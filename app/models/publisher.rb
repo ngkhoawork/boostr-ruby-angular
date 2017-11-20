@@ -7,7 +7,6 @@ class Publisher < ActiveRecord::Base
   has_many :contacts
   has_many :publisher_members, dependent: :destroy
   has_many :users, through: :publisher_members
-  has_many :sales_stages, as: :sales_stageable
   has_one :publisher_custom_field, dependent: :destroy
 
   has_many :values, as: :subject
@@ -21,9 +20,12 @@ class Publisher < ActiveRecord::Base
 
   belongs_to :client
   belongs_to :company
+  belongs_to :stage, class_name: 'PublisherStage', foreign_key: 'stage_id'
 
   validates :name, :client_id, presence: true
-  validates :website, format: { with: REGEXP_FOR_URL, message: 'Valid URL required', multiline: true }
+  validates :website, format: {
+                        with: REGEXP_FOR_URL, message: 'Valid URL required', multiline: true, allow_blank: true
+                      }
 
   pg_search_scope :search_by_name,
                   against: :name,
