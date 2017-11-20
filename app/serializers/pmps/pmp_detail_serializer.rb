@@ -11,6 +11,7 @@ class Pmps::PmpDetailSerializer < ActiveModel::Serializer
     :budget_delivered,
     :budget_remaining,
     :start_date,
+    :end_date
   )
 
   has_many :pmp_members, serializer: Pmps::PmpMemberSerializer

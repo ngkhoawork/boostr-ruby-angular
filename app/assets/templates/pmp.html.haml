@@ -1,85 +1,9 @@
 #pmp.z-styles.z-detail-page
-	.container-fluid
-		.row
-			.col-xs-12
-				.block.detail-stats
-					%div.stats-body
-						%div.mb20
-						%span.title PMP Name
-
-						.clearfix
-						%div.stats-numbers.mb30
-							%div.stats-col
-								.col-body-wrap
-									.col-body
-										.description Budget
-										.title {{currentPMP.budget_loc | currency:currency_symbol:0 }}
-										.subtitle{'ng-if': 'currentPMP.curr_cd != "USD"'} {{currentPMP.budget | currency: '$' : 0}}
-
-							%div.stats-col
-								.col-body-wrap
-									.col-body
-										.description Delivered
-										.title {{currentPMP.budget_delivered | currency:currency_symbol:0 }}
-										.subtitle{'ng-if': 'currentPMP.curr_cd != "USD"'} {{currentPMP.budget | currency: '$' : 0}}
-							%div.stats-col
-								.col-body-wrap
-									.col-body
-										.description Remaining
-										.title {{currentPMP.budget_remaining | currency:currency_symbol:0 }}
-										.subtitle{'ng-if': 'currentPMP.curr_cd != "USD"'} {{currentPMP.budget | currency: '$' : 0}}
-							%div.stats-col
-								.col-body-wrap
-									.col-body
-										.description Advertiser
-										.title {{advertiser}}
-							%div.stats-col
-								.col-body-wrap
-									.col-body
-										.description Agency
-										.title {{agency}}
-							%div.stats-col
-								.col-body-wrap
-									.col-body
-										.description Start
-										.title {{start_date}}
-							%div.stats-col
-								.col-body-wrap
-									.col-body
-										.description End
-										.title {{end_date}}
-							%div.stats-col
-								.col-body-wrap
-									.col-body
-										.description Guaranteed
-										.title {{guaranteed}}
-					
-						.clearfix
-						
-						.table-wrapper
-							%table.table.table-hover
-								%thead
-									%tr
-										%th.left Deal ID
-										%th.left SSP
-										%th.left Budget
-										%th.left Delivered
-										%th.left Remaining
-										%th.right 7 Day Run Rate
-										%th.right 30 Day Run Rate
-								%tbody
-									%tr{ ng: { if: 'currentPMP.pmp_names && currentPMP.pmp_names.length > 0', repeat: "pmpName in currentPMP.pmp_names | orderBy: 'deal_id'"} }
-										%td.left
-											{{ pmpName.dealId }}
-										%td.left
-											{{ pmpName.ssp }}
-										%td.left
-											{{ pmpName.budgetDelivered }}
-										%td.left
-											{{ pmpName.budgetRemaining }}
-										%td.left
-											{{ pmpName.sevenDayRunRate }}
-										%td.left
-											{{ pmpName.thirtyDayRunRate }}
-										
-									
+  .container-fluid
+    .row
+      .col-xs-8
+        %div{'ng-include': '"partials/pmp/pmp_detail.html"'}
+      .col-xs-4
+        %div{'ng-include': '"partials/pmp/pmp_members.html"'}
+      .col-xs-12
+        %div{'ng-include': '"partials/pmp/pmp_item_daily_actuals.html"'}

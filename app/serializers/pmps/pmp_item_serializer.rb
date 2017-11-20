@@ -1,7 +1,7 @@
 class Pmps::PmpItemSerializer < ActiveModel::Serializer
   attributes(
     :id,
-    :deal_id,
+    :ssp_deal_id,
     :ssp,
     :budget,
     :budget_loc,

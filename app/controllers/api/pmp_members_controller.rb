@@ -4,7 +4,7 @@ class Api::PmpMembersController < ApplicationController
   def create
     pmp_member = pmp.pmp_members.build(pmp_member_params)
     if pmp_member.save
-      render json: pmp_member, serializer: Pmps::PmpMemberSerializer
+      render json: pmp, serializer: Pmps::PmpDetailSerializer
     else
       render json: { errors: pmp_member.errors.messages }, status: :unprocessable_entity
     end
@@ -12,7 +12,7 @@ class Api::PmpMembersController < ApplicationController
 
   def update
     if pmp_member.update_attributes(pmp_member_params)
-      render json: pmp_member, serializer: Pmps::PmpMemberSerializer
+      render json: pmp, serializer: Pmps::PmpDetailSerializer
     else
       render json: { errors: pmp_member.errors.messages }, status: :unprocessable_entity
     end
@@ -20,7 +20,7 @@ class Api::PmpMembersController < ApplicationController
 
   def destroy
     pmp_member.destroy
-    render nothing: true
+    render json: pmp, serializer: Pmps::PmpDetailSerializer
   end
 
   private
@@ -37,6 +37,7 @@ class Api::PmpMembersController < ApplicationController
   def company
     @_company ||= current_user.company
   end
+  
   def pmp
     @_pmp ||= company.pmps.find(params[:pmp_id])
   end

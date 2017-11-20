@@ -1,0 +1,29 @@
+.block#line-content-fees
+  %div.mb20
+    %span.title PMP Actuals
+
+  .table-wrapper
+    %table.table.table-hover
+      %thead
+        %tr
+          %th.left Date
+          %th.left Ad Unit
+          %th.left Total Impression
+          %th.left Total Average eCPM ($)
+          %th.left Revenue
+      %tbody
+        %tr{ ng: { if: 'pmpItemDailyActuals && pmpItemDailyActuals.length > 0', repeat: "pmpItemDailyActual in pmpItemDailyActuals"} }
+          %td
+            {{ pmpItemDailyActual.date | date: 'M/d/yyyy' }}
+          %td
+            %strong
+              {{ pmpItemDailyActual.ad_unit }}
+          %td
+            {{ pmpItemDailyActual.impressions | currency:'$':0 }}
+          %td
+            {{ pmpItemDailyActual.price | currency:'$':0 }}
+          %td.left
+            {{ pmpItemDailyActual.revenue_loc | currency:currency_symbol:0 }}
+        %tr{ ng: { if: '!pmpItemDailyActuals || pmpItemDailyActuals.length == 0' } }
+          %td.center{ 'colspan': '5' }
+            No data available

@@ -7,16 +7,38 @@
 			%thead
 				%tr
 					%th Product
+					%th{'ng-if': 'isPmpDeal'} SSP
+					%th{'ng-if': 'isPmpDeal'} SSP Deal-ID
+					%th{'ng-if': 'isPmpDeal'} Is Guaranteed
 					%th{ ng: { repeat: 'dealProductCfName in dealProductCfNames | orderBy: "position"', if: "!dealProductCfName.disabled" } }
 						{{ dealProductCfName.field_label }}
 					%th Total Budget
 					%th{ ng: { repeat: 'month in currentDeal.months' } }
 						{{ month | boDate }}
-			%tbody{'ng-if': 'currentDeal.stage.open'}
+			%tbody
 				%tr{ ng: { repeat: 'deal_product in currentDeal.deal_products' } }
 					%td
 						{{ deal_product.name }}
-						%i.fa.fa-trash.delete-product{'ng-click': 'deleteDealProduct(deal_product)'}
+						%i.fa.fa-trash.delete-product{'ng-if': 'currentDeal.stage.open', 'ng-click': 'deleteDealProduct(deal_product)'}
+					%td{'ng-if': 'isPmpDeal'}
+						.dropdown
+							%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+								%span.editable{'ng-class': '{"not-selected": !deal_product.ssp_id}'}
+									{{deal_product.ssp.name || 'Select value'}}
+								%span.caret
+							%ul.dropdown-menu
+								%li{'ng-repeat': 'ssp in ssps', 'ng-class': '{active: deal_product.ssp_id == ssp.id}'}
+									%a{'href': '', 'ng-click': 'deal_product.ssp_id = ssp.id; updateDealProduct(deal_product)'}
+										%span.text {{ssp.name}}
+					%td{'ng-if': 'isPmpDeal'}
+						.text-field
+							%input.editable{ 'ng-model': "deal_product.ssp_deal_id", name: "ssp_deal_id", placeholder: 'Enter Deal-ID', 'ng-blur': 'updateDealProduct(deal_product)' }
+					%td{'ng-if': 'isPmpDeal'}
+						.boolean-field.show-hide-remainder-form
+							.switch-remainder-form
+								%input.cmn-toggle.cmn-toggle-round-flat{id: "{{'is_guaranteed' + deal_product.id}}", type: 'checkbox', 'ng-model': 'deal_product.is_guaranteed', 'ng-change': "updateDealProduct(deal_product)"}
+								%label{:for => "{{'is_guaranteed' + deal_product.id}}"}
+									%span
 					%td.custom-field-item{ ng: { repeat: 'dealProductCfName in dealProductCfNames | orderBy: "position"', if: "!dealProductCfName.disabled", init: "fieldName = dealProductCfName.field_type + dealProductCfName.field_index" } }
 						.custom-field-item-field{'ng-switch': 'dealProductCfName.field_type', 'ng-class': '{"has-error": !deal_product.deal_product_cf[fieldName]}'}
 							.text-field{ ng: { 'switch-when': 'text' } }
@@ -54,14 +76,18 @@
 							.currency-field{ ng: { 'switch-when': 'sum' } }
 								%div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "deal_product.deal_product_cf[fieldName]", 'on-after-save': 'updateDealProduct(deal_product)'}
 					%td.product-budget
-						%div
+						%div{'ng-if': 'currentDeal.stage.open'}
 							%div.total-budget-wrap
 								%div.budget-value.total-budget{'click-to-edit':'click-to-edit', type: "number", 'ng-attr-prefix': "{{currency_symbol}}", 'ng-model': "deal_product.budget_loc", 'on-after-save': 'updateDealProduct(deal_product)'}
 							%div.error-tooltip{'ng-show': 'deal_product.isIncorrectTotalBudgetPercent'}
 								Total budget percentage should be equal 100%
 							%span.budget-percent{ 'ng-class': "{'has-error':deal_product.isIncorrectTotalBudgetPercent}"}
 								{{deal_product.total_budget_percent || 0}}%
-					%td.product-budget{ ng: { repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
+						%div{'ng-if': '!currentDeal.stage.open'}
+							%span.budget-value.total-budget {{deal_product.budget_loc | currency: currency_symbol : 0}}
+							%div.budget-percent
+								{{deal_product.total_budget_percent || 0}}%
+					%td.product-budget{ ng: {if: 'currentDeal.stage.open', repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
 						%div{'ng-if': '!deal_product_budget.editMode'}
 							%span.editable.budget-value{ 'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "moneyOnFocus", "saveCopyProduct")' }
 								{{ deal_product_budget.budget_loc | currency: currency_symbol : 0 }}
@@ -88,67 +114,13 @@
 												'ng-blur':'disableProductsEditMode(deal_product, deal_product.deal_product_budgets, deal_product_budget)',
 												'numbers-only': '' }>
 								%span.symbol.percent %
-				%tr.sum-budgets-row
-					%td{colspan: '{{activeDealProductCfLength}}', 'ng-show': 'activeDealProductCfLength'}
-					%td.right
-						%b TOTAL
-					%td
-						%b {{sumDealProductBudget() | currency: currency_symbol : 0}}
-					%td{'ng-repeat': 'month in currentDeal.months'}
-						%b {{sumDealProductBudget($index) | currency: currency_symbol : 0}}
-
-			%tbody{'ng-if': '!currentDeal.stage.open'}
-				%tr{ ng: { repeat: 'deal_product in currentDeal.deal_products' } }
-					%td{style: 'padding-right: 30px'}
-						{{ deal_product.name }}
-					%td.custom-field-item{ ng: { repeat: 'dealProductCfName in dealProductCfNames | orderBy: "position"', if: "!dealProductCfName.disabled", init: "fieldName = dealProductCfName.field_type + dealProductCfName.field_index" } }
-						.custom-field-item-field{'ng-switch': 'dealProductCfName.field_type', 'ng-class': '{"has-error": !deal_product.deal_product_cf[fieldName]}'}
-							.text-field{ ng: { 'switch-when': 'text' } }
-								%input.editable{ 'ng-model': "deal_product.deal_product_cf[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealProductCfName.field_label}}', 'ng-blur': 'updateDealProduct(deal_product)' }
-							.text-area{ ng: { 'switch-when': 'note' } }
-								%textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "deal_product.deal_product_cf[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealProductCfName.field_label}}', 'ng-blur': 'updateDealProduct(deal_product)' }
-							.currency-field{ ng: { 'switch-when': 'number' } }
-								%div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "deal_product.deal_product_cf[fieldName]", 'on-after-save': 'updateDealProduct(deal_product)'}
-							.currency-field{ ng: { 'switch-when': 'number_4_dec' } }
-								%div{'click-to-edit':'click-to-edit', type: "number", decimal: '4', 'ng-model': "deal_product.deal_product_cf[fieldName]", 'on-after-save': 'updateDealProduct(deal_product)'}
-							.currency-field{ ng: { 'switch-when': 'integer' } }
-								%div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "deal_product.deal_product_cf[fieldName]", 'on-after-save': 'updateDealProduct(deal_product)'}
-							.currency-field{ ng: { 'switch-when': 'currency' } }
-								%div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', prefix: '{{currency_symbol}}', 'ng-model': "deal_product.deal_product_cf[fieldName]", 'on-after-save': 'updateDealProduct(deal_product)'}
-							.percentage-field{ ng: { 'switch-when': 'percentage' } }
-								%div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': "deal_product.deal_product_cf[fieldName]", 'on-after-save': 'updateDealProduct(deal_product)'}
-							.datetime-field.bs-datepicker{ ng: { 'switch-when': 'datetime' } }
-								%span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !deal_product.deal_product_cf[fieldName]}', model: 'deal_product.deal_product_cf[fieldName]', click: 'dateOpened[fieldName] = !dateOpened[fieldName]', change: 'updateDealProduct(deal_product)' }, 'is-open': 'dateOpened[fieldName]' }
-									{{(deal_product.deal_product_cf[fieldName] | date) || 'Select date'}}
-									%span.caret
-							.boolean-field.show-hide-remainder-form{ ng: { 'switch-when': 'boolean' } }
-								.switch-remainder-form
-									%input.cmn-toggle.cmn-toggle-round-flat{id: '{{fieldName}}', type: 'checkbox', 'ng-model': 'deal_product.deal_product_cf[fieldName]', 'ng-change': "updateDealProduct(deal_product)"}
-									%label{:for => "{{fieldName}}"}
-										%span
-							.dropdown{ ng: { 'switch-when': 'dropdown' } }
-								%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-									%span.editable{'ng-class': '{"not-selected": !deal_product.deal_product_cf[fieldName]}'}
-										{{deal_product.deal_product_cf[fieldName] || 'Select value'}}
-									%span.caret
-								%ul.dropdown-menu
-									%li{'ng-repeat': 'customFieldOption in dealProductCfName.deal_product_cf_options', 'ng-class': '{active: deal_product.deal_product_cf[fieldName] == customFieldOption.value}'}
-										%a{'href': '', 'ng-click': 'deal_product.deal_product_cf[fieldName] = customFieldOption.value; updateDealProduct(deal_product)'}
-											%span.text {{customFieldOption.value}}
-							.currency-field{ ng: { 'switch-when': 'sum' } }
-								%div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "deal_product.deal_product_cf[fieldName]", 'on-after-save': 'updateDealProduct(deal_product)'}
-					%td.product-budget
-						%div
-							%span.budget-value.total-budget {{deal_product.budget_loc | currency: currency_symbol : 0}}
-							%div.budget-percent
-								{{deal_product.total_budget_percent || 0}}%
-					%td.text-center.month-budget{ ng: { repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
+					%td.text-center.month-budget{ ng: {if: '!currentDeal.stage.open', repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
 						%span.budget-value
 							{{ deal_product_budget.budget_loc | currency: currency_symbol : 0 }}
 						%div.budget-percent
 							{{ deal_product_budget.budget_percent || 0}}%
 				%tr.sum-budgets-row
-					%td{colspan: '{{activeDealProductCfLength}}', 'ng-show': 'activeDealProductCfLength'}
+					%td{colspan: '{{activeDealProductCfLength + pmpColumns}}', 'ng-show': 'activeDealProductCfLength'}
 					%td.right
 						%b TOTAL
 					%td

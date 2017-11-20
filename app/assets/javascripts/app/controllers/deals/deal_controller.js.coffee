@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem, Validation) ->
 
   $scope.showMeridian = true
   $scope.isAdmin = false
@@ -16,7 +16,12 @@
   $scope.currency_symbol = '$'
   $scope.ealertReminder = false
   $scope.activitiesOrder = '-happened_at'
+<<<<<<< 0d82b4de998cf3405dfb0c51a20ebd0c3221e1f4
   $scope.activities = []
+=======
+  $scope.isPmpDeal = false
+  $scope.pmpColumns = 0
+>>>>>>> pmp detail page
   $anchorScroll()
   $scope.operativeIntegration =
     isEnabled: false
@@ -183,7 +188,20 @@
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
+    getSsps()
 
+  checkPmpDeal = () ->
+    console.log('checkPmpDeal')
+    $scope.isPmpDeal = false
+    $scope.pmpColumns = 0
+    _.each $scope.currentDeal.products, (product) ->
+      if product.revenue_type == 'PMP'
+        $scope.isPmpDeal = true
+        $scope.pmpColumns = 3
+  getSsps = () ->
+    SSP.all().then (ssps) ->
+      $scope.ssps = ssps
+      console.log($scope.ssps);
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
@@ -326,10 +344,11 @@
       deal.close_reason = Field.field(deal, 'Close Reason')
       deal.contact_roles = Field.field(deal, 'Contact Role')
       deal.next_steps_expired = moment(deal.next_steps_due) < moment().startOf('day')
-      $scope.currentDeal = deal
-      $scope.selectedStageId = deal.stage_id
-      $scope.verifyMembersShare()
-      $scope.setBudgetPercent(deal)
+    $scope.currentDeal = deal
+    $scope.selectedStageId = deal.stage_id
+    $scope.verifyMembersShare()
+    $scope.setBudgetPercent(deal)
+    checkPmpDeal()
 
   $scope.getStages = ->
     Stage.query().$promise.then (stages) ->
@@ -466,9 +485,10 @@
           $scope.errors[key] = error && error[0]
     )
   $scope.$on 'deal_product_added', (e, deal) ->
-    $scope.currentDeal = deal
-    $scope.selectedStageId = deal.stage_id
-    $scope.setBudgetPercent(deal)
+    $scope.setCurrentDeal(deal)
+    # $scope.currentDeal = deal
+    # $scope.selectedStageId = deal.stage_id
+    # $scope.setBudgetPercent(deal)
 
   $scope.resetDealProduct = ->
     $scope.deal_product = {
@@ -808,6 +828,8 @@
       resolve:
         currentDeal: ->
           currentDeal
+        isPmpDeal: ->
+          $scope.isPmpDeal
 
   $scope.addContact = ->
     $scope.modalInstance = $modal.open

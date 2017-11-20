@@ -3,7 +3,7 @@ require 'chronic'
 class Csv::PmpItemDailyActual
   include ActiveModel::Validations
 
-  validates :deal_id,
+  validates :ssp_deal_id,
             :date,
             :ad_unit,
             :bids,
@@ -13,7 +13,6 @@ class Csv::PmpItemDailyActual
             :revenue_loc,
             :currency, presence: true
   
-  validates :ad_unit, numericality: true
   validates :bids, numericality: true
   validates :impressions, numericality: true
   validates :win_rate, numericality: true
@@ -24,7 +23,7 @@ class Csv::PmpItemDailyActual
   validate  :validate_date_format
 
   attr_accessor(
-    :deal_id,
+    :ssp_deal_id,
     :date,
     :ad_unit,
     :bids,
@@ -100,7 +99,7 @@ class Csv::PmpItemDailyActual
   private
 
   def validate_pmp_item_presence
-    errors.add(:pmp_item, "with Deal-Id #{deal_id} could not be found") if pmp_item.blank?
+    errors.add(:pmp_item, "with Deal-Id #{ssp_deal_id} could not be found") if pmp_item.blank?
   end
 
   def validate_date_format
@@ -108,7 +107,7 @@ class Csv::PmpItemDailyActual
   end
 
   def pmp_item
-    @_pmp_item ||= PmpItem.find_by(deal_id: deal_id)
+    @_pmp_item ||= PmpItem.find_by(ssp_deal_id: ssp_deal_id)
   end
 
   def pmp_item_daily_actual
@@ -144,7 +143,7 @@ class Csv::PmpItemDailyActual
 
   def self.build(row, company)
     Csv::PmpItemDailyActual.new(
-      deal_id: row[:dealid],
+      ssp_deal_id: row[:dealid],
       date: row[:date].try(:strip),
       ad_unit: row[:ad_unit],
       bids: row[:bids],

@@ -36,6 +36,10 @@ end
 json.deal_products deal.deal_products.order(:created_at) do |deal_product|
   json.id deal_product.id
   json.name deal_product.product.name
+  json.ssp deal_product.ssp
+  json.ssp_id deal_product.ssp_id
+  json.is_guaranteed deal_product.is_guaranteed
+  json.ssp_deal_id deal_product.ssp_deal_id
   json.deal_product_budgets deal_product.deal_product_budgets.order(:start_date) do |deal_product_budget|
     json.id deal_product_budget.id
     json.budget (deal_product_budget.budget || 0).to_i

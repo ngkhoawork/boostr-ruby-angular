@@ -1,6 +1,6 @@
 %tr{'ng-repeat': 'row in revenue | orderBy : zSort.by : zSort.rev | filter:searchText'}
   %td.left
-    %a{ href: '', 'ng-href': '/revenue/pmp/{{row.id}}' }
+    %a{ href: '', 'ng-href': '/revenue/pmps/{{row.id}}' }
       {{ row.name }}
   %td.left
     %a{'href': '', 'ng-href': '/accounts/{{row.advertiser.id}}'} {{row.advertiser.name}}

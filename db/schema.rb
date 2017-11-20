@@ -442,7 +442,7 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.integer  "user_id"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
-    t.decimal  "changed_amount", precision: 12, scale: 2
+    t.decimal  "changed_amount", precision: 15, scale: 2
   end
 
   add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree
