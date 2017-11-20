@@ -2036,6 +2036,18 @@ ActiveRecord::Schema.define(version: 20171213215450) do
   add_index "publisher_custom_fields", ["company_id"], name: "index_publisher_custom_fields_on_company_id", using: :btree
   add_index "publisher_custom_fields", ["publisher_id"], name: "index_publisher_custom_fields_on_publisher_id", using: :btree
 
+  create_table "publisher_daily_actuals", force: :cascade do |t|
+    t.integer  "publisher_id"
+    t.date     "date"
+    t.integer  "available_impressions"
+    t.integer  "filled_impressions"
+    t.integer  "fill_rate"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "publisher_daily_actuals", ["publisher_id"], name: "index_publisher_daily_actuals_on_publisher_id", using: :btree
+
   create_table "publisher_members", force: :cascade do |t|
     t.integer  "publisher_id"
     t.integer  "user_id"

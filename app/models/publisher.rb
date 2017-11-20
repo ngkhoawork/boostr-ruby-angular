@@ -4,6 +4,7 @@ class Publisher < ActiveRecord::Base
 
   has_one :address, as: :addressable, dependent: :destroy
   has_many :activities, dependent: :destroy
+  has_many :publisher_daily_actuals
   has_many :contacts
   has_many :publisher_members, dependent: :destroy
   has_many :users, through: :publisher_members
