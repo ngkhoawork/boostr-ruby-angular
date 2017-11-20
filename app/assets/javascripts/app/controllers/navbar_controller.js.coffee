@@ -11,6 +11,7 @@
         {name: 'FORECAST', url: '/forecast'}
         {name: 'REVENUE', url: '/revenue'}
         {name: 'ACCOUNTS', url: '/accounts'}
+        {name: 'PUBLISHERS', url: '/publishers'}
         {name: 'CONTACTS', url: '/contacts'}
         {name: 'INFLUENCERS', url: '/influencers'} if _isCompanyInfluencerEnabled
         {name: 'BUSINESS PLANS', url: '/bps'}

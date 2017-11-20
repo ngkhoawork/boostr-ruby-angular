@@ -1,0 +1,23 @@
+#publishers
+  .container-fluid
+    .row
+      .col-xs-12.publishers-menu
+        %span.title Publishers
+        %add-button{'ng-click': ''} Add Publisher
+        %button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
+          %i.fa.fa-filter
+          Add filter
+    .row
+      .col-xs-12
+        .block
+          %table.table.table-hover
+            %thead
+              %tr
+                %th Stage
+                %th Publisher Type
+                %th Comscore 250
+            %tbody
+              %tr{ ng: { repeat: 'publisher in publishers'} }
+                %td{{publisher.name}}
+                %td{{publisher.name}}
+                %td{{publisher.comscore}}

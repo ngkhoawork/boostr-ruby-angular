@@ -332,6 +332,10 @@
     .when '/users/sign_out',
       templateUrl: 'sign_out.html'
       controller: 'signOutController'
+      
+    .when '/publishers',
+      templateUrl: 'publishers/publishers.html'
+      controller: 'PablishersController'
 
     .when '/api/gmail_extension/',
       templateUrl: 'gmail_extension.html'
