@@ -2,8 +2,8 @@
   %head
     %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
     %title boostr
-    %link{:href =>  @domain + "/assets/application-23b6112c7106c5494d58ecce16d3bf7d.css", :media => "all", :rel => "stylesheet"}/
-    %script{:src => @domain + "/assets/application-14420b4f9b182c014b66ed0c5f1adc0f.js"}
+    = stylesheet_link_tag    'application', media: 'all'
+    = javascript_include_tag 'application'
     = csrf_meta_tags
     %base{ href: "/" }
 
