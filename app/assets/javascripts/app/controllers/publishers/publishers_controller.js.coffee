@@ -7,16 +7,6 @@
       {name: 'My Team\'s publishers', my_team_publishers_bool: true}
     ]
 
-    searchTimeout = null
-    $scope.handleSearch = () ->
-      if searchTimeout
-        clearTimeout(searchTimeout)
-        searchTimeout = null
-      searchTimeout = setTimeout(
-        -> $scope.getPublishers()
-        400
-      )
-
     $scope.init = ->
       $scope.teamFilter = $scope.publisherTypes[0]
       $scope.getPublishers()

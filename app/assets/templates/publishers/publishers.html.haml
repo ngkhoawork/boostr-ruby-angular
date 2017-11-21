@@ -12,7 +12,7 @@
             .input-group
               .input-group-addon
                 %i.glyphicon.glyphicon-search
-              %input.form-control{ ng: { model: 'searchText', change: 'handleSearch()' }, placeholder: "Search by Name" }
+              %input.form-control{ ng: { model: 'searchText', change: 'getPublishers()' }, placeholder: "Search by Name" }
         %button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
           %i.fa.fa-filter
           Add filter
