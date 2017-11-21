@@ -49,6 +49,7 @@ class Company < ActiveRecord::Base
   has_many :influencer_content_fees, through: :influencers
   has_many :audit_logs
   has_many :filter_queries
+  has_many :publisher_stages, dependent: :destroy
   has_many :sales_stages, dependent: :destroy
   has_many :publishers, dependent: :destroy
   has_many :publisher_custom_field_names, dependent: :destroy

@@ -443,7 +443,11 @@ Rails.application.routes.draw do
     end
 
     resources :filter_queries, only: [:index, :create, :update, :destroy]
-    resources :publishers
+    resources :publishers do
+      collection do
+        get :settings
+      end
+    end
     resources :publisher_custom_field_names, only: [:index, :create, :update, :destroy]
     resources :publisher_daily_actuals, only: [] do
       post :import, on: :collection

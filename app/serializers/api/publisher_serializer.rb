@@ -7,7 +7,7 @@ class Api::PublisherSerializer < ActiveModel::Serializer
     :estimated_monthly_impressions,
     :actual_monthly_impressions,
     :type,
-    :stage,
+    :publisher_stage,
     :client_id,
     :created_at,
     :updated_at
@@ -16,10 +16,10 @@ class Api::PublisherSerializer < ActiveModel::Serializer
   private
 
   def type
-    object.type_option&.name
+    object.type&.serializable_hash(only: [:id, :name])
   end
 
-  def stage
-    object.stage&.name
+  def publisher_stage
+    object.publisher_stage&.name
   end
 end

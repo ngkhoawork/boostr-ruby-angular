@@ -2,8 +2,9 @@ class PublishersQuery < BaseQuery
   def perform
     default_relation
       .by_company_id(options[:company_id])
-      .by_stage_id(options[:stage_id])
-      .by_type_option_id(options[:type_option_id])
+      .by_comscore(options[:comscore])
+      .by_stage_id(options[:publisher_stage_id])
+      .by_type_id(options[:type_id])
       .my_publishers(options[:my_publishers_bool], options[:current_user])
       .my_team_publishers(options[:my_team_publishers_bool], options[:current_user])
       .search_by_name(options[:q])
@@ -17,23 +18,27 @@ class PublishersQuery < BaseQuery
 
   module Scopes
     def by_company_id(company_id)
-      company_id ? where(company_id: company_id ) : self
+      company_id.nil? ? self : where(company_id: company_id)
+    end
+
+    def by_comscore(comscore)
+      comscore.nil? ? self : where(comscore: comscore)
     end
 
     def by_stage_id(stage_id)
-      stage_id ? where(publisher_stage_id: stage_id) : self
+      stage_id.nil? ? self : where(publisher_stage_id: stage_id)
     end
 
-    def by_type_option_id(type_option_id)
-      type_option_id ? joins(:available_type_options).where(options: { id: type_option_id }) : self
+    def by_type_id(type_id)
+      type_id.nil? ? self : where(type_id: type_id)
     end
 
     def by_member_ids(member_ids)
-      member_ids ? joins(:publisher_members).where(publisher_members: { user_id: member_ids }) : self
+      member_ids.nil? ? self : joins(:publisher_members).where(publisher_members: { user_id: member_ids })
     end
 
     def by_team_ids(team_ids)
-      team_ids ? joins(:users).where(users: { team_id: team_ids } ) : self
+      team_ids.nil? ? self : joins(:users).where(users: { team_id: team_ids })
     end
 
     def my_publishers(my_publishers_bool, current_user)

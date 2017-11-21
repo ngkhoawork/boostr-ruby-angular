@@ -12,15 +12,11 @@ class Api::Publishers::IndexSerializer < ActiveModel::Serializer
     :updated_at
   )
 
-  has_one :stage, serializer: Api::Publishers::StageSerializer
+  has_one :publisher_stage, serializer: Api::Publishers::StageSerializer
 
   private
 
   def type
-    object.type_option&.name
-  end
-
-  def stage
-    object.publisher_stage
+    object.type&.serializable_hash(only: [:id, :name])
   end
 end
