@@ -42,7 +42,7 @@ class Publisher < ActiveRecord::Base
                   ranked_by: ':trigram'
 
   def type_option
-    type_value.option
+    type_value&.option
   end
 
   def type_option=(option)

@@ -6,8 +6,20 @@ class Api::PublisherSerializer < ActiveModel::Serializer
     :website,
     :estimated_monthly_impressions,
     :actual_monthly_impressions,
+    :type,
+    :stage,
     :client_id,
     :created_at,
     :updated_at
   )
+
+  private
+
+  def type
+    object.type_option&.name
+  end
+
+  def stage
+    'TYPE EXAMPLE'
+  end
 end

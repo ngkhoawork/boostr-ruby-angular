@@ -1,9 +1,18 @@
-#publishers
+#publishers.z-styles
   .container-fluid
     .row
       .col-xs-12.publishers-menu
         %span.title Publishers
         %add-button{'ng-click': ''} Add Publisher
+        .publisher-types
+          %span{'ng-repeat': 'type in publisherTypes', 'ng-class': '{active: type.name == teamFilter.name}', 'ng-click': 'filterPublishers(type)'}
+            {{type.name}}
+        .search
+          %form
+            .input-group
+              .input-group-addon
+                %i.glyphicon.glyphicon-search
+              %input.form-control{ ng: { model: 'searchText', change: 'handleSearch()' }, placeholder: "Search by Name" }
         %button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
           %i.fa.fa-filter
           Add filter
@@ -18,6 +27,6 @@
                 %th Comscore 250
             %tbody
               %tr{ ng: { repeat: 'publisher in publishers'} }
-                %td{{publisher.name}}
-                %td{{publisher.name}}
-                %td{{publisher.comscore}}
+                %td {{publisher.stage}}
+                %td {{publisher.type}}
+                %td {{publisher.comscore}}
