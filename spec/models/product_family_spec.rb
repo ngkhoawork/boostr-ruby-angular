@@ -13,6 +13,8 @@ RSpec.describe ProductFamily, 'model' do
     end
   end
 
+  private
+
   def company
     @_company ||= create :company
   end

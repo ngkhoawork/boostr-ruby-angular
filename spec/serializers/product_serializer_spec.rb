@@ -15,7 +15,7 @@ describe ProductSerializer do
   private
 
   def product_serializer
-    described_class.new(product)
+    @_product_serializer ||= described_class.new(product)
   end
 
   def product_family
