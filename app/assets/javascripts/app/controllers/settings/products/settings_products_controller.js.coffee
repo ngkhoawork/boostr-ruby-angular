@@ -93,6 +93,7 @@
 
         $scope.$on 'updated_product_families', ->
             getProductFamilies()
+            getProducts()
 
         $scope.$on 'updated_products', ->
             getProducts()
