@@ -3,5 +3,5 @@ class PublisherStage < ActiveRecord::Base
   has_one :sales_stage, as: :sales_stageable
   belongs_to :company
 
-  delegate :name, :probability, to: :sales_stage
+  delegate :name, :probability, to: :sales_stage, allow_nil: true
 end

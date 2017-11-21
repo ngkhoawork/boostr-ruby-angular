@@ -10,6 +10,6 @@ class PublisherDailyActual < ActiveRecord::Base
   def calculate_fill_rate
     return unless available_impressions && filled_impressions
 
-    self.fill_rate = (filled_impressions/available_impressions) * 100
+    self.fill_rate = (filled_impressions.to_f/available_impressions.to_f) * 100
   end
 end

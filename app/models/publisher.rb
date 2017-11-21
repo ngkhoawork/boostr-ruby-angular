@@ -4,7 +4,7 @@ class Publisher < ActiveRecord::Base
 
   has_one :address, as: :addressable, dependent: :destroy
   has_many :activities, dependent: :destroy
-  has_many :publisher_daily_actuals
+  has_many :daily_actuals, class_name: 'PublisherDailyActual'
   has_many :contacts
   has_many :publisher_members, dependent: :destroy
   has_many :users, through: :publisher_members
@@ -19,11 +19,11 @@ class Publisher < ActiveRecord::Base
           as: :subject,
           class_name: 'Value'
 
-  belongs_to :client
-  belongs_to :company
+  belongs_to :client, required: true
+  belongs_to :company, required: true
   belongs_to :publisher_stage
 
-  validates :name, :client_id, presence: true
+  validates :name, presence: true
   validates :website, format: {
                         with: REGEXP_FOR_URL, message: 'Valid URL required', multiline: true, allow_blank: true
                       }
@@ -47,6 +47,12 @@ class Publisher < ActiveRecord::Base
   end
 
   def type_option=(option)
-    type_value.option = option
+    if type_value
+      type_value.option = option
+    else
+      build_type_value(option: option, company_id: company_id, field_id: type_field.id).save!
+    end
+
+    type_option
   end
 end

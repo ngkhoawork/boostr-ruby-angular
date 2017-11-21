@@ -89,6 +89,14 @@ RSpec.describe Api::PublishersController, type: :controller do
     @_company ||= create(:company)
   end
 
+  def stage
+    @_stage ||= create(:publisher_stage, company: company)
+  end
+
+  def sales_stage
+    @_sales_stage ||= create(:sales_stage, company: company, sales_stageable: stage)
+  end
+
   def user
     @_user ||= create(:user, company: company)
   end
