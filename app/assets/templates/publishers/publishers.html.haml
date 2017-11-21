@@ -12,7 +12,7 @@
             .input-group
               .input-group-addon
                 %i.glyphicon.glyphicon-search
-              %input.form-control{ ng: { model: 'searchText', change: 'getPublishers()' }, placeholder: "Search by Name" }
+              %input.form-control{ ng: { model: 'searchText', change: 'getPublishers()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Name" }
         %button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
           %i.fa.fa-filter
           Add filter
@@ -22,11 +22,13 @@
           %table.table.table-hover
             %thead
               %tr
+                %th Name
+                %th Comscore 250
                 %th Stage
                 %th Publisher Type
-                %th Comscore 250
             %tbody
               %tr{ ng: { repeat: 'publisher in publishers'} }
+                %td {{publisher.name}}
+                %td {{publisher.comscore}}
                 %td {{publisher.stage}}
                 %td {{publisher.type}}
-                %td {{publisher.comscore}}
