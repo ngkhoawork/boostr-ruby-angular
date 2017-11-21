@@ -31,11 +31,11 @@ class Report::RevenueByAccountSerializer < ActiveModel::Serializer
   end
 
   def team_name
-    object.team_name
+    object.client.primary_user&.team&.name
   end
 
   def seller_names
-    object.seller_names.join(', ')
+    object.client.primary_user&.name
   end
 
   def revenues

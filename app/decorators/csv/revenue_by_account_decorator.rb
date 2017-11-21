@@ -21,11 +21,11 @@ class Csv::RevenueByAccountDecorator
   end
 
   def team_name
-    @record.team_name
+    @record.client.primary_user&.team&.name
   end
 
   def seller_names
-    @record.seller_names
+    @record.client.primary_user&.name
   end
 
   def year

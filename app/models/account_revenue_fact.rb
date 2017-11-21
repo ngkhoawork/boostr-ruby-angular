@@ -1,6 +1,7 @@
 class AccountRevenueFact < ActiveRecord::Base
   belongs_to :company
   belongs_to :account_dimension
+  belongs_to :client, foreign_key: :account_dimension_id
   belongs_to :time_dimension
   belongs_to :client_category, class_name: 'Option', foreign_key: 'category_id'
   belongs_to :client_region, class_name: 'Option'

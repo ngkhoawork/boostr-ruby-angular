@@ -70,24 +70,22 @@ module Report
         relation
           .joins(:account_dimension, :time_dimension)
           .group(
-            'account_dimensions.name,
+            'account_dimension_id,
+             account_dimensions.name,
              account_dimensions.account_type,
              account_revenue_facts.category_id,
              client_region_id,
              client_segment_id,
-             team_name,
-             seller_names,
              EXTRACT(YEAR FROM start_date),
              EXTRACT(MONTH FROM start_date)'
           )
           .select(
-            'account_dimensions.name,
+            'account_dimension_id,
+             account_dimensions.name,
              account_dimensions.account_type AS client_type,
              account_revenue_facts.category_id,
              client_region_id,
              client_segment_id,
-             team_name,
-             seller_names,
              EXTRACT(YEAR FROM start_date)::numeric::integer AS year,
              EXTRACT(MONTH FROM start_date) AS month,
              SUM(revenue_amount) AS month_revenue'
@@ -97,13 +95,12 @@ module Report
       def aggregate_by_period_revenue(relation)
         AccountRevenueFact
           .select(
-            'name,
+            'account_dimension_id,
+             name,
              client_type,
              category_id,
              client_region_id,
              client_segment_id,
-             team_name,
-             seller_names,
              json_agg(
                json_build_object(\'year\', year, \'month\', month, \'revenue\', month_revenue)
              ) AS month_revenues,
@@ -113,13 +110,12 @@ module Report
             aggregate_by_month_revenue(relation)
           )
           .group(
-            'name,
+            'account_dimension_id,
+             name,
              client_type,
              category_id,
              client_region_id,
-             client_segment_id,
-             team_name,
-             seller_names'
+             client_segment_id'
           )
           .order('name ASC')
       end
@@ -129,7 +125,7 @@ module Report
       end
 
       def preload_query(relation)
-        relation.includes(:client_category, :client_region, :client_segment)
+        relation.includes(:client_category, :client_region, :client_segment, client: { primary_user: :team })
       end
 
       def per_page
