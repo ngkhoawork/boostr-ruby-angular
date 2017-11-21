@@ -31,6 +31,7 @@ class Api::V2::DisplayLineItemsController < ApiController
   def line_item_params
     params.require(:display_line_item).permit(
       :external_io_number,
+      :io_name,
       :line_number,
       :ad_server,
       :start_date,

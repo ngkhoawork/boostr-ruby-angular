@@ -30,6 +30,7 @@
   'LocalStorageModule'
   'zFilterModule'
   'ngTextTruncate'
+  'mdMarkdownIt'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -352,6 +353,10 @@
     .when '/publishers/:id',
       templateUrl: 'publishers/publisher.html'
       controller: 'PablisherController'
+
+    .when '/api_reference',
+      templateUrl: 'api_reference.html'
+      controller: 'ApiReferenceController'
 
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true

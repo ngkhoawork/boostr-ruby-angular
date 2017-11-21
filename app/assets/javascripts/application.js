@@ -29,9 +29,10 @@
 //= require angular-loading-bar
 //= require angular-ui-sortable
 //= require angular-paginate-anything
+//= require markdown-it
+//= require angular-markdown-it
 //= require inflection
 //= require ngInflection
 //= require ngInfiniteScroll
 //= require_tree .
 //= require_tree ../templates
-
