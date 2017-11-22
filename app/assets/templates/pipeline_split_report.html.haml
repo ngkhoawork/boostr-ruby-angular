@@ -4,61 +4,12 @@
 			.reports-header
 				.header-cell.main-title
 					Pipeline Split Adjusted
-				.header-cell.filters-block
-					%table
-						%tr.filter-title
-							%td Team
-							%td Seller
-							%td Stage
-							%td Status
-							%td
-								%span.reset-filter{'ng-click': 'resetFilter()'}
-									Reset
-						%tr
-							%td
-								%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team', 'ng-class': '{"empty": filter.team.name === "All"}'}
-
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.seller.name === "All"}' }
-											{{filter.seller.name}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
-													{{seller.name}}
-
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.stages.length == 0}' }
-											%span{'ng-if': 'filter.stages.length == 0'}
-												All
-											%span{'ng-repeat': 'stage in filter.stages'}
-												{{stage.name}} {{stage.probability + '%'}}
-												%i.fa.fa-times.close-btn{'ng-click': 'removeFilter("stages", stage)'}
-											%span.caret
-										%ul.dropdown-menu
-											%li{ ng: { repeat: 'stage in stages | orderBy: ["-open", "probability"]' } }
-												%a{ href: '', ng: { click: 'setFilter("stages", stage)' } }
-													{{stage.name}} {{isNumber(stage.probability) ? stage.probability + '%' : ''}}
-
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.status.name === "All"}' }
-											{{filter.status.name}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{ ng: { repeat: 'status in statuses', class: '{active: status.name === filter.status.name}' } }
-												%a{ href: '', ng: { click: 'setFilter("status", status)' } }
-													{{ status.name }}
-
-				.header-cell
-					%button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
-						Run Report
-
+				.header-cell.filter-cell
+					%z-filter{'on-apply': 'onFilterApply'}
+						%z-filter-field{data: 'teams', type: 'team', 'save-as': '{team_id: "id"}', 'on-change': 'updateSellers'} Team
+						%z-filter-field{data: 'sellers', 'save-as': '{seller_id: "id"}'} Seller
+						%z-filter-field{data: 'stages', type: 'stage', 'save-as': '{"stage_ids[]": "id"}'} Stage
+						%z-filter-field{data: 'statuses', 'save-as': '{status: "id"}', 'order-by': '"-name"'} Status
 				.header-cell
 					.pull-right
 						%download-button{'ng-click': 'export()'}
@@ -154,3 +105,6 @@
 									%td {{deal.end_date | date : 'shortDate'}}
 									%td {{deal.created_date | date : 'shortDate'}}
 									%td {{deal.closed_date | date : 'shortDate'}}
+								%tr{ ng: { if: 'deals.length == 0' }}
+									%td.center.auto-colspan
+										No Data for the Filters Selected

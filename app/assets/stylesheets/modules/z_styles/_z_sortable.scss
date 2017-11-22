@@ -1,0 +1,9 @@
+.z-sortable {
+    //display: inline-block;
+    //padding: 5px 10px;
+    cursor: pointer;
+    [class*="fa-caret"] {
+        font-size: 14px;
+        margin-left: 5px;
+    }
+}

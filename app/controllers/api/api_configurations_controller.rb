@@ -72,9 +72,13 @@ class Api::ApiConfigurationsController < ApplicationController
                                                                                  :project_name,
                                                                                  :workspace_name
                                                                                 ],
-                                              datafeed_configuration_details_attributes: [:id,
-                                                                                 :auto_close_deals,
-                                                                                 :revenue_calculation_pattern
+                                              datafeed_configuration_details_attributes:
+                                                                                [
+                                                                                  :id,
+                                                                                  :auto_close_deals,
+                                                                                  :revenue_calculation_pattern,
+                                                                                  :product_mapping,
+                                                                                  :exclude_child_line_items
                                                                                 ])
   end
 

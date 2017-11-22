@@ -45,7 +45,10 @@ class Api::DisplayLineItemsController < ApplicationController
   private
 
   def display_line_items
-    dashboard_pacing_alert_service.filtered_line_items
+    dashboard_pacing_alert_service
+      .filtered_line_items
+      .limit(limit)
+      .offset(offset)
   end
 
   def dashboard_pacing_alert_service

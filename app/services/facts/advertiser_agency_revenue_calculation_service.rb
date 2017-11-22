@@ -9,10 +9,16 @@ class Facts::AdvertiserAgencyRevenueCalculationService < BaseService
   end
 
   def calculate_revenues
-    @calculated_revenues = [content_fee_products_budgets, display_products_budgets, display_line_items_daily_rate_budgets].inject(:union)
+    @calculated_revenues = ContentFeeProductBudget
+                               .select('revenues.advertiser_id, revenues.agency_id, revenues.company_id, SUM(revenues.revenue_amount) as revenue_amount')
+                               .from(unified_budgets, :revenues).group('revenues.advertiser_id, revenues.agency_id, revenues.company_id')
   end
 
   private
+
+  def unified_budgets
+    [content_fee_products_budgets, display_products_budgets, display_line_items_daily_rate_budgets].inject(:union)
+  end
 
   def content_fee_products_budgets
     content_fees_with_monthly_budgets.group('ios.advertiser_id, ios.agency_id, ios.company_id')
@@ -74,7 +80,7 @@ class Facts::AdvertiserAgencyRevenueCalculationService < BaseService
   def display_line_item_budgets_daily_rate_conditions
     'display_line_items.end_date >= :start_date
      AND display_line_items.start_date <= :end_date
-     AND display_line_items.id NOT IN (:display_line_item_ids)
+     AND (display_line_items.id NOT IN (:display_line_item_ids) OR display_line_items.id IS NOT NULL)
      AND products.revenue_type = \'Display\'
      AND ios.company_id = :company_id'
   end

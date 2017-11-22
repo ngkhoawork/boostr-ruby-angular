@@ -55,12 +55,18 @@ class NewQuarterlyForecast
       end
       user_ids.uniq!
     end
+
+    @data[:forecast][:quarterly_quota] = quarterly_quota
     
+    @data[:quarters] = (start_date.to_date..end_date.to_date).map { |d| 'q' + ((d.month - 1) / 3 + 1).to_s + '-' + d.year.to_s }.uniq    
+
+    return @data if user_ids.empty?
+
     pipeline_sql = "SELECT stage_dimension_id AS stage_id, avg(s.total) AS pipeline_amount, json_object_agg(key, val) AS monthly_amount
       FROM (
           SELECT stage_dimension_id, SUM(amount) AS total, key, SUM(value::numeric) AS val
           FROM forecast_pipeline_facts t, jsonb_each_text(monthly_amount)
-          WHERE  forecast_time_dimension_id = #{forecast_time_dimension.id} AND user_dimension_id IN (#{user_ids.join(', ')})
+          WHERE  forecast_time_dimension_id = #{forecast_time_dimension.id} AND user_dimension_id IN (#{user_ids.count > 0 ? user_ids.join(', ') : 0})
           GROUP BY stage_dimension_id, key
           ) s
       GROUP BY stage_dimension_id"
@@ -103,10 +109,6 @@ class NewQuarterlyForecast
 
     stage_ids = stage_ids.uniq
     @data[:forecast][:stages] = company.stages.where(id: stage_ids).order(:probability).all
-
-    @data[:forecast][:quarterly_quota] = quarterly_quota
-    
-    @data[:quarters] = (start_date.to_date..end_date.to_date).map { |d| 'q' + ((d.month - 1) / 3 + 1).to_s + '-' + d.year.to_s }.uniq    
 
     @data
   end

@@ -1,8 +1,8 @@
 class DisplayLineItemBudgetCsv
   include ActiveModel::Validations
 
-  validates :company_id, :line_number, :month_and_year,
-            :impressions, :budget_loc, presence: true
+  validates :company_id, :line_number, :month_and_year, :budget_loc, presence: true
+  validates_presence_of :impressions, if: :should_validate_impressions
 
   attr_accessor :company_id, :external_io_number, :line_number, :month_and_year, :ctr, :impressions, :clicks,
                 :video_avg_view_rate, :video_completion_rate, :budget_loc, :io_name
@@ -73,5 +73,9 @@ class DisplayLineItemBudgetCsv
 
   def io_number
     io_name.gsub(/.+_/, '')
+  end
+
+  def should_validate_impressions
+    true
   end
 end

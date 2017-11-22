@@ -17,7 +17,7 @@
         %input.form-control{ name: 'name', placeholder: 'Name', ng: { model: 'contact.name' } }
       .form-group.with-add-btn{'ng-class':'{error: errors.client_id}'}
         %span.error-text {{errors.client_id}}
-        %label{ for: 'client' } Primary Account
+        %label{ for: 'client' } Works At
         %span.star *
         %ui-select{ name: 'client', ng: { model: 'contact.client_id', disabled: true, keyup: 'searchClients($select.search)' } }
           %ui-select-match{ placeholder: 'Select An Account', "allow-clear": 'true' }

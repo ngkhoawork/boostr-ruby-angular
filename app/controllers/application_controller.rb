@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   def authenticate_admin_user!
-    unless current_user && current_user.is?(:superadmin)
+    unless current_user && (current_user.is?(:superadmin) || current_user.is?(:supportadmin))
       fail ActionController::RoutingError.new('Not Found')
     end
   end
@@ -41,5 +41,13 @@ class ApplicationController < ActionController::Base
     else
       'application'
     end
+  end
+
+  def limit
+    params[:per].present? ? params[:per].to_i : 10
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
   end
 end

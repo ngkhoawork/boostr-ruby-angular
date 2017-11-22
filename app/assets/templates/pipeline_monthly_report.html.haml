@@ -4,96 +4,19 @@
       .reports-header
         .header-cell.main-title
           Pipeline Monthly Summary
-        .header-cell
-          .filters-block
-            %table
-              %tr.filter-title
-                %td Team
-                %td Stage
-                %td Type
-                %td Source
-                %td Product
-                %td Team Member
-                %td Time period
-                %td
-                  %span.reset-filter{'ng-click': 'resetFilter()'}
-                    Reset
-              %tr
-                %td
-                  %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'ng-class': '{"empty": selectedTeam.name === "All"}'}
-
-                %td
-                  %ul.filter-item
-                    %li{ dropdown: true }
-                      %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.stages.length == 0}' }
-                        %span{'ng-if': 'filter.stages.length == 0'}
-                          All
-                        %span{'ng-repeat': 'stage in filter.stages'}
-                          {{stage.name}} {{stage.probability + '%'}}
-                          %i.fa.fa-times.close-btn{'ng-click': 'removeFilter("stages", stage)'}
-                        %span.caret
-                      %ul.dropdown-menu
-                        %li{ ng: { repeat: 'stage in stages | orderBy: ["-open", "probability"]' } }
-                          %a{ href: '', ng: { click: 'setFilter("stages", stage)' } }
-                            {{stage.name}} {{ stage.probability + '%' }}
-
-                %td
-                  %ul.filter-item
-                    %li{ dropdown: true }
-                      %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.type.name === "All"}' }
-                        {{filter.type.name}}
-                        %span.caret
-                      %ul.dropdown-menu
-                        %li{ ng: { repeat: 'type in types', class: '{active: type.id === filter.type.id}' } }
-                          %a{ href: '', ng: { click: 'setFilter("type", type)' } }
-                            {{ type.name }}
-                %td
-                  %ul.filter-item
-                    %li{ dropdown: true }
-                      %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.source.name === "All"}' }
-                        {{filter.source.name}}
-                        %span.caret
-                      %ul.dropdown-menu
-                        %li{ ng: { repeat: 'source in sources', class: '{active: source.id === filter.source.id}' } }
-                          %a{ href: '', ng: { click: 'setFilter("source", source)' } }
-                            {{ source.name }}
-                %td
-                  %ul.filter-item
-                    %li{ dropdown: true }
-                      %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.product.name === "All"}' }
-                        {{filter.product.name}}
-                        %span.caret
-                      %ul.dropdown-menu
-                        %li{ ng: { repeat: 'product in products', class: '{active: product.id === filter.product.id}' } }
-                          %a{ href: '', ng: { click: 'setFilter("product", product)' } }
-                            {{ product.name }}
-                %td
-                  %ul.filter-item
-                    %li{ dropdown: true }
-                      %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.seller.name === "All"}' }
-                        {{(filter.seller.first_name && filter.seller.first_name + ' ' + filter.seller.last_name) || 'All'}}
-                        %span.caret
-                      %ul.dropdown-menu
-                        %li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller.id}' } }
-                          %a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
-                            {{ seller.first_name + ' ' + seller.last_name}}
-                %td
-                  %ul.filter-item
-                    %li{ dropdown: true }
-                      %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.timePeriod.name === "All"}' }
-                        {{filter.timePeriod.name || 'All'}}
-                        %span.caret
-                      %ul.dropdown-menu
-                        %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
-                          %a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
-                            {{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
-        .header-cell
-          %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
-            Run Report
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply'}
+            %z-filter-field{data: 'teams', type: 'team', 'save-as': '{team_id: "id"}', 'on-change': 'updateSellers'} Team
+            %z-filter-field{data: 'stages', type: 'stage', 'save-as': '{"stage_ids[]": "id"}'} Stage
+            %z-filter-field{data: 'types', 'save-as': '{type: "id"}'} Type
+            %z-filter-field{data: 'sources', 'save-as': '{source: "id"}'} Source
+            %z-filter-field{data: 'products', 'save-as': '{product_id: "id"}'} Product
+            %z-filter-field{data: 'sellers', 'save-as': '{user_id: "id"}'} Team Member
+            %z-filter-field{data: 'timePeriods', 'save-as': '{time_period_id: "id"}', 'order-by': '["period_type", "start_date"]'} Time period
 
         .header-cell
           .pull-right
-            %download-button{'ng-click': 'exportReports()'}
+            %download-button{'ng-click': 'export()'}
               Export
 
     .row
@@ -123,62 +46,45 @@
           .table-wrapper
             %table.table.table-hover
               %thead
-                %tr{'z-fixed-header': true, watch: '"deals"'}
+                %tr.z-sortable-prime{'z-fixed-header': true, watch: '"deals"'}
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("users[0].first_name")'}
-                      Team Member
+                    .z-sortable{by: 'users[0].first_name'} Team Member
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("advertiser.name")'}
-                      Advertiser
+                    .z-sortable{by: 'advertiser.name'} Advertiser
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("name")'}
-                      Name
+                    .z-sortable{by: 'name', default: true} Name
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("agency.name")'}
-                      Agency
+                    .z-sortable{by: 'agency.name'} Agency
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("agency.parent_client.name")'}
-                      Agency Parent
+                    .z-sortable{by: 'agency.parent_client.name'} Agency Parent
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("stage.name")'}
-                      Stage
+                    .z-sortable{by: 'stage.name'} Stage
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("stage.probability")'} %
+                    .z-sortable{by: 'stage.probability'} %
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("budget")'}
-                      Budget
+                    .z-sortable{by: 'budget'} Budget
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("next_steps")'}
-                      Next Steps
+                    .z-sortable{by: 'next_steps'} Next Steps
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("next_steps_due")'}
-                      Next Steps Due
+                    .z-sortable{by: 'next_steps_due'} Next Steps Due
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("latest_activity")'}
-                      Latest Activity
+                    .z-sortable{by: 'latest_activity'} Latest Activity
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("type")'}
-                      Deal Type
+                    .z-sortable{by: 'type'} Deal Type
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("source")'}
-                      Deal Source
+                    .z-sortable{by: 'source'} Deal Source
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("team")'}
-                      Team
+                    .z-sortable{by: 'team'} Team
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("start_date")'}
-                      Start Date
+                    .z-sortable{by: 'start_date'} Start Date
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("end_date")'}
-                      End Date
+                    .z-sortable{by: 'end_date'} End Date
                   %th{ ng: { repeat: 'productTime in productRange track by $index' } }
-                    %span.clickable{'ng-click': 'changeSortType("deal_product_budgets["+$index+"]")'}
-                      {{ productTime | date: 'MMM-yy' }}
+                    .z-sortable{by: '"deal_product_budgets["+$index+"]"'} {{ productTime | date: 'MMM-yy' }}
                   %th{ ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: 'fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index' } }
-                    %span.clickable{'ng-click': 'changeSortType("deal_custom_field[\""+fieldName+"\"]")'}
-                      {{dealCustomFieldName.field_label}}
+                    .z-sortable{by: '"deal_custom_field[\""+fieldName+"\"]"'} {{dealCustomFieldName.field_label}}
               %tbody.nowrap{'infinite-scroll': "loadMoreData()"}
-                %tr{ ng: { repeat: 'deal in deals | orderBy:sortType:sortReverse' } }
+                %tr{ ng: { repeat: 'deal in deals | orderBy : zSort.by : zSort.rev' } }
                   %td
                     %div{ ng: { repeat: 'user in deal.users' } }
                       {{ user.first_name + " " + user.last_name + " (" + user.share + "%)"}}
@@ -212,7 +118,7 @@
                   %td {{ deal.start_date | date: 'MM-dd-yyyy' }}
                   %td {{ deal.end_date | date: 'MM-dd-yyyy' }}
                   %td{ ng: { repeat: 'productTime in productRange track by $index' } }
-                    ${{ deal.deal_product_budgets[$index] | number : 0 }}
+                    {{ (deal.deal_product_budgets[$index] | currency:'$':0) || '-'}}
                   %td{ ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: 'fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index' } }
                     %span{'ng-if': 'dealCustomFieldName.field_type == "percentage"'}
                       {{deal.deal_custom_field[fieldName] || 0}}%
@@ -236,3 +142,6 @@
                       {{ (deal.deal_custom_field[fieldName] || 0) | number : 0 }}
                     %a{href: '', ng: { 'if': 'dealCustomFieldName.field_type == "link"', href: '{{deal.deal_custom_field[fieldName]}}' } }
                       {{deal.deal_custom_field[fieldName]}}
+                %tr{ ng: { if: 'deals.length == 0' }}
+                  %td.center.auto-colspan
+                    No Data for the Filters Selected

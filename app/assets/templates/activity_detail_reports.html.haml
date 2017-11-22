@@ -4,61 +4,12 @@
       .reports-header
         .header-cell.main-title
           Activity Detail
-        .header-cell.filters-block
-          %table
-            %tr.filter-title
-              %td Team
-              %td Creator
-              %td Type
-              %td Time period
-              %td
-                %span.reset-filter{'ng-click': 'resetFilter()'}
-                  Reset
-            %tr
-              %td
-                %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team', 'ng-class': '{"empty": filter.team.name === "All"}'}
-              %td
-                %ul.filter-item
-                  %li{ dropdown: true }
-                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.member.id}' }
-                      {{filter.member.name}}
-                      %span.caret
-                    %ul.dropdown-menu
-                      %li{'ng-class': '{active: !filter.member.id}'}
-                        %a{href: '', 'ng-click': 'setFilter("member", emptyFilter)'}
-                          {{emptyFilter.name}}
-                      %li{ ng: { repeat: 'member in members | orderBy : "name"', class: '{active: member.id === filter.member.id}' } }
-                        %a{ href: '', ng: { click: 'setFilter("member", member)' } }
-                          {{member.name}}
-              %td
-                %ul.filter-item
-                  %li{ dropdown: true }
-                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.type.id}' }
-                      {{filter.type.name}}
-                      %span.caret
-                    %ul.dropdown-menu
-                      %li{'ng-class': '{active: !filter.type.id}'}
-                        %a{href: '', 'ng-click': 'setFilter("type", emptyFilter)'}
-                          {{emptyFilter.name}}
-                      %li{ ng: { repeat: 'type in activityTypes | orderBy : "name"', class: '{active: type.id === filter.type.id}' } }
-                        %a{ href: '', ng: { click: 'setFilter("type", type)' } }
-                          {{type.name}}
-              %td
-                .date-picker-wrap
-                  %div.date-picker{'date-range-picker': true,
-                                     'ng-model': 'filter.date',
-                                     :options => "{locale: {format: 'MMMM D, YYYY'},
-                                         eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
-                    %span.empty{'ng-hide': 'datePicker.toString("date")'}
-                      Time period
-                      %span.caret
-                    %span{'ng-show': 'datePicker.toString("date")'}
-                      {{datePicker.toString("date")}}
-                      %span.caret
-
-        .header-cell
-          %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
-            Run Report
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply'}
+            %z-filter-field{data: 'teams', type: 'team', 'save-as': '{team_id: "id"}', 'on-change': 'updateSellers'} Team
+            %z-filter-field{data: 'sellers', 'save-as': '{member_id: "id"}'} Creator
+            %z-filter-field{data: 'activityTypes', 'save-as': '{activity_type_id: "id"}'} Type
+            %z-filter-field{type: 'daterange', 'save-as': '{start_date: "startDate", end_date: "endDate"}'} Time period
 
         .header-cell
           .pull-right

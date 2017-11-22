@@ -44,7 +44,7 @@ class UserMailer < ApplicationMailer
     begin
       @user = User.find(user_id) if user_id.present?
       @deal = Deal.find(deal_id)
-      ealert = Ealert.find(ealert_id)
+      @ealert = Ealert.find(ealert_id)
     rescue ActiveRecord::RecordNotFound
       return
     end
@@ -66,7 +66,7 @@ class UserMailer < ApplicationMailer
       deal_product
     end
 
-    ealert.as_json({include: {
+    @ealert = @ealert.as_json({include: {
         ealert_custom_fields:  {
           include: {
             subject: {}
@@ -112,15 +112,15 @@ class UserMailer < ApplicationMailer
     ]
 
     position_fields.each do |position_field|
-      if ealert[position_field['name']] && ealert[position_field['name']] > 0
-        position_field['position'] = ealert[position_field['name']]
+      if @ealert[position_field['name']] && @ealert[position_field['name']] > 0
+        position_field['position'] = @ealert[position_field['name']]
         @deal_fields << position_field
       end
     end
 
     deal_custom_field = @deal.deal_custom_field.as_json
 
-    ealert['ealert_custom_fields'].each do |ealert_custom_field|
+    @ealert['ealert_custom_fields'].each do |ealert_custom_field|
       if ealert_custom_field['subject_type'] == 'DealCustomFieldName' && ealert_custom_field['position'] > 0
         field_name = ealert_custom_field['subject']['field_type'] + ealert_custom_field['subject']['field_index'].to_s
         value = deal_custom_field && deal_custom_field[field_name] ? deal_custom_field[field_name] : nil
@@ -137,7 +137,7 @@ class UserMailer < ApplicationMailer
             value = number_with_precision(value, :precision => 0, :delimiter => ',')
           when 'currency'
             value = value || 0
-            value = '$' + number_with_precision(value, :precision => 2, :delimiter => ',').to_s
+            value = @deal.currency.curr_symbol + number_with_precision(value, :precision => 2, :delimiter => ',').to_s + " #{@deal.currency.curr_cd}"
           when 'percentage'
             value = value || 0
             value = number_with_precision(value, :precision => 0, :delimiter => ',') + '%'
@@ -173,7 +173,7 @@ class UserMailer < ApplicationMailer
               value = number_with_precision(value, :precision => 0, :delimiter => ',')
             when 'currency'
               value = value || 0
-              value = '$' + number_with_precision(value, :precision => 2, :delimiter => ',').to_s
+              value = @deal.currency.curr_symbol + number_with_precision(value, :precision => 2, :delimiter => ',').to_s + " #{@deal.currency.curr_cd}"
             when 'percentage'
               value = value || 0
               value = number_with_precision(value, :precision => 0, :delimiter => ',') + '%'
