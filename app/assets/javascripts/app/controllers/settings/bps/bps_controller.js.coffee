@@ -12,13 +12,10 @@
       $scope.dataType = "weighted"
       $scope.notification = null
 
-
-      #init query
-      init = () ->
-        BP.all().then (bps) ->
+      getBps = () ->
+        BP.all({settings: true}).then (bps) ->
           $scope.bps = bps
-
-      init()
+      getBps()
 
       $scope.showModal = ->
         $scope.modalInstance = $modal.open
@@ -30,11 +27,28 @@
 
       $scope.$on 'newBP', ->
         $scope.notification = "Business Plan data is being generated in a few seconds."
-        init()
 
-      $scope.go = (bpId) ->
-        path = "/settings/bps/" + bpId
+      $scope.go = ($event, bp) ->
+        path = "/settings/bps/" + bp.id
         $location.path(path)
+
+      $scope.deleteBp = ($event, bp) ->
+        $event.stopPropagation()
+        deleteBp bp
+
+      $scope.activateBp = (bp) ->
+        BP.update(id: bp.id, bp: bp).then (data) ->
+          bp.active = data.active
+
+      deleteBp = (bp) ->
+        if confirm('Are you sure you want to delete "' +  bp.name + '"?')
+          BP.delete(bp).then(
+            (bp) ->
+              (err) ->
+                console.log err
+          )
+
+      $scope.$on 'updated_bps', getBps
 
 
 #=======================END Cycle Time=======================================================

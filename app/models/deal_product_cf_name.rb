@@ -1,20 +1,19 @@
 class DealProductCfName < ActiveRecord::Base
   belongs_to :company
-  has_many :deal_product_cf_options, dependent: :destroy
+  has_many :deal_product_cf_options, -> { order 'LOWER(value)' }, dependent: :destroy
   has_one :ealert_custom_field, as: :subject, dependent: :destroy
 
   accepts_nested_attributes_for :deal_product_cf_options
 
   scope :by_type, -> type { where(field_type: type) if type.present? }
   scope :by_index, -> field_index { where(field_index: field_index) if field_index.present? }
+  scope :position_asc, -> { order('position asc') }
 
   after_create do
     self.company.deal_product_cfs.update_all(field_name => nil)
   end
 
   def self.get_field_limit(type)
-    puts "====="
-    puts type
     field_limits = {
         "currency" => 7,
         "text" => 5,

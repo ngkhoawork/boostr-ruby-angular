@@ -1,0 +1,28 @@
+.z-error {
+    position: absolute;
+    background-color: $error-color;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 300ms;
+    max-width: 250px;
+    font-size: 12px;
+    &.visible {
+        opacity: 1;
+    }
+    &:before {
+        content: '';
+        bottom: -8px;
+        left: 50%;
+        margin-left: -10px;
+        border-width: 10px 10px 0;
+        border-color: transparent;
+        border-style: solid;
+        border-top-color: $error-color;
+        position: absolute;
+        width: 0;
+        height: 0;
+    }
+}

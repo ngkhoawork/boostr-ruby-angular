@@ -4,44 +4,14 @@
       .reports-header
         .header-cell.main-title
           Influencer Budget Detail
-        .header-cell.filters-block
-          %table
-            %tr.filter-title
-              %td Influencer
-              %td Asset Date
-              %td
-                %span.reset-filter{'ng-click': 'resetFilter()'}
-                  Reset
-            %tr
-              %td
-                %ul.filter-item
-                  %li{ dropdown: true }
-                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.influencer.name === "All"}' }
-                      {{filter.influencer.name}}
-                      %span.caret
-                    %ul.dropdown-menu
-                      %li{ ng: { repeat: 'influencer in influencers', class: '{active: influencer.id === filter.influencer.id}' } }
-                        %a{ href: '', ng: { click: 'setFilter("influencer", influencer)' } }
-                          {{ influencer.name }}
-              %td
-                .date-picker-wrap
-                  %div.date-picker{'date-range-picker': true,
-                               'ng-model': 'filter.assetDate',
-                               :options => "{locale: {format: 'MMMM D, YYYY'},
-                                     eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
-                    %span.empty{'ng-hide': 'datePicker.toString("assetDate")'}
-                      Time period
-                      %span.caret
-                    %span{'ng-show': 'datePicker.toString("assetDate")'}
-                      {{datePicker.toString("assetDate")}}
-                      %span.caret
-        .header-cell
-          %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
-            Run Report
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply'}
+            %z-filter-field{data: 'influencers', 'save-as': '{influencer_id: "id"}'} Influencer
+            %z-filter-field{type: 'daterange', 'save-as': '{asset_date_start: "startDate", asset_date_end: "endDate"}'} Asset Date
 
         .header-cell
           .pull-right
-            %download-button{'ng-click': 'exportReports()'}
+            %download-button{'ng-click': 'export()'}
               Export
     .row
       .col-md-12
@@ -57,63 +27,45 @@
           .table-wrapper
             %table.table.table-hover
               %thead
-                %tr
+                %tr.z-sortable-prime
                   %th.left{ width: "200" }
-                    %span.clickable{'ng-click': 'changeSortType("date")'}
-                      Team
+                    .z-sortable{by: 'team_name'} Team
                   %th.left{ width: "100" }
-                    %span.clickable{'ng-click': 'changeSortType("deal_type")'}
-                      IO Number
+                    .z-sortable{by: 'content_fee.io.io_number'} IO Number
                   %th.left{ width: "150" }
-                    %span.clickable{'ng-click': 'changeSortType("io_name")'}
-                      IO Name
+                    .z-sortable{by: 'content_fee.io.name'} IO Name
                   %th.left{ width: "150" }
-                    %span.clickable{'ng-click': 'changeSortType("name")'}
-                      Advertiser
+                    .z-sortable{by: 'content_fee.io.advertiser.name'} Advertiser
                   %th.left{ width: "150" }
-                    %span.clickable{'ng-click': 'changeSortType("advertiser_name")'}
-                      Agency
+                    .z-sortable{by: 'content_fee.io.agency.name'} Agency
                   %th.left{ width: "150" }
-                    %span.clickable{'ng-click': 'changeSortType("budget")'}
-                      Seller
+                    .z-sortable{by: 'content_fee.io.seller'} Seller
                   %th.left{ width: "150" }
-                    %span.clickable{'ng-click': 'changeSortType("start_date")'}
-                      Account Manager
+                    .z-sortable{by: 'content_fee.io.account_manager'} Account Manager
                   %th.left{ width: "150" }
-                    %span.clickable{'ng-click': 'changeSortType("stage_name")'}
-                      Product
+                    .z-sortable{by: 'content_fee.product.name'} Product
                   %th.right{ width: "100" }
-                    %span.clickable{'ng-click': 'changeSortType("previous_stage")'}
-                      Total Budget
+                    .z-sortable{by: 'content_fee.budget_loc'} Total Budget
                   %th.left{ width: "100" }
-                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
-                      IO Start Date
+                    .z-sortable{by: 'content_fee.io.start_date'} IO Start Date
                   %th.left{ width: "100" }
-                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
-                      Asset Date
+                    .z-sortable{by: 'effect_date'} Asset Date
                   %th.left{ width: "100" }
-                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
-                      Influencer
+                    .z-sortable{by: 'influencer.name'} Influencer
                   %th.left{ width: "100" }
-                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
-                      Network
+                    .z-sortable{by: 'influencer.network_name'} Network
                   %th.left{ width: "100" }
-                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
-                      Fee Type
+                    .z-sortable{by: 'fee_type'} Fee Type
                   %th.right{ width: "100" }
-                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
-                      Fee
+                    .z-sortable{by: '["fee_amount", "fee_amount_loc"]'} Fee
                   %th.right{ width: "100" }
-                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
-                      Gross Amount
+                    .z-sortable{by: 'gross_amount_loc'} Gross Amount
                   %th.right{ width: "100" }
-                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
-                      Net Amount
+                    .z-sortable{by: 'net_loc'} Net Amount
                   %th.left{ width: "200" }
-                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
-                      Asset Link
+                    .z-sortable{by: 'asset'} Asset Link
               %tbody.nowrap
-                %tr{ ng: { repeat: 'influencer_content_fee in influencer_content_fees | orderBy:sortType:sortReverse' } }
+                %tr{ ng: { repeat: 'influencer_content_fee in influencer_content_fees | orderBy : zSort.by : zSort.rev' } }
                   %td.left
                     {{ influencer_content_fee.team_name }}
                   %td.left
@@ -160,4 +112,7 @@
                     {{ influencer_content_fee.net_loc | currency:'$':0 }}
                   %td.left
                     {{ influencer_content_fee.asset }}
+                %tr{ ng: { if: 'influencer_content_fees.length == 0' }}
+                  %td.center.auto-colspan
+                    No Data for the Filters Selected
 

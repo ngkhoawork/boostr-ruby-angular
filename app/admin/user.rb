@@ -43,8 +43,19 @@ ActiveAdmin.register User do
       f.input :last_name
       f.input :title
       f.input :company
-      f.input :roles, as: :check_boxes, collection: User::ROLES
+      if current_user.is?(:superadmin)
+        f.input :roles, as: :check_boxes, collection: User::ROLES
+      end
     end
     f.actions
+  end
+
+  controller do
+    def update
+      if params[:user][:password].blank?
+        params[:user].delete("password")
+      end
+      super
+    end
   end
 end

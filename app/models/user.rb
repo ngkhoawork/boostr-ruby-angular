@@ -22,8 +22,9 @@ class User < ActiveRecord::Base
   has_many :contacts, through: :activities
   has_many :display_line_items, through: :ios
   has_many :audit_logs
+  has_many :filter_queries
 
-  ROLES = %w(user admin superadmin)
+  ROLES = %w(user admin superadmin supportadmin)
 
   enum user_type: { 'default': DEFAULT,
                     'seller': SELLER,
@@ -96,6 +97,10 @@ class User < ActiveRecord::Base
 
   def is?(role)
     roles.include?(role.to_s)
+  end
+
+  def authorized_switch_to?(to_user)
+    is?(:supportadmin) || is?(:superadmin) || is?(:admin) && to_user && company_id == to_user.company_id
   end
 
   def company_influencer_enabled

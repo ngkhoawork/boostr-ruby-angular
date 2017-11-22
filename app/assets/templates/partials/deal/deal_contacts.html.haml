@@ -33,8 +33,8 @@
 								%span.caret
 							%ul.dropdown-menu
 								%li
-									%a{'href': '', 'ng-click': 'deal_contact.role = undefined; submitDealContact(deal_contact)'}
+									%a{'href': '', 'ng-click': 'submitDealContact(deal_contact, undefined)'}
 										%span.text No role
 								%li{'ng-repeat': 'option in currentDeal.contact_roles.options', 'ng-class': '{active: deal_contact.role == option.name}'}
-									%a{'href': '', 'ng-click': 'deal_contact.role = option.name; submitDealContact(deal_contact)'}
+									%a{'href': '', 'ng-click': 'submitDealContact(deal_contact, option.name)'}
 										%span.text {{option.name}}

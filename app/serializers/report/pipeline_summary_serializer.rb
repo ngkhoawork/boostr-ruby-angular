@@ -1,7 +1,7 @@
 class Report::PipelineSummarySerializer < ActiveModel::Serializer
   attributes :id, :name, :advertiser, :category, :agency, :holding_company, :budget, :budget_loc, :stage, :start_date,
              :end_date, :created_at, :closed_at, :closed_reason, :closed_reason_text, :type, :source, :initiative,
-             :custom_fields, :members, :team, :billing_contact
+             :custom_fields, :members, :team, :billing_contact, :currency
 
   def advertiser
     object.advertiser.serializable_hash(only: [:id, :name]) rescue nil
@@ -27,6 +27,10 @@ class Report::PipelineSummarySerializer < ActiveModel::Serializer
 
   def budget_loc
     object.budget_loc.to_i
+  end
+
+  def currency
+    object.currency.serializable_hash(only: [:curr_symbol, :curr_cd])
   end
 
   def stage

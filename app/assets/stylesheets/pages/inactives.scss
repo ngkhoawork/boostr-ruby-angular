@@ -9,6 +9,9 @@
         padding: 0 15px;
         td {
             font-weight: normal;
+            a {
+                color: $secondary-color;
+            }
         }
     }
     .inactives-chart {

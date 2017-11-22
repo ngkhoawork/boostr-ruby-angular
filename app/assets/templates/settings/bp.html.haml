@@ -15,15 +15,11 @@
               Created: {{bp.created_at | date: 'MMM dd, yyyy'}}
             .description
               Due Date: {{bp.due_date | date: 'MMM dd, yyyy'}}
-            .description
+            .description.read-only-section
               .action
                 Read Only: 
               .action
-                .show-hide-remainder-form
-                  .switch-remainder-form
-                    %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'bp.read_only', 'ng-change': "updateBp()", id: "rem-act-modal-toggle{{bp.id}}"}
-                    %label{:for => "rem-act-modal-toggle{{bp.id}}"}
-                      %span
+                %z-toggle{'ng-model': 'bp.read_only', 'ng-change': 'updateBp()'}
         .info
           %svg#progress-circle
           .info-body-wrap

@@ -25,7 +25,7 @@
             getData = () ->
                 if $scope.selectedMonth && $scope.selectedYear
                     filter =
-                        month: $scope.selectedMonth
+                        month: $scope.selectedMonth.toLowerCase()
                         year: $scope.selectedYear
                     $scope.dataIsLoading = true
                     Billing.all(filter).then (data) ->
@@ -45,9 +45,10 @@
                         $scope.dataIsLoading = false
                         updateBillingStats()
 
-#            $scope.selectedMonth = 'January'
-#            $scope.selectedYear = '2017'
-#            getData()
+            #set last month
+            $scope.selectMonth moment().subtract(1, 'month').format('MMMM')
+            $scope.selectYear moment().format('YYYY')
+            getData()
 
             updateBillingStats = () ->
                 $scope.iosNeedingApproval = _.filter($scope.iosForApproval, (item) -> item.billing_status == 'Pending').length
