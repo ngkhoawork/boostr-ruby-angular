@@ -14,7 +14,7 @@
             %i.fa.fa-check-circle
             <strong style="text-transform: capitalize"></strong>
             {{notification}}
-        %table.table
+        %table.table.bp-table
           %thead
             %tr
               %th.left Business Plan name
@@ -22,8 +22,10 @@
               %th Date Created
               %th Due Date
               %th Status
+              %th Active
+              %th
           %tbody
-            %tr.clickable{ ng: { if: 'bps.length > 0', repeat: 'bp in bps', click: 'go(bp.id)' } }
+            %tr.clickable{ ng: { if: 'bps.length > 0', repeat: 'bp in bps', click: 'go($event, bp)' } }
               %td.left
                 {{bp.name}}
               %td
@@ -34,6 +36,10 @@
                 {{bp.due_date | date: 'shortDate'}}
               %td
                 {{bp.status}} / {{bp.client_count}}
+              %td
+                %z-toggle{'ng-model': 'bp.active', 'ng-change': 'activateBp(bp)', 'ng-click': '$event.stopPropagation()'}
+              %td{width: '100px'}
+                %i.fa.fa-trash.delete-icon{'ng-click': 'deleteBp($event, bp)'}
             %tr{ ng: { if: 'bps.length == 0' }}
               %td.center{ colspan: '6' }
                 No data available

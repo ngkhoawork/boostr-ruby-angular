@@ -12,8 +12,8 @@
 				else
 					this.by = key
 					this.rev = false
-		if attrs.name
-			scope.$parent.zSort[attrs.name] = zSort
+		if attrs.sortName
+			scope.$parent.zSort[attrs.sortName] = zSort
 		else
 			scope.$parent.zSort = zSort
 

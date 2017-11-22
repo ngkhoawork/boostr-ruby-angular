@@ -1,6 +1,6 @@
 class DealCustomFieldName < ActiveRecord::Base
   belongs_to :company
-  has_many :deal_custom_field_options, dependent: :destroy
+  has_many :deal_custom_field_options, -> { order 'LOWER(value)' }, dependent: :destroy
 
   has_one :ealert_custom_field, as: :subject, dependent: :destroy
 
@@ -26,7 +26,7 @@ class DealCustomFieldName < ActiveRecord::Base
       "percentage" => 5,
       "dropdown" => 7,
       "sum" => 7,
-      "link" => 1
+      "link" => 7
     }
     field_limits[type]
   end

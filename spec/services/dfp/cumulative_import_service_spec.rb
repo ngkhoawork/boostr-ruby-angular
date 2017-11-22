@@ -28,12 +28,12 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
         io_name: 'ioname',
         io_advertiser: 'Advertiser name',
         io_agency: 'Agency name',
-        io_start_date: convert_to_utc('2016-10-31T00:00:00-07:00'),
-        io_end_date: convert_to_utc('2016-11-27T23:59:00-08:00'),
+        io_start_date: '2016-10-31'.to_date,
+        io_end_date: '2016-11-27'.to_date,
         line_number: 1170022354,
         ad_server: 'DFP',
-        start_date: convert_to_utc('2016-10-31T00:00:00-07:00'),
-        end_date: convert_to_utc('2016-11-27T23:59:00-08:00'),
+        start_date: '2016-10-31'.to_date,
+        end_date: '2016-11-27'.to_date,
         external_io_number: 605084194,
         product_name: 'Hershey test - In-Feed - :30 - iOS',
         pricing_type: 'CPM',
@@ -65,14 +65,14 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       io_name: 'ioname',
       io_advertiser: 'Advertiser name',
       io_agency: 'Agency name',
-      io_start_date: convert_to_utc('2016-10-31T00:00:00-07:00'),
-      io_end_date: convert_to_utc('2016-11-27T23:59:00-08:00'),
+      io_start_date: '2016-10-31'.to_date,
+      io_end_date: '2016-11-27'.to_date,
       external_io_number: 605084194,
       product_name: 'Hershey test - In-Feed - :30 - iOS',
       line_number: 1170022354,
       ad_server: 'DFP',
-      start_date: convert_to_utc('2016-10-31T00:00:00-07:00'),
-      end_date: convert_to_utc('2016-11-27T23:59:00-08:00'),
+      start_date: '2016-10-31'.to_date,
+      end_date: '2016-11-27'.to_date,
       pricing_type: 'CPD',
       price: 20000000 / 1_000_000,
       quantity: 85000,
@@ -121,8 +121,8 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       import_log = CsvImportLog.last
       error = import_log.error_messages.first
 
-      expect(error["row"]).to be 1
-      expect(error["message"]).to include('Internal Server Error')
+      expect(error["row"]).to eq('1')
+      expect(error["message"]).to include('ActiveRecord::RecordNotFound')
     end
   end
 

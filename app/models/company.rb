@@ -5,6 +5,7 @@ class Company < ActiveRecord::Base
   has_many :revenues
   has_many :deals
   has_many :deal_products, through: :deals
+  has_many :deal_product_budgets, through: :deal_products
   has_many :stages
   has_many :distinct_stages, -> {distinct}, class_name: 'Stage'
   has_many :products
@@ -16,7 +17,10 @@ class Company < ActiveRecord::Base
   has_many :activities
   has_many :activity_types
   has_many :ios
+  has_many :content_fees, through: :ios
+  has_many :content_fee_product_budgets, through: :content_fees
   has_many :display_line_items, through: :ios
+  has_many :display_line_item_budgets, through: :display_line_items
   has_many :temp_ios
   has_many :bps
   has_many :assets, dependent: :destroy
@@ -43,6 +47,7 @@ class Company < ActiveRecord::Base
   has_many :influencers, dependent: :destroy
   has_many :influencer_content_fees, through: :influencers
   has_many :audit_logs
+  has_many :filter_queries
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -212,6 +217,8 @@ class Company < ActiveRecord::Base
     validations.find_or_initialize_by(factor: 'Billing Contact', value_type: 'Number')
     validations.find_or_initialize_by(factor: 'Account Manager', value_type: 'Number')
     validations.find_or_initialize_by(factor: 'Disable Deal Won', value_type: 'Boolean')
+    validations.find_or_initialize_by(factor: 'Billing Contact Full Address', value_type: 'Boolean')
+    validations.find_or_initialize_by(factor: 'Restrict Deal Reopen', value_type: 'Boolean')
 
     validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'client_category_id')
     validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'client_subcategory_id')

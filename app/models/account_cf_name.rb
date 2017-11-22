@@ -1,6 +1,6 @@
 class AccountCfName < ActiveRecord::Base
   belongs_to :company
-  has_many :account_cf_options, dependent: :destroy
+  has_many :account_cf_options, -> { order 'LOWER(value)' }, dependent: :destroy
 
   accepts_nested_attributes_for :account_cf_options
 

@@ -179,6 +179,7 @@ Rails.application.routes.draw do
       get :child_clients
       get :stats
       collection do
+        get :search_clients
         get :filter_options
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
@@ -303,6 +304,7 @@ Rails.application.routes.draw do
       collection do
         get :account_base_fields
         get :deal_base_fields
+        get :billing_contact_fields
       end
     end
     resources :tools, only: [:index]
@@ -322,6 +324,7 @@ Rails.application.routes.draw do
       collection do
         get :split_adjusted
         get :pipeline_summary
+        get :product_monthly_summary
       end
     end
     resources :influencers, only: [:index, :show, :create, :update, :destroy]
@@ -379,7 +382,9 @@ Rails.application.routes.draw do
 				get :pipeline_and_revenue
 				get :activity_pacing
 			end
-		end
+    end
+
+    resources :filter_queries, only: [:index, :create, :update, :destroy]
   end
 
   mount Sidekiq::Web => '/sidekiq'

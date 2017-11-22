@@ -39,9 +39,9 @@
           do event.preventDefault
         , 0
 
-      $scope.changeFile = (element) ->
+      $scope.changeFile = (e) ->
         $scope.$apply (scope) ->
-          scope.upload element.files[0]
+          scope.upload e.target.files[0]
 
       $scope.deleteFile = (file) ->
         if (file && file.id && confirm('Are you sure you want to delete "' +  file.original_file_name + '"?'))

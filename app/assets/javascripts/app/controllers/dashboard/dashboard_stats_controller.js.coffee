@@ -67,7 +67,9 @@
                 clearInterval(interval)
                 progressNumber.html(i + '%')
                 interval = setInterval (->
-                    if i is p then clearInterval(interval)
+                    if i is p || i >= animationDuration / 4
+                        clearInterval(interval)
+                        i = p
                     progressNumber.html(i + '%')
                     i++
                 ), animationDuration / p

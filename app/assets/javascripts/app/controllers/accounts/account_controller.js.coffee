@@ -13,7 +13,7 @@
   $scope.errors = {}
   $scope.contactSearchText = ""
   $scope.clientContactUrl = 'api/clients/' + $routeParams.id + '/client_contacts?primary=true'
-  $scope.url = 'api/resources';
+  $scope.url = 'api/resources'
   $scope.object = { userToLink: null }
 
   $scope.init = ->
@@ -222,18 +222,14 @@
 
   $scope.getClients = (query = '') ->
     $scope.isLoading = true
+
     params = {
-      page: $scope.page
       client_type_id: $scope.currentClient.client_type_id
-      filter: "all"
+      name: query.trim()
     }
-    if query.trim().length
-      params.name = query
-    Client.query(params).$promise.then (clients) ->
-      if $scope.page > 1
-        $scope.clients = $scope.clients.concat(clients)
-      else
-        $scope.clients = clients
+
+    Client.search_clients(params).$promise.then (clients) ->
+      $scope.clients = clients
       $scope.isLoading = false
 
   getHoldingCompanies = ->
@@ -399,6 +395,9 @@
       keyboard: false
       resolve:
         clientConnection: $scope.setupNewClientConnection
+        options: ->
+          currentAccountId: $scope.currentClient.id
+
     .result.then (response) ->
       $scope.getClientConnections()
 

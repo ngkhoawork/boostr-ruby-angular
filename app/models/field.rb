@@ -8,6 +8,10 @@ class Field < ActiveRecord::Base
 
   default_scope { order(:name) }
 
+  scope :client_category_fields, -> { where(subject_type: 'Client', name: 'Category') }
+  scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
+
+
   VALUE_TYPES = ['Text', 'Number', 'Decimal', 'Percent', 'Money', 'Datetime', 'Option', 'Object']
 
   validates :name, presence: true
@@ -23,5 +27,9 @@ class Field < ActiveRecord::Base
     self.options.find do |opt|
       opt.name.casecmp(name) == 0
     end
+  end
+
+  def self.to_options
+    joins(:options).pluck_to_struct('options.id as id', 'options.name as name')
   end
 end

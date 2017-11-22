@@ -48,6 +48,14 @@ class DisplayLineItem < ActiveRecord::Base
     .by_period(start_date, end_date)
     .without_display_line_item_budgets
   end
+  scope :by_start_date, -> (start_date, end_date) do
+    where(start_date: start_date..end_date) if (start_date && end_date).present?
+  end
+  scope :by_io_name, -> (name) { joins(:io).where('ios.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_agency_name, -> (name) { joins(io: :agency).where('clients.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_advertiser_name, -> (name) do
+    joins(io: :advertiser).where('clients.name ilike ?', "%#{name}%") if name.present?
+  end
 
   before_create :set_alert
   before_update :set_alert
@@ -64,7 +72,7 @@ class DisplayLineItem < ActiveRecord::Base
   after_commit :update_temp_io_budget, on: [:create, :update]
 
   scope :for_time_period, -> (start_date, end_date) { where('display_line_items.start_date <= ? AND display_line_items.end_date >= ?', end_date, start_date) }
-  scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) }
+  scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) if product_id.present? }
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
 
   def update_revenue_fact_callback

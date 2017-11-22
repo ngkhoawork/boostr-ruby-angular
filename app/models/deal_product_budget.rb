@@ -1,11 +1,24 @@
 class DealProductBudget < ActiveRecord::Base
-  # belongs_to :deal
-  # belongs_to :product
   belongs_to :deal_product
   delegate :deal, to: :deal_product
 
   scope :for_time_period, -> (start_date, end_date) { where('deal_product_budgets.start_date <= ? AND deal_product_budgets.end_date >= ?', end_date, start_date) }
-  scope :for_product_id, -> (product_id) { where('deal_products.product_id = ?', product_id) }
+  scope :for_product_id, -> (product_id) { where('deal_products.product_id = ?', product_id) if product_id.present? }
+  scope :by_seller_id, -> (seller_id) do
+    joins(deal_product: { deal: :deal_members })
+    .where(deal_members: { user_id: seller_id }) if seller_id.present?
+  end
+  scope :by_team_id, -> (team_id) do
+    joins( deal_product: { deal: { deal_members: :user } } )
+      .where(users: { team_id: team_id }) if team_id.present?
+  end
+  scope :by_created_date, -> (start_date, end_date) do
+    where(deals: { created_at: (start_date.to_datetime.beginning_of_day)..(end_date.to_datetime.end_of_day) }) if start_date.present? && end_date.present?
+  end
+  scope :all_products, -> do
+    joins(deal_product: { deal: :stage })
+    .where('(deals.open IS true) OR (stages.open IS false AND stages.probability=0)')
+  end 
 
   validates :start_date, :end_date, presence: true
 

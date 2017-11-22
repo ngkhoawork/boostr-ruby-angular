@@ -24,11 +24,27 @@ class Io < ActiveRecord::Base
   scope :for_company, -> (company_id) { where(company_id: company_id) }
   scope :for_io_members, -> (user_ids) { joins(:io_members).where('io_members.user_id in (?)', user_ids) }
   scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
+  scope :for_team, -> (team_id) { joins(io_members: :user).where(users: { team_id: team_id }) if team_id.present? }
   scope :without_display_line_items, -> { includes(:display_line_items).where(display_line_items: { id: nil }) }
   scope :with_won_deals, -> { joins(deal: [:stage]).where(stages: { probability: 100 }) }
   scope :with_open_deal_products, -> { joins(deal: [:deal_products]).where(deal_products: { open: true }) }
   scope :with_display_revenue_type, -> { joins(deal: {deal_products: [:product]})
                                           .where(products: { revenue_type: 'Display' }) }
+  scope :by_agency_id, -> (agency_id) { where(agency_id: agency_id) if agency_id.present? }
+  scope :by_advertiser_id, -> (advertiser_id) { where(advertiser_id: advertiser_id) if advertiser_id.present? }
+  scope :by_start_date, -> (start_date, end_date) do
+    where(start_date: start_date..end_date) if (start_date && end_date).present?
+  end
+  scope :by_advertiser_name, -> (name) do
+    joins(:advertiser).where('clients.name ilike ?', "%#{name}%") if name.present?
+  end
+  scope :by_agency_name, -> (name) do
+    joins(:agency).where('clients.name ilike ?', "%#{name}%") if name.present?
+  end
+  scope :by_name, -> (name) { where('ios.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_created_date, -> (start_date, end_date) do
+    where(created_at: (start_date.to_datetime.beginning_of_day)..(end_date.to_datetime.end_of_day)) if start_date.present? && end_date.present?
+  end
 
   after_update do
     if (start_date_changed? || end_date_changed?)

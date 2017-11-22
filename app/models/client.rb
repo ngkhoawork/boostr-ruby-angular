@@ -7,6 +7,7 @@ class Client < ActiveRecord::Base
   has_many :child_clients, class_name: 'Client', foreign_key: :parent_client_id
   has_many :client_members
   has_many :users, through: :client_members
+  has_many :client_member_info, -> { joins(:user).select(:id, :client_id, :share, 'users.first_name', 'users.last_name') }, class_name: 'ClientMember'
   # has_many :contacts
   has_many :contacts, -> { uniq }, through: :client_contacts
   has_many :primary_client_contacts, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
@@ -17,6 +18,7 @@ class Client < ActiveRecord::Base
   has_many :revenues
   has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id', dependent: :nullify
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id', dependent: :nullify
+  has_many :open_advertiser_deals, -> { joins(:stage).where('stages.open IS true') }, class_name: 'Deal', foreign_key: 'advertiser_id'
 
   has_many :agency_ios, class_name: 'Io', foreign_key: 'agency_id'
   has_many :advertiser_ios, class_name: 'Io', foreign_key: 'advertiser_id'
@@ -27,8 +29,8 @@ class Client < ActiveRecord::Base
            foreign_key: :agency_id, dependent: :destroy
   has_many :advertiser_connections, class_name: :ClientConnection,
            foreign_key: :advertiser_id, dependent: :destroy
-  has_many :agencies, -> { uniq }, through: :agency_connections, source: :advertiser
-  has_many :advertisers, -> { uniq }, through: :advertiser_connections, source: :agency
+  has_many :agencies, -> { uniq }, through: :advertiser_connections, source: :agency
+  has_many :advertisers, -> { uniq }, through: :agency_connections, source: :advertiser
 
   has_many :agency_client_contacts, through: :agencies, source: :client_contacts
   has_many :advertiser_client_contacts, -> { uniq }, through: :advertisers, source: :primary_client_contacts
@@ -39,6 +41,14 @@ class Client < ActiveRecord::Base
   has_many :values, as: :subject
   has_many :activities, -> { order(happened_at: :desc) }
   has_many :agency_activities, -> { order(happened_at: :desc) }, class_name: 'Activity', foreign_key: 'agency_id'
+
+  has_one :latest_advertiser_activity, -> { self.select_values = ["DISTINCT ON(activities.client_id) activities.*"]
+    order('activities.client_id', 'activities.happened_at DESC')
+  }, class_name: 'Activity'
+  has_one :latest_agency_activity, -> { self.select_values = ["DISTINCT ON(activities.agency_id) activities.*"]
+    order('activities.agency_id', 'activities.happened_at DESC')
+  }, class_name: 'Activity'
+
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
   has_one :account_cf, dependent: :destroy
@@ -77,6 +87,11 @@ class Client < ActiveRecord::Base
   scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }
   scope :by_ids, -> ids { where(id: ids) if ids.present?}
   scope :by_last_touch, -> (start_date, end_date) { Client.joins("INNER JOIN (select client_id, max(happened_at) as last_touch from activities group by client_id) as tb1 ON clients.id = tb1.client_id").where("tb1.last_touch >= ? and tb1.last_touch <= ?", start_date, end_date) if start_date.present? && end_date.present? }
+  scope :excepting_client_associations, ->(client, assoc_name) do
+    send("without_#{assoc_name}_for", client) if %i(child_clients connections).include?(assoc_name.to_sym)
+  end
+  scope :without_child_clients_for, ->(client) { where.not(id: client.child_client_ids) }
+  scope :without_connections_for, ->(client) { where.not(id: client.connection_entry_ids) }
 
   scope :without_related_clients, -> contact_id do
     joins(:client_contacts).where.not(client_contacts: { contact_id: contact_id }).distinct
@@ -155,6 +170,17 @@ class Client < ActiveRecord::Base
 
         csv << line
       end
+    end
+  end
+
+  def connection_entry_ids
+    case client_type.name
+    when 'Agency'
+      agency_connections.pluck(:advertiser_id)
+    when 'Advertiser'
+      advertiser_connections.pluck(:agency_id)
+    else
+      raise "callable for ['Advertiser', 'Agency'] clients only"
     end
   end
 
@@ -615,6 +641,16 @@ class Client < ActiveRecord::Base
       cf = self.build_account_cf(params)
       cf.save
     end
+  end
+
+  def advertiser_deals_open_pipeline
+    advertiser_deals
+      .open
+      .pluck(:budget)
+      .compact
+      .reduce(:+)
+      &.round(0)
+      &.to_i
   end
 
   private

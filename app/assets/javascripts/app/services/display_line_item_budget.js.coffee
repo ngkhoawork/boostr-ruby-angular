@@ -34,6 +34,8 @@
 
       currentTempIO = undefined
 
+      @query = resource.query
+
       @all = (params) ->
         deferred = $q.defer()
         resource.query params, (displayLineItems) ->
