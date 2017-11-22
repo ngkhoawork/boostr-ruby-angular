@@ -59,6 +59,10 @@
                     %strong
                       Advertiser:
                     {{deal.advertiser.name}}
+                    .advertiser-ballast
+                      %strong
+                        Probability:
+                      {{deal.stage.probability}}%
                   .advertiser-ballast
                     %strong
                       Sales Team: 
@@ -85,6 +89,10 @@
                 %strong
                   Flight Date:
                 {{deal.start_date | date: 'MMM dd, yyyy'}} - {{deal.end_date | date: 'MMM dd, yyyy'}}
+              %div{'ng-if': 'ealert.show_billing_contact && deal.billing_contact'}
+                %strong
+                  Billing Contact:
+                {{deal.billing_contact.name}} - {{deal.billing_contact.email}}
               %div{'ng-repeat': 'field in selected_fields | filter: dealCustomFieldFilter'}
                 %strong
                   {{field.subject.field_label}}:

@@ -145,22 +145,22 @@
                 .block
                     %table.table.table-hover
                         %thead
-                            %tr
-                                %th Name
-                                %th Type
-                                %th Category
-                                %th Team
-                                %th City
-                                %th Last Touch
-                        %tbody{infinite: {scroll: "loadMoreClients()", 'scroll-disabled': 'isLoading || allClientsLoaded'}}
-                            %tr{ ng: { repeat: 'client in clients'} }
+                            %tr.z-sortable-prime
+                                %th.z-sortable{by: 'name', default: true} Name
+                                %th.z-sortable{by: 'type'} Type
+                                %th.z-sortable{by: 'category'} Category
+                                %th.z-sortable{by: 'client_members'} Team
+                                %th.z-sortable{by: 'address.city'} City
+                                %th.z-sortable{by: '_lastTouch'} Last Touch
+                        %tbody{infinite: {scroll: "loadMoreClients()", 'scroll-disabled': 'isClientsLoading || allClientsLoaded'}}
+                            %tr{ ng: { repeat: 'client in clients | orderBy : zSort.by : zSort.rev'} }
                                 %td
                                     %a{'ng-href': '/accounts/{{client.id}}'}
                                         {{client.name}}
-                                %td {{ client.type }}
-                                %td {{ client.category }}
+                                %td {{client.type}}
+                                %td {{client.category}}
                                 %td
                                     %div{ 'ng-repeat': 'member in client.client_members' }
-                                        {{ member.first_name + ' ' + member.last_name + " (" + member.share + "%)" }}
-                                %td {{client.city}}
-                                %td {{getLastTouch(client) | date: 'MMM dd, yyyy'}}
+                                        {{ member.user.name + " (" + member.share + "%)" }}
+                                %td {{client.address.city}}
+                                %td {{client._lastTouch | date: 'MMM dd, yyyy'}}

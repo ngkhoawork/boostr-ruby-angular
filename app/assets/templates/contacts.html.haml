@@ -115,17 +115,17 @@
 			.table-wrapper
 				%table.table.table-hover
 					%thead
-						%tr
-							%th Name
-							%th Position
-							%th Job Level
-							%th Works At
-							%th Related Accounts
-							%th Email
-							%th Mobile
-							%th Last Touch
+						%tr.z-sortable-prime
+							%th.z-sortable{by: 'name', default: true} Name
+							%th.z-sortable{by: 'position'} Position
+							%th.z-sortable{by: 'job_level'} Job Level
+							%th.z-sortable{by: 'primary_client_json.name'} Works At
+							%th.z-sortable{by: 'non_primary_client_contacts'} Related Accounts
+							%th.z-sortable{by: 'address.email'} Email
+							%th.z-sortable{by: 'address.mobile'} Mobile
+							%th.z-sortable{by: 'last_touched'} Last Touch
 					%tbody{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading || allContactsLoaded'}}
-						%tr{'ng-repeat': 'contact in contacts'}
+						%tr{'ng-repeat': 'contact in contacts | orderBy : zSort.by : zSort.rev'}
 							%td
 								%a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}
 							%td {{contact.position}}

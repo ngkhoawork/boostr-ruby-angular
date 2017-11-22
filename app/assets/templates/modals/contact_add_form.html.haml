@@ -19,6 +19,8 @@
             .client-list
               .client-info{ 'ng-repeat': 'contact in contacts | filter: { name: searchText }' }
                 .name{ ng: { bind: { html: 'contact.name' } } }
+                .type{ ng: { bind: { html: 'contact.address.email' } } }
+                .type{ ng: { bind: { html: 'contact.client.name' } } }
                 .action
                   %a{ href: "javascript:void(0)", 'ng-click': "addContact(contact)", 'ng-hide': "checkContact(contact)" }
                     Add

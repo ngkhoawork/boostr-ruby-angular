@@ -134,7 +134,7 @@ $daterangepicker-ranges-active-border-radius: $daterangepicker-border-radius !de
     display: inline-block;
 
     border-bottom-color: rgba(0, 0, 0, 0.2);
-    content: '';
+    //content: '';
   }
 
   &:before {
@@ -477,8 +477,7 @@ $daterangepicker-ranges-active-border-radius: $daterangepicker-border-radius !de
 /*  Larger Screen Styling */
 @media (min-width: 564px) {
   .#{$prefix-class} {
-    width: auto;
-
+    width: 494px;
     .ranges {
       ul {
         width: 160px;

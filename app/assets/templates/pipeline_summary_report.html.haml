@@ -4,128 +4,19 @@
 			.reports-header
 				.header-cell.main-title
 					Pipeline Summary
-				.header-cell.filters-block
-					%table
-						%tr.filter-title
-							%td Team
-							%td Team Member
-							%td Stage
-							%td Type
-							%td Source
-							%td Start Date
-							%td Created Date
-							%td Closed Date
-							%td
-								%span.reset-filter{'ng-click': 'resetFilter()'}
-									Reset
-						%tr
-							%td
-								%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team', 'ng-class': '{"empty": filter.team.name === "All"}'}
-
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.seller.id}' }
-											{{filter.seller.name}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{'ng-class': '{active: !filter.seller.id}'}
-												%a{href: '', 'ng-click': 'setFilter("seller", emptyFilter)'}
-													{{emptyFilter.name}}
-											%li{ ng: { repeat: 'seller in sellers | orderBy : "name"', class: '{active: seller.id === filter.seller.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
-													{{seller.name}}
-
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.stages.length == 0}' }
-											%span{'ng-if': 'filter.stages.length == 0'}
-												All
-											%span{'ng-repeat': 'stage in filter.stages'}
-												{{stage.name}} {{stage.probability + '%'}}
-												%i.fa.fa-times.close-btn{'ng-click': 'removeFilter("stages", stage)'}
-											%span.caret
-										%ul.dropdown-menu
-											%li{ ng: { repeat: 'stage in stages | orderBy: ["-open", "probability"]' } }
-												%a{ href: '', ng: { click: 'setFilter("stages", stage)' } }
-													{{stage.name}} {{isNumber(stage.probability) ? stage.probability + '%' : ''}}
-
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.type.id}' }
-											{{filter.type.name}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{'ng-class': '{active: !filter.type.id}'}
-												%a{href: '', 'ng-click': 'setFilter("type", emptyFilter)'}
-													{{emptyFilter.name}}
-											%li{ ng: { repeat: 'type in types | orderBy : "name"', class: '{active: type.id === filter.type.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("type", type)' } }
-													{{type.name}}
-
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.source.id}' }
-											{{filter.source.name}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{'ng-class': '{active: !filter.source.id}'}
-												%a{href: '', 'ng-click': 'setFilter("source", emptyFilter)'}
-													{{emptyFilter.name}}
-											%li{ ng: { repeat: 'source in sources | orderBy : "name"', class: '{active: source.id === filter.source.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("source", source)' } }
-													{{source.name}}
-
-							%td
-								.date-picker-wrap
-									%div.date-picker{'date-range-picker': true,
-														   'ng-model': 'filter.startDate',
-														   :options => "{locale: {format: 'MMMM D, YYYY'},
-																		 eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
-										%span.empty{'ng-hide': 'datePicker.toString("startDate")'}
-											Time period
-											%span.caret
-										%span{'ng-show': 'datePicker.toString("startDate")'}
-											{{datePicker.toString("startDate")}}
-											%span.caret
-
-							%td
-								.date-picker-wrap
-									%div.date-picker{'date-range-picker': true,
-														   'ng-model': 'filter.createdDate',
-														   :options => "{locale: {format: 'MMMM D, YYYY'},
-																		 eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
-										%span.empty{'ng-hide': 'datePicker.toString("createdDate")'}
-											Time period
-											%span.caret
-										%span{'ng-show': 'datePicker.toString("createdDate")'}
-											{{datePicker.toString("createdDate")}}
-											%span.caret
-
-							%td
-								.date-picker-wrap
-									%div.date-picker{'date-range-picker': true,
-														   'ng-model': 'filter.closedDate',
-														   :options => "{locale: {format: 'MMMM D, YYYY'},
-																		 eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
-										%span.empty{'ng-hide': 'datePicker.toString("closedDate")'}
-											Time period
-											%span.caret
-										%span{'ng-show': 'datePicker.toString("closedDate")'}
-											{{datePicker.toString("closedDate")}}
-											%span.caret
-												
-				.header-cell
-					%button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
-						Run Report
+				.header-cell.filter-cell
+					%z-filter{'on-apply': 'onFilterApply'}
+						%z-filter-field{data: 'teams', type: 'team', 'save-as': '{team_id: "id"}', 'on-change': 'updateSellers'} Team
+						%z-filter-field{data: 'sellers', 'save-as': '{seller_id: "id"}'} Team Member
+						%z-filter-field{data: 'stages', type: 'stage', 'save-as': '{"stage_ids[]": "id"}'} Stage
+						%z-filter-field{data: 'types', 'save-as': '{type_id: "id"}'} Type
+						%z-filter-field{data: 'sources', 'save-as': '{source_id: "id"}'} Source
+						%z-filter-field{type: 'daterange', 'save-as': '{start_date: "startDate", end_date: "endDate"}'} Start Date
+						%z-filter-field{type: 'daterange', 'save-as': '{created_date_start: "startDate", created_date_end: "endDate"}'} Created Date
+						%z-filter-field{type: 'daterange', 'save-as': '{closed_date_start: "startDate", closed_date_end: "endDate"}'} Closed Date
 
 				.header-cell
-					.pull-right
-						%download-button{'ng-click': 'export()'}
-							Export
+					%download-button{'ng-click': 'export()'} Export
 
 		.row
 			.col-xs-12
@@ -213,7 +104,7 @@
 										%a{href: '', 'ng-href': '/accounts/{{deal.agency.id}}'} {{deal.agency.name}}
 									%td {{deal.holding_company}}
 									%td {{deal.budget | currency: '$': 0 }}
-									%td {{deal.budget_loc.budget | currency : deal.budget_loc.curr_symbol || deal.budget_loc.curr_cd: 0 }}
+									%td {{deal.budget_loc | currency : deal.currency.curr_symbol : 0 }}
 									%td {{deal.stage.name}}
 									%td {{deal.stage.probability}}
 									%td {{deal.start_date | date : 'shortDate'}}

@@ -55,6 +55,11 @@
         %strong
           Flight Date:
         #{@deal.start_date.strftime('%b %d, %Y')} - #{@deal.end_date.strftime('%b %d, %Y')}
+      - if @ealert['show_billing_contact'] && @deal.has_billing_contact?
+        .div
+          %strong
+            Billing Contact:
+          #{@deal.billing_contact.name} - #{@deal.billing_contact.email}
       - @deal_fields.each do |deal_field|
         %div
           %strong

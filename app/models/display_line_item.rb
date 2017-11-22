@@ -72,7 +72,7 @@ class DisplayLineItem < ActiveRecord::Base
   after_commit :update_temp_io_budget, on: [:create, :update]
 
   scope :for_time_period, -> (start_date, end_date) { where('display_line_items.start_date <= ? AND display_line_items.end_date >= ?', end_date, start_date) }
-  scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) }
+  scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) if product_id.present? }
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
 
   def update_revenue_fact_callback

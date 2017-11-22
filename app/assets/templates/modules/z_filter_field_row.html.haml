@@ -1,0 +1,3 @@
+%span.item{'ng-click': 'setFilter(item)', 'ng-class': '{active: item.id === selected.id}'}
+	{{item.name}}
+%div.team-field{'ng-repeat': 'item in item.children', 'ng-include': '"modules/z_filter_field_row.html"'}

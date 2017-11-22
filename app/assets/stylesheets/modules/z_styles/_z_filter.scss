@@ -1,0 +1,188 @@
+.z-filter {
+    display: flex;
+    flex-wrap: wrap;
+    .add-btn {
+        top: auto;
+        margin: 0 10px;
+    }
+    .reset-filter {
+        font-weight: bold;
+        padding: 5px 10px;
+        cursor: pointer;
+        color: $secondary-color;
+        &:hover {
+            color: lighten($secondary-color, 10%)
+        }
+    }
+    .z-filter-field {
+        white-space: nowrap;
+        margin-bottom: 10px;
+        .field-name {
+            cursor: default;
+            padding: 0 10px;
+            font-weight: bold;
+        }
+        .field-value {
+            padding: 0 5px;
+            .dropdown-toggle, .date-picker {
+                padding: 0 5px;
+                cursor: pointer;
+                border-radius: 3px;
+                color: $main-color;
+                transition: background-color 250ms;
+                &:hover {
+                    background-color: darken($main-background-color, 3%);
+                }
+            }
+            .empty {
+                color: #B5BDC4;
+            }
+            .close-btn {
+                color: #818689;
+                &:hover {
+                    color: $main-color;
+                }
+            }
+            .dropdown-menu {
+                padding: 10px 0;
+                .active {
+                    background-color: #dfe1e3;
+                }
+                span.item {
+                    display: block;
+                    padding: 5px 20px;
+                    &:hover {
+                        background-color: $main-color;
+                        color: white;
+                        cursor: pointer;
+                    }
+                }
+            }
+            .team-field {
+                margin-left: 15px;
+            }
+            &.multiselect-field {
+                .multiselect {
+                    position: absolute;
+                    width: 100%;
+                    top: 0;
+                    text-align: center;
+                    font-size: 10px;
+                    padding: 0 5px;
+                    text-transform: uppercase;
+                    color: $secondary-font-color;
+                    user-select: none;
+                    cursor: default;
+                }
+                .dropdown-menu {
+                    padding-top: 12px;
+                }
+            }
+        }
+        .z-loading {
+            position: relative;
+            top: 1px;
+            margin-left: 3px;
+        }
+        &.query-field {
+            border-right: 2px solid #c6ced6;
+            padding-right: 15px;
+            margin-right: 15px;
+            .dropdown-menu {
+                padding: 0;
+            }
+            .query-subtitle {
+                color: #B5BDC4;
+                padding: 10px;
+                border-bottom: 1px solid #c2ccd3;
+            }
+            .query-line {
+                min-width: 250px;
+                padding: 10px 20px;
+                border-bottom: 1px solid #c2ccd3;
+                position: relative;
+                &:hover:not(.empty) {
+                    cursor: pointer;
+                    background-color: #f5f5f5;
+                }
+                &.unsaved-line {
+                    padding-right: 50px;
+                }
+                &.saved-line {
+                    .subline {
+                        .status {
+                            color: #BAC1C6;
+                            margin-right: 5px;
+                        }
+                        .default {
+                            color: $main-color;
+                            vertical-align: text-top;
+                            font-size: 14px;
+                            line-height: 10px;
+                            background-color: transparent;
+                            display: none;
+                            padding: 2px;
+                            border: 1px solid transparent;
+                            border-radius: 4px;
+                            &.active {
+                                display: inline-block
+                            }
+                            &:hover {
+                                border-color: #cbd3d8;
+                            }
+                        }
+                    }
+                    &:hover {
+                        .default {
+                            display: inline-block;
+                        }
+                    }
+                }
+                &.new-line {
+                    .query-name-input {
+                        width: 100%;
+                        padding: 5px;
+                        height: 32px;
+                        margin-bottom: 10px;
+                    }
+                    .z-toggle {
+                        vertical-align: middle;
+                    }
+                    .query-actions {
+                        height: auto;
+                        top: auto;
+                        bottom: 0;
+                        padding: 10px;
+                        .default.fa-star-o, .default.fa-star {
+                            color: $main-color;
+                            &:hover {
+                                background-color: $main-color;
+                                color: white;
+                            }
+                        }
+                    }
+                }
+                &:last-child {
+                    border-bottom: none;
+                }
+            }
+            .query-actions {
+                display: flex;
+                align-items: center;
+                height: 100%;
+                position: absolute;
+                padding: 0 10px;
+                top: 0;
+                right: 0;
+            }
+            .z-icon {
+                width: 30px;
+                //color: $main-color;
+                //&:hover {
+                //    background-color: $main-color;
+                //    color: white;
+                //}
+            }
+        }
+    }
+}
