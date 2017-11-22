@@ -174,7 +174,7 @@
 
         tooltip = d3.select("body").append("div") 
             .attr("class", "pmp-delivery-tooltip")             
-            .style("opacity", 0)
+            .style("opacity", 1)
         mouseOut = (d) ->
           d3.select(this).transition().duration(500).attr("r", 4)   
           tooltip.transition()        
@@ -186,9 +186,9 @@
             tooltip.transition()        
                 .duration(200)      
                 .style("opacity", .9);      
-            tooltip.html('<span>' + d.date + '</span><br/>' + title + ': ' + d[option] + (unit || ''))  
-                .style("left", (d3.event.pageX) + "px")     
-                .style("top", (d3.event.pageY - 28) + "px")
+            tooltip.html('<p>' + $scope.selectedItem.ssp_deal_id + '</p><p><span>' + d[option] + (unit || '') + '</span></p><p><span>' + title + '</span></p>')  
+                .style("left", (d3.event.pageX) - 50 + "px")     
+                .style("top", (d3.event.pageY + 18) + "px")
         setTimeout ->
           svg.selectAll("dot")    
               .data(data)         

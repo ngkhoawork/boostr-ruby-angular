@@ -222,22 +222,39 @@
     margin: 0;
 }
 
-.pmp-delivery-tooltip {    
-  position: absolute;           
-  text-align: left; 
-  color: #ffffff;          
-  width: auto;                  
-  height: 42px;                 
-  padding: 7px 10px;             
-  font: 12px sans-serif;        
-  background: #2B3C49;   
-  border: 0px;      
-  border-radius: 8px;           
-  pointer-events: none;       
-  z-index: 1000;  
+.pmp-delivery-tooltip {
+    position: absolute;
+    text-align: center;
+    width: auto;
+    height: 100px;
+    padding: 10px 20px 10px 20px;
+    background: white;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+    box-shadow: -1px 9px 36px -6px rgba(163,162,180,0.65);
 
-  span { 
-    color: #f6A2AC;
-    font-size: 10px;
-  }
+    span {
+      display: inline-block;
+      width: auto;
+      text-align: center;
+    }
+
+    p:first-child {
+      color: #FF7E30;
+      font-size: 16px;
+    }
+
+    p:nth-child(2) {
+      width: auto;
+      color: #2B3C49;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    p:nth-child(3) {
+      width: auto;
+      color: #A3ACB4;
+      font-size: 12px;
+    }   
 }
