@@ -378,7 +378,7 @@
   updateTalkus = (user) ->
     if location.hostname is 'localhost' or
         location.hostname is '127.0.0.1' or
-        location.pathname.indexOf('/gmail_extension/') is 0
+        location.pathname.indexOf('/api/gmail_extension/') is 0
       return
     talkus('init', 'qu346HQax2ut3MQr4',
       id: user.id
