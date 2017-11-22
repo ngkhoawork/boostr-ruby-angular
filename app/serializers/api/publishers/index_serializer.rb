@@ -1,4 +1,4 @@
-class Api::PublisherSerializer < ActiveModel::Serializer
+class Api::Publishers::IndexSerializer < ActiveModel::Serializer
   attributes(
     :id,
     :name,
@@ -7,11 +7,12 @@ class Api::PublisherSerializer < ActiveModel::Serializer
     :estimated_monthly_impressions,
     :actual_monthly_impressions,
     :type,
-    :stage,
     :client_id,
     :created_at,
     :updated_at
   )
+
+  has_one :stage, serializer: Api::Publishers::StageSerializer
 
   private
 
@@ -20,6 +21,6 @@ class Api::PublisherSerializer < ActiveModel::Serializer
   end
 
   def stage
-    'TYPE EXAMPLE'
+    object.publisher_stage
   end
 end

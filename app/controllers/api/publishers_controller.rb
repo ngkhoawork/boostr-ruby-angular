@@ -3,7 +3,7 @@ class Api::PublishersController < ApplicationController
 
   def index
     render json: paginate(filtered_publishers),
-           each_serializer: Api::PublisherSerializer
+           each_serializer: Api::Publishers::IndexSerializer
   end
 
   private

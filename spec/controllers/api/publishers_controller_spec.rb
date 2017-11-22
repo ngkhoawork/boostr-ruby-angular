@@ -1,10 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Api::PublishersController, type: :controller do
-  let(:publisher) { create(:publisher, name: 'Amazon', company: company) }
-  let!(:stage) { create(:sales_stage, company: company, sales_stageable: publisher) }
-
   before { sign_in user }
+
+  let!(:publisher_stage) { PublisherStage.create(publishers: [publisher], company: company, sales_stage: stage) }
 
   describe '#index' do
     let(:params) { {} }
@@ -20,7 +19,7 @@ RSpec.describe Api::PublishersController, type: :controller do
 
     context 'when an appropriate stage filter is included' do
       let(:address) { publisher.address }
-      let(:params) { { stage_id: stage.id } }
+      let(:params) { { stage_id: publisher_stage.id } }
 
       it { subject; expect(first_item[:id]).to eq publisher.id }
     end
@@ -96,5 +95,13 @@ RSpec.describe Api::PublishersController, type: :controller do
 
   def another_user
     @_another_user ||= create(:user, company: company)
+  end
+
+  def publisher
+    @_publisher ||= create(:publisher, name: 'Amazon', company: company)
+  end
+
+  def stage
+    @_stage ||= create(:sales_stage, company: company)
   end
 end

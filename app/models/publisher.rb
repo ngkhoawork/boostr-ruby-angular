@@ -20,7 +20,7 @@ class Publisher < ActiveRecord::Base
 
   belongs_to :client
   belongs_to :company
-  belongs_to :stage, class_name: 'PublisherStage', foreign_key: 'stage_id'
+  belongs_to :publisher_stage
 
   validates :name, :client_id, presence: true
   validates :website, format: {

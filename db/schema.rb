@@ -1934,6 +1934,146 @@ ActiveRecord::Schema.define(version: 20171213215450) do
   add_index "publishers", ["publisher_stage_id"], name: "index_publishers_on_publisher_stage_id", using: :btree
   add_index "publishers", ["type_id"], name: "index_publishers_on_type_id", using: :btree
 
+  create_table "publisher_custom_field_names", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "field_index"
+    t.string   "field_type"
+    t.string   "field_label"
+    t.boolean  "is_required"
+    t.integer  "position"
+    t.boolean  "show_on_modal"
+    t.boolean  "disabled"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "publisher_custom_field_names", ["company_id"], name: "index_publisher_custom_field_names_on_company_id", using: :btree
+
+  create_table "publisher_custom_field_options", force: :cascade do |t|
+    t.integer  "publisher_custom_field_name_id"
+    t.string   "value"
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  add_index "publisher_custom_field_options", ["publisher_custom_field_name_id"], name: "index_publisher_cf_options_on_publisher_cf_name_id", using: :btree
+
+  create_table "publisher_custom_fields", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "publisher_id"
+    t.decimal  "currency1",     precision: 15, scale: 2
+    t.decimal  "currency2",     precision: 15, scale: 2
+    t.decimal  "currency3",     precision: 15, scale: 2
+    t.decimal  "currency4",     precision: 15, scale: 2
+    t.decimal  "currency5",     precision: 15, scale: 2
+    t.decimal  "currency6",     precision: 15, scale: 2
+    t.decimal  "currency7",     precision: 15, scale: 2
+    t.string   "text1"
+    t.string   "text2"
+    t.string   "text3"
+    t.string   "text4"
+    t.string   "text5"
+    t.text     "note1"
+    t.text     "note2"
+    t.datetime "datetime1"
+    t.datetime "datetime2"
+    t.datetime "datetime3"
+    t.datetime "datetime4"
+    t.datetime "datetime5"
+    t.datetime "datetime6"
+    t.datetime "datetime7"
+    t.decimal  "number1",       precision: 15, scale: 2
+    t.decimal  "number2",       precision: 15, scale: 2
+    t.decimal  "number3",       precision: 15, scale: 2
+    t.decimal  "number4",       precision: 15, scale: 2
+    t.decimal  "number5",       precision: 15, scale: 2
+    t.decimal  "number6",       precision: 15, scale: 2
+    t.decimal  "number7",       precision: 15, scale: 2
+    t.decimal  "number_4_dec1", precision: 15, scale: 4
+    t.decimal  "number_4_dec2", precision: 15, scale: 4
+    t.decimal  "number_4_dec3", precision: 15, scale: 4
+    t.decimal  "number_4_dec4", precision: 15, scale: 4
+    t.decimal  "integer1",      precision: 15
+    t.decimal  "integer2",      precision: 15
+    t.decimal  "integer3",      precision: 15
+    t.decimal  "integer4",      precision: 15
+    t.decimal  "integer5",      precision: 15
+    t.decimal  "integer6",      precision: 15
+    t.decimal  "integer7",      precision: 15
+    t.boolean  "boolean1"
+    t.boolean  "boolean2"
+    t.boolean  "boolean3"
+    t.decimal  "percentage1",   precision: 5,  scale: 2
+    t.decimal  "percentage2",   precision: 5,  scale: 2
+    t.decimal  "percentage3",   precision: 5,  scale: 2
+    t.decimal  "percentage4",   precision: 5,  scale: 2
+    t.decimal  "percentage5",   precision: 5,  scale: 2
+    t.string   "dropdown1"
+    t.string   "dropdown2"
+    t.string   "dropdown3"
+    t.string   "dropdown4"
+    t.string   "dropdown5"
+    t.string   "dropdown6"
+    t.string   "dropdown7"
+    t.integer  "sim1"
+    t.integer  "sum2"
+    t.integer  "sum3"
+    t.integer  "sum4"
+    t.integer  "sum5"
+    t.integer  "sum6"
+    t.integer  "sum7"
+    t.string   "link1"
+    t.string   "link2"
+    t.string   "link3"
+    t.string   "link4"
+    t.string   "link5"
+    t.string   "link6"
+    t.string   "link7"
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+  end
+
+  add_index "publisher_custom_fields", ["company_id"], name: "index_publisher_custom_fields_on_company_id", using: :btree
+  add_index "publisher_custom_fields", ["publisher_id"], name: "index_publisher_custom_fields_on_publisher_id", using: :btree
+
+  create_table "publisher_members", force: :cascade do |t|
+    t.integer  "publisher_id"
+    t.integer  "user_id"
+    t.boolean  "owner",        default: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+  end
+
+  add_index "publisher_members", ["publisher_id"], name: "index_publisher_members_on_publisher_id", using: :btree
+  add_index "publisher_members", ["user_id"], name: "index_publisher_members_on_user_id", using: :btree
+
+  create_table "publisher_stages", force: :cascade do |t|
+    t.integer  "company_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "publisher_stages", ["company_id"], name: "index_publisher_stages_on_company_id", using: :btree
+
+  create_table "publishers", force: :cascade do |t|
+    t.string   "name"
+    t.boolean  "comscore"
+    t.string   "website"
+    t.integer  "estimated_monthly_impressions"
+    t.integer  "actual_monthly_impressions"
+    t.integer  "client_id"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+    t.datetime "deleted_at"
+    t.integer  "company_id"
+    t.integer  "publisher_stage_id"
+  end
+
+  add_index "publishers", ["client_id"], name: "index_publishers_on_client_id", using: :btree
+  add_index "publishers", ["comscore"], name: "index_publishers_on_comscore", using: :btree
+  add_index "publishers", ["name"], name: "index_publishers_on_name", using: :btree
+  add_index "publishers", ["publisher_stage_id"], name: "index_publishers_on_publisher_stage_id", using: :btree
+
   create_table "quota", force: :cascade do |t|
     t.integer  "time_period_id"
     t.integer  "value"

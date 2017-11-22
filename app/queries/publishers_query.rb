@@ -21,7 +21,7 @@ class PublishersQuery < BaseQuery
     end
 
     def by_stage_id(stage_id)
-      stage_id ? joins(:sales_stages).where(sales_stages: { id: stage_id }) : self
+      stage_id ? where(publisher_stage_id: stage_id) : self
     end
 
     def by_type_option_id(type_option_id)
