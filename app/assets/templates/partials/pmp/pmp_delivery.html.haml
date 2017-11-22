@@ -1,0 +1,18 @@
+.block#pmp-delivery
+  %div.mb20
+    %span.title PMP Delivery
+  %div.custom-field-item
+    %div.custom-field-item-label
+      %label{ for: 'type' } Deal-ID
+    %div.custom-field-item-field
+      .dropdown
+        %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+          %span.editable{'ng-class': '{"not-selected": !currentDeal.deal_type.option_id}'}
+            {{selectedItem.ssp_deal_id || selectedItem.id || 'Select'}}
+          %span.caret
+        %ul.dropdown-menu
+          %li{'ng-repeat': 'pmpItem in currentPMP.pmp_items', 'ng-class': '{active: selectedItem.id == pmpItem.id}'}
+            %a{'href': '', 'ng-click': 'updateChart(pmpItem)'}
+              %span.text {{pmpItem.ssp_deal_id || pmpItem.id}}
+  %div#pmp-delivery-chart-container.mb20
+    %svg#pmp-delivery-chart

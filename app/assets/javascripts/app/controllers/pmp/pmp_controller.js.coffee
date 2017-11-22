@@ -1,29 +1,28 @@
 @app.controller 'PMPController',
-  ['$rootScope', '$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'PMP', 'PMPMember', 'SSP', 'ContentFee', 'User', 'CurrentUser', 'Product', 'DisplayLineItem', 'Company', 'InfluencerContentFee'
-  ( $rootScope,   $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   PMP,   PMPMember,   SSP,   ContentFee,   User,   CurrentUser,   Product,   DisplayLineItem,   Company,   InfluencerContentFee) ->
+  ['$rootScope', '$scope', '$modal', '$filter', '$timeout', '$routeParams', '$window', '$q', 'PMP', 'PMPMember', 'SSP', 'User', 'CurrentUser', 'Company'
+  ( $rootScope,   $scope,   $modal,   $filter,   $timeout,   $routeParams,   $window,   $q,   PMP,   PMPMember,   SSP,   User,   CurrentUser,   Company) ->
       $scope.currentPMP = {}
       $scope.currency_symbol = '$'
       $scope.canEditIO = true
+      $scope.selectedItem = {}
+      $scope.pmpItemDailyActuals = []
       
       $scope.init = ->
         CurrentUser.get().$promise.then (user) ->
           $scope.currentUser = user
-        # $scope.currentUser = $rootScope.currentUser
-        console.log($rootScope.currentUser)
         Company.get().$promise.then (company) ->
           $scope.company = company
           $scope.canEditIO = $scope.company.io_permission[$scope.currentUser.user_type]
         SSP.all().then (ssps) ->
-          console.log(ssps)
           $scope.ssps = ssps
         PMP.get($routeParams.id).then (pmp) ->
           $scope.currentPMP = pmp
-          console.log('currentPMP', $scope.currentPMP);
           if pmp.currency
             if pmp.currency.curr_symbol
               $scope.currency_symbol = pmp.currency.curr_symbol
           PMP.pmp_item_daily_actuals($routeParams.id).then (data) ->
             $scope.pmpItemDailyActuals = data
+            $scope.updateChart($scope.currentPMP.pmp_items[0])
 
           $scope.currency_symbol = (->
             if $scope.currentPMP && $scope.currentPMP.currency
@@ -59,6 +58,113 @@
       $scope.updatePMPMember = (data) ->
         PMPMember.update(id: data.id, pmp_id: $scope.currentPMP.id, pmp_member: data).then (pmp) ->
           $scope.currentPMP = pmp
+
+      $scope.updateChart = (pmpItem) ->
+        if pmpItem
+          $scope.selectedItem = pmpItem
+          drawChart($scope.pmpItemDailyActuals.filter((item) -> item.pmp_item_id == pmpItem.id))
+
+      drawChart = (data) ->
+        chartContainer = angular.element('#pmp-delivery-chart-container')
+        margin =
+            top: 65
+            left: 45
+            right: 45
+            bottom: 90
+        width = chartContainer.width() - margin.left - margin.right || 800
+        height = chartContainer.width()*0.5
+        c = d3.scale.category10()
+        data = data.sort (a,b) -> new Date(a.date) - new Date(b.date)
+        days = data.map((item) -> item.date)
+        dataset = [
+          {name: 'Bids', color: c(0), values: data.map((item) -> parseFloat(item.bids))}
+          {name: 'Impressions', color: c(1), values: data.map((item) -> parseFloat(item.impressions))}          
+          {name: 'Win Rate', color: c(2), values: data.map((item) -> parseFloat(item.win_rate))}
+        ]
+
+        svg = d3.select('#pmp-delivery-chart')
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + height)
+                .html('')
+                .append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+        height = height - margin.top - margin.bottom - 10
+
+        maxValue = (d3.max [dataset[0],dataset[1]], (item) -> d3.max item.values) || 100
+        y1Max = Math.ceil(maxValue / 50) * 50
+        tickValues = []
+        for i in [0..5]
+          tickValues.push i*Math.ceil(maxValue / 50)*10
+
+        x = d3.scale.ordinal().domain(days).rangePoints([20, width-20])
+        y1 = d3.scale.linear().domain([y1Max, 0]).rangeRound([0, height])
+        y2 = d3.scale.linear().domain([100, 0]).rangeRound([0, height])
+
+        xAxis = d3.svg.axis().scale(x).orient('bottom')
+                .outerTickSize(0)
+                .innerTickSize(0)
+                .tickPadding(10)
+        y1Axis = d3.svg.axis().scale(y1).orient('left')
+                .innerTickSize(-width)
+                .tickPadding(10)
+                .outerTickSize(0)
+                .ticks(6)
+                .tickValues(tickValues)
+        y2Axis = d3.svg.axis().scale(y2).orient('right')
+                .innerTickSize(width)
+                .tickPadding(10)
+                .outerTickSize(0)
+                .ticks(6)
+                .tickFormat (v) -> v + '%'
+
+        svg.append('g').attr('class', 'axis')
+          .attr('transform', 'translate(0,' + height + ')')
+          .call(xAxis)
+          .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-90)" )
+        svg.append('g').attr('class', 'axis').call y1Axis
+        svg.append('g').attr('class', 'axis').call y2Axis
+
+        graphLine1 = d3.svg.line()
+                .x((value, i) -> x(days[i]))
+                .y((value, i) -> y1(value))
+                .defined((value, i) -> _.isNumber value)
+        graphLine2 = d3.svg.line()
+                .x((value, i) -> x(days[i]))
+                .y((value, i) -> y2(value))
+                .defined((value, i) -> _.isNumber value)
+
+        graphsContainer = svg.append('g')
+                .attr('class', 'graphs-container')
+
+        graphs = graphsContainer.selectAll('.graph')
+                .data(dataset)
+                .enter()
+                .append('path')
+                .attr('class', 'graph')
+                .attr 'stroke', (d) -> d.color
+                .attr 'd', (d) -> if d.name=='Win Rate' then graphLine2(d.values) else graphLine1(d.values)
+
+        legend = svg.selectAll('g.legend')
+            .data(dataset)
+            .enter()
+            .append('g')
+            .attr('class', 'legend')
+
+        legend.append('rect')
+            .attr('x', width - margin.right - 50)
+            .attr('y', (d, i) -> 20*i - 60)
+            .attr('width', 10)
+            .attr('height', 10)
+            .style('fill', (d) -> d.color)
+
+        legend.append('text')
+            .attr('x', width - margin.right - 36)
+            .attr('y', (d, i) -> 10 + 20*i - 60)
+            .text((d) -> d.name)
 
       $scope.init()
   ]

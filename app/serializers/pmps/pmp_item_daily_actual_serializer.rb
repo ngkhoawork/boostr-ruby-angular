@@ -7,7 +7,13 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
     :price,
     :revenue,
     :revenue_loc,
-    :impressions
+    :impressions,
+    :win_rate,
+    :bids
   )
+
+  def date
+    object.date.strftime('%m/%d/%Y')
+  end
 
 end

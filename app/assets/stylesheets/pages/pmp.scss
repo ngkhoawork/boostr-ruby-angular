@@ -168,3 +168,44 @@
         }
     }
 }
+
+#pmp-delivery-chart {
+    height: auto;
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+
+    .graph {
+        fill: transparent;
+        stroke-width: 3px;
+    }
+
+    .axis line,
+    .axis path {
+        fill: none;
+        stroke: #d9dde0;
+    }
+}
+
+#pmp-delivery {
+    .custom-field-item {
+        margin: 30px 10px 0px 45px;
+        position: absolute;
+        z-index: 1000;
+    }
+
+    .custom-field-item-field,
+    .custom-field-item-label {
+        display: inline-block;
+    }
+}
+
+#pmp-delivery-chart-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 50%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+}
