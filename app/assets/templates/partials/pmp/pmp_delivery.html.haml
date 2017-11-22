@@ -6,7 +6,7 @@
       %label{ for: 'type' } Deal-ID
     %div.custom-field-item-field
       .dropdown
-        %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+        %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
           %span.editable{'ng-class': '{"not-selected": !currentDeal.deal_type.option_id}'}
             {{selectedItem.ssp_deal_id || selectedItem.id || 'Select'}}
           %span.caret

@@ -68,11 +68,14 @@
         chartContainer = angular.element('#pmp-delivery-chart-container')
         margin =
             top: 65
-            left: 45
-            right: 45
+            left: 65
+            right: 65
             bottom: 90
+        duration = 1000
+        ratio = 0.35
+        ticks = 11
         width = chartContainer.width() - margin.left - margin.right || 800
-        height = chartContainer.width()*0.5
+        height = chartContainer.width()*ratio
         c = d3.scale.category10()
         data = data.sort (a,b) -> new Date(a.date) - new Date(b.date)
         days = data.map((item) -> item.date)
@@ -91,11 +94,11 @@
         height = height - margin.top - margin.bottom - 10
 
         maxValue = (d3.max [dataset[0],dataset[1]], (item) -> d3.max item.values) || 100
-        y1Max = Math.ceil(maxValue / 50) * 50
+        y1Max = Math.ceil(maxValue / (ticks - 1) / 10) * 10 * (ticks - 1)
         tickValues = []
-        for i in [0..5]
-          tickValues.push i*Math.ceil(maxValue / 50)*10
-
+        for i in [0..ticks-1]
+          tickValues.push i*Math.ceil(maxValue / (ticks - 1) / 10)*10
+        console.log(tickValues);
         x = d3.scale.ordinal().domain(days).rangePoints([20, width-20])
         y1 = d3.scale.linear().domain([y1Max, 0]).rangeRound([0, height])
         y2 = d3.scale.linear().domain([100, 0]).rangeRound([0, height])
@@ -105,28 +108,27 @@
                 .innerTickSize(0)
                 .tickPadding(10)
         y1Axis = d3.svg.axis().scale(y1).orient('left')
-                .innerTickSize(-width)
+                .innerTickSize(0)
                 .tickPadding(10)
                 .outerTickSize(0)
-                .ticks(6)
                 .tickValues(tickValues)
         y2Axis = d3.svg.axis().scale(y2).orient('right')
                 .innerTickSize(width)
                 .tickPadding(10)
                 .outerTickSize(0)
-                .ticks(6)
+                .ticks(ticks)
                 .tickFormat (v) -> v + '%'
 
-        svg.append('g').attr('class', 'axis')
+        svg.append('g').attr('class', 'axisX')
           .attr('transform', 'translate(0,' + height + ')')
           .call(xAxis)
           .selectAll("text")  
             .style("text-anchor", "end")
             .attr("dx", "-.8em")
-            .attr("dy", ".15em")
+            .attr("dy", "-.3em")
             .attr("transform", "rotate(-90)" )
-        svg.append('g').attr('class', 'axis').call y1Axis
-        svg.append('g').attr('class', 'axis').call y2Axis
+        svg.append('g').attr('class', 'axisY').call y1Axis
+        svg.append('g').attr('class', 'axisY').call y2Axis
 
         graphLine1 = d3.svg.line()
                 .x((value, i) -> x(days[i]))
@@ -146,6 +148,9 @@
                 .append('path')
                 .attr('class', 'graph')
                 .attr 'stroke', (d) -> d.color
+                .attr 'd', -> graphLine1(_.map days, -> 0)
+                .transition()
+                .duration(duration)
                 .attr 'd', (d) -> if d.name=='Win Rate' then graphLine2(d.values) else graphLine1(d.values)
 
         legend = svg.selectAll('g.legend')
@@ -164,7 +169,70 @@
         legend.append('text')
             .attr('x', width - margin.right - 36)
             .attr('y', (d, i) -> 10 + 20*i - 60)
+            .style('fill', '#2b3c49')
             .text((d) -> d.name)
+
+        tooltip = d3.select("body").append("div") 
+            .attr("class", "pmp-delivery-tooltip")             
+            .style("opacity", 0)
+        mouseOut = (d) ->
+          d3.select(this).transition().duration(500).attr("r", 4)   
+          tooltip.transition()        
+              .duration(500)      
+              .style("opacity", 0);
+        mouseOver = (title, option, unit) ->
+          return (d) ->
+            d3.select(this).transition().duration(500).attr("r", 6)     
+            tooltip.transition()        
+                .duration(200)      
+                .style("opacity", .9);      
+            tooltip.html('<span>' + d.date + '</span><br/>' + title + ': ' + d[option] + (unit || ''))  
+                .style("left", (d3.event.pageX) + "px")     
+                .style("top", (d3.event.pageY - 28) + "px")
+        setTimeout ->
+          svg.selectAll("dot")    
+              .data(data)         
+              .enter().append("circle") 
+              .style("cursor", "pointer")  
+              .attr("fill", c(0))                              
+              .attr("r", 4)       
+              .attr("cx", (d) -> x(d.date))       
+              .attr("cy", (d) -> y1(d.bids))     
+              .on("mouseover", mouseOver('Bids', 'bids'))                  
+              .on("mouseout", mouseOut)
+              .style("opacity", 0)
+              .transition()
+              .duration(500)
+              .style("opacity", 1)
+          svg.selectAll("dot")    
+              .data(data)         
+              .enter().append("circle") 
+              .style("cursor", "pointer")
+              .attr("fill", c(1))                              
+              .attr("r", 4)       
+              .attr("cx", (d) -> x(d.date))       
+              .attr("cy", (d) -> y1(d.impressions))     
+              .on("mouseover", mouseOver('Impressions', 'impressions'))                  
+              .on("mouseout", mouseOut)
+              .style("opacity", 0)
+              .transition()
+              .duration(500)
+              .style("opacity", 1)
+          svg.selectAll("dot")    
+              .data(data)         
+              .enter().append("circle") 
+              .style("cursor", "pointer")
+              .attr("fill", c(2))                                      
+              .attr("r", 4)       
+              .attr("cx", (d) -> x(d.date))       
+              .attr("cy", (d) -> y2(d.win_rate))     
+              .on("mouseover", mouseOver('Win Rate', 'win_rate', '%'))                  
+              .on("mouseout", mouseOut)
+              .style("opacity", 0)
+              .transition()
+              .duration(500)
+              .style("opacity", 1)
+        , duration
 
       $scope.init()
   ]
