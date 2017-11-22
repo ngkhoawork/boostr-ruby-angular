@@ -147,8 +147,6 @@
 
   addMissingClientFields = (clients) ->
     _.map clients, (client) ->
-      client._type = $scope.getClientType(client)
-      client._category = $scope.getClientCategory(client)
       client._lastTouch = $scope.getLastTouch(client)
       client
 

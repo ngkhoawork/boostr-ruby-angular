@@ -147,8 +147,8 @@
                         %thead
                             %tr.z-sortable-prime
                                 %th.z-sortable{by: 'name', default: true} Name
-                                %th.z-sortable{by: '_type'} Type
-                                %th.z-sortable{by: '_category'} Category
+                                %th.z-sortable{by: 'type'} Type
+                                %th.z-sortable{by: 'category'} Category
                                 %th.z-sortable{by: 'client_members'} Team
                                 %th.z-sortable{by: 'address.city'} City
                                 %th.z-sortable{by: '_lastTouch'} Last Touch
@@ -157,8 +157,8 @@
                                 %td
                                     %a{'ng-href': '/accounts/{{client.id}}'}
                                         {{client.name}}
-                                %td {{client._type}}
-                                %td {{client._category}}
+                                %td {{client.type}}
+                                %td {{client.category}}
                                 %td
                                     %div{ 'ng-repeat': 'member in client.client_members' }
                                         {{ member.user.name + " (" + member.share + "%)" }}
