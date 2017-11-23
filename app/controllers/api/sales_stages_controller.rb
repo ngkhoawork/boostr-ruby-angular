@@ -9,7 +9,7 @@ class Api::SalesStagesController < ApplicationController
     sales_stage = company.sales_stages.new(sales_stage_params)
 
     if sales_stage.save
-      render json: sales_stage
+      render json: sales_stage, status: :created
     else
       render json: { errors: sales_stage.errors.messages }, status: :unprocessable_entity
     end
