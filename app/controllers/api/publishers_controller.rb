@@ -8,7 +8,7 @@ class Api::PublishersController < ApplicationController
 
   def create
     if build_resource.save
-      render json: Api::PublisherSerializer.new(resource)
+      render json: Api::PublisherSerializer.new(resource), status: :created
     else
       render json: { errors: resource.errors.messages }, status: :unprocessable_entity
     end

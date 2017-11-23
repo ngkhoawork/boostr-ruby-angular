@@ -6,7 +6,8 @@ class Api::PublisherSettingsSerializer
   def as_json(*_args)
     {
       publisher_types: publisher_types,
-      publisher_stages: publisher_stages
+      publisher_stages: publisher_stages,
+      comscore: [true, false]
     }
   end
 
