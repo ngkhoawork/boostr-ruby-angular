@@ -443,9 +443,10 @@ Rails.application.routes.draw do
     end
 
     resources :filter_queries, only: [:index, :create, :update, :destroy]
-    resources :publishers do
+    resources :publishers, defaults: { format: :json } do
       collection do
         get :settings
+        get :all_fields_report
       end
     end
     resources :publisher_custom_field_names, only: [:index, :create, :update, :destroy]

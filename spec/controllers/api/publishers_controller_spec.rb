@@ -120,7 +120,7 @@ RSpec.describe Api::PublishersController, type: :controller do
 
     it 'creates a publisher' do
       expect{subject}.to change{Publisher.count}.by(1)
-      expect(response).to be_success
+      expect(response).to have_http_status(201)
       expect(response_body[:id]).to eq Publisher.last.id
     end
 
@@ -141,7 +141,7 @@ RSpec.describe Api::PublishersController, type: :controller do
 
     it 'updates a publisher' do
       expect{subject}.to change{publisher.reload.name}.to(params[:publisher][:name])
-      expect(response).to be_success
+      expect(response).to have_http_status(200)
       expect(response_body[:id]).to eq Publisher.last.id
     end
 
@@ -175,6 +175,61 @@ RSpec.describe Api::PublishersController, type: :controller do
       expect(response_body[:publisher_stages]).to be_a_kind_of Array
       expect(response_type_ids).to include publisher_type_option.id
       expect(response_stage_ids).to include publisher_stage.id
+    end
+  end
+
+  describe '#all_fields_report' do
+    let(:params) { { format: :json } }
+    subject { get :all_fields_report, params }
+
+    it 'has an appropriate structure' do
+      subject
+      expect(response).to be_success
+      expect(response_body).to be_kind_of Array
+      expect(first_item).to have_key :name
+      expect(first_item).to have_key :comscore
+      expect(first_item).to have_key :website
+      expect(first_item).to have_key :estimated_monthly_impressions
+      expect(first_item).to have_key :actual_monthly_impressions
+    end
+    it { subject; expect(first_item[:id]).to eq publisher.id }
+
+    context 'and when params include appropriate "publisher_stage_id"' do
+      let(:params) { super().merge(publisher_stage_id: publisher.publisher_stage_id) }
+
+      it { subject; expect(first_item[:id]).to eq publisher.id }
+    end
+
+    context 'and when params does not include appropriate "publisher_stage_id"' do
+      let(:params) { super().merge(publisher_stage_id: -1) }
+
+      it { subject; expect(response_body).to be_empty }
+    end
+
+    context 'and when params include appropriate "team_id"' do
+      let(:params) { super().merge(team_id: team.id) }
+
+      before { publisher.users << user }
+
+      it { subject; expect(first_item[:id]).to eq publisher.id }
+    end
+
+    context 'and when params does not include appropriate "team_id"' do
+      let(:params) { super().merge(team_id: -1) }
+
+      it { subject; expect(response_body).to be_empty }
+    end
+
+    context 'and when params include appropriate "created_at"' do
+      let(:params) { super().merge(created_at: publisher.created_at) }
+
+      it { subject; expect(first_item[:id]).to eq publisher.id }
+    end
+
+    context 'and when params does not include appropriate "created_at"' do
+      let(:params) { super().merge(created_at: 1000.days.ago) }
+
+      it { subject; expect(response_body).to be_empty }
     end
   end
 
@@ -213,10 +268,14 @@ RSpec.describe Api::PublishersController, type: :controller do
   end
 
   def user
-    @_user ||= create(:user, company: company)
+    @_user ||= create(:user, company: company, team: team)
   end
 
   def another_user
     @_another_user ||= create(:user, company: company)
+  end
+
+  def team
+    @_team ||= create(:team, company: company)
   end
 end

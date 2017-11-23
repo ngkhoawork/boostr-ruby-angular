@@ -1,5 +1,5 @@
 class Api::PublishersController < ApplicationController
-  respond_to :json
+  respond_to :json, :csv
 
   def index
     render json: paginate(filtered_publishers),
@@ -26,6 +26,19 @@ class Api::PublishersController < ApplicationController
     render json: Api::PublisherSettingsSerializer.new(current_user.company)
   end
 
+  def all_fields_report
+    respond_to do |format|
+      format.json {
+        render json: generate_all_fields_report,
+               each_serializer: Report::Publishers::AllFieldsSerializer
+      }
+      format.csv {
+        send_data Csv::PublisherAllFieldsReportService.new(generate_all_fields_report).perform,
+                  filename: "reports-publishers-all_fields-#{DateTime.current}.csv"
+      }
+    end
+  end
+
   private
 
   def resource
@@ -38,6 +51,10 @@ class Api::PublishersController < ApplicationController
 
   def filtered_publishers
     PublishersQuery.new(filter_params).perform
+  end
+
+  def generate_all_fields_report
+    Report::Publishers::AllFieldsService.new(all_fields_report_params).perform
   end
 
   def filter_params
@@ -137,6 +154,16 @@ class Api::PublishersController < ApplicationController
         :number_4_dec6,
         :number_4_dec7
       ]
+    ).merge(company_id: current_user.company_id)
+  end
+
+  def all_fields_report_params
+    params.permit(
+      :publisher_stage_id,
+      :team_id,
+      :created_at,
+      :page,
+      :per_page
     ).merge(company_id: current_user.company_id)
   end
 end
