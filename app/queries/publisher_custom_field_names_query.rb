@@ -5,7 +5,7 @@ class PublisherCustomFieldNamesQuery
   end
 
   def perform
-    return relation if options.empty? || options.blank?
+    return relation if relation.empty?
 
     relation
       .by_field(:field_type, options[:field_type])
@@ -21,7 +21,7 @@ class PublisherCustomFieldNamesQuery
 
   module Scopes
     def by_field(name, value)
-      value ? where(name => value) : self
+      value.nil? ? self : where(name => value)
     end
   end
 end
