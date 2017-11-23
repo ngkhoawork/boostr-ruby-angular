@@ -40,7 +40,10 @@ class  Api::V2::EmailThreadsController < ApiController
   end
 
   def all_not_opened_emails
-    render json: current_user.email_threads.without_opens.search_by_email_threads(email_thread_params[:search]).limit(limit).offset(offset)
+    render json: current_user
+                  .email_threads
+                  .without_opens
+                  .search_by_email_threads(email_thread_params[:search]).order('email_threads.created_at DESC').limit(limit).offset(offset)
   end
 
   private
