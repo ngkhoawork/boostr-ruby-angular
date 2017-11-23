@@ -15,7 +15,7 @@
                     %label{style: 'display: block'}
                         Advertiser
                         %span.star *
-                    %ui-select{ name: 'advertiser', ng: { model: 'clientConnection.advertiser_id', disabled: true, keyup: 'searchClients($select.search, Advertiser)' }, 'on-select': "advertiserSelected($model)" }
+                    %ui-select{ name: 'advertiser', ng: { model: 'clientConnection.advertiser_id', disabled: true, keyup: 'searchClients($select.search, Advertiser, currentAccountId)' }, 'on-select': "advertiserSelected($model)" }
                         %ui-select-match{ placeholder: 'Advertiser' }
                             {{ $select.selected.name }}
                         %ui-select-choices{ repeat: 'advertiser.id as advertiser in advertisers' }
@@ -24,7 +24,7 @@
                     %span.error-text {{errors.agency}}
                     %label{style: 'display: block'}
                         Agency
-                    %ui-select{ name: 'agency', ng: { model: 'clientConnection.agency_id', disabled: true, keyup: 'searchClients($select.search, Agency)' }, 'on-select': 'agencySelected($model)' }
+                    %ui-select{ name: 'agency', ng: { model: 'clientConnection.agency_id', disabled: true, keyup: 'searchClients($select.search, Agency, currentAccountId)' }, 'on-select': 'agencySelected($model)' }
                         %ui-select-match{ placeholder: 'Agency' }
                             {{ $select.selected.name }}
                         %ui-select-choices{ repeat: 'agency.id as agency in agencies' }

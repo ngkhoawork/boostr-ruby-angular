@@ -4,54 +4,23 @@
 			.reports-header
 				.header-cell.main-title
 					Forecast Detail
-				.header-cell.filters-block
-					%table
-						%tr.filter-title
-							%td Team
-							%td Seller
-							%td Time period
-						%tr
-							%td
-								%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'onChange': 'test()', 'ng-class': '{"empty": selectedTeam.name === "All"}'}
-
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.seller.name === "All"}' }
-											{{(filter.seller.first_name && filter.seller.first_name + ' ' + filter.seller.last_name) || 'All'}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{ ng: { repeat: 'seller in sellers | orderBy : "name"', class: '{active: seller.id === filter.seller.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
-													{{ seller.first_name + ' ' + seller.last_name}}
-
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id}' }
-											{{filter.timePeriod.name || 'All'}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{ ng: { repeat: 'timePeriod in timePeriods | orderBy : ["period_type", "start_date"]', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
-													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
-
-				.header-cell
-					%button.add-btn.mr20{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
-						Run Report
-
-				.header-cell
-					%span.mr8 Go to
-					%a{href: '', 'ng-click': 'scrollTo("#revenue-section")'} Revenue
-					|
-					%a{href: '', 'ng-click': 'scrollTo("#deals-section")'} Deals
+				.header-cell.filter-cell
+					%z-filter{'on-apply': 'onFilterApply'}
+						%z-filter-field{data: 'teams', type: 'team', 'save-as': '{id: "id"}', 'on-change': 'updateSellers', default: 'defaultTeam'} Team
+						%z-filter-field{data: 'sellers', 'save-as': '{user_id: "id"}'} Seller
+						%z-filter-field{data: 'timePeriods', 'save-as': '{time_period_id: "id"}', 'is-all': 'false', 'order-by': '["period_type", "start_date"]', id: 'time-period-field'} Time period
+						%div{style: 'order: 1; margin: 0 10px'}
+							%span.mr8 Go to
+							%a{href: '', 'ng-click': 'scrollTo("#revenue-section")'} Revenue
+							|
+							%a{href: '', 'ng-click': 'scrollTo("#deals-section")'} Deals
 
 				.header-cell
 					.pull-right
 						%download-button{'ng-click': 'export($event)'}
 							Export
 
-		%div{'ng-show': 'filter.timePeriod.id'}
+		%div
 			.row
 				.col-xs-6
 					.block
@@ -72,7 +41,7 @@
 									%td
 										%b Revenue
 									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
+										{{(forecast.quarterly_revenue[quarter] || 0) | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
 										{{getAnnualSum(forecast.quarterly_revenue) | currency : '$' : 0}}
 								%tr{'ng-repeat': 'stage in forecast.stages'}
@@ -86,7 +55,7 @@
 									%td
 										%b Forecast
 									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_weighted_forecast[quarter] | currency : '$' : 0}}
+										{{(forecast.quarterly_weighted_forecast[quarter] || 0) | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
 										{{getAnnualSum(forecast.quarterly_weighted_forecast) | currency : '$' : 0}}
 
@@ -94,7 +63,7 @@
 									%td
 										%b Quota
 									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_quota[quarter] | currency : '$' : 0}}
+										{{(forecast.quarterly_quota[quarter] || 0) | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
 										{{getAnnualSum(forecast.quarterly_quota) | currency : '$' : 0}}
 
@@ -102,7 +71,7 @@
 									%td
 										%b Gap to Quota
 									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_weighted_gap_to_quota[quarter] | currency : '$' : 0}}
+										{{(forecast.quarterly_weighted_gap_to_quota[quarter] || 0) | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
 										{{getAnnualSum(forecast.quarterly_weighted_gap_to_quota) | currency : '$' : 0}}
 								%tr
@@ -131,7 +100,7 @@
 									%td
 										%b Revenue
 									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
+										{{(forecast.quarterly_revenue[quarter] || 0) | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
 										{{getAnnualSum(forecast.quarterly_revenue) | currency : '$' : 0}}
 								%tr{'ng-repeat': 'stage in forecast.stages'}
@@ -145,7 +114,7 @@
 									%td
 										%b Forecast
 									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_unweighted_forecast[quarter] | currency : '$' : 0}}
+										{{(forecast.quarterly_unweighted_forecast[quarter] || 0) | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
 										{{getAnnualSum(forecast.quarterly_unweighted_forecast) | currency : '$' : 0}}
 
@@ -153,15 +122,15 @@
 									%td
 										%b Quota
 									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_quota[quarter] | currency : '$' : 0}}
+										{{(forecast.quarterly_quota[quarter] || 0) | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
-										{{getAnnualSum(forecast.quarterly_quota) | currency : '$' : 0}}
+										{{(getAnnualSum(forecast.quarterly_quota) || 0) | currency : '$' : 0}}
 
 								%tr
 									%td
 										%b Gap to Quota
 									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_unweighted_gap_to_quota[quarter] | currency : '$' : 0}}
+										{{(forecast.quarterly_unweighted_gap_to_quota[quarter] || 0) | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
 										{{getAnnualSum(forecast.quarterly_unweighted_gap_to_quota) | currency : '$' : 0}}
 								%tr
@@ -184,43 +153,27 @@
 									%tr.hide
 										-#title for export
 										%th Revenue Details
-									%tr{'z-fixed-header': true, watch: '["revenues", "revenues.detail_amounts[switch.revenues]", "filter.timePeriod.id"]'}
+									%tr.z-sortable-prime{'sort-name': 'revenues', 'z-fixed-header': true, watch: '["revenues", "revenues.detail_amounts[switch.revenues]"]'}
 										%th
-											%span.clickable{'ng-click': 'sortRevenues.by("name")'}
-												IO Name
-												%i{'ng-show': 'sortRevenues.field == "name"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'name'} IO Name
 										%th
-											%span.clickable{'ng-click': 'sortRevenues.by("advertiser.name")'}
-												Advertiser
-												%i{'ng-show': 'sortRevenues.field == "advertiser.name"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'advertiser.name'} Advertiser
 										%th
-											%span.clickable{'ng-click': 'sortRevenues.by("agency.name")'}
-												Agency
-												%i{'ng-show': 'sortRevenues.field == "agency.name"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
-										%th 
-											Team
+											.z-sortable{by: 'agency.name'} Agency
 										%th
-											%span.clickable{'ng-click': 'sortRevenues.by("start_date")'}
-												Start Date
-												%i{'ng-show': 'sortRevenues.field == "start_date"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'members'} Team
 										%th
-											%span.clickable{'ng-click': 'sortRevenues.by("end_date")'}
-												End Date
-												%i{'ng-show': 'sortRevenues.field == "end_date"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'start_date'} Start Date
 										%th
-											%span.clickable{'ng-click': 'sortRevenues.by("budget")'}
-												Total Budget
-												%i{'ng-show': 'sortRevenues.field == "budget"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'end_date'} End Date
 										%th
-											%span.clickable{'ng-click': 'sortRevenues.by("in_period_split_amt")'}
-												Split In-Period Amt
-												%i{'ng-show': 'sortRevenues.field == "in_period_split_amt"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'budget', default: true} Total Budget
+										%th
+											.z-sortable{by: 'in_period_split_amt'} Split In-Period Amt
 										%th{'ng-repeat': '(index, key) in revenues.detail_amounts[switch.revenues]'}
-											%span.clickable{'ng-click': 'sortRevenues.by(getSortableAmountKey("revenues", index))'}
-												{{key}}
-												%i{'ng-show': 'sortRevenues.field == getSortableAmountKey("revenues", index)', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'getSortableAmountKey("revenues", index)'} {{key}}
 								%tbody
-									%tr{'ng-repeat': 'revenue in revenues | orderBy : sortRevenues.field : sortRevenues.reverse'}
+									%tr{'ng-repeat': 'revenue in revenues | orderBy : zSort.revenues.by : zSort.revenues.rev'}
 										%td
 											%a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}'} {{revenue.name}}
 										%td {{revenue.advertiser.name}}
@@ -235,6 +188,9 @@
 											{{amount | currency : '$' : 2}}
 										%td{'ng-repeat': 'amount in revenue.months track by $index', 'ng-if': 'switch.revenues == "months" && amount != null'}
 											{{amount | currency : '$' : 2}}
+									%tr{ ng: { if: 'revenues.length == 0' }}
+										%td.center.auto-colspan
+											No Data for the Filters Selected
 
 			#deals-section.row
 				.col-xs-12
@@ -250,48 +206,29 @@
 									%tr.hide
 										-#title for export
 										%th Deals
-									%tr{'z-fixed-header': true, watch: '["deals", "deals.detail_amounts[switch.deals]", "filter.timePeriod.id"]'}
+									%tr.z-sortable-prime{'sort-name': 'deals', 'z-fixed-header': true, watch: '["deals", "deals.detail_amounts[switch.deals]"]'}
 										%th
-											%span.clickable{'ng-click': 'sortDeals.by("name")'}
-												Deal Name
-												%i{'ng-show': 'sortDeals.field == "name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'name'} Deal Name
 										%th
-											%span.clickable{'ng-click': 'sortDeals.by("advertiser.name")'}
-												Advertiser
-												%i{'ng-show': 'sortDeals.field == "advertiser.name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'advertiser.name'} Advertiser
 										%th
-											%span.clickable{'ng-click': 'sortDeals.by("agency.name")'}
-												Agency
-												%i{'ng-show': 'sortDeals.field == "agency.name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
-										%th 
-											Deal Team
+											.z-sortable{by: 'agency.name'} Agency
 										%th
-											%span.clickable{'ng-click': 'sortDeals.by("start_date")'}
-												Start Date
-												%i{'ng-show': 'sortDeals.field == "start_date"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'deal_members'} Deal Team
 										%th
-											%span.clickable{'ng-click': 'sortDeals.by("end_date")'}
-												End Date
-												%i{'ng-show': 'sortDeals.field == "end_date"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'start_date'} Start Date
 										%th
-											%span.clickable{'ng-click': 'sortDeals.by("budget")'}
-												Total Budget
-												%i{'ng-show': 'sortDeals.field == "budget"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'end_date'} End Date
 										%th
-											%span.clickable{'ng-click': 'sortDeals.by("split_period_budget")'}
-												Split In-Period Amt
-												%i{'ng-show': 'sortDeals.field == "split_period_budget"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'budget', default: true} Total Budget
 										%th
-											%span.clickable{'ng-click': 'sortDeals.by("stage.probability")'}
-												\%
-												%i{'ng-show': 'sortDeals.field == "stage.probability"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
-										-#%th{width: '300px'} Next Steps
+											.z-sortable{by: 'split_period_budget'} Split In-Period Amt
+										%th
+											.z-sortable{by: 'stage.probability'} %
 										%th{'ng-repeat': '(index, key) in deals.detail_amounts[switch.deals]'}
-											%span.clickable{'ng-click': 'sortDeals.by(getSortableAmountKey("deals", index))'}
-												{{key}}
-												%i{'ng-show': 'sortDeals.field == getSortableAmountKey("deals", index)', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+											.z-sortable{by: 'getSortableAmountKey("deals", index)'} {{key}}
 								%tbody
-									%tr{'ng-repeat': 'deal in deals | orderBy : sortDeals.field : sortDeals.reverse', popover: '{{deal.next_steps}}', 'popover-title': 'Next Steps', 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
+									%tr{'ng-repeat': 'deal in deals | orderBy : zSort.deals.by : zSort.deals.rev', popover: '{{deal.next_steps}}', 'popover-title': 'Next Steps', 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
 										%td
 											%a{href: '', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
 										%td {{deal.advertiser.name}}
@@ -307,3 +244,6 @@
 											{{amount | currency : '$' : 0}}
 										%td{'ng-repeat': 'amount in deal.month_amounts track by $index', 'ng-if': 'switch.deals == "months" && amount != null'}
 											{{amount | currency : '$' : 0}}
+									%tr{ ng: { if: 'deals.length == 0' }}
+										%td.center.auto-colspan
+											No Data for the Filters Selected

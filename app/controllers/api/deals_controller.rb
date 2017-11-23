@@ -649,10 +649,16 @@ class Api::DealsController < ApplicationController
                 :number_4_dec5,
                 :number_4_dec6,
                 :number_4_dec7,
-                :link1
+                :link1,
+                :link2,
+                :link3,
+                :link4,
+                :link5,
+                :link6,
+                :link7,
             ]
         }
-    )
+    ).merge(modifying_user: current_user)
   end
 
   def deal_type_source_params

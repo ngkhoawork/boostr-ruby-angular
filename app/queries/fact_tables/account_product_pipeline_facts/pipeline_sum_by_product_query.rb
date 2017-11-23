@@ -4,7 +4,7 @@ class FactTables::AccountProductPipelineFacts::PipelineSumByProductQuery
   end
 
   def perform
-    relation.where('time_dimensions.start_date >= ?', Date.today)
+    relation.where('time_dimensions.start_date >= ?', Date.today.beginning_of_month)
             .group('time_dimensions.start_date, time_dimensions.end_date, product_dimensions.name')
             .order('product_dimensions.name')
             .select('time_dimensions.start_date, product_dimensions.name, sum(weighted_amount)')

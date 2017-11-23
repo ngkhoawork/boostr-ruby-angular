@@ -1,8 +1,7 @@
 class DisplayLineItemBudgetCsvOperative < DisplayLineItemBudgetCsv
   include ActiveModel::Validations
 
-  validates :company_id, :line_number, :month_and_year,
-            :impressions, :budget_loc, presence: true
+  validates :company_id, :line_number, :month_and_year, :budget_loc, presence: true
 
   attr_accessor :company_id, :external_io_number, :line_number, :month_and_year,
                 :ctr, :impressions, :clicks, :video_avg_view_rate, :video_completion_rate,
@@ -69,5 +68,9 @@ class DisplayLineItemBudgetCsvOperative < DisplayLineItemBudgetCsv
 
   def get_external_io_number
     io_or_tempio.external_io_number
+  end
+
+  def should_validate_impressions
+    false
   end
 end

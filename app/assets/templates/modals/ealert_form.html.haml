@@ -59,6 +59,10 @@
                     %strong
                       Advertiser:
                     {{deal.advertiser.name}}
+                    .advertiser-ballast
+                      %strong
+                        Probability:
+                      {{deal.stage.probability}}%
                   .advertiser-ballast
                     %strong
                       Sales Team: 
@@ -85,6 +89,10 @@
                 %strong
                   Flight Date:
                 {{deal.start_date | date: 'MMM dd, yyyy'}} - {{deal.end_date | date: 'MMM dd, yyyy'}}
+              %div{'ng-if': 'ealert.show_billing_contact && deal.billing_contact'}
+                %strong
+                  Billing Contact:
+                {{deal.billing_contact.name}} - {{deal.billing_contact.email}}
               %div{'ng-repeat': 'field in selected_fields | filter: dealCustomFieldFilter'}
                 %strong
                   {{field.subject.field_label}}:
@@ -96,7 +104,7 @@
                   %span{ ng: { 'switch-when': 'integer' } }
                     {{(getDealFieldValue(field) || 0) | number : 0}}
                   %span{ ng: { 'switch-when': 'currency' } }
-                    {{(getDealFieldValue(field) || 0) | currency: '$' : 2}}
+                    {{(getDealFieldValue(field) || 0) | currency: deal.currency.curr_symbol : 2}} {{deal.currency.curr_cd}}
                   %span{ ng: { 'switch-when': 'percentage' } }
                     {{(getDealFieldValue(field) || 0) | number : 2}}%
                   %span{ ng: { 'switch-when': 'datetime' } }
@@ -136,7 +144,7 @@
                       %span{ ng: { 'switch-when': 'integer' } }
                         {{(getDealProductFieldValue(deal_product, field) || 0) | number : 0}}
                       %span{ ng: { 'switch-when': 'currency' } }
-                        {{(getDealProductFieldValue(deal_product, field) || 0) | currency: '$' : 2}}
+                        {{(getDealProductFieldValue(deal_product, field) || 0) | currency: deal.currency.curr_symbol : 2}} {{deal.currency.curr_cd}}
                       %span{ ng: { 'switch-when': 'percentage' } }
                         {{(getDealProductFieldValue(deal_product, field) || 0) | number : 2}}%
                       %span{ ng: { 'switch-when': 'datetime' } }

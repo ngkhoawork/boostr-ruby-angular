@@ -1,12 +1,29 @@
 class DisplayLineItemBudget < ActiveRecord::Base
   PENDING = 'Pending'.freeze
+  BUDGET_BUFFER = 10
 
   belongs_to :display_line_item
+  delegate :io, to: :display_line_item
 
   scope :for_time_period, -> (start_date, end_date) { where('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?', end_date, start_date) }
 
   scope :by_date, -> (start_date, end_date) do
     where('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?', start_date, end_date)
+  end
+
+  scope :for_product_id, -> (product_id) do
+    where('display_line_items.product_id = ?', product_id) if product_id.present?
+  end
+  scope :by_seller_id, -> (seller_id) do
+    joins(display_line_item: { io: :io_members })
+    .where(io_members: { user_id: seller_id }) if seller_id.present?
+  end
+  scope :by_team_id, -> (team_id) do
+    joins(display_line_item: { io: { io_members: :user } })
+      .where(users: { team_id: team_id }) if team_id.present?
+  end
+  scope :by_created_date, -> (start_date, end_date) do
+    where(ios: { created_at: (start_date.to_datetime.beginning_of_day)..(end_date.to_datetime.end_of_day) }) if start_date.present? && end_date.present?
   end
 
   attr_accessor :has_dfp_budget_correction
@@ -18,11 +35,19 @@ class DisplayLineItemBudget < ActiveRecord::Base
   validate :sum_of_budgets_less_than_line_item_budget, unless: -> { has_dfp_budget_correction }
 
   def daily_budget
-    budget.to_f / (end_date - start_date + 1).to_i
+    if effective_days > 0
+      budget.to_f / effective_days
+    else
+      0
+    end
   end
 
   def daily_budget_loc
-    budget_loc.to_f / (end_date - start_date + 1).to_i
+    if effective_days > 0
+      budget_loc.to_f / effective_days
+    else
+      0
+    end
   end
 
   def self.to_csv(company_id)
@@ -241,6 +266,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
   private
 
+  def effective_days
+    @effective_days ||= ([display_line_item.end_date, end_date].min - [display_line_item.start_date, start_date].max + 1).to_i
+  end
+
   def self.convert_params_currency(exchange_rate, params)
     params[:budget] = params[:budget_loc] / exchange_rate
     params
@@ -279,11 +308,11 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   def max_monthly_budget_exceeded?
-    sum_of_monthly_budgets > display_line_item.budget_loc
+    sum_of_monthly_budgets > (display_line_item.budget_loc + BUDGET_BUFFER)
   end
 
   def max_budget_loc_exceeded?
-    budget_loc.truncate(2) > display_line_item.budget_loc
+    budget_loc.truncate(2) > (display_line_item.budget_loc + BUDGET_BUFFER)
   end
 
   def sum_of_monthly_budgets

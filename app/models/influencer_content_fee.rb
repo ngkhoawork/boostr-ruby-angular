@@ -58,4 +58,8 @@ class InfluencerContentFee < ActiveRecord::Base
       ''
     end
   end
+
+  def self.to_csv(influencer_content_fees)
+    Csv::InfluencerBudgetDetailService.new(influencer_content_fees).perform
+  end
 end

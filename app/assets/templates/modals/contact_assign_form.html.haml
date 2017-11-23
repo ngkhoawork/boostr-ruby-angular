@@ -4,12 +4,6 @@
       Assign to an Account
       %span.close-btn{'ng-click': 'cancel()'}
     .popup-modal-body.modal-body{style: 'padding: 15px'}
-      .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
-        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
-          %i.fa.fa-warning
-          <strong style="text-transform: capitalize">{{field}}</strong>
-          {{error}}
-
       .form-group.with-add-btn
         %input.form-control{ name: 'client', placeholder: 'Select', ng: { model: 'searchText', change: 'searchObj(searchText)', 'model-options': '{debounce: 500}' } }
         %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openAccountModal()'}

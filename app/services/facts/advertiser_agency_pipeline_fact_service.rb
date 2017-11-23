@@ -7,7 +7,8 @@ class Facts::AdvertiserAgencyPipelineFactService < BaseService
 
   def find_or_create_facts
     Facts::AccountAgencyPipelineFactCreationHandler.perform(calculated_facts: calculated_pipelines,
-                                                            time_dimension: time_dimension)
+                                                            time_dimension: time_dimension,
+                                                            company_id: company_id)
   end
 
   private

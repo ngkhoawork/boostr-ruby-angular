@@ -20,8 +20,11 @@ class Facts::AccountAgencyRevenueFactCreationHandler < BaseService
   private
 
   def unused_records
-    AdvertiserAgencyRevenueFact.where('time_dimension_id = :time_dimension_id AND process_ran_at < :process_date_time',
-                                      time_dimension_id: time_dimension.id, process_date_time: running_process_date_time)
+    AdvertiserAgencyRevenueFact.where('time_dimension_id = :time_dimension_id AND process_ran_at < :process_date_time
+                                     AND company_id = :company_id',
+                                    time_dimension_id: time_dimension.id,
+                                    process_date_time: running_process_date_time,
+                                    company_id: company_id)
 
   end
 
@@ -40,6 +43,8 @@ class Facts::AccountAgencyRevenueFactCreationHandler < BaseService
     elsif fact.new_record?
       fact.update_attributes(revenue_amount: calculated_record.revenue_amount.to_i,
                              process_ran_at: running_process_date_time)
+    else
+      fact.update_attributes(process_ran_at: running_process_date_time)
     end
   end
 end

@@ -11,6 +11,10 @@
                 method: 'GET'
                 url: '/api/reports/pipeline_summary'
                 isArray: true
+            product_monthly_summary:
+                method: 'GET'
+                url: '/api/reports/product_monthly_summary'
+                isArray: false
 
         return resource
     ]

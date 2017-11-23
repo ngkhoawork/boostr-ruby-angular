@@ -11,7 +11,6 @@ RSpec.describe Client, type: :model do
   end
 
   context 'to_csv' do
-    let!(:company) { create :company }
     let!(:user) { create :user, company: company }
     let!(:user2) { create :user, company: company }
     let!(:user3) { create :user, company: company }
@@ -100,7 +99,6 @@ RSpec.describe Client, type: :model do
   end
 
   context 'base field validations' do
-    let(:company) { create :company }
     let(:advertiser) { create :bare_client, client_type_id: advertiser_type_id(company), company: company }
     let(:agency) { create :bare_client, client_type_id: agency_type_id(company), company: company }
 
@@ -138,7 +136,6 @@ RSpec.describe Client, type: :model do
   end
 
   describe '#import' do
-    let!(:company) { create :company }
     let!(:user) { create :user, company: company }
     let!(:client) { create :client, company: company }
     let!(:existing_client) { create :client, company: company }
@@ -404,6 +401,28 @@ RSpec.describe Client, type: :model do
     end
   end
 
+  describe '#connection_entry_ids' do
+    subject { client.connection_entry_ids }
+
+    context 'when client is advertiser' do
+      let(:client) { create :bare_client, client_type_id: advertiser_type_id(company), company: company }
+      let(:related_agency) { create :bare_client, client_type_id: agency_type_id(company), company: company }
+
+      before { client.agencies << related_agency }
+
+      it { expect(subject).to eq [related_agency.id] }
+    end
+
+    context 'when client is agency' do
+      let(:client) { create :bare_client, client_type_id: agency_type_id(company), company: company }
+      let(:related_advertiser) { create :bare_client, client_type_id: advertiser_type_id(company), company: company }
+
+      before(:each) { client.advertisers << related_advertiser }
+
+      it { expect(subject).to eq [related_advertiser.id] }
+    end
+  end
+
   def generate_csv(data)
     CSV.generate do |csv|
       csv << data.keys
@@ -422,5 +441,9 @@ RSpec.describe Client, type: :model do
 
   def base_validations(subject)
     subject.base_field_validations
+  end
+
+  def company
+    @_company ||= create :company
   end
 end

@@ -71,7 +71,7 @@
     )
 
   $scope.loadClients = (query, type_id) ->
-    Client.query({ filter: 'all', name: query, per: 10, client_type_id: type_id }).$promise.then (clients) ->
+    Client.search_clients( name: query, client_type_id: type_id ).$promise.then (clients) ->
       if type_id == $scope.Advertiser
         $scope.advertisers = clients
       if type_id == $scope.Agency
@@ -110,6 +110,7 @@
       (deal) ->
         $modalInstance.close(deal)
         options.onSuccess() if _.isFunction options.onSuccess
+        $location.path('/deals' + '/' + deal.id)
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

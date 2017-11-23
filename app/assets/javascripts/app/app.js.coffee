@@ -27,6 +27,8 @@
   'jsonFormatter'
   'boostrServerErrors'
   'bgf.paginateAnything'
+  'LocalStorageModule'
+  'zFilterModule'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -74,6 +76,7 @@
     .when '/revenue',
       templateUrl: 'revenue.html'
       controller: 'RevenueController'
+      reloadOnSearch: false
 
     .when '/revenue/ios/:id',
       templateUrl: 'io.html'
@@ -116,6 +119,10 @@
     .when '/reports/product_forecasts',
       templateUrl: 'product_forecasts_detail.html'
       controller: 'ProductForecastsDetailController'
+
+    .when '/reports/product_monthly_summary',
+      templateUrl: 'product_monthly_summary.html'
+      controller: 'ProductMonthlySummaryController'
 
     .when '/smart_reports/sales_execution_dashboard',
       templateUrl: 'sales_execution_dashboard.html'
@@ -241,6 +248,10 @@
       templateUrl: 'settings/products.html'
       controller: 'SettingsProductsController'
 
+    .when '/settings/products/:id',
+      templateUrl: 'settings/products.html'
+      controller: 'SettingsProductsController'
+
     .when '/settings/teams',
       templateUrl: 'settings/teams.html'
       controller: 'SettingsTeamsController'
@@ -317,6 +328,10 @@
   $locationProvider.html5Mode true
 ])
 
+@app.config ['localStorageServiceProvider', (lssp) ->
+  lssp.setPrefix 'bstr'
+]
+
 @app.config ['$httpProvider', ($httpProvider) ->
   csrfToken = $('meta[name=csrf-token]').attr('content')
   $httpProvider.defaults.headers.common['X-CSRF-Token'] = csrfToken
@@ -363,7 +378,7 @@
   updateTalkus = (user) ->
     if location.hostname is 'localhost' or
         location.hostname is '127.0.0.1' or
-        location.pathname.indexOf('/gmail_extension/') is 0
+        location.pathname.indexOf('/api/gmail_extension/') is 0
       return
     talkus('init', 'qu346HQax2ut3MQr4',
       id: user.id

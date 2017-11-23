@@ -218,7 +218,7 @@ class Api::V2::DealsController < ApiController
                 :percentage5
             ]
         }
-    )
+    ).merge(modifying_user: current_user)
   end
 
   def deal_type_source_params
