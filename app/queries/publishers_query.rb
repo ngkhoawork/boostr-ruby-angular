@@ -8,6 +8,7 @@ class PublishersQuery < BaseQuery
       .my_publishers(options[:my_publishers_bool], options[:current_user])
       .my_team_publishers(options[:my_team_publishers_bool], options[:current_user])
       .search_by_name(options[:q])
+      .order('created_at DESC')
   end
 
   private

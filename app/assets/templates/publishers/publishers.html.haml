@@ -3,7 +3,7 @@
     .row
       .col-xs-12.publishers-menu
         %span.title Publishers
-        %add-button{'ng-click': ''} Add Publisher
+        %add-button{'ng-click': 'showNewPublisherModal()'} Add Publisher
         .publisher-types
           %span{'ng-repeat': 'type in publisherTypes', 'ng-class': '{active: type.name == teamFilter.name}', 'ng-click': 'filterPublishers(type)'}
             {{type.name}}
@@ -30,5 +30,5 @@
               %tr{ ng: { repeat: 'publisher in publishers'} }
                 %td {{publisher.name}}
                 %td {{publisher.comscore}}
-                %td {{publisher.stage}}
-                %td {{publisher.type}}
+                %td {{publisher.publisher_stage.name}}
+                %td {{publisher.type.name}}

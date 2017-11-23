@@ -55,7 +55,19 @@ class Api::PublishersController < ApplicationController
       :actual_monthly_impressions,
       :client_id,
       :publisher_stage_id,
-      :type_id
+      :type_id,
+      address_attributes: [
+        :id,
+        :country,
+        :street1,
+        :street2,
+        :city,
+        :state,
+        :zip,
+        :phone,
+        :mobile,
+        :email
+      ]
     ).merge(company_id: current_user.company_id)
   end
 end

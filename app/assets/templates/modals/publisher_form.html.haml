@@ -1,0 +1,101 @@
+#publisher_modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header
+      {{formType}} Publisher
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+      .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
+        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+          %i.fa.fa-warning
+          {{error}}
+
+      .form-group{'ng-class':'{error: errors.name}'}
+        %span.error-text {{errors.name}}
+        %label{ for: 'name' }
+          Name
+        %span.star *
+        %input.form-control{ placeholder: 'Name', ng: { model: 'publisher.name' }, name: 'name' }
+
+      .form-group
+        %label{ for: 'comscore' }
+          Comscore 250
+        %br
+        %z-toggle{ng: { model: 'publisher.comscore' }}
+
+      .row
+        .form-group.col-xs-6
+          %label{ for: 'publisher-stage' }
+            Stage
+          %ui-select{ stage: 'pablisher-stage', ng: { model: 'publisher.publisher_stage_id', disabled: true } }
+            %ui-select-match{ placeholder: 'Stage' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'stage.id as stage in publisher_stages' }
+              %div{ ng: { bind: { html: 'stage.name' } } }
+
+        .form-group.col-xs-6{'ng-class':'{error: errors.type_id}'}
+          %span.error-text {{errors.type_id}}
+          %label{ for: 'publisher-stage' }
+            Publisher Type
+          %span.star *
+          %ui-select{ type: 'publisher-type', ng: { model: 'publisher.type_id', disabled: true } }
+            %ui-select-match{ placeholder: 'Publisher Type' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'type.id as type in publisher_types' }
+              %div{ ng: { bind: { html: 'type.name' } } }
+
+      .row
+        .form-group.col-xs-6
+          %label{ for: 'estimate-monthly' }
+            Estimated Monthly Impressions
+          %input.form-control{type: 'number', placeholder: 'Estimated Monthly Impressions', ng: { model: 'publisher.estimated_monthly_impressions' }, name: 'estimated_monthly_impressions' }
+
+        .form-group.col-xs-6{'ng-class':'{error: errors.client_id}'}
+          %span.error-text {{errors.client_id}}
+          %label{ for: 'client-stage' }
+            Client
+          %span.star *
+          %ui-select{ name: 'client', ng: { model: 'publisher.client_id', 'model-options': '{debounce: 400}', keyup: 'getClients($select.search)' } }
+            %ui-select-match{ placeholder: 'Client' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'client.id as client in clients | filter: { name: $select.search }' }
+              %div{ ng: { bind: { html: 'client.name' } } }
+
+      .form-group
+        %label{ for: 'website' }
+          Website
+        %input.form-control{ placeholder: 'Website', ng: { model: 'publisher.website' }, name: 'website' }
+
+      .form-group.text-center{'ng-hide': 'showAddressFields'}
+        %a.btn.add-btn{ 'ng-click': 'showAddressFields = true'}
+          %i.fa.fa-plus
+          Add Address
+      %div{ 'ng-show': 'showAddressFields' }
+        .form-group
+          %label{ for: 'street1' } Address
+          %input.form-control{ name: 'street1', placeholder: 'Address', ng: { model: 'publisher.address_attributes.street1' } }
+        .form-group
+          .row
+            .col-xs-5
+              %label{ for: 'city' } City
+              %input.form-control{ name: 'city', placeholder: 'City', ng: { model: 'publisher.address_attributes.city' }  }
+            .col-xs-4.fat
+              %label{ for: 'state' } State
+              %ui-select.bo-state-select{ name: 'state', ng: { model: 'publisher.address_attributes.state', disabled: true } }
+                %ui-select-match{ placeholder: 'State' }
+                  {{ $select.selected.name }}
+                %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
+                  %div{ ng: { bind: { html: 'state.name' } } }
+            .col-xs-3
+              %label{ for: 'zip' } Postal code
+              %input.form-control{ name: 'zip', placeholder: 'Postal code', ng: { model: 'publisher.address_attributes.zip' }  }
+        .form-group
+          %label{ for: 'country' } Country
+          %ui-select{ name: 'country', ng: { model: 'publisher.address_attributes.country', disabled: true } }
+            %ui-select-match{ placeholder: 'Country' }
+              {{ $select.selected }}
+            %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
+              %div {{ country }}
+
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
