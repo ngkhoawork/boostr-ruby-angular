@@ -8,7 +8,7 @@ class UsersImportWorker < BaseWorker
       obj.download_file(tempfile_path, mode: 'auto')
 
       begin
-        Importers::UsersService.new(inviter: inviter, company_id: inviter.company_id, file: tempfile_path, import_subject: import_subject).perform
+        Importers::UsersService.new(inviter: inviter, company_id: inviter.company_id, file: tempfile_path, import_subject: import_subject, import_source: 'ui').perform
         obj.delete
       rescue Exception => e
         obj.delete

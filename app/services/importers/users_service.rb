@@ -27,4 +27,8 @@ class Importers::UsersService < Importers::BaseService
     { force_simple_split: true, strip_chars_from_headers: /[\-"]/ }
   end
 
+  def import_source
+    import_source
+  end
+
 end

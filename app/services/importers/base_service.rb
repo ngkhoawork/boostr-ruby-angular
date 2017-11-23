@@ -49,12 +49,15 @@ class Importers::BaseService < BaseService
     raise NotImplementedError, 'build_csv(row) method should be implemented in your class'
   end
 
+  def import_source
+    raise NotImplementedError, 'import_source method should be implemented in your class. Return nil if non ui source'
+  end
+
   def open_file
     begin
       File.open(file, 'r:ISO-8859-1')
     rescue Exception => e
-      puts e
-      csv_import_log = CsvImportLog.new(company_id: company_id, object_name: import_subject)
+      csv_import_log = CsvImportLog.new(company_id: company_id, object_name: import_subject, source: import_source)
       csv_import_log.set_file_source(file)
       csv_import_log.log_error [e.class.to_s, e.message]
       csv_import_log.save
