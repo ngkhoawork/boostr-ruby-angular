@@ -354,6 +354,10 @@
                 font-weight: bold;
             }
         }
+        .star {
+            color: $error-color;
+            font-size: 16px;
+        }
 
         .custom-field-item-field {
             .text-area {
@@ -439,6 +443,10 @@
                 > th {
                     color: white !important;
                     //color:lighten($main-color, 5%) !important;
+
+                    &.vtop {
+                        vertical-align: top;
+                    }
                 }
             }
             > tbody {
@@ -459,6 +467,22 @@
                         .delete-product {
                             visibility: visible;
                         }
+                    }
+                }
+                .error-text {
+                  display: none;
+                  color: $error-color;
+                  float: right;
+                  margin: 0;
+                  width: 100%;
+                  text-align: right;
+                }
+                .error {                    
+                    .error-text {
+                        display: inline;
+                    }
+                    input, textarea, span.editable, .ui-select-container, .ui-select-toggle, button.dropdown-toggle {
+                        border-color: $error-color;
                     }
                 }
             }
