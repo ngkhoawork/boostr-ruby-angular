@@ -2,7 +2,7 @@ class Api::PublisherCustomFieldNamesController < ApplicationController
   respond_to :json
 
   def index
-    render json: publisher_custom_field_names.order_by_position
+    render json: filtered_publisher_custom_field_names
   end
 
   def create
@@ -52,5 +52,9 @@ class Api::PublisherCustomFieldNamesController < ApplicationController
         :field_type, :field_label, :is_required, :position, :show_on_modal, :disabled, 
         { publisher_custom_field_options_attributes: [:id, :value] }
       )
+  end
+
+  def filtered_publisher_custom_field_names
+    PublisherCustomFieldNamesQuery.new(publisher_custom_field_names, params).perform
   end
 end

@@ -13,6 +13,70 @@ describe Api::PublisherCustomFieldNamesController do
 
       expect(json_response.length).to be 1
     end
+
+    context 'filter by field_type field' do
+      before { create :publisher_custom_field_name, company: company, field_type: 'integer' }
+
+      it 'expect to find records by specific field type' do
+        get :index, field_type: 'integer'
+
+        expect(json_response.length).to be 1
+      end
+
+      it 'expect not to find records by specific field type' do
+        get :index, field_type: 'text'
+
+        expect(json_response.length).to be 0
+      end
+    end
+
+    context 'filter by is_required field' do
+      before { create :publisher_custom_field_name, company: company, is_required: true }
+
+      it 'expect to find records by is_required' do
+        get :index, is_required: 'true'
+
+        expect(json_response.length).to be 1
+      end
+
+      it 'expect not to find records by is_required' do
+        get :index, is_required: 'false'
+
+        expect(json_response.length).to be 0
+      end
+    end
+
+    context 'filter by show_on_modal field' do
+      before { create :publisher_custom_field_name, company: company, show_on_modal: true }
+
+      it 'expect to find records by show_on_modal' do
+        get :index, show_on_modal: 'true'
+
+        expect(json_response.length).to be 1
+      end
+
+      it 'expect not to find records by show_on_modal' do
+        get :index, show_on_modal: 'false'
+
+        expect(json_response.length).to be 0
+      end
+    end
+
+    context 'filter by disabled field' do
+      before { create :publisher_custom_field_name, company: company, disabled: true }
+
+      it 'expect to find records by disabled' do
+        get :index, disabled: 'true'
+
+        expect(json_response.length).to be 1
+      end
+
+      it 'expect not to find records by disabled' do
+        get :index, disabled: 'false'
+
+        expect(json_response.length).to be 0
+      end
+    end
   end
 
   describe 'POST #create' do
