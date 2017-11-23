@@ -452,6 +452,8 @@ Rails.application.routes.draw do
     resources :publisher_daily_actuals, only: [] do
       post :import, on: :collection
     end
+
+    resources :sales_stages, only: [:index, :create, :update]
   end
 
   mount Sidekiq::Web => '/sidekiq'
