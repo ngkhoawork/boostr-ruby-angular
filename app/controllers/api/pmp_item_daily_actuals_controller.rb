@@ -2,10 +2,25 @@ class Api::PmpItemDailyActualsController < ApplicationController
   respond_to :json
 
   def index
-    render json: ActiveModel::ArraySerializer.new(
-      pmp_item_daily_actuals,
-      each_serializer: Pmps::PmpItemDailyActualSerializer
-    )
+    respond_to do |format|
+      format.json {
+        if params[:pmp_item_id].present?
+          render json: ActiveModel::ArraySerializer.new(
+            pmp_item_daily_actuals
+              .where(pmp_item_id: params[:pmp_item_id])
+              .order(:date),
+            each_serializer: Pmps::PmpItemDailyActualSerializer
+          )          
+        else
+          render json: ActiveModel::ArraySerializer.new(
+            pmp_item_daily_actuals.order(:date)
+              .limit(limit)
+              .offset(offset),
+            each_serializer: Pmps::PmpItemDailyActualSerializer
+          )
+        end
+      }
+    end
   end
 
   def import
@@ -35,5 +50,13 @@ class Api::PmpItemDailyActualsController < ApplicationController
 
   def company
     @_company ||= current_user.company
+  end
+
+  def limit
+    params[:per].present? ? params[:per].to_i : 1
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
   end
 end

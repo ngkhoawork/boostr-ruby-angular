@@ -55,9 +55,11 @@
         )
         deferred.promise
 
-      @pmp_item_daily_actuals = (pmp_id) ->
+      @pmp_item_daily_actuals = (pmp_id, params) ->
+        params = params || {}
+        params['id'] = pmp_id
         deferred = $q.defer()
-        resource.pmp_item_daily_actuals id: pmp_id, (data) ->
+        resource.pmp_item_daily_actuals params, (data) ->
           deferred.resolve(data)
         deferred.promise
 

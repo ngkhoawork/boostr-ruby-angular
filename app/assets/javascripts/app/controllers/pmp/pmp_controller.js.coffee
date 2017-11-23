@@ -6,6 +6,10 @@
       $scope.canEditIO = true
       $scope.selectedItem = {}
       $scope.pmpItemDailyActuals = []
+      $scope.isLoading = false
+      $scope.allDataLoaded = false
+      $scope.page = 1
+      graphData = {}
       
       $scope.init = ->
         CurrentUser.get().$promise.then (user) ->
@@ -20,9 +24,11 @@
           if pmp.currency
             if pmp.currency.curr_symbol
               $scope.currency_symbol = pmp.currency.curr_symbol
+          
           PMP.pmp_item_daily_actuals($routeParams.id).then (data) ->
             $scope.pmpItemDailyActuals = data
-            $scope.updateChart($scope.currentPMP.pmp_items[0])
+          
+          $scope.updateChart($scope.currentPMP.pmp_items[0])
 
           $scope.currency_symbol = (->
             if $scope.currentPMP && $scope.currentPMP.currency
@@ -32,6 +38,14 @@
                 return $scope.currentPMP.currency.curr_cd
             return '%'
           )()
+
+      $scope.loadMoreData = ->
+        $scope.isLoading = true
+        PMP.pmp_item_daily_actuals($routeParams.id, {page: ++$scope.page}).then (data) ->
+          console.log(data)
+          $scope.allDataLoaded = !data.length
+          $scope.pmpItemDailyActuals = $scope.pmpItemDailyActuals.concat data
+          $timeout -> $scope.isLoading = false
 
       $scope.deleteMember = (pmp_member) ->
         if confirm('Are you sure you want to delete "' + pmp_member.name + '"?')
@@ -62,7 +76,12 @@
       $scope.updateChart = (pmpItem) ->
         if pmpItem
           $scope.selectedItem = pmpItem
-          drawChart($scope.pmpItemDailyActuals.filter((item) -> item.pmp_item_id == pmpItem.id))
+          if graphData[pmpItem.id]
+            drawChart(graphData[pmpItem.id])
+          else
+            PMP.pmp_item_daily_actuals($routeParams.id, {pmp_item_id: pmpItem.id}).then (data) ->
+              graphData[pmpItem.id] = data
+              drawChart(data)
 
       drawChart = (data) ->
         chartContainer = angular.element('#pmp-delivery-chart-container')
@@ -98,7 +117,6 @@
         tickValues = []
         for i in [0..ticks-1]
           tickValues.push i*Math.ceil(maxValue / (ticks - 1) / 10)*10
-        console.log(tickValues);
         x = d3.scale.ordinal().domain(days).rangePoints([20, width-20])
         y1 = d3.scale.linear().domain([y1Max, 0]).rangeRound([0, height])
         y2 = d3.scale.linear().domain([100, 0]).rangeRound([0, height])
@@ -174,7 +192,7 @@
 
         tooltip = d3.select("body").append("div") 
             .attr("class", "pmp-delivery-tooltip")             
-            .style("opacity", 1)
+            .style("opacity", 0)
         mouseOut = (d) ->
           d3.select(this).transition().duration(500).attr("r", 4)   
           tooltip.transition()        

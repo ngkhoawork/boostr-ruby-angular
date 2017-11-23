@@ -11,7 +11,7 @@
           %th.left Total Impression
           %th.left Total Average eCPM ($)
           %th.left Revenue
-      %tbody
+      %tbody{infinite: {scroll: 'loadMoreData()', 'scroll-disabled': 'isLoading || allDataLoaded', 'scroll-distance': '0.5'}}
         %tr{ ng: { if: 'pmpItemDailyActuals && pmpItemDailyActuals.length > 0', repeat: "pmpItemDailyActual in pmpItemDailyActuals"} }
           %td
             {{ pmpItemDailyActual.date | date: 'M/d/yyyy' }}
