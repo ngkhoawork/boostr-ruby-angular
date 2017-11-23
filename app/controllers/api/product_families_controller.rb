@@ -41,6 +41,6 @@ class Api::ProductFamiliesController < ApplicationController
   end
 
   def product_family
-    @_product_family ||= product_families.where(id: params[:id]).first
+    @_product_family ||= product_families.find_by(id: params[:id])
   end
 end
