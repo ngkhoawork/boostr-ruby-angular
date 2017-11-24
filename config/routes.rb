@@ -454,7 +454,9 @@ Rails.application.routes.draw do
       post :import, on: :collection
     end
 
-    resources :sales_stages, only: [:index, :create, :update]
+    resources :sales_stages, only: [:index, :create, :update] do
+      put :update_positions, on: :collection
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'

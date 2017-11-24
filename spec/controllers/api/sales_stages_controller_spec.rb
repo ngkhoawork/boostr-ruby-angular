@@ -48,6 +48,21 @@ describe Api::SalesStagesController, type: :controller do
     end
   end
 
+  describe 'PUT #update_positions' do
+    it 'update sales stages positions successfully' do
+      sales_stages = create_list :sales_stage, 2, company: company
+      sales_stages_ids = sales_stages.map(&:id)
+      position_params =  Hash[sales_stages_ids.map { |i| [i.to_s, i+1] }]
+
+      put :update_positions, sales_stages_position: position_params, format: :json
+
+      sales_stages.map(&:reload)
+
+      expect(sales_stages.first.position).to eq(position_params[sales_stages.first.id.to_s])
+      expect(sales_stages.last.position).to eq(position_params[sales_stages.last.id.to_s])
+    end
+  end
+
   private
 
   def company

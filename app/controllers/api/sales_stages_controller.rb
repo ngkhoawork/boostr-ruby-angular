@@ -23,6 +23,17 @@ class Api::SalesStagesController < ApplicationController
     end
   end
 
+  def update_positions
+    positions = params[:sales_stages_position]
+    sales_stages = company.sales_stages.where(id: positions.keys)
+
+    sales_stages.each do |sales_stage|
+      sales_stage.update(position: positions[sales_stage.id.to_s])
+    end
+
+    render json: sales_stages
+  end
+
   private
 
   def company
