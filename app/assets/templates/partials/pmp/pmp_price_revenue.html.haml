@@ -1,0 +1,18 @@
+.block#pmp-price-revenue
+  %div.mb20
+    %span.title Price & Revenue
+  %div.custom-field-item
+    %div.custom-field-item-label
+      %label{ for: 'type' } Deal-ID
+    %div.custom-field-item-field
+      .dropdown
+        %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+          %span.editable{'ng-class': '{"not-selected": !currentDeal.deal_type.option_id}'}
+            {{selectedPriceItem.ssp_deal_id || selectedPriceItem.id || 'Select'}}
+          %span.caret
+        %ul.dropdown-menu
+          %li{'ng-repeat': 'pmpItem in currentPMP.pmp_items', 'ng-class': '{active: selectedPriceItem.id == pmpItem.id}'}
+            %a{'href': '', 'ng-click': 'updatePriceChart(pmpItem)'}
+              %span.text {{pmpItem.ssp_deal_id || pmpItem.id}}
+  %div#pmp-price-revenue-chart-container.mb20
+    %svg#pmp-price-revenue-chart

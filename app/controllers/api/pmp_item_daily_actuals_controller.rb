@@ -53,7 +53,7 @@ class Api::PmpItemDailyActualsController < ApplicationController
   end
 
   def limit
-    params[:per].present? ? params[:per].to_i : 1
+    params[:per].present? ? params[:per].to_i : 10
   end
 
   def offset
