@@ -9,6 +9,7 @@
 						%tr.filter-title
 							%td{'ng-if': 'hasForecastPermission'} Team
 							%td{'ng-if': 'hasForecastPermission'} Seller
+							%td Product Family
 							%td Product
 							%td Time period
 							%td
@@ -31,6 +32,19 @@
 											%li{ ng: { repeat: 'seller in sellers | orderBy : "name"', class: '{active: seller.id === filter.seller.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
 													{{seller.name}}
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.productFamily.id}' }
+											{{filter.productFamily.name}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{'ng-class': '{active: !filter.productFamily.id}'}
+												%a{href: '', 'ng-click': 'setFilter("productFamily", emptyFilter)'}
+													{{emptyFilter.name}}
+											%li{ ng: { repeat: 'productFamily in productFamilies | orderBy : "name"', class: '{active: productFamily.id === filter.productFamily.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("productFamily", productFamily)' } }
+													{{productFamily.name}}
 
 							%td
 								%ul.filter-item

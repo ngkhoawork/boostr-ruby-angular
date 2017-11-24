@@ -8,15 +8,15 @@ class Api::ForecastsController < ApplicationController
           {quarter: time_period_row[:quarter]}
         else
           if user.present?
-            NewForecastMemberSerializer.new(NewForecastMember.new(user, time_period_row[:data], product, time_period_row[:quarter], year))
+            NewForecastMemberSerializer.new(NewForecastMember.new(user, time_period_row[:data], product_family, product, time_period_row[:quarter], year))
           elsif team.present?
-            NewForecastTeamSerializer.new(NewForecastTeam.new(team, time_period_row[:data], product, time_period_row[:quarter], year))
+            NewForecastTeamSerializer.new(NewForecastTeam.new(team, time_period_row[:data], product_family, product, time_period_row[:quarter], year))
           elsif params[:team_id] == 'all'
-            NewForecastSerializer.new(NewForecast.new(company, teams, time_period_row[:data], product, time_period_row[:quarter], year))
+            NewForecastSerializer.new(NewForecast.new(company, teams, time_period_row[:data], product_family, product, time_period_row[:quarter], year))
           elsif show_all_data
-            NewForecastSerializer.new(NewForecast.new(company, teams, time_period_row[:data], product, time_period_row[:quarter], year))
+            NewForecastSerializer.new(NewForecast.new(company, teams, time_period_row[:data], product_family, product, time_period_row[:quarter], year))
           else
-            NewForecastMemberSerializer.new(NewForecastMember.new(current_user, time_period_row[:data], product, time_period_row[:quarter], year))
+            NewForecastMemberSerializer.new(NewForecastMember.new(current_user, time_period_row[:data], product_family, product, time_period_row[:quarter], year))
           end
         end
       end
@@ -228,6 +228,14 @@ class Api::ForecastsController < ApplicationController
     @product = nil
     if params[:product_id] && params[:product_id] != 'all'
       @product = company.products.find(params[:product_id])
+    end
+  end
+
+  def product_family
+    @_product_family ||= if params[:product_family_id] && params[:product_family_id] != 'all'
+      @company.product_families.find_by(id: params[:product_family_id])
+    else
+      nil
     end
   end
 

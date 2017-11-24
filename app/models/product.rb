@@ -13,6 +13,7 @@ class Product < ActiveRecord::Base
 
   scope :active, -> { where('active IS true') }
   scope :by_revenue_type, -> (revenue_type) { where('revenue_type = ?', revenue_type) if revenue_type }
+  scope :by_product_family, -> (product_family_id) { where('product_family_id = ?', product_family_id) if product_family_id }
 
   after_create do
     create_dimension

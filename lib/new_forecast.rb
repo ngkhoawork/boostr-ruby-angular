@@ -3,36 +3,25 @@ class NewForecast
 
   delegate :id, to: :company
 
-  attr_accessor :company, :teams, :team_members, :start_date, :end_date, :time_period, :product, :quarter, :year
+  attr_accessor :company, :teams, :team_members, :start_date, :end_date, :time_period, :product_family, :product, :quarter, :year
 
   # If there is a year, the start_date and end_date are ignored
-  def initialize(company, teams, time_period, product = nil, quarter = nil, year = nil)
+  def initialize(company, teams, time_period, product_family = nil, product = nil, quarter = nil, year = nil)
     self.company = company
     self.time_period = time_period
     self.start_date = time_period.start_date
     self.end_date = time_period.end_date
+    self.product_family = product_family
     self.product = product
     self.quarter = quarter
     self.year = year
-    @teams = teams.map{ |t| NewForecastTeam.new(t, time_period, product, quarter, year) }
-  end
-
-  def cache_key
-    parts = []
-    teams.each do |team|
-      parts << team.cache_key
-    end
-    stages.each do |stage|
-      parts << stage.id
-      parts << stage.updated_at
-    end
-    Digest::MD5.hexdigest(parts.join)
+    @teams = teams.map{ |t| NewForecastTeam.new(t, time_period, product_family, product, quarter, year) }
   end
 
   def team_members
     return @team_members if defined?(@team_members)
 
-    @team_members = company.teams_tree_members.map{ |m| NewForecastMember.new(m, time_period, product, quarter) }
+    @team_members = company.teams_tree_members.map{ |m| NewForecastMember.new(m, time_period, product_family, product, quarter) }
   end
 
   def stages

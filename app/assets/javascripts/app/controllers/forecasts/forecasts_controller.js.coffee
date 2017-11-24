@@ -1,10 +1,11 @@
 @app.controller 'ForecastsController',
-	['$scope', '$timeout', '$filter', '$q', 'Forecast', 'WeightedPipeline', 'Revenue', 'Team', 'Seller', 'Product', 'TimePeriod', 'CurrentUser', 'shadeColor'
-	( $scope,   $timeout,   $filter,   $q,   Forecast,   WeightedPipeline,   Revenue,   Team,   Seller,   Product,   TimePeriod,   CurrentUser,   shadeColor ) ->
+	['$scope', '$timeout', '$filter', '$q', 'Forecast', 'WeightedPipeline', 'Revenue', 'Team', 'Seller', 'Product', 'ProductFamily', 'TimePeriod', 'CurrentUser', 'shadeColor'
+	( $scope,   $timeout,   $filter,   $q,   Forecast,   WeightedPipeline,   Revenue,   Team,   Seller,   Product,   ProductFamily,   TimePeriod,   CurrentUser,   shadeColor ) ->
 
 		$scope.filterTeams = []
 		$scope.teams = []
 		$scope.sellers = []
+		$scope.productFamilies = []
 		$scope.products = []
 		$scope.timePeriods = []
 		$scope.isUnweighted = false
@@ -15,6 +16,7 @@
 		defaultFilter =
 			team: emptyFilter
 			seller: emptyFilter
+			productFamily: emptyFilter
 			product: emptyFilter
 			timePeriod: emptyFilter
 			year: null
@@ -57,7 +59,13 @@
 				angular.element('.subtable-arrow').hide()
 				angular.element('.subtable-wrap').removeClass('opened').height(0)
 
-				params = { time_period_id: $scope.filter.timePeriod.id, quarter: row.quarter, product_id: $scope.filter.product.id, year: row.year  }
+				params = {
+					time_period_id: $scope.filter.timePeriod.id,
+					quarter: row.quarter,
+					product_id: $scope.filter.product.id,
+					product_family_id: $scope.filter.productFamily.id,
+					year: row.year
+				}
 				if row.type == 'member'
 					params = _.extend(params, { member_id: row.id })
 				else if row.type == 'team'
@@ -120,10 +128,18 @@
 			Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
 				$scope.sellers = sellers
 
+		$scope.$watch 'filter.productFamily', (productFamily, prevProductFamily) ->
+			if productFamily == prevProductFamily then return
+			if productFamily.id then $scope.setFilter('product', emptyFilter)
+			$scope.setFilter('productFamily', productFamily)
+			Product.all(product_family_id: productFamily.id).then (products) ->
+				$scope.products = products
+
 		$q.all(
 			user: CurrentUser.get().$promise
 			teams: Team.all(all_teams: true)
 			sellers: Seller.query({id: 'all'}).$promise
+			productFamilies: ProductFamily.all(active: true)
 			products: Product.all()
 			timePeriods: TimePeriod.all()
 		).then (data) ->
@@ -135,6 +151,7 @@
 			searchAndSetTeam(data.teams, data.user) if shouldChooseTeamFilter
 			searchAndSetSeller(data.sellers, data.user) if shouldChooseMemberFilter
 			$scope.sellers = data.sellers
+			$scope.productFamilies= data.productFamilies
 			$scope.products = data.products
 			$scope.timePeriods = data.timePeriods.filter (period) ->
 				period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
@@ -169,6 +186,7 @@
 			query = {}
 			query.team_id = f.team.id || 'all'
 			query.user_id = f.seller.id || 'all'
+			query.product_family_id = f.productFamily.id || 'all'
 			query.product_id = f.product.id || 'all'
 			query.time_period_id = f.timePeriod.id if f.timePeriod.id
 			query.year = f.year if f.year

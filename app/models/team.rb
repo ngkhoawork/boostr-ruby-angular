@@ -81,7 +81,19 @@ class Team < ActiveRecord::Base
   end
 
   def all_deals_for_time_period(start_date, end_date)
-    deals.where(open: true).for_time_period(start_date, end_date) + children.map {|c| c.all_deals_for_time_period(start_date, end_date) } + (leader.nil? ? [] : leader.all_deals_for_time_period(start_date, end_date))
+    team_deals = team_deals_for_time_period(start_date, end_date)
+    all_deals = children.inject(team_deals) do |all_deals, c|
+      all_deals.union(c.all_deals_for_time_period(start_date, end_date))
+    end
+    if leader
+      all_deals.union(leader.all_deals_for_time_period(start_date, end_date))
+    else
+      all_deals
+    end
+  end
+
+  def team_deals_for_time_period(start_date, end_date)
+    deals.where(open: true).for_time_period(start_date, end_date)
   end
 
   def all_revenues_for_time_period(start_date, end_date)
