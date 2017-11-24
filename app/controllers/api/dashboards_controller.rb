@@ -30,7 +30,7 @@ class Api::DashboardsController < ApplicationController
   end
 
   def closest_quarter
-    @_closest_quarter ||= company.time_periods.all_quarter.closest
+    @_closest_quarter ||= company.time_periods.all_quarter.closest.first
   end
 
   def next_time_period

@@ -23,7 +23,8 @@
 
             $scope.setPacingAlertsFilter = (filter) ->
               $scope.currentPacingAlertsFilter = filter
-              $scope.init()
+              $scope.pacingAlertsIsLoading = true
+              getPacingAlerts()
 
             $scope.setActivitySwitch = (val) ->
                 $scope.activitySwitch = val
@@ -85,22 +86,8 @@
                 Contact.query().$promise.then (contacts) ->
                     $scope.contacts = contacts
 
-                $scope.dashboardIsLoading = true
-                $scope.pacingAlertsIsLoading = true
-
-                Dashboard.get({ io_owner: $scope.currentPacingAlertsFilter.value }).then (data) ->
-                    $scope.dashboard = data
-                    $scope.dashboardIsLoading = false
-                , (error) ->
-                    $scope.dashboard = null
-                    $scope.dashboardIsLoading = false
-
-                PacingAlerts.get().then (data) ->
-                    $scope.pacingAlerts = data
-                    $scope.pacingAlertsIsLoading = false
-                , (error) ->
-                    $scope.pacingAlerts = null
-                    $scope.pacingAlertsIsLoading = false
+                getDashboardData()
+                getPacingAlerts()
 
             $scope.$on 'dashboard.updateBlocks', (e, blocks) ->
                 blocks.forEach (name) -> $scope[name + 'Init']()
@@ -110,6 +97,26 @@
 
             $scope.$on 'dashboard.openAccountModal', ->
                 $scope.showNewAccountModal()
+
+            getDashboardData = ->
+                $scope.dashboardIsLoading = true
+
+                Dashboard.get().then (data) ->
+                    $scope.dashboard = data
+                    $scope.dashboardIsLoading = false
+                , (error) ->
+                    $scope.dashboard = null
+                    $scope.dashboardIsLoading = false
+
+            getPacingAlerts = ->
+                $scope.pacingAlertsIsLoading = true
+
+                PacingAlerts.get(io_owner: $scope.currentPacingAlertsFilter.value).then (data) ->
+                    $scope.pacingAlerts = data
+                    $scope.pacingAlertsIsLoading = false
+                , (error) ->
+                    $scope.pacingAlerts = null
+                    $scope.pacingAlertsIsLoading = false
 
             getActivityDateRange = ->
                 switch $scope.activitySwitch

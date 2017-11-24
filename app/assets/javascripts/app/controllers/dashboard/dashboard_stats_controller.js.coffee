@@ -23,7 +23,7 @@
                 $scope.qtr = n
                 $scope.stats = $scope.forecast[n]
 
-                return unless $scope.stats?
+                return if !$scope.stats
 
                 updateProgressCircle($scope.stats.percent_to_quota)
                 updateForecastChart($scope.stats)
