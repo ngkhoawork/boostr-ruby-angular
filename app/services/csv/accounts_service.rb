@@ -11,6 +11,7 @@ class Csv::AccountsService < Csv::BaseService
       City
       State
       Zip
+      Country
       Phone
       Website
       Team\ members

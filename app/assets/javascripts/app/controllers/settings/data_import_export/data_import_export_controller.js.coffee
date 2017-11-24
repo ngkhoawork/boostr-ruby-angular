@@ -7,6 +7,9 @@
     source: 'ui'
   }
 
+  $scope.getLogs = ->
+    $scope.$broadcast('pagination:reload')
+
   $scope.showUploadClientModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_upload.html'
@@ -16,7 +19,7 @@
       keyboard: false
       resolve:
         api_url: ->
-          '/api/clients'
+          '/api/clients/import'
         custom_fields_api: ->
           'AccountCfName'
         metadata: ->

@@ -238,6 +238,7 @@ Rails.application.routes.draw do
         get :search_clients
         get :filter_options
         get :category_options
+        post :import
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index, :create, :update, :destroy] do

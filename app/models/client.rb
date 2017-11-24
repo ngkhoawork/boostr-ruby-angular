@@ -232,7 +232,9 @@ class Client < ActiveRecord::Base
     client_members.build(user_id: created_by, share: share)
   end
 
-  def self.import(file, current_user_id, file_path)
+  def self.import(opts)#file, current_user_id, file_path)
+    Importers::ClientsService.new(opts).perform
+    return
     current_user = User.find current_user_id
 
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'account', source: 'ui')

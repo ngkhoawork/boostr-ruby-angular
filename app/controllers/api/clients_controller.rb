@@ -70,23 +70,12 @@ class Api::ClientsController < ApplicationController
   end
 
   def create
-    if params[:file].present?
-      CsvImportWorker.perform_async(
-        params[:file][:s3_file_path],
-        'Client',
-        current_user.id,
-        params[:file][:original_filename]
-      )
-
-      render json: { message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)" }, status: :ok
+    client = company.clients.new(client_params)
+    client.created_by = current_user.id
+    if client.save
+      render json: client, status: :created
     else
-      client = company.clients.new(client_params)
-      client.created_by = current_user.id
-      if client.save
-        render json: client, status: :created
-      else
-        render json: { errors: client.errors.messages }, status: :unprocessable_entity
-      end
+      render json: { errors: client.errors.messages }, status: :unprocessable_entity
     end
   end
 
@@ -130,6 +119,19 @@ class Api::ClientsController < ApplicationController
     else
       client.destroy
       render nothing: true
+    end
+  end
+
+  def csv_upload
+    if params[:file].present?
+      SmartCsvImportWorker.perform_async(
+        params[:file][:s3_file_path],
+        'Client',
+        current_user.id,
+        params[:file][:original_filename]
+      )
+
+      render json: { message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)" }, status: :ok
     end
   end
 
