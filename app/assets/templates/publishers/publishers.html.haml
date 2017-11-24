@@ -1,19 +1,19 @@
 #publishers.z-styles
-  .container-fluid
-    .row
-      .col-xs-12.publishers-menu
-        %span.title Publishers
-        %add-button{'ng-click': 'showNewPublisherModal()'} Add Publisher
-        .publisher-types
-          %span{'ng-repeat': 'type in publisherTypes', 'ng-class': '{active: type.name == teamFilter.name}', 'ng-click': 'filterPublishers(type)'}
-            {{type.name}}
-        .search
-          %form
-            .input-group
-              .input-group-addon
-                %i.glyphicon.glyphicon-search
-              %input.form-control{ ng: { model: 'searchText', change: 'getPublishers()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Name" }
-        %button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
+  .container-fluid.publisher-inner
+    .row.publisher-header.mb30
+      .header-item
+        .main-title Publishers
+      .header-item
+        %add-button{'ng-click': 'showNewPublisherModal()'}
+          Add Publisher
+      .header-item.switch-row
+        %span{'ng-repeat': 'type in publisherTypes', 'ng-class': '{active: type.name == teamFilter.name}', 'ng-click': 'filterPublishers(type)'}
+          {{type.name}}
+      .header-item.publisher-search
+        %i.fa.fa-search
+        %input.form-control{ ng: { model: 'searchText', change: 'getPublishers()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Name" }
+      .header-item
+        %button.btn-main
           %i.fa.fa-filter
           Add filter
     .row

@@ -12,52 +12,44 @@
     color: $secondary-color;
   }
 
-  .publishers-menu {
-    height: $publishers-menu-h;
-    padding: 30px 30px 30px 30px;
-    display: flex;
-
-    .title {
-      color: #2B3C49;
-      font-family: "Avenir Next";
-      font-size: 24px;
-      font-weight: 600;
-      line-height: 33px;
-      margin-right: 40px;
-    }
-    .btn-main {
-      margin-top: 5px;
-      margin: 0 0 0 auto;
-    }
-    .switcher {
-      margin-top: -25px;
-      margin-right: 30px;
-      text-align: center;
-      .switch-remainder-form {
-        float: none;
-        display: inline-block;
-        margin-left: 0;
-      }
-    }
-    .search {
-      margin-left: 30px;
-      width: 30%;
-    }
+  .publisher-inner {
+    margin: 0 25px;
   }
 
-  .publisher-types {
-    display: inline-block;
-    margin-left: 50px;
-    span {
-      display: inline-block;
-      padding: 12px 5px;
-      margin: 0 10px;
-      font-weight: bold;
-      cursor: pointer;
-      &.active {
-        color: $main-color;
-        border-bottom: 2px solid $main-color;
+  .publisher-header {
+    display: flex;
+    align-items: center;
+    .header-item {
+      margin-right: 30px;
+      white-space: nowrap;
+      &:last-child {
+        margin: 0 0 0 auto;
       }
+
+    }
+    .add-btn {
+      position: relative;
+      top: 2px;
+    }
+    .publisher-search {
+      width: 30%;
+      position: relative;
+      i.fa {
+        position: absolute;
+        font-size: 20px;
+        color: lighten($secondary-font-color, 15%);
+        top: 13px;
+        left: 10px;
+      }
+      input {
+        width: 100%;
+        padding-left: 38px;
+        background-color: white;
+      }
+    }
+    .download-btn {
+      position: relative;
+      top: 0;
     }
   }
 }
