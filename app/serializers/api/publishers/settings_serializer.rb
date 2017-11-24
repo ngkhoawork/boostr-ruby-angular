@@ -1,4 +1,4 @@
-class Api::PublisherSettingsSerializer
+class Api::Publishers::SettingsSerializer
   def initialize(company)
     @company = company
   end

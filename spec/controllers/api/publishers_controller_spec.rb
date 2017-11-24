@@ -180,7 +180,12 @@ RSpec.describe Api::PublishersController, type: :controller do
 
   describe '#all_fields_report' do
     let(:params) { { format: :json } }
+
     subject { get :all_fields_report, params }
+
+    before do
+      publisher.create_publisher_custom_field(company: company, text1: publisher_custom_field_option.value)
+    end
 
     it 'has an appropriate structure' do
       subject
@@ -191,6 +196,8 @@ RSpec.describe Api::PublishersController, type: :controller do
       expect(first_item).to have_key :website
       expect(first_item).to have_key :estimated_monthly_impressions
       expect(first_item).to have_key :actual_monthly_impressions
+      expect(first_item).to have_key :publisher_custom_field
+      expect(first_item[:publisher_custom_field][custom_field_label.to_sym]).to eq custom_field_value
     end
     it { subject; expect(first_item[:id]).to eq publisher.id }
 
@@ -277,5 +284,30 @@ RSpec.describe Api::PublishersController, type: :controller do
 
   def team
     @_team ||= create(:team, company: company)
+  end
+
+  def publisher_custom_field_name
+    @_publisher_custom_field_name ||=
+      create(
+        :publisher_custom_field_name,
+        company: company,
+        field_label: 'Last release date',
+        field_type: 'text',
+        field_index: 1,
+        position: 1
+      )
+  end
+
+  def publisher_custom_field_option
+    @_publisher_custom_field_option ||=
+      create(:publisher_custom_field_option, publisher_custom_field_name: publisher_custom_field_name)
+  end
+
+  def custom_field_label
+    @_custom_field_label ||= publisher_custom_field_name.field_label
+  end
+
+  def custom_field_value
+    @_custom_field_value ||= publisher_custom_field_option.value
   end
 end

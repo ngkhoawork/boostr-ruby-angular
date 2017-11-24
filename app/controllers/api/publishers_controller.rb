@@ -23,7 +23,7 @@ class Api::PublishersController < ApplicationController
   end
 
   def settings
-    render json: Api::PublisherSettingsSerializer.new(current_user.company)
+    render json: Api::Publishers::SettingsSerializer.new(current_user.company)
   end
 
   def all_fields_report

@@ -24,4 +24,10 @@ class Csv::PublisherAllFieldsReportDecorator
   def created_at
     @record.created_at.to_date
   end
+
+  def custom_fields
+    return unless @record.publisher_custom_field
+
+    @custom_fields ||= PublisherCustomFieldSerializer.new(@record.publisher_custom_field).attributes
+  end
 end

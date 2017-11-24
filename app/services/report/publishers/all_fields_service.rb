@@ -17,7 +17,7 @@ module Report
         end
 
         def perform
-          preload_query(
+          preload_associations(
             paginate(
               apply_filters
             )
@@ -34,8 +34,8 @@ module Report
           @options[:page] ? relation.offset(offset).limit(per_page) : relation
         end
 
-        def preload_query(relation)
-          relation
+        def preload_associations(relation)
+          relation.includes(:publisher_stage, :type, publisher_custom_field: { company: :publisher_custom_field_names })
         end
 
         def per_page
