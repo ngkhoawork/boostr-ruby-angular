@@ -1,0 +1,35 @@
+#stages.z-styles
+  .container
+    .stage-types
+      %span{'ng-repeat': 'stage in stageTypes', 'ng-class': '{active: stage.name == selectedStage.name}', 'ng-click': 'selectStage(stage)'}
+        {{stage.name}}
+    .block{'ng-if': 'selectedStage.name == "Deals"'}
+      %div{'ng-controller': 'SettingsStagesController'}
+        %div.mb20
+          %span.title Stages
+          %add-button{'ng-click': 'showModal()'} Add
+
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.left Name
+                %th.right Probability
+                %th Open/Closed
+                %th.left Active
+            %tbody{ 'ui-sortable': 'sortableOptions', ng: { model: 'stages' } }
+              %tr{ ng: { repeat: 'row in stages' } }
+                %td
+                  %span.mr8 {{ row.name }}
+                  %i.fa.fa-pencil.z-icon{'ng-click': 'edit(row)'}
+                %td.right {{ row.probability }}%
+                %td {{ row.open ? 'Open' : 'Closed' }}
+                %td.left {{ row.active ? 'Active' : 'Archived' }}
+
+    .block{'ng-if': 'selectedStage.name == "Publishers"'}
+      %div{'ng-controller': 'SettingsPublisherStagesController'}
+        %div.mb20
+          %span.title Publishers
+          %add-button{'ng-click': 'showModal()'} Add
+
+

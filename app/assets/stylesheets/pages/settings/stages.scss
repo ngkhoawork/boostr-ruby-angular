@@ -1,0 +1,18 @@
+#stages {
+  .stage-types {
+    display: inline-block;
+    padding: 0 10px 5px 10px;
+
+    span {
+      display: inline-block;
+      padding: 12px 5px;
+      margin: 0 10px;
+      font-weight: bold;
+      cursor: pointer;
+      &.active {
+        color: $main-color;
+        border-bottom: 2px solid $main-color;
+      }
+    }
+  }
+}

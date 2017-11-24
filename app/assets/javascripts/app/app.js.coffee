@@ -286,8 +286,8 @@
       controller: 'SettingsQuotasController'
 
     .when '/settings/stages',
-      templateUrl: 'settings/stages.html'
-      controller: 'SettingsStagesController'
+      templateUrl: 'settings/stages/main_stages.html'
+      controller: 'MainStageController'
 
     .when '/settings/bps',
       templateUrl: 'settings/bps.html'
