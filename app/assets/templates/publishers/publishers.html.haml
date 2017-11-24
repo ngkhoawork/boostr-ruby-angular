@@ -21,14 +21,24 @@
         .block
           %table.table.table-hover
             %thead
-              %tr
-                %th Name
-                %th Comscore 250
-                %th Stage
-                %th Publisher Type
+              %tr.z-sortable-prime{watch: '"publishers"'}
+                %th
+                  .z-sortable{by: 'name', default: true}
+                    Name
+                %th
+                  .z-sortable{by: 'comscore'}
+                    Comscore 250
+                %th
+                  .z-sortable{by: 'publisher_stage.name'}
+                    Stage
+                %th
+                  .z-sortable{by: 'type.name'}
+                    Publisher Type
             %tbody
-              %tr{ ng: { repeat: 'publisher in publishers'} }
-                %td {{publisher.name}}
-                %td {{publisher.comscore}}
+              %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
+                %td
+                  %input.editable{ 'ng-model': "publisher.name", name: "name", 'ng-blur': 'updatePublisher(publisher)'}
+                %td
+                  %z-toggle{'ng-model': 'publisher.comscore', 'ng-change': 'updatePublisher(publisher)', 'ng-click': '$event.stopPropagation()'}
                 %td {{publisher.publisher_stage.name}}
                 %td {{publisher.type.name}}

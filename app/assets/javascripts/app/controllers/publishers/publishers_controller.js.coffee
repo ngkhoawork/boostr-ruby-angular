@@ -22,6 +22,9 @@
       Publisher.publishersList($scope.teamFilter).then (publishers) ->
         $scope.publishers = publishers
 
+    $scope.updatePublisher = (publisher) ->
+      console.log(publisher)
+
     $scope.showNewPublisherModal = ->
       $scope.modalInstance = $modal.open
         templateUrl: 'modals/publisher_form.html'

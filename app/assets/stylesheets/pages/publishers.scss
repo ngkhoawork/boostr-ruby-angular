@@ -52,4 +52,20 @@
       top: 0;
     }
   }
+
+  .editable {
+    cursor: pointer;
+    padding: 5px 8px;
+    border-bottom: 1px dashed #818689;
+    display: inline-block;
+    min-width: 100px;
+    max-width: 100%;
+  }
+
+  .editable:hover {
+    border: 0;
+    border-radius: 0;
+    background-color: rgba(163, 168, 170, 0.18);
+    border-bottom: 1px dashed #818689;
+  }
 }
