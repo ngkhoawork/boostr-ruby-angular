@@ -68,6 +68,8 @@
       if !appliedFilter.start_date || !appliedFilter.end_date
         return zError '#time-period-field', 'Select a Time Period and Run Report to Export'
       url = '/api/revenue/report_by_account.csv'
+      
+      delete appliedFilter.page
       appliedFilter.utc_oset = moment().utcOffset()
       $window.open url + '?' + $httpParamSerializer appliedFilter
       return
