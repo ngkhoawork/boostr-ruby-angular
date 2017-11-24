@@ -20,9 +20,7 @@
       param.q = $scope.searchText
 
       Publisher.publishersList($scope.teamFilter).then (publishers) ->
-        console.log(publishers)
         $scope.publishers = publishers
-
 
     $scope.showNewPublisherModal = ->
       $scope.modalInstance = $modal.open

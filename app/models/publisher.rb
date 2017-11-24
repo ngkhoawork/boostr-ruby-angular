@@ -25,6 +25,9 @@ class Publisher < ActiveRecord::Base
                         with: REGEXP_FOR_URL, message: 'Valid URL required', multiline: true, allow_blank: true
                       }
 
+  accepts_nested_attributes_for :address
+  accepts_nested_attributes_for :publisher_custom_field
+
   pg_search_scope :search_by_name,
                   against: :name,
                   using: {

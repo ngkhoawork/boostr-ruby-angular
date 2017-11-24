@@ -3,7 +3,7 @@
     ($scope, $modalInstance, Publisher, publisher, Client, CountriesList, PublisherCustomFieldName) ->
       $scope.formType = "Add New"
       $scope.submitText = "Add"
-      $scope.publisher = {comscore: false, cf_attributes: {}}
+      $scope.publisher = {comscore: false}
       $scope.clientSearch = ''
       $scope.countries = []
       $scope.publisherCustomFields = []
@@ -27,7 +27,6 @@
       $scope.getPublisherCustomFields = () ->
         PublisherCustomFieldName.all({show_on_modal: true}).then (cf) ->
           $scope.publisherCustomFields = cf
-          console.log(cf)
 
       $scope.getCountries = () ->
         CountriesList.get (data) ->
@@ -60,7 +59,7 @@
               if !validUrl.test(field) then return $scope.errors[key] = 'Website URL is not valid'
 
         $scope.publisherCustomFields.forEach (item) ->
-          if item.is_required && (!$scope.publisher.cf_attributes || !$scope.publisher.cf_attributes[item.field_type + item.field_index])
+          if item.is_required && (!$scope.publisher.publisher_custom_field_attributes || !$scope.publisher.publisher_custom_field_attributes[item.field_type + item.field_index])
             $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
       $scope.cancel = ->
