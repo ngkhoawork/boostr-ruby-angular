@@ -1,0 +1,43 @@
+#stage-modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' }, novalidate: true }
+    .popup-modal-header
+      {{ formType }} Publisher Stage
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+      .form-group{'ng-class':'{error: errors.name}'}
+        %span.error-text {{errors.name}}
+        %label{ for: 'name' } Name
+        %span.star *
+        %input.form-control{ placeholder: 'Name', ng: { model: 'sale_stages.name' }, name: 'name', required: true, server: true }
+
+
+      .form-group
+        .row
+          .col-xs-3.hide-input-arrows{'ng-class':'{error: errors.probability}'}
+            %label{ for: 'probability' } Probability
+            %span.star *
+            %input.form-control{ style: 'width: 60px', placeholder: '85', ng: { model: 'sale_stages.probability' }, name: 'probability', required: true, type: 'number' }
+            %span.error-text {{errors.probability}}
+
+          .col-xs-9
+            .inline-block.mr20
+              %label{ for: 'open' } Open/Closed
+              %div
+                .btn-group.radio-switch
+                  %label.open-button.btn.btn-primary{ ng: { model: 'sale_stages.open' }, btn: { radio: 'true' } }
+                    Open
+                  %label.close-button.btn.btn-primary{ ng: { model: 'sale_stages.open' }, btn: { radio: 'false' } }
+                    Closed
+            .inline-block
+              %label{ for: 'active' } Active/Archived
+              %div
+                .btn-group.radio-switch
+                  %label.btn.btn-primary{ ng: { model: 'sale_stages.active' }, btn: { radio: 'true' } }
+                    Active
+                  %label.btn.btn-primary{ ng: { model: 'sale_stages.active' }, btn: { radio: 'false' } }
+                    Archived
+
+
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+      %button.btn.btn-warning{'type': 'submit'} {{ submitText }}

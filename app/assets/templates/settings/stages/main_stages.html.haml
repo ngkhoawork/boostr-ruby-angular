@@ -30,6 +30,22 @@
       %div{'ng-controller': 'SettingsPublisherStagesController'}
         %div.mb20
           %span.title Publishers
-          %add-button{'ng-click': 'showModal()'} Add
+          %add-button{'ng-click': 'createModal()'} Add
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.left Name
+                %th.right Probability
+                %th Open/Closed
+                %th.left Active
+            %tbody{ 'ui-sortable': 'sortableOptions', ng: { model: 'stages' } }
+              %tr{ ng: { repeat: 'pub_stage in publisher_stages' } }
+                %td
+                  %span.mr8 {{ pub_stage.name }}
+                  %i.fa.fa-pencil.z-icon{'ng-click': 'editModal(pub_stage)'}
+                %td.right {{ pub_stage.probability }}%
+                %td {{ pub_stage.open ? 'Open' : 'Closed' }}
+                %td.left {{ pub_stage.active ? 'Active' : 'Archived' }}
 
 
