@@ -8,6 +8,6 @@ class SalesStage < ActiveRecord::Base
   private
 
   def set_position
-    self.position ||= SalesStage.count
+    self.position ||= company.sales_stages.count
   end
 end

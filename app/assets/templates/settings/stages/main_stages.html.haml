@@ -31,7 +31,7 @@
         %div.mb20
           %span.title Publishers
           %add-button{'ng-click': 'createModal()'} Add
-        .table-wrapper
+        .table-wrapper.publisher-table
           %table.table.table-hover.table-striped
             %thead
               %tr
@@ -39,8 +39,8 @@
                 %th.right Probability
                 %th Open/Closed
                 %th.left Active
-            %tbody{ 'ui-sortable': 'sortableOptions', ng: { model: 'stages' } }
-              %tr{ ng: { repeat: 'pub_stage in publisher_stages' } }
+            %tbody{'dnd-list': 'publisher_stages'}
+              %tr{ ng: { repeat: 'pub_stage in publisher_stages' }, dnd: {draggable: 'pub_stage', moved: 'stageMoved($index)'} }
                 %td
                   %span.mr8 {{ pub_stage.name }}
                   %i.fa.fa-pencil.z-icon{'ng-click': 'editModal(pub_stage)'}
