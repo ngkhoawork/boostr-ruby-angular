@@ -48,63 +48,62 @@
       %span.reset{'ng-click': 'filter.resetAll()'} Reset
       %button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters
 
-  .container-fluid
-    .row
-      .col-xs-12.publishers-menu
-        %span.title Publishers
-        %add-button{'ng-click': ''} Add Publisher
-        .publisher-types
-          %span{'ng-repeat': 'type in publisherTypes', 'ng-class': '{active: type.name == teamFilter.name}', 'ng-click': 'filterPublishers(type)'}
-            {{type.name}}
-        .search
-          %form
-            .input-group
-              .input-group-addon
-                %i.glyphicon.glyphicon-search
-              %input.form-control{ ng: { model: 'searchText', change: 'getPublishers()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Name" }
-        %button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
+  .container-fluid.publisher-inner
+    .row.publisher-header.mb30
+      .header-item
+        .main-title Publishers
+      .header-item
+        %add-button{'ng-click': 'showNewPublisherModal()'}
+          Add Publisher
+      .header-item.switch-row
+        %span{'ng-repeat': 'type in publisherTypes', 'ng-class': '{active: type.name == teamFilter.name}', 'ng-click': 'filterPublishers(type)'}
+          {{type.name}}
+      .header-item.publisher-search
+        %i.fa.fa-search
+        %input.form-control{ ng: { model: 'searchText', change: 'getPublishers()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Name" }
+      .header-item
+        %button.btn-main{'ng-click': 'filter.open($event)'}
           %i.fa.fa-filter
           Add filter
     .row
-      .col-xs-12
-        .block
-          %table.table.table-hover
-            %thead
-              %tr.z-sortable-prime{watch: '"publishers"'}
-                %th
-                  .z-sortable{by: 'name', default: true}
-                    Name
-                %th
-                  .z-sortable{by: 'comscore'}
-                    Comscore 250
-                %th
-                  .z-sortable{by: 'publisher_stage.name'}
-                    Stage
-                %th
-                  .z-sortable{by: 'type.name'}
-                    Publisher Type
-            %tbody
-              %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
-                %td
-                  %a {{publisher.name}}
-                %td
-                  %z-toggle{'ng-model': 'publisher.comscore', 'ng-change': 'updatePublisher(publisher)', 'ng-click': '$event.stopPropagation()'}
-                %td
-                  .dropdown
-                    %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-                      %span.editable{'ng-class': '{"not-selected": !publisher.publisher_stage.name}'} {{publisher.publisher_stage.name || 'Select Stage'}}
-                      %span.caret
-                    %ul.dropdown-menu
-                      %li{'ng-repeat': 'stage in publisher_stages', 'ng-class': '{active: publisher.publisher_stage.id == stage.id}'}
-                        %a{'href': '', 'ng-click': ' publisher.publisher_stage = stage; updatePublisher(publisher)'}
-                          %span.text {{stage.name}}
+      .block
+        %table.table.table-hover
+          %thead
+            %tr.z-sortable-prime{watch: '"publishers"'}
+              %th
+                .z-sortable{by: 'name', default: true}
+                  Name
+              %th
+                .z-sortable{by: 'comscore'}
+                  Comscore 250
+              %th
+                .z-sortable{by: 'publisher_stage.name'}
+                  Stage
+              %th
+                .z-sortable{by: 'type.name'}
+                  Publisher Type
+          %tbody
+            %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
+              %td
+                %a {{publisher.name}}
+              %td
+                %z-toggle{'ng-model': 'publisher.comscore', 'ng-change': 'updatePublisher(publisher)', 'ng-click': '$event.stopPropagation()'}
+              %td
+                .dropdown
+                  %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.editable{'ng-class': '{"not-selected": !publisher.publisher_stage.name}'} {{publisher.publisher_stage.name || 'Select Stage'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{'ng-repeat': 'stage in publisher_stages', 'ng-class': '{active: publisher.publisher_stage.id == stage.id}'}
+                      %a{'href': '', 'ng-click': ' publisher.publisher_stage = stage; updatePublisher(publisher)'}
+                        %span.text {{stage.name}}
 
-                %td
-                  .dropdown
-                    %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-                      %span.editable{'ng-class': '{"not-selected": !publisher.type.name}'} {{publisher.type.name || 'Select Type'}}
-                      %span.caret
-                    %ul.dropdown-menu
-                      %li{'ng-repeat': 'type in publisher_types', 'ng-class': '{active: publisher.type.id == type.id}'}
-                        %a{'href': '', 'ng-click': ' publisher.type = type; updatePublisher(publisher)'}
-                          %span.text {{type.name}}
+              %td
+                .dropdown
+                  %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.editable{'ng-class': '{"not-selected": !publisher.type.name}'} {{publisher.type.name || 'Select Type'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{'ng-repeat': 'type in publisher_types', 'ng-class': '{active: publisher.type.id == type.id}'}
+                      %a{'href': '', 'ng-click': ' publisher.type = type; updatePublisher(publisher)'}
+                        %span.text {{type.name}}
