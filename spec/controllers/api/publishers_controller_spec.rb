@@ -104,6 +104,35 @@ RSpec.describe Api::PublishersController, type: :controller do
         it { subject; expect(first_item[:id]).to eq publisher.id }
       end
     end
+
+    context 'when custom fields params are included' do
+      let(:params) do
+        {
+          custom_field_names: [
+            {
+              id: publisher_custom_field_name.id,
+              field_option: custom_field_value
+            }
+          ]
+        }
+      end
+
+      before do
+        publisher.create_publisher_custom_field(company: company, text1: publisher_custom_field_option.value)
+      end
+
+      context 'and a field value param fits a publisher' do
+        let(:custom_field_value) { publisher_custom_field_option.value }
+
+        it { subject; expect(first_item[:id]).to eq publisher.id }
+      end
+
+      context 'and a field value param does not fit a publisher' do
+        let(:custom_field_value) { FFaker::Lorem.phrase }
+
+        it { subject; expect(first_item).to eq nil }
+      end
+    end
   end
 
   describe '#create' do

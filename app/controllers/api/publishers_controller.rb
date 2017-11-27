@@ -59,8 +59,18 @@ class Api::PublishersController < ApplicationController
 
   def filter_params
     params
-      .permit(:q, :comscore, :publisher_stage_id, :type_id, :my_publishers_bool, :my_team_publishers_bool)
-      .merge(current_user: current_user, company_id: current_user.company_id)
+      .permit(
+        :q,
+        :comscore,
+        :publisher_stage_id,
+        :type_id,
+        :my_publishers_bool,
+        :my_team_publishers_bool,
+        custom_field_names: [:id, :field_option]
+      ).merge(
+        current_user: current_user,
+        company_id: current_user.company_id
+      )
   end
 
   def publisher_params

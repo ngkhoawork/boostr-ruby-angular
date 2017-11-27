@@ -30,6 +30,10 @@ class PublisherCustomFieldName < ActiveRecord::Base
     link: 7
   }
 
+  def fetch_attr_name_for_publisher_custom_field
+    "#{field_type}#{field_index}"
+  end
+
   private
 
   def assign_index

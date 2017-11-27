@@ -9,6 +9,7 @@ class PublishersQuery < BaseQuery
       .by_created_at(options[:created_at])
       .my_publishers(options[:my_publishers_bool], options[:current_user])
       .my_team_publishers(options[:my_team_publishers_bool], options[:current_user])
+      .by_custom_fields(options[:custom_field_names])
       .search_by_name(options[:q])
       .order('created_at DESC')
   end
@@ -58,6 +59,30 @@ class PublishersQuery < BaseQuery
       return self unless my_team_publishers_bool && current_user&.team_id
 
       by_team_id(current_user.team_id)
+    end
+
+    def by_custom_fields(custom_field_name_opts)
+      return self if custom_field_name_opts.nil?
+
+      generate_custom_field_opts(custom_field_name_opts).inject(self) do |scope, custom_field_opt|
+        scope.by_custom_field_attr(custom_field_opt[:attr_name], custom_field_opt[:attr_value])
+      end
+    end
+
+    def by_custom_field_attr(attr_name, attr_value)
+      return self if attr_name.nil? || attr_value.nil?
+
+      joins(:publisher_custom_field).where(publisher_custom_fields: { attr_name => attr_value })
+    end
+
+    def generate_custom_field_opts(custom_field_name_opts)
+      custom_field_name_opts.inject([]) do |acc, custom_field_name_opt|
+        custom_field = PublisherCustomFieldName.find(custom_field_name_opt[:id])
+        acc << {
+          attr_name: custom_field.fetch_attr_name_for_publisher_custom_field,
+          attr_value: custom_field_name_opt[:field_option]
+        }
+      end
     end
 
     def search_by_name(q)
