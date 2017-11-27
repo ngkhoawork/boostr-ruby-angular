@@ -57,7 +57,7 @@ FactoryGirl.define do
     dropdown5 'MyString'
     dropdown6 'MyString'
     dropdown7 'MyString'
-    sim1 9
+    sum1 9
     sum2 9
     sum3 9
     sum4 9

@@ -18,8 +18,8 @@ Rails.application.routes.draw do
   get 'switch_user', to: 'switch_user#set_current_user'
   get 'switch_user/remember_user', to: 'switch_user#remember_user'
 
-  namespace :api do
-    scope module: :v1, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 1) do
+  namespace :api, defaults: { format: :json } do
+    scope module: :v1, constraints: ApiConstraints.new(version: 1) do
       post 'forgot_password' => 'forgot_password#create'
       post 'resend_confirmation' => 'forgot_password#create'
 
@@ -72,7 +72,7 @@ Rails.application.routes.draw do
       resources :users, only: [:index, :update]
     end # API V1 END
 
-    scope module: :v2, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 2) do
+    scope module: :v2, constraints: ApiConstraints.new(version: 2) do
       post 'forgot_password' => 'forgot_password#create'
       post 'resend_confirmation' => 'forgot_password#create'
 
@@ -443,7 +443,7 @@ Rails.application.routes.draw do
     end
 
     resources :filter_queries, only: [:index, :create, :update, :destroy]
-    resources :publishers, defaults: { format: :json } do
+    resources :publishers do
       collection do
         get :settings
         get :all_fields_report

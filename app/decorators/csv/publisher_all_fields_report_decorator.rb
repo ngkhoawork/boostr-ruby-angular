@@ -1,9 +1,12 @@
 class Csv::PublisherAllFieldsReportDecorator
+  DELEGATE_TO_PUBLISHER_ATTRIBUTES =
+    %i(id name comscore website estimated_monthly_impressions actual_monthly_impressions).freeze
+
   def initialize(record)
     @record = record
   end
 
-  %i(id name comscore website estimated_monthly_impressions actual_monthly_impressions).each do |method_name|
+  DELEGATE_TO_PUBLISHER_ATTRIBUTES.each do |method_name|
     define_method(method_name) do
       @record.send(method_name)
     end
