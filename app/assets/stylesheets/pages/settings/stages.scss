@@ -1,19 +1,32 @@
 #stages {
   .stage-types {
     display: inline-block;
-    padding: 0 10px 5px 10px;
+    padding: 2px 9px 5px 15px;
+    position: absolute;
 
     span {
       display: inline-block;
-      padding: 12px 5px;
-      margin: 0 10px;
+      padding: 0 5px 5px 5px;
+      margin: 0 10px 0 5px;
       font-weight: bold;
       cursor: pointer;
+
       &.active {
         color: $main-color;
         border-bottom: 2px solid $main-color;
       }
     }
+  }
+
+  .title {
+    color: #2B3C49;
+    font-family: "Avenir Next";
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 33px;
+    padding-bottom: 37px;
+    padding-left: 18px;
+    padding-right: 20px;
   }
 
   .dndDraggingSource {

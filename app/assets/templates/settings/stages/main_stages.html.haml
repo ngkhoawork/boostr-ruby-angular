@@ -1,14 +1,12 @@
 #stages.z-styles
   .container
+    %span.title Stages
+    %add-button{'ng-click': 'createStageModal()'} Add
     .stage-types
       %span{'ng-repeat': 'stage in stageTypes', 'ng-class': '{active: stage.name == selectedStage.name}', 'ng-click': 'selectStage(stage)'}
         {{stage.name}}
     .block{'ng-if': 'selectedStage.name == "Deals"'}
       %div{'ng-controller': 'SettingsStagesController'}
-        %div.mb20
-          %span.title Stages
-          %add-button{'ng-click': 'showModal()'} Add
-
         .table-wrapper
           %table.table.table-hover.table-striped
             %thead
@@ -28,9 +26,6 @@
 
     .block{'ng-if': 'selectedStage.name == "Publishers"'}
       %div{'ng-controller': 'SettingsPublisherStagesController'}
-        %div.mb20
-          %span.title Publishers
-          %add-button{'ng-click': 'createModal()'} Add
         .table-wrapper.publisher-table
           %table.table.table-hover.table-striped
             %thead
