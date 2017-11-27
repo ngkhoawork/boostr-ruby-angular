@@ -10,10 +10,16 @@
     $scope.init = ->
       $scope.teamFilter = $scope.publisherTypes[0]
       $scope.getPublishers()
+      $scope.getPublisherSettings()
 
     $scope.filterPublishers = (type) ->
       $scope.teamFilter = type
       $scope.getPublishers()
+
+    $scope.getPublisherSettings = () ->
+      Publisher.publisherSettings().then (settings) ->
+        $scope.publisher_types = settings.publisher_types
+        $scope.publisher_stages = settings.publisher_stages
 
     $scope.getPublishers = ->
       param = $scope.teamFilter
@@ -23,7 +29,13 @@
         $scope.publishers = publishers
 
     $scope.updatePublisher = (publisher) ->
-      console.log(publisher)
+      params = { comscore: publisher.comscore, type_id: publisher.type.id }
+
+      if publisher.publisher_stage
+        params.publisher_stage_id = publisher.publisher_stage.id
+
+      Publisher.update(id: publisher.id, publisher: params)
+
 
     $scope.showNewPublisherModal = ->
       $scope.modalInstance = $modal.open

@@ -37,8 +37,25 @@
             %tbody
               %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
                 %td
-                  %input.editable{ 'ng-model': "publisher.name", name: "name", 'ng-blur': 'updatePublisher(publisher)'}
+                  %a {{publisher.name}}
                 %td
                   %z-toggle{'ng-model': 'publisher.comscore', 'ng-change': 'updatePublisher(publisher)', 'ng-click': '$event.stopPropagation()'}
-                %td {{publisher.publisher_stage.name}}
-                %td {{publisher.type.name}}
+                %td
+                  .dropdown
+                    %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                      %span.editable{'ng-class': '{"not-selected": !publisher.publisher_stage.name}'} {{publisher.publisher_stage.name || 'Select Stage'}}
+                      %span.caret
+                    %ul.dropdown-menu
+                      %li{'ng-repeat': 'stage in publisher_stages', 'ng-class': '{active: publisher.publisher_stage.id == stage.id}'}
+                        %a{'href': '', 'ng-click': ' publisher.publisher_stage = stage; updatePublisher(publisher)'}
+                          %span.text {{stage.name}}
+
+                %td
+                  .dropdown
+                    %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                      %span.editable{'ng-class': '{"not-selected": !publisher.type.name}'} {{publisher.type.name || 'Select Type'}}
+                      %span.caret
+                    %ul.dropdown-menu
+                      %li{'ng-repeat': 'type in publisher_types', 'ng-class': '{active: publisher.type.id == type.id}'}
+                        %a{'href': '', 'ng-click': ' publisher.type = type; updatePublisher(publisher)'}
+                          %span.text {{type.name}}

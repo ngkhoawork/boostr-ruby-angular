@@ -56,7 +56,7 @@
             when 'client_id'
               if !field then return $scope.errors[key] = 'Client is required'
             when 'website'
-              if !validUrl.test(field) then return $scope.errors[key] = 'Website URL is not valid'
+              if field && !validUrl.test(field) then return $scope.errors[key] = 'Website URL is not valid'
 
         $scope.publisherCustomFields.forEach (item) ->
           if item.is_required && (!$scope.publisher.publisher_custom_field_attributes || !$scope.publisher.publisher_custom_field_attributes[item.field_type + item.field_index])

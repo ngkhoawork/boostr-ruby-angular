@@ -56,16 +56,29 @@
   .editable {
     cursor: pointer;
     padding: 5px 8px;
-    border-bottom: 1px dashed #818689;
-    display: inline-block;
-    min-width: 100px;
-    max-width: 100%;
+    border-radius: 4px;
+    border-bottom: 1px dashed $secondary-font-color;
+    &:hover {
+      border-color: transparent;
+      border-bottom-color: $secondary-font-color;
+      background-color: $separate-line-color;
+    }
   }
 
-  .editable:hover {
-    border: 0;
-    border-radius: 0;
-    background-color: rgba(163, 168, 170, 0.18);
-    border-bottom: 1px dashed #818689;
+  .dropdown {
+    display: inline-block;
+    button:not(.add-btn) {
+      background-color: inherit;
+      border: none;
+      color: inherit;
+      padding: 0;
+      &:active {
+        outline: none;
+        box-shadow: none;
+      }
+    }
+    .dropdown-menu {
+      top: calc(100% + 10px);
+    }
   }
 }
