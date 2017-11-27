@@ -58,6 +58,8 @@ class TimePeriod < ActiveRecord::Base
   end
 
   scope :all_quarter, -> { where(period_type: 'quarter') }
+  scope :years_only, -> { where(period_type: 'year') }
+  scope :closest, -> { where('end_date >= ?', Date.current).order(:start_date) }
 
   def self.now
     where('start_date <= ? AND end_date >= ?', Time.now, Time.now).first

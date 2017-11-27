@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 describe Api::ForecastsController do
-  let(:company) { Company.first }
-  let(:user) { create :user }
-  let(:parent_team) { create :parent_team, leader: user }
-  let(:time_period) { create :time_period }
+  let(:company) { create :company }
+  let(:user) { create :user, company: company }
+  let(:parent_team) { create :parent_team, leader: user, company: company }
+  let(:time_period) { create :time_period, company: company }
 
   before do
     sign_in user
@@ -14,7 +14,7 @@ describe Api::ForecastsController do
     context 'as a leader' do
       it 'returns a list of root teams' do
         parent_team
-        create_list :parent_team, 2
+        create_list :parent_team, 2, company: company
 
         get :index, { format: :json, time_period_id: time_period.id }
         expect(response).to be_success
@@ -25,7 +25,7 @@ describe Api::ForecastsController do
 
     context 'as a non-leader' do
       it 'returns only the user\'s forecast' do
-        create_list :parent_team, 2
+        create_list :parent_team, 2, company: company
 
         get :index, { format: :json, time_period_id: time_period.id }
 
@@ -39,7 +39,7 @@ describe Api::ForecastsController do
   end
 
   describe 'GET #show' do
-    let(:child_team) { create :child_team, parent: parent_team }
+    let(:child_team) { create :child_team, parent: parent_team, company: company }
 
     it 'returns json for a team' do
       get :show, { id: child_team.id, format: :json, time_period_id: time_period.id }

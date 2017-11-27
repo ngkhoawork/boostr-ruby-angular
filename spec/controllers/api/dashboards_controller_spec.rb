@@ -23,9 +23,10 @@ describe Api::DashboardsController do
 
       get :show, format: :json
 
-      expect(response).to_not be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json['errors']).to eq 'Error happened when company didn\'t have time periods of type Quarter'
+      expect(response).to be_success
+      expect(json_response['forecast']).to be_nil
+      expect(json_response['next_quarter_forecast']).to be_nil
+      expect(json_response['this_year_forecast']).to be_nil
     end
   end
 
