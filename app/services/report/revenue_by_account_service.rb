@@ -69,6 +69,7 @@ module Report
       def aggregate_by_month_revenue(relation)
         relation
           .joins(:account_dimension, :time_dimension)
+          .where('revenue_amount > 0')
           .group(
             'account_dimension_id,
              account_dimensions.name,
