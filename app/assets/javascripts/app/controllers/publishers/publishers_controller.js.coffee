@@ -1,11 +1,47 @@
-@app.controller 'PablishersController',
-  ['$scope', 'Publisher', '$modal', ( $scope, Publisher, $modal ) ->
+@app.controller 'PablishersController', [
+  '$scope', 'Publisher', 'PublishersFilter',
+  ($scope,   Publisher,   PublishersFilter) ->
     $scope.publishers = []
     $scope.publisherTypes = [
       {name: 'All'}
       {name: 'My Publishers', my_publishers_bool: true}
       {name: 'My Team\'s publishers', my_team_publishers_bool: true}
     ]
+
+    $scope.filter =
+      stages: []
+      types: []
+      isOpen: false
+      search: ''
+      selected: PublishersFilter.selected
+      get: ->
+        s = this.selected
+        filter = {}
+        filter.comscore = s.comscore
+        filter.publisher_stage_id = s.stage if s.stage
+        filter.type_id = s.type if s.type
+        filter
+      apply: (reset) ->
+        $scope.getPublishers()
+        if !reset then this.isOpen = false
+      searching: (item) ->
+        if !item then return false
+        if item.name
+          return item.name.toString().toUpperCase().indexOf($scope.filter.search.toUpperCase()) > -1
+        else
+          return item.toString().toUpperCase().indexOf($scope.filter.search.toUpperCase()) > -1
+      reset: (key) ->
+        PublishersFilter.reset(key)
+      resetAll: ->
+        PublishersFilter.resetAll()
+      select: (key, value) ->
+        PublishersFilter.select(key, value)
+      onDropdownToggle: ->
+        this.search = ''
+      open: ->
+        this.isOpen = true
+      close: ->
+        this.isOpen = false
 
     $scope.init = ->
       $scope.teamFilter = $scope.publisherTypes[0]
@@ -22,10 +58,15 @@
         $scope.publisher_stages = settings.publisher_stages
 
     $scope.getPublishers = ->
-      param = $scope.teamFilter
-      param.q = $scope.searchText
-
-      Publisher.publishersList($scope.teamFilter).then (publishers) ->
+      params = {}
+      params.q = $scope.searchText if $scope.searchText
+      params = _.extend(
+          params
+          $scope.filter.get()
+          _.omit $scope.teamFilter, 'name'
+      )
+      Publisher.publishersList(params).then (publishers) ->
+        console.log(publishers)
         $scope.publishers = publishers
 
     $scope.updatePublisher = (publisher) ->
@@ -49,4 +90,4 @@
             {}
             
     $scope.init()
-  ]
+]
