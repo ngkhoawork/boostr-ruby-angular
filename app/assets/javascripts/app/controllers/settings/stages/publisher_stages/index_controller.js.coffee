@@ -21,7 +21,7 @@
         backdrop: 'static'
         keyboard: false
         resolve:
-          stage: ->
+          sale_stages: ->
             angular.copy pub_stage
 
     $scope.$on 'updated_stages', ->

@@ -6,7 +6,7 @@
       $scope.submitText = "Create"
       $scope.sale_stages = {}
       
-      $scope.submitForm = (form) ->
+      $scope.submitForm = () ->
         formValidation()
         if Object.keys($scope.errors).length > 0 then return
 
