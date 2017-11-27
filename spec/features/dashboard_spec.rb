@@ -17,7 +17,7 @@ feature 'Dashboard' do
 
     before do
       login_as user, scope: :user
-      allow_any_instance_of(Api::DashboardsController).to receive(:time_period).and_return(time_period)
+      allow_any_instance_of(Api::DashboardsController).to receive(:closest_quarter).and_return(time_period)
       visit '/'
       wait_for_ajax 1
       expect(page).to have_css('#dashboard')
@@ -36,7 +36,7 @@ feature 'Dashboard' do
 
     before do
       login_as member, scope: :user
-      allow_any_instance_of(Api::DashboardsController).to receive(:time_period).and_return(time_period)
+      allow_any_instance_of(Api::DashboardsController).to receive(:closest_quarter).and_return(time_period)
       visit '/'
       wait_for_ajax 1
       expect(page).to have_css('#dashboard')
@@ -60,7 +60,7 @@ feature 'Dashboard' do
 
     before do
       login_as user, scope: :user
-      allow_any_instance_of(Api::DashboardsController).to receive(:time_period).and_return(time_period)
+      allow_any_instance_of(Api::DashboardsController).to receive(:closest_quarter).and_return(time_period)
       visit '/dashboard'
       expect(page).to have_css('#dashboard')
     end

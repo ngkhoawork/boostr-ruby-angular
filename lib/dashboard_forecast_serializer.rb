@@ -13,6 +13,6 @@ class DashboardForecastSerializer < ActiveModel::Serializer
   )
 
   def time_period_name
-    object.time_period.name
+    object.time_period&.name
   end
 end
