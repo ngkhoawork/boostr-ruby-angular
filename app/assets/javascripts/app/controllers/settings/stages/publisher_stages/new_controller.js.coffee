@@ -10,7 +10,7 @@
         formValidation()
         if Object.keys($scope.errors).length > 0 then return
 
-        SaleStage.create(sales_stage: $scope.sale_stages).then (response) ->
+        SaleStage.create(type: 'publisher', sales_stage: $scope.sale_stages).then (response) ->
           $rootScope.$broadcast 'updated_stages'
           $scope.cancel()
 

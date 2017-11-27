@@ -9,6 +9,8 @@ class Api::SalesStagesController < ApplicationController
     sales_stage = company.sales_stages.new(sales_stage_params)
 
     if sales_stage.save
+      set_polymorphic_association(sales_stage)
+
       render json: sales_stage, status: :created
     else
       render json: { errors: sales_stage.errors.messages }, status: :unprocessable_entity
@@ -46,5 +48,12 @@ class Api::SalesStagesController < ApplicationController
 
   def sales_stage_params
     params.require(:sales_stage).permit(:name, :probability, :position, :open, :active)
+  end
+
+  def set_polymorphic_association(sales_stage)
+    case params[:type]
+      when 'publisher'
+        company.publisher_stages.create(sales_stage: sales_stage)
+    end
   end
 end
