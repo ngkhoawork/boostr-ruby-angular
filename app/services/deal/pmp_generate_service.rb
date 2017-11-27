@@ -69,8 +69,12 @@ class Deal::PmpGenerateService
   end
 
   def destroy_pmp
-    if deal.pmp.present?
-      deal.pmp.destroy
+    pmp = deal.pmp
+    if pmp.present?
+      pmp.pmp_item_daily_actuals.destroy_all
+      pmp.pmp_items.destroy_all
+      pmp.pmp_members.destroy_all
+      pmp.destroy
       deal.deal_products.product_type_of('PMP').update_all(open: true)
     end
   end
