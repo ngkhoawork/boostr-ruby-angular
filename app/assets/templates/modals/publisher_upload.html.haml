@@ -1,0 +1,48 @@
+#csv_import_modal
+  .modal-header.text-center
+    %a.close{ ng: { click: 'cancel()' } }
+      %span{'aria-hidden' => 'true'}
+        = inline_svg 'icons/close.svg'
+    = inline_svg 'icons/csv.svg'
+    %h3.modal-title
+      %strong
+        Import Publishers
+      %br
+      %small
+        Please import your publishers to your current system from a CSV file.
+
+  .modal-body
+    .well.transparent
+      %h6.text-center
+        Make sure your CSV file includes these EXACT headers and columns:
+
+      %ol.row.center-block.grid-block
+        %li Publisher Id
+        %li Publisher Name*
+        %li Date(MM/DD/YYYY)
+        %li Available Impressions
+        %li Filled Impressions
+        %li Fill Rate
+
+    .well.well-lg.dark
+      .row
+        .col-xs-9
+          .progress
+            .progress-bar.progress-bar-striped{ aria: { valuemax: "100", valuemin: "0", valuenow: "{{ progressPercentage }}" }, role: "progressbar", style: "width: {{ progressPercentage }}%" }
+              %span.sr-only {{ progressPercentage }}% Complete
+              .text{ ng: { show: 'progressPercentage > 0' } }
+                {{ progressPercentage }}%
+            .text{ ng: { hide: 'progressPercentage > 0' } }
+              CSV File
+        .col-xs-3
+          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files', disabled: "is_uploading" } }
+            Browse
+
+    .alert.alert-danger{ role: 'alert', ng: { repeat: 'error in errors' } }
+      {{ error.message.join(', ') }}
+
+    .alert.alert-info{ ng: { show: 'messages' } }
+      {{ messages.message }}
+
+    .modal-footer.text-center{ ng: { hide: 'progressPercentage < 100 || is_uploading == true' } }
+      %button.btn.btn-primary.btn-lg{ ng: { click: 'cancel()' } } Done

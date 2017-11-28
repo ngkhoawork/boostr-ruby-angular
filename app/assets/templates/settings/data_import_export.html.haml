@@ -127,6 +127,15 @@
                       = inline_svg 'icons/import.svg'
                       Import Content Fee
 
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Publishers Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadPublisherModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Publishers
+
         %tab{heading: "Data Export", index: "1"}
           .row
             .col-sm-4
