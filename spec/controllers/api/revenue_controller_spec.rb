@@ -19,45 +19,6 @@ RSpec.describe Api::RevenueController, type: :controller do
     end
   end
 
-  describe 'GET #index' do
-    context 'user' do
-      before do
-        create(:io_member, user: user, io: io, share: 100)
-        2.times { create :content_fee, io: io, product: product, budget: 20_000 }
-      end
-
-      it 'has proper revenue data' do
-        get :index, format: :json, time_period_id: time_period.id, member_id: user.id.to_s
-        response_json = JSON.parse(response.body)
-
-        expect(response_json[0]['name']).to eq(io.name)
-        expect(response_json[0]['advertiser']).to eq(advertiser.name)
-        expect(response_json[0]['budget']).to eq('40000.0')
-        expect(response_json[0]['sum_period_budget']).to eq(40000.0)
-      end
-    end
-
-    context 'team' do
-      before do
-        create(:io_member, user: user, io: io, share: 100)
-        2.times { create :content_fee, io: io, product: product, budget: 20_000 }
-
-        create(:io_member, user: another_user, io: io_for_another_user, share: 80)
-        2.times { create :content_fee, io: io_for_another_user, product: product, budget: 10_000 }
-      end
-
-      it 'has proper revenue data' do
-        get :index, format: :json, time_period_id: time_period.id, team_id: team.id.to_s
-        response_json = response_json(response.body)
-
-        expect(select_values(response_json, 'name')).to include(io.name && io_for_another_user.name)
-        expect(select_values(response_json, 'advertiser')).to include(advertiser.name)
-        expect(select_values(response_json, 'budget')).to include('40000.0' && '20000.0')
-        expect(select_values(response_json, 'sum_period_budget')).to include(40000.0 && 20000.0)
-      end
-    end
-  end
-
   private
 
   def response_json(body)
