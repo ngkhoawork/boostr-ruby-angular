@@ -38,7 +38,7 @@ class Importers::BaseService < BaseService
   end
 
   def csv_import_log
-    @csv_import_log ||= CsvImportLog.new(company_id: company_id, object_name: import_subject)
+    @csv_import_log ||= CsvImportLog.new(company_id: company_id, object_name: import_subject, source: import_source)
   end
 
   def parser_options
