@@ -10,5 +10,7 @@ class Pmp < ActiveRecord::Base
   has_many :pmp_items, dependent: :destroy
   has_many :pmp_item_daily_actuals, through: :pmp_items, dependent: :destroy
 
+  validates :name, :budget, :budget_loc, :start_date, :end_date, :curr_cd, presence: true
+
   scope :by_name, -> (name) { where('pmps.name ilike ?', "%#{name}%") if name.present? }
 end

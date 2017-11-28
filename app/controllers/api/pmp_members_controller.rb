@@ -29,6 +29,7 @@ class Api::PmpMembersController < ApplicationController
     params.require(:pmp_member).permit(
       :share,
       :user_id,
+      :pmp_id,
       :from_date,
       :to_date
     )

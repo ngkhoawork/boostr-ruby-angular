@@ -13,7 +13,7 @@ class Api::PmpsController < ApplicationController
     pmp = company.pmps.new(pmp_params)
 
     if pmp.save
-      render json: pmp.full_json, status: :created
+      render json: pmp, serializer: Pmps::PmpDetailSerializer, status: :created
     else
       render json: { errors: pmp.errors.messages }, status: :unprocessable_entity
     end
@@ -21,7 +21,7 @@ class Api::PmpsController < ApplicationController
 
   def update
     if pmp.update_attributes(pmp_params)
-      render json: pmp.full_json
+      render json: pmp, serializer: Pmps::PmpDetailSerializer
     else
       render json: { errors: pmp.errors.messages }, status: :unprocessable_entity
     end
@@ -30,10 +30,9 @@ class Api::PmpsController < ApplicationController
   def destroy
     if current_user.is_admin
       pmp.destroy
-
       render nothing: true
     else
-      render json: { errors: 'You can\'t delete io' }, status: :unprocessable_entity
+      render json: { error: 'You can\'t delete pmp' }, status: :unprocessable_entity
     end
   end
 
@@ -47,7 +46,7 @@ class Api::PmpsController < ApplicationController
   end
 
   def pmp_params
-    params.require(:io).permit(
+    params.require(:pmp).permit(
       :name,
       :budget,
       :budget_loc,
