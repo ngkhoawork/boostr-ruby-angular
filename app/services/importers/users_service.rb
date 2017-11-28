@@ -1,7 +1,6 @@
 class Importers::UsersService < Importers::BaseService
 
   def perform
-    open_file
     import
   end
 

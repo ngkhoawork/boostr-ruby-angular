@@ -13,6 +13,7 @@ class Importers::BaseService < BaseService
     parsed_csv.each do |row|
       import_row(row)
     end
+    csv_import_log.set_file_source(file)
     csv_import_log.save
   end
 
@@ -22,6 +23,7 @@ class Importers::BaseService < BaseService
 
   def import_row(row)
     csv_object = build_csv(row)
+    csv_import_log.count_processed
 
     if csv_object.valid?
       begin
