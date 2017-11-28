@@ -99,6 +99,14 @@ class Api::ForecastsController < ApplicationController
     end
   end
 
+  def pipeline_data
+    render json: forecast_pipeline_data_serializer
+  end
+
+  def revenue_data
+    render json: forecast_revenue_data_serializer
+  end
+
   def show
     render json: ForecastTeam.new(team, time_period.start_date, time_period.end_date, nil, year)
   end
@@ -233,19 +241,21 @@ class Api::ForecastsController < ApplicationController
 
   def product_family
     @_product_family ||= if params[:product_family_id] && params[:product_family_id] != 'all'
-      @company.product_families.find_by(id: params[:product_family_id])
+      company.product_families.find_by(id: params[:product_family_id])
     else
       nil
     end
   end
 
   def products
-    return @products if defined?(@products)
-    @products = []
-    if params[:product_ids] == ['all']
-      @products = company.products
+    @_products ||= if params[:product_ids] == ['all'] && params[:product_family_id] == 'all'
+      company.products
     elsif params[:product_ids] && params[:product_ids] != ['all']
-      @products = company.products.where('id in (?)', params[:product_ids])
+      company.products.where('id in (?)', params[:product_ids])
+    elsif product_family
+      product_family.products
+    else
+      []
     end
   end
 
@@ -264,6 +274,14 @@ class Api::ForecastsController < ApplicationController
 
   def show_all_data
     return company.forecast_permission[current_user.user_type.to_s]
+  end
+
+  def forecast_revenue_data_serializer
+    Forecast::RevenueDataService.new(company, params).perform
+  end
+
+  def forecast_pipeline_data_serializer
+    Forecast::PipelineDataService.new(company, params).perform
   end
 
 end

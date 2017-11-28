@@ -1,9 +1,10 @@
 @app.controller 'ProductForecastsDetailController', [
-    '$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'Forecast', 'Revenue', 'Deal', 'Product', 'Stage', 'zError'
-    ($scope,   $q,   Team,   Seller,   TimePeriod,   Forecast,   Revenue,   Deal,   Product,   Stage,   zError) ->
+    '$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'Forecast', 'Revenue', 'Deal', 'Product', 'ProductFamily', 'Stage', 'zError'
+    ($scope,   $q,   Team,   Seller,   TimePeriod,   Forecast,   Revenue,   Deal,   Product,   ProductFamily,   Stage,   zError) ->
 
         $scope.teams = []
         $scope.sellers = []
+        $scope.productFamilies = []
         $scope.timePeriods = []
         $scope.quarters = []
         $scope.forecast = {}
@@ -23,6 +24,7 @@
             timePeriods: TimePeriod.all()
             products: Product.all()
             stages: Stage.query().$promise
+            productFamilies: ProductFamily.all(active: true)
         ).then (data) ->
             $scope.teams = data.teams
             data.timePeriods = data.timePeriods.filter (period) ->
@@ -30,6 +32,7 @@
             $scope.timePeriods = data.timePeriods
             $scope.sellers = data.sellers
             $scope.products = data.products
+            $scope.productFamilies = data.productFamilies
             $scope.stages = _.filter data.stages, (item) ->
                 if item.probability > 0
                     return true

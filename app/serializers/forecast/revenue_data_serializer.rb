@@ -1,13 +1,12 @@
 class Forecast::RevenueDataSerializer < ActiveModel::Serializer
-  attributes  :id, :name, :start_date, :end_date, :stage_id, :client_name,
-              :agency_name, :probability, :budget, :in_period_amt, :wday_in_stage,
-              :wday_since_opened, :wday_in_stage_color, :wday_since_opened_color
+  attributes  :id, :name, :agency,
+              :advertiser, :budget, :sum_period_budget, :split_period_budget
 
-  def client_name
+  def advertiser
     object.advertiser.name rescue nil
   end
 
-  def agency_name
+  def agency
     object.agency.name rescue nil
   end
 
@@ -15,64 +14,19 @@ class Forecast::RevenueDataSerializer < ActiveModel::Serializer
     stage.probability rescue nil
   end
 
-  def in_period_amt
-    deal_products.inject(0) do |sum, deal_product|
-      sum + deal_product.deal_product_budgets.inject(0) do |sum, deal_product_budget|
-        from = [filter_start_date, deal_product_budget.start_date].max
-        to = [filter_end_date, deal_product_budget.end_date].min
-        num_days = [(to.to_date - from.to_date) + 1, 0].max
-        sum += deal_product_budget.daily_budget.to_f * num_days
-      end
-    end
+  def sum_period_budget
+    partial_amounts[0]
   end
 
-  def wday_in_stage
-    object.wday_in_stage
+  def split_period_budget
+    partial_amounts[1]
   end
 
-  def wday_since_opened
-    object.wday_since_opened
-  end
-
-  def wday_in_stage_color
-    if stage.red_threshold.present? or stage.yellow_threshold.present?
-      if stage.red_threshold.present? and wday_in_stage >= stage.red_threshold
-        'red'
-      elsif stage.yellow_threshold.present? and wday_in_stage >= stage.yellow_threshold
-        'yellow'
-      else
-        'green'
-      end
-    end
-  end
-
-  def wday_since_opened_color
-    if company.red_threshold.present? || company.yellow_threshold.present?
-      if company.red_threshold.present? && wday_since_opened >= company.red_threshold
-        'red'
-      elsif company.yellow_threshold.present? && wday_since_opened >= company.yellow_threshold
-        'yellow'
-      else
-        'green'
-      end
-    end
-  end
 
   private
 
-  def deal_products
-    @_deal_products ||= object.deal_products.inject([]) do |result, deal_product|
-      if deal_product.open == true && (product_ids.nil? || product_ids.include?(deal_product.product_id))
-        result << deal_product
-      end
-      result
-    end
-  end
-
   def product_ids
-    @_product_ids ||= if products.present?
-      products.collect(&:id)
-    end
+    @_product_ids ||= @options[:product_ids]
   end
 
   def filter_start_date
@@ -83,15 +37,13 @@ class Forecast::RevenueDataSerializer < ActiveModel::Serializer
     @_filter_end_date ||= @options[:filter_end_date]
   end
 
-  def products
-    @_products ||= @options[:products]
+  def member_ids
+    @_member_ids ||= @options[:member_ids]
   end
 
-  def stage
-    @_stage ||= object.stage
-  end
-
-  def company
-    @_company ||= object.company
+  def partial_amounts
+    @_partial_amounts ||= Io::FilteredRevenueDataService
+      .new(object, filter_start_date, filter_end_date, member_ids, product_ids)
+      .perform
   end
 end

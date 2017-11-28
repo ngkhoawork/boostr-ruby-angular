@@ -1,6 +1,6 @@
 @app.controller 'ForecastsController',
-	['$scope', '$timeout', '$filter', '$q', 'Forecast', 'WeightedPipeline', 'Revenue', 'Team', 'Seller', 'Product', 'ProductFamily', 'TimePeriod', 'CurrentUser', 'shadeColor'
-	( $scope,   $timeout,   $filter,   $q,   Forecast,   WeightedPipeline,   Revenue,   Team,   Seller,   Product,   ProductFamily,   TimePeriod,   CurrentUser,   shadeColor ) ->
+	['$scope', '$timeout', '$filter', '$q', 'Forecast', 'Team', 'Seller', 'Product', 'ProductFamily', 'TimePeriod', 'CurrentUser', 'shadeColor'
+	( $scope,   $timeout,   $filter,   $q,   Forecast,   Team,   Seller,   Product,   ProductFamily,   TimePeriod,   CurrentUser,   shadeColor ) ->
 
 		$scope.filterTeams = []
 		$scope.teams = []
@@ -79,7 +79,7 @@
 
 				switch type
 					when 'pipeline'
-						WeightedPipeline.get(params).then (weighted_pipeline) ->
+						Forecast.pipeline_data(params).$promise.then (weighted_pipeline) ->
 							$scope.revenues = null
 							$scope.weighted_pipeline = weighted_pipeline
 							$scope.sort.weighted_pipeline = new McSort(
@@ -96,7 +96,7 @@
 						, ->
 							link.removeClass('loading-subtable')
 					when 'revenue'
-						Revenue.query(params).$promise.then (revenues) ->
+						Forecast.revenue_data(params).$promise.then (revenues) ->
 							$scope.weighted_pipeline = null
 							$scope.revenues = revenues
 							$scope.sort.revenues = new McSort(

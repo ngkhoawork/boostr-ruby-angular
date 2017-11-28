@@ -292,6 +292,8 @@ Rails.application.routes.draw do
     end
     resources :forecasts, only: [:index, :show] do
       collection do
+        get :revenue_data
+        get :pipeline_data
         get :old_detail
         get :detail
         get :old_product_detail

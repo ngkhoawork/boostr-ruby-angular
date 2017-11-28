@@ -33,42 +33,6 @@ class Api::RevenueController < ApplicationController
 
   private
 
-  def quarterly_revenues
-
-    revs = current_user.company.revenues
-      .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", year, year)
-      .as_json
-    revs.map do |revenue|
-      revenue[:quarters] = []
-      revenue[:year] = year
-      if revenue['end_date'] == revenue['start_date']
-        revenue['end_date'] += 1.day
-      end
-      revenue_range = revenue['start_date'] .. revenue['end_date']
-      revenue['months'] = []
-      month = Date.parse("#{year-1}1201")
-      while month = month.next_month and month.year == year do
-        month_range = month.at_beginning_of_month..month.at_end_of_month
-        if month_range.overlaps? revenue_range
-          overlap = [revenue['start_date'], month_range.begin].max..[revenue['end_date'], month_range.end].min
-          revenue['months'].push((overlap.end.to_time - overlap.begin.to_time) / (revenue['end_date'].to_time - revenue['start_date'].to_time))
-        else
-          revenue['months'].push 0
-        end
-      end
-
-      quarters.each do |quarter|
-        if quarter[:range].overlaps? revenue_range
-          overlap = [revenue['start_date'], quarter[:start_date]].max..[revenue['end_date'], quarter[:end_date]].min
-          revenue[:quarters].push ((overlap.end - overlap.begin)  / (revenue['end_date'] - revenue['start_date']))
-        else
-          revenue[:quarters].push 0
-        end
-      end
-    end
-    revs
-  end
-
   def quarterly_ios
     if params[:team_id] == 'all' && params[:user_id] == 'all'
       all_users = current_user.company.users
@@ -365,6 +329,16 @@ class Api::RevenueController < ApplicationController
   def product_ids
     @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
       params[:product_ids]
+    elsif product_family
+      product_family.products.collect(&:id)
+    else
+      nil
+    end
+  end
+
+  def product_family
+    @_product_family ||= if params[:product_family_id] && params[:product_family_id] != 'all'
+      company.product_families.find_by(id: params[:product_family_id])
     else
       nil
     end
@@ -388,6 +362,10 @@ class Api::RevenueController < ApplicationController
     else
       raise ActiveRecord::RecordNotFound
     end
+  end
+
+  def company
+    @_company ||= current_user.company
   end
 
   def member
