@@ -1,10 +1,11 @@
 #stages.z-styles
   .container
-    %span.title Stages
-    %add-button{'ng-click': 'createStageModal()'} Add
-    .stage-types
-      %span{'ng-repeat': 'stage in stageTypes', 'ng-class': '{active: stage.name == selectedStage.name}', 'ng-click': 'selectStage(stage)'}
-        {{stage.name}}
+    .block-navigation
+      %span.title Stages
+      %add-button{'ng-click': 'createStageModal()'} Add
+      .stage-types
+        %span{'ng-repeat': 'stage in stageTypes', 'ng-class': '{active: stage.name == selectedStage.name}', 'ng-click': 'selectStage(stage)'}
+          {{stage.name}}
     .block{'ng-if': 'selectedStage.name == "Deals"'}
       %div{'ng-controller': 'SettingsStagesController'}
         .table-wrapper

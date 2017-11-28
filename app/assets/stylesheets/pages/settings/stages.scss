@@ -1,7 +1,7 @@
 #stages {
   .stage-types {
     display: inline-block;
-    padding: 2px 9px 5px 15px;
+    padding: 2px 9px 5px 20px;
     position: absolute;
 
     span {
@@ -49,5 +49,17 @@
     tr {
       cursor: pointer;
     }
+  }
+
+  .block-navigation {
+    background-color: white;
+    padding: 15px 3px 0;
+  }
+
+  .block {
+    background-color: white;
+    padding: 0 20px;
+    border-radius: 4px;
+    border-bottom: 1px solid #E6E6E8;
   }
 }
