@@ -1,14 +1,13 @@
 #stages.z-styles
   .container
-    .block-navigation
+    .block
       %span.title Stages
       %add-button{'ng-click': 'createStageModal()'} Add
       .stage-types
         %span{'ng-repeat': 'stage in stageTypes', 'ng-class': '{active: stage.name == selectedStage.name}', 'ng-click': 'selectStage(stage)'}
           {{stage.name}}
-    .block{'ng-if': 'selectedStage.name == "Deals"', 'ng-controller': 'SettingsStagesController'}
       .table-wrapper
-        %table.table.table-hover.table-striped
+        %table.table.table-hover.table-striped{'ng-if': 'selectedStage.name == "Deals"', 'ng-controller': 'SettingsStagesController'}
           %thead
             %tr
               %th.left Name
@@ -23,10 +22,8 @@
               %td.right {{ row.probability }}%
               %td {{ row.open ? 'Open' : 'Closed' }}
               %td.left {{ row.active ? 'Active' : 'Archived' }}
-
-    .block{'ng-if': 'selectedStage.name == "Publishers"', 'ng-controller': 'SettingsPublisherStagesController'}
       .table-wrapper.publisher-table
-        %table.table.table-hover.table-striped
+        %table.table.table-hover.table-striped{'ng-if': 'selectedStage.name == "Publishers"', 'ng-controller': 'SettingsPublisherStagesController'}
           %thead
             %tr
               %th.left Name
