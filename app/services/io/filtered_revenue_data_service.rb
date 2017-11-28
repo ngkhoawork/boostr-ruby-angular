@@ -50,65 +50,71 @@ class Io::FilteredRevenueDataService
 
   def partial_amounts
     @_partial_amounts ||= [content_fee_partial_amounts, display_partial_amounts]
-      .inject([0, 0]) do |result, item|
-        result[0] += item[0]
-        result[1] += item[1]
-        result
+      .inject([0, 0]) do |total, item|
+        total[0] += item[0]
+        total[1] += item[1]
+        total
       end
   end
 
   def content_fee_partial_amounts
-    @_content_fee_partial_amounts ||= content_fees.inject([0, 0]) do |result, item|
-      item_data = item.content_fee_product_budgets.each do |budget|
-        user_data = io_users.each do |member|
+    @_content_fee_partial_amounts ||= io_users.inject([0, 0]) do |total, member|
+      item_data = content_fees.inject([0, 0]) do |item_total, item|
+        item_data = item.content_fee_product_budgets.each do |budget|
           share = member.share
           if (start_date <= budget.end_date && end_date >= budget.start_date)
-            sum_content_fee_budget_data(result, item, budget, member)
+            sum_content_fee_budget_data(item_total, item, budget, member)
           end
         end
+        item_total
       end
-      result
+      total[0] += item_data[0] if total[0] == 0
+      total[1] += item_data[1]
+      total
     end
   end
 
   def display_partial_amounts
-    @_display_partial_amounts ||= display_line_items.inject([0, 0]) do |result, item|
-      io_users.each do |member|
+    @_display_partial_amounts ||= io_users.inject([0, 0]) do |total, member|
+      item_data = display_line_items.inject([0, 0]) do |item_total, item|
         share = member.share
-        budget_data = item.display_line_item_budgets.inject([0, 0, 0, 0]) do |res, budget|
+        budget_data = item.display_line_item_budgets.inject([0, 0, 0, 0]) do |budget_total, budget|
           if (start_date <= budget.end_date && end_date >= budget.start_date)
-            sum_display_budget_data(res, item, budget, member)
+            sum_display_budget_data(budget_total, item, budget, member)
           end
-          res
+          budget_total
         end
         if (start_date <= item.end_date && end_date >= item.start_date)
           in_period_days = period_days(item, nil)
           in_period_effective_days = period_effective_days(item, nil, member)
-          result[0] += budget_data[0] + item.ave_run_rate * (in_period_days - budget_data[2])
-          result[1] += budget_data[1] + item.ave_run_rate * (in_period_effective_days - budget_data[3]) * share / 100
+          item_total[0] += budget_data[0] + item.ave_run_rate * (in_period_days - budget_data[2])
+          item_total[1] += budget_data[1] + item.ave_run_rate * (in_period_effective_days - budget_data[3]) * share / 100
         end
+        item_total
       end
-      result
+      total[0] += item_data[0] if total[0] == 0
+      total[1] += item_data[1]
+      total
     end
   end
 
-  def sum_content_fee_budget_data(res, item, budget, member)
+  def sum_content_fee_budget_data(total, item, budget, member)
     share = member.share
     in_period_days = period_days(io, budget)
     in_period_effective_days = period_effective_days(io, budget, member)
 
-    res[0] += budget.corrected_daily_budget(start_date, end_date) * in_period_days
-    res[1] += budget.corrected_daily_budget(start_date, end_date) * in_period_effective_days * share / 100
+    total[0] += budget.corrected_daily_budget(start_date, end_date) * in_period_days
+    total[1] += budget.corrected_daily_budget(start_date, end_date) * in_period_effective_days * share / 100
   end
 
-  def sum_display_budget_data(res, item, budget, member)
+  def sum_display_budget_data(total, item, budget, member)
     share = member.share
     in_period_days = period_days(item, budget)
     in_period_effective_days = period_effective_days(item, budget, member)
-    res[0] += budget.daily_budget * in_period_days
-    res[1] += budget.daily_budget * in_period_effective_days / 100 * share
-    res[2] += in_period_days
-    res[3] += in_period_effective_days
+    total[0] += budget.daily_budget * in_period_days
+    total[1] += budget.daily_budget * in_period_effective_days / 100 * share
+    total[2] += in_period_days
+    total[3] += in_period_effective_days
   end
 
   def period_effective_days(object, budget, member)
