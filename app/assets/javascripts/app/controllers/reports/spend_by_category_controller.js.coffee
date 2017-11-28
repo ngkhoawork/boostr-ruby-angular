@@ -67,10 +67,12 @@
       setMonthNames = (data) ->
         return if data.length is 0
         revenues1 = data[0].revenues
-        revenues2 = data[1].revenues
-
         month_nums = Object.keys(revenues1)
-        month_nums = _.uniq(month_nums.concat Object.keys(revenues2))
+
+        if data[1] && data[1].revenues
+          revenues2 = data[1].revenues
+          month_nums = _.uniq(month_nums.concat Object.keys(revenues2))
+
         nums = month_nums.map( (item) ->
           parseInt(item, 10)
         )
