@@ -233,6 +233,7 @@ class Client < ActiveRecord::Base
   end
 
   def self.import(opts)#file, current_user_id, file_path)
+    opts[:company_id] = User.find(opts[:user_id]).company_id
     Importers::ClientsService.new(opts).perform
     return
     current_user = User.find current_user_id

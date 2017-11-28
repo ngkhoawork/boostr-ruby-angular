@@ -6,18 +6,43 @@ FactoryGirl.define do
     parent_account nil
     category nil
     teammembers nil
+    replace_team nil
     region nil
     segment nil
     holding_company nil
+    address { FFaker::AddressUS.street_address }
+    city    { FFaker::AddressUS.city }
+    state   { FFaker::AddressUS.state_abbr }
+    zip     { FFaker::AddressUS.zip_code }
+    country { ISO3166::Country.all_translated.sample }
+    phone   { FFaker::PhoneNumber.phone_number }
+    website { FFaker::Internet.http_url }
 
-    # io_external_number { rand(1000..9999) }
-    # io_name { FFaker::Product.product_name }
-    # io_start_date { FFaker::Time.date }
-    # io_end_date { FFaker::Time.date }
-    # io_advertiser { FFaker::Company.name }
-    # io_agency { FFaker::Company.name }
-    # io_budget { rand(1000..9999) }
-    # io_budget_loc { rand(1000..9999) }
-    # io_curr_cd 'USD'
+    factory :client_csv_with_custom_fields do
+      after(:build) do |item|
+        setup_client_csv_custom_fields(item)
+      end
+    end
   end
+end
+
+def setup_client_csv_custom_fields(item)
+  item.custom_field_names.each do |cf|
+    value = case cf.field_type
+    when 'boolean'
+      [true, false].sample
+    when 'datetime'
+      FFaker::Time.date
+    when 'number'
+      max = 999
+      min = 100
+      (rand * (max - min) + min).round(1)
+    when 'text'
+      FFaker::BaconIpsum.paragraph
+    end
+
+    item.singleton_class.class_eval { attr_accessor cf.to_csv_header }
+    item.send("#{cf.to_csv_header}=", value)
+  end
+  item.custom_field_names = nil
 end
