@@ -5,22 +5,27 @@
       %span{ ng: { class: '{ active: currentPacingAlertsFilter.value == filter.value }', click: 'setPacingAlertsFilter(filter)' } }
         {{filter.name}}
 
-  %table.deals-table.table.table-hover
-    %thead
-      %tr
-        %th Alert
-        %th # Lines
-        %th Est. Amount
-    %tbody
-      %tr{ng: {show: 'dashboard.revenue.positive_balance_count > 0'}}
-        %td
-          %a{href: '', ng: {href: '/revenue?filter=upside&io_owner={{currentPacingAlertsFilter.value}}'}}
-            Revenue Upside Potential
-        %td {{dashboard.revenue.positive_balance_count}}
-        %td {{dashboard.revenue.positive_balance | currency:'$':0}}
-        %tr{ng: {show: 'dashboard.revenue.negative_balance_count > 0'}}
+  %div.custom-field-item-field{'ng-show': 'pacingAlertsIsLoading'}
+    %div.loading-pulse
+  %div{'ng-show': '!pacingAlertsIsLoading && !pacingAlerts'}
+    %span Oops! There was an error while fetching data.
+  %div{'ng-show': 'pacingAlerts'}
+    %table.deals-table.table.table-hover
+      %thead
+        %tr
+          %th Alert
+          %th # Lines
+          %th Est. Amount
+      %tbody
+        %tr{ng: {show: 'pacingAlerts.positive_balance_count > 0'}}
           %td
-            %a{href: '', ng: {href: '/revenue?filter=risk&io_owner={{currentPacingAlertsFilter.value}}'}}
-              Revenue at Risk
-          %td {{dashboard.revenue.negative_balance_count}}
-          %td {{dashboard.revenue.negative_balance | currency:'$':0}}
+            %a{href: '', ng: {href: '/revenue?filter=upside&io_owner={{currentPacingAlertsFilter.value}}'}}
+              Revenue Upside Potential
+          %td {{pacingAlerts.positive_balance_count}}
+          %td {{pacingAlerts.positive_balance | currency:'$':0}}
+          %tr{ng: {show: 'pacingAlerts.negative_balance_count > 0'}}
+            %td
+              %a{href: '', ng: {href: '/revenue?filter=risk&io_owner={{currentPacingAlertsFilter.value}}'}}
+                Revenue at Risk
+            %td {{pacingAlerts.negative_balance_count}}
+            %td {{pacingAlerts.negative_balance | currency:'$':0}}
