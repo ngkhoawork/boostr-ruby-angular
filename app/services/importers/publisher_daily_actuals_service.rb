@@ -12,7 +12,7 @@ class Importers::PublisherDailyActualsService < Importers::BaseService
       date: row[:date],
       available_impressions: row[:available_impressions],
       filled_impressions: row[:filled_impressions],
-      company_id: row[:company_id],
+      company_id: company_id,
       publisher_id: row[:publisher_id],
       publisher_name: row[:publisher_name]
     )

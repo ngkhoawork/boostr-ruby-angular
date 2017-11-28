@@ -37,11 +37,14 @@ class Importers::BaseService < BaseService
         csv_import_log.count_imported
       rescue Exception => e
         csv_import_log.count_failed
-        csv_import_log.log_error ['Internal Server Error', row.compact.to_s]
+        csv_import_log.log_error ['Internal Server Error', row.compact.to_s, e.message]
+      ensure
+        csv_import_log.save
       end
     else
       csv_import_log.count_failed
       csv_import_log.log_error csv_object.errors.full_messages
+      csv_import_log.save
     end
   end
 
