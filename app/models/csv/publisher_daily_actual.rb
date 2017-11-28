@@ -43,6 +43,6 @@ class Csv::PublisherDailyActual
   end
 
   def formatted_date
-    @formatted_date ||= Date.parse(date)
+    @formatted_date ||= Date.strptime(date.gsub(/[-:]/, '/'), '%m/%d/%Y')
   end
 end
