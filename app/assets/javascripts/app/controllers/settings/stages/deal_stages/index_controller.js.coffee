@@ -18,7 +18,7 @@
   $scope.updateStage = (stage) ->
     stage.$update()
 
-  $scope.$on 'openDealStageModal', ->
+  $scope.$on 'openModal', ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/stage_form.html'
       size: 'md'

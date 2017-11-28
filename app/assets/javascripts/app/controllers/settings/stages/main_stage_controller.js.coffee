@@ -7,8 +7,5 @@
       $scope.selectedStage = stage
 
     $scope.createStageModal = () ->
-      if $scope.selectedStage.name == 'Deals'
-        $rootScope.$broadcast 'openDealStageModal'
-      else
-        $rootScope.$broadcast 'openPublisherStageModal'
+      $rootScope.$broadcast 'openModal'
   ]

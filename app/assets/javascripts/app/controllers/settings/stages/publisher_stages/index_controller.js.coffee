@@ -15,7 +15,7 @@
       _.each $scope.publisher_stages, (t, i) -> _positions[t.id] = i + 1
       _positions
 
-    $scope.$on 'openPublisherStageModal', ->
+    $scope.$on 'openModal', ->
       $scope.modalInstance = $modal.open
         templateUrl: 'modals/publisher_stage_form.html'
         size: 'md'
