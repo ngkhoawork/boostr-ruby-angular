@@ -1,20 +1,33 @@
 @app.controller 'DashboardStatsController',
-    ['$scope', '$document', 'shadeColor'
-        ($scope, $document, shadeColor) ->
+    ['$scope', '$document', 'shadeColor', 'localStorageService'
+        ($scope, $document, shadeColor, LS) ->
             $scope.$watch '$parent.dashboard', (dashboard)->
-                if !dashboard || !dashboard.forecast || !dashboard.next_quarter_forecast then return
+                $scope.pageName = 'dashboardMyStats'
+
+                if !dashboard then return
                 $scope.forecast = [
                     dashboard.forecast
                     dashboard.next_quarter_forecast
+                    dashboard.this_year_forecast
                 ]
-                $scope.setStats(0)
+                setCurrenStatsTab()
+
+            setCurrenStatsTab = ->
+                statTab = LS.get($scope.pageName) || 0
+                $scope.setStats(statTab)
 
             $scope.setStats = (n) ->
-                if $scope.qtr is n then return
+                return if $scope.qtr is n
+
+                LS.set($scope.pageName, n)
                 $scope.qtr = n
                 $scope.stats = $scope.forecast[n]
+
+                return if !$scope.stats
+
                 updateProgressCircle($scope.stats.percent_to_quota)
                 updateForecastChart($scope.stats)
+
             interval = null
             updateProgressCircle = (p) ->
                 p = Math.round(p)
