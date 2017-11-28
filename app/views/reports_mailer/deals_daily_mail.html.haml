@@ -11,7 +11,7 @@
 %h1 Budget Changes
 - @budget_changed_deals.each do |budget_changed_deal|
   %p
-    Deal: #{ budget_changed_deal[:name] } - Advertiser: #{ budget_changed_deal[:advertiser_name] } - Old Budget: #{ budget_changed_deal[:old_value] } - New Budget Change: #{ budget_changed_deal[:new_value] } - Budget Change Amount: #{ budget_changed_deal[:budget_change] } - Start Date: #{ budget_changed_deal[:start_date] }
+    Deal: #{ budget_changed_deal[:name] } - Advertiser: #{ budget_changed_deal[:advertiser_name] } - Old Budget: #{ budget_changed_deal[:old_value] } - New Budget: #{ budget_changed_deal[:new_value] } - Budget Change Amount: #{ budget_changed_deal[:budget_change] } - Start Date: #{ budget_changed_deal[:start_date] }
 
 %h1 Stage Changes
 - @stage_changed_deals.each do |stage_changed_deal|
