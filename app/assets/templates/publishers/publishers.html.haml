@@ -8,7 +8,15 @@
         .filter-name
           %div
             Comscore
-        %z-toggle{'ng-model': 'filter.selected.comscore'}
+        .filter-dropdown
+          %i.fa.fa-close{'ng-show': 'filter.selected.comscore', 'ng-click': 'filter.reset("comscore")'}
+          %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.comscore}'}
+              {{filter.selected.comscore.name || 'Select a comscore'}}
+              %span.caret
+            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+              .dropdown-option{'ng-repeat': 'comscore in filter.comscores | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select("comscore", comscore)'} {{comscore.name}}
       .filter-row
         .filter-name
           %div

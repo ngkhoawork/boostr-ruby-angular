@@ -1,6 +1,6 @@
 @service.service 'PublishersFilter', ->
     Selection = ->
-        @comscore = true
+        @comscore = ''
         @stage = ''
         @type = ''
         return

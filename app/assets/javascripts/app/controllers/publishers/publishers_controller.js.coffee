@@ -11,13 +11,17 @@
     $scope.filter =
       stages: []
       types: []
+      comscores: [
+        {name: 'Active', value: true}
+        {name: 'Inactive', value: false}
+      ]
       isOpen: false
       search: ''
       selected: PublishersFilter.selected
       get: ->
         s = this.selected
         filter = {}
-        filter.comscore = s.comscore
+        filter.comscore = s.comscore.value if _.isBoolean s.comscore.value
         filter.publisher_stage_id = s.stage if s.stage
         filter.type_id = s.type if s.type
         filter
@@ -54,8 +58,8 @@
 
     $scope.getPublisherSettings = () ->
       Publisher.publisherSettings().then (settings) ->
-        $scope.publisher_types = settings.publisher_types
-        $scope.publisher_stages = settings.publisher_stages
+        $scope.filter.stages = settings.publisher_stages
+        $scope.filter.types = settings.publisher_types
 
     $scope.getPublishers = ->
       params = {}
