@@ -445,6 +445,7 @@ Rails.application.routes.draw do
     resources :filter_queries, only: [:index, :create, :update, :destroy]
     resources :publishers do
       collection do
+        get :pipeline
         get :settings
         get :all_fields_report
       end

@@ -6,6 +6,10 @@ class Api::PublishersController < ApplicationController
            each_serializer: Api::Publishers::IndexSerializer
   end
 
+  def pipeline
+    render json: pipelined_publishers
+  end
+
   def create
     if build_resource.save
       render json: Api::PublisherSerializer.new(resource), status: :created
@@ -53,6 +57,10 @@ class Api::PublishersController < ApplicationController
     PublishersQuery.new(filter_params).perform
   end
 
+  def pipelined_publishers
+    PublisherPipelineService.new(pipeline_params).perform
+  end
+
   def generate_all_fields_report
     Report::Publishers::AllFieldsService.new(all_fields_report_params).perform
   end
@@ -71,6 +79,10 @@ class Api::PublishersController < ApplicationController
         current_user: current_user,
         company_id: current_user.company_id
       )
+  end
+
+  def pipeline_params
+    filter_params.merge(page: params[:page], per: params[:per])
   end
 
   def publisher_params

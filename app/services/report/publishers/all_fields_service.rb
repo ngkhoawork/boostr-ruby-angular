@@ -8,22 +8,10 @@ module Report
       end
 
       def optional_param_keys
-        @optional_option_keys ||= %i(publisher_stage_id team_id created_at page per_page).freeze
+        @optional_option_keys ||= %i(publisher_stage_id team_id created_at page per).freeze
       end
 
       class ScopeBuilder < BaseScopeBuilder
-        def initialize(options)
-          @options = options
-        end
-
-        def perform
-          preload_associations(
-            paginate(
-              apply_filters
-            )
-          )
-        end
-
         private
 
         def apply_filters

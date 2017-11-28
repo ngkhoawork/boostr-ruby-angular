@@ -135,6 +135,34 @@ RSpec.describe Api::PublishersController, type: :controller do
     end
   end
 
+  describe '#pipeline' do
+    let(:params) { {} }
+    subject { get :pipeline, params }
+
+    it 'returns publishers by stages' do
+      subject
+
+      expect(response).to be_success
+      expect(response_body).to be_a_kind_of Array
+      expect(first_item[:id]).to eq publisher_stage.id
+      expect(first_item[:name]).to eq publisher_stage.name
+      expect(first_item[:probability]).to eq publisher_stage.probability
+      expect(first_item[:publishers].map { |p| p[:id] }).to include publisher.id
+    end
+
+    context 'when an appropriate filter is included' do
+      let(:params) { { comscore: publisher.comscore } }
+
+      it { subject; expect(first_item[:publishers].map { |p| p[:id] }).to include publisher.id }
+    end
+
+    context 'when an appropriate filter is not included' do
+      let(:params) { { comscore: !publisher.comscore } }
+
+      it { subject; expect(first_item[:publishers].map { |p| p[:id] }).not_to include publisher.id }
+    end
+  end
+
   describe '#create' do
     let(:attributes) do
       attributes_for(:publisher).merge(
