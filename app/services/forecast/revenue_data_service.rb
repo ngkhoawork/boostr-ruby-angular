@@ -29,12 +29,22 @@ class Forecast::RevenueDataService
               :time_period_id
 
   def data_for_serializer
-    @_data_for_serializer ||= ios
+    @_data_for_serializer ||= if product_ids.present?
+      ios.inject([]) do |results, io|
+        results << io if io_has_products?(io)
+        results
+      end
+    else
+      ios
+    end
   end
 
-  def deal_has_products?(deal)
-    deal.deal_products.each do |deal_product|
-      return true if product_ids.include?(deal_product.product_id)
+  def io_has_products?(io)
+    io.content_fees.each do |item|
+      return true if product_ids.include?(item.product_id)
+    end
+    io.display_line_items.each do |item|
+      return true if product_ids.include?(item.product_id)
     end
     false
   end
