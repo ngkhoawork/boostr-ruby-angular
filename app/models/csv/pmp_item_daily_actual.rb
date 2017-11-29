@@ -103,7 +103,7 @@ class Csv::PmpItemDailyActual
   end
 
   def validate_date_format
-      errors.add(:date, "- #{date} must be a valid datetime") unless date_valid?
+    errors.add(:date, "- #{date} must be a valid datetime") unless date_valid?
   end
 
   def pmp_item

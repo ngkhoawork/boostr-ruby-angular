@@ -22,7 +22,6 @@
           $scope.ssps = ssps
         PMP.get($routeParams.id).then (pmp) ->
           $scope.currentPMP = pmp
-          console.log(pmp)
           if pmp.currency
             if pmp.currency.curr_symbol
               $scope.currency_symbol = pmp.currency.curr_symbol

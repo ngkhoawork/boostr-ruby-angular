@@ -23,22 +23,19 @@ describe Csv::PmpItemDailyActual do
       expect(pmp_item_daily_actual.pmp_item_id).to eq(pmp_item.id)
     end
 
-    context 'with duplicated data' do
-      let!(:pmp_item_daily_actual) { create :pmp_item_daily_actual, pmp_item: pmp_item, date: Date.new(2017, 11, 20) }
+    it 'updates existing pmp_item_daily_actual' do
+      pmp_item_daily_actual = create :pmp_item_daily_actual, pmp_item: pmp_item, date: Date.new(2017, 11, 20)
+      expect {
+        described_class.import(file, user.id, 'pmp_item_daily_actual.csv')
+      }.to change(PmpItemDailyActual, :count).by(1)
 
-      it 'update existing pmp_item_daily_actual' do
-        expect {
-          described_class.import(file, user.id, 'pmp_item_daily_actual.csv')
-        }.to change(PmpItemDailyActual, :count).by(1)
-
-        pmp_item_daily_actual.reload
-        expect(pmp_item_daily_actual.ad_unit).to eq('Unit 4')
-        expect(pmp_item_daily_actual.bids).to eq(9)
-        expect(pmp_item_daily_actual.impressions).to eq(99)
-        expect(pmp_item_daily_actual.win_rate).to eq(60)
-        expect(pmp_item_daily_actual.price).to eq(99)
-        expect(pmp_item_daily_actual.revenue_loc).to eq(999)
-      end
+      pmp_item_daily_actual.reload
+      expect(pmp_item_daily_actual.ad_unit).to eq('Unit 4')
+      expect(pmp_item_daily_actual.bids).to eq(9)
+      expect(pmp_item_daily_actual.impressions).to eq(99)
+      expect(pmp_item_daily_actual.win_rate).to eq(60)
+      expect(pmp_item_daily_actual.price).to eq(99)
+      expect(pmp_item_daily_actual.revenue_loc).to eq(999)
     end
   end
 
