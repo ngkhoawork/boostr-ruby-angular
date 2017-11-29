@@ -13,7 +13,8 @@ class Pmps::PmpMemberSerializer < ActiveModel::Serializer
   def name
     object.user.name rescue nil
   end
+  
   def user
-    object.user.serializable_hash(only: [:id, :name, :email]) rescue nil
+    object.user.serializable_hash(only: [:id, :email]) rescue nil
   end
 end
