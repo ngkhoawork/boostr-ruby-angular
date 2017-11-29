@@ -41,10 +41,10 @@ class Csv::PublisherAllFieldsReportService < Csv::BaseService
   end
 
   def custom_field_headers
-    @custom_field_headers ||= company.publisher_custom_field_names.map(&:field_label)
+    @custom_field_headers ||= company ? company.publisher_custom_field_names.map(&:field_label) : []
   end
 
   def company
-    records[0].company
+    records[0]&.company
   end
 end

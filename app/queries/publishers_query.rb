@@ -38,7 +38,7 @@ class PublishersQuery < BaseQuery
     end
 
     def by_created_at(created_at)
-      created_at.nil? ? self : where('date(created_at) = ?', created_at.to_date)
+      created_at.nil? ? self : where('created_at >= ? AND created_at <= ?', created_at[:start], created_at[:end])
     end
 
     def by_member_id(member_id)

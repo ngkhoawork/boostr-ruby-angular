@@ -285,13 +285,17 @@ RSpec.describe Api::PublishersController, type: :controller do
     end
 
     context 'and when params include appropriate "created_at"' do
-      let(:params) { super().merge(created_at: publisher.created_at) }
+      let(:params) do
+        super().merge(created_at: { start: publisher.created_at - 1.minute, end: publisher.created_at + 1.minute })
+      end
 
       it { subject; expect(first_item[:id]).to eq publisher.id }
     end
 
     context 'and when params does not include appropriate "created_at"' do
-      let(:params) { super().merge(created_at: 1000.days.ago) }
+      let(:params) do
+        super().merge(created_at: { start: publisher.created_at - 2.minute, end: publisher.created_at - 1.minute })
+      end
 
       it { subject; expect(response_body).to be_empty }
     end
