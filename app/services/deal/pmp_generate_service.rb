@@ -49,6 +49,7 @@ class Deal::PmpGenerateService
       end
     end
   end
+  
   def generate_pmp_items(pmp)
     deal.deal_products.each do |deal_product|
       if deal_product
