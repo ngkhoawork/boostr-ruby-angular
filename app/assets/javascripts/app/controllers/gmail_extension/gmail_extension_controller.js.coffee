@@ -1,45 +1,65 @@
 @app.controller 'GmailExtensionController',
-['$scope', '$rootScope', '$window', '$modal'
-( $scope,   $rootScope,   $window,   $modal ) ->
+['$scope', '$rootScope', '$window', '$modal', 'Activity', 'ActivityType'
+( $scope,   $rootScope,   $window,   $modal,   Activity,   ActivityType ) ->
 
 	angular.element('body').css
 		backgroundColor: 'transparent'
 
-	$scope.showNewDealModal = ->
-		$scope.modalInstance = $modal.open
+	closeExtensionModal = (params) ->
+		$window.parent.postMessage {expression: 'onModelClose', params}, '*'
+
+	createActivity = (activityData, deal) ->
+		return if !deal || !deal.id
+		activity = _.omit activityData, 'contacts', 'guests'
+		activity.deal_id = deal.id
+		activity.client_id = deal.advertiser_id if deal.advertiser_id
+		activity.agency_id = deal.agency_id if deal.agency_id
+		ActivityType.all().then (activityTypes) ->
+			type = _.findWhere activityTypes, {name: 'Email'}
+			return if !type
+			activity.activity_type_id = type.id
+			activity.activity_type_name = type.name
+			Activity.create({
+				activity
+				guests: activityData.guests
+			})
+
+	$scope.showNewDealModal = (activityData) ->
+		modalInstance = $modal.open
 			templateUrl: 'modals/deal_form.html'
 			size: 'md'
 			controller: 'DealsNewController'
 			backdrop: 'static'
-			keyboard: false
+			keyboard: true
 			resolve:
 				deal: -> {}
 				options: ->
 					type: 'gmail'
-					onCancel: ->
-						$window.parent.postMessage {expression: 'onModelClose'}, '*'
-					onSuccess: ->
-						$window.parent.postMessage {expression: 'onDealCreateSuccess'}, '*'
 
-	$scope.showNewActivityModal = (data) ->
-		$scope.modalInstance = $modal.open
+		modalInstance.result.then (deal) ->
+			createActivity(activityData, deal)
+			closeExtensionModal({type: 'Deal', id: deal && deal.id})
+		, (err) ->
+			closeExtensionModal()
+
+	$scope.showNewActivityModal = (activityData) ->
+		modalInstance = $modal.open
 			templateUrl: 'modals/activity_new_form.html'
 			size: 'md'
 			controller: 'ActivityNewController'
 			backdrop: 'static'
-			keyboard: false
+			keyboard: true
 			resolve:
 				activity: ->
 					null
 				options: ->
 					type: 'gmail'
-					data: data
-					onCancel: ->
-						$window.parent.postMessage {expression: 'onModelClose'}, '*'
-					onSuccess: ->
-						$window.parent.postMessage {expression: 'onActivityCreateSuccess'}, '*'
+					data: activityData
 
-#	$scope.showNewActivityModal()
+		modalInstance.result.then (activity) ->
+			closeExtensionModal({type: 'Activity', id: activity && activity.id})
+		, (err) ->
+			closeExtensionModal()
 
 	$window.addEventListener 'message', (e) ->
 		if e.origin is 'https://mail.google.com'

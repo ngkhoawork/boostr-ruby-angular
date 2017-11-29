@@ -50,8 +50,7 @@
                                 id: options.data.client_id
                     when 'gmail'
                         $scope.showRelated = true
-                        $scope.form.comment = options.data
-
+                        $scope.form = _.extend $scope.form, options.data
 
             #edit mode
             if activity
@@ -101,7 +100,7 @@
                 else
                     $scope.selectedType = activityTypes[0]
                     $scope.form.type = activityTypes[0].id
-                if (options.type == 'gmail')
+                if options && options.type == 'gmail'
                     $scope.selectType _.findWhere($scope.types, name: 'Email')
 
             Contact.query().$promise.then (contacts) ->
@@ -160,7 +159,6 @@
 
             $scope.cancel = ->
                 $modalInstance.close()
-                options.onCancel() if _.isFunction options.onCancel
 
             $scope.submitForm = ->
                 $scope.errors = {}
@@ -230,17 +228,16 @@
                     $scope.form.contacts = $scope.form.contacts.map (c) ->
                         if typeof c is 'object' then c.id else c
                 if activity
-                    updateActivity(activity.id, activityData, $scope.form.contacts)
+                    updateActivity(activity.id, activityData, $scope.form.contacts, $scope.form.guests)
                 else
-                    createActivity(activityData, $scope.form.contacts)
+                    createActivity(activityData, $scope.form.contacts, $scope.form.guests)
 
 
-
-
-            createActivity = (activity, contacts) ->
+            createActivity = (activity, contacts, guests) ->
                 Activity.create({
-                    activity: activity
-                    contacts: contacts
+                    activity
+                    contacts
+                    guests
                 }, (response) ->
                     #response
                 ).then (activity) ->
@@ -256,27 +253,23 @@
                             reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
                         $scope.reminder.remind_on = reminder_date
                         Reminder.create(reminder: $scope.reminder).then (reminder) ->
-                            $scope.cancel()
-                            options.onSuccess() if _.isFunction options.onSuccess
+                            $modalInstance.close(activity)
                             $rootScope.$broadcast 'dashboard.updateBlocks', ['activities', 'reminders']
                         , (err) ->
                             console.log(err)
                     else
-                        $scope.cancel()
-                        options.onSuccess() if _.isFunction options.onSuccess
+                        $modalInstance.close(activity)
                         if options
                             $rootScope.$broadcast 'updated_activities'
-#                            switch options.type
-#                                when 'deal'
-#                                when 'account'
                         else
                             $rootScope.$broadcast 'dashboard.updateBlocks', ['activities']
 
-            updateActivity = (id, activity, contacts) ->
+            updateActivity = (id, activity, contacts, guests) ->
                 Activity.update({
-                    id: id
-                    activity: activity
-                    contacts: contacts
+                    id
+                    activity
+                    contacts
+                    guests
                 }, (response) ->
                     #response
                 ).then (activity) ->
@@ -294,17 +287,17 @@
                         if $scope.reminder.id
                             Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder)
                                 .then (reminder) ->
-                                    $scope.cancel()
+                                    $modalInstance.close(activity)
                                     $rootScope.$broadcast 'dashboard.updateBlocks', ['activities', 'reminders']
                                 , (err) ->
                                     console.log(err)
                         else
                             Reminder.create(reminder: $scope.reminder).then (reminder) ->
-                                $scope.cancel()
+                                $modalInstance.close(activity)
                                 $rootScope.$broadcast 'dashboard.updateBlocks', ['activities', 'reminders']
                             , (err) ->
                                 console.log(err)
                     else
-                        $scope.cancel()
+                        $modalInstance.close(activity)
                         $rootScope.$broadcast 'dashboard.updateBlocks', ['activities']
     ]
