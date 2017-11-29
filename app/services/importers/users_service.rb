@@ -7,7 +7,7 @@ class Importers::UsersService < Importers::BaseService
   private
 
   def build_csv(row)
-    UserCsv.new(email: row[:email],
+    Csv::User.new(email: row[:email],
                 name: row[:name],
                 title: row[:title],
                 team: row[:team],

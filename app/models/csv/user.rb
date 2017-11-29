@@ -1,4 +1,4 @@
-class UserCsv
+class Csv::User
   include ActiveModel::Validations
 
   attr_accessor :email, :name, :title, :team, :user_type, :currency, :status, :is_admin, :revenue_requests,
@@ -45,7 +45,7 @@ class UserCsv
         last_name: last_name,
         title: title,
         default_currency: currency,
-        user_type: user_type,
+        user_type: integer_user_type,
         revenue_requests_access: revenue_requests,
         employee_id: employee_id,
         office: office,
@@ -53,6 +53,29 @@ class UserCsv
         is_active: user_status,
         company_id: company_id
     }
+  end
+
+  def integer_user_type
+    case user_type
+      when 'default'
+        DEFAULT
+      when 'seller'
+        SELLER
+      when 'sales manager'
+        SALES_MANAGER
+      when 'account manager'
+        ACCOUNT_MANAGER
+      when 'manager account manager'
+        MANAGER_ACCOUNT_MANAGER
+      when 'admin'
+        ADMIN
+      when 'exec'
+        EXEC
+      when 'fake user'
+        FAKE_USER
+      else
+        DEFAULT
+    end
   end
 
   def first_name
