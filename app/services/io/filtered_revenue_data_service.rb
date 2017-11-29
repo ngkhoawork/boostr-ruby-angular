@@ -42,12 +42,6 @@ class Io::FilteredRevenueDataService
       .select{ |io_member| member_ids.include?(io_member.user_id) }
   end
 
-  def total_share
-    @_total_share ||= io_users.inject(0) do |result, io_user|
-        io_user.share
-      end
-  end
-
   def partial_amounts
     @_partial_amounts ||= [content_fee_partial_amounts, display_partial_amounts]
       .inject([0, 0]) do |total, item|

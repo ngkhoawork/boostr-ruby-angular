@@ -2,11 +2,10 @@ require 'rails_helper'
 
 describe Io::FilteredRevenueDataService do
   before do
-    io(start_date: '2015-04-01', end_date: '2015-06-30')
-    content_fee(io: io, product: products[0], budget: 10000, budget_loc: 10000)
-    content_fee2(io: io, product: products[1], budget: 5000, budget_loc: 5000)
-    io_member(io: io, user: user, share: 60, from_date: '2015-04-01', to_date: '2015-06-30')
-    io_member2(io: io, user: user2, share: 40, from_date: '2015-04-01', to_date: '2015-06-30')
+    content_fee
+    content_fee2
+    io_member
+    io_member2
   end
 
   it 'return correct filtered revenue data service' do
@@ -83,24 +82,23 @@ describe Io::FilteredRevenueDataService do
     @_products ||= create_list :product, 2
   end
 
-  def io(opts={})
-    opts[:company_id] = company.id
-    @_io ||= create :io, opts
+  def io
+    @_io ||= create :io, company: company, start_date: '2015-04-01', end_date: '2015-06-30'
   end
 
-  def io_member(opts={})
-    @_io_member ||= create :io_member, opts
+  def io_member
+    @_io_member ||= create :io_member, io: io, user: user, share: 60, from_date: '2015-04-01', to_date: '2015-06-30'
   end
 
-  def io_member2(opts={})
-    @_io_member2 ||= create :io_member, opts
+  def io_member2
+    @_io_member2 ||= create :io_member, io: io, user: user2, share: 40, from_date: '2015-04-01', to_date: '2015-06-30'
   end
 
-  def content_fee(opts={})
-    @_content_fee ||= create :content_fee, opts
+  def content_fee
+    @_content_fee ||= create :content_fee, io: io, product: products[0], budget: 10000, budget_loc: 10000
   end
 
-  def content_fee2(opts={})
-    @_content_fee2 ||= create :content_fee, opts
+  def content_fee2
+    @_content_fee2 ||= create :content_fee, io: io, product: products[1], budget: 5000, budget_loc: 5000
   end
 end

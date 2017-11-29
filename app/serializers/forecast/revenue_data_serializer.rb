@@ -1,6 +1,7 @@
 class Forecast::RevenueDataSerializer < ActiveModel::Serializer
   attributes  :id, :name, :agency,
-              :advertiser, :budget, :sum_period_budget, :split_period_budget
+              :advertiser, :budget, 
+              :sum_period_budget, :split_period_budget
 
   def advertiser
     object.advertiser.name rescue nil
@@ -8,10 +9,6 @@ class Forecast::RevenueDataSerializer < ActiveModel::Serializer
 
   def agency
     object.agency.name rescue nil
-  end
-
-  def probability
-    stage.probability rescue nil
   end
 
   def sum_period_budget
