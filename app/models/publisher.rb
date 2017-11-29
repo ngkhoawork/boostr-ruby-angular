@@ -8,7 +8,7 @@ class Publisher < ActiveRecord::Base
   has_many :contacts
   has_many :publisher_members, dependent: :destroy
   has_many :users, through: :publisher_members
-  has_one :publisher_custom_field, dependent: :destroy
+  has_one :publisher_custom_field, dependent: :destroy, inverse_of: :publisher
 
   has_one :type_field,
           -> { where(subject_type: 'Publisher', name: 'Publisher Type') },

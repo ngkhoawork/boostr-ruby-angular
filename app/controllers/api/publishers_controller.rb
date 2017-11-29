@@ -176,7 +176,7 @@ class Api::PublishersController < ApplicationController
         :number_4_dec6,
         :number_4_dec7
       ]
-    ).merge(company_id: current_user.company_id)
+    ).merge!(company_id: current_user.company_id)
   end
 
   def all_fields_report_params
