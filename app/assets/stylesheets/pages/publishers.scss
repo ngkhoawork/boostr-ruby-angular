@@ -88,3 +88,74 @@
     }
   }
 }
+
+#publisher-report {
+  font-family: "Avenir Next", Arial, serif;
+  padding-left: 25px;
+  padding-right: 25px;
+
+  .inner-agency360 {
+    max-width: 1600px;
+    padding: 0 15px;
+  }
+
+  .required {
+    color: $error-color;
+  }
+
+  .date-range-container {
+    border: 1px solid #D7E4F1;
+    border-radius: 4px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    background-color: white;
+    position: absolute;
+    .date-range-inner {
+      padding: 10px 15px 25px;
+    }
+    .dropdown-wrap {
+      .filters-block {
+        display: inline-block;
+        margin: 0 15px;
+        td {
+          padding-right: 0;
+        }
+      }
+    }
+  }
+  .dropdown {
+    .search-field {
+      margin-bottom: 5px;
+      padding: 5px;
+      border-width: 1px;
+      border-radius: 4px;
+    }
+  }
+
+  .filters-block {
+    a {
+      font-weight: normal;
+      color: $main-color;
+      &.empty {
+        color: #B5BDC4;
+        //color: $secondary-font-color;
+      }
+    }
+    .dropdown-menu {
+      li {
+        &.active {
+          color: white;
+        }
+        a {
+          color: inherit;
+        }
+      }
+    }
+    vertical-align: middle;
+  }
+  .header-cell {
+    padding-left: 0;
+    &:first-child {
+      padding-right: 30px;
+    }
+  }
+}

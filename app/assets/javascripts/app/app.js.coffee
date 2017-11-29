@@ -185,6 +185,10 @@
       templateUrl: 'spend_by_account.html'
       controller: 'SpendByAccountController'
 
+    .when '/reports/publishers',
+      templateUrl: 'publishers_report.html'
+      controller: 'PublishersReportController'
+
     .when '/reports/activity_detail_reports',
       templateUrl: 'activity_detail_reports.html'
       controller: 'ActivityDetailReportsController'

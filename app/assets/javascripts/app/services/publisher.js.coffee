@@ -14,11 +14,16 @@
       update:
         method: 'PUT'
         url: '/api/publishers/:id'
+      publisherReport:
+        method: 'GET'
+        url: '/api/publishers/all_fields_report'
+        isArray: true
         
     this.publishersList = (params) -> resource.publishersList(params).$promise
     this.publisherSettings = (params) -> resource.publisherSettings(params).$promise
     this.create = (params) -> resource.create(params).$promise
     this.update = (params) -> resource.update(params).$promise
+    this.publisherReport = (params) -> resource.publisherReport(params).$promise
       
     return
   ]

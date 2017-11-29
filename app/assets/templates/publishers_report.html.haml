@@ -1,0 +1,14 @@
+#publisher-report.z-styles
+  .container-fluid.inner-agency360
+    .row.mb20
+      .reports-header
+        .header-cell.main-title
+          Publishers
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply'}
+            %z-filter-field{data: 'teams', type: 'team', 'save-as': '{team_id: "id"}'} Team
+            %z-filter-field{data: 'stages', type: 'team', 'save-as': '{publisher_stage_id: "id"}'} Stage
+        .header-cell
+          .pull-right
+            %download-button{'ng-click': 'export()'}
+              Export
