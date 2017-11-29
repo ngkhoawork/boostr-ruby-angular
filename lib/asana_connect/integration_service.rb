@@ -19,7 +19,7 @@ class AsanaConnect::IntegrationService
 
   def send_deal
     @task = asana_client.tasks.create task_params
-    log_success(@task)
+    log_success
   end
 
   def api_config
@@ -71,32 +71,36 @@ Flight Dates – #{deal.start_date.strftime('%m/%d/%Y')} to #{deal.end_date.strf
 
   def log_error(error)
     integration_log = IntegrationLog.new
+    integration_log.assign_attributes(log_params)
 
-    integration_log.object_name   = 'deal'
-    integration_log.api_provider  = 'asana_connect'
-    integration_log.company_id    = deal.company_id
-    integration_log.deal_id       = deal.id
     integration_log.response_code = (error.cause.response[:status] rescue 500)
     integration_log.response_body = (error.errors.to_s rescue error.to_s)
     integration_log.is_error      = true
-    integration_log.doctype       = 'json'
+    integration_log.api_endpoint  = "https://app.asana.com/"
 
     integration_log.save
   end
 
-  def log_success(task)
+  def log_success
     integration_log = IntegrationLog.new
+    integration_log.assign_attributes(log_params)
 
-    integration_log.object_name   = 'deal'
-    integration_log.api_provider  = 'asana_connect'
-    integration_log.company_id    = deal.company_id
-    integration_log.deal_id       = deal.id
     integration_log.response_code = 200
     integration_log.response_body = "Task #{task.name} has been created"
     integration_log.is_error      = false
-    integration_log.doctype       = 'json'
+    integration_log.api_endpoint  = asana_task_link
 
     integration_log.save
+  end
+
+  def log_params
+    {
+      api_provider: 'asana_connect',
+      object_name: 'deal',
+      company_id: deal.company_id,
+      deal_id: deal.id,
+      doctype: 'json'
+    }
   end
 
   def set_deal_custom_field
@@ -104,6 +108,10 @@ Flight Dates – #{deal.start_date.strftime('%m/%d/%Y')} to #{deal.end_date.strf
     return unless dcfn.present?
     dcf = deal.deal_custom_field
     dcf = deal.build_deal_custom_field unless dcf.present?
-    dcf.update(dcfn.field_name => "https://app.asana.com/0/#{project.id}/#{@task.id}")
+    dcf.update(dcfn.field_name => asana_task_link)
+  end
+
+  def asana_task_link
+    "https://app.asana.com/0/#{project&.id}/#{@task&.id}"
   end
 end
