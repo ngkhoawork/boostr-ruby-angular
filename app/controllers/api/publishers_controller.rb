@@ -3,7 +3,7 @@ class Api::PublishersController < ApplicationController
 
   def index
     render json: paginate(filtered_publishers),
-           each_serializer: Api::Publishers::IndexSerializer
+           each_serializer: Api::Publishers::Serializer
   end
 
   def pipeline
@@ -12,7 +12,7 @@ class Api::PublishersController < ApplicationController
 
   def create
     if build_resource.save
-      render json: Api::PublisherSerializer.new(resource), status: :created
+      render json: Api::Publishers::Serializer.new(resource), status: :created
     else
       render json: { errors: resource.errors.messages }, status: :unprocessable_entity
     end
@@ -20,7 +20,7 @@ class Api::PublishersController < ApplicationController
 
   def update
     if resource.update(publisher_params)
-      render json: Api::PublisherSerializer.new(resource)
+      render json: Api::Publishers::Serializer.new(resource)
     else
       render json: { errors: resource.errors.messages }, status: :unprocessable_entity
     end

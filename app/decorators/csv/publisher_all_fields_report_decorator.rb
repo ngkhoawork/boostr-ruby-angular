@@ -31,6 +31,6 @@ class Csv::PublisherAllFieldsReportDecorator
   def custom_fields
     return unless @record.publisher_custom_field
 
-    @custom_fields ||= PublisherCustomFieldSerializer.new(@record.publisher_custom_field).attributes
+    FlatPublisherCustomFieldSerializer.new(@record.publisher_custom_field).attributes
   end
 end

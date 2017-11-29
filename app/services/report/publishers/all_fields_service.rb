@@ -19,7 +19,15 @@ module Report
         end
 
         def preload_associations(relation)
-          relation.includes(:publisher_stage, :type, publisher_custom_field: { company: :publisher_custom_field_names })
+          relation.includes(
+            :publisher_stage,
+            :type,
+            :client,
+            users: :team,
+            publisher_custom_field: {
+              company: :publisher_custom_field_names
+            }
+          )
         end
       end
     end

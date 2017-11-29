@@ -254,7 +254,9 @@ RSpec.describe Api::PublishersController, type: :controller do
       expect(first_item).to have_key :estimated_monthly_impressions
       expect(first_item).to have_key :actual_monthly_impressions
       expect(first_item).to have_key :publisher_custom_field
-      expect(first_item[:publisher_custom_field][custom_field_label.to_sym]).to eq custom_field_value
+      expect(first_item[:publisher_custom_field][0][:field_label]).to eq publisher_custom_field_name.field_label
+      expect(first_item[:publisher_custom_field][0][:field_type]).to eq publisher_custom_field_name.field_type
+      expect(first_item[:publisher_custom_field][0][:field_value]).to eq publisher_custom_field_option.value
     end
     it { subject; expect(first_item[:id]).to eq publisher.id }
 
@@ -368,13 +370,5 @@ RSpec.describe Api::PublishersController, type: :controller do
   def publisher_custom_field_option
     @_publisher_custom_field_option ||=
       create(:publisher_custom_field_option, publisher_custom_field_name: publisher_custom_field_name)
-  end
-
-  def custom_field_label
-    @_custom_field_label ||= publisher_custom_field_name.field_label
-  end
-
-  def custom_field_value
-    @_custom_field_value ||= publisher_custom_field_option.value
   end
 end
