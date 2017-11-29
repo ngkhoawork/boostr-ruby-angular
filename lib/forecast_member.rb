@@ -4,7 +4,7 @@ class ForecastMember
   delegate :id, to: :member
   delegate :name, to: :member
 
-  attr_accessor :member, :start_date, :end_date, :quarter, :year
+  attr_accessor :member, :start_date, :end_date, :quarter, :year, :time_period
 
   def initialize(member, start_date, end_date, quarter = nil, year = nil)
     self.member = member

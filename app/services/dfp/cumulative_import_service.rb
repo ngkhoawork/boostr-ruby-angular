@@ -11,8 +11,10 @@ module DFP
     private
 
     def parse_dfp_report
+      row_number = 0
       CSV.parse(report_csv, { headers: true, header_converters: :symbol }) do |row|
-        import_to_temp_table(row)
+        row_number += 1
+        import_to_temp_table(row: row, source_file_row_number: row_number)
       end
     end
 
@@ -26,12 +28,12 @@ module DFP
             csv_import_log.count_imported
           rescue Exception => e
             csv_import_log.count_failed
-            csv_import_log.log_error ['Internal Server Error', row.to_h.compact.to_s]
+            csv_import_log.log_error e.message, row[:source_file_row_number].to_s
             next
           end
         else
           csv_import_log.count_failed
-          csv_import_log.log_error object_from_temp.errors.full_messages
+          csv_import_log.log_error object_from_temp.errors.full_messages, row[:source_file_row_number].to_s
         end
       end
       csv_import_log.save
@@ -69,14 +71,18 @@ module DFP
 
     def non_duplicate_items
       @non_duplicate_rows ||= if duplicating_line_item_ids.any?
-                                TempCumulativeDfpReport.where('company_id = :company_id AND dimensionline_item_id NOT IN (:ids)', company_id: company_id, ids: duplicating_line_item_ids)
+                                TempCumulativeDfpReport.where('company_id = :company_id AND dimensionline_item_id NOT IN (:ids)',
+                                                              company_id: company_id,
+                                                              ids: duplicating_line_item_ids)
                               else
-                                TempCumulativeDfpReport.where('company_id = :company_id', company_id: company_id)
+                                TempCumulativeDfpReport.where('company_id = :company_id',
+                                                              company_id: company_id)
                               end
     end
 
-    def import_to_temp_table(row)
-      row_params = row.to_hash.merge(company_id: company_id)
+    def import_to_temp_table(params = {})
+      return if params.blank?
+      row_params = params[:row].to_hash.merge(company_id: company_id, source_file_row_number: params[:source_file_row_number])
       TempCumulativeDfpReport.create!(row_params)
     end
 
