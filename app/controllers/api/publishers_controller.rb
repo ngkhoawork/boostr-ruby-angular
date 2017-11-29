@@ -183,9 +183,10 @@ class Api::PublishersController < ApplicationController
     params.permit(
       :publisher_stage_id,
       :team_id,
+      :created_at_start,
+      :created_at_end,
       :page,
-      :per_page,
-      created_at: [:start, :end]
+      :per_page
     ).merge(company_id: current_user.company_id)
   end
 end

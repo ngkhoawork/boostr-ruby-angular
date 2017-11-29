@@ -8,7 +8,7 @@ module Report
       end
 
       def optional_param_keys
-        @optional_option_keys ||= %i(publisher_stage_id team_id created_at page per).freeze
+        @optional_option_keys ||= %i(publisher_stage_id team_id created_at_start created_at_end page per_page).freeze
       end
 
       class ScopeBuilder < BaseScopeBuilder

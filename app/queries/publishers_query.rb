@@ -6,7 +6,7 @@ class PublishersQuery < BaseQuery
       .by_stage_id(options[:publisher_stage_id])
       .by_type_id(options[:type_id])
       .by_team_id(options[:team_id])
-      .by_created_at(options[:created_at])
+      .by_created_at(options[:created_at_start], options[:created_at_end])
       .my_publishers(options[:my_publishers_bool], options[:current_user])
       .my_team_publishers(options[:my_team_publishers_bool], options[:current_user])
       .by_custom_fields(options[:custom_field_names])
@@ -37,8 +37,10 @@ class PublishersQuery < BaseQuery
       type_id.nil? ? self : where(type_id: type_id)
     end
 
-    def by_created_at(created_at)
-      created_at.nil? ? self : where('created_at >= ? AND created_at <= ?', created_at[:start], created_at[:end])
+    def by_created_at(created_at_start, created_at_end)
+      return self if created_at_start.nil? || created_at_end.nil?
+
+      where('created_at >= ? AND created_at <= ?', created_at_start, created_at_end)
     end
 
     def by_member_id(member_id)
