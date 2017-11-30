@@ -79,8 +79,11 @@ class Deal < ActiveRecord::Base
 
   after_update do
     if stage_id_changed?
-      Deal::IoGenerateService.new(self).perform
-      Deal::PmpGenerateService.new(self).perform
+      if include_pmp_product?
+        Deal::PmpGenerateService.new(self).perform
+      else
+        Deal::IoGenerateService.new(self).perform
+      end
       send_ealert
       log_stage_changes
     end
@@ -1668,6 +1671,10 @@ class Deal < ActiveRecord::Base
         end
       end
     end
+  end
+
+  def include_pmp_product?
+    self.products.where(revenue_type: 'PMP').count > 0
   end
 
   private

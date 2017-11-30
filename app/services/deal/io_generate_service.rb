@@ -8,15 +8,15 @@ class Deal::IoGenerateService
 
   def perform
     if !stage.open? && stage.probability == 100
-      generate_pmp
+      generate_io
     else
-      destroy_pmp
+      destroy_io
     end
   end
 
   private
 
-  def generate_pmp
+  def generate_io
     io_param = {
         advertiser_id: deal.advertiser_id,
         agency_id: deal.agency_id,
@@ -58,7 +58,7 @@ class Deal::IoGenerateService
     end
   end
 
-  def destroy_pmp
+  def destroy_io
     if deal.io.present?
       deal.io.destroy
       deal.deal_products.product_type_of('Content-Fee').update_all(open: true)
