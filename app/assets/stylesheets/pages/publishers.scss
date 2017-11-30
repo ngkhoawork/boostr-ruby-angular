@@ -78,6 +78,9 @@
           outline: none;
           box-shadow: none;
         }
+        span.not-selected {
+          color: #a9acae;
+        }
       }
       .dropdown-menu {
         top: calc(100% + 10px);
