@@ -5,7 +5,9 @@ describe Importers::PublisherDailyActualsService do
     before(:each) do
       @file = File.open(file_path, 'w') do |f|
         f.puts('date,available_impressions,filled_impressions,company_id,publisher_id,publisher_name')
-        f.puts("#{date},#{available_impressions},#{filled_impressions},#{company_id},#{publisher_id},#{publisher_name}")
+        f.puts(
+          "#{us_string_date},#{available_impressions},#{filled_impressions},#{company_id},#{publisher_id},#{publisher_name}"
+        )
       end
     end
     after(:each) { FileUtils.rm(file_path) if File.exist?(file_path) }
@@ -58,7 +60,7 @@ describe Importers::PublisherDailyActualsService do
   private
 
   def params
-    { file: file_path, company_id: company.id, import_subject: 'PublisherDailyActual' }
+    { file: file_path, company_id: company_id, import_subject: 'PublisherDailyActual' }
   end
 
   def instance
@@ -95,6 +97,10 @@ describe Importers::PublisherDailyActualsService do
 
   def date
     1.day.ago.to_date
+  end
+
+  def us_string_date
+    date.strftime('%m/%d/%Y')
   end
 
   def available_impressions

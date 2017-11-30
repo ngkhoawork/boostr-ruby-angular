@@ -1,5 +1,5 @@
 module PagesHelper
-  def paginate(relation)
+  def by_pages(relation)
     relation.offset(offset).limit(limit)
   end
 
