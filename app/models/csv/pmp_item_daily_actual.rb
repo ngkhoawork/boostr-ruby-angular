@@ -69,6 +69,7 @@ class Csv::PmpItemDailyActual
   def self.import(file, current_user_id, file_path)
     current_user = User.find current_user_id
     company = current_user.company
+    pmp_item_ids = []
 
     import_log = CsvImportLog.new(company_id: company.id, object_name: 'pmp_item_daily_actual', source: 'ui')
     import_log.set_file_source(file_path)
@@ -78,6 +79,7 @@ class Csv::PmpItemDailyActual
 
       csv_pmp_item_daily_actual = self.build(row, company)
       if csv_pmp_item_daily_actual.valid?
+        pmp_item_ids << csv_pmp_item_daily_actual.pmp_item.id
         begin
           csv_pmp_item_daily_actual.save
           import_log.count_imported
@@ -92,8 +94,13 @@ class Csv::PmpItemDailyActual
         next
       end
     end
+    PmpItem::CalculateRunRateService.new(company, pmp_item_ids).perform
 
     import_log.save
+  end
+
+  def pmp_item
+    @_pmp_item ||= PmpItem.find_by(ssp_deal_id: ssp_deal_id)
   end
 
   private
@@ -103,11 +110,7 @@ class Csv::PmpItemDailyActual
   end
 
   def validate_date_format
-    errors.add(:date, "- #{date} must be a valid datetime") unless date_valid?
-  end
-
-  def pmp_item
-    @_pmp_item ||= PmpItem.find_by(ssp_deal_id: ssp_deal_id)
+      errors.add(:date, "- #{date} must be a valid datetime") unless date_valid?
   end
 
   def pmp_item_daily_actual
