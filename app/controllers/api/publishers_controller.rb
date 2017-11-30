@@ -26,6 +26,11 @@ class Api::PublishersController < ApplicationController
     end
   end
 
+  def activities
+    render json: paginate(publisher_activities),
+           each_serializer: Api::ActivitySerializer
+  end
+
   def settings
     render json: Api::Publishers::SettingsSerializer.new(current_user.company)
   end
@@ -63,6 +68,10 @@ class Api::PublishersController < ApplicationController
 
   def generate_all_fields_report
     Report::Publishers::AllFieldsService.new(all_fields_report_params).perform
+  end
+
+  def publisher_activities
+    resource.activities.preload(:creator, :activity_type, :client, :contacts, :deal)
   end
 
   def filter_params

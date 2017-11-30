@@ -449,6 +449,9 @@ Rails.application.routes.draw do
         get :settings
         get :all_fields_report
       end
+      member do
+        get :activities
+      end
     end
     resources :publisher_custom_field_names, only: [:index, :create, :update, :destroy]
     resources :publisher_daily_actuals, only: [] do
