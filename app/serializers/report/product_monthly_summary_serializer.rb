@@ -152,10 +152,6 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
     else
       if product_row.io
         product_row.io.deal.deal_products.find{ |item| item.product_id == product_row.product_id }
-        # product_row.io.deal.deal_products.each do |item|
-        #   return item if item.product_id == product_row.product_id
-        #   return nil
-        # end
       else
         nil
       end
