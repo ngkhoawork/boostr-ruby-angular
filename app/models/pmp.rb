@@ -13,6 +13,9 @@ class Pmp < ActiveRecord::Base
   validates :name, :budget, :budget_loc, :start_date, :end_date, :curr_cd, presence: true
 
   scope :by_name, -> (name) { where('pmps.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_advertiser_name, -> (name) { joins(:advertiser).where('clients.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_agency_name, -> (name) { joins(:agency).where('clients.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) if (start_date && end_date).present? }
 
   before_validation :convert_currency, on: :create
 

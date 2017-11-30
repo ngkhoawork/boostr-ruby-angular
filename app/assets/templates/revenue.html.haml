@@ -16,7 +16,7 @@
           .input-group
             .input-group-addon
               %i.glyphicon.glyphicon-search
-            %input.form-control{ ng: { model: 'filter.name', 'model-options': '{debounce: 400}', change: 'applyFilter()' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
+            %input.form-control{ ng: { model: 'filter.name', 'model-options': '{debounce: 400}', change: 'applyFilter()' }, placeholder: "Search by Name, Advertiser, Agency, etc." }
       .header-item.date-filter
         %span Start date period
         -#%ul
@@ -98,13 +98,15 @@
                 %th.left
                   %span.z-sortable{by: 'name'} Name
                 %th.left
+                  %span.z-sortable{by: 'deal_id'} Deal-ID
+                %th.left
                   %span.z-sortable{by: 'advertiser.name'} Advertiser
                 %th.left
                   %span.z-sortable{by: 'agency.name'} Agency
-                %th.right
-                  %span.z-sortable{by: 'budget_loc'} Budget Delivered
-                %th.right
+                %th.left
                   %span.z-sortable{by: 'start_date'} Start Date
+                %th.right
+                  %span.z-sortable{by: 'budget_loc'} Budget
                 %th.right
                   %a.add-button{href: '', 'ng-click': 'addPmp()'}
                     = inline_svg "icons/button-plus-icon.svg" 

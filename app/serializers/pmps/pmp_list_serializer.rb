@@ -5,8 +5,9 @@ class Pmps::PmpListSerializer < ActiveModel::Serializer
     :deal_id,
     :advertiser,
     :agency,
-    :budget_delivered,
-    :start_date
+    :budget_loc,
+    :start_date,
+    :currency
   )
 
   def advertiser
@@ -17,4 +18,7 @@ class Pmps::PmpListSerializer < ActiveModel::Serializer
     object.agency.serializable_hash(only: [:id, :name]) rescue nil
   end
 
+  def currency
+    object.currency.serializable_hash(only: [:curr_cd, :curr_symbol]) rescue nil
+  end
 end

@@ -59,9 +59,20 @@ class Api::PmpsController < ApplicationController
     )
   end
 
+  def limit
+    params[:per].present? ? params[:per].to_i : 10
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
+  end
+
   def pmps
     @_pmps ||= pmps_by_name
+      .union(pmps_by_agency)
+      .union(pmps_by_advertiser)
       .includes(:agency, :advertiser)
+      .by_start_date(params[:start_date], params[:end_date])
       .limit(limit)
       .offset(offset)
   end
@@ -80,5 +91,13 @@ class Api::PmpsController < ApplicationController
 
   def pmps_by_name
     @_pmps_by_name ||= company_pmps.by_name(params[:name])
+  end
+
+  def pmps_by_agency
+    @_pmps_by_agency ||= company_pmps.by_agency_name(params[:name])
+  end
+
+  def pmps_by_advertiser
+    @_pmps_by_advertiser ||= company_pmps.by_advertiser_name(params[:name])
   end
 end
