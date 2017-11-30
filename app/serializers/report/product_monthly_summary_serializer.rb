@@ -150,11 +150,15 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
     @_deal_product ||= if is_deal
       product_row
     else
-      if product_row.io
-        product_row.io.deal.deal_products.find{ |item| item.product_id == product_row.product_id } rescue nil
-      else
-        nil
-      end
+      io_deal_product
+    end
+  end
+
+  def io_deal_product
+    @_io_deal_product ||= if product_row.io
+      product_row.io.deal.deal_products.find{ |item| item.product_id == product_row.product_id } rescue nil
+    else
+      nil
     end
   end
 
