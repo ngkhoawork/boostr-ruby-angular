@@ -1,5 +1,5 @@
 #publisher-report.z-styles
-  .container-fluid.inner-agency360
+  .container-fluid.inner-publisher
     .row.mb20
       .reports-header
         .header-cell.main-title
@@ -8,7 +8,54 @@
           %z-filter{'on-apply': 'onFilterApply'}
             %z-filter-field{data: 'teams', type: 'team', 'save-as': '{team_id: "id"}'} Team
             %z-filter-field{data: 'stages', type: 'team', 'save-as': '{publisher_stage_id: "id"}'} Stage
+            %z-filter-field{type: 'daterange', 'save-as': '{created_at_start: "startDate", created_at_end: "endDate"}'} Created Date
         .header-cell
           .pull-right
             %download-button{'ng-click': 'export()'}
               Export
+
+  .container-fluid.inner-publisher{'ng-show': 'showDashboard'}
+    .row
+      .block
+        .table-wrapper
+          %table.table.table-hover
+            %thead
+              %tr.z-sortable-prime{watch: '"publishers"'}
+                %th
+                  .z-sortable{by: 'name', default: true}
+                    Name
+                %th
+                  .z-sortable{by: 'comscore'}
+                    Comscore
+                %th
+                  .z-sortable{by: 'client.name'}
+                    Client
+                %th
+                  .z-sortable{by: 'publisher_stage'}
+                    Stage
+                %th
+                  .z-sortable{by: 'type.name'}
+                    Type
+                %th.center
+                  .z-sortable{by: 'estimated_monthly_impressions'}
+                    Estimated Monthly Impressions
+                %th.left
+                  .z-sortable{by: 'created_at'}
+                    Created Date
+                %th{'ng-repeat': 'cfName in publisherCustomFields'}
+                  {{ cfName }}
+            %tbody
+              %tr{'ng-repeat': 'publisher in publishers | orderBy : zSort.by : zSort.rev'}
+                %td {{publisher.name}}
+                %td {{publisher.comscore ? 'Active' : 'Inactive'}}
+                %td {{publisher.client.name}}
+                %td {{publisher.publisher_stage}}
+                %td {{publisher.type.name}}
+                %td.center {{publisher.estimated_monthly_impressions}}
+                %td.left {{publisher.created_at | date : 'shortDate'}}
+                %td{'ng-repeat': 'cf in publisher.publisher_custom_field | orderBy : zSort.by : zSort.rev'}
+                  %p{'ng-if': 'cf.field_type == "datetime"'}
+                    {{cf.field_value  | date : 'shortDate'}}
+                  %p{'ng-if': 'cf.field_type != "datetime"'}
+                    {{cf.field_value}}
+

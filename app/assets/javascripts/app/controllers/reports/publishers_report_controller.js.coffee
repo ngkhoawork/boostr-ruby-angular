@@ -2,7 +2,10 @@
   ['$scope', 'Team', 'Publisher', '$httpParamSerializer', '$window', ($scope, Team, Publisher, $httpParamSerializer, $window) ->
     $scope.teams = []
     $scope.stages = []
+    $scope.publishers = []
+    $scope.publisherCustomFields = []
     appliedFilter = null
+    $scope.showDashboard = false
 
     $scope.init = ->
       $scope.getTeams()
@@ -17,13 +20,18 @@
         $scope.stages = settings.publisher_stages
 
     $scope.onFilterApply = (query) ->
-      console.log(query)
       appliedFilter = query
       getReport query
 
+    getCustomFields = (data) ->
+      _.each data, (d) ->
+        $scope.publisherCustomFields = _.pluck(d.publisher_custom_field, 'field_label')
+        
     getReport = (query) ->
       Publisher.publisherReport(query).then (data) ->
-        console.log(data)
+        getCustomFields(data)
+        $scope.showDashboard = true
+        $scope.publishers = data
 
     $scope.export = ->
       url = '/api/publishers/all_fields_report.csv'
