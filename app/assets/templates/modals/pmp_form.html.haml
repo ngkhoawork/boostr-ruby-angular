@@ -1,0 +1,73 @@
+#new_pmp_modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header
+      New PMP
+      %span.close-btn{'ng-click': 'closeModal()'}
+    .popup-modal-body
+      .form-group{'ng-class':'{error: errors.name}'}
+        %span.error-text {{errors.name}}
+        %label{ for: 'name' }
+          Name
+          %span.star *
+        %input.form-control{ placeholder: 'Name', ng: { model: 'pmp.name', required: true }, name: 'name' }
+
+      .advertiser-agency
+        .form-group.advertiser-field{'ng-class':'{error: errors.advertiser_id}'}
+          %span.error-text {{errors.advertiser_id}}
+          %label{style: 'display: block'}
+            Advertiser
+            %span.star *
+            {{Advertiser}}
+          %ui-select{ name: 'advertiser', ng: { model: 'pmp.advertiser_id', required: true, keyup: 'searchClients($select.search, Advertiser)' }}
+            %ui-select-match{ placeholder: 'Advertiser' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'advertiser.id as advertiser in advertisers' }
+              %div{ ng: { bind: { html: 'advertiser.name' } } }
+        .form-group.agency-field{'ng-class':'{error: errors.agency_id}'}
+          %span.error-text {{errors.agency_id}}
+          %label{style: 'display: block'}
+            Agency
+            %span.star *
+          %ui-select{ name: 'agency', ng: { model: 'pmp.agency_id', required: true, keyup: 'searchClients($select.search, Agency)' }}
+            %ui-select-match{ placeholder: 'Agency' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'agency.id as agency in agencies' }
+              %div{ ng: { bind: { html: 'agency.name' } } }
+        %button.add-btn.plus-btn{type: 'button', 'ng-click': 'addClient()'}
+
+      .row
+        .col-md-6.form-group{'ng-class':'{error: errors.budget_loc}'}
+          %span.error-text {{errors.budget_loc}}
+          %label{ for: 'budget' }
+            Budget
+            %span.star *
+          %input.form-control{ 'numbers-only': '', placeholder: 'Budget', ng: { model: 'pmp.budget_loc', required: true }, name: 'budget' }
+        .col-md-6.form-group{'ng-class':'{error: errors.curr_cd}'}
+          %span.error-text {{errors.curr_cd}}
+          %label{ for: 'currency' }
+            Pmp Currency
+            %span.star *
+          %ui-select{ name: 'currency', ng: { model: 'pmp.curr_cd', required: true } }
+            %ui-select-match
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'currency.curr_cd as currency in currencies' }
+              %div{ ng: { bind: { html: 'currency.name' } } }
+
+      %div{ ng: {if: "formType == 'New'"}}
+        .row
+          .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.start_date}'}
+            %span.error-text {{errors.start_date}}
+            %label{ for: 'start-date' }
+              Start Date
+              %span.star *
+            %input.form-control{readonly: true, name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'pmp.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+          .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.end_date}'}
+            %span.error-text {{errors.end_date}}
+            %label{ for: 'end-date' }
+              End Date
+              %span.star *
+            %input.form-control{readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'pmp.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
+
+    .popup-modal-footer.text-center
+      %button.btn.btn-default{ 'type': 'button', 'ng-click': 'closeModal()' } Cancel
+      %button.btn.btn-warning{ type: 'submit' } {{ submitText }}

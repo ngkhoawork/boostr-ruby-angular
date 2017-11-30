@@ -7,6 +7,6 @@
   %td.left
     %a{'href': '', 'ng-href': '/accounts/{{row.agency.id}}'} {{row.agency.name}}
   %td.right {{row.budget_delivered | currency:row.currency.curr_symbol:0 }}
-  %td.left {{row.start_date | date: 'M/d/yyyy'}}
-  -#%td.right
-    %i.fa.fa-angle-right
+  %td.right {{row.start_date | date: 'M/d/yyyy'}} 
+  %td.right
+    / %i.fa.fa-angle-right

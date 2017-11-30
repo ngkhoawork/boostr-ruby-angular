@@ -62,6 +62,21 @@
       .action-column {
         width: auto;
       }
+
+      .add-button {
+        color: $main-color !important;
+
+        svg {
+          width: 14px;
+          path {
+            transition: fill 300ms;
+            fill: $main-color;
+          }
+        }
+        svg, span {
+          vertical-align: middle;
+        }
+      }
     }
     tbody {
       tr {

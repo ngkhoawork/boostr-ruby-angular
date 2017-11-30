@@ -103,12 +103,14 @@
                   %span.z-sortable{by: 'agency.name'} Agency
                 %th.right
                   %span.z-sortable{by: 'budget_loc'} Budget Delivered
-                %th.left
+                %th.right
                   %span.z-sortable{by: 'start_date'} Start Date
-                -#%th.right
+                %th.right
+                  %a.add-button{href: '', 'ng-click': 'addPmp()'}
+                    = inline_svg "icons/button-plus-icon.svg" 
+                    Add PMP
 
             %tbody{ 'ng-include': "'partials/revenue_pmp_rows.html'" }
-
 
           %table.table.table-hover{ng: {if: "filter.revenue == 'risk' || filter.revenue == 'upside'"}}
             %thead

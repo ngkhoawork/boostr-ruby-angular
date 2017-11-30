@@ -12,7 +12,7 @@
       $scope.page = 1
       graphData = {}
       
-      $scope.init = ->
+      init = () ->
         CurrentUser.get().$promise.then (user) ->
           $scope.currentUser = user
         Company.get().$promise.then (company) ->
@@ -272,5 +272,5 @@
                 .style("opacity", 1)          
         , duration
 
-      $scope.init()
+      init()
   ]

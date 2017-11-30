@@ -13,4 +13,14 @@ class Pmp < ActiveRecord::Base
   validates :name, :budget, :budget_loc, :start_date, :end_date, :curr_cd, presence: true
 
   scope :by_name, -> (name) { where('pmps.name ilike ?', "%#{name}%") if name.present? }
+
+  before_validation :convert_currency, on: :create
+
+  private
+
+  def convert_currency
+    if self.budget.nil? && self.budget_loc.present? && self.curr_cd.present?
+      self.budget = self.budget_loc * company.exchange_rate_for(currency: self.curr_cd) rescue nil
+    end
+  end
 end
