@@ -19,7 +19,7 @@ describe Forecast::PipelineDataSerializer do
   private
 
   def pipeline_data
-    @_pipeline_data || = described_class.new(deal, filter_start_date: time_period.start_date, filter_end_date: time_period.end_date, products: [product])
+    @_pipeline_data ||= described_class.new(deal, filter_start_date: time_period.start_date, filter_end_date: time_period.end_date, products: [product])
   end
 
   def deal
