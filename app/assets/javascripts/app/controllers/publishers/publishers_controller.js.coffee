@@ -22,8 +22,8 @@
         s = this.selected
         filter = {}
         filter.comscore = s.comscore.value if _.isBoolean s.comscore.value
-        filter.publisher_stage_id = s.stage if s.stage
-        filter.type_id = s.type if s.type
+        filter.publisher_stage_id = s.stage.id if s.stage
+        filter.type_id = s.type.id if s.type
         filter
       apply: (reset) ->
         $scope.getPublishers()
@@ -58,8 +58,8 @@
 
     $scope.getPublisherSettings = () ->
       Publisher.publisherSettings().then (settings) ->
-        $scope.filter.stages = settings.publisher_stages
-        $scope.filter.types = settings.publisher_types
+        $scope.publisher_stages = $scope.filter.stages = settings.publisher_stages
+        $scope.publisher_types = $scope.filter.types = settings.publisher_types
 
     $scope.getPublishers = ->
       params = {}

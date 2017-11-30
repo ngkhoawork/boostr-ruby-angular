@@ -55,6 +55,19 @@
         a {
             color: $secondary-color;
         }
+        .dropdown-menu {
+            li {
+                a {
+                    color: $main-font-color;
+                    &:hover {
+                        color: $main-color;
+                    }
+                }
+                &.active > a {
+                    color: white;
+                }
+            }
+        }
         thead {
             background-color: white;
             th {

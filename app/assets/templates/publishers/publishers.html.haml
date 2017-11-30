@@ -25,7 +25,7 @@
           %i.fa.fa-close{'ng-show': 'filter.selected.stage', 'ng-click': 'filter.reset("stage")'}
           %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
             .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.stage}'}
-              {{filter.selected.stage || 'Select a job level'}}
+              {{filter.selected.stage ? filter.selected.stage.probability + '% - ' + filter.selected.stage.name : 'Select a stage'}}
               %span.caret
             .dropdown-menu{'dropdown-menu': '', role: 'menu'}
               .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
@@ -33,7 +33,7 @@
                 %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
               %span.dropdown-title Select from list
               .dropdown-option{'ng-repeat': 'stage in filter.stages | filter: filter.searching | limitTo: 10', role: 'menuitem'}
-                %a{href: '', 'ng-click': 'filter.select("stage", stage)'} {{stage}}
+                %a{href: '', 'ng-click': 'filter.select("stage", stage)'} {{stage.name}} {{stage.probability}}%
       .filter-row
         .filter-name
           %div
@@ -42,7 +42,7 @@
           %i.fa.fa-close{'ng-show': 'filter.selected.type', 'ng-click': 'filter.reset("type")'}
           %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
             .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.type}'}
-              {{filter.selected.type || 'Select a type'}}
+              {{filter.selected.type.name || 'Select a type'}}
               %span.caret
             .dropdown-menu{'dropdown-menu': '', role: 'menu'}
               .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
@@ -50,7 +50,7 @@
                 %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
               %span.dropdown-title Select from list
               .dropdown-option{'ng-repeat': 'type in filter.types | filter: filter.searching | limitTo: 10', role: 'menuitem'}
-                %a{href: '', 'ng-click': 'filter.select("type", type)'} {{type}}
+                %a{href: '', 'ng-click': 'filter.select("type", type)'} {{type.name}}
 
     .footer
       %span.reset{'ng-click': 'filter.resetAll()'} Reset
@@ -99,16 +99,17 @@
               %td
                 .dropdown
                   %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-                    %span.editable{'ng-class': '{"not-selected": !publisher.publisher_stage.name}'} {{publisher.publisher_stage.name || 'Select Stage'}}
+                    %span.editable{'ng-class': '{"not-selected": !publisher.publisher_stage.name}'}
+                      {{publisher.publisher_stage.probability + '% - ' + publisher.publisher_stage.name || 'Select Stage'}}
                     %span.caret
                   %ul.dropdown-menu
                     %li{'ng-repeat': 'stage in publisher_stages', 'ng-class': '{active: publisher.publisher_stage.id == stage.id}'}
                       %a{'href': '', 'ng-click': ' publisher.publisher_stage = stage; updatePublisher(publisher)'}
-                        %span.text {{stage.name}}
+                        %span.text {{stage.name}} {{stage.probability}}%
 
               %td
                 .dropdown
-                  %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                  %button.btn.dropdown-toggle.z-dd-ar{'data-toggle': 'dropdown', type: 'button'}
                     %span.editable{'ng-class': '{"not-selected": !publisher.type.name}'} {{publisher.type.name || 'Select Type'}}
                     %span.caret
                   %ul.dropdown-menu

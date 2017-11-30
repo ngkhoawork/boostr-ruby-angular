@@ -1,16 +1,13 @@
 #publishers {
-  $publishers-menu-h: 100px;
-  $publishers-column-header-h: 72px;
-
-  font-family: "Avenir Next", Arial, serif;
-  color: $main-font-color;
-  background-color: #F5F5F5;
-  min-height: calc(100vh - #{$header-height});
+  //font-family: "Avenir Next", Arial, serif;
+  //color: $main-font-color;
+  //background-color: #F5F5F5;
+  //min-height: calc(100vh - #{$header-height});
   position: relative;
   overflow-x: hidden;
-  a {
-    color: $secondary-color;
-  }
+  //a {
+  //  color: $secondary-color;
+  //}
   .z-sliding-filter {
     top: 0;
     .dropdown-menu {
