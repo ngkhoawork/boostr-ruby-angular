@@ -1,6 +1,6 @@
 ActiveAdmin.register Company do
   permit_params :name, :ealert_reminder, :influencer_enabled, :primary_contact_id, :billing_contact_id, :quantity,
-  :cost, :start_date, :end_date, :requests_enabled,
+  :cost, :start_date, :end_date, :requests_enabled, :publishers_enabled,
   billing_address_attributes: [ :street1, :street2, :city, :state, :zip, :website, :phone ],
   physical_address_attributes: [ :street1, :street2, :city, :state, :zip ]
 

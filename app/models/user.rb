@@ -101,6 +101,10 @@ class User < ActiveRecord::Base
     self.company.influencer_enabled
   end
 
+  def company_publisher_enabled
+    self.company.publishers_enabled
+  end
+
   def company_forecast_gap_to_quota_positive
     self.company.forecast_gap_to_quota_positive
   end
