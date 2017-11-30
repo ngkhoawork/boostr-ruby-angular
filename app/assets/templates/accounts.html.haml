@@ -161,6 +161,6 @@
                                 %td {{client.category}}
                                 %td
                                     %div{ 'ng-repeat': 'member in client.client_members' }
-                                        {{ member.user.name + " (" + member.share + "%)" }}
+                                        {{ member.first_name + ' ' + member.last_name + " (" + member.share + "%)" }}
                                 %td {{client.address.city}}
                                 %td {{client._lastTouch | date: 'MMM dd, yyyy'}}
