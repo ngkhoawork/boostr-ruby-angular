@@ -1,10 +1,15 @@
 module Report
   class RevenueByCategoryService < Report::BaseService
+    INT_MONTHS = { first: 1, last: 12 }.freeze
 
     def initialize(params)
       super
       @params[:start_date] = @params[:start_date].to_date
       @params[:end_date] = @params[:end_date].to_date
+    end
+
+    def perform
+      format_records(super)
     end
 
     private
@@ -51,7 +56,7 @@ module Report
       end
 
       def perform
-        preload_query(
+        preload_associations(
           aggregate_by_period_revenue(
             apply_filters
           )
@@ -77,7 +82,6 @@ module Report
              EXTRACT(MONTH FROM start_date) AS month,
              SUM(revenue_amount) AS month_revenue'
           )
-          .includes(:client_category)
       end
 
       def aggregate_by_period_revenue(relation)
@@ -100,7 +104,7 @@ module Report
           .order('category_id ASC, year DESC')
       end
 
-      def preload_query(relation)
+      def preload_associations(relation)
         relation.includes(:client_category)
       end
     end

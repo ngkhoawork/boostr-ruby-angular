@@ -6,6 +6,10 @@ module Report
       @params[:end_date] = @params[:end_date].to_date
     end
 
+    def perform
+      format_records(super)
+    end
+
     private
 
     def required_param_keys
@@ -45,13 +49,9 @@ module Report
         end
     end
 
-    class ScopeBuilder
-      def initialize(options)
-        @options = options
-      end
-
+    class ScopeBuilder < BaseScopeBuilder
       def perform
-        preload_query(
+        preload_associations(
           paginate(
             aggregate_by_period_revenue(
               apply_filters
@@ -121,24 +121,8 @@ module Report
           .order('name ASC')
       end
 
-      def paginate(relation)
-        @options[:page] ? relation.offset(offset).limit(per_page) : relation
-      end
-
-      def preload_query(relation)
+      def preload_associations(relation)
         relation.includes(:client_category, :client_region, :client_segment, client: { primary_user: :team })
-      end
-
-      def per_page
-        @options[:per_page].to_i > 0 ? @options[:per_page].to_i : 10
-      end
-
-      def offset
-        (page - 1) * per_page
-      end
-
-      def page
-        @options[:page].to_i > 0 ? @options[:page].to_i : 1
       end
     end
   end

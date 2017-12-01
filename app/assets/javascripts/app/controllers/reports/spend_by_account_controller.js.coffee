@@ -15,7 +15,7 @@
     $scope.page = 1
     $scope.allClientsLoaded = false
     $scope.isLoading = false
-    $scope.per_page = 10
+    $scope.per = 10
 
     getMonths = (startDate, endDate) ->
       start = moment startDate
@@ -55,7 +55,7 @@
       query.page = $scope.page
 
       SpendByAccount.SpendByAccountReport(query).then (data) ->
-        $scope.allClientsLoaded = !data || data.length < $scope.per_page
+        $scope.allClientsLoaded = !data || data.length < $scope.per
 
         if $scope.page++ > 1
           $scope.spend_by_account = $scope.spend_by_account.concat(data)
