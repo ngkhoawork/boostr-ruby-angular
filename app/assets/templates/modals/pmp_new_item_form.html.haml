@@ -1,0 +1,45 @@
+#new_pmp_item_modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header
+      New PMP Item
+      %span.close-btn{'ng-click': 'closeModal()'}
+    .popup-modal-body
+      .row
+        .col-md-6.form-group{'ng-class':'{error: errors.ssp_id}'}
+          %span.error-text {{errors.ssp_id}}
+          %label{ for: 'ssp' }
+            SSP
+            %span.star *
+          %ui-select{ name: 'ssp', ng: { model: 'pmp_item.ssp_id', required: true }}
+            %ui-select-match{ placeholder: 'SSP' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'ssp.id as ssp in ssps' }
+              %div{ ng: { bind: { html: 'ssp.name' } } }
+        .col-md-6.form-group{'ng-class':'{error: errors.ssp_deal_id}'}
+          %span.error-text {{errors.ssp_deal_id}}
+          %label{ for: 'deal_id' }
+            Deal-ID
+            %span.star *
+          %input.form-control{ placeholder: 'Deal-ID', ng: { model: 'pmp_item.ssp_deal_id', required: true }, name: 'deal_id' }
+
+      .row
+        .col-md-6.form-group{'ng-class':'{error: errors.budget_loc}'}
+          %span.error-text {{errors.budget_loc}}
+          %label{ for: 'budget' }
+            Budget
+            %span.star *
+          %input.form-control{ 'numbers-only': '', placeholder: 'Budget', ng: { model: 'pmp_item.budget_loc', required: true }, name: 'budget' }
+        .col-md-6.form-group{'ng-class':'{error: errors.is_guaranteed}'}
+          %span.error-text {{errors.is_guaranteed}}
+          %label{ for: 'guaranteed' }
+            Guaranteed
+            %span.star *
+          .boolean-field.show-hide-remainder-form
+            .switch-remainder-form
+              %input.cmn-toggle.cmn-toggle-round-flat{ id: 'guaranteed', type: 'checkbox', 'ng-model': 'pmp_item.is_guaranteed' }
+              %label{ for: 'guaranteed' }
+                %span
+
+    .popup-modal-footer.text-center
+      %button.btn.btn-default{ 'type': 'button', 'ng-click': 'closeModal()' } Cancel
+      %button.btn.btn-warning{ type: 'submit' } {{ submitText }}

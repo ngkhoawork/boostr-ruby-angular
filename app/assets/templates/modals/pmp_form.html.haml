@@ -17,7 +17,6 @@
           %label{style: 'display: block'}
             Advertiser
             %span.star *
-            {{Advertiser}}
           %ui-select{ name: 'advertiser', ng: { model: 'pmp.advertiser_id', required: true, keyup: 'searchClients($select.search, Advertiser)' }}
             %ui-select-match{ placeholder: 'Advertiser' }
               {{ $select.selected.name }}

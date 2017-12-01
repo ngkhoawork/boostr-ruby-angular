@@ -1,7 +1,7 @@
 .block.detail-stats
   %div.stats-body
     %div.mb30
-      %span.title PMP Name
+      %span.title {{currentPMP.name}}
 
     .clearfix
     %div.stats-numbers.mb30
@@ -46,33 +46,3 @@
             .title {{currentPMP.end_date | date: 'M/d/yyyy'}}
   
     .clearfix
-    
-    .table-wrapper
-      %table.table.table-hover
-        %thead
-          %tr
-            %th.left Deal ID
-            %th.left SSP
-            %th.left Budget
-            %th.left Delivered
-            %th.left Remaining
-            %th.right 7 Day Run Rate
-            %th.right 30 Day Run Rate
-        %tbody
-          %tr{ ng: { if: 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0', repeat: "pmpItem in currentPMP.pmp_items | orderBy: 'deal_id'"} }
-            %td.left
-              {{ pmpItem.ssp_deal_id }}
-            %td.left
-              %strong
-                {{ pmpItem.ssp.name }}
-            %td.left
-              {{ pmpItem.budget_loc | currency:currency_symbol:0 }}
-            %td.left
-              {{ pmpItem.budget_delivered_loc | currency:currency_symbol:0 }}
-            %td.left
-              {{ pmpItem.budget_remaining_loc | currency:currency_symbol:0 }}
-            %td.left
-              {{ pmpItem.sevenDayRunRate }}
-            %td.left
-              {{ pmpItem.thirtyDayRunRate }}
-                    

@@ -19,11 +19,15 @@ class Pmp < ActiveRecord::Base
 
   before_validation :convert_currency, on: :create
 
+  def exchange_rate
+    company.exchange_rate_for(currency: self.curr_cd)
+  end
+
   private
 
   def convert_currency
-    if self.budget.nil? && self.budget_loc.present? && self.curr_cd.present?
-      self.budget = self.budget_loc * company.exchange_rate_for(currency: self.curr_cd) rescue nil
+    if self.budget.nil? && self.budget_loc.present?
+      self.budget = self.budget_loc * exchange_rate
     end
   end
 end
