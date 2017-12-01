@@ -2,7 +2,7 @@ class Api::PublishersController < ApplicationController
   respond_to :json, :csv
 
   def index
-    render json: paginate(filtered_publishers),
+    render json: by_pages(filtered_publishers),
            each_serializer: Api::Publishers::Serializer
   end
 
