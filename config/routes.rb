@@ -449,6 +449,8 @@ Rails.application.routes.draw do
         get :settings
         get :all_fields_report
       end
+    end
+    resources :publisher_details do
       member do
         get :activities
       end

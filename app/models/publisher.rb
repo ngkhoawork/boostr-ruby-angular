@@ -3,7 +3,7 @@ class Publisher < ActiveRecord::Base
   acts_as_paranoid
 
   has_one :address, as: :addressable, dependent: :destroy
-  has_many :activities, -> { order(id: :desc) }, dependent: :destroy
+  has_many :activities, dependent: :destroy
   has_many :daily_actuals, class_name: 'PublisherDailyActual'
   has_many :contacts
   has_many :publisher_members, dependent: :destroy

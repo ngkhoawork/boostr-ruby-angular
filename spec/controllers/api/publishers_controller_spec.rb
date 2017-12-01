@@ -213,21 +213,6 @@ RSpec.describe Api::PublishersController, type: :controller do
     end
   end
 
-  describe '#activities' do
-    let!(:activity) { Activity.create!(company: company, user: user) }
-
-    subject { get :activities, id: publisher.id }
-
-    before { publisher.activities << activity }
-
-    it 'returns publisher\'s activities' do
-      subject
-      expect(response).to have_http_status(200)
-      expect(response_body).to be_a_kind_of Array
-      expect(response_body[0][:id]).to eq activity.id
-    end
-  end
-
   describe '#settings' do
     let(:response_stage_ids) { response_body[:publisher_stages].map { |stage| stage[:id] } }
     let(:response_type_ids) { response_body[:publisher_types].map { |stage| stage[:id] } }
