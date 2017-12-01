@@ -1,6 +1,6 @@
 @app.controller 'PablishersController', [
-  '$scope', 'Publisher', 'PublishersFilter',
-  ($scope,   Publisher,   PublishersFilter) ->
+  '$scope', 'Publisher', 'PublishersFilter', '$modal',
+  ($scope,   Publisher,   PublishersFilter,  $modal) ->
     $scope.publishers = []
     $scope.publisherTypes = [
       {name: 'All'}
