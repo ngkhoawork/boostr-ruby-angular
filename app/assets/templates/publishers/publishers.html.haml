@@ -69,11 +69,21 @@
       .header-item.publisher-search
         %i.fa.fa-search
         %input.form-control{ ng: { model: 'searchText', change: 'getPublishers()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Name" }
+      .header-item.view-toggle
+        %div{'ng-click': 'changeView("list")', 'ng-class': '{active: view == "list"}'}
+          %i.fa.fa-list
+          List view
+        %div{'ng-click': 'changeView("columns")', 'ng-class': '{active: view == "columns"}'}
+          %i.fa.fa-columns
+          Columns view
+
       .header-item
         %button.btn-main{'ng-click': 'filter.open($event)'}
           %i.fa.fa-filter
           Add filter
-    .row
+
+
+    .row{'ng-if': 'view == "list"'}
       .block
         %table.table.table-hover
           %thead
@@ -116,3 +126,37 @@
                     %li{'ng-repeat': 'type in publisher_types', 'ng-class': '{active: publisher.type.id == type.id}'}
                       %a{'href': '', 'ng-click': ' publisher.type = type; updatePublisher(publisher)'}
                         %span.text {{type.name}}
+
+    .row.deals-container{'ng-if': 'view == "columns"'}
+      .deals-table
+        .deal-column{'ng-repeat': 'stage in publishersPipeline', 'ng-init': 'columnIndex = $index; $last && coloringColumns()'}
+          .column-header
+            %span
+              {{stage.probability}}%
+              %br
+              {{stage.name}}
+              %i ({{stage.publishers.length || 0}})
+            %svg{width: '17', height: '72'}
+              %polygon{points: '-2,-7 15, 36, -2, 79'}
+          .column-body{'dnd-list': 'stage.publishers',
+                                   'dnd-drop': 'onDrop(item, stage)',
+                                   'dnd-inserted': 'onInserted(item, index, columnIndex)'}
+            .deal-block{'ng-repeat': 'publisher in stage.publishers',
+                                      id: 'publisher-{{publisher.id}}',
+                                      'dnd-draggable': 'publisher',
+                                      'dnd-moved': 'onMoved(publisher, $index, columnIndex)',
+                                      'dnd-effect-allowed': 'move',
+                                      'dnd-dragstart': 'onDragStart()',
+                                      'dnd-dragend': 'onDragEnd()'}
+              .date.pull-right{'ng-class': '{expired: publisher.isExpired && publisher.stage.open}'} {{publisher.created_at | date: 'mediumDate'}}
+              %span
+                %a{'ng-href': '{{"/publishers/" + publisher.id}}'} {{publisher.name}}
+              %span -------
+              %div.block-menu
+                %div{'dropdown': '', 'keyboard-nav': ''}
+                  %i.fa.fa-ellipsis-h{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}
+                  .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                    .dropdown-option
+                      %a{href: '', 'ng-click': 'showDealEditModal(publisher)'} Edit
+                    .dropdown-option
+                      %a{href: '', 'ng-click': 'deleteDeal(publisher)'} Delete

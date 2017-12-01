@@ -22,7 +22,7 @@ class PublisherPipelineService < Report::BaseService
 
   def optional_param_keys
     @optional_option_keys ||=
-      %i(q comscore type_id team_id my_publishers_bool my_team_publishers_bool current_user page per).freeze
+      %i(q comscore publisher_stage_id type_id team_id my_publishers_bool my_team_publishers_bool current_user page per).freeze
   end
 
   def publisher_stages
