@@ -19,7 +19,7 @@ describe BillingSummary::IosForApprovalSerializer do
     expect(display_line_item_serializer_budget[:billing_contact_name]).to eql contact.name
     expect(display_line_item_serializer_budget[:product_name]).to eql display_line_item_product.name
     expect(display_line_item_serializer_budget[:revenue_type]).to eql display_line_item_product.revenue_type
-    expect(display_line_item_serializer_budget[:vat]).to eql calculate_line_item_vat
+    expect(display_line_item_serializer_budget[:vat]).to eq calculate_line_item_vat
     expect(display_line_item_serializer_budget[:line]).to eql display_line_item.line_number
     expect(display_line_item_serializer_budget[:ad_server]).to eql display_line_item.ad_server
     expect(display_line_item_serializer_budget[:budget_loc]).to eql display_line_item_budget.budget_loc.to_f
