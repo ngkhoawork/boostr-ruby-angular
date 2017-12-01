@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171031005746) do
+ActiveRecord::Schema.define(version: 20171120181523) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -987,11 +987,14 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   create_table "deal_products", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "product_id"
-    t.decimal  "budget",     precision: 15, scale: 2, default: 0.0
-    t.datetime "created_at",                                         null: false
-    t.datetime "updated_at",                                         null: false
-    t.boolean  "open",                                default: true
-    t.decimal  "budget_loc", precision: 15, scale: 2, default: 0.0
+    t.decimal  "budget",        precision: 15, scale: 2, default: 0.0
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
+    t.boolean  "open",                                   default: true
+    t.decimal  "budget_loc",    precision: 15, scale: 2, default: 0.0
+    t.integer  "ssp_id"
+    t.boolean  "is_guaranteed"
+    t.string   "ssp_deal_id"
   end
 
   add_index "deal_products", ["deal_id"], name: "index_deal_products_on_deal_id", using: :btree
@@ -1044,6 +1047,7 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "initiative_id"
     t.string   "closed_reason_text"
     t.datetime "next_steps_due"
+    t.string   "ssp_deal_id"
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree
@@ -1211,6 +1215,18 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   add_index "fields", ["deleted_at"], name: "index_fields_on_deleted_at", using: :btree
   add_index "fields", ["subject_type"], name: "index_fields_on_subject_type", using: :btree
 
+  create_table "filter_queries", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "company_id"
+    t.integer  "user_id"
+    t.string   "query_type"
+    t.boolean  "global",        default: false
+    t.text     "filter_params"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+    t.boolean  "default",       default: false
+  end
+
   create_table "forecast_calculation_logs", force: :cascade do |t|
     t.integer  "company_id"
     t.datetime "start_date"
@@ -1364,18 +1380,18 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   create_table "ios", force: :cascade do |t|
     t.integer  "advertiser_id"
     t.integer  "agency_id"
-    t.decimal  "budget",             precision: 15, scale: 2
+    t.decimal  "budget",                       precision: 15, scale: 2
     t.date     "start_date"
     t.date     "end_date"
-    t.integer  "external_io_number"
+    t.integer  "external_io_number", limit: 8
     t.integer  "io_number"
-    t.datetime "created_at",                                                  null: false
-    t.datetime "updated_at",                                                  null: false
+    t.datetime "created_at",                                                            null: false
+    t.datetime "updated_at",                                                            null: false
     t.string   "name"
     t.integer  "company_id"
     t.integer  "deal_id"
-    t.decimal  "budget_loc",         precision: 15, scale: 2, default: 0.0
-    t.string   "curr_cd",                                     default: "USD"
+    t.decimal  "budget_loc",                   precision: 15, scale: 2, default: 0.0
+    t.string   "curr_cd",                                               default: "USD"
   end
 
   add_index "ios", ["advertiser_id"], name: "index_ios_on_advertiser_id", using: :btree
@@ -1420,6 +1436,7 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.decimal "revenue_loc", precision: 15, scale: 2
     t.integer "impressions"
     t.decimal "win_rate"
+    t.decimal "bids",        precision: 15, scale: 2
   end
 
   add_index "pmp_item_daily_actuals", ["pmp_item_id"], name: "index_pmp_item_daily_actuals_on_pmp_item_id", using: :btree
@@ -1437,7 +1454,7 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   create_table "pmp_items", force: :cascade do |t|
     t.integer "pmp_id"
     t.integer "ssp_id"
-    t.string  "deal_id"
+    t.string  "ssp_deal_id"
     t.decimal "budget",               precision: 15, scale: 2
     t.decimal "budget_delivered",     precision: 15, scale: 2
     t.decimal "budget_remaining",     precision: 15, scale: 2
@@ -1453,8 +1470,8 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "user_id"
     t.integer  "pmp_id"
     t.integer  "share"
-    t.datetime "start_date"
-    t.datetime "end_date"
+    t.datetime "from_date"
+    t.datetime "to_date"
   end
 
   add_index "pmp_members", ["pmp_id"], name: "index_pmp_members_on_pmp_id", using: :btree
@@ -1476,6 +1493,7 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.decimal  "7_day_run_rate"
     t.decimal  "30_day_run_rate"
     t.string   "curr_cd",                                       default: "USD"
+    t.integer  "deal_id"
   end
 
   add_index "pmps", ["company_id"], name: "index_pmps_on_company_id", using: :btree
@@ -1504,19 +1522,30 @@ ActiveRecord::Schema.define(version: 20171031005746) do
 
   add_index "product_dimensions", ["company_id"], name: "index_product_dimensions_on_company_id", using: :btree
 
+  create_table "product_families", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "name"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.boolean  "active",     default: true
+  end
+
+  add_index "product_families", ["company_id"], name: "index_product_families_on_company_id", using: :btree
+
   create_table "products", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
     t.string   "product_line"
-    t.string   "family"
     t.string   "revenue_type"
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.boolean  "active",                default: true
     t.boolean  "is_influencer_product", default: false
+    t.integer  "product_family_id"
   end
 
   add_index "products", ["company_id"], name: "index_products_on_company_id", using: :btree
+  add_index "products", ["product_family_id"], name: "index_products_on_product_family_id", using: :btree
 
   create_table "quota", force: :cascade do |t|
     t.integer  "time_period_id"
@@ -1686,11 +1715,11 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "dimensionadvertiser_id",                             limit: 8
     t.integer  "dimensionline_item_id",                              limit: 8
     t.integer  "dimensionad_unit_id",                                limit: 8
-    t.datetime "dimensionattributeorder_start_date_time"
-    t.datetime "dimensionattributeorder_end_date_time"
+    t.date     "dimensionattributeorder_start_date_time"
+    t.date     "dimensionattributeorder_end_date_time"
     t.string   "dimensionattributeorder_agency"
-    t.datetime "dimensionattributeline_item_start_date_time"
-    t.datetime "dimensionattributeline_item_end_date_time"
+    t.date     "dimensionattributeline_item_start_date_time"
+    t.date     "dimensionattributeline_item_end_date_time"
     t.string   "dimensionattributeline_item_cost_type"
     t.integer  "dimensionattributeline_item_cost_per_unit",          limit: 8
     t.integer  "dimensionattributeline_item_goal_quantity",          limit: 8
@@ -1704,6 +1733,7 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "company_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "source_file_row_number",                             limit: 8
   end
 
   create_table "temp_ios", force: :cascade do |t|
@@ -1711,15 +1741,15 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "company_id"
     t.string   "advertiser"
     t.string   "agency"
-    t.decimal  "budget",             precision: 15, scale: 2, default: 0.0
+    t.decimal  "budget",                       precision: 15, scale: 2, default: 0.0
     t.date     "start_date"
     t.date     "end_date"
-    t.integer  "external_io_number"
-    t.datetime "created_at",                                                  null: false
-    t.datetime "updated_at",                                                  null: false
+    t.integer  "external_io_number", limit: 8
+    t.datetime "created_at",                                                            null: false
+    t.datetime "updated_at",                                                            null: false
     t.integer  "io_id"
-    t.decimal  "budget_loc",         precision: 15, scale: 2, default: 0.0
-    t.string   "curr_cd",                                     default: "USD"
+    t.decimal  "budget_loc",                   precision: 15, scale: 2, default: 0.0
+    t.string   "curr_cd",                                               default: "USD"
   end
 
   add_index "temp_ios", ["company_id"], name: "index_temp_ios_on_company_id", using: :btree
@@ -1920,6 +1950,7 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   add_foreign_key "deal_product_cf_names", "companies"
   add_foreign_key "deal_product_cf_options", "deal_product_cf_names"
   add_foreign_key "deal_product_cfs", "companies"
+  add_foreign_key "deal_products", "ssps"
   add_foreign_key "dfp_report_queries", "api_configurations"
   add_foreign_key "display_line_item_budgets", "display_line_items"
   add_foreign_key "display_line_items", "ios"
@@ -1954,8 +1985,10 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   add_foreign_key "pmp_members", "pmps"
   add_foreign_key "pmp_members", "users"
   add_foreign_key "pmps", "companies"
+  add_foreign_key "pmps", "deals"
   add_foreign_key "print_items", "ios"
   add_foreign_key "product_dimensions", "companies"
+  add_foreign_key "product_families", "companies"
   add_foreign_key "requests", "companies"
   add_foreign_key "requests", "deals"
   add_foreign_key "requests", "users", column: "assignee_id"

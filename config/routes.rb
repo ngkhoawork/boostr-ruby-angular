@@ -222,7 +222,7 @@ Rails.application.routes.draw do
         get :metadata
       end
     end
-    resources :revenue, only: [:index, :create] do
+    resources :revenue, only: [:create] do
       collection do
         get :forecast_detail
       end
@@ -259,6 +259,7 @@ Rails.application.routes.draw do
     resources :deal_product_budgets, only: [:index, :create]
     resources :deal_products, only: [:index, :create]
     resources :stages, only: [:index, :create, :show, :update]
+    resources :product_families, only: [:index, :create, :update, :destroy]
     resources :products, only: [:index, :create, :update] do
       resources :ad_units, only: [:index, :create, :update, :destroy]
     end
@@ -291,6 +292,8 @@ Rails.application.routes.draw do
     end
     resources :forecasts, only: [:index, :show] do
       collection do
+        get :revenue_data
+        get :pipeline_data
         get :old_detail
         get :detail
         get :old_product_detail

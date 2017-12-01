@@ -19,5 +19,13 @@
     run_forecast_calculation:
       method: 'POST'
       url: '/api/forecasts/run_forecast_calculation'
+    revenue_data:
+      method: 'GET'
+      url: '/api/forecasts/revenue_data'
+      isArray: true
+    pipeline_data:
+      method: 'GET'
+      url: '/api/forecasts/pipeline_data'
+      isArray: true
   return resource
 ]

@@ -2,7 +2,9 @@ class Api::ProductsController < ApplicationController
   respond_to :json, :csv
 
   def index
-    products = current_user.company.products.by_revenue_type(params[:revenue_type])
+    products = current_user.company.products
+                    .by_revenue_type(params[:revenue_type])
+                    .by_product_family(params[:product_family_id])
     if params[:active] == 'true'
       products = products.active
     end
@@ -33,7 +35,7 @@ class Api::ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:name, :revenue_type, :active, :is_influencer_product, { values_attributes: [:id, :field_id, :option_id, :value] })
+    params.require(:product).permit(:name, :revenue_type, :active, :is_influencer_product, :product_family_id, { values_attributes: [:id, :field_id, :option_id, :value] })
   end
 
   def product
