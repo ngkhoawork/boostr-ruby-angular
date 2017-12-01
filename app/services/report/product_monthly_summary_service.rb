@@ -95,7 +95,7 @@ class Report::ProductMonthlySummaryService
   end
 
   def deal_product_cf_names
-    @_deal_product_cf_names ||= company.deal_product_cf_names.position_asc || []
+    @_deal_product_cf_names ||= company.deal_product_cf_names.active.position_asc || []
   end
 
   def deal_custom_fields
@@ -119,6 +119,11 @@ class Report::ProductMonthlySummaryService
             content_fee: {
               product: {},
               io: {
+                deal: {
+                  deal_products: {
+                    deal_product_cf: {}
+                  }
+                },
                 io_members: [{ user: :team }],
                 company: {},
                 currency: {},
@@ -133,6 +138,11 @@ class Report::ProductMonthlySummaryService
             display_line_item: {
               product: {},
               io: {
+                deal: {
+                  deal_products: {
+                    deal_product_cf: {}
+                  }
+                },
                 io_members: [{ user: :team }],
                 company: {},
                 currency: {},

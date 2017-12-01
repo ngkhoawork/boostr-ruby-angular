@@ -8,6 +8,7 @@ class DealProductCfName < ActiveRecord::Base
   scope :by_type, -> type { where(field_type: type) if type.present? }
   scope :by_index, -> field_index { where(field_index: field_index) if field_index.present? }
   scope :position_asc, -> { order('position asc') }
+  scope :active, -> { where('disabled IS NOT TRUE') }
 
   after_create do
     self.company.deal_product_cfs.update_all(field_name => nil)
