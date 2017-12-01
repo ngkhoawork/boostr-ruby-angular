@@ -2,6 +2,7 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
   attributes(
     :id,
     :pmp_item_id,
+    :ssp_deal_id,
     :date,
     :ad_unit,
     :price,
@@ -16,4 +17,7 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
     object.date.strftime('%m/%d/%Y')
   end
 
+  def ssp_deal_id
+    object.pmp_item.ssp_deal_id
+  end
 end

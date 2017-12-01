@@ -7,19 +7,28 @@
       %thead
         %tr
           %th.left Date
-          %th.left Ad Unit
-          %th.left Total Impression
-          %th.left Total Average eCPM ($)
+          %th.left Deal-ID
+          %th.left Ad Unit/Product
+          %th.left Bids
+          %th.left Impressions
+          %th.left Win Rate
+          %th.left eCPM
           %th.left Revenue
       %tbody{infinite: {scroll: 'loadMoreData()', 'scroll-disabled': 'isLoading || allDataLoaded', 'scroll-distance': '0.5'}}
         %tr{ ng: { if: 'pmpItemDailyActuals && pmpItemDailyActuals.length > 0', repeat: "pmpItemDailyActual in pmpItemDailyActuals"} }
           %td
             {{ pmpItemDailyActual.date | date: 'M/d/yyyy' }}
           %td
+            {{ pmpItemDailyActual.ssp_deal_id }}
+          %td
             %strong
               {{ pmpItemDailyActual.ad_unit }}
           %td
-            {{ pmpItemDailyActual.impressions | currency:'$':0 }}
+            {{ pmpItemDailyActual.bids | currency:'$':0 }}
+          %td
+            {{ pmpItemDailyActual.impressions }}
+          %td
+            {{ pmpItemDailyActual.win_rate | percentage:0 }}
           %td
             {{ pmpItemDailyActual.price | currency:'$':0 }}
           %td.left
