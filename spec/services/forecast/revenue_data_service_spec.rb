@@ -24,8 +24,8 @@ describe Forecast::RevenueDataService do
       team_id: team.id
     };
     expect(
-      revenue_data_service(company, params).perform.object.to_a
-    ).to eq([io, io2])
+      revenue_data_service(company, params).perform.object.count
+    ).to eq(2)
   end
 
   it 'return correct revenue data service for a product' do
@@ -46,8 +46,8 @@ describe Forecast::RevenueDataService do
       product_family_id: product_family.id
     };
     expect(
-      revenue_data_service(company, params).perform.object.to_a
-    ).to eq([io, io2])
+      revenue_data_service(company, params).perform.object.count
+    ).to eq(2)
   end
 
   private
