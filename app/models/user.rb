@@ -240,28 +240,6 @@ class User < ActiveRecord::Base
     end
   end
 
-  def crevenues(start_date, end_date, product = nil)
-    ios_for_period = self.all_ios_for_time_period(start_date, end_date)
-
-    @crevenues ||= ios_for_period.each_with_object([]) do |io, memo|
-      if product.present?
-        sum_period_budget, split_period_budget = io.for_product_forecast_page(product, start_date, end_date, self)
-      else
-        sum_period_budget, split_period_budget = io.for_forecast_page(start_date, end_date, self)
-      end
-
-      memo << {
-          id: io.id,
-          name: io.name,
-          agency: io.get_agency,
-          advertiser: io.advertiser.name,
-          budget: io.budget.to_s,
-          sum_period_budget: sum_period_budget,
-          split_period_budget: split_period_budget
-      }
-    end
-  end
-
   def quarterly_ios(start_date, end_date)
     ios = self.all_ios_for_time_period(start_date, end_date).as_json
     year = start_date.year

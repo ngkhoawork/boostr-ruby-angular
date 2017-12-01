@@ -4,13 +4,14 @@ class NewForecastTeam
   delegate :id, to: :team
   delegate :name, to: :team
 
-  attr_accessor :team, :start_date, :end_date, :time_period, :product, :quarter, :year
+  attr_accessor :team, :start_date, :end_date, :time_period, :product_family, :product, :quarter, :year
 
-  def initialize(team, time_period, product = nil, quarter = nil, year = nil)
+  def initialize(team, time_period, product_family = nil, product = nil, quarter = nil, year = nil)
     self.team = team
     self.time_period = time_period
     self.start_date = time_period.start_date
     self.end_date = time_period.end_date
+    self.product_family = product_family
     self.product = product
     self.quarter = quarter
     self.year = year
@@ -122,18 +123,18 @@ class NewForecastTeam
       end
     end
 
-    if product.nil?
+    if product_ids.nil?
       revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?)", forecast_time_dimension.id, user_ids)
         .select("user_dimension_id AS user_id, SUM(amount) AS revenue_amount")
         .group("user_dimension_id")
       pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?)", forecast_time_dimension.id, user_ids)
         .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
         .group("user_dimension_id, stage_dimension_id")
-    else
-      revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id = ?", forecast_time_dimension.id, user_ids, product.id)
+    elsif product_ids.count > 0
+      revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id in (?)", forecast_time_dimension.id, user_ids, product_ids)
         .select("user_dimension_id AS user_id, SUM(amount) AS revenue_amount")
         .group("user_dimension_id")
-      pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id = ?", forecast_time_dimension.id, user_ids, product.id)
+      pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id in (?)", forecast_time_dimension.id, user_ids, product_ids)
         .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
         .group("user_dimension_id, stage_dimension_id")
     end
@@ -521,39 +522,14 @@ class NewForecastTeam
     return 0 if goal > 0 && !team.company.forecast_gap_to_quota_positive
     return 'N/A' if average_deal_size <= 0 or win_rate <= 0
     (gap_to_quota.abs / (win_rate * average_deal_size)).ceil
-    # return 0 if gap_to_quota <= 0
-    # members_gap_to_quota = 0
-    # new_deals = 0
-    #
-    # teams.each do |team|
-    #   num = team.new_deals_needed
-    #   members_gap_to_quota += team.gap_to_quota
-    #   if num != 'N/A'
-    #     new_deals += num
-    #   end
-    # end
-    # return 'N/A' if new_deals == 'N/A'
-    #
-    # members.each do |member|
-    #   next if leader and member.member == leader.member
-    #   members_gap_to_quota += member.gap_to_quota
-    #   if member.new_deals_needed != 'N/A'
-    #     new_deals += member.new_deals_needed
-    #   end
-    #
-    # end
-    # return 'N/A' if new_deals == 'N/A'
+  end
 
-    # leader_gap_to_quota = gap_to_quota - members_gap_to_quota
-    #
-    # if leader_gap_to_quota > 0
-    #   if leader.win_rate > 0 and leader.average_deal_size > 0
-    #     new_deals += (leader_gap_to_quota / (leader.win_rate * leader.average_deal_size)).ceil
-    #   else
-    #     return 'N/A'
-    #   end
-    # end
-    # new_deals
+  def product_ids
+    @_product_ids ||= if product.present?
+      [product.id]
+    elsif product_family.present?
+      product_family.products.collect(&:id)
+    end
   end
 
   def complete_deals

@@ -222,7 +222,7 @@ Rails.application.routes.draw do
         get :metadata
       end
     end
-    resources :revenue, only: [:index, :create] do
+    resources :revenue, only: [:create] do
       collection do
         get :forecast_detail
       end
@@ -292,6 +292,8 @@ Rails.application.routes.draw do
     end
     resources :forecasts, only: [:index, :show] do
       collection do
+        get :revenue_data
+        get :pipeline_data
         get :old_detail
         get :detail
         get :old_product_detail
