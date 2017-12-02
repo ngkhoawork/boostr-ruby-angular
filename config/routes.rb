@@ -452,6 +452,8 @@ Rails.application.routes.draw do
     end
     resources :publisher_details do
       member do
+        get :extended_fields
+        get :associations
         get :activities
       end
     end

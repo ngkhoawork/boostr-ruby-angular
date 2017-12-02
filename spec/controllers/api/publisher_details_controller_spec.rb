@@ -13,6 +13,24 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
   end
   before { sign_in user }
 
+  describe '#extended_fields' do
+    let(:response_first_custom_field) { response_body[:publisher_custom_field][0] }
+
+    subject { get :extended_fields, id: publisher.id }
+
+    before do
+      publisher.create_publisher_custom_field(company: company, text1: publisher_custom_field_option.value)
+    end
+
+    it 'returns publisher\'s fields' do
+      subject
+      expect(response).to have_http_status(200)
+      expect(response_first_custom_field[:field_label]).to eq publisher_custom_field_name.field_label
+      expect(response_first_custom_field[:field_type]).to eq publisher_custom_field_name.field_type
+      expect(response_first_custom_field[:field_value]).to eq publisher_custom_field_option.value
+    end
+  end
+
   describe '#activities' do
     let!(:activity) { Activity.create!(company: company, user: user) }
 
@@ -28,6 +46,22 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
     end
   end
 
+  describe '#associations' do
+    let!(:member) { create(:publisher_member, publisher: publisher, user: user) }
+    let!(:contact) { create(:contact, publisher: publisher, client: client, company: company) }
+
+    subject { get :associations, id: publisher.id }
+
+    it 'returns publisher\'s associations' do
+      subject
+      expect(response).to have_http_status(200)
+      expect(response_body).to have_key :members
+      expect(response_body).to have_key :contacts
+      expect(response_body_member_ids).to include member.id
+      expect(response_body_contact_ids).to include contact.id
+    end
+  end
+
   private
 
   def response_body
@@ -36,6 +70,14 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
 
   def first_item
     @_first_item ||= response_body.first
+  end
+
+  def response_body_member_ids
+    response_body[:members].map { |member| member[:id] }
+  end
+
+  def response_body_contact_ids
+    response_body[:contacts].map { |contact| contact[:id] }
   end
 
   def company
@@ -64,5 +106,22 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
 
   def user
     @_user ||= create(:user, company: company)
+  end
+
+  def publisher_custom_field_name
+    @_publisher_custom_field_name ||=
+      create(
+        :publisher_custom_field_name,
+        company: company,
+        field_label: 'Last release date',
+        field_type: 'text',
+        field_index: 1,
+        position: 1
+      )
+  end
+
+  def publisher_custom_field_option
+    @_publisher_custom_field_option ||=
+      create(:publisher_custom_field_option, publisher_custom_field_name: publisher_custom_field_name)
   end
 end
