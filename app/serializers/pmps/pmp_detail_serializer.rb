@@ -9,7 +9,9 @@ class Pmps::PmpDetailSerializer < ActiveModel::Serializer
     :budget_loc,
     :currency,
     :budget_delivered,
+    :budget_delivered_loc,
     :budget_remaining,
+    :budget_remaining_loc,
     :start_date,
     :end_date
   )

@@ -18,7 +18,8 @@ class Pmp < ActiveRecord::Base
   scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) if (start_date && end_date).present? }
 
   before_validation :convert_currency, on: :create
-
+  before_create :set_budget_remaining_and_delivered
+  
   def exchange_rate
     company.exchange_rate_for(currency: self.curr_cd)
   end
@@ -29,5 +30,12 @@ class Pmp < ActiveRecord::Base
     if self.budget.nil? && self.budget_loc.present?
       self.budget = self.budget_loc * exchange_rate
     end
+  end
+
+  def set_budget_remaining_and_delivered
+    self.budget_remaining = self.budget
+    self.budget_remaining_loc = self.budget_loc
+    self.budget_delivered = 0
+    self.budget_delivered_loc = 0
   end
 end

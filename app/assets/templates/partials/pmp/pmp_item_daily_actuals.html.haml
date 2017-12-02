@@ -15,7 +15,7 @@
           %th.left eCPM
           %th.left Revenue
       %tbody{infinite: {scroll: 'loadMoreData()', 'scroll-disabled': 'isLoading || allDataLoaded', 'scroll-distance': '0.5'}}
-        %tr{ ng: { if: 'pmpItemDailyActuals && pmpItemDailyActuals.length > 0', repeat: "pmpItemDailyActual in pmpItemDailyActuals"} }
+        %tr{ ng: { repeat: "pmpItemDailyActual in pmpItemDailyActuals"} }
           %td
             {{ pmpItemDailyActual.date | date: 'M/d/yyyy' }}
           %td
@@ -24,15 +24,16 @@
             %strong
               {{ pmpItemDailyActual.ad_unit }}
           %td
-            {{ pmpItemDailyActual.bids | currency:'$':0 }}
+            {{ pmpItemDailyActual.bids | currency:currency_symbol:0 }}
           %td
             {{ pmpItemDailyActual.impressions }}
           %td
             {{ pmpItemDailyActual.win_rate | percentage:0 }}
           %td
-            {{ pmpItemDailyActual.price | currency:'$':0 }}
+            {{ pmpItemDailyActual.price | currency:currency_symbol:0 }}
           %td.left
             {{ pmpItemDailyActual.revenue_loc | currency:currency_symbol:0 }}
         %tr{ ng: { if: '!pmpItemDailyActuals || pmpItemDailyActuals.length == 0' } }
-          %td.center{ 'colspan': '5' }
-            No data available
+          %td.center{ 'colspan': '8' }
+            No data available. Please import data in 
+            %a{'href': '', 'ng-href': '/settings/data_import'} Settings/Data Import

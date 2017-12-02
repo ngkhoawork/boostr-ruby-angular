@@ -15,7 +15,7 @@
           %th.right 7 Day Run Rate
           %th.right 30 Day Run Rate
       %tbody
-        %tr{ ng: { if: 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0', repeat: "pmpItem in currentPMP.pmp_items | orderBy: 'deal_id'"} }
+        %tr{ ng: { repeat: "pmpItem in currentPMP.pmp_items | orderBy: 'deal_id'"} }
           %td.left
             {{ pmpItem.ssp_deal_id }}
           %td.left
@@ -31,3 +31,6 @@
             {{ pmpItem.sevenDayRunRate }}
           %td.left
             {{ pmpItem.thirtyDayRunRate }}
+        %tr{ ng: { if: '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' } }
+          %td.center{ 'colspan': '7' }
+            No data available

@@ -118,6 +118,25 @@ if !deal.stage.open && deal.stage.probability == 100 && deal.io.present?
   end
 end
 
+if !deal.stage.open && deal.stage.probability == 100 && deal.pmp.present?
+  json.pmp do
+    json.extract! deal.pmp, :id, :name, :budget, :budget_delivered, :budget_remaining, :budget_loc, :budget_delivered_loc, :budget_remaining_loc, :start_date, :end_date, :curr_cd
+    if deal.pmp.currency.present? 
+      json.currency_symbol deal.pmp.currency.curr_symbol
+    end
+    if deal.pmp.agency.present?
+      json.agency deal.pmp.agency, :id, :name
+    end
+    if deal.pmp.advertiser.present?
+      json.advertiser deal.pmp.advertiser, :id, :name
+    end
+    json.pmp_items deal.pmp.pmp_items do |pmp_item|
+      json.extract! pmp_item, :ssp_deal_id, :budget, :budget_delivered, :budget_remaining_loc, :budget_loc, :budget_delivered_loc, :budget_remaining_loc 
+      json.ssp pmp_item.ssp
+    end
+  end
+end
+
 json.values deal.values
 json.fields deal.fields
 

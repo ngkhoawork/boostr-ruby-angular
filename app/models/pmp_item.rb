@@ -8,7 +8,7 @@ class PmpItem < ActiveRecord::Base
   validates :ssp_deal_id, :budget, :budget_loc, presence: true
 
   before_validation :convert_currency, on: :create
-  before_create :set_budget_remaining
+  before_create :set_budget_remaining_and_delivered
 
   private
 
@@ -18,8 +18,10 @@ class PmpItem < ActiveRecord::Base
     end
   end
 
-  def set_budget_remaining
+  def set_budget_remaining_and_delivered
     self.budget_remaining = self.budget
     self.budget_remaining_loc = self.budget_loc
+    self.budget_delivered = 0
+    self.budget_delivered_loc = 0
   end
 end

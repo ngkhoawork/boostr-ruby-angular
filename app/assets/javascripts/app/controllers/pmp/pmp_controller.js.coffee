@@ -4,7 +4,7 @@
     $scope.currentPMP = {}
     $scope.currency_symbol = '$'
     $scope.canEditIO = true
-    $scope.selectedItem = {}
+    $scope.selectedDeliveryItem = {}
     $scope.selectedPriceItem = {}
     $scope.pmpItemDailyActuals = []
     $scope.isLoading = false
@@ -29,7 +29,7 @@
         PMP.pmp_item_daily_actuals($routeParams.id).then (data) ->
           $scope.pmpItemDailyActuals = data
         
-        $scope.updateChart($scope.currentPMP.pmp_items[0])
+        $scope.updateDeliveryChart($scope.currentPMP.pmp_items[0])
         $scope.updatePriceChart($scope.currentPMP.pmp_items[0])
 
         $scope.currency_symbol = (->
@@ -74,9 +74,9 @@
       PMPMember.update(id: data.id, pmp_id: $scope.currentPMP.id, pmp_member: data).then (pmp) ->
         $scope.currentPMP = pmp
 
-    $scope.updateChart = (pmpItem) ->
+    $scope.updateDeliveryChart = (pmpItem) ->
       if pmpItem
-        $scope.selectedItem = pmpItem
+        $scope.selectedDeliveryItem = pmpItem
         if graphData[pmpItem.id]
           drawChart(graphData[pmpItem.id], '#pmp-delivery-chart-container', '#pmp-delivery-chart')
         else
@@ -105,12 +105,13 @@
           ]
         when '#pmp-price-revenue-chart'
           [
-            {name: 'Price', graphType: 1, active: true, unit: '$', color: c(0), values: data.map((item) -> parseFloat(item.price))}
-            {name: 'Revenue', graphType: 2, active: true, unit: '$', color: c(1), values: data.map((item) -> parseFloat(item.revenue))}          
+            {name: 'Price', graphType: 1, active: true, unit: $scope.currency_symbol, color: c(0), values: data.map((item) -> parseFloat(item.price))}
+            {name: 'Revenue', graphType: 2, active: true, unit: $scope.currency_symbol, color: c(1), values: data.map((item) -> parseFloat(item.revenue))}          
           ]
         else []
 
     drawChart = (data, containerID, svgID) ->
+      # return if data.length == 0
       chartContainer = angular.element(containerID)
       margin =
           top: 65
@@ -126,6 +127,7 @@
       days = data.map((item) -> item.date)
       dataset = getGraphDataSet(data, svgID)
       return if dataset.length == 0 
+
       svg = d3.select(svgID)
               .attr("preserveAspectRatio", "xMinYMin meet")
               .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + height)
@@ -137,13 +139,13 @@
       # Axes
       y1Max = y2Max = 100
       if svgID == '#pmp-delivery-chart'
-        maxData = d3.max [dataset[0],dataset[1]], (item) -> d3.max item.values
+        maxData = d3.max([dataset[0],dataset[1]], (item) -> d3.max item.values) || 100
         y1Max = Math.ceil(maxData*1.2 / (ticks - 1)) * (ticks - 1)
         y2Max = 100
       else
-        maxData = d3.max [dataset[0]], (item) -> d3.max item.values
+        maxData = d3.max([dataset[0]], (item) -> d3.max item.values) || 100
         y1Max = Math.ceil(maxData*1.2 / (ticks - 1)) * (ticks - 1)
-        maxData = d3.max [dataset[1]], (item) -> d3.max item.values
+        maxData = d3.max([dataset[1]], (item) -> d3.max item.values) || 100
         y2Max = Math.ceil(maxData*1.2 / (ticks - 1)) * (ticks - 1)
       y1TickValues = []
       y2TickValues = []
@@ -161,12 +163,12 @@
               .innerTickSize(-width)
               .outerTickSize(0)
               .tickValues(y1TickValues)
-              .tickFormat (v) -> if dataset[0].unit == '$' then '$' + v else v + dataset[0].unit
+              .tickFormat (v) -> if dataset[0].unit == $scope.currency_symbol then $scope.currency_symbol + v else v + dataset[0].unit
       y2Axis = d3.svg.axis().scale(y2).orient('right')
               .innerTickSize(width)
               .outerTickSize(0)
               .tickValues(y2TickValues)
-              .tickFormat (v) -> if dataset[dataset.length-1].unit == '$' then '$' + v else v + dataset[dataset.length-1].unit
+              .tickFormat (v) -> if dataset[dataset.length-1].unit == $scope.currency_symbol then $scope.currency_symbol + v else v + dataset[dataset.length-1].unit
       svg.append('g').attr('class', 'axisX')
         .attr('transform', 'translate(0,' + height + ')')
         .call(xAxis)
@@ -244,12 +246,13 @@
             .duration(500)      
             .style("opacity", 0);
       mouseOver = (title, unit) ->
+        selectedItem = if svgID == '#pmp-delivery-chart' then $scope.selectedDeliveryItem else $scope.selectedPriceItem
         return (d) ->
           d3.select(this).transition().duration(500).attr("r", 6)     
           tooltip.transition()        
               .duration(200)      
               .style("opacity", .9);      
-          tooltip.html('<p>' + $scope.selectedItem.ssp_deal_id + '</p><p><span>' + (if unit == '$' then '$' + d else d + unit) + '</span></p><p><span>' + title + '</span></p>')  
+          tooltip.html('<p>' + selectedItem.ssp_deal_id + '</p><p><span>' + (if unit == '$' then '$' + d else d + unit) + '</span></p><p><span>' + title + '</span></p>')  
               .style("left", (d3.event.pageX) - 50 + "px")     
               .style("top", (d3.event.pageY + 18) + "px")
       setTimeout ->
@@ -284,7 +287,6 @@
           pmp_id: () -> $scope.currentPMP.id
       modalInstance.result.then (pmp_item) ->
         $scope.currentPMP.pmp_items.push pmp_item
-        , () ->
 
     init()
   ]

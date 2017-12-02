@@ -63,6 +63,7 @@ class Deal::PmpGenerateService
             budget_delivered_loc: 0,
             budget_remaining: deal_product.budget,
             budget_remaining_loc: deal_product.budget_loc,
+            is_guaranteed: deal_product.is_guaranteed
         }
         PmpItem.create!(pmp_item_param)
       end
@@ -72,9 +73,6 @@ class Deal::PmpGenerateService
   def destroy_pmp
     pmp = deal.pmp
     if pmp.present?
-      pmp.pmp_item_daily_actuals.destroy_all
-      pmp.pmp_items.destroy_all
-      pmp.pmp_members.destroy_all
       pmp.destroy
       deal.deal_products.product_type_of('PMP').update_all(open: true)
     end

@@ -258,7 +258,7 @@
             }
         }
     }
-    #io-details {
+    #io-details, #pmp-details {
         .table-wrapper {
             overflow-y: hidden;
         }
@@ -288,6 +288,10 @@
             a {
                 color: $main-color;
             }
+        }
+
+        .stats-col {
+            width: 14%;
         }
     }
     .deal-insights {

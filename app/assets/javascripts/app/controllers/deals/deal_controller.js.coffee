@@ -16,12 +16,9 @@
   $scope.currency_symbol = '$'
   $scope.ealertReminder = false
   $scope.activitiesOrder = '-happened_at'
-<<<<<<< 0d82b4de998cf3405dfb0c51a20ebd0c3221e1f4
   $scope.activities = []
-=======
   $scope.isPmpDeal = false
   $scope.pmpColumns = 0
->>>>>>> pmp detail page
   $anchorScroll()
   $scope.operativeIntegration =
     isEnabled: false
@@ -177,7 +174,7 @@
       if(err && err.status == 404)
         $location.url('/deals')
 
-    $scope.anchors = [{name: 'campaign', id: 'campaign'},
+        $scope.anchors = [{name: 'campaign', id: 'campaign'},
                       {name: 'activities', id: 'activities'},
                       {name: 'team & split', id: 'teamsplit'},
                       {name: 'attachments', id: 'attachments'},
@@ -191,7 +188,6 @@
     getSsps()
 
   checkPmpDeal = () ->
-    console.log('checkPmpDeal')
     $scope.isPmpDeal = false
     $scope.pmpColumns = 0
     _.each $scope.currentDeal.products, (product) ->
@@ -201,7 +197,6 @@
   getSsps = () ->
     SSP.all().then (ssps) ->
       $scope.ssps = ssps
-      console.log($scope.ssps);
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
@@ -669,7 +664,7 @@
         # validation check for pmp products
         if !stage.open && $scope.isPmpDeal
           for deal_product in $scope.currentDeal.deal_products
-            if !deal_product.ssp_id
+            if !deal_product.ssp_id || !deal_product.ssp_deal_id
               $scope.errors['ssp_id' + deal_product.id] = "can't be blank"
             if !deal_product.ssp_deal_id
               $scope.errors['ssp_deal_id' + deal_product.id] = "can't be blank"
@@ -757,7 +752,6 @@
           deal_contact.id == deletedContact.id
 
   $scope.submitDealContact = (deal_contact, option) ->
-    console.log(option)
     if option == 'Billing'
       if !confirm("Confirm you want to assign an unrelated billing contact")
         return

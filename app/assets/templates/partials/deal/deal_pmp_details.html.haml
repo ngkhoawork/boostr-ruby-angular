@@ -1,0 +1,83 @@
+#pmp-details{ ng: { if: 'currentDeal.pmp && currentDeal.stage.probability == 100', init: 'currentPMP = currentDeal.pmp' }}
+  .block.detail-stats
+    %div.stats-body
+      %div.mb30
+        %span.title PMP Details
+        %a{ 'href': '', 'ng-href': '/revenue/pmps/{{currentDeal.pmp.id}}' } {{ currentDeal.pmp.name }}
+
+      .clearfix
+      %div.stats-numbers.mb30
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Budget
+              .title {{currentPMP.budget_loc | currency:currentPMP.currency_symbol:0 }}
+              .subtitle{'ng-if': 'currentPMP.curr_cd != "USD"'} {{currentPMP.budget | currency: '$' : 0}}
+
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Delivered
+              .title {{currentPMP.budget_delivered_loc | currency:currentPMP.currency_symbol:0 }}
+              .subtitle{'ng-if': 'currentPMP.curr_cd != "USD"'} {{currentPMP.budget_delivered | currency: '$' : 0}}
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Remaining
+              .title {{currentPMP.budget_remaining_loc | currency:currentPMP.currency_symbol:0 }}
+              .subtitle{'ng-if': 'currentPMP.curr_cd != "USD"'} {{currentPMP.budget_remaining | currency: '$' : 0}}
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Advertiser
+              .title {{currentPMP.advertiser.name}}
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Agency
+              .title {{currentPMP.agency.name}}
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Start
+              .title {{currentPMP.start_date | date: 'M/d/yyyy'}}
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description End
+              .title {{currentPMP.end_date | date: 'M/d/yyyy'}}
+    
+      .clearfix
+
+  .block
+    %div.mb20
+      %span.title PMP Items
+      
+    .table-wrapper
+      %table.table.table-hover
+        %thead
+          %tr
+            %th.left Deal ID
+            %th.left SSP
+            %th.left Budget
+            %th.left Delivered
+            %th.left Remaining
+            %th.right 7 Day Run Rate
+            %th.right 30 Day Run Rate
+        %tbody
+          %tr{ ng: { if: 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0', repeat: "pmpItem in currentPMP.pmp_items | orderBy: 'deal_id'"} }
+            %td.left
+              {{ pmpItem.ssp_deal_id }}
+            %td.left
+              %strong
+                {{ pmpItem.ssp.name }}
+            %td.left
+              {{ pmpItem.budget_loc | currency:currentPMP.currency_symbol:0 }}
+            %td.left
+              {{ pmpItem.budget_delivered_loc | currency:currentPMP.currency_symbol:0 }}
+            %td.left
+              {{ pmpItem.budget_remaining_loc | currency:currentPMP.currency_symbol:0 }}
+            %td.left
+              {{ pmpItem['7_day_run_rate'] }}
+            %td.left
+              {{ pmpItem['30_day_run_rate'] }}

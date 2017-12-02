@@ -383,17 +383,17 @@ class Deal < ActiveRecord::Base
             deal_members: {
               methods: [:name]
             },
-              activities: {
-                include: {
-                  creator: {},
-                  contacts: {},
-                  assets: {
-                    methods: [
-                      :presigned_url
-                    ]
-                  }
+            activities: {
+              include: {
+                creator: {},
+                contacts: {},
+                assets: {
+                  methods: [
+                    :presigned_url
+                  ]
                 }
               }
+            }
           ],
           methods: [
             :formatted_name

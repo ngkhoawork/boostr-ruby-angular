@@ -39,3 +39,6 @@
             %span{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "pmp_member.share", 'on-after-save': 'updatePMPMember(pmp_member)', 'ng-if': "currentUser.is_admin || canEditIO" }
             %span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
               {{ pmp_member.share }}%
+        %tr{ ng: { if: '!currentPMP.pmp_members || currentPMP.pmp_members.length == 0' } }
+          %td.center{ 'colspan': '4' }
+            No data available

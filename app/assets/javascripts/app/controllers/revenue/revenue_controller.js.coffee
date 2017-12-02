@@ -9,7 +9,7 @@
     $scope.revenueFilters = [
       {name: 'IOs', value: ''}
       {name: 'No-Match IOs', value: 'no-match'}
-      {name: 'PMP', value: 'pmp'}
+      {name: 'PMPs', value: 'pmp'}
       {name: 'Upside Revenues', value: 'upside'}
       {name: 'At Risk Revenues', value: 'risk'}
     ]

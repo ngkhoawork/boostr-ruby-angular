@@ -13,7 +13,7 @@ class Api::PmpItemDailyActualsController < ApplicationController
           )          
         else
           render json: ActiveModel::ArraySerializer.new(
-            pmp_item_daily_actuals.order(:date)
+            pmp_item_daily_actuals.order(:pmp_item_id, :date)
               .limit(limit)
               .offset(offset),
             each_serializer: Pmps::PmpItemDailyActualSerializer

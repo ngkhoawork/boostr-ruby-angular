@@ -26,7 +26,7 @@
 						%i.fa.fa-trash.delete-product{'ng-if': 'currentDeal.stage.open', 'ng-click': 'deleteDealProduct(deal_product)'}
 					%td{'ng-if': 'isPmpDeal'}
 						.dropdown{'ng-class':'{error: errors["ssp_id"+deal_product.id]}'}
-							%span.error-text {{errors["ssp_id"+deal_product.id]}}
+							/ %span.error-text {{errors["ssp_id"+deal_product.id]}}
 							%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
 								%span.editable{'ng-class': '{"not-selected": !deal_product.ssp_id}'}
 									{{deal_product.ssp.name || 'Select value'}}
@@ -37,7 +37,7 @@
 										%span.text {{ssp.name}}
 					%td{'ng-if': 'isPmpDeal'}
 						.text-field{'ng-class':'{error: errors["ssp_deal_id"+deal_product.id]}'}
-							%span.error-text {{errors["ssp_deal_id"+deal_product.id]}}
+							/ %span.error-text {{errors["ssp_deal_id"+deal_product.id]}}
 							%input.editable{ 'ng-model': "deal_product.ssp_deal_id", name: "ssp_deal_id", placeholder: 'Enter Deal-ID', 'ng-blur': 'updateDealProduct(deal_product)' }
 					%td{'ng-if': 'isPmpDeal'}
 						.boolean-field.show-hide-remainder-form

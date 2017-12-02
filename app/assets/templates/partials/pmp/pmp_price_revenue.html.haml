@@ -1,7 +1,7 @@
 .block#pmp-price-revenue
   %div.mb20
     %span.title Price & Revenue
-  %div.custom-field-item
+  %div.custom-field-item{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0' }
     %div.custom-field-item-label
       %label{ for: 'type' } Deal-ID
     %div.custom-field-item-field
@@ -14,5 +14,7 @@
           %li{'ng-repeat': 'pmpItem in currentPMP.pmp_items', 'ng-class': '{active: selectedPriceItem.id == pmpItem.id}'}
             %a{'href': '', 'ng-click': 'updatePriceChart(pmpItem)'}
               %span.text {{pmpItem.ssp_deal_id || pmpItem.id}}
-  %div#pmp-price-revenue-chart-container.mb20
+  %div#pmp-price-revenue-chart-container.mb20{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0' }
     %svg#pmp-price-revenue-chart
+  %div.center{ 'ng-if': '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' }
+    %span No data available
