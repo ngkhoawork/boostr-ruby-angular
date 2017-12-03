@@ -9,6 +9,8 @@ class PmpItem < ActiveRecord::Base
 
   before_validation :convert_currency, on: :create
   before_create :set_budget_remaining_and_delivered
+  after_save :update_pmp_budgets
+  after_destroy :update_pmp_budgets
 
   private
 
@@ -24,4 +26,9 @@ class PmpItem < ActiveRecord::Base
     self.budget_delivered = 0
     self.budget_delivered_loc = 0
   end
+
+  def update_pmp_budgets
+    self.pmp.calculate_budgets!
+  end
+
 end

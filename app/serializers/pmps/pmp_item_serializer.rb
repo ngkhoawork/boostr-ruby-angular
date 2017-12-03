@@ -8,7 +8,9 @@ class Pmps::PmpItemSerializer < ActiveModel::Serializer
     :budget_delivered,
     :budget_delivered_loc,
     :budget_remaining,
-    :budget_remaining_loc
+    :budget_remaining_loc,
+    :run_rate_7_days,
+    :run_rate_30_days
   )
 
   def ssp

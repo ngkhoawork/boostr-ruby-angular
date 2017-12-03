@@ -232,10 +232,18 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.integer "category_id"
     t.integer "subcategory_id"
     t.decimal "revenue_amount",       precision: 10, scale: 2
+    t.integer "client_region_id"
+    t.integer "client_segment_id"
+    t.string  "team_name"
+    t.string  "seller_names",                                  default: [], array: true
   end
 
   add_index "account_revenue_facts", ["account_dimension_id"], name: "index_account_revenue_facts_on_account_dimension_id", using: :btree
+  add_index "account_revenue_facts", ["client_region_id"], name: "index_account_revenue_facts_on_client_region_id", using: :btree
+  add_index "account_revenue_facts", ["client_segment_id"], name: "index_account_revenue_facts_on_client_segment_id", using: :btree
   add_index "account_revenue_facts", ["company_id"], name: "index_account_revenue_facts_on_company_id", using: :btree
+  add_index "account_revenue_facts", ["seller_names"], name: "index_account_revenue_facts_on_seller_names", using: :gin
+  add_index "account_revenue_facts", ["team_name"], name: "index_account_revenue_facts_on_team_name", using: :btree
   add_index "account_revenue_facts", ["time_dimension_id"], name: "index_account_revenue_facts_on_time_dimension_id", using: :btree
 
   create_table "active_admin_comments", force: :cascade do |t|
@@ -442,7 +450,7 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.integer  "user_id"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
-    t.decimal  "changed_amount", precision: 15, scale: 2
+    t.decimal  "changed_amount", precision: 12, scale: 2
   end
 
   add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree

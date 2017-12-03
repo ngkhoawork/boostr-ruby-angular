@@ -24,6 +24,17 @@ class Pmp < ActiveRecord::Base
     company.exchange_rate_for(currency: self.curr_cd)
   end
 
+  def calculate_budgets!
+    items = self.pmp_items.to_a
+    self.budget = items.map(&:budget).inject(0, &:+)
+    self.budget_loc = items.map(&:budget_loc).inject(0, &:+)
+    self.budget_delivered = items.map(&:budget_delivered).inject(0, &:+)
+    self.budget_delivered_loc = items.map(&:budget_delivered_loc).inject(0, &:+)
+    self.budget_remaining = items.map(&:budget_remaining).inject(0, &:+)
+    self.budget_remaining_loc = items.map(&:budget_remaining_loc).inject(0, &:+)
+    self.save!
+  end
+
   private
 
   def convert_currency

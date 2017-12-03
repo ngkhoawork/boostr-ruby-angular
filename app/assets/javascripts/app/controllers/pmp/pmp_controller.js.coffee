@@ -287,6 +287,12 @@
           pmp_id: () -> $scope.currentPMP.id
       modalInstance.result.then (pmp_item) ->
         $scope.currentPMP.pmp_items.push pmp_item
+        $scope.currentPMP.budget = parseFloat($scope.currentPMP.budget) + parseFloat(pmp_item.budget)
+        $scope.currentPMP.budget_loc = parseFloat($scope.currentPMP.budget_loc) + parseFloat(pmp_item.budget_loc)
+        $scope.currentPMP.budget_delivered = parseFloat($scope.currentPMP.budget_delivered) + parseFloat(pmp_item.budget_delivered)
+        $scope.currentPMP.budget_delivered_loc = parseFloat($scope.currentPMP.budget_delivered_loc) + parseFloat(pmp_item.budget_delivered_loc)
+        $scope.currentPMP.budget_remaining = parseFloat($scope.currentPMP.budget_remaining) + parseFloat(pmp_item.budget_remaining)
+        $scope.currentPMP.budget_remaining_loc = parseFloat($scope.currentPMP.budget_remaining_loc) + parseFloat(pmp_item.budget_remaining_loc)
 
     init()
   ]
