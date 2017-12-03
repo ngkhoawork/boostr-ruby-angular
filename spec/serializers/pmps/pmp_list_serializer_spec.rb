@@ -7,9 +7,9 @@ describe Pmps::PmpListSerializer do
     expect(serializer.deal_id).to eq(pmp.deal_id)
     expect(serializer.advertiser.symbolize_keys).to eq(id: pmp.advertiser.id, name: pmp.advertiser.name)
     expect(serializer.agency.symbolize_keys).to eq(id: pmp.agency.id, name: pmp.agency.name)
-    expect(serializer.budget_delivered).to eq(pmp.budget_delivered)
+    expect(serializer.budget_loc).to eq(pmp.budget_loc)
     expect(serializer.start_date).to eq(pmp.start_date)
-    expect(serializer.currency).to eq(pmp.currency)
+    expect(serializer.currency.symbolize_keys).to eq(curr_cd: pmp.currency.curr_cd, curr_symbol: pmp.currency.curr_symbol)
   end
 
   describe 'without advertiser' do
@@ -25,14 +25,6 @@ describe Pmps::PmpListSerializer do
       pmp.agency = nil
       serializer = described_class.new(pmp)
       expect(serializer.agency).to eq(nil)
-    end
-  end
-
-  describe 'without currency' do 
-    it 'returns nil for currency' do
-      pmp.currency = nil
-      serializer = described_class.new(pmp)
-      expect(serializer.currency).to eq(nil)
     end
   end
 
