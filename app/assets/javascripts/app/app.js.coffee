@@ -345,6 +345,10 @@
       templateUrl: 'gmail_extension.html'
       controller: 'GmailExtensionController'
 
+    .when '/publisher/:id',
+      templateUrl: 'publishers/publisher.html'
+      controller: 'PablisherController'
+
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])

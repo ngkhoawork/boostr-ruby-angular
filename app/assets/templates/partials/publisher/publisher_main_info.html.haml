@@ -1,0 +1,37 @@
+.block.detail-stats.publisher-stats
+  .client-title
+    %span.main-title
+      Publisher Name
+      -#%i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentClient)'}
+      -#%i.fa.fa-trash.delete-deal{'ng-click': 'delete(currentClient)'}
+  -#  .detail-info
+  -#    Last Touched: {{getLastTouch(currentClient) | date: 'MMM dd, yyyy'}}
+  -#.stats-body
+  -#  .stats-col
+  -#    .col-body-wrap
+  -#      .col-body
+  -#        .col-description
+  -#          Won Deals
+  -#        .col-title
+  -#          {{clientStats.won || 0}}
+  -#  .stats-col
+  -#    .col-body-wrap
+  -#      .col-body
+  -#        .col-description
+  -#          Lost Deals
+  -#        .col-title
+  -#          {{clientStats.lost || 0}}
+  -#  .stats-col
+  -#    .col-body-wrap
+  -#      .col-body
+  -#        .col-description
+  -#          Open Deals
+  -#        .col-title
+  -#          {{clientStats.open || 0}}
+  -#  .stats-col
+  -#    .col-body-wrap
+  -#      .col-body
+  -#        .col-description
+  -#          Interactions
+  -#        .col-title
+  -#          {{clientStats.interaction || 0}}
