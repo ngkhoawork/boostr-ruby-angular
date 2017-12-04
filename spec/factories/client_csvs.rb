@@ -17,6 +17,8 @@ FactoryGirl.define do
     country { ISO3166::Country.all_translated.sample }
     phone   { FFaker::PhoneNumber.phone_number }
     website { FFaker::Internet.http_url }
+    unmatched_fields { Hash.new }
+    company_fields nil
 
     factory :client_csv_with_custom_fields do
       after(:build) do |item|
@@ -41,8 +43,9 @@ def setup_client_csv_custom_fields(item)
       FFaker::BaconIpsum.paragraph
     end
 
-    item.singleton_class.class_eval { attr_accessor cf.to_csv_header }
-    item.send("#{cf.to_csv_header}=", value)
+    item.unmatched_fields[cf.to_csv_header] = value
+    # item.singleton_class.class_eval { attr_accessor cf.to_csv_header }
+    # item.send("#{cf.to_csv_header}=", value)
   end
   item.custom_field_names = nil
 end

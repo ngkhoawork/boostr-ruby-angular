@@ -3,11 +3,14 @@ class ClientCsv
 
   CLIENT_TYPES = %(agency advertiser).freeze
 
-  attr_accessor :account_id, :name, :type, :parent_account, :company_id,
-                :user_id, :category, :subcategory, :teammembers, :region,
-                :segment, :holding_company, :address, :city, :state, :zip,
-                :country, :phone, :website, :custom_field_names,
-                :replace_team
+  ATTRS = [
+    :account_id, :name, :type, :parent_account, :company_id,
+    :user_id, :category, :subcategory, :teammembers, :region,
+    :segment, :holding_company, :address, :city, :state, :zip,
+    :country, :phone, :website, :custom_field_names,
+    :replace_team, :unmatched_fields, :company_fields
+  ]
+  attr_accessor(*ATTRS)
 
   validates_presence_of :name, :type, :company_id
 
@@ -27,32 +30,31 @@ class ClientCsv
     attributes.each do |name, value|
       send("#{name}=", value)
     end
-
-    # load_client
-    # set_company_fields
   end
 
   def perform
     return self.errors.full_messages unless self.valid?
-    if import_client
+
+    assign_client_attributes
+
+    if client.valid?
+      client.save!
       import_client_members
       import_custom_fields
+      true
+    else
+      false
     end
+  end
+
+  def object_errors
+    client.errors.full_messages
   end
 
   private
 
-  # def set_company_fields
-  #   if company_id
-  #     cf_names = company.account_cf_names.map(&:to_csv_header)
-  #     cf_names.each do |cf_name|
-  #       singleton_class.class_eval { attr_accessor cf_name }
-  #     end
-  #   end
-  # end
-
-  def import_client
-    client.update_attributes(client_import_params)
+  def assign_client_attributes
+    client.assign_attributes(client_import_params)
   end
 
   def import_client_members
@@ -64,11 +66,14 @@ class ClientCsv
   end
 
   def import_custom_fields
-    cf_names = company.account_cf_names
     cf_values = {}
-    cf_names.each do |cf_name|
-      cf_values[cf_name.field_name] = send(cf_name.to_csv_header)
+
+    if unmatched_fields.present?
+      account_cf_names.each do |cf_name|
+        cf_values[cf_name.field_name] = unmatched_fields[cf_name.to_csv_header]
+      end
     end
+
     if cf_values.compact.any?
       client.upsert_custom_fields(cf_values)
     end
@@ -126,7 +131,7 @@ class ClientCsv
 
   def category_value_params
     {
-      id: find_client_value(category_field.id),
+      id: find_client_value_id(category_field.id),
       subject_id: client.id,
       value_type: 'Option',
       subject_type: 'Client',
@@ -138,7 +143,7 @@ class ClientCsv
 
   def region_value_params
     {
-      id: find_client_value(region_field.id),
+      id: find_client_value_id(region_field.id),
       subject_id: client.id,
       value_type: 'Option',
       subject_type: 'Client',
@@ -150,7 +155,7 @@ class ClientCsv
 
   def segment_value_params
     {
-      id: find_client_value(segment_field.id),
+      id: find_client_value_id(segment_field.id),
       subject_id: client.id,
       value_type: 'Option',
       subject_type: 'Client',
@@ -162,7 +167,7 @@ class ClientCsv
 
   def type_value_params
     {
-      id: find_client_value(type_field.id),
+      id: find_client_value_id(type_field.id),
       subject_id: client.id,
       value_type: 'Option',
       subject_type: 'Client',
@@ -172,10 +177,10 @@ class ClientCsv
     }
   end
 
-  def find_client_value(field_id)
-    client.values.find do |value|
-      value.field_id == field_id
-    end
+  def find_client_value_id(field_id)
+    client.values.find {
+      |value| value.field_id == field_id
+    }&.id
   end
 
   def client_type_id
@@ -188,25 +193,11 @@ class ClientCsv
   end
 
   def advertiser_type_id
-    if self.class.class_variable_defined?(:@@advertiser_type_id)
-      self.class.class_variable_get(:@@advertiser_type_id)
-    else
-      self.class.class_variable_set(
-        :@@advertiser_type_id,
-        type_field.options.where(name: "Advertiser").first.id
-      )
-    end
+    company_fields.advertiser_type_id
   end
 
   def agency_type_id
-    if self.class.class_variable_defined?(:@@agency_type_id)
-      self.class.class_variable_get(:@@agency_type_id)
-    else
-      self.class.class_variable_set(
-        :@@agency_type_id,
-        type_field.options.where(name: "Agency").first.id
-      )
-    end
+    company_fields.agency_type_id
   end
 
   def client_relation
@@ -218,7 +209,7 @@ class ClientCsv
   end
 
   def client_category
-    @_client_category ||= category_field.option_from_name(category)
+    @_client_category ||= category_field.option_from_name(category) if category.present?
   end
 
   def client_subcategory
@@ -226,11 +217,11 @@ class ClientCsv
   end
 
   def client_region
-    @_client_region ||= region_field.option_from_name(region)
+    @_client_region ||= region_field.option_from_name(region) if region.present?
   end
 
   def client_segment
-    @_client_segment ||= segment_field.option_from_name(segment)
+    @_client_segment ||= segment_field.option_from_name(segment) if segment.present?
   end
 
   def client_holding_company
@@ -292,7 +283,7 @@ class ClientCsv
     @client_member_list = []
     if teammembers.present?
       client_members.each do |member|
-        user = company.users.where('email ilike ?', member[0]).first
+        user = User.where(company_id: company_id).where('email ilike ?', member[0]).first
         if user.nil?
           errors.add(:teammember, "#{member[0]} could not be found in the users list")
         else
@@ -345,76 +336,22 @@ class ClientCsv
   end
 
   def category_field
-    if self.class.class_variable_defined?(:@@category_field)
-      self.class.class_variable_get(:@@category_field)
-    else
-      self.class.class_variable_set(
-        :@@category_field,
-        Field.find_by(
-          company_id: company_id, subject_type: 'Client', name: 'Category'
-        )
-      )
-    end
+    company_fields.category_field
   end
 
   def region_field
-    if self.class.class_variable_defined?(:@@region_field)
-      self.class.class_variable_get(:@@region_field)
-    else
-      self.class.class_variable_set(
-        :@@region_field,
-        Field.find_by(
-          company_id: company_id, subject_type: 'Client', name: 'Region'
-        )
-      )
-    end
+    company_fields.region_field
   end
 
   def segment_field
-    if self.class.class_variable_defined?(:@@segment_field)
-      self.class.class_variable_get(:@@segment_field)
-    else
-      self.class.class_variable_set(
-        :@@segment_field,
-        Field.find_by(
-          company_id: company_id, subject_type: 'Client', name: 'Segment'
-        )
-      )
-    end
+    company_fields.segment_field
   end
 
   def type_field
-    if self.class.class_variable_defined?(:@@type_field)
-      self.class.class_variable_get(:@@type_field)
-    else
-      self.class.class_variable_set(
-        :@@type_field,
-        Field.find_by(
-          company_id: company_id, subject_type: 'Client', name: 'Client Type'
-        )
-      )
-    end
+    company_fields.type_field
   end
 
-  def company
-    @_company ||= Company.find(company_id)
+  def account_cf_names
+    company_fields.account_cf_names
   end
-
-  # def set_company_fields
-  #   unless self.class.class_variable_defined?(:@@type_field)
-  #     self.class.class_variable_set(:@@type_field, type_field)
-  #   end
-
-  #   unless self.class.class_variable_defined?(:@@category_field)
-  #     self.class.class_variable_set(:@@category_field, category_field)
-  #   end
-
-  #   unless self.class.class_variable_defined?(:@@region_field)
-  #     self.class.class_variable_set(:@@region_field, region_field)
-  #   end
-
-  #   unless self.class.class_variable_defined?(:@@segment_field)
-  #     self.class.class_variable_set(:@@segment_field, segment_field)
-  #   end
-  # end
 end

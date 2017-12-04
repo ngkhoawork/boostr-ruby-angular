@@ -122,7 +122,7 @@ class Api::ClientsController < ApplicationController
     end
   end
 
-  def csv_upload
+  def csv_import
     if params[:file].present?
       SmartCsvImportWorker.perform_async(
         params[:file][:s3_file_path],

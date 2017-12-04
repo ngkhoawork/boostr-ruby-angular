@@ -7,10 +7,21 @@ class Importers::ClientsService < Importers::BaseService
   private
 
   def build_csv(row)
-    ClientCsv.new(row)
+    params = ClientCsv::ATTRS.each_with_object({}) {|attr, obj| obj[attr] = row[attr]}
+    params[:unmatched_fields] = row.except(*params.keys)
+    params[:company_fields] = company_fields
+    ClientCsv.new(params)
   end
 
   def parser_options
     { force_simple_split: true, strip_chars_from_headers: /[\-"]/ }
+  end
+
+  def company_fields
+    @_company_fields ||= Models::AccountCompanyDataService.new(company_id).perform
+  end
+
+  def import_source
+    'ui'
   end
 end

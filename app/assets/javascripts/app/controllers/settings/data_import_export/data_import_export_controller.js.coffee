@@ -19,7 +19,7 @@
       keyboard: false
       resolve:
         api_url: ->
-          '/api/clients/import'
+          '/api/clients/csv_import'
         custom_fields_api: ->
           'AccountCfName'
         metadata: ->

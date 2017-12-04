@@ -8,7 +8,7 @@ class SmartCsvImportWorker < BaseWorker
       csv_file = File.open(tempfile_path, "r:ISO-8859-1")
 
       begin
-        klass.constantize.import(file: tempfile_path, import_subject: klass, user_id: id_object)
+        klass.constantize.import(file: tempfile_path, import_subject: klass, user_id: id_object, original_filename: original_filename)
         obj.delete
       rescue Exception => e
         obj.delete

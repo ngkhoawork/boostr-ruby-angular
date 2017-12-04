@@ -27,8 +27,12 @@ class Importers::BaseService < BaseService
 
     if csv_object.valid?
       begin
-        csv_object.perform
-        csv_import_log.count_imported
+        if csv_object.perform
+          csv_import_log.count_imported
+        else
+          csv_import_log.count_failed
+          csv_import_log.log_error csv_object.object_errors
+        end
       rescue Exception => e
         csv_import_log.count_failed
         csv_import_log.log_error ['Internal Server Error', row.compact.to_s, e.message]

@@ -238,7 +238,7 @@ Rails.application.routes.draw do
         get :search_clients
         get :filter_options
         get :category_options
-        post :import
+        post :csv_import
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index, :create, :update, :destroy] do
@@ -248,9 +248,23 @@ Rails.application.routes.draw do
       end
     end
     resources :client_connections, only: [:index, :create, :update, :destroy]
-    resources :deal_custom_field_names, only: [:index, :show, :create, :update, :destroy]
-    resources :deal_product_cf_names, only: [:index, :show, :create, :update, :destroy]
-    resources :account_cf_names, only: [:index, :show, :create, :update, :destroy]
+    resources :deal_custom_field_names, only: [:index, :show, :create, :update, :destroy] do
+      collection do
+        get :csv_headers
+      end
+    end
+
+    resources :deal_product_cf_names, only: [:index, :show, :create, :update, :destroy] do
+      collection do
+        get :csv_headers
+      end
+    end
+
+    resources :account_cf_names, only: [:index, :show, :create, :update, :destroy] do
+      collection do
+        get :csv_headers
+      end
+    end
     resources :contact_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_reports, only: [:index]
 

@@ -1,18 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe ClientCsv, type: :model do
-  CLASS_VARIABLES_TO_CLEAN = [
-    :@@type_field, :@@category_field, :@@region_field,
-    :@@segment_field, :@@advertiser_type_id, :@@agency_type_id
-  ]
-
   it { should validate_presence_of(:name) }
   it { should validate_presence_of(:type) }
   it { should validate_presence_of(:company_id) }
-
-  after do
-    reset_class_variables(ClientCsv, CLASS_VARIABLES_TO_CLEAN)
-  end
 
   context 'custom validations' do
     context 'type validation' do
@@ -295,10 +286,10 @@ RSpec.describe ClientCsv, type: :model do
       account_cf = AccountCf.last
       data = client_csv_with_custom_fields
 
-      expect(account_cf.datetime1).to eq(data.production_date)
-      expect(account_cf.boolean1).to eq(data.risky_click)
-      expect(account_cf.number1.to_f).to eq(data.target_views)
-      expect(account_cf.text1).to eq(data.deal_type)
+      expect(account_cf.datetime1).to eq(data.unmatched_fields[:production_date])
+      expect(account_cf.boolean1).to eq(data.unmatched_fields[:risky_click])
+      expect(account_cf.number1.to_f).to eq(data.unmatched_fields[:target_views])
+      expect(account_cf.text1).to eq(data.unmatched_fields[:deal_type])
     end
   end
 
@@ -398,7 +389,8 @@ RSpec.describe ClientCsv, type: :model do
   def client_csv(opts={})
     defaults = {
       company_id: company.id,
-      user_id: user.id
+      user_id: user.id,
+      company_fields: company_fields
     }
     @_client_csv ||= build :client_csv, defaults.merge(opts)
   end
@@ -407,7 +399,8 @@ RSpec.describe ClientCsv, type: :model do
     defaults = {
       company_id: company.id,
       user_id: user.id,
-      custom_field_names: company.account_cf_names
+      custom_field_names: company.account_cf_names,
+      company_fields: company_fields
     }
 
     @_client_csv_with_custom_fields ||= build :client_csv_with_custom_fields,
@@ -504,5 +497,9 @@ RSpec.describe ClientCsv, type: :model do
     create :account_cf_name, field_type: 'boolean',  field_label: 'Risky Click?', company: company
     create :account_cf_name, field_type: 'number',   field_label: 'Target Views', company: company
     create :account_cf_name, field_type: 'text',     field_label: 'Deal Type', company: company
+  end
+
+  def company_fields
+    company.account_fields_data
   end
 end

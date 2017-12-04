@@ -70,6 +70,10 @@ class Api::DealProductCfNamesController < ApplicationController
     render nothing: true
   end
 
+  def csv_headers
+    render json: deal_product_cf_names.order("position asc"), each_serializer: CsvHeaderSerializer
+  end
+
   private
 
   def deal_product_cf_name

@@ -62,6 +62,10 @@ class Api::AccountCfNamesController < ApplicationController
     render nothing: true
   end
 
+  def csv_headers
+    render json: account_cf_names.order("position asc"), each_serializer: CsvHeaderSerializer
+  end
+
   private
 
   def account_cf_name
