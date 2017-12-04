@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :client_csv do
+  factory :csv_client, class: Csv::Client do
     company_id nil
     name { FFaker::Company.name }
     type { %w{advertiser agency}.sample }
@@ -20,7 +20,7 @@ FactoryGirl.define do
     unmatched_fields { Hash.new }
     company_fields nil
 
-    factory :client_csv_with_custom_fields do
+    factory :csv_client_with_custom_fields do
       after(:build) do |item|
         setup_client_csv_custom_fields(item)
       end
@@ -44,8 +44,6 @@ def setup_client_csv_custom_fields(item)
     end
 
     item.unmatched_fields[cf.to_csv_header] = value
-    # item.singleton_class.class_eval { attr_accessor cf.to_csv_header }
-    # item.send("#{cf.to_csv_header}=", value)
   end
   item.custom_field_names = nil
 end

@@ -1,4 +1,4 @@
-class ClientCsv
+class Csv::Client
   include ActiveModel::Validations
 
   CLIENT_TYPES = %(agency advertiser).freeze

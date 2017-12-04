@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ClientCsv, type: :model do
+RSpec.describe Csv::Client, type: :model do
   it { should validate_presence_of(:name) }
   it { should validate_presence_of(:type) }
   it { should validate_presence_of(:company_id) }
@@ -8,25 +8,25 @@ RSpec.describe ClientCsv, type: :model do
   context 'custom validations' do
     context 'type validation' do
       it 'allows advertiser type' do
-        client_csv(type: 'advertiser')
-        expect(client_csv).to be_valid
+        csv_client(type: 'advertiser')
+        expect(csv_client).to be_valid
       end
 
       it 'allows agency type' do
-        client_csv(type: 'agency')
-        expect(client_csv).to be_valid
+        csv_client(type: 'agency')
+        expect(csv_client).to be_valid
       end
 
       it 'is case insensitive' do
-        client_csv(type: 'aGeNcY')
-        expect(client_csv).to be_valid
+        csv_client(type: 'aGeNcY')
+        expect(csv_client).to be_valid
       end
 
       it 'rejects incorrect data in type' do
-        client_csv(type: 'deal')
-        expect(client_csv).not_to be_valid
+        csv_client(type: 'deal')
+        expect(csv_client).not_to be_valid
 
-        expect(client_csv.errors.full_messages).to include(
+        expect(csv_client.errors.full_messages).to include(
           'Type is invalid. Use "Agency" or "Advertiser" string'
         )
       end
@@ -34,11 +34,11 @@ RSpec.describe ClientCsv, type: :model do
 
     context 'parent_client_exists' do
       it 'rejects clients which parents don\'t exist' do
-        client_csv(parent_account: 'N/A')
+        csv_client(parent_account: 'N/A')
 
-        expect(client_csv).not_to be_valid
+        expect(csv_client).not_to be_valid
 
-        expect(client_csv.errors.full_messages).to include (
+        expect(csv_client.errors.full_messages).to include (
           'Parent account N/A could not be found'
         )
       end
@@ -46,169 +46,169 @@ RSpec.describe ClientCsv, type: :model do
       it 'accepts existing parent client' do
         client
 
-        client_csv(parent_account: client.name)
+        csv_client(parent_account: client.name)
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
 
       it 'does case insensitive search' do
         client
 
-        client_csv(parent_account: client.name.upcase)
+        csv_client(parent_account: client.name.upcase)
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
     end
 
     context 'category validation' do
       it 'rejects nonexistent categories' do
-        client_csv(type: 'advertiser', category: 'N/A')
+        csv_client(type: 'advertiser', category: 'N/A')
 
-        expect(client_csv).not_to be_valid
+        expect(csv_client).not_to be_valid
 
-        expect(client_csv.errors.full_messages).to include "Category N/A could not be found"
+        expect(csv_client.errors.full_messages).to include "Category N/A could not be found"
       end
 
       it 'allows valid category' do
-        client_csv(type: 'advertiser', category: category.name)
+        csv_client(type: 'advertiser', category: category.name)
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
 
       it 'is valid without categories' do
-        client_csv(type: 'advertiser', category: nil)
+        csv_client(type: 'advertiser', category: nil)
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
 
       it 'is valid with incorrect category if agency' do
-        client_csv(type: 'Agency', category: 'N/A')
+        csv_client(type: 'Agency', category: 'N/A')
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
     end
 
     context 'subcategory validation' do
       it 'rejects nonexistent subcategories' do
-        client_csv(type: 'advertiser', category: category.name, subcategory: 'N/A')
+        csv_client(type: 'advertiser', category: category.name, subcategory: 'N/A')
 
-        expect(client_csv).not_to be_valid
+        expect(csv_client).not_to be_valid
 
-        expect(client_csv.errors.full_messages).to include "Subcategory N/A could not be found"
+        expect(csv_client.errors.full_messages).to include "Subcategory N/A could not be found"
       end
 
       it 'rejects subcategory from wrong category' do
         subcategory(option_id: other_category.id)
 
-        client_csv(type: 'advertiser', category: category.name, subcategory: subcategory.name)
+        csv_client(type: 'advertiser', category: category.name, subcategory: subcategory.name)
 
-        expect(client_csv).not_to be_valid
+        expect(csv_client).not_to be_valid
       end
 
       it 'allows valid subcategory' do
-        client_csv(type: 'advertiser', category: category.name, subcategory: subcategory.name)
+        csv_client(type: 'advertiser', category: category.name, subcategory: subcategory.name)
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
 
       it 'is valid without subcategories' do
-        client_csv(type: 'advertiser', category: nil, subcategory: nil)
+        csv_client(type: 'advertiser', category: nil, subcategory: nil)
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
 
       it 'is valid with incorrect subcategory if agency' do
-        client_csv(type: 'Agency', category: 'N/A', subcategory: 'N/A')
+        csv_client(type: 'Agency', category: 'N/A', subcategory: 'N/A')
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
     end
 
     context 'client_members_have_share' do
       it 'rejects client members without shares' do
-        client_csv(teammembers: 'example@test.com;example2@test.com')
+        csv_client(teammembers: 'example@test.com;example2@test.com')
 
-        expect(client_csv).not_to be_valid
+        expect(csv_client).not_to be_valid
 
-        expect(client_csv.errors.full_messages).to include "Teammember example@test.com does not have a share value"
-        expect(client_csv.errors.full_messages).to include "Teammember example2@test.com does not have a share value"
+        expect(csv_client.errors.full_messages).to include "Teammember example@test.com does not have a share value"
+        expect(csv_client.errors.full_messages).to include "Teammember example2@test.com does not have a share value"
       end
 
       it 'allows client members with shares' do
         add_user('example@test.com')
         add_user('example2@test.com')
 
-        client_csv(teammembers: 'example@test.com/50;example2@test.com/50')
+        csv_client(teammembers: 'example@test.com/50;example2@test.com/50')
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
     end
 
     context 'client_member_users_exist' do
       it 'rejects nonexistent client members' do
-        client_csv(teammembers: 'example@test.com/50;example2@test.com/50')
+        csv_client(teammembers: 'example@test.com/50;example2@test.com/50')
 
-        expect(client_csv).not_to be_valid
+        expect(csv_client).not_to be_valid
 
-        expect(client_csv.errors.full_messages).to include "Teammember example@test.com could not be found in the users list"
-        expect(client_csv.errors.full_messages).to include "Teammember example2@test.com could not be found in the users list"
+        expect(csv_client.errors.full_messages).to include "Teammember example@test.com could not be found in the users list"
+        expect(csv_client.errors.full_messages).to include "Teammember example2@test.com could not be found in the users list"
       end
 
       it 'accepts existing users' do
         add_user('example@test.com')
         add_user('example2@test.com')
 
-        client_csv(teammembers: 'example@test.com/50;example2@test.com/50')
+        csv_client(teammembers: 'example@test.com/50;example2@test.com/50')
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
     end
 
     context 'region exists' do
       it 'rejects nonexistent regions' do
-        client_csv(region: 'N/A')
+        csv_client(region: 'N/A')
 
-        expect(client_csv).not_to be_valid
+        expect(csv_client).not_to be_valid
 
-        expect(client_csv.errors.full_messages).to include "Region N/A could not be found"
+        expect(csv_client.errors.full_messages).to include "Region N/A could not be found"
       end
 
       it 'accepts existing region' do
-        client_csv(region: region.name)
+        csv_client(region: region.name)
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
     end
 
     context 'segment exists' do
       it 'rejects nonexistent segment' do
-        client_csv(segment: 'N/A')
+        csv_client(segment: 'N/A')
 
-        expect(client_csv).not_to be_valid
+        expect(csv_client).not_to be_valid
 
-        expect(client_csv.errors.full_messages).to include "Segment N/A could not be found"
+        expect(csv_client.errors.full_messages).to include "Segment N/A could not be found"
       end
 
       it 'accepts existing segment' do
-        client_csv(segment: segment.name)
+        csv_client(segment: segment.name)
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
     end
 
     context 'holding company exists' do
       it 'rejects nonexistent holding company' do
-        client_csv(type: 'Agency', holding_company: 'N/A')
+        csv_client(type: 'Agency', holding_company: 'N/A')
 
-        expect(client_csv).not_to be_valid
+        expect(csv_client).not_to be_valid
 
-        expect(client_csv.errors.full_messages).to include "Holding company N/A could not be found"
+        expect(csv_client.errors.full_messages).to include "Holding company N/A could not be found"
       end
 
       it 'accepts existing holding company' do
-        client_csv(type: 'Agency', holding_company: holding_company.name)
+        csv_client(type: 'Agency', holding_company: holding_company.name)
 
-        expect(client_csv).to be_valid
+        expect(csv_client).to be_valid
       end
     end
 
@@ -216,11 +216,11 @@ RSpec.describe ClientCsv, type: :model do
       it 'checks name match to just one client' do
         create_clients(2, name: 'Duplicate Name')
 
-        client_csv(type: 'Advertiser', name: 'Duplicate Name')
+        csv_client(type: 'Advertiser', name: 'Duplicate Name')
 
-        expect(client_csv).not_to be_valid
+        expect(csv_client).not_to be_valid
 
-        expect(client_csv.errors.full_messages).to include "Account name Duplicate Name matched more than one account record"
+        expect(csv_client.errors.full_messages).to include "Account name Duplicate Name matched more than one account record"
       end
     end
 
@@ -228,11 +228,11 @@ RSpec.describe ClientCsv, type: :model do
       it 'rejects record being set as a parent of self' do
         create_clients(1, name: 'Parent account')
 
-        client_csv(name: 'Parent account', parent_account: 'Parent account')
+        csv_client(name: 'Parent account', parent_account: 'Parent account')
 
-        expect(client_csv).not_to be_valid
+        expect(csv_client).not_to be_valid
 
-        expect(client_csv.errors.full_messages).to include "Account Parent account can't be set as a parent of itself"
+        expect(csv_client.errors.full_messages).to include "Account Parent account can't be set as a parent of itself"
       end
     end
   end
@@ -242,7 +242,7 @@ RSpec.describe ClientCsv, type: :model do
       parent_account = create_client
 
       expect do
-        client_csv(
+        csv_client(
           parent_account: parent_account.name,
           category: category.name,
           subcategory: subcategory.name,
@@ -250,41 +250,41 @@ RSpec.describe ClientCsv, type: :model do
           segment: segment.name,
           teammembers: "#{new_user.email}/55",
         ).perform
-      end.to change(Client, :count).by(1)
+      end.to change(::Client, :count).by(1)
 
       subject = Client.last
       address = subject.address
 
-      expect(subject.name).to eq client_csv.name
-      expect(subject.website).to eq client_csv.website
-      expect(subject.parent_client.name).to eq client_csv.parent_account
+      expect(subject.name).to eq csv_client.name
+      expect(subject.website).to eq csv_client.website
+      expect(subject.parent_client.name).to eq csv_client.parent_account
 
-      expect(subject.client_category.name).to eq client_csv.category
-      expect(subject.client_subcategory.name).to eq client_csv.subcategory
-      expect(subject.client_region.name).to eq client_csv.region
-      expect(subject.client_segment.name).to eq client_csv.segment
+      expect(subject.client_category.name).to eq csv_client.category
+      expect(subject.client_subcategory.name).to eq csv_client.subcategory
+      expect(subject.client_region.name).to eq csv_client.region
+      expect(subject.client_segment.name).to eq csv_client.segment
 
       client_member = subject.client_members.find_by(user_id: new_user.id)
       expect(client_member).to be_present
       expect(client_member.share).to eq 55
 
-      expect(address.street1).to eq client_csv.address
-      expect(address.city).to eq client_csv.city
-      expect(address.state).to eq client_csv.state
-      expect(address.zip).to eq client_csv.zip
-      expect(address.country).to eq client_csv.country
-      expect(address.phone).to eq client_csv.phone.gsub(/[^0-9]/, '')
+      expect(address.street1).to eq csv_client.address
+      expect(address.city).to eq csv_client.city
+      expect(address.state).to eq csv_client.state
+      expect(address.zip).to eq csv_client.zip
+      expect(address.country).to eq csv_client.country
+      expect(address.phone).to eq csv_client.phone.gsub(/[^0-9]/, '')
     end
 
     it 'imports custom fields' do
       setup_custom_fields(company)
 
       expect do
-        client_csv_with_custom_fields.perform
+        csv_client_with_custom_fields.perform
       end.to change(AccountCf, :count).by(1)
 
       account_cf = AccountCf.last
-      data = client_csv_with_custom_fields
+      data = csv_client_with_custom_fields
 
       expect(account_cf.datetime1).to eq(data.unmatched_fields[:production_date])
       expect(account_cf.boolean1).to eq(data.unmatched_fields[:risky_click])
@@ -299,7 +299,7 @@ RSpec.describe ClientCsv, type: :model do
       parent_account = create_client
 
       expect do
-        client_csv(
+        csv_client(
           name: existing_account.name,
           type: 'Advertiser',
           parent_account: parent_account.name,
@@ -310,30 +310,30 @@ RSpec.describe ClientCsv, type: :model do
           teammembers: "#{new_user.email}/55",
           website: 'https://wonka.com/'
         ).perform
-      end.not_to change(Client, :count)
+      end.not_to change(::Client, :count)
 
       subject = existing_account.reload
       address = existing_account.address
 
-      expect(subject.name).to eq client_csv.name
-      expect(subject.website).to eq client_csv.website
-      expect(subject.parent_client.name).to eq client_csv.parent_account
+      expect(subject.name).to eq csv_client.name
+      expect(subject.website).to eq csv_client.website
+      expect(subject.parent_client.name).to eq csv_client.parent_account
 
-      expect(subject.client_category.name).to eq client_csv.category
-      expect(subject.client_subcategory.name).to eq client_csv.subcategory
-      expect(subject.client_region.name).to eq client_csv.region
-      expect(subject.client_segment.name).to eq client_csv.segment
+      expect(subject.client_category.name).to eq csv_client.category
+      expect(subject.client_subcategory.name).to eq csv_client.subcategory
+      expect(subject.client_region.name).to eq csv_client.region
+      expect(subject.client_segment.name).to eq csv_client.segment
 
       client_member = subject.client_members.find_by(user_id: new_user.id)
       expect(client_member).to be_present
       expect(client_member.share).to eq 55
 
-      expect(address.street1).to eq client_csv.address
-      expect(address.city).to eq client_csv.city
-      expect(address.state).to eq client_csv.state
-      expect(address.zip).to eq client_csv.zip
-      expect(address.country).to eq client_csv.country
-      expect(address.phone).to eq client_csv.phone.gsub(/[^0-9]/, '')
+      expect(address.street1).to eq csv_client.address
+      expect(address.city).to eq csv_client.city
+      expect(address.state).to eq csv_client.state
+      expect(address.zip).to eq csv_client.zip
+      expect(address.country).to eq csv_client.country
+      expect(address.phone).to eq csv_client.phone.gsub(/[^0-9]/, '')
 
       expect(subject.values.map(&:option).map(&:name).sort).to eq(
         ["Advertiser", "CPG", "Small", "West"]
@@ -345,7 +345,7 @@ RSpec.describe ClientCsv, type: :model do
     it 'deletes teammembers if flag is true' do
       existing_account = create_client(created_by: user.id)
 
-      client_csv(
+      csv_client(
         name: existing_account.name,
         replace_team: 'Y'
       ).perform
@@ -357,7 +357,7 @@ RSpec.describe ClientCsv, type: :model do
     it 'replaces teammembers in place of old ones' do
       existing_account = create_client(created_by: user.id)
 
-      client_csv(
+      csv_client(
         name: existing_account.name,
         teammembers: "#{new_user.email}/55",
         replace_team: 'Y'
@@ -386,16 +386,16 @@ RSpec.describe ClientCsv, type: :model do
     create :client, defaults.merge(opts)
   end
 
-  def client_csv(opts={})
+  def csv_client(opts={})
     defaults = {
       company_id: company.id,
       user_id: user.id,
       company_fields: company_fields
     }
-    @_client_csv ||= build :client_csv, defaults.merge(opts)
+    @_csv_client ||= build :csv_client, defaults.merge(opts)
   end
 
-  def client_csv_with_custom_fields(opts={})
+  def csv_client_with_custom_fields(opts={})
     defaults = {
       company_id: company.id,
       user_id: user.id,
@@ -403,7 +403,7 @@ RSpec.describe ClientCsv, type: :model do
       company_fields: company_fields
     }
 
-    @_client_csv_with_custom_fields ||= build :client_csv_with_custom_fields,
+    @_csv_client_with_custom_fields ||= build :csv_client_with_custom_fields,
       defaults.merge(opts)
   end
 
