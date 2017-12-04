@@ -1,7 +1,15 @@
 #publishers.z-detail-page.z-styles
-  .container-fluid
+  .container-fluid.pad
     .row
       .col-xs-9
         %div{ng: { include: '"partials/publisher/publisher_main_info.html"'}}
       .col-xs-9
+        %div{ng: { include: '"partials/publisher/publisher_fill_rate_chart.html"'}}
+      .col-xs-9
+        %div{ng: { include: '"partials/publisher/publisher_agreement.html"'}}
+      .col-xs-9
         %div{ng: { include: '"partials/publisher/publisher_contacts.html"'}}
+      .col-xs-3
+        %div{ng: { include: '"partials/publisher/publisher_detail.html"'}}
+      .col-xs-3
+        %div{ng: { include: '"partials/dashboard/activity.html"'}}

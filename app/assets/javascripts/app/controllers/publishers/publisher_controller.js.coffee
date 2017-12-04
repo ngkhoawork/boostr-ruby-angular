@@ -8,8 +8,6 @@
 
       PublisherDetails.associations(id: $routeParams.id).then (association) ->
         $scope.contacts = association.contacts
-        console.log association.contacts
-        
-        
+
     $scope.init()
 ]
