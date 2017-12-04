@@ -27,6 +27,18 @@ class Api::UsersController < ApplicationController
     render json: current_user
   end
 
+  def import
+    if params[:file].present?
+      UsersImportWorker.perform_async(current_user.id,
+                                      params[:file][:s3_file_path],
+                                      params[:file][:original_filename],
+                                      'User')
+      render json: {
+          message: 'Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)'
+      }, status: :ok
+    end
+  end
+
   private
 
   def user_params

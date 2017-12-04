@@ -49,6 +49,7 @@ gem 'pluck_to_hash'
 gem 'upsert'
 gem 'hashie'
 gem 'active_record_union'
+gem 'smarter_csv'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

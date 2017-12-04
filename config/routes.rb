@@ -168,6 +168,7 @@ Rails.application.routes.draw do
 
     resources :users, only: [:index, :update] do
       collection do
+        post 'import'
         post 'starting_page'
         get :signed_in_user
       end

@@ -142,6 +142,21 @@
         metadata: ->
           false
 
+  $scope.showUploadUsersModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/users_import.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/users/import'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.showUploadAssetsModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/assets_upload.html'
