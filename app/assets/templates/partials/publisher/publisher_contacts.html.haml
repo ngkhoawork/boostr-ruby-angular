@@ -1,0 +1,23 @@
+.block
+  %div.mb20
+    %span.title Contacts
+
+  %table.table.table-striped
+    %thead
+      %tr
+        %th.left Name
+        %th.left Advertiser
+        %th.left Email
+        %th.left Phone
+        %th.left Last Touch
+      %tbody
+        %tr{ ng: { repeat: 'contact in contacts'} }
+          %td
+            %a{'ng-href': '/contacts/{{contact.id}}', target: "_blank"}
+              {{contact.name}}
+          %td
+            %a{'ng-href': '/accounts/{{contact.client.id}}', target: "_blank"}
+              {{contact.client.name}}
+          %td {{contact.email}}
+          %td {{contact.phone}}
+          %td {{contact.activity_updated_at  | date : 'shortDate'}}

@@ -4,6 +4,9 @@ class Api::Publishers::ContactsSerializer < ActiveModel::Serializer
     :note,
     :email,
     :primary_client_contact,
+    :name,
+    :activity_updated_at,
+    :phone,
     :client
   )
 

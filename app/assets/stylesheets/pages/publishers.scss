@@ -1,4 +1,7 @@
 #publishers {
+  position: relative;
+  overflow-x: hidden;
+
   .z-sliding-filter {
     top: 0;
     .dropdown-menu {
@@ -117,13 +120,12 @@
   }
 
   .publisher-stats {
-    display: flex;
-
     .stats-body {
       display: flex;
       flex: 1;
       justify-content: space-around;
       align-items: center;
+      padding-top: 25px;
     }
 
     .stats-col {
@@ -133,11 +135,13 @@
       text-align: center;
       position: relative;
       display: inline-block;
+
       .col-description {
         color: #818689;
+        font-size: 17px;
       }
       .col-title {
-        font-size: 18px;
+        font-size: 30px;
         font-weight: 600;
       }
     }
