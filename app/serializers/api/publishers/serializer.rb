@@ -13,6 +13,7 @@ class Api::Publishers::Serializer < ActiveModel::Serializer
   )
 
   has_one :publisher_stage, serializer: Api::Publishers::StageSerializer
+  has_many :publisher_members, serializer: Api::Publishers::MembersSerializer
 
   private
 

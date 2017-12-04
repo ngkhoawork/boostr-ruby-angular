@@ -26,6 +26,7 @@ class Publisher < ActiveRecord::Base
                       }
 
   accepts_nested_attributes_for :address
+  accepts_nested_attributes_for :publisher_members, allow_destroy: true
   accepts_nested_attributes_for :publisher_custom_field
 
   pg_search_scope :search_by_name,

@@ -211,6 +211,55 @@ RSpec.describe Api::PublishersController, type: :controller do
         expect(response_body).to have_key :errors
       end
     end
+
+    context 'when publisher_members_attributes are provided' do
+      let(:response_user_ids) { response_body[:publisher_members].map { |u| u[:user_id] } }
+      let!(:user_membership) { publisher.publisher_members.create(user: user) }
+
+      context 'for adding a new member' do
+        let(:params) do
+          {
+            id: publisher.id,
+            publisher: {
+              publisher_members_attributes: [
+                {
+                  user_id: another_user.id
+                }
+              ]
+            }
+          }
+        end
+
+        it 'creates a publisher member' do
+          expect{subject}.to change{publisher.publisher_members.count}.by(1)
+          expect(response).to have_http_status(200)
+          expect(response_user_ids).to include another_user.id
+          expect(response_user_ids).to include user.id
+        end
+      end
+
+      context 'for deleting an existing member' do
+        let(:params) do
+          {
+            id: publisher.id,
+            publisher: {
+              publisher_members_attributes: [
+                {
+                  id: user_membership.id,
+                  _destroy: true
+                }
+              ]
+            }
+          }
+        end
+
+        it 'deletes a publisher member' do
+          subject
+          expect(response).to have_http_status(200)
+          expect(response_user_ids).not_to include user.id
+        end
+      end
+    end
   end
 
   describe '#settings' do

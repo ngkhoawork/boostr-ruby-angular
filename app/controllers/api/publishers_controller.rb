@@ -124,6 +124,12 @@ class Api::PublishersController < ApplicationController
         :mobile,
         :email
       ],
+      publisher_members_attributes: [
+        :id,
+        :user_id,
+        :owner,
+        :_destroy
+      ],
       publisher_custom_field_attributes: [
         :id,
         :company_id,
