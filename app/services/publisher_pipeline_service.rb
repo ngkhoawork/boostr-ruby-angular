@@ -5,10 +5,6 @@ class PublisherPipelineService < Report::BaseService
 
       acc << {
         id: publisher_stage.id,
-        name: publisher_stage.name,
-        probability: publisher_stage.probability,
-        estimated_monthly_impressions_sum: calculate_sum_for(publishers, :estimated_monthly_impressions),
-        actual_monthly_impressions_sum: calculate_sum_for(publishers, :actual_monthly_impressions),
         publishers: decorate_publishers(publishers)
       }
     end
@@ -31,13 +27,6 @@ class PublisherPipelineService < Report::BaseService
 
   def decorate_publishers(publishers)
     publishers.map { |publisher| Api::Publishers::PipelineSerializer.new(publisher).as_json }
-  end
-
-  def calculate_sum_for(publishers, field_name)
-    publishers.inject(0) do |sum, publisher|
-      field_value = publisher.send(field_name)
-      field_value ? (sum + field_value) : sum
-    end
   end
 
   def query_db(params)

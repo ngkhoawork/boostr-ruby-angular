@@ -137,6 +137,8 @@ RSpec.describe Api::PublishersController, type: :controller do
 
   describe '#pipeline' do
     let(:params) { {} }
+    let(:response_publisher_ids) { first_item[:publishers].map { |p| p[:id] } }
+
     subject { get :pipeline, params }
 
     it 'returns publishers by stages' do
@@ -145,9 +147,7 @@ RSpec.describe Api::PublishersController, type: :controller do
       expect(response).to be_success
       expect(response_body).to be_a_kind_of Array
       expect(first_item[:id]).to eq publisher_stage.id
-      expect(first_item[:name]).to eq publisher_stage.name
-      expect(first_item[:probability]).to eq publisher_stage.probability
-      expect(first_item[:publishers].map { |p| p[:id] }).to include publisher.id
+      expect(response_publisher_ids).to include publisher.id
     end
 
     context 'when an appropriate filter is included' do
@@ -232,6 +232,27 @@ RSpec.describe Api::PublishersController, type: :controller do
       expect(response_body[:publisher_stages]).to be_a_kind_of Array
       expect(response_type_ids).to include publisher_type_option.id
       expect(response_stage_ids).to include publisher_stage.id
+    end
+  end
+
+  describe '#pipeline_headers' do
+    let(:response_stage_ids) { response_body.map { |stage| stage[:id] } }
+
+    subject { get :pipeline_headers }
+
+    before { publisher_stage }
+
+    it 'returns pipeline headers' do
+      subject
+
+      expect(response).to be_success
+      expect(response_body).to be_a_kind_of Array
+      expect(response_stage_ids).to include publisher_stage.id
+      expect(first_item).to have_key :id
+      expect(first_item).to have_key :name
+      expect(first_item).to have_key :probability
+      expect(first_item).to have_key :estimated_monthly_impressions_sum
+      expect(first_item).to have_key :actual_monthly_impressions_sum
     end
   end
 

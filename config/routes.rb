@@ -446,8 +446,9 @@ Rails.application.routes.draw do
     resources :publishers do
       collection do
         get :pipeline
-        get :settings
         get :all_fields_report
+        get :settings
+        get :pipeline_headers
       end
     end
     resources :publisher_details do

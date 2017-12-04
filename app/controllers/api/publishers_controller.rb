@@ -26,10 +26,6 @@ class Api::PublishersController < ApplicationController
     end
   end
 
-  def settings
-    render json: Api::Publishers::SettingsSerializer.new(current_user.company)
-  end
-
   def all_fields_report
     respond_to do |format|
       format.json {
@@ -41,6 +37,14 @@ class Api::PublishersController < ApplicationController
                   filename: "reports-publishers-all_fields-#{DateTime.current}.csv"
       }
     end
+  end
+
+  def settings
+    render json: Api::Publishers::SettingsSerializer.new(current_user.company)
+  end
+
+  def pipeline_headers
+    render json: PublisherPipelineHeadersService.new(pipeline_params).perform
   end
 
   private
@@ -82,7 +86,20 @@ class Api::PublishersController < ApplicationController
   end
 
   def pipeline_params
-    filter_params.merge(page: params[:page], per: params[:per])
+    params
+      .permit(
+        :q,
+        :comscore,
+        :type_id,
+        :my_publishers_bool,
+        :my_team_publishers_bool,
+        :page,
+        :per,
+        custom_field_names: [:id, :field_option]
+      ).merge(
+        current_user: current_user,
+        company_id: current_user.company_id
+      )
   end
 
   def publisher_params
@@ -188,5 +205,9 @@ class Api::PublishersController < ApplicationController
       :page,
       :per_page
     ).merge(company_id: current_user.company_id)
+  end
+
+  def pipeline_headers_params
+    pipeline_params.except!(:page, :per)
   end
 end
