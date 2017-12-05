@@ -100,7 +100,7 @@
               %th
                 .z-sortable{by: 'type.name'}
                   Publisher Type
-          %tbody{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isListLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
+          %tbody{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
             %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
               %td
                 %a {{publisher.name}}
@@ -128,14 +128,14 @@
                         %span.text {{type.name}}
 
     .row.publishers-container{'ng-if': 'view == "columns"'}
-      .publishers-table{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPipelineLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
+      .publishers-table{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
         .publisher-column{'ng-repeat': 'stage in publishersPipeline', 'ng-init': 'columnIndex = $index; $last && coloringColumns()'}
           .column-header
             %span
               {{stage.probability}}%
               %br
               {{stage.name}}
-              %i ({{stage.publishers.length || 0}})
+              %i ({{stage.publishers_count || 0}})
             %span
               Estimated Impressions {{stage.estimated_monthly_impressions_sum || 0}}
             %svg{width: '17', height: '72'}

@@ -11,7 +11,6 @@ class PublishersQuery < BaseQuery
       .my_team_publishers(options[:my_team_publishers_bool], options[:current_user])
       .by_custom_fields(options[:custom_field_names])
       .search_by_name(options[:q])
-      .order('created_at DESC')
   end
 
   private

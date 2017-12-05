@@ -1,13 +1,13 @@
 @app.controller 'PablishersController', [
-  '$scope', '$document', '$timeout', '$modal', 'Publisher', 'PublishersFilter', 'shadeColor'
-  ($scope,   $document,   $timeout,   $modal,   Publisher,   PublishersFilter,   shadeColor) ->
+  '$scope', '$q', '$document', '$timeout', '$modal', 'Publisher', 'PublishersFilter', 'shadeColor'
+  ($scope,   $q,   $document,   $timeout,   $modal,   Publisher,   PublishersFilter,   shadeColor) ->
+
     $scope.publishers = []
     $scope.publishersPipeline = []
-    $scope.view = 'list'
+    $scope.view = 'columns'
     page = 1
     per = 10
-    $scope.isListLoading = false
-    $scope.isPipelineLoading = false
+    $scope.isPublishersLoading = false
     $scope.allPublishersLoaded = false
     $scope.publisherTypes = [
       {name: 'All'}
@@ -69,8 +69,7 @@
       $scope.publishers = []
       $scope.publishersPipeline = []
       page = 1
-      $scope.isListLoading = false
-      $scope.isPipelineLoading = false
+      $scope.isPublishersLoading = false
       $scope.allPublishersLoaded = false
 
     $scope.changeView = (view) ->
@@ -110,34 +109,49 @@
         when 'columns'
           getPublishersPipeline(params)
 
+    setLoading = (bool, err) ->
+      if bool then $scope.isPublishersLoading = bool else $timeout -> $scope.isPublishersLoading = bool
+      if err
+        $scope.allPublishersLoaded = true
+        console.log err
+
     getPublishersList = (params) ->
-      $scope.isListLoading = true
+      setLoading(true)
       Publisher.publishersList(params).then (publishers) ->
         $scope.allPublishersLoaded = !publishers || publishers.length < per
         if page++ > 1
           $scope.publishers = $scope.publishers.concat(publishers)
         else
           $scope.publishers = publishers
-        $scope.isListLoading = false
-      , ->
-        $scope.isListLoading = false
+        setLoading(false)
+      , (err) ->
+        setLoading(false, err)
 
     getPublishersPipeline = (params) ->
-      $scope.isPipelineLoading = true
-      Publisher.publishersPipeline(params).then (pipeline) ->
-        $scope.allPublishersLoaded = !pipeline || _.every pipeline, (stage) -> stage.publishers.length < per
-        if page++ > 1
+      setLoading(true)
+      if page is 1
+        $q.all(
+          headers: Publisher.pipelineHeaders(_.omit params, ['per', 'page'])
+          pipeline: Publisher.publishersPipeline(params)
+        ).then (data) ->
+          $scope.publishersPipeline = _.map data.headers, (stage) ->
+            _.extend stage, _.findWhere data.pipeline, id: stage.id
+          page++
+          $timeout -> addScrollEvent()
+          setLoading(false)
+        , (err) ->
+          setLoading(false, err)
+      else
+        Publisher.publishersPipeline(params).then (pipeline) ->
+          $scope.allPublishersLoaded = !pipeline || _.every pipeline, (stage) -> stage.publishers.length < per
           $scope.publishersPipeline = _.map $scope.publishersPipeline, (stage, i) ->
-            stage.publishers = stage.publishers.concat(pipeline[i].publishers)
+            stagePipeline = _.findWhere pipeline, id: stage.id
+            stage.publishers = [].concat stage.publishers, (stagePipeline && stagePipeline.publishers) || []
             stage
-        else
-          $scope.publishersPipeline = pipeline
-        $scope.isListLoading = false
-        $timeout -> addScrollEvent()
-        $scope.isPipelineLoading = false
-      , ->
-        $scope.isPipelineLoading = false
-        $scope.allPublishersLoaded = true
+          page++
+          setLoading(false)
+        , (err) ->
+          setLoading(false, err)
 
     $scope.loadMorePublishers = ->
       $scope.getPublishers(true)
@@ -240,20 +254,13 @@
       $scope.$on '$destroy', ->
         $document.unbind 'scroll'
 
-#    createRandomPublisher = (name) ->
-#      random = (min, max) -> Math.round(Math.random()*(max-min)) + min
-#      accounts = [15880, 16302, 810, 753, 6337, 19811]
-#      {
-#        publisher:
-#          comscore: Boolean(random(0, 1))
-#          name: name
-#          type_id: $scope.publisher_types[random(0, $scope.publisher_types.length - 1)].id
-#          publisher_stage_id: $scope.publisher_stages[random(0, $scope.publisher_stages.length - 1)].id
-#          client_id: accounts[random(0, accounts.length - 1)]
-#          estimated_monthly_impressions: random(1, 10)
-#      }
-#    setTimeout ->
-#      [1..500].map (i) -> Publisher.create(createRandomPublisher('Publisher ' + ('00' + i).slice(-3)))
-#    , 3000
+    $scope.$on 'updated_publishers', ->
+      if $scope.view != 'columns' then return;
+      params = getParams()
+      Publisher.pipelineHeaders(_.omit params, ['per', 'page']).then (headers) ->
+        $scope.publishersPipeline = _.map $scope.publishersPipeline, (stage) ->
+          stageHeader = _.findWhere headers, id: stage.id
+          stage.publishers_count = stageHeader.publishers_count if stageHeader
+          stage
 
 ]

@@ -1,5 +1,5 @@
 @service.service 'Publisher',
-  ['$resource', ( $resource ) ->
+  ['$resource', '$rootScope', '$q', ( $resource, $rootScope, $q ) ->
     resource = $resource '/api/publishers', {id: '@id'},
       publishersList:
         method: 'GET'
@@ -8,6 +8,10 @@
       publishersPipeline:
         method: 'GET'
         url: '/api/publishers/pipeline'
+        isArray: true
+      pipelineHeaders:
+        method: 'GET'
+        url: '/api/publishers/pipeline_headers'
         isArray: true
       publisherSettings:
         method: 'GET'
@@ -25,10 +29,20 @@
 
     this.publishersList = (params) -> resource.publishersList(params).$promise
     this.publishersPipeline = (params) -> resource.publishersPipeline(params).$promise
+    this.pipelineHeaders = (params) -> resource.pipelineHeaders(params).$promise
     this.publisherSettings = (params) -> resource.publisherSettings(params).$promise
-    this.create = (params) -> resource.create(params).$promise
-    this.update = (params) -> resource.update(params).$promise
     this.publisherReport = (params) -> resource.publisherReport(params).$promise
+    this.create = (params) -> resource.create(params).$promise
+
+    this.update = (params) ->
+      deferred = $q.defer()
+      resource.update params,
+        (resp) ->
+          deferred.resolve(resp)
+          $rootScope.$broadcast 'updated_publishers', resp
+        (err) ->
+          deferred.reject(err)
+      deferred.promise
 
     return
   ]
