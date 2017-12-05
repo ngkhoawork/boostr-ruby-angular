@@ -71,8 +71,6 @@ describe Report::RevenueByCategoryService do
       revenue_amount: 10_000,
       company: company,
       category_id: category.id,
-      client_region_id: region.id,
-      client_segment_id: segment.id,
       time_dimension: time_dimension
     )
   end
@@ -110,7 +108,15 @@ describe Report::RevenueByCategoryService do
   end
 
   def advertiser
-    @advertiser ||= create(:client, :advertiser, holding_company: holding_company, company: company)
+    @advertiser ||=
+      create(
+        :client,
+        :advertiser,
+        holding_company: holding_company,
+        company: company,
+        client_region_id: region.id,
+        client_segment_id: segment.id
+      )
   end
 
   def account_dimension
