@@ -61,6 +61,35 @@
 		, (err) ->
 			closeExtensionModal()
 
+	$scope.openContactModal = ->
+		$scope.populateContact = true
+		$scope.modalInstance = $modal.open
+			templateUrl: 'modals/contact_form.html'
+			size: 'md'
+			controller: 'ContactsNewController'
+			backdrop: 'static'
+			keyboard: false
+			resolve:
+				contact: ->
+					{}
+
+	$scope.openAccountModal = ->
+		$scope.modalInstance = $modal.open
+			templateUrl: 'modals/client_form.html'
+			size: 'md'
+			controller: 'AccountsNewController'
+			backdrop: 'static'
+			keyboard: false
+			resolve:
+				client: ->
+					{}
+
+	$scope.$on 'openContactModal', ->
+		$scope.openContactModal()
+
+	$scope.$on 'dashboard.openAccountModal', ->
+		$scope.openAccountModal()
+
 	$window.addEventListener 'message', (e) ->
 		if e.origin is 'https://mail.google.com'
 			expression = $scope.$eval(e.data.expression) if e.data.expression
