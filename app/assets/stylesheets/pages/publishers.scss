@@ -1,13 +1,4 @@
 #publishers {
-  //font-family: "Avenir Next", Arial, serif;
-  //color: $main-font-color;
-  //background-color: #F5F5F5;
-  //min-height: calc(100vh - #{$header-height});
-  //position: relative;
-  //overflow-x: hidden;
-  //a {
-  //  color: $secondary-color;
-  //}
   .z-sliding-filter {
     top: 0;
     .dropdown-menu {
@@ -124,12 +115,6 @@
     margin-left: -40px;
     margin-right: -40px;
   }
-  //.column-header {
-  //  span {
-  //    position: relative;
-  //    top: 8px;
-  //  }
-  //}
 }
 
 #publisher-report {
@@ -180,7 +165,6 @@
       color: $main-color;
       &.empty {
         color: #B5BDC4;
-        //color: $secondary-font-color;
       }
     }
     .dropdown-menu {
