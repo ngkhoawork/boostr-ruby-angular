@@ -1,14 +1,15 @@
 class PublisherPipelineHeadersService < Report::BaseService
   def perform
     publisher_stages.inject([]) do |acc, publisher_stage|
-      publishers = query_db(@params.merge(publisher_stage_id: publisher_stage.id))
+      publishers = query_db(@params.merge(publisher_stage_id: publisher_stage.id)).to_a
 
       acc << {
         id: publisher_stage.id,
         name: publisher_stage.name,
         probability: publisher_stage.probability,
         estimated_monthly_impressions_sum: calculate_sum_for(publishers, :estimated_monthly_impressions),
-        actual_monthly_impressions_sum: calculate_sum_for(publishers, :actual_monthly_impressions)
+        actual_monthly_impressions_sum: calculate_sum_for(publishers, :actual_monthly_impressions),
+        publishers_count: publishers.count
       }
     end
   end

@@ -12,6 +12,10 @@ module Report
       end
 
       class ScopeBuilder < BaseScopeBuilder
+        def perform
+          order(super)
+        end
+
         private
 
         def apply_filters
@@ -28,6 +32,10 @@ module Report
               company: :publisher_custom_field_names
             }
           )
+        end
+
+        def order(relation)
+          relation.order(name: :asc)
         end
       end
     end

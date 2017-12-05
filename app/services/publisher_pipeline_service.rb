@@ -34,6 +34,10 @@ class PublisherPipelineService < Report::BaseService
   end
 
   class ScopeBuilder < BaseScopeBuilder
+    def perform
+      order(super)
+    end
+
     private
 
     def apply_filters
@@ -42,6 +46,10 @@ class PublisherPipelineService < Report::BaseService
 
     def preload_associations(relation)
       relation.includes(:users)
+    end
+
+    def order(relation)
+      relation.order(name: :asc)
     end
   end
 end

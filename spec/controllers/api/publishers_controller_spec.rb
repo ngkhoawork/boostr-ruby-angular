@@ -302,6 +302,7 @@ RSpec.describe Api::PublishersController, type: :controller do
       expect(first_item).to have_key :probability
       expect(first_item).to have_key :estimated_monthly_impressions_sum
       expect(first_item).to have_key :actual_monthly_impressions_sum
+      expect(first_item).to have_key :publishers_count
     end
   end
 
