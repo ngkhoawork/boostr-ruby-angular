@@ -1,5 +1,6 @@
 class PublisherDailyActual < ActiveRecord::Base
   belongs_to :publisher, required: true
+  belongs_to :currency
 
   validates :date, :available_impressions, :filled_impressions, presence: true
 

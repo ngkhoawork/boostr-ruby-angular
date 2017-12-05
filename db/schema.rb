@@ -1900,8 +1900,12 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.integer  "fill_rate"
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
+    t.decimal  "total_revenue",         precision: 10, scale: 2
+    t.decimal  "ecpm",                  precision: 10, scale: 2
+    t.integer  "currency_id"
   end
 
+  add_index "publisher_daily_actuals", ["currency_id"], name: "index_publisher_daily_actuals_on_currency_id", using: :btree
   add_index "publisher_daily_actuals", ["publisher_id"], name: "index_publisher_daily_actuals_on_publisher_id", using: :btree
 
   create_table "publisher_members", force: :cascade do |t|

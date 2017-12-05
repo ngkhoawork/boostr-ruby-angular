@@ -1,9 +1,18 @@
 class Csv::PublisherDailyActual
   include ActiveModel::Validations
 
-  attr_accessor :date, :available_impressions, :filled_impressions, :company_id, :publisher_id, :publisher_name
+  attr_accessor :date,
+                :available_impressions,
+                :filled_impressions,
+                :company_id,
+                :publisher_id,
+                :publisher_name,
+                :total_revenue,
+                :ecpm,
+                :curr_symbol
 
-  validates :date, :available_impressions, :filled_impressions, :company_id, presence: true
+  validates :date, :available_impressions, :filled_impressions, :total_revenue, :ecpm, :currency, :company_id,
+            presence: true
   validates :publisher_id, presence: true, if: ->(obj) { obj.publisher_name.nil? }
   validates :publisher_name, presence: true, if: ->(obj) { obj.publisher_id.nil? }
   validates :publisher, presence: { message: 'not found by given id, name' }
@@ -33,11 +42,18 @@ class Csv::PublisherDailyActual
     ).first
   end
 
+  def currency
+    @currency ||= Currency.find_by(curr_symbol: curr_symbol)
+  end
+
   def publisher_daily_actual_params
     {
       date: formatted_date,
       available_impressions: available_impressions,
       filled_impressions: filled_impressions,
+      total_revenue: total_revenue,
+      ecpm: ecpm,
+      currency: currency,
       publisher: publisher
     }
   end

@@ -12,6 +12,9 @@ class Importers::PublisherDailyActualsService < Importers::BaseService
       date: row[:date],
       available_impressions: row[:available_impressions],
       filled_impressions: row[:filled_impressions],
+      total_revenue: row[:total_revenue],
+      curr_symbol: row[:curr_symbol],
+      ecpm: row[:ecpm],
       company_id: company_id,
       publisher_id: row[:publisher_id],
       publisher_name: row[:publisher_name]

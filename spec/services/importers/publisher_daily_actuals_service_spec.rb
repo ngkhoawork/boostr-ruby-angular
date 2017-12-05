@@ -4,9 +4,27 @@ describe Importers::PublisherDailyActualsService do
   describe '#perform' do
     before(:each) do
       @file = File.open(file_path, 'w') do |f|
-        f.puts('date,available_impressions,filled_impressions,company_id,publisher_id,publisher_name')
         f.puts(
-          "#{us_string_date},#{available_impressions},#{filled_impressions},#{company_id},#{publisher_id},#{publisher_name}"
+          "date,\
+           available_impressions,\
+           filled_impressions,\
+           company_id,\
+           publisher_id,\
+           publisher_name,\
+           total_revenue,\
+           curr_symbol,\
+           ecpm"
+        )
+        f.puts(
+          "#{us_string_date},\
+           #{available_impressions},\
+           #{filled_impressions},\
+           #{company_id},\
+           #{publisher_id},\
+           #{publisher_name},\
+           #{total_revenue},\
+           #{curr_symbol},\
+           #{ecpm}"
         )
       end
     end
@@ -19,6 +37,9 @@ describe Importers::PublisherDailyActualsService do
       expect(last_publisher_daily_actual.date).to eq date
       expect(last_publisher_daily_actual.available_impressions).to eq available_impressions
       expect(last_publisher_daily_actual.filled_impressions).to eq filled_impressions
+      expect(last_publisher_daily_actual.total_revenue).to eq total_revenue
+      expect(last_publisher_daily_actual.currency).to eq currency
+      expect(last_publisher_daily_actual.ecpm).to eq ecpm
     end
 
     context 'when there is daily actual for this date' do
@@ -28,7 +49,10 @@ describe Importers::PublisherDailyActualsService do
           publisher: publisher,
           date: date,
           available_impressions: 10,
-          filled_impressions: 7
+          filled_impressions: 7,
+          total_revenue: rand(1..1000),
+          ecpm: rand(1..1000),
+          currency: currency
         )
       end
 
@@ -87,12 +111,28 @@ describe Importers::PublisherDailyActualsService do
     @publisher ||= create(:publisher, name: 'Amazon', company: company)
   end
 
+  def currency
+    @currency ||= Currency.first || create(:currency)
+  end
+
   def publisher_id
     publisher.id
   end
 
   def publisher_name
     publisher.name
+  end
+
+  def total_revenue
+    1000
+  end
+
+  def curr_symbol
+    currency.curr_symbol
+  end
+
+  def ecpm
+    50
   end
 
   def date
