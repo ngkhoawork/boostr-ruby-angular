@@ -4,20 +4,20 @@ RSpec.describe Pmp, 'model' do
   describe '#destroy' do
     before do
       pmp_members
-      pmp_items
+      pmp_item
       pmp_item_daily_actuals
     end
 
     it 'remove records of pmp_members relation' do
       expect do
-        pmp.destroy
+        pmp.destroy!
       end.to change(PmpMember, :count).by(-2)
     end
 
     it 'remove records of pmp_items relation' do
       expect do
         pmp.destroy
-      end.to change(PmpItem, :count).by(-2)
+      end.to change(PmpItem, :count).by(-1)
     end
 
     it 'remove records of pmp_item_daily_actuals relation' do
@@ -41,12 +41,12 @@ RSpec.describe Pmp, 'model' do
     @_pmp_members ||= create_list :pmp_member, 2, pmp: pmp
   end
 
-  def pmp_items
-    @_pmp_items ||= create_list :pmp_item, 2, pmp: pmp
+  def pmp_item
+    @_pmp_item ||= create :pmp_item, pmp: pmp
   end
 
   def pmp_item_daily_actuals
-    @_pmp_item_daily_actuals ||= create_list :pmp_item_daily_actual, 2, pmp_item: pmp_items.first
+    @_pmp_item_daily_actuals ||= create_list :pmp_item_daily_actual, 2, pmp_item: pmp_item
   end
 end
 
