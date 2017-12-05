@@ -1,6 +1,10 @@
 workers Integer(ENV['WEB_CONCURRENCY'] || 2)
+worker_timeout 45
+
 threads_count = Integer(ENV['MAX_THREADS'] || 5)
 threads threads_count, threads_count
+
+restart_command 'puma'
 
 preload_app!
 

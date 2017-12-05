@@ -49,6 +49,7 @@ gem 'upsert'
 gem 'hashie'
 gem 'active_record_union'
 gem 'smarter_csv'
+gem 'daemons'
 
 source 'http://insecure.rails-assets.org' do
   gem 'rails-assets-angular'

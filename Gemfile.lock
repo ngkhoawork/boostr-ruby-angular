@@ -152,6 +152,7 @@ GEM
       unicode_utils (~> 1.4)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
+    daemons (1.2.5)
     dalli (2.7.4)
     database_cleaner (1.4.1)
     debug_inspector (0.0.2)
@@ -597,6 +598,7 @@ DEPENDENCIES
   clockwork
   coffee-rails (~> 4.1.0)
   countries
+  daemons
   dalli
   database_cleaner
   devise
@@ -675,4 +677,4 @@ RUBY VERSION
    ruby 2.3.4p301
 
 BUNDLED WITH
-   1.15.4
+   1.16.0
