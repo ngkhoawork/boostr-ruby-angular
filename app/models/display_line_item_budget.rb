@@ -31,8 +31,32 @@ class DisplayLineItemBudget < ActiveRecord::Base
   before_save :correct_budget_loc, if: -> { has_dfp_budget_correction }
   before_save :set_cpd_price_type_budget, if: -> { has_dfp_budget_correction }
 
+  set_callback :save, :after, :update_revenue_fact_callback
+
   validate :budget_less_than_display_line_item_budget, unless: -> { has_dfp_budget_correction }
   validate :sum_of_budgets_less_than_line_item_budget, unless: -> { has_dfp_budget_correction }
+
+  def update_revenue_fact_callback
+    if budget_changed? && manual_override
+      update_revenue_pipeline_budget(self)
+    end
+  end
+
+  def update_revenue_pipeline_budget(display_line_item_budget)
+    display_line_item = display_line_item_budget.display_line_item
+    io = display_line_item.io
+    product = display_line_item.product
+    if io.present? && product.present?
+      company = io.company
+      time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
+      time_periods.each do |time_period|
+        io.users.each do |user|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
+  end
 
   def daily_budget
     if effective_days > 0
@@ -117,6 +141,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
     Io.skip_callback(:save, :after, :update_revenue_fact_callback)
     DisplayLineItem.skip_callback(:save, :after, :update_revenue_fact_callback)
+    DisplayLineItemBudget.set_callback(:save, :after, :update_revenue_fact_callback)
 
     CSV.parse(file, headers: true) do |row|
       import_log.count_processed
@@ -229,7 +254,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
           budget: budget,
           budget_loc: budget_loc,
           start_date: start_date,
-          end_date: end_date
+          end_date: end_date,
       }
 
       if io.present?
@@ -254,6 +279,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
     Io.set_callback(:save, :after, :update_revenue_fact_callback)
     DisplayLineItem.set_callback(:save, :after, :update_revenue_fact_callback)
+    DisplayLineItemBudget.set_callback(:save, :after, :update_revenue_fact_callback)
 
     io_change[:time_period_ids] = io_change[:time_period_ids].uniq
     io_change[:user_ids] = io_change[:user_ids].uniq
