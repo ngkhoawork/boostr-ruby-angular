@@ -1,10 +1,14 @@
 @app.controller 'PablishersController', [
-  '$scope', '$document', '$modal', 'Publisher', 'PublishersFilter', 'shadeColor'
-  ($scope,   $document,   $modal,   Publisher,   PublishersFilter,   shadeColor) ->
+  '$scope', '$document', '$timeout', '$modal', 'Publisher', 'PublishersFilter', 'shadeColor'
+  ($scope,   $document,   $timeout,   $modal,   Publisher,   PublishersFilter,   shadeColor) ->
     $scope.publishers = []
     $scope.publishersPipeline = []
-    $scope.columns = []
-    $scope.view = 'columns'
+    $scope.view = 'list'
+    page = 1
+    per = 10
+    $scope.isListLoading = false
+    $scope.isPipelineLoading = false
+    $scope.allPublishersLoaded = false
     $scope.publisherTypes = [
       {name: 'All'}
       {name: 'My Publishers', my_publishers_bool: true}
@@ -61,14 +65,18 @@
       close: ->
         this.isOpen = false
 
+    resetPagination = ->
+      $scope.publishers = []
+      $scope.publishersPipeline = []
+      page = 1
+      $scope.isListLoading = false
+      $scope.isPipelineLoading = false
+      $scope.allPublishersLoaded = false
+
     $scope.changeView = (view) ->
       $scope.view = view
-
-    getColumnsFromPipeline = (pipeline) ->
-      _.map pipeline, (stage) ->
-        pubs = stage.publishers
-        pubs.stage = stage
-        pubs
+      resetPagination()
+      $scope.getPublishers()
 
     $scope.init = ->
       $scope.teamFilter = $scope.publisherTypes[0]
@@ -84,22 +92,55 @@
         $scope.publisher_stages = $scope.filter.stages = settings.publisher_stages
         $scope.publisher_types = $scope.filter.types = settings.publisher_types
 
-    $scope.getPublishers = ->
-      params = {}
+    getParams = ->
+      params = {per, page}
       params.q = $scope.searchText if $scope.searchText
       params = _.extend(
           params
           $scope.filter.get()
           _.omit $scope.teamFilter, 'name'
       )
+
+    $scope.getPublishers = (nextPage) ->
+      if !nextPage then resetPagination()
+      params = getParams()
+      switch $scope.view
+        when 'list'
+          getPublishersList(params)
+        when 'columns'
+          getPublishersPipeline(params)
+
+    getPublishersList = (params) ->
+      $scope.isListLoading = true
       Publisher.publishersList(params).then (publishers) ->
-        console.log(publishers)
-        $scope.publishers = publishers
+        $scope.allPublishersLoaded = !publishers || publishers.length < per
+        if page++ > 1
+          $scope.publishers = $scope.publishers.concat(publishers)
+        else
+          $scope.publishers = publishers
+        $scope.isListLoading = false
+      , ->
+        $scope.isListLoading = false
+
+    getPublishersPipeline = (params) ->
+      $scope.isPipelineLoading = true
       Publisher.publishersPipeline(params).then (pipeline) ->
-        $scope.publishersPipeline = pipeline
-        $scope.columns = getColumnsFromPipeline(pipeline)
-        console.log pipeline
-        console.log $scope.columns
+        $scope.allPublishersLoaded = !pipeline || _.every pipeline, (stage) -> stage.publishers.length < per
+        if page++ > 1
+          $scope.publishersPipeline = _.map $scope.publishersPipeline, (stage, i) ->
+            stage.publishers = stage.publishers.concat(pipeline[i].publishers)
+            stage
+        else
+          $scope.publishersPipeline = pipeline
+        $scope.isListLoading = false
+        $timeout -> addScrollEvent()
+        $scope.isPipelineLoading = false
+      , ->
+        $scope.isPipelineLoading = false
+        $scope.allPublishersLoaded = true
+
+    $scope.loadMorePublishers = ->
+      $scope.getPublishers(true)
 
     $scope.updatePublisher = (publisher) ->
       params = { comscore: publisher.comscore, type_id: publisher.type.id }
@@ -183,6 +224,22 @@
           $scope.publishersPipeline[last.from.column].publishers.splice(last.from.publisher, 0, publisher)
           $scope.history.lock(publisherId, false)
 
+    addScrollEvent = ->
+      table = angular.element('.publishers-table')
+      headers = angular.element('.column-header')
+      headers.each (i) -> angular.element(this).css 'zIndex', headers.length - i
+      offsetTop = table.offset().top
+      $document.unbind 'scroll'
+      $document.bind 'scroll', ->
+        if $document.scrollTop() > offsetTop
+          table.addClass 'fixed'
+          headers.css 'top', $document.scrollTop() - offsetTop + 'px'
+        else
+          table.removeClass 'fixed'
+          headers.css 'top', 0
+      $scope.$on '$destroy', ->
+        $document.unbind 'scroll'
+
 #    createRandomPublisher = (name) ->
 #      random = (min, max) -> Math.round(Math.random()*(max-min)) + min
 #      accounts = [15880, 16302, 810, 753, 6337, 19811]
@@ -193,10 +250,10 @@
 #          type_id: $scope.publisher_types[random(0, $scope.publisher_types.length - 1)].id
 #          publisher_stage_id: $scope.publisher_stages[random(0, $scope.publisher_stages.length - 1)].id
 #          client_id: accounts[random(0, accounts.length - 1)]
+#          estimated_monthly_impressions: random(1, 10)
 #      }
 #    setTimeout ->
-#      [1...30].map (i) -> Publisher.create(createRandomPublisher('Publisher ' + i))
+#      [1..500].map (i) -> Publisher.create(createRandomPublisher('Publisher ' + ('00' + i).slice(-3)))
 #    , 3000
-
 
 ]

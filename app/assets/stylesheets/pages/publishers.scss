@@ -29,18 +29,24 @@
       }
       &.view-toggle {
         margin: 0 30px 0 auto;
-        i.fa {
-          margin-right: 8px;
-        }
-        div {
-          border-radius: 4px;
-          padding: 0 10px;
-          &.active {
-            color: $main-color;
+        height: 40px;
+        .view-toggle-inner {
+          height: 56px;
+          margin-top: -8px;
+          font-size: 20px;
+          i.fa {
+            margin-right: 8px;
           }
-          &:hover {
-            background-color: #e8e8ea;
-            cursor: pointer;
+          div {
+            border-radius: 4px;
+            padding: 0 10px;
+            &.active {
+              color: $main-color;
+            }
+            &:hover {
+              background-color: #e8e8ea;
+              cursor: pointer;
+            }
           }
         }
       }
@@ -114,16 +120,16 @@
       }
     }
   }
-  .deals-container {
+  .publishers-container {
     margin-left: -40px;
     margin-right: -40px;
   }
-  .column-header {
-    span {
-      position: relative;
-      top: 8px;
-    }
-  }
+  //.column-header {
+  //  span {
+  //    position: relative;
+  //    top: 8px;
+  //  }
+  //}
 }
 
 #publisher-report {

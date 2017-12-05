@@ -70,18 +70,18 @@
         %i.fa.fa-search
         %input.form-control{ ng: { model: 'searchText', change: 'getPublishers()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Name" }
       .header-item.view-toggle
-        %div{'ng-click': 'changeView("list")', 'ng-class': '{active: view == "list"}'}
-          %i.fa.fa-list
-          List view
-        %div{'ng-click': 'changeView("columns")', 'ng-class': '{active: view == "columns"}'}
-          %i.fa.fa-columns
-          Columns view
+        %div.view-toggle-inner
+          %div{'ng-click': 'changeView("list")', 'ng-class': '{active: view == "list"}'}
+            %i.fa.fa-list
+            List
+          %div{'ng-click': 'changeView("columns")', 'ng-class': '{active: view == "columns"}'}
+            %i.fa.fa-columns
+            Columns
 
       .header-item
         %button.btn-main{'ng-click': 'filter.open($event)'}
           %i.fa.fa-filter
           Add filter
-
 
     .row{'ng-if': 'view == "list"'}
       .block
@@ -100,7 +100,7 @@
               %th
                 .z-sortable{by: 'type.name'}
                   Publisher Type
-          %tbody
+          %tbody{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isListLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
             %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
               %td
                 %a {{publisher.name}}
@@ -127,21 +127,23 @@
                       %a{'href': '', 'ng-click': ' publisher.type = type; updatePublisher(publisher)'}
                         %span.text {{type.name}}
 
-    .row.deals-container{'ng-if': 'view == "columns"'}
-      .deals-table
-        .deal-column{'ng-repeat': 'stage in publishersPipeline', 'ng-init': 'columnIndex = $index; $last && coloringColumns()'}
+    .row.publishers-container{'ng-if': 'view == "columns"'}
+      .publishers-table{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPipelineLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
+        .publisher-column{'ng-repeat': 'stage in publishersPipeline', 'ng-init': 'columnIndex = $index; $last && coloringColumns()'}
           .column-header
             %span
               {{stage.probability}}%
               %br
               {{stage.name}}
               %i ({{stage.publishers.length || 0}})
+            %span
+              Estimated Impressions {{stage.estimated_monthly_impressions_sum || 0}}
             %svg{width: '17', height: '72'}
               %polygon{points: '-2,-7 15, 36, -2, 79'}
           .column-body{'dnd-list': 'stage.publishers',
                                    'dnd-drop': 'onDrop(item, stage)',
                                    'dnd-inserted': 'onInserted(item, index, columnIndex)'}
-            .deal-block{'ng-repeat': 'publisher in stage.publishers',
+            .publisher-block{'ng-repeat': 'publisher in stage.publishers',
                                       id: 'publisher-{{publisher.id}}',
                                       'dnd-draggable': 'publisher',
                                       'dnd-moved': 'onMoved(publisher, $index, columnIndex)',
@@ -151,7 +153,8 @@
               .date.pull-right{'ng-class': '{expired: publisher.isExpired && publisher.stage.open}'} {{publisher.created_at | date: 'mediumDate'}}
               %span
                 %a{'ng-href': '{{"/publishers/" + publisher.id}}'} {{publisher.name}}
-              %span -------
+              %span Estimated Impressions {{publisher.estimated_monthly_impressions || 0}}
+              %span {{publisher.users.length ? publisher.users.join(', ') : '-'}}
               %div.block-menu
                 %div{'dropdown': '', 'keyboard-nav': ''}
                   %i.fa.fa-ellipsis-h{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}
