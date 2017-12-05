@@ -3,13 +3,14 @@ class PmpItem::CalculateRunRateService < BaseWorker
   
   def initialize(company, pmp_item_ids)
     @company = company
-    @pmp_item_ids = pmp_item_ids
+    @pmp_item_ids = pmp_item_ids.uniq
   end
 
   def perform
     pmp_items.find_each do |pmp_item|
       calculate_run_rate_and_budgets(pmp_item)
     end
+    calculate_monthly_actuals(@pmp_item_ids)
   end
 
   private
@@ -38,6 +39,16 @@ class PmpItem::CalculateRunRateService < BaseWorker
       budget_delivered_loc: budget_delivered_loc,
       budget_remaining: budget_remaining,
       budget_remaining_loc: budget_remaining_loc)
+  end
+
+  def calculate_monthly_actuals(pmp_item_ids)
+    PmpItemMonthlyActual.transaction do
+      PmpItemMonthlyActual.where(pmp_item_id: pmp_item_ids).destroy_all
+      pmp_item_monthly_actuals = PmpItemDailyActual.select('pmp_item_id, sum(revenue) as amount, sum(revenue_loc) as amount_loc, min(date) as start_date, max(date) as end_date')
+        .where(pmp_item_id: pmp_item_ids)
+        .group("pmp_item_id, to_char(date, 'YYYY-MM')").as_json
+      PmpItemMonthlyActual.create(pmp_item_monthly_actuals)
+    end
   end
 
   def pmp_items
