@@ -75,8 +75,8 @@ module Report
              account_dimensions.name,
              account_dimensions.account_type,
              account_revenue_facts.category_id,
-             client_region_id,
-             client_segment_id,
+             account_dimensions.client_region_id,
+             account_dimensions.client_segment_id,
              EXTRACT(YEAR FROM start_date),
              EXTRACT(MONTH FROM start_date)'
           )
@@ -85,8 +85,8 @@ module Report
              account_dimensions.name,
              account_dimensions.account_type AS client_type,
              account_revenue_facts.category_id,
-             client_region_id,
-             client_segment_id,
+             account_dimensions.client_region_id,
+             account_dimensions.client_segment_id,
              EXTRACT(YEAR FROM start_date)::numeric::integer AS year,
              EXTRACT(MONTH FROM start_date) AS month,
              SUM(revenue_amount) AS month_revenue'

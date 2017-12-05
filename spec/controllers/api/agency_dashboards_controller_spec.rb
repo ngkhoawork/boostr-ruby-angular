@@ -6,6 +6,7 @@ describe Api::AgencyDashboardsController, type: :controller do
   before do
     sign_in user
     Io.skip_callback(:save, :after, :update_revenue_fact_callback)
+    Client.skip_callback(:commit, :after, :update_account_dimension)
   end
 
   describe 'GET #spend_by_product' do

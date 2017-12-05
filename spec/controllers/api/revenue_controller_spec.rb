@@ -64,8 +64,6 @@ RSpec.describe Api::RevenueController, type: :controller do
         revenue_amount: 10_000,
         company: user.company,
         category_id: category.id,
-        client_region_id: region.id,
-        client_segment_id: segment.id,
         time_dimension: time_dimension
       )
     end
@@ -134,8 +132,6 @@ RSpec.describe Api::RevenueController, type: :controller do
         revenue_amount: 10_000,
         company: user.company,
         category_id: category.id,
-        client_region_id: region.id,
-        client_segment_id: segment.id,
         time_dimension: time_dimension
       )
     end
@@ -281,7 +277,15 @@ RSpec.describe Api::RevenueController, type: :controller do
   end
 
   def advertiser
-    @_advertiser ||= create(:client, :advertiser, holding_company: holding_company, company: company)
+    @_advertiser ||=
+      create(
+        :client,
+        :advertiser,
+        holding_company: holding_company,
+        company: company,
+        client_region_id: region.id,
+        client_segment_id: segment.id
+      )
   end
 
   def account_dimension

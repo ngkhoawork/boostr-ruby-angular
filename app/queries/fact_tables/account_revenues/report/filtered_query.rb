@@ -52,11 +52,15 @@ class FactTables::AccountRevenues::Report::FilteredQuery
     end
 
     def by_client_region_ids(client_region_ids)
-      client_region_ids ? where(account_revenue_facts: { client_region_id: client_region_ids }) : self
+      return self if client_region_ids.nil?
+
+      joins(:account_dimension).where(account_dimensions: { client_region_id: client_region_ids })
     end
 
     def by_client_segment_ids(client_segment_ids)
-      client_segment_ids ? where(account_revenue_facts: { client_segment_id: client_segment_ids }) : self
+      return self if client_segment_ids.nil?
+
+      joins(:account_dimension).where(account_dimensions: { client_segment_id: client_segment_ids })
     end
   end
 end
