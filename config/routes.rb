@@ -96,6 +96,9 @@ Rails.application.routes.draw do
       resources :clients, only: [:index, :show, :create, :update, :destroy] do
         get :sellers
         resources :client_members, only: [:index, :create, :update, :destroy]
+        collection do
+          get :search_clients
+        end
         resources :client_contacts, only: [:index] do
           collection do
             get :related_clients
@@ -140,6 +143,17 @@ Rails.application.routes.draw do
       end
 
       resources :gmail_extension, only: [:index]
+
+      resources :validations, only: [] do
+        collection do
+          get :account_base_fields
+          get :deal_base_fields
+        end
+      end
+
+      resources :account_cf_names, only: [:index]
+      resources :holding_companies, only: [:index]
+      resources :contact_cf_names, only: [:index]
     end # API V2 END
 
     resources :dfp_imports do
