@@ -622,7 +622,6 @@ DEPENDENCIES
   libnotify
   lol_dba
   meta_request
-  money
   net-sftp
   newrelic_rpm
   oauth2
