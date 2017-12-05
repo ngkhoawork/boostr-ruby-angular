@@ -37,7 +37,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
   validate :sum_of_budgets_less_than_line_item_budget, unless: -> { has_dfp_budget_correction }
 
   def update_revenue_fact_callback
-    if budget_changed? && manual_override
+    if budget_changed?
       update_revenue_pipeline_budget(self)
     end
   end
