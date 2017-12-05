@@ -51,7 +51,7 @@ gem 'active_record_union'
 gem 'smarter_csv'
 gem 'daemons'
 
-source 'http://insecure.rails-assets.org' do
+source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
   gem 'rails-assets-angular-route'
   gem 'rails-assets-angular-bootstrap'
@@ -113,7 +113,7 @@ group :development, :test do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
 
-  source 'http://insecure.rails-assets.org' do
+  source 'https://rails-assets.org' do
     gem 'rails-assets-angular-mocks'
   end
 end
