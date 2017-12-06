@@ -456,6 +456,7 @@ Rails.application.routes.draw do
         get :extended_fields
         get :associations
         get :activities
+        get :fill_rate_by_month_graph
       end
     end
     resources :publisher_custom_field_names, only: [:index, :create, :update, :destroy]

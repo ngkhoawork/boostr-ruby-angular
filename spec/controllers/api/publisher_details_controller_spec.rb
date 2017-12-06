@@ -62,6 +62,29 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
     end
   end
 
+  describe '#fill_rate_by_month_graph' do
+    let!(:daily_actual_1) { create(:publisher_daily_actual, publisher: publisher, currency: currency) }
+    let!(:daily_actual_2) { create(:publisher_daily_actual, publisher: publisher, currency: currency) }
+
+    subject { get :fill_rate_by_month_graph, id: publisher.id }
+
+    it 'returns expressions info by months' do
+      subject
+      expect(response).to have_http_status(200)
+      expect(response_body).to be_a_kind_of Array
+      expect(first_item[:year_month]).to eq daily_actual_1.date.strftime('%Y-%m')
+      expect(first_item[:curr_symbol]).to eq currency.curr_symbol
+      expect(
+        first_item[:month_available_impressions]
+      ).to eq daily_actual_1.available_impressions + daily_actual_2.available_impressions
+      expect(
+        first_item[:month_filled_impressions]
+      ).to eq daily_actual_1.filled_impressions + daily_actual_2.filled_impressions
+      expect(first_item).to have_key :month_unfilled_impressions
+      expect(first_item).to have_key :month_fill_rate
+    end
+  end
+
   private
 
   def response_body
@@ -123,5 +146,9 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
   def publisher_custom_field_option
     @_publisher_custom_field_option ||=
       create(:publisher_custom_field_option, publisher_custom_field_name: publisher_custom_field_name)
+  end
+
+  def currency
+    @currency ||= Currency.first || create(:currency)
   end
 end

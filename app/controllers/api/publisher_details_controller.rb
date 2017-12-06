@@ -12,6 +12,10 @@ class Api::PublisherDetailsController < ApplicationController
            each_serializer: Api::ActivitySerializer
   end
 
+  def fill_rate_by_month_graph
+    render json: FillRateByMonthGraphService.new(publisher).perform
+  end
+
   private
 
   def publisher
