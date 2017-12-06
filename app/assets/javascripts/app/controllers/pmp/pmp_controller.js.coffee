@@ -100,8 +100,8 @@
         when '#pmp-delivery-chart'
           [
             {name: 'Bids', graphType: 1, active: true, unit: '', color: c(0), values: data.map((item) -> parseFloat(item.bids))}
-            {name: 'Impressions', graphType: 1, active: true, unit: '', color: c(1), values: data.map((item) -> parseFloat(item.impressions))}          
             {name: 'Win Rate', graphType: 2, active: true, unit: '%', color: c(2), values: data.map((item) -> parseFloat(item.win_rate))}
+            {name: 'Impressions', graphType: 1, active: true, unit: '', color: c(1), values: data.map((item) -> parseFloat(item.impressions))}          
           ]
         when '#pmp-price-revenue-chart'
           [
@@ -114,10 +114,10 @@
       # return if data.length == 0
       chartContainer = angular.element(containerID)
       margin =
-          top: 65
-          left: 65
-          right: 65
-          bottom: 90
+          top: 35
+          left: 85
+          right: 85
+          bottom: 115
       duration = 1000
       ratio = 0.35
       ticks = 11
@@ -137,16 +137,12 @@
       height = height - margin.top - margin.bottom - 10
 
       # Axes
-      y1Max = y2Max = 100
-      if svgID == '#pmp-delivery-chart'
-        maxData = d3.max([dataset[0],dataset[1]], (item) -> d3.max item.values) || 100
-        y1Max = Math.ceil(maxData*1.2 / (ticks - 1)) * (ticks - 1)
-        y2Max = 100
-      else
-        maxData = d3.max([dataset[0]], (item) -> d3.max item.values) || 100
-        y1Max = Math.ceil(maxData*1.2 / (ticks - 1)) * (ticks - 1)
-        maxData = d3.max([dataset[1]], (item) -> d3.max item.values) || 100
-        y2Max = Math.ceil(maxData*1.2 / (ticks - 1)) * (ticks - 1)
+      arr = dataset.filter((d) -> d.graphType==1)
+      maxValue = d3.max(arr, (item) -> d3.max item.values) || 50
+      y1Max = Math.max(100, Math.ceil(maxValue*1.2 / (ticks - 1)) * (ticks - 1))
+      arr = dataset.filter((d) -> d.graphType==2)
+      maxValue = d3.max(arr, (item) -> d3.max item.values) || 50
+      y2Max = Math.max(100, Math.ceil(maxValue*1.2 / (ticks - 1)) * (ticks - 1))
       y1TickValues = []
       y2TickValues = []
       for i in [0..ticks-1]
@@ -163,12 +159,16 @@
               .innerTickSize(-width)
               .outerTickSize(0)
               .tickValues(y1TickValues)
-              .tickFormat (v) -> if dataset[0].unit == $scope.currency_symbol then $scope.currency_symbol + v else v + dataset[0].unit
+              .tickFormat (v) -> 
+                d = dataset.filter((d) -> d.graphType==1)[0] || {}
+                if d.unit == $scope.currency_symbol then $scope.currency_symbol + $filter('number')(v) else $filter('number')(v) + d.unit
       y2Axis = d3.svg.axis().scale(y2).orient('right')
               .innerTickSize(width)
               .outerTickSize(0)
               .tickValues(y2TickValues)
-              .tickFormat (v) -> if dataset[dataset.length-1].unit == $scope.currency_symbol then $scope.currency_symbol + v else v + dataset[dataset.length-1].unit
+              .tickFormat (v) -> 
+                d = dataset.filter((d) -> d.graphType==2)[0] || {}
+                if d.unit == $scope.currency_symbol then $scope.currency_symbol + $filter('number')(v) else $filter('number')(v) + d.unit
       svg.append('g').attr('class', 'axisX')
         .attr('transform', 'translate(0,' + height + ')')
         .call(xAxis)
@@ -179,6 +179,38 @@
           .attr("transform", "rotate(-90)" )
       svg.append('g').attr('class', 'axisY1').call y1Axis
       svg.append('g').attr('class', 'axisY2').call y2Axis
+      svg.append('line')
+          .style('stroke', '#d9dde0')
+          .attr('x1', 0)
+          .attr('y1', 0)
+          .attr('x2', 0)
+          .attr('y2', height + 80)
+      svg.append('line')
+          .style('stroke', '#d9dde0')
+          .attr('x1', width)
+          .attr('y1', 0)
+          .attr('x2', width)
+          .attr('y2', height + 80)
+      svg.append('line')
+          .style('stroke', '#d9dde0')
+          .attr('x1', 0)
+          .attr('y1', height)
+          .attr('x2', width)
+          .attr('y2', height)
+
+      # Axis titles
+      y1Title = dataset.filter((d) -> d.graphType==1).map((d) -> d.name).join(' , ')
+      y2Title = dataset.filter((d) -> d.graphType==2).map((d) -> d.name).join(' , ')
+      svg.append('text')
+          .attr('text-anchor', 'middle')
+          .attr('transform', 'translate(' + (10-margin.left) + ',' + (height/2) + ')rotate(-90)')
+          .attr('class', 'title titleY1')
+          .text(y1Title)
+      svg.append('text')
+          .attr('text-anchor', 'middle')
+          .attr('transform', 'translate(' + (width+margin.right-10) + ',' + (height/2) + ')rotate(90)')
+          .attr('class', 'title titleY2')
+          .text(y2Title)
 
       # Graphs
       graphLine1 = d3.svg.line()
@@ -209,14 +241,14 @@
           .append('g')
           .attr('class', 'legend')
       legend.append('rect')
-          .attr('x', width - margin.right - 50)
-          .attr('y', (d, i) -> 20*i - 60)
+          .attr('x', (d, i) -> margin.left + 120*i)
+          .attr('y', height + 100)
           .attr('width', 10)
           .attr('height', 10)
           .style('fill', (d) -> d.color)
       legend.append('text')
-          .attr('x', width - margin.right - 36)
-          .attr('y', (d, i) -> 10 + 20*i - 60)
+          .attr('x', (d, i) -> margin.left + 120*i + 14)
+          .attr('y', height + 110)
           .style('fill', '#2b3c49')
           .on('click', (d) ->
             i = dataset.indexOf(d)
@@ -226,11 +258,13 @@
             if active
               d3.select(this).style('fill', '#2b3c49')
               svg.select('.axisY'+d.graphType).style('opacity', newOpacity)
+              svg.select('.titleY'+d.graphType).style('opacity', newOpacity)
             else
               d3.select(this).style('fill', '#7B7B7B')
               activeGraphs = _.filter(dataset, (g) -> g.graphType == d.graphType && g.active)
               if activeGraphs.length == 1 
                 svg.select('.axisY'+d.graphType).style('opacity', newOpacity)
+                svg.select('.titleY'+d.graphType).style('opacity', newOpacity)
             dataset[i].active = active
           )
           .style("cursor", "pointer")
@@ -252,7 +286,7 @@
           tooltip.transition()        
               .duration(200)      
               .style("opacity", .9);      
-          tooltip.html('<p>' + selectedItem.ssp_deal_id + '</p><p><span>' + (if unit == '$' then '$' + d else d + unit) + '</span></p><p><span>' + title + '</span></p>')  
+          tooltip.html('<p>' + selectedItem.ssp_deal_id + '</p><p><span>' + (if unit == $scope.currency_symbol then unit + $filter('number')(d) else $filter('number')(d) + unit) + '</span></p><p><span>' + title + '</span></p>')  
               .style("left", (d3.event.pageX) - 50 + "px")     
               .style("top", (d3.event.pageY + 18) + "px")
       setTimeout ->

@@ -171,7 +171,7 @@
 
 #pmp-delivery, #pmp-price-revenue {
     .custom-field-item {
-        margin: 30px 10px 0px 75px;
+        margin: 10px 10px 0px 75px;
         position: absolute;
         z-index: 1000;
     }
@@ -182,7 +182,7 @@
     }
 }
 
-#pmp-delivery-chart-container {
+#pmp-delivery-chart-container, #pmp-price-revenue-chart-container {
     display: inline-block;
     position: relative;
     width: 100%;
@@ -192,7 +192,7 @@
     margin: 0;
 }
 
-#pmp-delivery-chart {
+#pmp-delivery-chart, #pmp-price-revenue-chart {
     height: auto;
     display: inline-block;
     position: absolute;
@@ -222,47 +222,10 @@
         font-size: 12px;
         fill: #2b3c49;
     }
-}
 
-#pmp-price-revenue-chart-container {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    padding-bottom: 35%; /* aspect ratio */
-    vertical-align: top;
-    overflow: hidden;
-    margin: 0;
-}
-
-#pmp-price-revenue-chart {
-    height: auto;
-    display: inline-block;
-    position: absolute;
-    top: 10px;
-    left: 0;
-
-    .graph {
-        fill: transparent;
-        stroke-width: 3px;
-    }
-
-    .axisY1 line,
-    .axisY1 path,
-    .axisY2 line,
-    .axisY2 path  {
-        fill: none;
-        stroke: #d9dde0;
-    }
-
-    .axisY1 text,
-    .axisY2 text {
-        font-size: 11px;
-        fill: #2b3c49;
-    }
-
-    .axisX text {
+    .title {
         font-size: 12px;
-        fill: #2b3c49;
+        fill: #2b3c49;        
     }
 }
 
