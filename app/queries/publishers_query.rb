@@ -51,15 +51,15 @@ class PublishersQuery < BaseQuery
     end
 
     def my_publishers(my_publishers_bool, current_user)
-      return self unless my_publishers_bool && current_user&.id
+      return self if my_publishers_bool.nil? || current_user.nil?
 
       by_member_id(current_user.id)
     end
 
     def my_team_publishers(my_team_publishers_bool, current_user)
-      return self unless my_team_publishers_bool && current_user&.team_id
+      return self if my_team_publishers_bool.nil? || current_user.nil?
 
-      by_team_id(current_user.team_id)
+      current_user.team_id.nil? ? none : by_team_id(current_user.team_id)
     end
 
     def by_custom_fields(custom_field_name_opts)
