@@ -43,6 +43,8 @@
                 %tr.z-sortable-prime{'sort-name': 'forecast'}
                   %th
                     .z-sortable{by: 'product.name', default: true} Product
+                  %th
+                    .z-sortable{by: 'product.product_family.name', default: true} Product Family
                   %th{'ng-repeat': 'stage in stages'}
                     .z-sortable{by: '"weighted_pipeline_by_stage[\""+stage.id+"\"]"'} {{stage.probability}}%
                   %th
@@ -57,6 +59,8 @@
                 %tr{'ng-repeat': 'product_forecast in forecastData | orderBy : zSort.forecast.by : zSort.forecast.rev'}
                   %td
                     {{product_forecast.product.name}}
+                  %td
+                    {{product_forecast.product.product_family.name}}
                   %td{'ng-repeat': 'stage in stages'}
                     {{(product_forecast.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
                   %td
