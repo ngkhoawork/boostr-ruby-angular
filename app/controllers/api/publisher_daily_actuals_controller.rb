@@ -10,7 +10,7 @@ class Api::PublisherDailyActualsController < ApplicationController
   private
 
   def import_params
-    [current_user.company_id, file_params[:s3_file_path], file_params[:original_filename], 'PublisherDailyActual']
+    [current_user.company_id, file_params[:s3_file_path], file_params[:original_filename]]
   end
 
   def file_params

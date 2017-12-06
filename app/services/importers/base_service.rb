@@ -16,7 +16,8 @@ class Importers::BaseService < BaseService
 <<<<<<< HEAD
     csv_import_log.set_file_source(file)
 =======
->>>>>>> Add publisher csv importer
+    csv_import_log.set_file_source(file_name)
+>>>>>>> Csv import headers change
     csv_import_log.save
   end
 
@@ -38,13 +39,10 @@ class Importers::BaseService < BaseService
       rescue Exception => e
         csv_import_log.count_failed
         csv_import_log.log_error ['Internal Server Error', row.compact.to_s, e.message]
-      ensure
-        csv_import_log.save
       end
     else
       csv_import_log.count_failed
       csv_import_log.log_error csv_object.errors.full_messages
-      csv_import_log.save
     end
   end
 
@@ -76,14 +74,25 @@ class Importers::BaseService < BaseService
       csv_import_log = CsvImportLog.new(company_id: company_id, object_name: import_subject, source: import_source)
 =======
   def open_file
+=======
+  def import_source
+    raise NotImplementedError, 'import_source method should be implemented in your class. Return nil if non ui source'
+  end
+>>>>>>> Csv import headers change
 
+  def open_file
     begin
       File.open(file, 'r:bom|utf-8')
     rescue Exception => e
+<<<<<<< HEAD
       puts e
       csv_import_log = CsvImportLog.new(company_id: company_id, object_name: import_subject)
 >>>>>>> Add publisher csv importer
       csv_import_log.set_file_source(file)
+=======
+      csv_import_log = CsvImportLog.new(company_id: company_id, object_name: import_subject, source: import_source)
+      csv_import_log.set_file_source(file_name)
+>>>>>>> Csv import headers change
       csv_import_log.log_error [e.class.to_s, e.message]
       csv_import_log.save
     end
@@ -91,5 +100,10 @@ class Importers::BaseService < BaseService
 <<<<<<< HEAD
 end
 =======
+
+  def file_name
+    @original_filename || file
+  end
+>>>>>>> Csv import headers change
 end
 >>>>>>> Add publisher csv importer

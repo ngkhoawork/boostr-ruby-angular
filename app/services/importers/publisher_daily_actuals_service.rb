@@ -13,7 +13,7 @@ class Importers::PublisherDailyActualsService < Importers::BaseService
       available_impressions: row[:available_impressions],
       filled_impressions: row[:filled_impressions],
       total_revenue: row[:total_revenue],
-      curr_symbol: row[:curr_symbol],
+      curr_symbol: row[:currency],
       ecpm: row[:ecpm],
       company_id: company_id,
       publisher_id: row[:publisher_id],
@@ -23,5 +23,13 @@ class Importers::PublisherDailyActualsService < Importers::BaseService
 
   def parser_options
     { force_simple_split: true, strip_chars_from_headers: /[\-"]/ }
+  end
+
+  def import_subject
+    'PublisherDailyActual'
+  end
+
+  def import_source
+    'ui'
   end
 end

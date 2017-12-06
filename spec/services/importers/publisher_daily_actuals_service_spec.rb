@@ -5,21 +5,19 @@ describe Importers::PublisherDailyActualsService do
     before(:each) do
       @file = File.open(file_path, 'w') do |f|
         f.puts(
-          "date,\
-           available_impressions,\
-           filled_impressions,\
-           company_id,\
-           publisher_id,\
-           publisher_name,\
-           total_revenue,\
-           curr_symbol,\
-           ecpm"
+          "Date,\
+           Available Impressions,\
+           Filled Impressions,\
+           Publisher Id,\
+           Publisher Name,\
+           Total Revenue,\
+           Currency,\
+           eCPM"
         )
         f.puts(
           "#{us_string_date},\
            #{available_impressions},\
            #{filled_impressions},\
-           #{company_id},\
            #{publisher_id},\
            #{publisher_name},\
            #{total_revenue},\
