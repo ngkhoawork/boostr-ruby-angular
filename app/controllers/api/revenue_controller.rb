@@ -1,16 +1,6 @@
 class Api::RevenueController < ApplicationController
   respond_to :json, :csv
 
-  def index
-    if params[:time_period_id].present? || params[:quarter].present?
-      render json: crevenues
-    elsif params[:year].present?
-      render json: quarterly_ios
-    else
-      render json: revenues
-    end
-  end
-
   def forecast_detail
     if valid_time_period?
       if params[:product_ids].present?
@@ -58,42 +48,6 @@ class Api::RevenueController < ApplicationController
   end
 
   private
-
-  def quarterly_revenues
-
-    revs = current_user.company.revenues
-      .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", year, year)
-      .as_json
-    revs.map do |revenue|
-      revenue[:quarters] = []
-      revenue[:year] = year
-      if revenue['end_date'] == revenue['start_date']
-        revenue['end_date'] += 1.day
-      end
-      revenue_range = revenue['start_date'] .. revenue['end_date']
-      revenue['months'] = []
-      month = Date.parse("#{year-1}1201")
-      while month = month.next_month and month.year == year do
-        month_range = month.at_beginning_of_month..month.at_end_of_month
-        if month_range.overlaps? revenue_range
-          overlap = [revenue['start_date'], month_range.begin].max..[revenue['end_date'], month_range.end].min
-          revenue['months'].push((overlap.end.to_time - overlap.begin.to_time) / (revenue['end_date'].to_time - revenue['start_date'].to_time))
-        else
-          revenue['months'].push 0
-        end
-      end
-
-      quarters.each do |quarter|
-        if quarter[:range].overlaps? revenue_range
-          overlap = [revenue['start_date'], quarter[:start_date]].max..[revenue['end_date'], quarter[:end_date]].min
-          revenue[:quarters].push ((overlap.end - overlap.begin)  / (revenue['end_date'] - revenue['start_date']))
-        else
-          revenue[:quarters].push 0
-        end
-      end
-    end
-    revs
-  end
 
   def quarterly_ios
     if params[:team_id] == 'all' && params[:user_id] == 'all'
@@ -243,86 +197,6 @@ class Api::RevenueController < ApplicationController
     end
   end
 
-  def revenues
-    rss = []
-    if params[:filter] == 'all' && current_user.leader?
-      rss = current_user.company.revenues
-    elsif params[:filter] == 'team'
-      team.members.each do |m|
-        m.clients.each do |c|
-          c.revenues.each do |r|
-            rss += [r] if !rss.include?(r)
-          end
-        end
-      end
-    elsif params[:filter] == 'upside'
-      if current_user.leader?
-        current_user.teams.first.all_members.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance > 0").each do |r|
-                rss += [r] if !rss.include?(r)
-              end
-            end
-          end
-        end
-        current_user.teams.first.all_leaders.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance > 0").each do |r|
-                rss += [r] if !rss.include?(r)
-              end
-            end
-          end
-        end
-      else
-        current_user.clients.each do |c|
-          if c.client_members.where(user_id: current_user.id).first.share > 0
-            c.revenues.where("revenues.balance > 0").each do |r|
-              rss += [r] if !rss.include?(r)
-            end
-          end
-        end
-      end
-    elsif params[:filter] == 'risk'
-      if current_user.leader?
-        current_user.teams.first.all_members.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance < 0").each do |r|
-                rss += [r] if !rss.include?(r)
-              end
-            end
-          end
-        end
-        current_user.teams.first.all_leaders.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance < 0").each do |r|
-                rss += [r] if !rss.include?(r)
-              end
-            end
-          end
-        end
-      else
-        current_user.clients.each do |c|
-          if c.client_members.where(user_id: current_user.id).first.share > 0
-            c.revenues.where("revenues.balance < 0").each do |r|
-              rss += [r] if !rss.include?(r)
-            end
-          end
-        end
-      end
-    else # mine/default
-      current_user.clients.each do |c|
-        c.revenues.each do |r|
-          rss += [r] if !rss.include?(r)
-        end
-      end
-    end
-    return rss
-  end
-
   def time_period
     if params[:time_period_id].present?
       @time_period ||= current_user.company.time_periods.find_by_id(params[:time_period_id])
@@ -391,6 +265,16 @@ class Api::RevenueController < ApplicationController
   def product_ids
     @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
       params[:product_ids]
+    elsif product_family
+      product_family.products.collect(&:id)
+    else
+      nil
+    end
+  end
+
+  def product_family
+    @_product_family ||= if params[:product_family_id] && params[:product_family_id] != 'all'
+      company.product_families.find_by(id: params[:product_family_id])
     else
       nil
     end
@@ -416,6 +300,10 @@ class Api::RevenueController < ApplicationController
     end
   end
 
+  def company
+    @_company ||= current_user.company
+  end
+
   def member
     @member ||= if params[:user_id]
       current_user.company.users.find(params[:user_id])
@@ -428,10 +316,6 @@ class Api::RevenueController < ApplicationController
 
   def team
     @team ||= current_user.company.teams.find(params[:team_id])
-  end
-
-  def crevenues
-    @crevenues ||= member_or_team.crevenues(start_date, end_date, product)
   end
 
   def revenue_by_category_report

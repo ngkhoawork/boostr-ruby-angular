@@ -1,5 +1,6 @@
 class Product < ActiveRecord::Base
   belongs_to :company
+  belongs_to :product_family
   has_many :deal_products
   has_many :values, as: :subject
   has_many :ad_units
@@ -12,6 +13,7 @@ class Product < ActiveRecord::Base
 
   scope :active, -> { where('active IS true') }
   scope :by_revenue_type, -> (revenue_type) { where('revenue_type = ?', revenue_type) if revenue_type }
+  scope :by_product_family, -> (product_family_id) { where('product_family_id = ?', product_family_id) if product_family_id }
 
   after_create do
     create_dimension
@@ -76,8 +78,7 @@ class Product < ActiveRecord::Base
           product.id,
           product.name,
           get_option_value(product, "Pricing Type"),
-          get_option_value(product, "Product Line"),
-          get_option_value(product, "Product Family"),
+          product.product_family.name,
           product.active ? "Yes" : "No"
         ]
       end

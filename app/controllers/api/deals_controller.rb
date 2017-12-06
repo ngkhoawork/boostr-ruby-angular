@@ -12,7 +12,7 @@ class Api::DealsController < ApplicationController
           render json: activity_deals
         elsif params[:time_period_id].present?
           if valid_time_period?
-            if params[:product_ids].present?
+            if product_ids.present?
               render json: product_forecast_deals
             else
               render json: forecast_deals
@@ -755,6 +755,16 @@ class Api::DealsController < ApplicationController
   def product_ids
     @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
       params[:product_ids]
+    elsif product_family
+      product_family.products.collect(&:id)
+    else
+      nil
+    end
+  end
+
+  def product_family
+    @_product_family ||= if params[:product_family_id] && params[:product_family_id] != 'all'
+      company.product_families.find_by(id: params[:product_family_id])
     else
       nil
     end

@@ -172,6 +172,7 @@ Rails.application.routes.draw do
 
     resources :users, only: [:index, :update] do
       collection do
+        post 'import'
         post 'starting_page'
         get :signed_in_user
       end
@@ -227,7 +228,7 @@ Rails.application.routes.draw do
         get :metadata
       end
     end
-    resources :revenue, only: [:index, :create] do
+    resources :revenue, only: [:create] do
       collection do
         get :forecast_detail
         get :report_by_category, defaults: { format: :json }
@@ -266,6 +267,7 @@ Rails.application.routes.draw do
     resources :deal_product_budgets, only: [:index, :create]
     resources :deal_products, only: [:index, :create]
     resources :stages, only: [:index, :create, :show, :update]
+    resources :product_families, only: [:index, :create, :update, :destroy]
     resources :products, only: [:index, :create, :update] do
       resources :ad_units, only: [:index, :create, :update, :destroy]
     end
@@ -298,6 +300,8 @@ Rails.application.routes.draw do
     end
     resources :forecasts, only: [:index, :show] do
       collection do
+        get :revenue_data
+        get :pipeline_data
         get :old_detail
         get :detail
         get :old_product_detail
@@ -369,7 +373,13 @@ Rails.application.routes.draw do
     end
 
     resource :weighted_pipelines, only: [:show]
-    resource :dashboard, only: [:show]
+
+    resource :dashboard, only: [:show] do
+      collection do
+        get :pacing_alerts
+      end
+    end
+
     resource :company, only: [:show, :update]
     resources :initiatives, only: [:index, :create, :update, :destroy] do
       get 'smart_report', on: :collection

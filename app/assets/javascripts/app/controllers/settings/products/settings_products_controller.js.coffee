@@ -1,18 +1,24 @@
 @app.controller 'SettingsProductsController',
-    ['$scope', '$modal', '$window', 'Product', 'Field',
-    ( $scope,   $modal,   $window,   Product,   Field) ->
+    ['$scope', '$modal', '$window', 'Product', 'ProductFamily', 'Field',
+    ( $scope,   $modal,   $window,   Product,   ProductFamily,   Field) ->
         $scope.expendedRow = null
         $scope.productUnits = {}
         $scope.isUnitsLoading = {}
 
         $scope.init = () ->
+            getProductFamilies()
+            getProducts()
+
+        getProducts = () ->
             Product.all().then (products) ->
                 $scope.products = products
                 _.each $scope.products, (product) ->
                     Field.defaults(product, 'Product').then (fields) ->
                         product.pricing_type = Field.field(product, 'Pricing Type')
-                        product.product_line = Field.field(product, 'Product Line')
-                        product.product_family = Field.field(product, 'Product Family')
+
+        getProductFamilies = () ->
+            ProductFamily.all().then (product_families) ->
+                $scope.product_families = product_families
 
         getProductUnits = (product_id) ->
             $scope.isUnitsLoading[product_id] = true
@@ -62,8 +68,35 @@
                     id: unit.id
                 })
 
+        $scope.showFamilyModal = () ->
+            $scope.modalInstance = $modal.open
+                templateUrl: 'modals/product_family_form.html'
+                size: 'md'
+                controller: 'NewProductFamiliesController'
+                backdrop: 'static'
+                keyboard: false
+
+        $scope.editFamilyModal = (product_family) ->
+            $scope.modalInstance = $modal.open
+                templateUrl: 'modals/product_family_form.html'
+                size: 'md'
+                controller: 'ProductFamiliesEditController'
+                backdrop: 'static'
+                keyboard: false
+                resolve:
+                    product_family: ->
+                        angular.copy product_family
+
+        $scope.deleteFamily = (product_family) ->
+            if confirm('Are you sure you want to delete "' +  product_family.name + '"?')
+              ProductFamily.delete(id: product_family.id)
+
+        $scope.$on 'updated_product_families', ->
+            getProductFamilies()
+            getProducts()
+
         $scope.$on 'updated_products', ->
-            $scope.init()
+            getProducts()
         $scope.$on 'updated_product_units', (e, product_id)->
             getProductUnits(product_id)
 

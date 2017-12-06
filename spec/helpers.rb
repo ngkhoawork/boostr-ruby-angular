@@ -68,14 +68,6 @@ module Helpers
     company.fields.where(name: 'Pricing Type').first
   end
 
-  def product_line_field(company)
-    company.fields.where(name: 'Product Line').first
-  end
-
-  def product_family_field(company)
-    company.fields.where(name: 'Product Family').first
-  end
-
   def client_role_field(company)
     company.fields.where(name: 'Member Role').first
   end
