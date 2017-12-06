@@ -120,12 +120,14 @@ ActiveRecord::Schema.define(version: 20171101102850) do
     t.integer "category_id"
     t.integer "subcategory_id"
     t.integer "holding_company_id"
+    t.integer "company_id"
     t.integer "client_region_id"
     t.integer "client_segment_id"
   end
 
   add_index "account_dimensions", ["client_region_id"], name: "index_account_dimensions_on_client_region_id", using: :btree
   add_index "account_dimensions", ["client_segment_id"], name: "index_account_dimensions_on_client_segment_id", using: :btree
+  add_index "account_dimensions", ["company_id"], name: "index_account_dimensions_on_company_id", using: :btree
   add_index "account_dimensions", ["holding_company_id"], name: "index_account_dimensions_on_holding_company_id", using: :btree
 
   create_table "account_pipeline_facts", force: :cascade do |t|
