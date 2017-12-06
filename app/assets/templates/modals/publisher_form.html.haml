@@ -16,13 +16,13 @@
         %span.star *
         %input.form-control{ placeholder: 'Name', ng: { model: 'publisher.name' }, name: 'name' }
 
-      .form-group
-        %label{ for: 'comscore' }
-          Comscore 250
-        %br
-        %z-toggle{ng: { model: 'publisher.comscore' }}
-
       .row
+        .form-group.col-xs-6
+          %label{ for: 'comscore' }
+            Comscore 250
+          %br
+          %z-toggle{ng: { model: 'publisher.comscore' }}
+
         .form-group.col-xs-6
           %label{ for: 'publisher-stage' }
             Stage
@@ -32,34 +32,21 @@
             %ui-select-choices{ repeat: 'stage.id as stage in publisher_stages' }
               %div{ ng: { bind: { html: 'stage.name' } } }
 
+      .row
         .form-group.col-xs-6{'ng-class':'{error: errors.type_id}'}
           %span.error-text {{errors.type_id}}
           %label{ for: 'publisher-stage' }
             Publisher Type
-          %span.star *
           %ui-select{ type: 'publisher-type', ng: { model: 'publisher.type_id', disabled: true } }
-            %ui-select-match{ placeholder: 'Publisher Type' }
+            %ui-select-match{ placeholder: 'Publisher Type', "allow-clear": 'true' }
               {{ $select.selected.name }}
             %ui-select-choices{ repeat: 'type.id as type in publisher_types' }
               %div{ ng: { bind: { html: 'type.name' } } }
 
-      .row
         .form-group.col-xs-6
           %label{ for: 'estimate-monthly' }
             Estimated Monthly Impressions
-          %input.form-control{type: 'number', placeholder: 'Estimated Monthly Impressions', ng: { model: 'publisher.estimated_monthly_impressions' }, name: 'estimated_monthly_impressions' }
-
-        .form-group.col-xs-6{'ng-class':'{error: errors.client_id}'}
-          %span.error-text {{errors.client_id}}
-          %label{ for: 'client-stage' }
-            Client
-          %span.star *
-          %ui-select{ name: 'client', ng: { model: 'publisher.client_id', 'model-options': '{debounce: 400}', keyup: 'getClients($select.search)' } }
-            %ui-select-match{ placeholder: 'Client' }
-              {{ $select.selected.name }}
-            %ui-select-choices{ repeat: 'client.id as client in clients | filter: { name: $select.search }' }
-              %div{ ng: { bind: { html: 'client.name' } } }
-
+          %input.form-control{placeholder: 'Estimated Monthly Impressions', ng: { model: 'publisher.estimated_monthly_impressions' }, name: 'estimated_monthly_impressions' }
 
       .form-group{ng: {repeat: 'pubCustomField in publisherCustomFields | orderBy: "position"', init: "fieldName = pubCustomField.field_type + pubCustomField.field_index", if: "!pubCustomField.disabled", class:'{error: errors[fieldName]}'}}
         %span.error-text {{errors[fieldName]}}
