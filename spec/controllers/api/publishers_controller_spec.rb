@@ -180,16 +180,6 @@ RSpec.describe Api::PublishersController, type: :controller do
       expect(response).to have_http_status(201)
       expect(response_body[:id]).to eq Publisher.last.id
     end
-
-    context 'when client_id is missed' do
-      let(:attributes) { super().merge(client_id: nil) }
-
-      it 'does not create a publisher' do
-        expect{subject}.not_to change{Publisher.count}
-        expect(response).to have_http_status(422)
-        expect(response_body).to have_key :errors
-      end
-    end
   end
 
   describe '#update' do
