@@ -44,7 +44,7 @@
                   %th
                     .z-sortable{by: 'product.name', default: true} Product
                   %th
-                    .z-sortable{by: 'product.product_family.name', default: true} Product Family
+                    .z-sortable{by: 'product.product_family.name'} Product Family
                   %th{'ng-repeat': 'stage in stages'}
                     .z-sortable{by: '"weighted_pipeline_by_stage[\""+stage.id+"\"]"'} {{stage.probability}}%
                   %th
