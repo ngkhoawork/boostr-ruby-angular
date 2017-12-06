@@ -15,7 +15,7 @@ class Publisher < ActiveRecord::Base
           through: :company, source: :fields
   has_many :available_types, through: :type_field, source: :options
 
-  belongs_to :client, required: true
+  belongs_to :client
   belongs_to :company, required: true
   belongs_to :publisher_stage
   belongs_to :type, class_name: 'Option'
