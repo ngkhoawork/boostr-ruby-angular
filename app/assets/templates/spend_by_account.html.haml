@@ -58,7 +58,7 @@
                   %td {{account.team_name}}
                   %td {{account.seller_names}}
                   %td{'ng-repeat': 'revenue in account.revenues track by $index'}
-                    {{ revenue ? (revenue | currency: '$' : '0') : '0$' }}
+                    {{ revenue ? (revenue | currency: '$' : '0') : '$0' }}
 
                 %tr{ ng: { if: 'spend_by_account.length == 0' }}
                   %td.center.auto-colspan
