@@ -9,6 +9,7 @@ class Company < ActiveRecord::Base
   has_many :stages
   has_many :distinct_stages, -> {distinct}, class_name: 'Stage'
   has_many :products
+  has_many :product_families
   has_many :teams
   has_many :time_periods
   has_many :quotas

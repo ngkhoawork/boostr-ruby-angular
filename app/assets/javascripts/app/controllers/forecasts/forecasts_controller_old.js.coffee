@@ -1,6 +1,6 @@
 @app.controller 'ForecastsOldController',
-['$scope', '$routeParams', '$location', 'Forecast', 'TimePeriod', 'WeightedPipeline', 'Revenue'
-($scope, $routeParams, $location, Forecast, TimePeriod, WeightedPipeline, Revenue) ->
+['$scope', '$routeParams', '$location', 'Forecast', 'TimePeriod'
+($scope, $routeParams, $location, Forecast, TimePeriod) ->
 
   $scope.chartBarOptions = {
     responsive: false,
@@ -224,7 +224,7 @@
       else if row.type == 'team'
         params = _.extend(params, { team_id: row.id })
 
-      WeightedPipeline.get(params).then (weighted_pipeline) ->
+      Forecast.pipeline_data(params).$promise.then (weighted_pipeline) ->
         $scope.weighted_pipeline = weighted_pipeline
         $scope.sort.weighted_pipeline = new McSort(
           column: "name",
@@ -251,7 +251,7 @@
       else if row.type == 'team'
         params = _.extend(params, { team_id: row.id })
 
-      Revenue.query(params).$promise.then (revenues) ->
+      Forecast.revenue_data(params).$promise.then (revenues) ->
         $scope.revenues = revenues
         $scope.sort.revenues = new McSort(
           column: "name",
