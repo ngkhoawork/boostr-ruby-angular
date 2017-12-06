@@ -205,6 +205,7 @@ class DisplayLineItem < ActiveRecord::Base
 
     Io.skip_callback(:save, :after, :update_revenue_fact_callback)
     DisplayLineItem.skip_callback(:save, :after, :update_revenue_fact_callback)
+    DisplayLineItemBudget.skip_callback(:save, :after, :update_revenue_fact_callback)
 
     CSV.parse(file, headers: true) do |row|
       import_log.count_processed
@@ -678,6 +679,7 @@ class DisplayLineItem < ActiveRecord::Base
 
     Io.set_callback(:save, :after, :update_revenue_fact_callback)
     DisplayLineItem.set_callback(:save, :after, :update_revenue_fact_callback)
+    DisplayLineItemBudget.set_callback(:save, :after, :update_revenue_fact_callback)
 
     io_change[:time_period_ids] = io_change[:time_period_ids].uniq
     io_change[:user_ids] = io_change[:user_ids].uniq
