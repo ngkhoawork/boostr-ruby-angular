@@ -1,10 +1,10 @@
 @app.controller 'PablishersController', [
-  '$scope', '$q', '$document', '$timeout', '$modal', 'Publisher', 'PublishersFilter', 'shadeColor'
-  ($scope,   $q,   $document,   $timeout,   $modal,   Publisher,   PublishersFilter,   shadeColor) ->
+  '$scope', '$q', '$document', '$timeout', '$modal', 'Publisher', 'PublishersFilter', 'localStorageService', 'shadeColor'
+  ($scope,   $q,   $document,   $timeout,   $modal,   Publisher,   PublishersFilter,   localStorageService,   shadeColor) ->
 
     $scope.publishers = []
     $scope.publishersPipeline = []
-    $scope.view = 'columns'
+    $scope.view = localStorageService.get('publishersViewType') || 'list'
     page = 1
     per = 10
     $scope.isPublishersLoading = false
@@ -74,6 +74,7 @@
 
     $scope.changeView = (view) ->
       $scope.view = view
+      localStorageService.set('publishersViewType', view)
       resetPagination()
       $scope.getPublishers()
 
