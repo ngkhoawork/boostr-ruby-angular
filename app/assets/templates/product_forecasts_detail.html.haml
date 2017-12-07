@@ -75,6 +75,7 @@
                   %td
                     %strong
                       Total
+                  %td
                   %td{'ng-repeat': 'stage in stages'}
                     %strong
                       {{(totalForecastData.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
