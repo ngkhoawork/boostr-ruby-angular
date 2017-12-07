@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171120181523) do
+ActiveRecord::Schema.define(version: 20171207032805) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,13 +44,13 @@ ActiveRecord::Schema.define(version: 20171120181523) do
   create_table "account_cfs", force: :cascade do |t|
     t.integer  "company_id"
     t.integer  "client_id"
-    t.decimal  "currency1",      precision: 15, scale: 2
-    t.decimal  "currency2",      precision: 15, scale: 2
-    t.decimal  "currency3",      precision: 15, scale: 2
-    t.decimal  "currency4",      precision: 15, scale: 2
-    t.decimal  "currency5",      precision: 15, scale: 2
-    t.decimal  "currency6",      precision: 15, scale: 2
-    t.decimal  "currency7",      precision: 15, scale: 2
+    t.decimal  "currency1",       precision: 15, scale: 2
+    t.decimal  "currency2",       precision: 15, scale: 2
+    t.decimal  "currency3",       precision: 15, scale: 2
+    t.decimal  "currency4",       precision: 15, scale: 2
+    t.decimal  "currency5",       precision: 15, scale: 2
+    t.decimal  "currency6",       precision: 15, scale: 2
+    t.decimal  "currency7",       precision: 15, scale: 2
     t.string   "currency_code1"
     t.string   "currency_code2"
     t.string   "currency_code3"
@@ -72,28 +72,28 @@ ActiveRecord::Schema.define(version: 20171120181523) do
     t.datetime "datetime5"
     t.datetime "datetime6"
     t.datetime "datetime7"
-    t.decimal  "number1",        precision: 15, scale: 2
-    t.decimal  "number2",        precision: 15, scale: 2
-    t.decimal  "number3",        precision: 15, scale: 2
-    t.decimal  "number4",        precision: 15, scale: 2
-    t.decimal  "number5",        precision: 15, scale: 2
-    t.decimal  "number6",        precision: 15, scale: 2
-    t.decimal  "number7",        precision: 15, scale: 2
-    t.decimal  "integer1",       precision: 15
-    t.decimal  "integer2",       precision: 15
-    t.decimal  "integer3",       precision: 15
-    t.decimal  "integer4",       precision: 15
-    t.decimal  "integer5",       precision: 15
-    t.decimal  "integer6",       precision: 15
-    t.decimal  "integer7",       precision: 15
+    t.decimal  "number1",         precision: 15, scale: 2
+    t.decimal  "number2",         precision: 15, scale: 2
+    t.decimal  "number3",         precision: 15, scale: 2
+    t.decimal  "number4",         precision: 15, scale: 2
+    t.decimal  "number5",         precision: 15, scale: 2
+    t.decimal  "number6",         precision: 15, scale: 2
+    t.decimal  "number7",         precision: 15, scale: 2
+    t.decimal  "integer1",        precision: 15
+    t.decimal  "integer2",        precision: 15
+    t.decimal  "integer3",        precision: 15
+    t.decimal  "integer4",        precision: 15
+    t.decimal  "integer5",        precision: 15
+    t.decimal  "integer6",        precision: 15
+    t.decimal  "integer7",        precision: 15
     t.boolean  "boolean1"
     t.boolean  "boolean2"
     t.boolean  "boolean3"
-    t.decimal  "percentage1",    precision: 5,  scale: 2
-    t.decimal  "percentage2",    precision: 5,  scale: 2
-    t.decimal  "percentage3",    precision: 5,  scale: 2
-    t.decimal  "percentage4",    precision: 5,  scale: 2
-    t.decimal  "percentage5",    precision: 5,  scale: 2
+    t.decimal  "percentage1",     precision: 5,  scale: 2
+    t.decimal  "percentage2",     precision: 5,  scale: 2
+    t.decimal  "percentage3",     precision: 5,  scale: 2
+    t.decimal  "percentage4",     precision: 5,  scale: 2
+    t.decimal  "percentage5",     precision: 5,  scale: 2
     t.string   "dropdown1"
     t.string   "dropdown2"
     t.string   "dropdown3"
@@ -101,15 +101,61 @@ ActiveRecord::Schema.define(version: 20171120181523) do
     t.string   "dropdown5"
     t.string   "dropdown6"
     t.string   "dropdown7"
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
-    t.decimal  "number_4_dec1",  precision: 15, scale: 4
-    t.decimal  "number_4_dec2",  precision: 15, scale: 4
-    t.decimal  "number_4_dec3",  precision: 15, scale: 4
-    t.decimal  "number_4_dec4",  precision: 15, scale: 4
-    t.decimal  "number_4_dec5",  precision: 15, scale: 4
-    t.decimal  "number_4_dec6",  precision: 15, scale: 4
-    t.decimal  "number_4_dec7",  precision: 15, scale: 4
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+    t.decimal  "number_4_dec1",   precision: 15, scale: 4
+    t.decimal  "number_4_dec2",   precision: 15, scale: 4
+    t.decimal  "number_4_dec3",   precision: 15, scale: 4
+    t.decimal  "number_4_dec4",   precision: 15, scale: 4
+    t.decimal  "number_4_dec5",   precision: 15, scale: 4
+    t.decimal  "number_4_dec6",   precision: 15, scale: 4
+    t.decimal  "number_4_dec7",   precision: 15, scale: 4
+    t.decimal  "currency8",       precision: 15, scale: 2
+    t.decimal  "currency9",       precision: 15, scale: 2
+    t.decimal  "currency10",      precision: 15, scale: 2
+    t.string   "currency_code8"
+    t.string   "currency_code9"
+    t.string   "currency_code10"
+    t.string   "text6"
+    t.string   "text7"
+    t.string   "text8"
+    t.string   "text9"
+    t.string   "text10"
+    t.text     "note3"
+    t.text     "note4"
+    t.text     "note5"
+    t.text     "note6"
+    t.text     "note7"
+    t.text     "note8"
+    t.text     "note9"
+    t.text     "note10"
+    t.datetime "datetime8"
+    t.datetime "datetime9"
+    t.datetime "datetime10"
+    t.decimal  "number8",         precision: 15, scale: 2
+    t.decimal  "number9",         precision: 15, scale: 2
+    t.decimal  "number10",        precision: 15, scale: 2
+    t.decimal  "integer8",        precision: 15
+    t.decimal  "integer9",        precision: 15
+    t.decimal  "integer10",       precision: 15
+    t.boolean  "boolean4"
+    t.boolean  "boolean5"
+    t.boolean  "boolean6"
+    t.boolean  "boolean7"
+    t.boolean  "boolean8"
+    t.boolean  "boolean9"
+    t.boolean  "boolean10"
+    t.decimal  "percentage6",     precision: 5,  scale: 2
+    t.decimal  "percentage7",     precision: 5,  scale: 2
+    t.decimal  "percentage8",     precision: 5,  scale: 2
+    t.decimal  "percentage9",     precision: 5,  scale: 2
+    t.decimal  "percentage10",    precision: 5,  scale: 2
+    t.string   "dropdown8"
+    t.string   "dropdown9"
+    t.string   "dropdown10"
+    t.decimal  "number_4_dec8",   precision: 15, scale: 4
+    t.decimal  "number_4_dec9",   precision: 15, scale: 4
+    t.decimal  "number_4_dec10",  precision: 15, scale: 4
   end
 
   add_index "account_cfs", ["client_id"], name: "index_account_cfs_on_client_id", using: :btree
@@ -564,13 +610,13 @@ ActiveRecord::Schema.define(version: 20171120181523) do
   create_table "contact_cfs", force: :cascade do |t|
     t.integer  "company_id"
     t.integer  "contact_id"
-    t.decimal  "currency1",      precision: 15, scale: 2
-    t.decimal  "currency2",      precision: 15, scale: 2
-    t.decimal  "currency3",      precision: 15, scale: 2
-    t.decimal  "currency4",      precision: 15, scale: 2
-    t.decimal  "currency5",      precision: 15, scale: 2
-    t.decimal  "currency6",      precision: 15, scale: 2
-    t.decimal  "currency7",      precision: 15, scale: 2
+    t.decimal  "currency1",       precision: 15, scale: 2
+    t.decimal  "currency2",       precision: 15, scale: 2
+    t.decimal  "currency3",       precision: 15, scale: 2
+    t.decimal  "currency4",       precision: 15, scale: 2
+    t.decimal  "currency5",       precision: 15, scale: 2
+    t.decimal  "currency6",       precision: 15, scale: 2
+    t.decimal  "currency7",       precision: 15, scale: 2
     t.string   "currency_code1"
     t.string   "currency_code2"
     t.string   "currency_code3"
@@ -592,28 +638,28 @@ ActiveRecord::Schema.define(version: 20171120181523) do
     t.datetime "datetime5"
     t.datetime "datetime6"
     t.datetime "datetime7"
-    t.decimal  "number1",        precision: 15, scale: 2
-    t.decimal  "number2",        precision: 15, scale: 2
-    t.decimal  "number3",        precision: 15, scale: 2
-    t.decimal  "number4",        precision: 15, scale: 2
-    t.decimal  "number5",        precision: 15, scale: 2
-    t.decimal  "number6",        precision: 15, scale: 2
-    t.decimal  "number7",        precision: 15, scale: 2
-    t.decimal  "integer1",       precision: 15
-    t.decimal  "integer2",       precision: 15
-    t.decimal  "integer3",       precision: 15
-    t.decimal  "integer4",       precision: 15
-    t.decimal  "integer5",       precision: 15
-    t.decimal  "integer6",       precision: 15
-    t.decimal  "integer7",       precision: 15
+    t.decimal  "number1",         precision: 15, scale: 2
+    t.decimal  "number2",         precision: 15, scale: 2
+    t.decimal  "number3",         precision: 15, scale: 2
+    t.decimal  "number4",         precision: 15, scale: 2
+    t.decimal  "number5",         precision: 15, scale: 2
+    t.decimal  "number6",         precision: 15, scale: 2
+    t.decimal  "number7",         precision: 15, scale: 2
+    t.decimal  "integer1",        precision: 15
+    t.decimal  "integer2",        precision: 15
+    t.decimal  "integer3",        precision: 15
+    t.decimal  "integer4",        precision: 15
+    t.decimal  "integer5",        precision: 15
+    t.decimal  "integer6",        precision: 15
+    t.decimal  "integer7",        precision: 15
     t.boolean  "boolean1"
     t.boolean  "boolean2"
     t.boolean  "boolean3"
-    t.decimal  "percentage1",    precision: 5,  scale: 2
-    t.decimal  "percentage2",    precision: 5,  scale: 2
-    t.decimal  "percentage3",    precision: 5,  scale: 2
-    t.decimal  "percentage4",    precision: 5,  scale: 2
-    t.decimal  "percentage5",    precision: 5,  scale: 2
+    t.decimal  "percentage1",     precision: 5,  scale: 2
+    t.decimal  "percentage2",     precision: 5,  scale: 2
+    t.decimal  "percentage3",     precision: 5,  scale: 2
+    t.decimal  "percentage4",     precision: 5,  scale: 2
+    t.decimal  "percentage5",     precision: 5,  scale: 2
     t.string   "dropdown1"
     t.string   "dropdown2"
     t.string   "dropdown3"
@@ -621,15 +667,61 @@ ActiveRecord::Schema.define(version: 20171120181523) do
     t.string   "dropdown5"
     t.string   "dropdown6"
     t.string   "dropdown7"
-    t.decimal  "number_4_dec1",  precision: 15, scale: 4
-    t.decimal  "number_4_dec2",  precision: 15, scale: 4
-    t.decimal  "number_4_dec3",  precision: 15, scale: 4
-    t.decimal  "number_4_dec4",  precision: 15, scale: 4
-    t.decimal  "number_4_dec5",  precision: 15, scale: 4
-    t.decimal  "number_4_dec6",  precision: 15, scale: 4
-    t.decimal  "number_4_dec7",  precision: 15, scale: 4
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.decimal  "number_4_dec1",   precision: 15, scale: 4
+    t.decimal  "number_4_dec2",   precision: 15, scale: 4
+    t.decimal  "number_4_dec3",   precision: 15, scale: 4
+    t.decimal  "number_4_dec4",   precision: 15, scale: 4
+    t.decimal  "number_4_dec5",   precision: 15, scale: 4
+    t.decimal  "number_4_dec6",   precision: 15, scale: 4
+    t.decimal  "number_4_dec7",   precision: 15, scale: 4
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+    t.decimal  "currency8",       precision: 15, scale: 2
+    t.decimal  "currency9",       precision: 15, scale: 2
+    t.decimal  "currency10",      precision: 15, scale: 2
+    t.string   "currency_code8"
+    t.string   "currency_code9"
+    t.string   "currency_code10"
+    t.string   "text6"
+    t.string   "text7"
+    t.string   "text8"
+    t.string   "text9"
+    t.string   "text10"
+    t.text     "note3"
+    t.text     "note4"
+    t.text     "note5"
+    t.text     "note6"
+    t.text     "note7"
+    t.text     "note8"
+    t.text     "note9"
+    t.text     "note10"
+    t.datetime "datetime8"
+    t.datetime "datetime9"
+    t.datetime "datetime10"
+    t.decimal  "number8",         precision: 15, scale: 2
+    t.decimal  "number9",         precision: 15, scale: 2
+    t.decimal  "number10",        precision: 15, scale: 2
+    t.decimal  "integer8",        precision: 15
+    t.decimal  "integer9",        precision: 15
+    t.decimal  "integer10",       precision: 15
+    t.boolean  "boolean4"
+    t.boolean  "boolean5"
+    t.boolean  "boolean6"
+    t.boolean  "boolean7"
+    t.boolean  "boolean8"
+    t.boolean  "boolean9"
+    t.boolean  "boolean10"
+    t.decimal  "percentage6",     precision: 5,  scale: 2
+    t.decimal  "percentage7",     precision: 5,  scale: 2
+    t.decimal  "percentage8",     precision: 5,  scale: 2
+    t.decimal  "percentage9",     precision: 5,  scale: 2
+    t.decimal  "percentage10",    precision: 5,  scale: 2
+    t.string   "dropdown8"
+    t.string   "dropdown9"
+    t.string   "dropdown10"
+    t.decimal  "number_4_dec8",   precision: 15, scale: 4
+    t.decimal  "number_4_dec9",   precision: 15, scale: 4
+    t.decimal  "number_4_dec10",  precision: 15, scale: 4
   end
 
   add_index "contact_cfs", ["company_id"], name: "index_contact_cfs_on_company_id", using: :btree
@@ -759,13 +851,13 @@ ActiveRecord::Schema.define(version: 20171120181523) do
   create_table "deal_custom_fields", force: :cascade do |t|
     t.integer  "company_id"
     t.integer  "deal_id"
-    t.decimal  "currency1",      precision: 15, scale: 2
-    t.decimal  "currency2",      precision: 15, scale: 2
-    t.decimal  "currency3",      precision: 15, scale: 2
-    t.decimal  "currency4",      precision: 15, scale: 2
-    t.decimal  "currency5",      precision: 15, scale: 2
-    t.decimal  "currency6",      precision: 15, scale: 2
-    t.decimal  "currency7",      precision: 15, scale: 2
+    t.decimal  "currency1",       precision: 15, scale: 2
+    t.decimal  "currency2",       precision: 15, scale: 2
+    t.decimal  "currency3",       precision: 15, scale: 2
+    t.decimal  "currency4",       precision: 15, scale: 2
+    t.decimal  "currency5",       precision: 15, scale: 2
+    t.decimal  "currency6",       precision: 15, scale: 2
+    t.decimal  "currency7",       precision: 15, scale: 2
     t.string   "currency_code1"
     t.string   "currency_code2"
     t.string   "currency_code3"
@@ -787,30 +879,30 @@ ActiveRecord::Schema.define(version: 20171120181523) do
     t.datetime "datetime5"
     t.datetime "datetime6"
     t.datetime "datetime7"
-    t.decimal  "number1",        precision: 15, scale: 2
-    t.decimal  "number2",        precision: 15, scale: 2
-    t.decimal  "number3",        precision: 15, scale: 2
-    t.decimal  "number4",        precision: 15, scale: 2
-    t.decimal  "number5",        precision: 15, scale: 2
-    t.decimal  "number6",        precision: 15, scale: 2
-    t.decimal  "number7",        precision: 15, scale: 2
-    t.decimal  "integer1",       precision: 15
-    t.decimal  "integer2",       precision: 15
-    t.decimal  "integer3",       precision: 15
-    t.decimal  "integer4",       precision: 15
-    t.decimal  "integer5",       precision: 15
-    t.decimal  "integer6",       precision: 15
-    t.decimal  "integer7",       precision: 15
+    t.decimal  "number1",         precision: 15, scale: 2
+    t.decimal  "number2",         precision: 15, scale: 2
+    t.decimal  "number3",         precision: 15, scale: 2
+    t.decimal  "number4",         precision: 15, scale: 2
+    t.decimal  "number5",         precision: 15, scale: 2
+    t.decimal  "number6",         precision: 15, scale: 2
+    t.decimal  "number7",         precision: 15, scale: 2
+    t.decimal  "integer1",        precision: 15
+    t.decimal  "integer2",        precision: 15
+    t.decimal  "integer3",        precision: 15
+    t.decimal  "integer4",        precision: 15
+    t.decimal  "integer5",        precision: 15
+    t.decimal  "integer6",        precision: 15
+    t.decimal  "integer7",        precision: 15
     t.boolean  "boolean1"
     t.boolean  "boolean2"
     t.boolean  "boolean3"
-    t.decimal  "percentage1",    precision: 5,  scale: 2
-    t.decimal  "percentage2",    precision: 5,  scale: 2
-    t.decimal  "percentage3",    precision: 5,  scale: 2
-    t.decimal  "percentage4",    precision: 5,  scale: 2
-    t.decimal  "percentage5",    precision: 5,  scale: 2
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.decimal  "percentage1",     precision: 5,  scale: 2
+    t.decimal  "percentage2",     precision: 5,  scale: 2
+    t.decimal  "percentage3",     precision: 5,  scale: 2
+    t.decimal  "percentage4",     precision: 5,  scale: 2
+    t.decimal  "percentage5",     precision: 5,  scale: 2
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
     t.string   "dropdown1"
     t.string   "dropdown2"
     t.string   "dropdown3"
@@ -825,13 +917,13 @@ ActiveRecord::Schema.define(version: 20171120181523) do
     t.integer  "sum5"
     t.integer  "sum6"
     t.integer  "sum7"
-    t.decimal  "number_4_dec1",  precision: 15, scale: 4
-    t.decimal  "number_4_dec2",  precision: 15, scale: 4
-    t.decimal  "number_4_dec3",  precision: 15, scale: 4
-    t.decimal  "number_4_dec4",  precision: 15, scale: 4
-    t.decimal  "number_4_dec5",  precision: 15, scale: 4
-    t.decimal  "number_4_dec6",  precision: 15, scale: 4
-    t.decimal  "number_4_dec7",  precision: 15, scale: 4
+    t.decimal  "number_4_dec1",   precision: 15, scale: 4
+    t.decimal  "number_4_dec2",   precision: 15, scale: 4
+    t.decimal  "number_4_dec3",   precision: 15, scale: 4
+    t.decimal  "number_4_dec4",   precision: 15, scale: 4
+    t.decimal  "number_4_dec5",   precision: 15, scale: 4
+    t.decimal  "number_4_dec6",   precision: 15, scale: 4
+    t.decimal  "number_4_dec7",   precision: 15, scale: 4
     t.string   "link1"
     t.string   "link2"
     t.string   "link3"
@@ -839,6 +931,58 @@ ActiveRecord::Schema.define(version: 20171120181523) do
     t.string   "link5"
     t.string   "link6"
     t.string   "link7"
+    t.decimal  "currency8",       precision: 15, scale: 2
+    t.decimal  "currency9",       precision: 15, scale: 2
+    t.decimal  "currency10",      precision: 15, scale: 2
+    t.string   "currency_code8"
+    t.string   "currency_code9"
+    t.string   "currency_code10"
+    t.string   "text6"
+    t.string   "text7"
+    t.string   "text8"
+    t.string   "text9"
+    t.string   "text10"
+    t.text     "note3"
+    t.text     "note4"
+    t.text     "note5"
+    t.text     "note6"
+    t.text     "note7"
+    t.text     "note8"
+    t.text     "note9"
+    t.text     "note10"
+    t.datetime "datetime8"
+    t.datetime "datetime9"
+    t.datetime "datetime10"
+    t.decimal  "number8",         precision: 15, scale: 2
+    t.decimal  "number9",         precision: 15, scale: 2
+    t.decimal  "number10",        precision: 15, scale: 2
+    t.decimal  "integer8",        precision: 15
+    t.decimal  "integer9",        precision: 15
+    t.decimal  "integer10",       precision: 15
+    t.boolean  "boolean4"
+    t.boolean  "boolean5"
+    t.boolean  "boolean6"
+    t.boolean  "boolean7"
+    t.boolean  "boolean8"
+    t.boolean  "boolean9"
+    t.boolean  "boolean10"
+    t.decimal  "percentage6",     precision: 5,  scale: 2
+    t.decimal  "percentage7",     precision: 5,  scale: 2
+    t.decimal  "percentage8",     precision: 5,  scale: 2
+    t.decimal  "percentage9",     precision: 5,  scale: 2
+    t.decimal  "percentage10",    precision: 5,  scale: 2
+    t.string   "dropdown8"
+    t.string   "dropdown9"
+    t.string   "dropdown10"
+    t.integer  "sum8"
+    t.integer  "sum9"
+    t.integer  "sum10"
+    t.decimal  "number_4_dec8",   precision: 15, scale: 4
+    t.decimal  "number_4_dec9",   precision: 15, scale: 4
+    t.decimal  "number_4_dec10",  precision: 15, scale: 4
+    t.string   "link8"
+    t.string   "link9"
+    t.string   "link10"
   end
 
   add_index "deal_custom_fields", ["company_id"], name: "index_deal_custom_fields_on_company_id", using: :btree
@@ -979,6 +1123,55 @@ ActiveRecord::Schema.define(version: 20171120181523) do
     t.decimal  "number_4_dec5",   precision: 15, scale: 4
     t.decimal  "number_4_dec6",   precision: 15, scale: 4
     t.decimal  "number_4_dec7",   precision: 15, scale: 4
+    t.decimal  "currency8",       precision: 15, scale: 2
+    t.decimal  "currency9",       precision: 15, scale: 2
+    t.decimal  "currency10",      precision: 15, scale: 2
+    t.string   "currency_code8"
+    t.string   "currency_code9"
+    t.string   "currency_code10"
+    t.string   "text6"
+    t.string   "text7"
+    t.string   "text8"
+    t.string   "text9"
+    t.string   "text10"
+    t.text     "note3"
+    t.text     "note4"
+    t.text     "note5"
+    t.text     "note6"
+    t.text     "note7"
+    t.text     "note8"
+    t.text     "note9"
+    t.text     "note10"
+    t.datetime "datetime8"
+    t.datetime "datetime9"
+    t.datetime "datetime10"
+    t.decimal  "number8",         precision: 15, scale: 2
+    t.decimal  "number9",         precision: 15, scale: 2
+    t.decimal  "number10",        precision: 15, scale: 2
+    t.decimal  "integer8",        precision: 15
+    t.decimal  "integer9",        precision: 15
+    t.decimal  "integer10",       precision: 15
+    t.boolean  "boolean4"
+    t.boolean  "boolean5"
+    t.boolean  "boolean6"
+    t.boolean  "boolean7"
+    t.boolean  "boolean8"
+    t.boolean  "boolean9"
+    t.boolean  "boolean10"
+    t.decimal  "percentage6",     precision: 5,  scale: 2
+    t.decimal  "percentage7",     precision: 5,  scale: 2
+    t.decimal  "percentage8",     precision: 5,  scale: 2
+    t.decimal  "percentage9",     precision: 5,  scale: 2
+    t.decimal  "percentage10",    precision: 5,  scale: 2
+    t.string   "dropdown8"
+    t.string   "dropdown9"
+    t.string   "dropdown10"
+    t.integer  "sum8"
+    t.integer  "sum9"
+    t.integer  "sum10"
+    t.decimal  "number_4_dec8",   precision: 15, scale: 4
+    t.decimal  "number_4_dec9",   precision: 15, scale: 4
+    t.decimal  "number_4_dec10",  precision: 15, scale: 4
   end
 
   add_index "deal_product_cfs", ["company_id"], name: "index_deal_product_cfs_on_company_id", using: :btree
@@ -1461,6 +1654,9 @@ ActiveRecord::Schema.define(version: 20171120181523) do
     t.decimal "budget_loc",           precision: 15, scale: 2
     t.decimal "budget_delivered_loc", precision: 15, scale: 2
     t.decimal "budget_remaining_loc", precision: 15, scale: 2
+    t.decimal "run_rate_7_days"
+    t.decimal "run_rate_30_days"
+    t.boolean "is_guaranteed",                                 default: false
   end
 
   add_index "pmp_items", ["pmp_id"], name: "index_pmp_items_on_pmp_id", using: :btree
@@ -1490,8 +1686,6 @@ ActiveRecord::Schema.define(version: 20171120181523) do
     t.decimal  "budget_remaining_loc", precision: 15, scale: 2
     t.datetime "start_date"
     t.datetime "end_date"
-    t.decimal  "7_day_run_rate"
-    t.decimal  "30_day_run_rate"
     t.string   "curr_cd",                                       default: "USD"
     t.integer  "deal_id"
   end
