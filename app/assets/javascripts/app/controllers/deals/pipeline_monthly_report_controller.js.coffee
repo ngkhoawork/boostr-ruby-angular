@@ -101,21 +101,6 @@
           $scope.sortType = sortType
           $scope.sortReverse = false
 
-      $scope.getHtml = (html) ->
-        $sce.trustAsHtml(html)
-
-
-      $scope.showEmailsModal = (activity) ->
-        $scope.modalInstance = $modal.open
-          templateUrl: 'modals/activity_emails.html'
-          size: 'lg'
-          controller: 'ActivityEmailsController'
-          backdrop: 'static'
-          keyboard: false
-          resolve:
-            activity: ->
-              activity
-
       $scope.export = ->
         url = '/api/deals/pipeline_report.csv'
         $window.open url + '?' + $httpParamSerializer appliedFilter

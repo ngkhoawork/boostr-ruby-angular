@@ -48,7 +48,7 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def latest_activity
-    object.latest_happened_activity.serializable_hash(only: [:happened_at, :activity_type_name, :comment]) rescue nil
+    object.latest_happened_activity.serializable_hash(only: [:happened_at, :activity_type_name]) rescue nil
   end
 
   def type
