@@ -11,7 +11,8 @@ describe Api::ForecastsController do
         parent_team
         create_list :parent_team, 2
 
-        get :index, { format: :json, new_version: 'true', time_period_id: time_period.id, team_id: 'all', product_id: 'all', user_id: 'all' }
+        get :index, format: :json, new_version: 'true', time_period_id: time_period.id,
+              team_id: 'all', product_id: 'all', user_id: 'all'
 
         response_json = JSON.parse(response.body)
         expect(response).to be_success
@@ -24,7 +25,8 @@ describe Api::ForecastsController do
         parent_team
         create_list :user, 2, team: parent_team
 
-        get :index, { format: :json, new_version: 'true', time_period_id: time_period.id, team_id: parent_team.id, product_id: 'all', user_id: 'all' }
+        get :index, format: :json, new_version: 'true', time_period_id: time_period.id,
+              team_id: parent_team.id, product_id: 'all', user_id: 'all'
 
         response_json = JSON.parse(response.body)
         expect(response).to be_success
@@ -40,7 +42,8 @@ describe Api::ForecastsController do
         parent_team
         create_list :user, 2, team: parent_team
 
-        get :index, { format: :json, new_version: 'true', time_period_id: time_period.id, team_id: parent_team.id, product_id: 'all', user_id: user.id }
+        get :index, format: :json, new_version: 'true', time_period_id: time_period.id,
+              team_id: parent_team.id, product_id: 'all', user_id: user.id
 
         response_json = JSON.parse(response.body)
         expect(response).to be_success
@@ -54,7 +57,8 @@ describe Api::ForecastsController do
         parent_team
         create_list :user, 2, team: parent_team
 
-        get :index, { format: :json, new_version: 'true', time_period_id: time_period.id, team_id: parent_team.id, product_id: product.id, user_id: user.id }
+        get :index, format: :json, new_version: 'true', time_period_id: time_period.id, 
+              team_id: parent_team.id, product_id: product.id, user_id: user.id
 
         response_json = JSON.parse(response.body)
         expect(response).to be_success
@@ -70,7 +74,7 @@ describe Api::ForecastsController do
         parent_team
         create_list :parent_team, 2, company: company
 
-        get :index, { format: :json, time_period_id: time_period.id }
+        get :index, format: :json, time_period_id: time_period.id
 
         response_json = JSON.parse(response.body)
         expect(response).to be_success
@@ -82,7 +86,7 @@ describe Api::ForecastsController do
       it 'returns only the user\'s forecast' do
         create_list :parent_team, 2, company: company
 
-        get :index, { format: :json, time_period_id: time_period.id }
+        get :index, format: :json, time_period_id: time_period.id
 
         response_json = response_json(response)
         expect(response).to be_success
@@ -94,7 +98,7 @@ describe Api::ForecastsController do
 
   describe 'GET #show' do
     it 'returns json for a team' do
-      get :show, { id: child_team.id, format: :json, time_period_id: time_period.id }
+      get :show, id: child_team.id, format: :json, time_period_id: time_period.id
 
       response_json = JSON.parse(response.body)
       expect(response).to be_success
