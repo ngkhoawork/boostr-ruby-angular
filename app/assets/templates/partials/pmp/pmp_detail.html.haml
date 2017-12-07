@@ -1,7 +1,10 @@
 .block.detail-stats
   %div.stats-body
     %div.mb30
-      %span.title {{currentPMP.name}}
+      %span.title 
+        {{currentPMP.name}}
+      %i.fa.fa-pencil.edit-pmp{'ng-click': 'showPmpEditModal()'}
+      %i.fa.fa-trash.delete-pmp{'ng-click': 'deletePmp()'}
 
     .clearfix
     %div.stats-numbers.mb30

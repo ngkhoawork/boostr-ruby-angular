@@ -5,6 +5,20 @@
         .stats-col {
             width: 14%;
         }
+
+        .edit-pmp, .delete-pmp {
+            color: $secondary-font-color;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            padding: 4px 6px;
+            font-size: 20px;
+            border-radius: 5px;
+            &:hover {
+                background-color: $secondary-font-color;
+                color: white;
+            }
+        }
     }
     .editable {
         &:hover {

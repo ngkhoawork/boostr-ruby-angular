@@ -1,7 +1,7 @@
 #new_pmp_modal.popup-modal
   %form{ ng: { submit: 'submitForm()' } }
     .popup-modal-header
-      New PMP
+      {{formType}} PMP
       %span.close-btn{'ng-click': 'closeModal()'}
     .popup-modal-body
       .form-group{'ng-class':'{error: errors.name}'}
@@ -52,7 +52,7 @@
             %ui-select-choices{ repeat: 'currency.curr_cd as currency in currencies' }
               %div{ ng: { bind: { html: 'currency.name' } } }
 
-      %div{ ng: {if: "formType == 'New'"}}
+      %div
         .row
           .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.start_date}'}
             %span.error-text {{errors.start_date}}

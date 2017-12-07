@@ -3,12 +3,24 @@
   ($scope,    $rootScope,   $modal,   $modalInstance,   $location,   Field,   Client,   pmp,   PMP,   Currency) ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
-    $scope.pmp = pmp || {}
+    $scope.pmp = {}
     $scope.advertisers = []
     $scope.agencies = []
     $scope.currencies = []
 
     init = () ->
+      if !_.isEmpty(pmp)
+        $scope.pmp.id = pmp.id
+        $scope.pmp.name = pmp.name
+        $scope.pmp.advertiser_id = pmp.advertiser.id
+        $scope.pmp.agency_id = pmp.agency.id
+        $scope.pmp.budget_loc = pmp.budget_loc
+        $scope.pmp.start_date = pmp.start_date
+        $scope.pmp.end_date = pmp.end_date
+        $scope.advertisers.push pmp.advertiser
+        $scope.agencies.push pmp.agency
+        $scope.formType = 'Edit'
+        $scope.submitText = 'Update'
       Currency.active_currencies().then (currencies) ->
         $scope.currencies = currencies
         user_currency = _.find(currencies, {curr_cd: $rootScope.currentUser.default_currency})
@@ -25,10 +37,25 @@
         if !field then $scope.errors[key] = title + ' is required'
       if !_.isEmpty($scope.errors) then return
 
+      if $scope.formType == 'New'
+        createPmp()
+      else
+        updatePmp()
+
+    createPmp = () ->
       PMP.create(pmp: $scope.pmp).then(
         (pmp) ->
           $modalInstance.close(pmp)
           $location.path('/revenue/pmps/' + pmp.id)
+        (resp) ->
+          for key, error of resp.data.errors
+            $scope.errors[key] = error && error[0]
+      )
+
+    updatePmp = () ->
+      PMP.update(id: $scope.pmp.id, pmp: $scope.pmp).then(
+        (pmp) ->
+          $modalInstance.close(pmp)
         (resp) ->
           for key, error of resp.data.errors
             $scope.errors[key] = error && error[0]
@@ -84,7 +111,7 @@
       )
 
     $scope.closeModal = () ->
-      $modalInstance.close()
+      $modalInstance.dismiss()
 
     init()
   ]

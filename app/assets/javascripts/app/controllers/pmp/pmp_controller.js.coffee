@@ -1,6 +1,6 @@
 @app.controller 'PMPController',
-  ['$rootScope', '$scope', '$modal', '$filter', '$timeout', '$routeParams', '$window', '$q', 'PMP', 'PMPMember', 'SSP', 'User', 'CurrentUser', 'Company'
-  ( $rootScope,   $scope,   $modal,   $filter,   $timeout,   $routeParams,   $window,   $q,   PMP,   PMPMember,   SSP,   User,   CurrentUser,   Company) ->
+  ['$rootScope', '$scope', '$modal', '$location', '$filter', '$timeout', '$routeParams', '$window', '$q', 'PMP', 'PMPMember', 'SSP', 'User', 'CurrentUser', 'Company'
+  ( $rootScope,   $scope,   $modal,   $location,   $filter,   $timeout,   $routeParams,   $window,   $q,   PMP,   PMPMember,   SSP,   User,   CurrentUser,   Company) ->
     $scope.currentPMP = {}
     $scope.currency_symbol = '$'
     $scope.canEditIO = true
@@ -327,6 +327,29 @@
         $scope.currentPMP.budget_delivered_loc = parseFloat($scope.currentPMP.budget_delivered_loc) + parseFloat(pmp_item.budget_delivered_loc)
         $scope.currentPMP.budget_remaining = parseFloat($scope.currentPMP.budget_remaining) + parseFloat(pmp_item.budget_remaining)
         $scope.currentPMP.budget_remaining_loc = parseFloat($scope.currentPMP.budget_remaining_loc) + parseFloat(pmp_item.budget_remaining_loc)
+
+    $scope.showPmpEditModal = () ->
+      modalInstance = $modal.open
+        templateUrl: 'modals/pmp_form.html'
+        size: 'md'
+        controller: 'PmpsNewController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          pmp: () -> $scope.currentPMP
+      modalInstance.result.then (pmp) ->
+        $scope.currentPMP = pmp
+
+    $scope.deletePmp = () ->
+      $scope.errors = {}
+      if confirm('Are you sure you want to delete "' +  $scope.currentPMP.name + '"?')
+        PMP.delete($scope.currentPMP).then(
+          () ->
+            $location.path('/revenue').search('filter', 'pmp')
+          (resp) ->
+            for key, error of resp.data.errors
+              $scope.errors[key] = error && error[0]
+        )
 
     init()
   ]
