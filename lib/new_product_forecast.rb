@@ -40,10 +40,7 @@ class NewProductForecast
     products.each do |product_item|
       product_ids << product_item.id
       data[product_item.id] = {
-        product: {
-          id: product_item.id,
-          name: product_item.name
-        },
+        product: ProductSerializer.new(product_item),
         stages: stages,
         revenue: 0.0,
         unweighted_pipeline_by_stage: {},

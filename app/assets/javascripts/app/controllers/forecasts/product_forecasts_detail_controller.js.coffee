@@ -53,6 +53,7 @@
             query.id = query.id || 'all'
             query.user_id = query.user_id || 'all'
             query['product_ids[]'] = ['all'] if !query['product_ids[]'] || !query['product_ids[]'].length
+            query.product_family_id = query.product_family_id || 'all'
             getData(query)
 
         getData = (query) ->
