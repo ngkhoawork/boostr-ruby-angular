@@ -17,13 +17,12 @@ RSpec.describe ContactCfName, type: :model do
       end
 
       it 'is invalid when there is no space' do
-        create :contact_cf_name, field_type: 'note', company: company
-        create :contact_cf_name, field_type: 'note', company: company
+        create_list :contact_cf_name, 10, field_type: 'note', company: company
 
         cf_name = build :contact_cf_name, field_type: 'note', company: company
 
         expect(cf_name).not_to be_valid
-        expect(cf_name.errors.full_messages).to eql(["Field type Note reached it's limit of 2"])
+        expect(cf_name.errors.full_messages).to eql(["Field type Note reached it's limit of 10"])
       end
     end
   end
@@ -75,7 +74,7 @@ RSpec.describe ContactCfName, type: :model do
     end
 
     it 'allocates freed up slots' do
-      contact_cf_names(7, field_type: 'datetime')
+      contact_cf_names(10, field_type: 'datetime')
 
       new_cf = build :contact_cf_name, field_type: 'datetime', company: company
 
@@ -89,7 +88,7 @@ RSpec.describe ContactCfName, type: :model do
 
       expect(new_cf.field_index).to be 3
       expect(company.contact_cf_names.pluck(:field_index))
-      .to eql [1, 2, 4, 5, 6, 7, 3]
+      .to eql [1, 2, 4, 5, 6, 7, 8, 9, 10, 3]
     end
   end
 
