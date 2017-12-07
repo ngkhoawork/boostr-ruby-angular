@@ -26,7 +26,7 @@ class PublisherPipelineHeadersService < Report::BaseService
   end
 
   def publisher_stages
-    Company.find(@params[:company_id]).publisher_stages
+    Company.find(@params[:company_id]).publisher_stages.active.order_by_position
   end
 
   def calculate_sum_for(publishers, field_name)

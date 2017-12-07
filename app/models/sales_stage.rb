@@ -5,6 +5,8 @@ class SalesStage < ActiveRecord::Base
   validates :name, :probability, presence: true
   before_create :set_position
 
+  scope :order_by_position, -> { order(:position) }
+
   private
 
   def set_position

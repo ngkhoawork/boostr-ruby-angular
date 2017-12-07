@@ -21,7 +21,7 @@ class Api::Publishers::SettingsSerializer
   end
 
   def publisher_stages
-    @company.publisher_stages.map do |publisher_stage|
+    @company.publisher_stages.active.order_by_open_and_probability.map do |publisher_stage|
       publisher_stage.serializable_hash(only: :id, methods: [:name, :probability])
     end
   end

@@ -2,7 +2,7 @@ class Api::SalesStagesController < ApplicationController
   respond_to :json
 
   def index
-    render json: company.sales_stages
+    render json: company.sales_stages.order_by_position
   end
 
   def create
