@@ -175,7 +175,10 @@
         resolve:
           publisher: ->
             {}
-            
+
+    $scope.$on 'updated_publishers', ->
+      $scope.init()
+
     $scope.init()
 
     $scope.coloringColumns = ->

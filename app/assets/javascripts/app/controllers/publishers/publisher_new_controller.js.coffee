@@ -1,6 +1,6 @@
 @app.controller 'PablisherNewController',
-  ['$scope', '$modalInstance', 'Publisher', 'publisher', 'Client', 'CountriesList', 'PublisherCustomFieldName',
-    ($scope, $modalInstance, Publisher, publisher, Client, CountriesList, PublisherCustomFieldName) ->
+  ['$scope', '$modalInstance', 'Publisher', 'publisher', 'Client', 'CountriesList', 'PublisherCustomFieldName', '$rootScope',
+    ($scope, $modalInstance, Publisher, publisher, Client, CountriesList, PublisherCustomFieldName, $rootScope) ->
       $scope.formType = "Add New"
       $scope.submitText = "Add"
       $scope.publisher = {comscore: false}
@@ -37,6 +37,7 @@
         if Object.keys($scope.errors).length > 0 then return
 
         Publisher.create(publisher: $scope.publisher).then (response) ->
+          $rootScope.$broadcast 'updated_publishers'
           $scope.cancel()
           # TODO need redirect to show publihser when will be ready
 

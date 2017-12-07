@@ -28,9 +28,6 @@
                   .z-sortable{by: 'comscore'}
                     Comscore
                 %th
-                  .z-sortable{by: 'client.name'}
-                    Client
-                %th
                   .z-sortable{by: 'publisher_stage'}
                     Stage
                 %th
@@ -48,7 +45,6 @@
               %tr{'ng-repeat': 'publisher in publishers | orderBy : zSort.by : zSort.rev'}
                 %td {{publisher.name}}
                 %td {{publisher.comscore ? 'Active' : 'Inactive'}}
-                %td {{publisher.client.name}}
                 %td {{publisher.publisher_stage}}
                 %td {{publisher.type.name}}
                 %td.center {{publisher.estimated_monthly_impressions}}
