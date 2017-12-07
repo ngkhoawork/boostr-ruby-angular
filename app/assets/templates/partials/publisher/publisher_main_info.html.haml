@@ -4,6 +4,8 @@
       {{currentPublisher.name}}
       %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentPublisher)'}
       %i.fa.fa-trash.delete-deal{'ng-click': 'delete(currentClient)'}
+    %span.stage-label
+      {{currentPublisher.publisher_stage.name}}
     .detail-info
       %a{target: "_blank", href: "{{currentPublisher.website}}"}
         {{currentPublisher.website}}
@@ -29,18 +31,19 @@
           .col-description
             Fill Rate
           .col-title
-            45,2%
+            {{currentPublisher.fill_rate}}%
     .stats-col
       .col-body-wrap
         .col-body
           .col-description
             Revenue LifeTime
           .col-title
-            $2,450,421
+            {{ currentPublisher.revenue_lifetime ? (currentPublisher.revenue_lifetime | currency: '$' : '0') : '$0' }}
     .stats-col
       .col-body-wrap
         .col-body
           .col-description
             Revenue YTD
           .col-title
-            $12,650,421
+            {{ currentPublisher.revenue_ytd ? (currentPublisher.revenue_ytd | currency: '$' : '0') : '$0' }}
+

@@ -3,6 +3,7 @@
     $scope.formType = "Edit"
     $scope.submitText = "Update"
     $scope.publisher = publisher
+    $scope.publisherCustomFields = []
 
     $scope.init = () ->
       $scope.getPublisherSettings()
@@ -17,6 +18,9 @@
     $scope.getPublisherCustomFields = () ->
       PublisherCustomFieldName.all({show_on_modal: true}).then (cf) ->
         $scope.publisherCustomFields = cf
+        console.log($scope.publisherCustomFields)
+        console.log($scope.publisher.publisher_custom_field)
+
 
     $scope.getCountries = () ->
       CountriesList.get (data) ->
@@ -25,7 +29,7 @@
     $scope.submitForm = () ->
       formValidation()
       if Object.keys($scope.errors).length > 0 then return
-
+      console.log($scope.publisher)
       Publisher.update(id: $scope.publisher.id, publisher: $scope.publisher).then (response) ->
         $scope.cancel()
 

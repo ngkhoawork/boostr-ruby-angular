@@ -1,6 +1,6 @@
 @app.controller 'PablisherNewController',
   ['$scope', '$modalInstance', 'Publisher', 'publisher', 'CountriesList', 'PublisherCustomFieldName', '$rootScope',
-    ($scope, $modalInstance, Publisher, publisher, Client, CountriesList, PublisherCustomFieldName, $rootScope) ->
+    ($scope, $modalInstance, Publisher, publisher, CountriesList, PublisherCustomFieldName, $rootScope) ->
       $scope.formType = "Add New"
       $scope.submitText = "Add"
       $scope.publisher = {comscore: false}

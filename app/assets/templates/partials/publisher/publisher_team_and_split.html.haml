@@ -5,10 +5,10 @@
     %thead
       %tr
         %th Member
-        %th Owner
+        %th.left Owner
     %tbody
       %tr{ ng: { repeat: "member in publisherMembers | orderBy: 'name'"} }
         %td
           {{member.name}}
-        %td
+        %td.left
           {{member.owner ? "Yes" : "No"}}
