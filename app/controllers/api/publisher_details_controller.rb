@@ -13,7 +13,11 @@ class Api::PublisherDetailsController < ApplicationController
   end
 
   def fill_rate_by_month_graph
-    render json: FillRateByMonthGraphService.new(publisher).perform
+    render json: PublisherFillRateByMonthGraphService.new(publisher).perform
+  end
+
+  def daily_revenue_graph
+    render json: PublisherDailyRevenueGraphService.new(publisher).perform
   end
 
   private

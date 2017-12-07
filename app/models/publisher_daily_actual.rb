@@ -7,6 +7,8 @@ class PublisherDailyActual < ActiveRecord::Base
 
   after_validation :calculate_fill_rate
 
+  delegate :curr_symbol, to: :currency, allow_nil: true
+
   private
 
   def calculate_fill_rate

@@ -457,6 +457,7 @@ Rails.application.routes.draw do
         get :associations
         get :activities
         get :fill_rate_by_month_graph
+        get :daily_revenue_graph
       end
     end
     resources :publisher_custom_field_names, only: [:index, :create, :update, :destroy]

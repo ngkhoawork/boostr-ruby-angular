@@ -85,6 +85,27 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
     end
   end
 
+  describe '#daily_revenue_graph' do
+    let!(:daily_actual_1) do
+      create(:publisher_daily_actual, publisher: publisher, currency: currency, date: 25.hours.ago)
+    end
+    let!(:daily_actual_2) do
+      create(:publisher_daily_actual, publisher: publisher, currency: currency, date: Date.current)
+    end
+
+    subject { get :daily_revenue_graph, id: publisher.id }
+
+    it 'returns revenues info by dates' do
+      subject
+      expect(response).to have_http_status(200)
+      expect(response_body).to be_a_kind_of Array
+      expect(response_body[0][:date]).to eq daily_actual_1.date.to_s
+      expect(response_body[0][:revenue]).to eq daily_actual_1.total_revenue
+      expect(response_body[1][:date]).to eq daily_actual_2.date.to_s
+      expect(response_body[1][:revenue]).to eq daily_actual_2.total_revenue
+    end
+  end
+
   private
 
   def response_body
