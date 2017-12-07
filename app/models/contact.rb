@@ -121,87 +121,12 @@ class Contact < ActiveRecord::Base
   end
 
   def job_level
-    job_level_field = company.fields.where(name: 'Job Level').first
-    job_level_value = self.values.find_by(field_id: job_level_field.id)
+    return nil if values.empty?
+
+    job_level_field_id = company.fields.where(name: 'Job Level').pluck(:id).first
+    job_level_value = values.find_by(field_id: job_level_field_id)
     return job_level_value.option.name if job_level_value.present?
-    return  nil
-  end
-
-  def self.to_csv(company, contacts)
-    header = [
-      'Id',
-      'Name',
-      'Works At',
-      'Position',
-      'Email',
-      'Street1',
-      'Street2',
-      'City',
-      'State',
-      'Zip',
-      'Country',
-      'Phone',
-      'Mobile',
-      'Related Accounts',
-      'Job Level'
-    ]
-
-    contact_cf_names = company.contact_cf_names.where('disabled IS NOT TRUE').order('position asc')
-
-    contact_cf_names.each do |contact_cf_name|
-      header << contact_cf_name.field_label
-    end
-
-    CSV.generate(headers: true) do |csv|
-      csv << header
-
-      contacts = contacts.includes(:contact_cf)
-
-      contacts.each do |contact|
-
-        line = []
-        line << contact.id
-        line << contact.name
-        line << (contact.primary_client.nil? ? nil : contact.primary_client.name)
-        line << contact.position
-        line << (contact.address.nil? ? nil : contact.address.email)
-        line << (contact.address.nil? ? nil : contact.address.street1)
-        line << (contact.address.nil? ? nil : contact.address.street2)
-        line << (contact.address.nil? ? nil : contact.address.city)
-        line << (contact.address.nil? ? nil : contact.address.state)
-        line << (contact.address.nil? ? nil : contact.address.zip)
-        line << (contact.address.nil? ? nil : contact.address.country)
-        line << (contact.address.nil? ? nil : contact.address.phone)
-        line << (contact.address.nil? ? nil : contact.address.mobile)
-        related_clients = contact.non_primary_clients.each_with_object([]) do |client, memo|
-          memo << client.name
-        end
-        line << related_clients.join(';')
-        line << contact.job_level
-
-        contact_cf = contact.contact_cf.as_json
-        contact_cf_names.each do |contact_cf_name|
-          field_name = contact_cf_name.field_type + contact_cf_name.field_index.to_s
-          value = nil
-          if contact_cf.present?
-            value = contact_cf[field_name]
-          end
-          case contact_cf_name.field_type
-            when "currency"
-              line << '$' + (value || '').to_s
-            when "percentage"
-              line << (value || '').to_s + "%"
-            when "number", "integer"
-              line << (value || '')
-            when "datetime"
-              line << (value.present? ? (value.strftime("%Y-%m-%d %H:%M:%S")) : '')
-            else
-              line << (value || '')
-          end
-        end
-        csv << line
-      end
-    end
+    return nil
   end
 
   def self.import(file, current_user_id, file_path)
@@ -209,7 +134,7 @@ class Contact < ActiveRecord::Base
 
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'contact', source: 'ui')
     import_log.set_file_source(file_path)
-    
+
     CSV.parse(file, headers: true) do |row|
       import_log.count_processed
 
