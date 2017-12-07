@@ -12,8 +12,9 @@ describe Api::ForecastsController do
         create_list :parent_team, 2
 
         get :index, { format: :json, new_version: 'true', time_period_id: time_period.id, team_id: 'all', product_id: 'all', user_id: 'all' }
-        expect(response).to be_success
+
         response_json = JSON.parse(response.body)
+        expect(response).to be_success
         expect(response_json[0]['teams'].length).to eq(3)
       end
     end
@@ -24,8 +25,9 @@ describe Api::ForecastsController do
         create_list :user, 2, team: parent_team
 
         get :index, { format: :json, new_version: 'true', time_period_id: time_period.id, team_id: parent_team.id, product_id: 'all', user_id: 'all' }
-        expect(response).to be_success
+
         response_json = JSON.parse(response.body)
+        expect(response).to be_success
         expect(response_json[0]['name']).to eq(parent_team.name)
         expect(response_json[0]['type']).to eq('team')
         expect(response_json[0]['leader']['id']).to eq(user.id)
@@ -39,8 +41,9 @@ describe Api::ForecastsController do
         create_list :user, 2, team: parent_team
 
         get :index, { format: :json, new_version: 'true', time_period_id: time_period.id, team_id: parent_team.id, product_id: 'all', user_id: user.id }
-        expect(response).to be_success
+
         response_json = JSON.parse(response.body)
+        expect(response).to be_success
         expect(response_json[0]['name']).to eq(user.name)
         expect(response_json[0]['type']).to eq('member')
       end
@@ -52,8 +55,9 @@ describe Api::ForecastsController do
         create_list :user, 2, team: parent_team
 
         get :index, { format: :json, new_version: 'true', time_period_id: time_period.id, team_id: parent_team.id, product_id: product.id, user_id: user.id }
-        expect(response).to be_success
+
         response_json = JSON.parse(response.body)
+        expect(response).to be_success
         expect(response_json[0]['name']).to eq(user.name)
         expect(response_json[0]['type']).to eq('member')
       end
@@ -67,8 +71,9 @@ describe Api::ForecastsController do
         create_list :parent_team, 2, company: company
 
         get :index, { format: :json, time_period_id: time_period.id }
-        expect(response).to be_success
+
         response_json = JSON.parse(response.body)
+        expect(response).to be_success
         expect(response_json[0]['teams'].length).to eq(3)
       end
     end
@@ -80,7 +85,6 @@ describe Api::ForecastsController do
         get :index, { format: :json, time_period_id: time_period.id }
 
         response_json = response_json(response)
-
         expect(response).to be_success
         expect(response_json[0]['teams'].count).to eq 2
         expect(response_json[0]['team_members'].count).to eq 1
@@ -91,8 +95,9 @@ describe Api::ForecastsController do
   describe 'GET #show' do
     it 'returns json for a team' do
       get :show, { id: child_team.id, format: :json, time_period_id: time_period.id }
-      expect(response).to be_success
+
       response_json = JSON.parse(response.body)
+      expect(response).to be_success
       expect(response_json['name']).to eq(child_team.name)
     end
   end
