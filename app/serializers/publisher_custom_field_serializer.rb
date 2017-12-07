@@ -1,12 +1,11 @@
 class PublisherCustomFieldSerializer < ActiveModel::Serializer
   def attributes
-    publisher_custom_field_names.map do |field_name|
-      [field_name.field_label, field_name.field_type]
-    end.inject([]) do |acc, (field_label, field_type)|
+    publisher_custom_field_names.inject([]) do |acc, custom_field_name|
       acc << {
-        field_label: field_label,
-        field_type: field_type,
-        field_value: fetch_field_value(field_label)
+        field_label: custom_field_name.field_label,
+        field_type: custom_field_name.field_type,
+        field_value: fetch_field_value(custom_field_name),
+        attr_name: custom_field_name.fetch_attr_name_for_publisher_custom_field
       }
     end
   end
@@ -17,15 +16,7 @@ class PublisherCustomFieldSerializer < ActiveModel::Serializer
     @publisher_custom_field_names ||= object.company.publisher_custom_field_names.to_a
   end
 
-  def fetch_field_value(field_label)
-    field_name = publisher_custom_field_name_by_field_label(field_label)
-
-    object.send("#{field_name.field_type}#{field_name.field_index}")
-  end
-
-  def publisher_custom_field_name_by_field_label(field_label)
-    publisher_custom_field_names.detect do |publisher_custom_field_name|
-      publisher_custom_field_name.field_label == field_label
-    end
+  def fetch_field_value(custom_field_name)
+    object.send(custom_field_name.fetch_attr_name_for_publisher_custom_field)
   end
 end
