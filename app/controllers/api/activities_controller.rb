@@ -90,6 +90,7 @@ class Api::ActivitiesController < ApplicationController
       :deal_id,
       :client_id,
       :agency_id,
+      :publisher_id,
       :user_id,
       :activity_type_id,
       :activity_type_name,

@@ -51,6 +51,10 @@
                     when 'gmail'
                         $scope.showRelated = true
                         $scope.form = _.extend $scope.form, options.data
+                    when 'publisher'
+                        $scope.form.publisher = options.data
+                        $scope.form.advertiser =
+                            id: $scope.form.publisher.client_id
 
             #edit mode
             if activity
@@ -223,6 +227,9 @@
                     activityData.deal_id = null
                     activityData.client_id = $scope.form.advertiser && $scope.form.advertiser.id || null
                     activityData.agency_id = $scope.form.agency && $scope.form.agency.id || null
+                if $scope.form.publisher
+                    activityData.publisher_id = $scope.form.publisher.id
+                    activityData.client_id = $scope.form.publisher.client_id
 
                 if $scope.form.contacts.length
                     $scope.form.contacts = $scope.form.contacts.map (c) ->

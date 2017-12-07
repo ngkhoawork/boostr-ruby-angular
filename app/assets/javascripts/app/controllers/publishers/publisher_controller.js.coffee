@@ -1,5 +1,8 @@
-@app.controller 'PablisherController',
-  ['$scope', '$routeParams', 'PublisherDetails', '$modal', 'Publisher', '$filter', ($scope, $routeParams, PublisherDetails, $modal, Publisher, $filter) ->
+@app.controller 'PablisherController', [
+  '$scope', '$modal', '$filter', '$routeParams', 'Publisher', 'PublisherDetails',
+  ($scope,   $modal,   $filter,   $routeParams,   Publisher,   PublisherDetails) ->
+
+    $scope.currentPublisher = {}
 
     $scope.init = ->
       PublisherDetails.getPublisher(id: $routeParams.id).then (publisher) ->
