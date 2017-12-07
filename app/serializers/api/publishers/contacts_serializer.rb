@@ -3,12 +3,17 @@ class Api::Publishers::ContactsSerializer < ActiveModel::Serializer
     :id,
     :note,
     :email,
-    :primary_client_contact
+    :primary_client_contact,
+    :client
   )
 
   private
 
   def primary_client_contact
     object.primary_client_contact&.serializable_hash(only: [:id, :name, :primary, :is_active, :client_id])
+  end
+
+  def client
+    object.client&.serializable_hash(only: [:id, :name])
   end
 end

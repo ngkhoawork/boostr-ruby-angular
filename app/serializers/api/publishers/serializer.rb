@@ -9,15 +9,21 @@ class Api::Publishers::Serializer < ActiveModel::Serializer
     :type,
     :client_id,
     :created_at,
-    :updated_at
+    :updated_at,
+    :publisher_members
   )
 
   has_one :publisher_stage, serializer: Api::Publishers::StageSerializer
-  has_many :publisher_members, serializer: Api::Publishers::MembersSerializer
 
   private
 
   def type
     object.type&.serializable_hash(only: [:id, :name])
+  end
+
+  def publisher_members
+    object.publisher_members.includes(:user).map do |member|
+      Api::Publishers::MembersSerializer.new(member).as_json
+    end
   end
 end

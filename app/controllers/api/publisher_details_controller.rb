@@ -3,10 +3,12 @@ class Api::PublisherDetailsController < ApplicationController
     render json: Api::Publishers::ShowSerializer.new(publisher)
   end
 
+  # TODO: remove, as 'show' includes it
   def extended_fields
     render json: Api::Publishers::ExtendedFieldsSerializer.new(publisher)
   end
 
+  # TODO: remove, as 'show' includes it
   def associations
     render json: Api::Publishers::AssociationsSerializer.new(publisher)
   end
