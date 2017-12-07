@@ -2,7 +2,6 @@ require 'rails_helper'
 
 describe Api::ForecastsController do
   before do
-    time_period
     sign_in user
   end
 
@@ -18,6 +17,7 @@ describe Api::ForecastsController do
         expect(response_json[0]['teams'].length).to eq(3)
       end
     end
+
     context 'with team filter' do
       it 'returns a team data' do
         parent_team
@@ -32,6 +32,7 @@ describe Api::ForecastsController do
         expect(response_json[0]['members'].count).to eq 3
       end
     end
+
     context 'with user filter' do
       it 'returns a member data' do
         parent_team
@@ -44,8 +45,8 @@ describe Api::ForecastsController do
         expect(response_json[0]['type']).to eq('member')
       end
     end
+
     context 'with all filter' do
-      let(:product) { create :product }
       it 'returns a user data' do
         parent_team
         create_list :user, 2, team: parent_team
@@ -88,8 +89,6 @@ describe Api::ForecastsController do
   end
 
   describe 'GET #show' do
-    let(:child_team) { create :child_team, parent: parent_team, company: company }
-
     it 'returns json for a team' do
       get :show, { id: child_team.id, format: :json, time_period_id: time_period.id }
       expect(response).to be_success
@@ -104,6 +103,14 @@ describe Api::ForecastsController do
 
   def user
     @_user ||= create :user
+  end
+
+  def product
+    @_product ||= create :product
+  end
+
+  def child_team
+    @_child_team ||= create :child_team, parent: parent_team, company: company
   end
 
   def parent_team
