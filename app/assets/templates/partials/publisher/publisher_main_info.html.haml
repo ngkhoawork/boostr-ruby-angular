@@ -15,6 +15,14 @@
             Est.Monthly Impressions
           .col-title
             {{currentPublisher.estimated_monthly_impressions}}
+
+    .stats-col
+      .col-body-wrap
+        .col-body
+          .col-description
+            Actual Monthly Impressions
+          .col-title
+            {{currentPublisher.actual_monthly_impressions || 0}}
     .stats-col
       .col-body-wrap
         .col-body

@@ -345,7 +345,7 @@
       templateUrl: 'gmail_extension.html'
       controller: 'GmailExtensionController'
 
-    .when '/publisher/:id',
+    .when '/publishers/:id',
       templateUrl: 'publishers/publisher.html'
       controller: 'PablisherController'
 

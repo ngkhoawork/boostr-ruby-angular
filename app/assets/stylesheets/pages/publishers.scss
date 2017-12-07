@@ -118,34 +118,6 @@
     margin-left: -40px;
     margin-right: -40px;
   }
-
-  .publisher-stats {
-    .stats-body {
-      display: flex;
-      flex: 1;
-      justify-content: space-around;
-      align-items: center;
-      padding-top: 25px;
-    }
-
-    .stats-col {
-      width: auto;
-      height: auto;
-      margin-right: -4px;
-      text-align: center;
-      position: relative;
-      display: inline-block;
-
-      .col-description {
-        color: #818689;
-        font-size: 17px;
-      }
-      .col-title {
-        font-size: 30px;
-        font-weight: 600;
-      }
-    }
-  }
 }
 
 #publisher-report {

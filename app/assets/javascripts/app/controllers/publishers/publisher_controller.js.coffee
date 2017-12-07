@@ -7,7 +7,9 @@
         console.log $scope.currentPublisher
 
       PublisherDetails.associations(id: $routeParams.id).then (association) ->
+        console.log association
         $scope.contacts = association.contacts
+        $scope.publisherMembers = association.members
 
     $scope.init()
 ]

@@ -103,7 +103,7 @@
           %tbody{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
             %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
               %td
-                %a{'ng-href': '/publisher/{{publisher.id}}'} {{publisher.name}}
+                %a{'ng-href': '/publishers/{{publisher.id}}'} {{publisher.name}}
               %td
                 %z-toggle{'ng-model': 'publisher.comscore', 'ng-change': 'updatePublisher(publisher)', 'ng-click': '$event.stopPropagation()'}
               %td
