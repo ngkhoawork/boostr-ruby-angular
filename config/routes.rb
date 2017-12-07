@@ -451,7 +451,7 @@ Rails.application.routes.draw do
         get :pipeline_headers
       end
     end
-    resources :publisher_details do
+    resources :publisher_details, only: [:show] do
       member do
         get :extended_fields
         get :associations

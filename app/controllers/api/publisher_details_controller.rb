@@ -1,4 +1,8 @@
 class Api::PublisherDetailsController < ApplicationController
+  def show
+    render json: Api::Publishers::ShowSerializer.new(publisher)
+  end
+
   def extended_fields
     render json: Api::Publishers::ExtendedFieldsSerializer.new(publisher)
   end

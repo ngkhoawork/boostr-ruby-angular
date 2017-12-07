@@ -9,6 +9,8 @@ class PublisherDailyActual < ActiveRecord::Base
 
   delegate :curr_symbol, to: :currency, allow_nil: true
 
+  scope :by_date, -> (start_date, end_date) { where(date: start_date..end_date) }
+
   private
 
   def calculate_fill_rate

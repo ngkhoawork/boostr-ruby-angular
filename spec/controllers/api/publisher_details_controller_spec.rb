@@ -11,6 +11,7 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
       type: publisher_type_option
     )
   end
+
   before { sign_in user }
 
   describe '#extended_fields' do
@@ -103,6 +104,30 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
       expect(response_body[0][:revenue]).to eq daily_actual_1.total_revenue
       expect(response_body[1][:date]).to eq daily_actual_2.date.to_s
       expect(response_body[1][:revenue]).to eq daily_actual_2.total_revenue
+    end
+  end
+
+  describe '#show' do
+    it 'returns publisher fields' do
+      publisher  = create(
+        :publisher,
+        name: 'Amazon',
+        company: company,
+        client: client,
+        publisher_stage: publisher_stage,
+        type: publisher_type_option,
+        estimated_monthly_impressions: 2_000,
+        actual_monthly_impressions: 1_000
+      )
+
+      get :show, id: publisher.id
+
+      expect(response_body[:id]).to eq publisher.id
+      expect(response_body[:name]).to eq publisher.name
+      expect(response_body[:comscore]).to eq publisher.comscore
+      expect(response_body[:website]).to eq publisher.website
+      expect(response_body[:estimated_monthly_impressions]).to eq publisher.estimated_monthly_impressions
+      expect(response_body[:actual_monthly_impressions]).to eq publisher.actual_monthly_impressions
     end
   end
 
