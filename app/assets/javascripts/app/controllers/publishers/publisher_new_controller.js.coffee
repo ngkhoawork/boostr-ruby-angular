@@ -1,5 +1,5 @@
 @app.controller 'PablisherNewController',
-  ['$scope', '$modalInstance', 'Publisher', 'publisher', 'Client', 'CountriesList', 'PublisherCustomFieldName', '$rootScope',
+  ['$scope', '$modalInstance', 'Publisher', 'publisher', 'CountriesList', 'PublisherCustomFieldName', '$rootScope',
     ($scope, $modalInstance, Publisher, publisher, Client, CountriesList, PublisherCustomFieldName, $rootScope) ->
       $scope.formType = "Add New"
       $scope.submitText = "Add"
@@ -10,7 +10,6 @@
       $scope.showAddressFields = false
 
       $scope.init = () ->
-        $scope.getClients()
         $scope.getPublisherSettings()
         $scope.getCountries()
         $scope.getPublisherCustomFields()
@@ -19,10 +18,6 @@
         Publisher.publisherSettings().then (settings) ->
           $scope.publisher_types = settings.publisher_types
           $scope.publisher_stages = settings.publisher_stages
-
-      $scope.getClients = (query = '') ->
-        Client.search_clients({name: query}).$promise.then (clients) ->
-          $scope.clients = clients
 
       $scope.getPublisherCustomFields = () ->
         PublisherCustomFieldName.all({show_on_modal: true}).then (cf) ->

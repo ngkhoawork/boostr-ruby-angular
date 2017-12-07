@@ -2,7 +2,7 @@
   .client-title
     %span.main-title
       {{currentPublisher.name}}
-      %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentClient)'}
+      %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentPublisher)'}
       %i.fa.fa-trash.delete-deal{'ng-click': 'delete(currentClient)'}
     .detail-info
       %a{target: "_blank", href: "{{currentPublisher.website}}"}

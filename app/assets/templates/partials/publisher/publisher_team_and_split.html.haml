@@ -5,10 +5,10 @@
     %thead
       %tr
         %th Member
-        %th Role
-        %th.member-share
-          %div.error-tooltip{'ng-show': 'membersShareInvalid'}
-            Sum of the column should be equal 100%
-          Share (%)
+        %th Owner
     %tbody
       %tr{ ng: { repeat: "member in publisherMembers | orderBy: 'name'"} }
+        %td
+          {{member.name}}
+        %td
+          {{member.owner ? "Yes" : "No"}}
