@@ -28,9 +28,9 @@
             Stage
           %ui-select{ stage: 'pablisher-stage', ng: { model: 'publisher.publisher_stage_id', disabled: true } }
             %ui-select-match{ placeholder: 'Stage', "allow-clear": 'true' }
-              {{ $select.selected.name }}
+              {{ $select.selected.name }} {{$select.selected.probability}}%
             %ui-select-choices{ repeat: 'stage.id as stage in publisher_stages' }
-              %div{ ng: { bind: { html: 'stage.name' } } }
+              %div{ ng: { bind: { html: 'stage.name+" "+stage.probability+"%"' } } }
 
       .row
         .form-group.col-xs-6{'ng-class':'{error: errors.type_id}'}
