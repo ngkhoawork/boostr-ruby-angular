@@ -26,15 +26,15 @@
           %td
             .bs-datepicker
               %span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.is_admin || canEditIO", model: 'pmp_member.from_date', click: 'startOpened1 = !startOpened1', class: '{ editing: startOpened1 }', change: 'updatePMPMember(pmp_member)' }, 'is-open': 'startOpened1' }
-                {{ pmp_member.from_date | date: 'M/d/yyyy' }}
+                {{ pmp_member.from_date | date: 'M/d/yyyy' : 'UTC' }}
               %span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
-                {{ pmp_member.from_date | date: 'M/d/yyyy' }}
+                {{ pmp_member.from_date | date: 'M/d/yyyy' : 'UTC' }}
           %td
             .bs-datepicker
               %span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.is_admin || canEditIO", model: 'pmp_member.to_date', click: 'endOpened1 = !endOpened1', class: '{ editing: endOpened1 }', change: 'updatePMPMember(pmp_member)' }, 'is-open': 'endOpened1' }
-                {{ pmp_member.to_date | date: 'M/d/yyyy' }}
+                {{ pmp_member.to_date | date: 'M/d/yyyy' : 'UTC' }}
             %span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
-              {{ pmp_member.to_date | date: 'M/d/yyyy' }}
+              {{ pmp_member.to_date | date: 'M/d/yyyy' : 'UTC' }}
           %td
             %span{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "pmp_member.share", 'on-after-save': 'updatePMPMember(pmp_member)', 'ng-if': "currentUser.is_admin || canEditIO" }
             %span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }

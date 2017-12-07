@@ -38,11 +38,11 @@
         .col-body-wrap
           .col-body
             .description Start
-            .title {{currentPMP.start_date | date: 'M/d/yyyy'}}
+            .title {{currentPMP.start_date | date: 'M/d/yyyy' : 'UTC'}}
       %div.stats-col
         .col-body-wrap
           .col-body
             .description End
-            .title {{currentPMP.end_date | date: 'M/d/yyyy'}}
+            .title {{currentPMP.end_date | date: 'M/d/yyyy' : 'UTC'}}
   
     .clearfix
