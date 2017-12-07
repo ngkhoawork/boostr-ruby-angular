@@ -23,6 +23,14 @@
       appliedFilter = query
       getReport query
 
+    transformData  = (data) ->
+      _.each data, (d) ->
+        if !d.publisher_custom_field
+          d.publisher_custom_field = []
+          _.each $scope.publisherCustomFields, (cf) ->
+            d.publisher_custom_field.push({field_type: "datetime", field_value: ""})
+      data
+
     getCustomFields = (data) ->
       _.each data, (d) ->
         $scope.publisherCustomFields = _.pluck(d.publisher_custom_field, 'field_label')
@@ -30,8 +38,9 @@
     getReport = (query) ->
       Publisher.publisherReport(query).then (data) ->
         getCustomFields(data)
+        trasformed = transformData(data)
         $scope.showDashboard = true
-        $scope.publishers = data
+        $scope.publishers = trasformed
 
     $scope.export = ->
       url = '/api/publishers/all_fields_report.csv'
