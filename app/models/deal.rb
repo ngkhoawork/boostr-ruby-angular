@@ -691,7 +691,7 @@ class Deal < ActiveRecord::Base
 
         deal_product_budgets = deal.deal_product_budgets
           .select{ |budget| selected_products.include?(budget.deal_product_id) }
-          .group_by(&:start_date)
+          .group_by{|budget| budget.start_date.beginning_of_month}
           .collect{|key, value| {start_date: key, budget: value.map(&:budget).compact.reduce(:+)} }
 
         range.each do |product_time|
