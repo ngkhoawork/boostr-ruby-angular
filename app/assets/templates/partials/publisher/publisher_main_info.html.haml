@@ -6,9 +6,9 @@
       %i.fa.fa-trash.delete-deal{'ng-click': 'delete(currentClient)'}
     %span.stage-label{'ng-show': 'currentPublisher.publisher_stage'}
       {{currentPublisher.publisher_stage.name}}
-    .detail-info
-      %a{target: "_blank", href: "{{currentPublisher.website}}"}
-        {{currentPublisher.website}}
+  .detail-info
+    %a{target: "_blank", href: "{{currentPublisher.website}}"}
+      {{currentPublisher.website}}
   .stats-body
     .stats-col
       .col-body-wrap
