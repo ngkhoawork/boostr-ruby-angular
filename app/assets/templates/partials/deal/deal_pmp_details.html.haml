@@ -59,11 +59,11 @@
           %tr
             %th.left Deal ID
             %th.left SSP
-            %th.left Budget
-            %th.left Delivered
-            %th.left Remaining
-            %th.left 7 Day Run Rate
-            %th.left 30 Day Run Rate
+            %th.right Budget
+            %th.right Delivered
+            %th.right Remaining
+            %th.right 7 Day Run Rate
+            %th.right 30 Day Run Rate
         %tbody
           %tr{ ng: { repeat: "pmpItem in currentPMP.pmp_items | orderBy: 'deal_id'"} }
             %td.left
@@ -71,16 +71,16 @@
             %td.left
               %strong
                 {{ pmpItem.ssp.name }}
-            %td.left
+            %td.right
               {{ pmpItem.budget_loc | currency:currentPMP.currency_symbol:0 }}
-            %td.left
+            %td.right
               {{ pmpItem.budget_delivered_loc | currency:currentPMP.currency_symbol:0 }}
-            %td.left
+            %td.right
               {{ pmpItem.budget_remaining_loc | currency:currentPMP.currency_symbol:0 }}
-            %td.left
-              {{ pmpItem.run_rate_7_days }}
-            %td.left
-              {{ pmpItem.run_rate_30_days }}
+            %td.right
+              {{ (pmpItem.run_rate_7_days | number: 2) || 'N/A' }}
+            %td.right
+              {{ (pmpItem.run_rate_30_days | number: 2) || 'N/A' }}
           %tr{ ng: { if: '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' } }
             %td.center{ 'colspan': '7' }
               No data available

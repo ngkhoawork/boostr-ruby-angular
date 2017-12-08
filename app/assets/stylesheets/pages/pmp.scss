@@ -181,6 +181,11 @@
             }
         }
     }
+
+    table .action-td {
+        width: auto;
+        white-space: nowrap;
+    }
 }
 
 #pmp-delivery, #pmp-price-revenue {

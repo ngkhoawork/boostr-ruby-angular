@@ -64,8 +64,6 @@ end
 
 RSpec.describe Pmp, 'validations' do
   it { should validate_presence_of(:name) }
-  it { should validate_presence_of(:budget) }
-  it { should validate_presence_of(:budget_loc) }
   it { should validate_presence_of(:start_date) }
   it { should validate_presence_of(:end_date) }
   it { should validate_presence_of(:curr_cd) }

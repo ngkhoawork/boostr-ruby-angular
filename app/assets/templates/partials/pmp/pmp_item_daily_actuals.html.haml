@@ -7,32 +7,32 @@
       %thead
         %tr
           %th.left Date
-          %th.left Deal-ID
-          %th.left Ad Unit/Product
-          %th.left Bids
-          %th.left Impressions
-          %th.left Win Rate
-          %th.left eCPM
-          %th.left Revenue
+          %th.center Deal-ID
+          %th.center Ad Unit/Product
+          %th.right Bids
+          %th.right Impressions
+          %th.right Win Rate
+          %th.right eCPM
+          %th.right Revenue
       %tbody{infinite: {scroll: 'loadMoreData()', 'scroll-disabled': 'isLoading || allDataLoaded', 'scroll-distance': '0.5'}}
         %tr{ ng: { repeat: "pmpItemDailyActual in pmpItemDailyActuals"} }
-          %td
+          %td.left
             {{ pmpItemDailyActual.date | date: 'M/d/yyyy' }}
-          %td
+          %td.center
             {{ pmpItemDailyActual.ssp_deal_id }}
-          %td
+          %td.center
             %strong
               {{ pmpItemDailyActual.ad_unit }}
-          %td
+          %td.right
             {{ pmpItemDailyActual.bids | currency:currency_symbol:0 }}
-          %td
-            {{ pmpItemDailyActual.impressions }}
-          %td
+          %td.right
+            {{ pmpItemDailyActual.impressions | number:0 }}
+          %td.right
             {{ pmpItemDailyActual.win_rate | percentage:0 }}
-          %td
-            {{ pmpItemDailyActual.price | currency:currency_symbol:0 }}
-          %td.left
-            {{ pmpItemDailyActual.revenue_loc | currency:currency_symbol:0 }}
+          %td.right
+            {{ pmpItemDailyActual.price | currency:currency_symbol:2 }}
+          %td.right
+            {{ pmpItemDailyActual.revenue_loc | currency:currency_symbol:2 }}
         %tr{ ng: { if: '!pmpItemDailyActuals || pmpItemDailyActuals.length == 0' } }
           %td.center{ 'colspan': '8' }
             No data available. Please import data in 

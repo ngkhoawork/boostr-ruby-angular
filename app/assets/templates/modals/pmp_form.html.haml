@@ -35,12 +35,26 @@
         %button.add-btn.plus-btn{type: 'button', 'ng-click': 'addClient()'}
 
       .row
-        .col-md-6.form-group{'ng-class':'{error: errors.budget_loc}'}
-          %span.error-text {{errors.budget_loc}}
-          %label{ for: 'budget' }
-            Budget
+        .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.start_date}'}
+          %span.error-text {{errors.start_date}}
+          %label{ for: 'start-date' }
+            Start Date
             %span.star *
-          %input.form-control{ 'numbers-only': '', placeholder: 'Budget', ng: { model: 'pmp.budget_loc', required: true }, name: 'budget' }
+          %input.form-control{readonly: true, name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'pmp.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+        .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.end_date}'}
+          %span.error-text {{errors.end_date}}
+          %label{ for: 'end-date' }
+            End Date
+            %span.star *
+          %input.form-control{readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'pmp.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
+
+      .row
+        / .col-md-6.form-group{'ng-class':'{error: errors.budget_loc}'}
+        /   %span.error-text {{errors.budget_loc}}
+        /   %label{ for: 'budget' }
+        /     Budget
+        /     %span.star *
+        /   %input.form-control{ 'numbers-only': '', placeholder: 'Budget', ng: { model: 'pmp.budget_loc', required: true }, name: 'budget' }
         .col-md-6.form-group{'ng-class':'{error: errors.curr_cd}'}
           %span.error-text {{errors.curr_cd}}
           %label{ for: 'currency' }
@@ -51,21 +65,6 @@
               {{ $select.selected.name }}
             %ui-select-choices{ repeat: 'currency.curr_cd as currency in currencies' }
               %div{ ng: { bind: { html: 'currency.name' } } }
-
-      %div
-        .row
-          .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.start_date}'}
-            %span.error-text {{errors.start_date}}
-            %label{ for: 'start-date' }
-              Start Date
-              %span.star *
-            %input.form-control{readonly: true, name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'pmp.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
-          .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.end_date}'}
-            %span.error-text {{errors.end_date}}
-            %label{ for: 'end-date' }
-              End Date
-              %span.star *
-            %input.form-control{readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'pmp.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
 
     .popup-modal-footer.text-center
       %button.btn.btn-default{ 'type': 'button', 'ng-click': 'closeModal()' } Cancel

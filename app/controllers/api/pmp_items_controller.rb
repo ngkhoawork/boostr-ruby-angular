@@ -12,7 +12,7 @@ class Api::PmpItemsController < ApplicationController
 
   def update
     if pmp_item.update_attributes(pmp_item_params)
-      render json: pmp_item, serializer: Pmps::PmpItemSerializer
+      render json: pmp, serializer: Pmps::PmpDetailSerializer
     else
       render json: { errors: pmp_item.errors.messages }, status: :unprocessable_entity
     end

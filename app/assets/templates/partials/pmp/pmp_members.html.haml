@@ -1,7 +1,7 @@
 .block#team-split
   %div.mb20
     %span.title Team & Split
-    %span{ 'ng-show': 'currentUser.is_admin || canEditIO', dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
+    %span{ 'ng-show': 'currentUser.is_admin', dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
       %add-button{ dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } } Add
       %ul.dropdown-menu.new-member-options
         %li.existing-user-options
@@ -22,22 +22,22 @@
         %tr{ ng: { repeat: "pmp_member in currentPMP.pmp_members | orderBy: 'name'"} }
           %td
             %span.mr8 {{ pmp_member.name }}
-            %i.fa.fa-trash.z-icon{ href: '', ng: { if: "currentUser.is_admin || canEditIO", click: 'deleteMember(pmp_member)' } }
+            %i.fa.fa-trash.z-icon{ href: '', ng: { if: "currentUser.is_admin", click: 'deleteMember(pmp_member)' } }
           %td
             .bs-datepicker
-              %span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.is_admin || canEditIO", model: 'pmp_member.from_date', click: 'startOpened1 = !startOpened1', class: '{ editing: startOpened1 }', change: 'updatePMPMember(pmp_member)' }, 'is-open': 'startOpened1' }
+              %span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.is_admin", model: 'pmp_member.from_date', click: 'startOpened1 = !startOpened1', class: '{ editing: startOpened1 }', change: 'updatePMPMember(pmp_member)' }, 'is-open': 'startOpened1' }
                 {{ pmp_member.from_date | date: 'M/d/yyyy' : 'UTC' }}
-              %span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
+              %span{ ng: { if: "!currentUser.is_admin" } }
                 {{ pmp_member.from_date | date: 'M/d/yyyy' : 'UTC' }}
           %td
             .bs-datepicker
-              %span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.is_admin || canEditIO", model: 'pmp_member.to_date', click: 'endOpened1 = !endOpened1', class: '{ editing: endOpened1 }', change: 'updatePMPMember(pmp_member)' }, 'is-open': 'endOpened1' }
+              %span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.is_admin", model: 'pmp_member.to_date', click: 'endOpened1 = !endOpened1', class: '{ editing: endOpened1 }', change: 'updatePMPMember(pmp_member)' }, 'is-open': 'endOpened1' }
                 {{ pmp_member.to_date | date: 'M/d/yyyy' : 'UTC' }}
-            %span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
+            %span{ ng: { if: "!currentUser.is_admin" } }
               {{ pmp_member.to_date | date: 'M/d/yyyy' : 'UTC' }}
           %td
-            %span{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "pmp_member.share", 'on-after-save': 'updatePMPMember(pmp_member)', 'ng-if': "currentUser.is_admin || canEditIO" }
-            %span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
+            %span{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "pmp_member.share", 'on-after-save': 'updatePMPMember(pmp_member)', 'ng-if': "currentUser.is_admin" }
+            %span{ ng: { if: "!currentUser.is_admin" } }
               {{ pmp_member.share }}%
         %tr{ ng: { if: '!currentPMP.pmp_members || currentPMP.pmp_members.length == 0' } }
           %td.center{ 'colspan': '4' }
