@@ -12,7 +12,7 @@ class Api::DealsController < ApplicationController
           render json: activity_deals
         elsif params[:time_period_id].present?
           if valid_time_period?
-            if product_ids.present?
+            if params[:product_ids].present?
               render json: product_forecast_deals
             else
               render json: forecast_deals
