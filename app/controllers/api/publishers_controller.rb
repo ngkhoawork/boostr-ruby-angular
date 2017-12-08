@@ -47,6 +47,12 @@ class Api::PublishersController < ApplicationController
     render json: PublisherPipelineHeadersService.new(pipeline_params).perform
   end
 
+  def destroy
+    resource.destroy
+
+    render nothing: true
+  end
+
   private
 
   def resource

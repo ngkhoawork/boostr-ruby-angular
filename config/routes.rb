@@ -443,7 +443,7 @@ Rails.application.routes.draw do
     end
 
     resources :filter_queries, only: [:index, :create, :update, :destroy]
-    resources :publishers do
+    resources :publishers, only: [:index, :create, :update, :destroy] do
       collection do
         get :pipeline
         get :all_fields_report

@@ -370,6 +370,14 @@ RSpec.describe Api::PublishersController, type: :controller do
     end
   end
 
+  describe '#destroy' do
+    it 'delete publisher' do
+      expect{
+        delete :destroy, id: publisher.id
+      }.to change{Publisher.count}.by(-1)
+    end
+  end
+
   private
 
   def response_body
