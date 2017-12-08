@@ -14,4 +14,4 @@
       .col-xs-3
         %div{ng: { include: '"partials/publisher/publisher_detail.html"'}}
       .col-xs-3
-        %div{ng: { include: '"partials/dashboard/activity.html"'}}
+        %activity-feed{object: 'currentPublisher', type: 'publisher'}
