@@ -1,7 +1,8 @@
 @app.controller 'PablishersController', [
-  '$scope', '$q', '$document', '$timeout', '$modal', 'Publisher', 'PublishersFilter', 'localStorageService', 'shadeColor'
-  ($scope,   $q,   $document,   $timeout,   $modal,   Publisher,   PublishersFilter,   localStorageService,   shadeColor) ->
+  '$scope', '$q', '$document', '$timeout', '$modal', 'Publisher', 'PublishersFilter', 'localStorageService'
+  ($scope,   $q,   $document,   $timeout,   $modal,   Publisher,   PublishersFilter,   localStorageService) ->
 
+    $scope.baseColor = '#81B130'
     $scope.publishers = []
     $scope.publishersPipeline = []
     $scope.view = localStorageService.get('publishersViewType') || 'list'
@@ -181,17 +182,6 @@
       $scope.init()
 
     $scope.init()
-
-    $scope.coloringColumns = ->
-      baseColor = '#81B130'
-      headers = $document.find('.column-header')
-      headers.each (i, elem) ->
-        color = shadeColor baseColor, 0.8 - 0.8 / (headers.length - 1) * i
-        header = angular.element(elem)
-        svgPolygon = header.find('polygon')
-        header.css('backgroundColor', color)
-        svgPolygon.css('fill', color)
-      return true
 
     $scope.onMoved = (publisher, publisherIndex, columnIndex) ->
       $scope.history.set publisher.id, 'from',

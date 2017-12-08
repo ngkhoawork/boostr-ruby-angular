@@ -129,8 +129,8 @@
 
     .row.publishers-container{'ng-if': 'view == "columns"'}
       .publishers-table{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
-        .publisher-column{'ng-repeat': 'stage in publishersPipeline', 'ng-init': 'columnIndex = $index; $last && coloringColumns()'}
-          .column-header
+        .publisher-column{'ng-repeat': 'stage in publishersPipeline'}
+          .column-header{'z-coloring-stage': '{color: baseColor, stage: stage}'}
             %span
               {{stage.probability}}%
               %br

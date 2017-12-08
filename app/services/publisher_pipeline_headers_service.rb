@@ -7,6 +7,7 @@ class PublisherPipelineHeadersService < Report::BaseService
         id: publisher_stage.id,
         name: publisher_stage.name,
         probability: publisher_stage.probability,
+        is_open: publisher_stage.open,
         estimated_monthly_impressions_sum: calculate_sum_for(publishers, :estimated_monthly_impressions),
         actual_monthly_impressions_sum: calculate_sum_for(publishers, :actual_monthly_impressions),
         publishers_count: publishers.count
