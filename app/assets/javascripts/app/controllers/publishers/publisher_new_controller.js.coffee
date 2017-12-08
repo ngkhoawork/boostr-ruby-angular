@@ -16,8 +16,10 @@
 
       $scope.getPublisherSettings = () ->
         Publisher.publisherSettings().then (settings) ->
+          console.log(settings)
           $scope.publisher_types = settings.publisher_types
           $scope.publisher_stages = settings.publisher_stages
+          $scope.renewal_term_fields = settings.renewal_term_fields
 
       $scope.getPublisherCustomFields = () ->
         PublisherCustomFieldName.all({show_on_modal: true}).then (cf) ->

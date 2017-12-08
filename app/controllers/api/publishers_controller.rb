@@ -119,7 +119,10 @@ class Api::PublishersController < ApplicationController
       :publisher_stage_id,
       :type_id,
       :renewal_term_id,
-      address_attributes: [
+      :term_start_date,
+      :term_end_date,
+      :revenue_share,
+    address_attributes: [
         :id,
         :country,
         :street1,

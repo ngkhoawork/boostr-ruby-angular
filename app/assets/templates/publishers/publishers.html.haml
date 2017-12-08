@@ -100,6 +100,15 @@
               %th
                 .z-sortable{by: 'type.name'}
                   Publisher Type
+              %th
+                Renewal Term
+              %th
+                Revenue Share
+              %th
+                Term Start Date
+              %th
+                Term End Date
+
           %tbody{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
             %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
               %td
@@ -116,7 +125,6 @@
                     %li{'ng-repeat': 'stage in publisher_stages', 'ng-class': '{active: publisher.publisher_stage.id == stage.id}'}
                       %a{'href': '', 'ng-click': ' publisher.publisher_stage = stage; updatePublisher(publisher)'}
                         %span.text {{stage.name}} {{stage.probability}}%
-
               %td
                 .dropdown
                   %button.btn.dropdown-toggle.z-dd-ar{'data-toggle': 'dropdown', type: 'button'}
@@ -126,6 +134,21 @@
                     %li{'ng-repeat': 'type in publisher_types', 'ng-class': '{active: publisher.type.id == type.id}'}
                       %a{'href': '', 'ng-click': ' publisher.type = type; updatePublisher(publisher)'}
                         %span.text {{type.name}}
+              %td
+                .dropdown
+                  %button.btn.dropdown-toggle.z-dd-ar{'data-toggle': 'dropdown', type: 'button'}
+                    %span.editable{'ng-class': '{"not-selected": !publisher.renewal_term.name}'} {{publisher.renewal_term.name || 'Select Type'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{'ng-repeat': 'term in renewal_term_fields', 'ng-class': '{active: publisher.renewal_term.id == term.id}'}
+                      %a{'href': '', 'ng-click': ' publisher.renewal_term = term; updatePublisher(publisher)'}
+                        %span.text {{term.name}}
+              %td
+                {{publisher.revenue_share}}
+              %td
+                {{publisher.term_start_date | date : 'shortDate'}}
+              %td
+                {{publisher.term_end_date | date : 'shortDate'}}
 
     .row.publishers-container{'ng-if': 'view == "columns"'}
       .publishers-table{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}

@@ -18,12 +18,6 @@
 
       .row
         .form-group.col-xs-6
-          %label{ for: 'comscore' }
-            Comscore 250
-          %br
-          %z-toggle{ng: { model: 'publisher.comscore' }}
-
-        .form-group.col-xs-6
           %label{ for: 'publisher-stage' }
             Stage
           %ui-select{ stage: 'pablisher-stage', ng: { model: 'publisher.publisher_stage_id', disabled: true } }
@@ -31,6 +25,12 @@
               {{ $select.selected.name }} {{$select.selected.probability}}%
             %ui-select-choices{ repeat: 'stage.id as stage in publisher_stages' }
               %div{ ng: { bind: { html: 'stage.name+" "+stage.probability+"%"' } } }
+
+        .form-group.col-xs-6
+          %label{ for: 'comscore' }
+            Comscore 250
+          %br
+          %z-toggle{ng: { model: 'publisher.comscore' }}
 
       .row
         .form-group.col-xs-6{'ng-class':'{error: errors.type_id}'}
@@ -47,6 +47,34 @@
           %label{ for: 'estimate-monthly' }
             Estimated Monthly Impressions
           %input.form-control{placeholder: 'Estimated Monthly Impressions', ng: { model: 'publisher.estimated_monthly_impressions' }, name: 'estimated_monthly_impressions' }
+
+      .row
+        .form-group.col-md-6.bs-datepicker
+          %label{ for: 'start-date' }
+            Term Start Date
+          %input.form-control{readonly: true, name: 'term_start_date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'publisher.term_start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+
+        .form-group.col-md-6.bs-datepicker
+          %label{ for: 'end-date' }
+            Term End Date
+          %input.form-control{readonly: true, name: 'term_end_date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'publisher.term_end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
+
+      .row
+        .form-group.col-xs-6
+          %label{ for: 'estimate-monthly' }
+            Revenue Share
+          %input.form-control{placeholder: 'Revenue Share', ng: { model: 'publisher.revenue_share' }, name: 'revenue_share' }
+
+        .form-group.col-xs-6
+          %span.error-text
+          %label{ for: 'publisher-term' }
+            Renewal Term
+          %ui-select{ type: 'publisher-term', ng: { model: 'publisher.renewal_term_id', disabled: true } }
+            %ui-select-match{ placeholder: 'Renewal Term', "allow-clear": 'true' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'term.id as term in renewal_term_fields' }
+              %div{ ng: { bind: { html: 'term.name' } } }
+
 
       .form-group{ng: {repeat: 'pubCustomField in publisherCustomFields | orderBy: "position"', init: "fieldName = pubCustomField.field_type + pubCustomField.field_index", if: "!pubCustomField.disabled", class:'{error: errors[fieldName]}'}}
         %span.error-text {{errors[fieldName]}}
@@ -73,8 +101,8 @@
       .form-group{'ng-class':'{error: errors.website}'}
         %span.error-text {{errors.website}}
         %label{ for: 'website' }
-          Website URL
-        %input.form-control{ placeholder: 'Website URL', ng: { model: 'publisher.website' }, name: 'website' }
+          Website
+        %input.form-control{ placeholder: 'Website', ng: { model: 'publisher.website' }, name: 'website' }
 
       .form-group.text-center{'ng-hide': 'showAddressFields'}
         %a.btn.add-btn{ 'ng-click': 'showAddressFields = true'}

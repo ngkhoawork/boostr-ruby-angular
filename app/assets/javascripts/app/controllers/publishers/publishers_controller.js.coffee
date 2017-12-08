@@ -90,8 +90,10 @@
 
     $scope.getPublisherSettings = () ->
       Publisher.publisherSettings().then (settings) ->
+        console.log(settings)
         $scope.publisher_stages = $scope.filter.stages = settings.publisher_stages
         $scope.publisher_types = $scope.filter.types = settings.publisher_types
+        $scope.renewal_term_fields = $scope.filter.renewal_term_fields = settings.renewal_term_fields
 
     getParams = ->
       params = {per, page}
@@ -120,6 +122,7 @@
     getPublishersList = (params) ->
       setLoading(true)
       Publisher.publishersList(params).then (publishers) ->
+        console.log(publishers)
         $scope.allPublishersLoaded = !publishers || publishers.length < per
         if page++ > 1
           $scope.publishers = $scope.publishers.concat(publishers)
@@ -159,7 +162,15 @@
       $scope.getPublishers(true)
 
     $scope.updatePublisher = (publisher) ->
-      params = { comscore: publisher.comscore, type_id: publisher.type.id }
+      params = {
+        comscore: publisher.comscore
+      }
+
+      if publisher.renewal_term
+        params.renewal_term_id = publisher.renewal_term.id
+
+      if publisher.type
+        params.type_id = publisher.type.id
 
       if publisher.publisher_stage
         params.publisher_stage_id = publisher.publisher_stage.id

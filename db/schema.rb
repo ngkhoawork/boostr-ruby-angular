@@ -1941,13 +1941,17 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.integer  "publisher_stage_id"
     t.integer  "stage_id"
     t.integer  "type_id"
+    t.string   "revenue_share"
+    t.date     "term_start_date"
+    t.date     "term_end_date"
+    t.integer  "renewal_term_id"
   end
 
   add_index "publishers", ["client_id"], name: "index_publishers_on_client_id", using: :btree
   add_index "publishers", ["comscore"], name: "index_publishers_on_comscore", using: :btree
   add_index "publishers", ["name"], name: "index_publishers_on_name", using: :btree
   add_index "publishers", ["publisher_stage_id"], name: "index_publishers_on_publisher_stage_id", using: :btree
-  add_index "publishers", ["stage_id"], name: "index_publishers_on_stage_id", using: :btree
+  add_index "publishers", ["renewal_term_id"], name: "index_publishers_on_renewal_term_id", using: :btree
   add_index "publishers", ["type_id"], name: "index_publishers_on_type_id", using: :btree
 
   create_table "quota", force: :cascade do |t|
