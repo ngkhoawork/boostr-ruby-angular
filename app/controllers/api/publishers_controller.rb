@@ -112,6 +112,7 @@ class Api::PublishersController < ApplicationController
       :client_id,
       :publisher_stage_id,
       :type_id,
+      :renewal_term_id,
       address_attributes: [
         :id,
         :country,

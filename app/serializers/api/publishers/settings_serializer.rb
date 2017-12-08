@@ -8,7 +8,8 @@ class Api::Publishers::SettingsSerializer
       publisher_types: publisher_types,
       publisher_stages: publisher_stages,
       comscore: [true, false],
-      custom_field_names: custom_field_names
+      custom_field_names: custom_field_names,
+      renewal_term_fields: renewal_term_fields
     }
   end
 
@@ -40,6 +41,16 @@ class Api::Publishers::SettingsSerializer
   end
 
   def publisher_type_field
-    @company.fields.where(subject_type: 'Publisher', name: 'Publisher Type').first
+    @company.fields.find_by(subject_type: 'Publisher', name: 'Publisher Type')
+  end
+
+  def renewal_term_fields
+    renewal_term_field&.options.map do |option|
+      option.serializable_hash(only: [:id, :name, :probability])
+    end
+  end
+
+  def renewal_term_field
+    @company.fields.find_by(subject_type: 'Publisher', name: 'Renewal Terms')
   end
 end

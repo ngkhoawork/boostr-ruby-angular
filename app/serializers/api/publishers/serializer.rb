@@ -10,7 +10,11 @@ class Api::Publishers::Serializer < ActiveModel::Serializer
     :client_id,
     :created_at,
     :updated_at,
-    :publisher_members
+    :publisher_members,
+    :revenue_share,
+    :term_start_date,
+    :term_end_date,
+    :renewal_term
   )
 
   has_one :publisher_stage, serializer: Api::Publishers::StageSerializer
@@ -19,6 +23,10 @@ class Api::Publishers::Serializer < ActiveModel::Serializer
 
   def type
     object.type&.serializable_hash(only: [:id, :name])
+  end
+
+  def renewal_term
+    object.renewal_term&.serializable_hash(only: [:id, :name])
   end
 
   def publisher_members

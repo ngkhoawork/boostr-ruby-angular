@@ -13,12 +13,18 @@ class Publisher < ActiveRecord::Base
   has_one :type_field,
           -> { where(subject_type: 'Publisher', name: 'Publisher Type') },
           through: :company, source: :fields
+  has_one :renewal_term_field,
+          -> { where(subject_type: 'Publisher', name: 'Renewal Terms') },
+          through: :company, source: :fields
+
   has_many :available_types, through: :type_field, source: :options
+  has_many :available_renewal_terms, through: :renewal_term_field, source: :options
 
   belongs_to :client
   belongs_to :company, required: true
   belongs_to :publisher_stage
   belongs_to :type, class_name: 'Option'
+  belongs_to :renewal_term, class_name: 'Option'
 
   validates :name, presence: true
   validates :website, format: {
