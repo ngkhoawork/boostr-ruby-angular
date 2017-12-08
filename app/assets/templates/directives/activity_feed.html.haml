@@ -16,7 +16,7 @@
 
         %div.activity-body
             %p
-                %strong {{activity.creator.first_name}} {{activity.creator.last_name}}
+                %strong {{activity.creator.name}}
                 {{activity.activity_type.action}}
                 %span{'ng-repeat': 'contact in activity.contacts'}
                     %a{href: '', 'ng-href': '/contacts/{{contact.id}}'}> {{contact.name}}

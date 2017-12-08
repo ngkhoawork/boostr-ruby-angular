@@ -99,8 +99,9 @@
                     type.iconName = type.name.split(" ").join("-").toLowerCase()
                 $scope.types = activityTypes
                 if activity
-                    $scope.selectedType = _.findWhere(activityTypes, name: activity.activity_type_name)
-                    $scope.form.type = activity.activity_type_id
+                    activityType = activity.activity_type
+                    $scope.selectedType = activityType || _.findWhere(activityTypes, name: activity.activity_type_name)
+                    $scope.form.type = (activityType && activityType.id) || activity.activity_type_id
                 else
                     $scope.selectedType = activityTypes[0]
                     $scope.form.type = activityTypes[0].id
