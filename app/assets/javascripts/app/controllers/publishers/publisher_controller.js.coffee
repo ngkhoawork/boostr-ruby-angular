@@ -7,10 +7,8 @@
     $scope.init = ->
       PublisherDetails.getPublisher(id: $routeParams.id).then (publisher) ->
         $scope.currentPublisher = publisher
-#        console.log $scope.currentPublisher
 
       PublisherDetails.associations(id: $routeParams.id).then (association) ->
-#        console.log association
         $scope.contacts = association.contacts
         $scope.publisherMembers = association.members
 
@@ -35,13 +33,12 @@
       result
 
     $scope.updatePublisher = (publisher) ->
-#      console.log(publisher)
       params = {comscore: publisher.comscore, type_id: publisher.type.id}
       Publisher.update(id: $scope.currentPublisher.id, publisher: params)
 
     $scope.showEditModal = (publisher) ->
       $scope.modalInstance = $modal.open
-        templateUrl: 'modals/publisher_edit_form.html'
+        templateUrl: 'modals/publisher_form.html'
         size: 'md'
         controller: 'PablisherEditController'
         backdrop: 'static'
@@ -51,6 +48,8 @@
             angular.copy publisher
 
     dailyRevenueChart = (revenueData) ->
+      return false if _.isEmpty(revenueData.months)
+
       chartId = "#daily-revenue-chart"
       chartContainer = angular.element(chartId + '-container')
       delay = 1000
@@ -137,6 +136,9 @@
       .transition()
       .duration(duration)
       .attr 'd', (d) -> graphLine(d.values)
+
+    $scope.$on 'updated_publisher_detail', ->
+      $scope.init()
 
     $scope.init()
 ]

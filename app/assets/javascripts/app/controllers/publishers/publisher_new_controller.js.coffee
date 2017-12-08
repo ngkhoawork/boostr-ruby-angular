@@ -30,6 +30,8 @@
       $scope.submitForm = () ->
         formValidation()
         if Object.keys($scope.errors).length > 0 then return
+        $scope.publisher.address_attributes = $scope.publisher.address
+        $scope.publisher.publisher_custom_field_attributes = $scope.publisher.publisher_custom_field_obj
 
         Publisher.create(publisher: $scope.publisher).then (response) ->
           $rootScope.$broadcast 'updated_publishers'

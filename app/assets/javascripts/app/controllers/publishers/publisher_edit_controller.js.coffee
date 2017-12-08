@@ -1,5 +1,5 @@
 @app.controller 'PablisherEditController',
-  ['$scope', '$modalInstance', 'Publisher', 'publisher', 'PublisherCustomFieldName', 'CountriesList', ($scope, $modalInstance, Publisher, publisher, PublisherCustomFieldName, CountriesList) ->
+  ['$scope', '$modalInstance', 'Publisher', 'publisher', 'PublisherCustomFieldName', 'CountriesList', '$rootScope', ($scope, $modalInstance, Publisher, publisher, PublisherCustomFieldName, CountriesList, $rootScope) ->
     $scope.formType = "Edit"
     $scope.submitText = "Update"
     $scope.publisher = publisher
@@ -18,9 +18,6 @@
     $scope.getPublisherCustomFields = () ->
       PublisherCustomFieldName.all({show_on_modal: true}).then (cf) ->
         $scope.publisherCustomFields = cf
-        console.log($scope.publisherCustomFields)
-        console.log($scope.publisher.publisher_custom_field)
-
 
     $scope.getCountries = () ->
       CountriesList.get (data) ->
@@ -29,8 +26,11 @@
     $scope.submitForm = () ->
       formValidation()
       if Object.keys($scope.errors).length > 0 then return
-      console.log($scope.publisher)
+      $scope.publisher.address_attributes = $scope.publisher.address
+      $scope.publisher.publisher_custom_field_attributes = $scope.publisher.publisher_custom_field_obj
+
       Publisher.update(id: $scope.publisher.id, publisher: $scope.publisher).then (response) ->
+        $rootScope.$broadcast 'updated_publisher_detail'
         $scope.cancel()
 
     formValidation = () ->
