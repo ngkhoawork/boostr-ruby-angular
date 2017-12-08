@@ -1,6 +1,6 @@
 class Api::Publishers::ShowSerializer < Api::Publishers::Serializer
   attributes :publisher_stage_id, :type_id, :fill_rate, :revenue_lifetime, :revenue_ytd, :contacts,
-             :publisher_custom_field_obj
+             :publisher_custom_field_obj, :address
 
   def fill_rate
     daily_actuals_for_current_month.sum(:fill_rate) / daily_actuals_for_current_month.count rescue 0
