@@ -154,9 +154,11 @@ class Api::RevenueController < ApplicationController
         product_ios.each do |index, item|
           sum_period_budget, split_period_budget = 0, 0
           io_team_users.each do |user|
-            result = io_obj.for_product_forecast_page(item[:product], start_date, end_date, user)
-            sum_period_budget += result[0] if sum_period_budget == 0
-            split_period_budget += result[1]
+            if item[:product]
+              result = io_obj.for_product_forecast_page(item[:product], start_date, end_date, user)
+              sum_period_budget += result[0] if sum_period_budget == 0
+              split_period_budget += result[1]
+            end
           end
           product_ios[index]['in_period_amt'] = sum_period_budget
           product_ios[index]['in_period_split_amt'] = split_period_budget
