@@ -12,8 +12,8 @@
       if !_.isEmpty(pmp)
         $scope.pmp.id = pmp.id
         $scope.pmp.name = pmp.name
-        $scope.pmp.advertiser_id = pmp.advertiser.id
-        $scope.pmp.agency_id = pmp.agency.id
+        $scope.pmp.advertiser_id = pmp.advertiser && pmp.advertiser.id
+        $scope.pmp.agency_id = pmp.agency && pmp.agency.id
         $scope.pmp.budget_loc = pmp.budget_loc
         $scope.pmp.start_date = pmp.start_date
         $scope.pmp.end_date = pmp.end_date

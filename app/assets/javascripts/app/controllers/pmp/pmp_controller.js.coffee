@@ -366,7 +366,7 @@
       if confirm('Are you sure you want to delete this item?')
         PMPItem.delete(pmp_id: $scope.currentPMP.id, id: item.id).then(
           () ->
-            $scope.currentPMP.pmp_items = _.without($scope.currentPMP.pmp_items, item)
+            $scope.currentPMP.pmp_items = _.without($scope.currentPMP.pmp_items, item) || []
             $scope.updateDeliveryChart($scope.currentPMP.pmp_items[0])
             $scope.updatePriceChart($scope.currentPMP.pmp_items[0])
             reloadDailyActuals()

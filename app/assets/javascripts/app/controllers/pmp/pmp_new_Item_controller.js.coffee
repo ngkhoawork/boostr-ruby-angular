@@ -8,7 +8,7 @@
 
     init = () ->
       if !_.isEmpty(item)
-        item.ssp_id = item.ssp.id
+        item.ssp_id = item.ssp && item.ssp.id
         $scope.formType = 'Edit'
         $scope.submitText = 'Update'
       SSP.all().then (ssps) ->
