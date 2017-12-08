@@ -5,4 +5,8 @@ class PublisherMember < ActiveRecord::Base
   validates :user_id, :publisher_id, presence: true
 
   delegate :name, to: :user, allow_nil: true
+
+  def owner?
+    owner
+  end
 end

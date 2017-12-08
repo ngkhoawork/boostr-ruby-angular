@@ -468,6 +468,8 @@ Rails.application.routes.draw do
     resources :sales_stages, only: [:index, :create, :update] do
       put :update_positions, on: :collection
     end
+
+    resources :publisher_members, only: [:create, :update]
   end
 
   mount Sidekiq::Web => '/sidekiq'
