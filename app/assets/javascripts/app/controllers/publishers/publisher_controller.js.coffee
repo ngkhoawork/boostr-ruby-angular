@@ -7,7 +7,7 @@
     $scope.init = ->
       PublisherDetails.getPublisher(id: $routeParams.id).then (publisher) ->
         $scope.currentPublisher = publisher
-        console.log $scope.currentPublisher
+#        console.log $scope.currentPublisher
 
       PublisherDetails.associations(id: $routeParams.id).then (association) ->
 #        console.log association
@@ -35,7 +35,7 @@
       result
 
     $scope.updatePublisher = (publisher) ->
-      console.log(publisher)
+#      console.log(publisher)
       params = {comscore: publisher.comscore, type_id: publisher.type.id}
       Publisher.update(id: $scope.currentPublisher.id, publisher: params)
 
@@ -51,7 +51,6 @@
             angular.copy publisher
 
     dailyRevenueChart = (revenueData) ->
-      console.log(revenueData)
       chartId = "#daily-revenue-chart"
       chartContainer = angular.element(chartId + '-container')
       delay = 1000
