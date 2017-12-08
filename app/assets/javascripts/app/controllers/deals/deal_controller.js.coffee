@@ -664,7 +664,7 @@
         # validation check for pmp products
         if !stage.open && $scope.isPmpDeal
           for deal_product in $scope.currentDeal.deal_products
-            if !deal_product.ssp_id || !deal_product.ssp_deal_id
+            if !deal_product.ssp_id
               $scope.errors['ssp_id' + deal_product.id] = "can't be blank"
             if !deal_product.ssp_deal_id
               $scope.errors['ssp_deal_id' + deal_product.id] = "can't be blank"
