@@ -30,12 +30,12 @@
           .col-body-wrap
             .col-body
               .description Advertiser
-              .title {{currentPMP.advertiser.name}}
+              .title {{currentPMP.advertiser && currentPMP.advertiser.name}}
         %div.stats-col
           .col-body-wrap
             .col-body
               .description Agency
-              .title {{currentPMP.agency.name}}
+              .title {{currentPMP.agency && currentPMP.agency.name}}
         %div.stats-col
           .col-body-wrap
             .col-body
@@ -70,7 +70,7 @@
               {{ pmpItem.ssp_deal_id }}
             %td.left
               %strong
-                {{ pmpItem.ssp.name }}
+                {{ pmpItem.ssp && pmpItem.ssp.name }}
             %td.right
               {{ pmpItem.budget_loc | currency:currentPMP.currency_symbol:0 }}
             %td.right

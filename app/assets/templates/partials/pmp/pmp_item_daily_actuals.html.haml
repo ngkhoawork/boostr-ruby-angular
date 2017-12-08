@@ -24,7 +24,7 @@
             %strong
               {{ pmpItemDailyActual.ad_unit }}
           %td.right
-            {{ pmpItemDailyActual.bids | currency:currency_symbol:0 }}
+            {{ pmpItemDailyActual.bids | number:0 }}
           %td.right
             {{ pmpItemDailyActual.impressions | number:0 }}
           %td.right

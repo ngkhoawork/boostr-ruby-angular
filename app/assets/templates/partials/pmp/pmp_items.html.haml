@@ -21,7 +21,7 @@
             {{ pmpItem.ssp_deal_id }}
           %td.left
             %strong
-              {{ pmpItem.ssp.name }}
+              {{ pmpItem.ssp && pmpItem.ssp.name }}
           %td.right
             {{ pmpItem.budget_loc | currency:currency_symbol:0 }}
           %td.right
