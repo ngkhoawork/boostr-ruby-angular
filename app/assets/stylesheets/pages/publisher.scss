@@ -1,14 +1,17 @@
 #publisher {
   .publisher-stats {
+    .publisher-title {
+      display: flex;
+      align-items: center;
+    }
     .stage-label {
       color: white;
-      width: auto;
       background-color: #3498db;
-      height: 100px;
       font-size: 12px;
       font-weight: 100;
-      padding: 10px;
+      padding: 7px 10px;
       border-radius: 25px;
+      margin-left: 12px;
     }
 
     .stats-body {
@@ -16,7 +19,7 @@
       flex: 1;
       justify-content: space-around;
       align-items: center;
-      padding-top: 25px;
+      padding: 35px 0 15px;
     }
 
     .stats-col {

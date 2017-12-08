@@ -1,10 +1,10 @@
 .block.detail-stats.publisher-stats
-  .client-title
+  .publisher-title
     %span.main-title
       {{currentPublisher.name}}
       %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentPublisher)'}
       %i.fa.fa-trash.delete-deal{'ng-click': 'delete(currentClient)'}
-    %span.stage-label
+    %span.stage-label{'ng-show': 'currentPublisher.publisher_stage'}
       {{currentPublisher.publisher_stage.name}}
     .detail-info
       %a{target: "_blank", href: "{{currentPublisher.website}}"}
