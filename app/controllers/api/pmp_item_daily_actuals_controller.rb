@@ -2,24 +2,10 @@ class Api::PmpItemDailyActualsController < ApplicationController
   respond_to :json
 
   def index
-    respond_to do |format|
-      format.json {
-        if params[:pmp_item_id].present?
-          render json: ActiveModel::ArraySerializer.new(
-            pmp_item_daily_actuals
-              .where(pmp_item_id: params[:pmp_item_id])
-              .order(:date),
-            each_serializer: Pmps::PmpItemDailyActualSerializer
-          )          
-        else
-          render json: ActiveModel::ArraySerializer.new(
-            pmp_item_daily_actuals.order(:pmp_item_id, :date)
-              .limit(limit)
-              .offset(offset),
-            each_serializer: Pmps::PmpItemDailyActualSerializer
-          )
-        end
-      }
+    if params[:pmp_item_id].present?
+      render json: pmp_item_daily_actuals, each_serializer: Pmps::PmpItemDailyActualSerializer
+    else
+      render json: pmp_daily_actuals, each_serializer: Pmps::PmpItemDailyActualSerializer
     end
   end
 
@@ -38,14 +24,55 @@ class Api::PmpItemDailyActualsController < ApplicationController
     end
   end
 
+  def update
+    if pmp_item_daily_actual.update_attributes(pmp_item_daily_actual_params)
+      render json: pmp_item_daily_actual, serializer: Pmps::PmpItemDailyActualSerializer
+    else
+      render json: { errors: pmp_item_daily_actual.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    pmp_item_daily_actual.destroy
+    render nothing: true
+  end
+
   private
+
+  def pmp_item_daily_actual_params
+    params.require(:pmp_item_daily_actual).permit(
+      :date,
+      :ad_unit,
+      :price,
+      :revenue_loc,
+      :impressions,
+      :win_rate,
+      :bids,
+      :pmp_item_id
+    )
+  end
 
   def pmp
     @_pmp ||= company.pmps.find(params[:pmp_id])
   end
 
+  def pmp_item
+    @_pmp_item ||= pmp.pmp_items.find(params[:pmp_item_id])
+  end
+
   def pmp_item_daily_actuals
-    @_pmp_item_daily_actuals ||= pmp.pmp_item_daily_actuals
+    @_pmp_item_daily_actuals ||= pmp_item.pmp_item_daily_actuals.order(:date)
+  end
+
+  def pmp_daily_actuals
+    @_pmp_daily_actuals ||= pmp.pmp_item_daily_actuals
+      .order(:pmp_item_id, :date)
+      .limit(limit)
+      .offset(offset)
+  end
+
+  def pmp_item_daily_actual
+    @_pmp_item_daily_actual ||= pmp.pmp_item_daily_actuals.find(params[:id])
   end
 
   def company

@@ -29,8 +29,8 @@
     $scope.submitForm = () ->
       # validates empty fields
       $scope.errors = {}
-      fields = ['name', 'advertiser_id', 'agency_id', 'start_date', 'end_date']
-      titles = ['Name', 'Advertiser', 'Agency', 'Start date', 'End date']
+      fields = ['name', 'advertiser_id', 'start_date', 'end_date']
+      titles = ['Name', 'Advertiser', 'Start date', 'End date']
       fields.forEach (key) ->
         field = $scope.pmp[key]
         title = titles[_.indexOf(fields, key)]

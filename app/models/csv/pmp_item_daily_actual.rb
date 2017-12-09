@@ -17,7 +17,7 @@ class Csv::PmpItemDailyActual
   validates :impressions, numericality: true
   validates :win_rate, numericality: true
   validates :ecpm, numericality: true
-  validates :revenue, numericality: true
+  validates :revenue_loc, numericality: true
   
   validate  :validate_pmp_item_presence
   validate  :validate_date_format
@@ -49,7 +49,7 @@ class Csv::PmpItemDailyActual
         win_rate: win_rate,
         price: ecpm,
         revenue_loc: revenue_loc,
-        revenue: revenue
+        imported: true
       )
     else
       PmpItemDailyActual.create({
@@ -61,7 +61,7 @@ class Csv::PmpItemDailyActual
         win_rate: win_rate,
         price: ecpm,
         revenue_loc: revenue_loc,
-        revenue: revenue
+        imported: true
       })
     end
   end
@@ -94,7 +94,9 @@ class Csv::PmpItemDailyActual
         next
       end
     end
-    PmpItem::CalculateRunRateService.new(company, pmp_item_ids).perform
+
+    PmpItemMonthlyActual.generate(pmp_item_ids.uniq)
+    PmpItem.calculate(pmp_item_ids.uniq)
 
     import_log.save
   end
@@ -119,10 +121,6 @@ class Csv::PmpItemDailyActual
     else
       nil
     end
-  end
-
-  def revenue
-    @_revenue ||= revenue_loc
   end
 
   def parsed_date

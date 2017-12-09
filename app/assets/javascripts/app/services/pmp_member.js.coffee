@@ -19,8 +19,8 @@
     }
 
   @all = (params) ->
+    deferred = $q.defer()
     resource.query params, (pmp_member) ->
-      deferred = $q.defer()
       deferred.resolve(pmp_member)
     deferred.promise
 

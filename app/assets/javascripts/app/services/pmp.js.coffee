@@ -16,10 +16,6 @@
           method: 'PUT'
           url: '/api/pmps/:id'
           transformRequest: transformRequest
-        pmp_item_daily_actuals:
-          method: 'GET'
-          url: '/api/pmps/:id/pmp_item_daily_actuals'
-          isArray: true
 
       currentIO = undefined
 
@@ -53,14 +49,6 @@
           (resp) ->
             deferred.reject(resp)
         )
-        deferred.promise
-
-      @pmp_item_daily_actuals = (pmp_id, params) ->
-        params = params || {}
-        params['id'] = pmp_id
-        deferred = $q.defer()
-        resource.pmp_item_daily_actuals params, (data) ->
-          deferred.resolve(data)
         deferred.promise
 
       @get = (io_id) ->

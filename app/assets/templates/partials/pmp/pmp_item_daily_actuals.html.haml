@@ -14,10 +14,11 @@
           %th.right Win Rate
           %th.right eCPM
           %th.right Revenue
+          %th
       %tbody{infinite: {scroll: 'loadMoreData()', 'scroll-disabled': 'isLoading || allDataLoaded', 'scroll-distance': '0.5'}}
         %tr{ ng: { repeat: "pmpItemDailyActual in pmpItemDailyActuals"} }
           %td.left
-            {{ pmpItemDailyActual.date | date: 'M/d/yyyy' }}
+            {{ pmpItemDailyActual.date }}
           %td.center
             {{ pmpItemDailyActual.ssp_deal_id }}
           %td.center
@@ -33,6 +34,9 @@
             {{ pmpItemDailyActual.price | currency:currency_symbol:2 }}
           %td.right
             {{ pmpItemDailyActual.revenue_loc | currency:currency_symbol:2 }}
+          %td.right.action-td
+            %i.fa.fa-pencil.z-icon{ ng: { click: 'showDailyActualEditModal(pmpItemDailyActual)' } }
+            %i.fa.fa-trash.z-icon{ ng: { click: 'deleteDailyActual(pmpItemDailyActual)' } }
         %tr{ ng: { if: '!pmpItemDailyActuals || pmpItemDailyActuals.length == 0' } }
           %td.center{ 'colspan': '8' }
             No data available. Please import data in 

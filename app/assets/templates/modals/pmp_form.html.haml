@@ -26,7 +26,6 @@
           %span.error-text {{errors.agency_id}}
           %label{style: 'display: block'}
             Agency
-            %span.star *
           %ui-select{ name: 'agency', ng: { model: 'pmp.agency_id', required: true, keyup: 'searchClients($select.search, Agency)' }}
             %ui-select-match{ placeholder: 'Agency' }
               {{ $select.selected.name }}

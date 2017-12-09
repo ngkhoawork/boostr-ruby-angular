@@ -1,0 +1,66 @@
+#new_pmp_item_daily_actual_modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header
+      {{formType}} PMP Daily Actual
+      %span.close-btn{'ng-click': 'closeModal()'}
+    .popup-modal-body
+      .row
+        .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.date}'}
+          %span.error-text {{errors.date}}
+          %label{ for: 'date' }
+            Date
+            %span.star *
+          %input.form-control{readonly: true, name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'dailyActual.date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
+        .col-md-6.form-group{'ng-class':'{error: errors.pmp_item_id}'}
+          %span.error-text {{errors.pmp_item_id}}
+          %label{ for: 'pmp_item' }
+            Deal-ID
+            %span.star *
+          %ui-select{ name: 'pmp_item', ng: { model: 'dailyActual.pmp_item_id', required: true }}
+            %ui-select-match{ placeholder: 'Deal-ID' }
+              {{ $select.selected.ssp_deal_id }}
+            %ui-select-choices{ repeat: 'pmp_item.id as pmp_item in pmpItems' }
+              %div{ ng: { bind: { html: 'pmp_item.ssp_deal_id' } } }
+      .row
+        .col-md-6.form-group{'ng-class':'{error: errors.ad_unit}'}
+          %span.error-text {{errors.ad_unit}}
+          %label{ for: 'ad_unit' }
+            Ad Unit/Product
+            %span.star *
+          %input.form-control{ placeholder: 'Ad Unit/Product', ng: { model: 'dailyActual.ad_unit', required: true }, name: 'ad_unit' }
+        .col-md-6.form-group{'ng-class':'{error: errors.bids}'}
+          %span.error-text {{errors.bids}}
+          %label{ for: 'bids' }
+            Bids
+            %span.star *
+          %input.form-control{ 'numbers-only': '', placeholder: 'Bis', ng: { model: 'dailyActual.bids', required: true }, name: 'bids' }
+      .row
+        .col-md-6.form-group{'ng-class':'{error: errors.impressions}'}
+          %span.error-text {{errors.impressions}}
+          %label{ for: 'impressions' }
+            Impressions
+            %span.star *
+          %input.form-control{ 'numbers-only': '', placeholder: 'Impressions', ng: { model: 'dailyActual.impressions', required: true }, name: 'impressions' }
+        .col-md-6.form-group{'ng-class':'{error: errors.win_rate}'}
+          %span.error-text {{errors.win_rate}}
+          %label{ for: 'win_rate' }
+            Win Rate
+            %span.star *
+          %input.form-control{ 'numbers-only': '', placeholder: 'Win Rate', ng: { model: 'dailyActual.win_rate', required: true }, name: 'win_rate' }
+      .row
+        .col-md-6.form-group{'ng-class':'{error: errors.price}'}
+          %span.error-text {{errors.price}}
+          %label{ for: 'price' }
+            eCPM
+            %span.star *
+          %input.form-control{ 'numbers-only': '', placeholder: 'eCPM', ng: { model: 'dailyActual.price', required: true }, name: 'price' }
+        .col-md-6.form-group{'ng-class':'{error: errors.revenue_loc}'}
+          %span.error-text {{errors.revenue_loc}}
+          %label{ for: 'revenue_loc' }
+            Revenue
+            %span.star *
+          %input.form-control{ 'numbers-only': '', placeholder: 'Revenue', ng: { model: 'dailyActual.revenue_loc', required: true }, name: 'revenue_loc' }
+
+    .popup-modal-footer.text-center
+      %button.btn.btn-default{ 'type': 'button', 'ng-click': 'closeModal()' } Cancel
+      %button.btn.btn-warning{ type: 'submit' } {{ submitText }}

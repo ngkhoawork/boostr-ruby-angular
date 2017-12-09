@@ -13,10 +13,6 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
     :bids
   )
 
-  def date
-    object.date.strftime('%m/%d/%Y')
-  end
-
   def ssp_deal_id
     object.pmp_item.ssp_deal_id
   end

@@ -1,6 +1,6 @@
 @app.controller 'PMPController',
-  ['$rootScope', '$scope', '$modal', '$location', '$filter', '$timeout', '$routeParams', 'PMP', 'PMPMember', 'User', 'PMPItem'
-  ( $rootScope,   $scope,   $modal,   $location,   $filter,   $timeout,   $routeParams,   PMP,   PMPMember,   User,   PMPItem) ->
+  ['$rootScope', '$scope', '$modal', '$location', '$filter', '$timeout', '$routeParams', 'PMP', 'PMPMember', 'User', 'PMPItem', 'PMPItemDailyActual',
+  ( $rootScope,   $scope,   $modal,   $location,   $filter,   $timeout,   $routeParams,   PMP,   PMPMember,   User,   PMPItem,   PMPItemDailyActual) ->
     $scope.currentPMP = {}
     $scope.currency_symbol = '$'
     $scope.selectedDeliveryItem = {}
@@ -14,13 +14,9 @@
     init = () ->
       PMP.get($routeParams.id).then (pmp) ->
         $scope.currentPMP = pmp
-        
         $scope.updateDeliveryChart(pmp.pmp_items[0])
         $scope.updatePriceChart(pmp.pmp_items[0])
-
         $scope.currency_symbol = pmp.currency && (pmp.currency.curr_symbol || pmp.currency.curr_cd)
-        
-        reloadDailyActuals()
 
     reloadDailyActuals = () ->
       $scope.page = 1
@@ -28,8 +24,9 @@
       $scope.loadMoreData()
 
     $scope.loadMoreData = ->
+      return if $scope.isLoading
       $scope.isLoading = true
-      PMP.pmp_item_daily_actuals($routeParams.id, {page: $scope.page++}).then (data) ->
+      PMPItemDailyActual.all(pmp_id: $routeParams.id, page: $scope.page++).then (data) ->
         $scope.allDataLoaded = !data.length
         $scope.pmpItemDailyActuals = $scope.pmpItemDailyActuals.concat data
         $timeout -> $scope.isLoading = false
@@ -66,7 +63,7 @@
         if graphData[pmpItem.id]
           drawChart(graphData[pmpItem.id], '#pmp-delivery-chart-container', '#pmp-delivery-chart')
         else
-          PMP.pmp_item_daily_actuals($routeParams.id, {pmp_item_id: pmpItem.id}).then (data) ->
+          PMPItemDailyActual.all(pmp_id: $routeParams.id, pmp_item_id: pmpItem.id).then (data) ->
             graphData[pmpItem.id] = data
             drawChart(data, '#pmp-delivery-chart-container', '#pmp-delivery-chart')
 
@@ -76,7 +73,7 @@
         if graphData[pmpItem.id]
           drawChart(graphData[pmpItem.id], '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
         else
-          PMP.pmp_item_daily_actuals($routeParams.id, {pmp_item_id: pmpItem.id}).then (data) ->
+          PMPItemDailyActual.all(pmp_id: $routeParams.id, pmp_item_id: pmpItem.id).then (data) ->
             graphData[pmpItem.id] = data
             drawChart(data, '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
 
@@ -85,14 +82,14 @@
       switch svgID
         when '#pmp-delivery-chart'
           [
-            {name: 'Bids', graphType: 1, active: true, unit: '', color: c(0), values: data.map((item) -> parseFloat(item.bids))}
+            {name: 'Bids', graphType: 1, hideTitle: true, active: true, unit: '', color: c(0), values: data.map((item) -> parseFloat(item.bids))}
             {name: 'Win Rate', graphType: 2, active: true, unit: '%', color: c(2), values: data.map((item) -> parseFloat(item.win_rate))}
             {name: 'Impressions', graphType: 1, active: true, unit: '', color: c(1), values: data.map((item) -> parseFloat(item.impressions))}          
           ]
         when '#pmp-price-revenue-chart'
           [
             {name: 'Price', graphType: 1, active: true, unit: $scope.currency_symbol, color: c(0), values: data.map((item) -> parseFloat(item.price))}
-            {name: 'Revenue', graphType: 2, active: true, unit: $scope.currency_symbol, color: c(1), values: data.map((item) -> parseFloat(item.revenue))}          
+            {name: 'Revenue', graphType: 2, active: true, unit: $scope.currency_symbol, color: c(1), values: data.map((item) -> parseFloat(item.revenue_loc))}          
           ]
         else []
 
@@ -184,16 +181,15 @@
           .attr('x2', width)
           .attr('y2', height)
 
+      # Axis titles
       y1TitlePos = () ->
         c = -y1Max.toString().length * 10 - 15
         Math.max(c, 10 - margin.left)
       y2TitlePos = () ->
         c = width + y2Max.toString().length * 10 + 15
         Math.min(c, width + margin.right - 10)
-
-      # Axis titles
-      y1Title = dataset.filter((d) -> d.graphType==1).map((d) -> d.name).join(' , ')
-      y2Title = dataset.filter((d) -> d.graphType==2).map((d) -> d.name).join(' , ')
+      y1Title = dataset.filter((d) -> d.graphType==1 && !d.hideTitle).map((d) -> d.name).join(' , ')
+      y2Title = dataset.filter((d) -> d.graphType==2 && !d.hideTitle).map((d) -> d.name).join(' , ')
       svg.append('text')
           .attr('text-anchor', 'middle')
           .attr('transform', 'translate(' + y1TitlePos() + ',' + (height/2) + ')rotate(-90)')
@@ -236,13 +232,13 @@
           .append('g')
           .attr('class', 'legend')
       legend.append('rect')
-          .attr('x', (d, i) -> margin.left + 120*i)
+          .attr('x', (d, i) -> (width-120*dataset.length)/2 + 120*i)
           .attr('y', height + 100)
           .attr('width', 10)
           .attr('height', 10)
           .style('fill', (d) -> d.color)
       legend.append('text')
-          .attr('x', (d, i) -> margin.left + 120*i + 14)
+          .attr('x', (d, i) -> (width-120*dataset.length)/2 + 120*i + 14)
           .attr('y', height + 110)
           .style('fill', '#2b3c49')
           .on('click', (d) ->
@@ -322,7 +318,6 @@
         $scope.currentPMP.budget_delivered_loc = parseFloat($scope.currentPMP.budget_delivered_loc || 0) + parseFloat(pmp_item.budget_delivered_loc)
         $scope.currentPMP.budget_remaining = parseFloat($scope.currentPMP.budget_remaining || 0) + parseFloat(pmp_item.budget_remaining)
         $scope.currentPMP.budget_remaining_loc = parseFloat($scope.currentPMP.budget_remaining_loc || 0) + parseFloat(pmp_item.budget_remaining_loc)
-        console.log $scope.currentPMP
 
     $scope.showPmpEditModal = () ->
       modalInstance = $modal.open
@@ -367,13 +362,52 @@
         PMPItem.delete(pmp_id: $scope.currentPMP.id, id: item.id).then(
           () ->
             $scope.currentPMP.pmp_items = _.without($scope.currentPMP.pmp_items, item) || []
-            $scope.updateDeliveryChart($scope.currentPMP.pmp_items[0])
-            $scope.updatePriceChart($scope.currentPMP.pmp_items[0])
+            updateChartsByPmpItemId(item.id)
             reloadDailyActuals()
           (resp) ->
             for key, error of resp.data.errors
               $scope.errors[key] = error && error[0]
         )      
+
+    $scope.showDailyActualEditModal = (pmpItemDailyActual) ->
+      modalInstance = $modal.open
+        templateUrl: 'modals/pmp_item_new_daily_actual_form.html'
+        size: 'md'
+        controller: 'PmpItemNewDailyActualController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          dailyActual: () -> angular.copy(pmpItemDailyActual)
+          pmpId: () -> $scope.currentPMP.id
+          pmpItems: () -> $scope.currentPMP.pmp_items
+      modalInstance.result.then (data) ->
+        index = $scope.pmpItemDailyActuals.indexOf(pmpItemDailyActual)
+        $scope.pmpItemDailyActuals[index] = data
+        reloadPMPAndCharts(pmpItemDailyActual.pmp_item_id)
+
+    $scope.deleteDailyActual = (dailyActual) ->
+      $scope.errors = {}
+      if confirm('Are you sure you want to delete this item?')
+        PMPItemDailyActual.delete(pmp_id: $scope.currentPMP.id, id: dailyActual.id).then(
+          () ->
+            $scope.pmpItemDailyActuals = _.without($scope.pmpItemDailyActuals, dailyActual) || []
+            reloadPMPAndCharts(dailyActual.pmp_item_id)
+          (resp) ->
+            for key, error of resp.data.errors
+              $scope.errors[key] = error && error[0]
+        )   
+
+    reloadPMPAndCharts = (pmpItemId) ->
+      PMP.get($routeParams.id).then (pmp) ->
+        $scope.currentPMP = pmp
+        updateChartsByPmpItemId(pmpItemId)
+
+    updateChartsByPmpItemId = (id) ->
+      if $scope.selectedDeliveryItem.id == id || $scope.selectedPriceItem.id == id
+        pmpItem = $scope.currentPMP.pmp_items.filter((d) -> d.id == id)[0] || $scope.currentPMP.pmp_items[0]
+        graphData[id] = null
+        $scope.updateDeliveryChart(pmpItem) if $scope.selectedDeliveryItem.id == id
+        $scope.updatePriceChart(pmpItem) if $scope.selectedPriceItem.id == id
 
     init()
   ]

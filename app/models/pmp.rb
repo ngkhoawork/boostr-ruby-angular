@@ -31,7 +31,6 @@ class Pmp < ActiveRecord::Base
     self.budget_delivered_loc = items.map(&:budget_delivered_loc).inject(0, &:+)
     self.budget_remaining = items.map(&:budget_remaining).inject(0, &:+)
     self.budget_remaining_loc = items.map(&:budget_remaining_loc).inject(0, &:+)
-    self.save!
   end
 
   private
