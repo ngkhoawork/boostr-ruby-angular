@@ -85,5 +85,5 @@
             %td.right
               {{ (pmpItem.run_rate_30_days | currency:currentPMP.currency_symbol:2) || 'N/A' }}
           %tr{ ng: { if: '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' } }
-            %td.center{ 'colspan': '7' }
+            %td.center{ 'colspan': '8' }
               No data available
