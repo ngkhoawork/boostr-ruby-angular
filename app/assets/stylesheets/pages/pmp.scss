@@ -2,8 +2,14 @@
     .container-fluid {
     }
     .detail-stats {
+        .stats-numbers {
+            overflow: auto;
+        }
+
         .stats-col {
-            width: 14%;
+            width: auto;
+            padding-right: 15px;
+            display: table-cell;
         }
 
         .edit-pmp, .delete-pmp {
@@ -194,7 +200,7 @@
 
 #pmp-delivery, #pmp-price-revenue {
     .custom-field-item {
-        margin: 10px 10px 0px 75px;
+        margin: 10px 10px 0px 95px;
         position: absolute;
         z-index: 1000;
     }
