@@ -363,8 +363,7 @@
       if confirm('Are you sure you want to delete this item?')
         PMPItem.delete(pmp_id: $scope.currentPMP.id, id: item.id).then(
           () ->
-            $scope.currentPMP.pmp_items = _.without($scope.currentPMP.pmp_items, item) || []
-            updateChartsByPmpItemId(item.id)
+            reloadPMPAndCharts(item.id)
             reloadDailyActuals()
           (resp) ->
             for key, error of resp.data.errors
