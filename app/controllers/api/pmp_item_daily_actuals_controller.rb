@@ -2,7 +2,9 @@ class Api::PmpItemDailyActualsController < ApplicationController
   respond_to :json
 
   def index
-    if params[:pmp_item_id].present?
+    if params[:pmp_item_id].present? && params[:pmp_item_id] == 'all'
+      render json: aggregated_pmp_daily_actuals.as_json
+    elsif params[:pmp_item_id].present?
       render json: pmp_item_daily_actuals, each_serializer: Pmps::PmpItemDailyActualSerializer
     else
       render json: pmp_daily_actuals, each_serializer: Pmps::PmpItemDailyActualSerializer
@@ -62,6 +64,12 @@ class Api::PmpItemDailyActualsController < ApplicationController
 
   def pmp_item_daily_actuals
     @_pmp_item_daily_actuals ||= pmp_item.pmp_item_daily_actuals.order(:date)
+  end
+
+  def aggregated_pmp_daily_actuals
+    @_aggregated_pmp_daily_actuals ||= pmp.pmp_item_daily_actuals
+      .select('date, sum(price) as price, sum(revenue_loc) as revenue_loc, sum(revenue) as revenue, sum(impressions) as impressions, sum(bids) as bids, avg(win_rate) as win_rate')
+      .group('date')
   end
 
   def pmp_daily_actuals

@@ -8,9 +8,12 @@
       .dropdown
         %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
           %span.editable{'ng-class': '{"not-selected": !currentDeal.deal_type.option_id}'}
-            {{selectedDeliveryItem.ssp_deal_id || selectedDeliveryItem.id || 'Select'}}
+            {{selectedDeliveryItem.ssp_deal_id || selectedDeliveryItem.id || (selectedDeliveryItem | firstUppercase) || 'Select'}}
           %span.caret
         %ul.dropdown-menu
+          %li{'ng-class': '{active: selectedDeliveryItem == "all"}'}
+            %a{'href': '', 'ng-click': 'updateDeliveryChart("all")'}
+              %span.text All
           %li{'ng-repeat': 'pmpItem in currentPMP.pmp_items', 'ng-class': '{active: selectedDeliveryItem.id == pmpItem.id}'}
             %a{'href': '', 'ng-click': 'updateDeliveryChart(pmpItem)'}
               %span.text {{pmpItem.ssp_deal_id || pmpItem.id}}

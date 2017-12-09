@@ -19,6 +19,10 @@
                 color: white;
             }
         }
+
+        .title {
+            word-wrap: break-word;
+        }
     }
     .editable {
         &:hover {

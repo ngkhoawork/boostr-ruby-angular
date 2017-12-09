@@ -14,8 +14,8 @@
     init = () ->
       PMP.get($routeParams.id).then (pmp) ->
         $scope.currentPMP = pmp
-        $scope.updateDeliveryChart(pmp.pmp_items[0])
-        $scope.updatePriceChart(pmp.pmp_items[0])
+        $scope.updateDeliveryChart('all')
+        $scope.updatePriceChart('all')
         $scope.currency_symbol = pmp.currency && (pmp.currency.curr_symbol || pmp.currency.curr_cd)
 
     reloadDailyActuals = () ->
@@ -60,21 +60,23 @@
     $scope.updateDeliveryChart = (pmpItem) ->
       if pmpItem
         $scope.selectedDeliveryItem = pmpItem
-        if graphData[pmpItem.id]
-          drawChart(graphData[pmpItem.id], '#pmp-delivery-chart-container', '#pmp-delivery-chart')
+        id = if pmpItem == 'all' then 'all' else pmpItem.id
+        if graphData[id]
+          drawChart(graphData[id], '#pmp-delivery-chart-container', '#pmp-delivery-chart')
         else
-          PMPItemDailyActual.all(pmp_id: $routeParams.id, pmp_item_id: pmpItem.id).then (data) ->
-            graphData[pmpItem.id] = data
+          PMPItemDailyActual.all(pmp_id: $routeParams.id, pmp_item_id: id).then (data) ->
+            graphData[id] = data
             drawChart(data, '#pmp-delivery-chart-container', '#pmp-delivery-chart')
 
     $scope.updatePriceChart = (pmpItem) ->
       if pmpItem
         $scope.selectedPriceItem = pmpItem
-        if graphData[pmpItem.id]
-          drawChart(graphData[pmpItem.id], '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
+        id = if pmpItem == 'all' then 'all' else pmpItem.id
+        if graphData[id]
+          drawChart(graphData[id], '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
         else
-          PMPItemDailyActual.all(pmp_id: $routeParams.id, pmp_item_id: pmpItem.id).then (data) ->
-            graphData[pmpItem.id] = data
+          PMPItemDailyActual.all(pmp_id: $routeParams.id, pmp_item_id: id).then (data) ->
+            graphData[id] = data
             drawChart(data, '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
 
     getGraphDataSet = (data, svgID) ->
@@ -277,7 +279,7 @@
           tooltip.transition()        
               .duration(200)      
               .style("opacity", .9);      
-          tooltip.html('<p>' + selectedItem.ssp_deal_id + '</p><p><span>' + (if unit == $scope.currency_symbol then unit + $filter('number')(d) else $filter('number')(d) + unit) + '</span></p><p><span>' + title + '</span></p>')  
+          tooltip.html('<p>' + (selectedItem.ssp_deal_id || $filter('firstUppercase')(selectedItem)) + '</p><p><span>' + (if unit == $scope.currency_symbol then unit + $filter('number')(d) else $filter('number')(d) + unit) + '</span></p><p><span>' + title + '</span></p>')  
               .style("left", (d3.event.pageX) - 50 + "px")     
               .style("top", (d3.event.pageY + 18) + "px")
       setTimeout ->
@@ -408,6 +410,9 @@
         graphData[id] = null
         $scope.updateDeliveryChart(pmpItem) if $scope.selectedDeliveryItem.id == id
         $scope.updatePriceChart(pmpItem) if $scope.selectedPriceItem.id == id
-
+      if $scope.selectedPriceItem == 'all' || $scope.selectedDeliveryItem == 'all'
+        graphData['all'] = null
+        $scope.updateDeliveryChart('all') if $scope.selectedDeliveryItem == 'all'
+        $scope.updatePriceChart('all') if $scope.selectedPriceItem == 'all'
     init()
   ]
