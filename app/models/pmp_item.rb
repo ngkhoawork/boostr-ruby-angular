@@ -61,7 +61,6 @@ class PmpItem < ActiveRecord::Base
 
   def update_pmp_budgets
     self.pmp.calculate_budgets!
-    self.pmp.save!
   end
 
   def budgets_changed?
