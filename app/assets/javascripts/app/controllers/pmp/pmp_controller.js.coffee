@@ -247,7 +247,7 @@
             i = dataset.indexOf(d)
             active = if dataset[i].active then false else true
             newOpacity = if active then 1 else 0
-            svg.selectAll('.graph-'+d.name.replace(' ', '_')).style('opacity', newOpacity)
+            svg.selectAll('.graph-'+d.name.replace(' ', '_')).attr('visibility', if active then 'visible' else 'hidden')
             if active
               d3.select(this).style('fill', '#2b3c49')
               svg.select('.axisY'+d.graphType).style('opacity', newOpacity)
