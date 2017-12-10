@@ -1,5 +1,5 @@
 @service.service 'Publisher',
-  ['$resource', '$rootScope', '$q', ( $resource, $rootScope, $q ) ->
+  ['$resource', '$rootScope', '$q', '$location', ( $resource, $rootScope, $q, $location ) ->
     resource = $resource '/api/publishers', {id: '@id'},
       publishersList:
         method: 'GET'
@@ -22,6 +22,9 @@
       update:
         method: 'PUT'
         url: '/api/publishers/:id'
+      delete:
+        method: 'DELETE'
+        url: '/api/publishers/:id'
       publisherReport:
         method: 'GET'
         url: '/api/publishers/all_fields_report'
@@ -33,6 +36,16 @@
     this.publisherSettings = (params) -> resource.publisherSettings(params).$promise
     this.publisherReport = (params) -> resource.publisherReport(params).$promise
     this.create = (params) -> resource.create(params).$promise
+
+    this.delete = (params) ->
+      deferred = $q.defer()
+      resource.delete params,
+        (resp) ->
+          deferred.resolve(resp)
+          $location.url("/publishers")
+        (err) ->
+          deferred.reject(err)
+      deferred.promise
 
     this.update = (params) ->
       deferred = $q.defer()

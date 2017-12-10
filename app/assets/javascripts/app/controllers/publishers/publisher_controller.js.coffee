@@ -7,6 +7,7 @@
     $scope.init = ->
       PublisherDetails.getPublisher(id: $routeParams.id).then (publisher) ->
         $scope.currentPublisher = publisher
+        console.log(publisher)
 
       PublisherDetails.associations(id: $routeParams.id).then (association) ->
         $scope.contacts = association.contacts
@@ -23,18 +24,27 @@
       Publisher.publisherSettings().then (settings) ->
         $scope.publisher_stages = settings.publisher_stages
         $scope.publisher_types = settings.publisher_types
+        $scope.renewal_term_fields = settings.renewal_term_fields
 
     transformData = (data) ->
       result = {values: [], months: []}
       data.forEach (d) ->
         result.values.push(d.revenue)
         result.months.push({label: moment(d.date).format('MMM DD'), date: moment(d.date).format('YYYY-MM-DD')})
-
       result
 
     $scope.updatePublisher = (publisher) ->
-      params = {comscore: publisher.comscore, type_id: publisher.type.id}
+      params = {
+        comscore: publisher.comscore,
+        type_id: publisher.type.id,
+        renewal_term_id: publisher.renewal_term.id}
+
       Publisher.update(id: $scope.currentPublisher.id, publisher: params)
+
+    $scope.deletePublisher = (publisher) ->
+      if confirm('Are you sure you want to delete "' + publisher.name + '"?')
+        Publisher.delete(id: publisher.id)
+
 
     $scope.showEditModal = (publisher) ->
       $scope.modalInstance = $modal.open

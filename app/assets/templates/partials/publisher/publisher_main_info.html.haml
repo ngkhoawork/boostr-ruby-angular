@@ -3,7 +3,7 @@
     %span.main-title
       {{currentPublisher.name}}
       %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentPublisher)'}
-      %i.fa.fa-trash.delete-deal{'ng-click': 'delete(currentClient)'}
+      %i.fa.fa-trash.delete-deal{'ng-click': 'deletePublisher(currentPublisher)'}
     %span.stage-label{'ng-show': 'currentPublisher.publisher_stage'}
       {{currentPublisher.publisher_stage.name}}
   .detail-info

@@ -1,5 +1,5 @@
 class Api::Publishers::ShowSerializer < Api::Publishers::Serializer
-  attributes :publisher_stage_id, :type_id, :fill_rate, :revenue_lifetime, :revenue_ytd, :contacts,
+  attributes :publisher_stage_id, :type_id, :fill_rate, :revenue_lifetime, :revenue_ytd, :contacts, :renewal_term_id,
              :publisher_custom_field_obj, :address
 
   def fill_rate

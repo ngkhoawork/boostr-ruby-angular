@@ -14,8 +14,37 @@
             %span.text {{type.name}}
 
   %div.custom-field-item
-    %div.custom-field-item-label Comscore
-    %z-toggle{'ng-model': 'currentPublisher.comscore', 'ng-change': 'updatePublisher(currentPublisher)', 'ng-click': '$event.stopPropagation()'}
+    %div.custom-field-item-label.comscore-label Comscore
+    %z-toggle.comsocre-switcher{'ng-model': 'currentPublisher.comscore', 'ng-change': 'updatePublisher(currentPublisher)', 'ng-click': '$event.stopPropagation()'}
+
+  %div.custom-field-item
+    %div.custom-field-item-label Renewal Term
+    .dropdown
+      %button.btn.dropdown-toggle.z-dd-ar{'data-toggle': 'dropdown', type: 'button'}
+        %span.editable{'ng-class': '{"not-selected": !currentPublisher.renewal_term.name}'} {{currentPublisher.renewal_term.name || 'Select Type'}}
+        %span.caret
+      %ul.dropdown-menu
+        %li{'ng-repeat': 'term in renewal_term_fields', 'ng-class': '{active: currentPublisher.renewal_term.id == term.id}'}
+          %a{'href': '', 'ng-click': ' currentPublisher.renewal_term = term; updatePublisher(currentPublisher)'}
+            %span.text {{term.name}}
+
+  %div.custom-field-item
+    %div.custom-field-item-label
+      Revenue Share
+    %span
+      {{currentPublisher.revenue_share}}
+
+  %div.custom-field-item
+    %div.custom-field-item-label
+      Term Start Date
+    %span
+      {{currentPublisher.term_start_date | date : 'shortDate'}}
+
+  %div.custom-field-item
+    %div.custom-field-item-label
+      Term End Date
+    %span
+      {{currentPublisher.term_end_date | date : 'shortDate'}}
 
   %div{ng: {repeat: "cf in currentPublisher.publisher_custom_field"}}
     %div.custom-field-item
