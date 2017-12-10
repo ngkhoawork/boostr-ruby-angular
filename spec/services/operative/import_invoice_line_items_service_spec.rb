@@ -67,7 +67,7 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
 
         expect(DisplayLineItemBudgetCsv).to receive(:new).with(
           line_number: '2',
-          budget_loc: 45000.0,
+          budget_loc: 100000.0,
           month_and_year: '01-2017',
           impressions: '150000',
           revenue_calculation_pattern: recognized_revenue_pattern,
@@ -76,7 +76,7 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
         expect(line_item_budget_csv).to receive(:irrelevant?).and_return(false)
         expect(line_item_budget_csv).to receive(:valid?).and_return(:true)
         expect(line_item_budget_csv).to receive(:perform)
-        subject(recognized_revenue_pattern, recognized_revenue_adjustment: 0.5).perform
+        subject(recognized_revenue_pattern, recognized_revenue_adjustment: 10000).perform
       end
     end
 
