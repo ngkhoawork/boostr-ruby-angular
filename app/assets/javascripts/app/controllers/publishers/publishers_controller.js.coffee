@@ -90,7 +90,6 @@
 
     $scope.getPublisherSettings = () ->
       Publisher.publisherSettings().then (settings) ->
-        console.log(settings)
         $scope.publisher_stages = $scope.filter.stages = settings.publisher_stages
         $scope.publisher_types = $scope.filter.types = settings.publisher_types
         $scope.renewal_term_fields = $scope.filter.renewal_term_fields = settings.renewal_term_fields
@@ -122,7 +121,6 @@
     getPublishersList = (params) ->
       setLoading(true)
       Publisher.publishersList(params).then (publishers) ->
-        console.log(publishers)
         $scope.allPublishersLoaded = !publishers || publishers.length < per
         if page++ > 1
           $scope.publishers = $scope.publishers.concat(publishers)
@@ -182,7 +180,7 @@
       $scope.modalInstance = $modal.open
         templateUrl: 'modals/publisher_form.html'
         size: 'md'
-        controller: 'PablisherNewController'
+        controller: 'PablisherActionsController'
         backdrop: 'static'
         keyboard: false
         resolve:

@@ -1,7 +1,5 @@
-@app.controller 'PablisherEditController',
+@app.controller 'PablisherActionsController',
   ['$scope', '$modalInstance', 'Publisher', 'publisher', 'PublisherCustomFieldName', 'CountriesList', '$rootScope', ($scope, $modalInstance, Publisher, publisher, PublisherCustomFieldName, CountriesList, $rootScope) ->
-    $scope.formType = "Edit"
-    $scope.submitText = "Update"
     $scope.publisher = publisher
     $scope.publisherCustomFields = []
 
@@ -9,6 +7,7 @@
       $scope.getPublisherSettings()
       $scope.getCountries()
       $scope.getPublisherCustomFields()
+      handleModalType()
 
     $scope.getPublisherSettings = () ->
       Publisher.publisherSettings().then (settings) ->
@@ -26,12 +25,7 @@
     $scope.submitForm = () ->
       formValidation()
       if Object.keys($scope.errors).length > 0 then return
-      $scope.publisher.address_attributes = $scope.publisher.address
-      $scope.publisher.publisher_custom_field_attributes = $scope.publisher.publisher_custom_field_obj
-
-      Publisher.update(id: $scope.publisher.id, publisher: $scope.publisher).then (response) ->
-        $rootScope.$broadcast 'updated_publisher_detail'
-        $scope.cancel()
+      handleRequestType()
 
     formValidation = () ->
       $scope.errors = {}
@@ -48,8 +42,32 @@
             if field && !validUrl.test(field) then return $scope.errors[key] = 'Website URL is not valid'
 
       $scope.publisherCustomFields.forEach (item) ->
-        if item.is_required && (!$scope.publisher.publisher_custom_field_attributes || !$scope.publisher.publisher_custom_field_attributes[item.field_type + item.field_index])
+        if item.is_required && (!$scope.publisher.publisher_custom_field_obj || !$scope.publisher.publisher_custom_field_obj[item.field_type + item.field_index])
           $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
+
+    handleRequestType = () ->
+      $scope.publisher.address_attributes = $scope.publisher.address
+      $scope.publisher.publisher_custom_field_attributes = $scope.publisher.publisher_custom_field_obj
+
+      if $scope.publisher.id
+        Publisher.update(id: $scope.publisher.id, publisher: $scope.publisher).then (response) ->
+          $rootScope.$broadcast 'updated_publisher_detail'
+          $scope.cancel()
+      else
+        Publisher.create(publisher: $scope.publisher).then (response) ->
+          $rootScope.$broadcast 'updated_publishers'
+          $scope.cancel()
+
+    handleModalType = () ->
+      type = "Add New"
+      submitText = "Add"
+
+      if $scope.publisher.id
+        type = "Edit"
+        submitText = "Update"
+
+      $scope.formType = type
+      $scope.submitText = submitText
 
     $scope.cancel = ->
       $modalInstance.close()

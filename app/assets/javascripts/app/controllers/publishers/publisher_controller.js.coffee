@@ -40,7 +40,7 @@
       $scope.modalInstance = $modal.open
         templateUrl: 'modals/publisher_form.html'
         size: 'md'
-        controller: 'PablisherEditController'
+        controller: 'PablisherActionsController'
         backdrop: 'static'
         keyboard: false
         resolve:
