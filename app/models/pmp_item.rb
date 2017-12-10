@@ -55,8 +55,8 @@ class PmpItem < ActiveRecord::Base
   def set_budget_remaining_and_delivered
     self.budget_delivered ||= 0
     self.budget_delivered_loc ||= 0
-    self.budget_remaining = self.budget - self.budget_delivered
-    self.budget_remaining_loc = self.budget_loc - self.budget_delivered_loc
+    self.budget_remaining = [self.budget - self.budget_delivered, 0].max
+    self.budget_remaining_loc = [self.budget_loc - self.budget_delivered_loc, 0].max
   end
 
   def update_pmp_budgets

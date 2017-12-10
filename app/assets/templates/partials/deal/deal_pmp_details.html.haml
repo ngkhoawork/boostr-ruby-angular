@@ -18,7 +18,7 @@
           .col-body-wrap
             .col-body
               .description Delivered
-              .title {{ (currentPMP.budget_delivered_loc | currency:currentPMP.currency_symbol:2) || 'N/A' }}
+              .title {{ (currentPMP.budget_delivered_loc | currency:currentPMP.currency_symbol:2) || 'N/A' }} {{ currentPMP.budget_loc && currentPMP.budget_loc != 0 ? '(' + (currentPMP.budget_delivered_loc/currentPMP.budget_loc*100 | percentage:2) + ')' : '' }}
               .subtitle{'ng-if': 'currentPMP.curr_cd != "USD"'} {{currentPMP.budget_delivered | currency: '$' : 2}}
         %div.stats-col
           .col-body-wrap
