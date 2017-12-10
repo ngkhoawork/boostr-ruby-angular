@@ -55,10 +55,6 @@
     ClientConnection.all({client_id: $scope.currentClient.id}).then (client_connections) ->
       $scope.client_connections = client_connections
 
-  $scope.getClientConnectedContacts = ->
-    Client.connected_contacts({id: $scope.currentClient.id}).$promise.then (connected_contacts) ->
-      $scope.connected_contacts = connected_contacts
-
   $scope.getChildClients = ->
     Client.child_clients({id: $scope.currentClient.id}).$promise.then (child_clients) ->
       $scope.child_clients = child_clients
@@ -74,8 +70,6 @@
   $scope.setClient = (client) ->
     $scope.currentClient = client
     $scope.activities = client.activities.concat(client.agency_activities)
-#    $scope.initActivity()
-#    $scope.getContacts()
     $scope.getDeals($scope.currentClient)
     $scope.getClientConnections()
     $scope.initReminder()
@@ -86,8 +80,10 @@
     $scope.getClientMembers()
 
     account_type = Field.field($scope.currentClient, 'Client Type')
+    $scope.isAdvertiser = account_type.option.name == "Advertiser"
+    $scope.isAgency = account_type.option.name == "Agency"
     $scope.getIOs(account_type.option.name)
-    if account_type.option && account_type.option.name == "Advertiser"
+    if account_type.option && $scope.isAdvertiser
       $scope.getChildClients()
     $scope.categoryOptions = Field.findFieldOptions($scope.currentClient.fields, 'Category')
     $scope.segmentOptions = Field.findFieldOptions($scope.currentClient.fields, 'Segment')

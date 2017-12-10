@@ -9,7 +9,7 @@
                 %th
                     .z-sortable{ by: 'contact.name' } Name
                 %th
-                    .z-sortable{ by: 'client.name' } {{ currentClient.client_type.option.name == 'Advertiser' ? 'Agency' : 'Advertiser' }}
+                    .z-sortable{ by: 'client.name' } {{ isAdvertiser ? 'Agency' : 'Advertiser' }}
                 %th
                     .z-sortable{ by: 'contact.position' } Position
                 %th
@@ -23,7 +23,10 @@
                 %td
                     %a{'ng-href': '/contacts/{{client_contact.contact.id}}'} {{ client_contact.contact.name }}
                     %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnectionContact(client_contact)'}
-                %td
+                %td{ng: {if: 'isAdvertiser'}}
+                    %a{'ng-href': '/accounts/{{client_contact.contact.primary_client.id}}'}
+                        {{ client_contact.contact.primary_client.name }}
+                %td{ng: {if: 'isAgency'}}
                     %a{'ng-href': '/accounts/{{client_contact.client.id}}'}
                         {{ client_contact.client.name }}
                 %td

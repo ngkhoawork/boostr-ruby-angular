@@ -172,9 +172,9 @@ class Api::ClientsController < ApplicationController
     client = company.clients.find(params[:client_id])
     if client && client.client_type
       if client.client_type.name == "Agency"
-        contacts = client.agency_contacts
-      elsif client.client_type.name == "Advertiser"
         contacts = client.advertiser_contacts
+      elsif client.client_type.name == "Advertiser"
+        contacts = client.agency_contacts
       end
       if params[:name]
         contacts = contacts.where('contacts.name ilike ?', "%#{params[:name]}%")
@@ -390,21 +390,29 @@ class Api::ClientsController < ApplicationController
   end
 
   def connected_client_contacts_relation
-    clcons ||= ClientContact
-      .where('contact_id in (?)', client_record.primary_contacts.ids)
-      .where('client_contacts.client_id in (?)', related_accounts_ids)
+    clcons ||= related_client_contact_relation
       .where(primary: false)
       .joins(:client, :contact)
-      .preload(:client, contact: :address)
+      .preload(:client, contact: [:address, :primary_client])
       .order('clients.name')
   end
 
-  def related_accounts_ids
+  def related_client_contact_relation
     if client_record.client_type.present? && client_record.client_type.name == 'Advertiser'
-      client_record.agencies.ids
+      related_agency_client_contacts
     else
-      client_record.advertisers.ids
+      related_advertiser_client_contacts
     end
+  end
+
+  def related_agency_client_contacts
+    ClientContact.where(client_id: client_record.id)
+  end
+
+  def related_advertiser_client_contacts
+    ClientContact
+      .where('contact_id in (?)', client_record.primary_contacts.ids)
+      .where('client_contacts.client_id in (?)', client_record.advertisers.ids)
   end
 
   def company_job_level_options
