@@ -11,13 +11,6 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
     './spec/invoices_file.csv',
   ])
 
-  before do
-    content_for_files([
-      invoice_lines_csv_file,
-      invoice_csv_file
-    ])
-  end
-
   it 'passes rows to DisplayLineItemCsv' do
     expect(DisplayLineItemBudgetCsv).to receive(:new).with(
       line_number: '2',
@@ -68,6 +61,23 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
         expect(line_item_budget_csv).to receive(:perform)
         subject(recognized_revenue_pattern).perform
       end
+
+      it 'multiplies recognized revenue by the recognized revenue adjustement' do
+        recognized_revenue_pattern = DatafeedConfigurationDetails.get_pattern_id('Recognized Revenue')
+
+        expect(DisplayLineItemBudgetCsv).to receive(:new).with(
+          line_number: '2',
+          budget_loc: 45000.0,
+          month_and_year: '01-2017',
+          impressions: '150000',
+          revenue_calculation_pattern: recognized_revenue_pattern,
+          company_id: company.id
+        ).and_return(line_item_budget_csv)
+        expect(line_item_budget_csv).to receive(:irrelevant?).and_return(false)
+        expect(line_item_budget_csv).to receive(:valid?).and_return(:true)
+        expect(line_item_budget_csv).to receive(:perform)
+        subject(recognized_revenue_pattern, recognized_revenue_adjustment: 0.5).perform
+      end
     end
 
     context 'Invoice Amount pattern' do
@@ -98,7 +108,7 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
     end
   end
 
-  def invoice_lines_csv_file
+  def invoice_lines_csv_file(opts)
     @_invoice_lines_csv_file ||= generate_csv({
       invoice_id: 10,
       sales_order_line_item_id: '2',
@@ -106,8 +116,9 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
       recognized_revenue: '90000',
       invoice_amount: '35000',
       cumulative_primary_performance: '50',
-      cumulative_third_party_performance: '60'
-    })
+      cumulative_third_party_performance: '60',
+      recognized_revenue_adjustment: nil
+    }.merge(opts))
   end
 
   def invoice_csv_file
@@ -121,7 +132,12 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
     DatafeedConfigurationDetails.get_pattern_id('Invoice Units')
   end
 
-  def subject(revenue_calculation_pattern = default_pattern)
+  def subject(revenue_calculation_pattern = default_pattern, opts={})
+    content_for_files([
+      invoice_lines_csv_file(opts),
+      invoice_csv_file
+    ])
+
     @_subject ||= Operative::ImportInvoiceLineItemsService.new(
       company.id,
       revenue_calculation_pattern,
