@@ -28,7 +28,7 @@ class Api::PublisherMembersController < ApplicationController
   end
 
   def publisher
-    current_user.company.publishers.find(params[:id])
+    current_user.company.publishers.find(params[:publisher_id])
   end
 
   def update_owner_field_in_publisher_scope

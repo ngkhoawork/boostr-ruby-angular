@@ -1,6 +1,6 @@
 @app.controller 'PablisherController', [
-  '$scope', '$modal', '$filter', '$routeParams', 'Publisher', 'PublisherDetails',
-  ($scope,   $modal,   $filter,   $routeParams,   Publisher,   PublisherDetails) ->
+  '$scope', '$modal', '$filter', '$routeParams', 'Publisher', 'PublisherDetails', 'PublisherMembers', '$rootScope', 'User',
+  ($scope,   $modal,   $filter,   $routeParams,   Publisher,   PublisherDetails, PublisherMembers, $rootScope, User) ->
 
     $scope.currentPublisher = {}
 
@@ -45,6 +45,18 @@
       if confirm('Are you sure you want to delete "' + publisher.name + '"?')
         Publisher.delete(id: publisher.id)
 
+    $scope.updateMember = (member) ->
+      PublisherMembers.update(id: member.id, owner: member.owner).then (res) ->
+        $rootScope.$broadcast 'updated_publisher_detail'
+
+    $scope.showLinkExistingUser = ->
+      User.query().$promise.then (users) ->
+        $scope.users = $filter('notIn')(users, $scope.currentPublisher.publisher_members, 'user_id')
+
+    $scope.linkExistingUser = (selectedMember) ->
+      $scope.userToLink = undefined
+      PublisherMembers.create(id: selectedMember.id, publisher_id: $scope.currentPublisher.id).then (res) ->
+        $rootScope.$broadcast 'updated_publisher_detail'
 
     $scope.showEditModal = (publisher) ->
       $scope.modalInstance = $modal.open

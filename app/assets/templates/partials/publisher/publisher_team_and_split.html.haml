@@ -1,6 +1,15 @@
 .block
   %div.mb20
     %span.title Team & Split
+    %span{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
+      %add-button{ dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } } Add
+      %ul.dropdown-menu.new-member-options
+        %li.existing-user-options
+          %ui-select{ name: 'user-list', ng: { model: 'userToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingUser($item)' }
+            %ui-select-match{ placeholder: 'start typing their name here' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }
+              %div{ ng: { bind: { html: 'user.name' } } }
   %table.table.table-striped
     %thead
       %tr
@@ -11,4 +20,4 @@
         %td
           {{member.name}}
         %td.left
-          {{member.owner ? "Yes" : "No"}}
+          %z-toggle.comsocre-switcher{'ng-model': 'member.owner', 'ng-change': 'updateMember(member)', 'ng-click': '$event.stopPropagation()'}
