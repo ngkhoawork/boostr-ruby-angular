@@ -38,7 +38,8 @@ app.directive 'activityFeed',
             loadActivities()
 
         loadActivities = ->
-            resource().then (activities) -> $scope.activities = activities
+            resource().then (activities) ->
+                $scope.activities = activities
 
         $scope.getHtml = (html) ->
             $sce.trustAsHtml(html)

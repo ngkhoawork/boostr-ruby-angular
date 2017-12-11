@@ -9,6 +9,7 @@
 
 		drawChart = (data, chartId) ->
 			if !data then return
+			data.reverse()
 			chartContainer = angular.element(chartId + '-container')
 			tooltip = d3.select(chartId + '-tooltip')
 			delay = 500

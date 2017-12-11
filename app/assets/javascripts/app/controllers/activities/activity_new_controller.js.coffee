@@ -1,8 +1,10 @@
-@app.controller "ActivityNewController",
-    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Field', 'Contact', 'Reminder', 'activity', 'options', '$http'
-        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Field, Contact, Reminder, activity, options, $http) ->
+@app.controller "ActivityNewController", [
+    '$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Field', 'Contact', 'Publisher', 'Reminder', 'activity', 'options', '$http'
+    ($scope,   $rootScope,   $modalInstance,   Activity,   ActivityType,   Deal,   Client,   Field,   Contact,   Publisher,   Reminder,   activity,   options,   $http) ->
 
             $scope.types = []
+            $scope.isPublisherEnabled = _isPublisherEnabled
+#            $scope.isInfluencerEnabled = _isCompanyInfluencerEnabled
             $scope.showRelated = true
             $scope.showMeridian = true
             $scope.isEdit = Boolean activity
@@ -69,6 +71,9 @@
                 if activity.agency
                     $scope.form.agency = activity.agency
                     $scope.form.agency.formatted_name = $scope.form.agency.name
+                if activity.publisher
+                    $scope.form.formatted_name = activity.deal.name
+                    $scope.form.deal = activity.deal
                 $scope.form.contacts = activity.contacts
                 $scope.form.date = new Date(activity.happened_at)
                 if activity.timed
@@ -110,6 +115,9 @@
 
             Contact.query().$promise.then (contacts) ->
                 $scope.contacts = contacts
+
+            $scope.searchPublishers = (str) ->
+                Publisher.publishersList(q: str).then (publishers) -> publishers
 
             Field.defaults({}, 'Client').then (fields) ->
                 client_types = Field.findClientTypes(fields)
@@ -230,7 +238,7 @@
                     activityData.agency_id = $scope.form.agency && $scope.form.agency.id || null
                 if $scope.form.publisher
                     activityData.publisher_id = $scope.form.publisher.id
-                    activityData.client_id = $scope.form.publisher.client_id
+                    activityData.client_id = activityData.client_id || $scope.form.publisher.client_id
 
                 if $scope.form.contacts.length
                     $scope.form.contacts = $scope.form.contacts.map (c) ->
@@ -308,4 +316,4 @@
                     else
                         $modalInstance.close(activity)
                         $rootScope.$broadcast 'dashboard.updateBlocks', ['activities']
-    ]
+]

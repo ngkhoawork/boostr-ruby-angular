@@ -15,7 +15,6 @@ ActiveRecord::Schema.define(version: 20171213215450) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
   enable_extension "fuzzystrmatch"
 
@@ -399,11 +398,11 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.string   "api_email"
     t.string   "encrypted_password"
     t.string   "encrypted_password_iv"
-    t.boolean  "recurring",                  default: false
     t.text     "encrypted_json_api_key"
     t.text     "encrypted_json_api_key_iv"
     t.string   "network_code"
     t.string   "integration_provider"
+    t.boolean  "recurring",                  default: false
   end
 
   add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
@@ -589,9 +588,8 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.boolean  "requests_enabled",                  default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "enable_operative_extra_fields",     default: false
-    t.boolean  "requests_enabled",                  default: false
-    t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "influencer_enabled",                default: false
+    t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "forecast_gap_to_quota_positive",    default: true
     t.boolean  "publishers_enabled",                default: false
   end
@@ -1765,30 +1763,19 @@ ActiveRecord::Schema.define(version: 20171213215450) do
 
   add_index "product_dimensions", ["company_id"], name: "index_product_dimensions_on_company_id", using: :btree
 
-  create_table "product_families", force: :cascade do |t|
-    t.integer  "company_id"
-    t.string   "name"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-    t.boolean  "active",     default: true
-  end
-
-  add_index "product_families", ["company_id"], name: "index_product_families_on_company_id", using: :btree
-
   create_table "products", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
     t.string   "product_line"
+    t.string   "family"
     t.string   "revenue_type"
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.boolean  "active",                default: true
     t.boolean  "is_influencer_product", default: false
-    t.integer  "product_family_id"
   end
 
   add_index "products", ["company_id"], name: "index_products_on_company_id", using: :btree
-  add_index "products", ["product_family_id"], name: "index_products_on_product_family_id", using: :btree
 
   create_table "publisher_custom_field_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -1898,8 +1885,8 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.integer  "available_impressions"
     t.integer  "filled_impressions"
     t.integer  "fill_rate"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
     t.decimal  "total_revenue",         precision: 10, scale: 2
     t.decimal  "ecpm",                  precision: 10, scale: 2
     t.integer  "currency_id"
@@ -1939,7 +1926,6 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.datetime "deleted_at"
     t.integer  "company_id"
     t.integer  "publisher_stage_id"
-    t.integer  "stage_id"
     t.integer  "type_id"
     t.string   "revenue_share"
     t.date     "term_start_date"
@@ -2050,11 +2036,11 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.integer  "company_id"
     t.string   "name"
     t.integer  "probability"
-    t.boolean  "open"
-    t.boolean  "active"
+    t.boolean  "open",                 default: true
+    t.boolean  "active",               default: true
     t.integer  "position"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
   add_index "sales_stages", ["company_id"], name: "index_sales_stages_on_company_id", using: :btree
@@ -2081,10 +2067,6 @@ ActiveRecord::Schema.define(version: 20171213215450) do
   add_index "snapshots", ["time_period_id"], name: "index_snapshots_on_time_period_id", using: :btree
   add_index "snapshots", ["user_id"], name: "index_snapshots_on_user_id", using: :btree
   add_index "snapshots", ["year", "quarter"], name: "index_snapshots_on_year_and_quarter", using: :btree
-
-  create_table "ssps", force: :cascade do |t|
-    t.string "name"
-  end
 
   create_table "stage_dimensions", force: :cascade do |t|
     t.integer  "company_id"
@@ -2275,9 +2257,9 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
+    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
-    t.boolean  "revenue_requests_access",             default: false
   end
 
   add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree
@@ -2414,7 +2396,6 @@ ActiveRecord::Schema.define(version: 20171213215450) do
   add_foreign_key "pmps", "deals"
   add_foreign_key "print_items", "ios"
   add_foreign_key "product_dimensions", "companies"
-  add_foreign_key "product_families", "companies"
   add_foreign_key "requests", "companies"
   add_foreign_key "requests", "deals"
   add_foreign_key "requests", "users", column: "assignee_id"
