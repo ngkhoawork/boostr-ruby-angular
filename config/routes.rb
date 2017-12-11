@@ -470,6 +470,9 @@ Rails.application.routes.draw do
     end
 
     resources :publisher_members, only: [:create, :update]
+    resources :publisher_contacts, only: [] do
+      put :add, on: :member
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'
