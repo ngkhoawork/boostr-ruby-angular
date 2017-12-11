@@ -92,7 +92,10 @@
                 .z-sortable{by: 'name', default: true}
                   Name
               %th
-                .z-sortable{by: 'estimated_monthly_impressions', default: true}
+                .z-sortable{by: 'revenue_ytd'}
+                  Revenue YTD
+              %th
+                .z-sortable{by: 'estimated_monthly_impressions'}
                   Est. Monthly Impressions
               %th
                 .z-sortable{by: 'publisher_stage.name'}
@@ -116,6 +119,8 @@
             %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
               %td
                 %a{'ng-href': '/publishers/{{publisher.id}}'} {{publisher.name}}
+              %td
+                {{publisher.revenue_ytd}}
               %td.center
                 {{publisher.estimated_monthly_impressions || 0}}
               %td

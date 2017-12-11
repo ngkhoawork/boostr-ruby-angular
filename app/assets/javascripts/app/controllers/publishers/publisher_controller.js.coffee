@@ -5,25 +5,35 @@
     $scope.currentPublisher = {}
 
     $scope.init = ->
+      $scope.getCurrentPublisher()
+      $scope.getContactsAndMembers()
+      $scope.getCustomFields()
+      $scope.getFillRateByMonth()
+      $scope.getDailyRevenueGraph()
+      $scope.getPublisherSettings()
+
+    $scope.getCurrentPublisher = ->
       PublisherDetails.getPublisher(id: $routeParams.id).then (publisher) ->
         $scope.currentPublisher = publisher
-        console.log(publisher)
 
+    $scope.getContactsAndMembers = ->
       PublisherDetails.associations(id: $routeParams.id).then (association) ->
         $scope.contacts = association.contacts
         $scope.publisherMembers = association.members
 
+    $scope.getCustomFields = ->
       PublisherCustomFieldName.all({show_on_modal: true}).then (cf) ->
         $scope.publisherCustomFields = cf
 
-      PublisherDetails.fillRateByMonth(id: $routeParams.id).then (data) ->
-#        console.log data
-#        console.log "11111111111111"
+    $scope.getFillRateByMonth = ->
+      PublisherDetails.fillRateByMonth(id: $routeParams.id)
 
+    $scope.getDailyRevenueGraph = ->
       PublisherDetails.dailyRevenueGraph(id: $routeParams.id).then (data) ->
         transformed = transformData data
         dailyRevenueChart(transformed)
 
+    $scope.getPublisherSettings = ->
       Publisher.publisherSettings().then (settings) ->
         $scope.publisher_stages = settings.publisher_stages
         $scope.publisher_types = settings.publisher_types
@@ -37,7 +47,6 @@
       result
 
     $scope.updatePublisher = (publisher) ->
-      console.log(publisher)
       publisher.type_id = publisher.type.id
       publisher.renewal_term_id = publisher.renewal_term.id
       publisher.publisher_custom_field_attributes = publisher.publisher_custom_field_obj

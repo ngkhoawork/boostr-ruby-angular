@@ -26,6 +26,10 @@
     }
   }
 
+  .block {
+    overflow: scroll;
+  }
+
   .editable::placeholder {
     color: #a9acae;
   }
