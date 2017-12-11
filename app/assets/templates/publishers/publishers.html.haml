@@ -92,8 +92,8 @@
                 .z-sortable{by: 'name', default: true}
                   Name
               %th
-                .z-sortable{by: 'comscore'}
-                  Comscore 250
+                .z-sortable{by: 'estimated_monthly_impressions', default: true}
+                  Est. Monthly Impressions
               %th
                 .z-sortable{by: 'publisher_stage.name'}
                   Stage
@@ -108,13 +108,16 @@
                 Term Start Date
               %th
                 Term End Date
+              %th
+                .z-sortable{by: 'comscore'}
+                  Comscore 250
 
           %tbody{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
             %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
               %td
                 %a{'ng-href': '/publishers/{{publisher.id}}'} {{publisher.name}}
-              %td
-                %z-toggle{'ng-model': 'publisher.comscore', 'ng-change': 'updatePublisher(publisher)', 'ng-click': '$event.stopPropagation()'}
+              %td.center
+                {{publisher.estimated_monthly_impressions || 0}}
               %td
                 .dropdown
                   %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
@@ -153,6 +156,8 @@
                 %span.datetime-field.bs-datepicker
                   %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !publisher.term_end_date}', model: 'publisher.term_end_date', click: 'endDateOpened = !endDateOpened', change: 'updatePublisher(publisher)' }, 'is-open': 'endDateOpened' }
                     {{(publisher.term_end_date | date) || 'Select date'}}
+              %td.center
+                %z-toggle{'ng-model': 'publisher.comscore', 'ng-change': 'updatePublisher(publisher)', 'ng-click': '$event.stopPropagation()'}
 
     .row.publishers-container{'ng-if': 'view == "columns"'}
       .publishers-table{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
