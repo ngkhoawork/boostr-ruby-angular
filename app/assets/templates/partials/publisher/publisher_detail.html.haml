@@ -53,13 +53,42 @@
         %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !currentPublisher.term_end_date}', model: 'currentPublisher.term_end_date', click: 'endDateOpened = !endDateOpened', change: 'updatePublisher(currentPublisher)' }, 'is-open': 'endDateOpened' }
           {{(currentPublisher.term_end_date | date) || 'Select date'}}
 
-  %div{ng: {repeat: "cf in currentPublisher.publisher_custom_field"}}
+  %div{ng: {repeat: 'pubCustomField in publisherCustomFields | orderBy: "position"', init: "fieldName = pubCustomField.field_type + pubCustomField.field_index", if: "!pubCustomField.disabled", class: '{"required-field": pubCustomField.is_required}'}}
     %div.custom-field-item
-      %div.custom-field-item-label {{cf.field_label}}
-      %div.custom-field-item-field
-        %span{'ng-if': 'cf.field_type == "datetime"'}
-          {{cf.field_value  | date : 'shortDate'}}
-        %span{'ng-if': 'cf.field_type != "datetime"'}
-          {{cf.field_value}}
+      %div.custom-field-item-label
+        {{pubCustomField.field_label}}
+        %span.star *
+      %div.custom-field-item-field{'ng-switch': 'pubCustomField.field_type', 'ng-class': '{"has-error": !currentPublisher.publisher_custom_field_obj[fieldName]}'}
+        .text-field{ ng: { 'switch-when': 'text' } }
+          %input.editable{ 'ng-model': "currentPublisher.publisher_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pubCustomField.field_label}}', 'ng-blur': 'updatePublisher(currentPublisher)' }
+        .text-area{ ng: { 'switch-when': 'note' } }
+          %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentPublisher.publisher_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pubCustomField.field_label}}', 'ng-blur': 'updatePublisher(currentPublisher)' }
+        .currency-field{ ng: { 'switch-when': 'number' } }
+          %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "currentPublisher.publisher_custom_field_obj[fieldName]", 'on-after-save': 'updatePublisher(currentPublisher)'}
+        .currency-field{ ng: { 'switch-when': 'number_4_dec' } }
+          %div{'click-to-edit':'click-to-edit', type: "number", decimal: '4', 'ng-model': "currentPublisher.publisher_custom_field_obj[fieldName]", 'on-after-save': 'updatePublisher(currentPublisher)'}
+        .currency-field{ ng: { 'switch-when': 'integer' } }
+          %div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "currentPublisher.publisher_custom_field_obj[fieldName]", 'on-after-save': 'updatePublisher(currentPublisher)'}
+        .currency-field{ ng: { 'switch-when': 'currency' } }
+          %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', prefix: '{{currency_symbol}}', 'ng-model': "currentPublisher.publisher_custom_field_obj[fieldName]", 'on-after-save': 'updatePublisher(currentPublisher)'}
+        .percentage-field{ ng: { 'switch-when': 'percentage' } }
+          %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': "currentPublisher.publisher_custom_field_obj[fieldName]", 'on-after-save': 'updatePublisher(currentPublisher)'}
+        .datetime-field.bs-datepicker{ ng: { 'switch-when': 'datetime' } }
+          %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !currentPublisher.publisher_custom_field_obj[fieldName]}', model: 'currentPublisher.publisher_custom_field_obj[fieldName]', click: 'dateOpened[fieldName] = !dateOpened[fieldName]', change: 'updatePublisher(currentPublisher)' }, 'is-open': 'dateOpened[fieldName]' }
+            {{(currentPublisher.publisher_custom_field_obj[fieldName] | date) || 'Select date'}}
+            %span.caret
+        .boolean-field.show-hide-remainder-form{ ng: { 'switch-when': 'boolean' } }
+          %z-toggle{'ng-model': 'currentPublisher.publisher_custom_field_obj[fieldName]', 'ng-change': 'updatePublisher(currentPublisher)', 'ng-click': '$event.stopPropagation()'}
+        .dropdown{ ng: { 'switch-when': 'dropdown' } }
+          %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+            %span.editable{'ng-class': '{"not-selected": !currentPublisher.publisher_custom_field_obj[fieldName]}'}
+              {{currentPublisher.publisher_custom_field_obj[fieldName] || 'Select value'}}
+            %span.caret
+          %ul.dropdown-menu
+            %li{'ng-repeat': 'pubCf in pubCustomField.publisher_custom_field_options', 'ng-class': '{active: currentPublisher.publisher_custom_field_obj[fieldName] == pubCf.value}'}
+              %a{'href': '', 'ng-click': 'currentPublisher.publisher_custom_field_obj[fieldName] = pubCf.value; updatePublisher(currentPublisher)'}
+                %span.text {{pubCf.value}}
+          .currency-field{ ng: { 'switch-when': 'sum' } }
+            {{(currentPublisher.publisher_custom_field_obj[fieldName] || 0) | number : 0 }}
 
 

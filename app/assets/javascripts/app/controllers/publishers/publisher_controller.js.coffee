@@ -1,6 +1,6 @@
 @app.controller 'PablisherController', [
-  '$scope', '$modal', '$filter', '$routeParams', 'Publisher', 'PublisherDetails', 'PublisherMembers', '$rootScope', 'User',
-  ($scope,   $modal,   $filter,   $routeParams,   Publisher,   PublisherDetails, PublisherMembers, $rootScope, User) ->
+  '$scope', '$modal', '$filter', '$routeParams', 'Publisher', 'PublisherDetails', 'PublisherMembers', '$rootScope', 'User', 'PublisherCustomFieldName',
+  ($scope,   $modal,   $filter,   $routeParams,   Publisher,   PublisherDetails, PublisherMembers, $rootScope, User, PublisherCustomFieldName) ->
 
     $scope.currentPublisher = {}
 
@@ -12,6 +12,9 @@
       PublisherDetails.associations(id: $routeParams.id).then (association) ->
         $scope.contacts = association.contacts
         $scope.publisherMembers = association.members
+
+      PublisherCustomFieldName.all({show_on_modal: true}).then (cf) ->
+        $scope.publisherCustomFields = cf
 
       PublisherDetails.fillRateByMonth(id: $routeParams.id).then (data) ->
 #        console.log data
@@ -34,10 +37,13 @@
       result
 
     $scope.updatePublisher = (publisher) ->
+      console.log(publisher)
       publisher.type_id = publisher.type.id
       publisher.renewal_term_id = publisher.renewal_term.id
+      publisher.publisher_custom_field_attributes = publisher.publisher_custom_field_obj
 
-      Publisher.update(id: $scope.currentPublisher.id, publisher: publisher)
+      Publisher.update(id: $scope.currentPublisher.id, publisher: publisher).then (response) ->
+        $rootScope.$broadcast 'updated_publisher_detail'
 
     $scope.deletePublisher = (publisher) ->
       if confirm('Are you sure you want to delete "' + publisher.name + '"?')
