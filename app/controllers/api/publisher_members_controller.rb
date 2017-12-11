@@ -2,7 +2,7 @@ class Api::PublisherMembersController < ApplicationController
   respond_to :json
 
   def create
-    publisher_member = publisher.publisher_members.new(user: current_user)
+    publisher_member = publisher.publisher_members.new(user_id: params[:id])
 
     if publisher_member.save
       render json: publisher_member, status: :created
