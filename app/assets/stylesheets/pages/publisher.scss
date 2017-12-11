@@ -64,7 +64,47 @@
     overflow-x: auto;
   }
 
-  .revenue-chart {
+  #fill-rate-chart {
+    .tick {
+      text {
+        font-size: 14px;
+      }
+    }
+    .total-imp-rect {
+      fill: #C0BBBE;
+      &:hover {
+        fill: darken(#C0BBBE, 5%)
+      }
+    }
+    .imp-rect {
+      fill: #FF7200;
+      &:hover {
+        fill: darken(#FF7200, 5%)
+      }
+    }
+    .total-text {
+      opacity: 0;
+      transition: opacity 300ms;
+      &.active {
+        opacity: 1;
+      }
+    }
+  }
+  #fill-rate-chart-tooltip {
+    position: fixed;
+    display: none;
+    padding: 10px;
+    border: 1px solid $main-font-color;
+    background-color: white;
+    color: $main-font-color;
+    border-radius: 5px;
+    font-weight: bold;
+    &.active {
+      display: block;
+    }
+  }
+
+  .revenue-chart, .publisher-chart {
     height: auto;
     .axis {
       font: 10px sans-serif;

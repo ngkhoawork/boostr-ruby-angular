@@ -1,3 +1,7 @@
 .block
   %div.mb20
     %span.title Fill Rate by Month
+  .table-wrapper
+    %div#fill-rate-chart-container.mb20{'ng-controller': 'PublisherFillRateChartController'}
+      %div#fill-rate-chart-tooltip
+      %svg#fill-rate-chart.publisher-chart
