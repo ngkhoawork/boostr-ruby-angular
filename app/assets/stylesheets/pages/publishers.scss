@@ -12,6 +12,24 @@
     margin: 0 25px;
   }
 
+  .not-selected {
+    color: #a9acae;
+  }
+
+  .datetime-field {
+    table {
+      tbody {
+        tr {
+          height: 0 !important;
+        }
+      }
+    }
+  }
+
+  .editable::placeholder {
+    color: #a9acae;
+  }
+
   .publisher-header {
     display: flex;
     align-items: center;

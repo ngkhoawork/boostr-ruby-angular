@@ -160,20 +160,11 @@
       $scope.getPublishers(true)
 
     $scope.updatePublisher = (publisher) ->
-      params = {
-        comscore: publisher.comscore
-      }
+      publisher.renewal_term_id = publisher.renewal_term.id if publisher.renewal_term
+      publisher.type_id = publisher.type.id if publisher.type
+      publisher.publisher_stage_id = publisher.publisher_stage.id if publisher.publisher_stage
 
-      if publisher.renewal_term
-        params.renewal_term_id = publisher.renewal_term.id
-
-      if publisher.type
-        params.type_id = publisher.type.id
-
-      if publisher.publisher_stage
-        params.publisher_stage_id = publisher.publisher_stage.id
-
-      Publisher.update(id: publisher.id, publisher: params)
+      Publisher.update(id: publisher.id, publisher: publisher)
 
 
     $scope.showNewPublisherModal = ->

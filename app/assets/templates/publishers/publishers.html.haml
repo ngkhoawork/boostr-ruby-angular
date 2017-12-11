@@ -144,11 +144,15 @@
                       %a{'href': '', 'ng-click': ' publisher.renewal_term = term; updatePublisher(publisher)'}
                         %span.text {{term.name}}
               %td
-                {{publisher.revenue_share}}
+                %input.editable{'ng-class': '{"not-selected": !publisher.revenue_share}', placeholder: "Revenue Share", 'ng-model': "publisher.revenue_share", 'ng-blur': 'updatePublisher(publisher)' }
               %td
-                {{publisher.term_start_date | date : 'shortDate'}}
+                %span.datetime-field.bs-datepicker
+                  %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !publisher.term_start_date}', model: 'publisher.term_start_date', click: 'startedAtOpened = !startedAtOpened', change: 'updatePublisher(publisher)' }, 'is-open': 'startedAtOpened' }
+                    {{(publisher.term_start_date | date) || 'Select date'}}
               %td
-                {{publisher.term_end_date | date : 'shortDate'}}
+                %span.datetime-field.bs-datepicker
+                  %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !publisher.term_end_date}', model: 'publisher.term_end_date', click: 'endDateOpened = !endDateOpened', change: 'updatePublisher(publisher)' }, 'is-open': 'endDateOpened' }
+                    {{(publisher.term_end_date | date) || 'Select date'}}
 
     .row.publishers-container{'ng-if': 'view == "columns"'}
       .publishers-table{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}

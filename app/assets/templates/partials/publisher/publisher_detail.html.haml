@@ -4,54 +4,62 @@
     %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentPublisher)'}
   %div.custom-field-item
     %div.custom-field-item-label Publisher Type
-    .dropdown
-      %button.btn.dropdown-toggle.z-dd-ar{'data-toggle': 'dropdown', type: 'button'}
-        %span.editable{'ng-class': '{"not-selected": !currentPublisher.type.name}'} {{currentPublisher.type.name || 'Select Type'}}
-        %span.caret
-      %ul.dropdown-menu
-        %li{'ng-repeat': 'type in publisher_types', 'ng-class': '{active: currentPublisher.type.id == type.id}'}
-          %a{'href': '', 'ng-click': ' currentPublisher.type = type; updatePublisher(currentPublisher)'}
-            %span.text {{type.name}}
+    %div.custom-field-item-field
+      .dropdown
+        %button.btn.dropdown-toggle.z-dd-ar{'data-toggle': 'dropdown', type: 'button'}
+          %span.editable{'ng-class': '{"not-selected": !currentPublisher.type.name}'} {{currentPublisher.type.name || 'Select Type'}}
+          %span.caret
+        %ul.dropdown-menu
+          %li{'ng-repeat': 'type in publisher_types', 'ng-class': '{active: currentPublisher.type.id == type.id}'}
+            %a{'href': '', 'ng-click': ' currentPublisher.type = type; updatePublisher(currentPublisher)'}
+              %span.text {{type.name}}
 
   %div.custom-field-item
     %div.custom-field-item-label.comscore-label Comscore
-    %z-toggle.comsocre-switcher{'ng-model': 'currentPublisher.comscore', 'ng-change': 'updatePublisher(currentPublisher)', 'ng-click': '$event.stopPropagation()'}
+    %div.custom-field-item-field
+      %z-toggle.comsocre-switcher{'ng-model': 'currentPublisher.comscore', 'ng-change': 'updatePublisher(currentPublisher)', 'ng-click': '$event.stopPropagation()'}
 
   %div.custom-field-item
     %div.custom-field-item-label Renewal Term
-    .dropdown
-      %button.btn.dropdown-toggle.z-dd-ar{'data-toggle': 'dropdown', type: 'button'}
-        %span.editable{'ng-class': '{"not-selected": !currentPublisher.renewal_term.name}'} {{currentPublisher.renewal_term.name || 'Select Type'}}
-        %span.caret
-      %ul.dropdown-menu
-        %li{'ng-repeat': 'term in renewal_term_fields', 'ng-class': '{active: currentPublisher.renewal_term.id == term.id}'}
-          %a{'href': '', 'ng-click': ' currentPublisher.renewal_term = term; updatePublisher(currentPublisher)'}
-            %span.text {{term.name}}
+    %div.custom-field-item-field
+      .dropdown
+        %button.btn.dropdown-toggle.z-dd-ar{'data-toggle': 'dropdown', type: 'button'}
+          %span.editable{'ng-class': '{"not-selected": !currentPublisher.renewal_term.name}'} {{currentPublisher.renewal_term.name || 'Select Type'}}
+          %span.caret
+        %ul.dropdown-menu
+          %li{'ng-repeat': 'term in renewal_term_fields', 'ng-class': '{active: currentPublisher.renewal_term.id == term.id}'}
+            %a{'href': '', 'ng-click': ' currentPublisher.renewal_term = term; updatePublisher(currentPublisher)'}
+              %span.text {{term.name}}
 
   %div.custom-field-item
     %div.custom-field-item-label
       Revenue Share
-    %span
-      {{currentPublisher.revenue_share}}
+    %div.custom-field-item-field
+      %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentPublisher.revenue_share", placeholder: 'Enter Revenue Share', 'ng-blur': 'updatePublisher(currentPublisher)' }
 
   %div.custom-field-item
     %div.custom-field-item-label
       Term Start Date
-    %span
-      {{currentPublisher.term_start_date | date : 'shortDate'}}
+    %div.custom-field-item-field
+      %span.datetime-field.bs-datepicker
+        %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !currentPublisher.term_start_date}', model: 'currentPublisher.term_start_date', click: 'startedAtOpened = !startedAtOpened', change: 'updatePublisher(currentPublisher)' }, 'is-open': 'startedAtOpened' }
+          {{(currentPublisher.term_start_date | date) || 'Select date'}}
 
   %div.custom-field-item
     %div.custom-field-item-label
       Term End Date
-    %span
-      {{currentPublisher.term_end_date | date : 'shortDate'}}
+    %div.custom-field-item-field
+      %span.datetime-field.bs-datepicker
+        %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !currentPublisher.term_end_date}', model: 'currentPublisher.term_end_date', click: 'endDateOpened = !endDateOpened', change: 'updatePublisher(currentPublisher)' }, 'is-open': 'endDateOpened' }
+          {{(currentPublisher.term_end_date | date) || 'Select date'}}
 
   %div{ng: {repeat: "cf in currentPublisher.publisher_custom_field"}}
     %div.custom-field-item
       %div.custom-field-item-label {{cf.field_label}}
-      %span{'ng-if': 'cf.field_type == "datetime"'}
-        {{cf.field_value  | date : 'shortDate'}}
-      %span{'ng-if': 'cf.field_type != "datetime"'}
-        {{cf.field_value}}
+      %div.custom-field-item-field
+        %span{'ng-if': 'cf.field_type == "datetime"'}
+          {{cf.field_value  | date : 'shortDate'}}
+        %span{'ng-if': 'cf.field_type != "datetime"'}
+          {{cf.field_value}}
 
 

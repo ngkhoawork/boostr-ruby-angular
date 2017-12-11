@@ -34,12 +34,10 @@
       result
 
     $scope.updatePublisher = (publisher) ->
-      params = {
-        comscore: publisher.comscore,
-        type_id: publisher.type.id,
-        renewal_term_id: publisher.renewal_term.id}
+      publisher.type_id = publisher.type.id
+      publisher.renewal_term_id = publisher.renewal_term.id
 
-      Publisher.update(id: $scope.currentPublisher.id, publisher: params)
+      Publisher.update(id: $scope.currentPublisher.id, publisher: publisher)
 
     $scope.deletePublisher = (publisher) ->
       if confirm('Are you sure you want to delete "' + publisher.name + '"?')
