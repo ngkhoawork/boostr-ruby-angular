@@ -6,7 +6,8 @@ class Api::ActivitySerializer < ActiveModel::Serializer
     :activity_type,
     :client,
     :contacts,
-    :deal
+    :deal,
+    :publisher
   )
 
   has_one :creator, serializer: Api::Publishers::UserSerializer
@@ -27,5 +28,9 @@ class Api::ActivitySerializer < ActiveModel::Serializer
 
   def deal
     object.deal&.serializable_hash(only: [:id, :name])
+  end
+
+  def publisher
+    object.publisher&.serializable_hash(only: [:id, :name])
   end
 end
