@@ -14,7 +14,8 @@ class Api::Publishers::Serializer < ActiveModel::Serializer
     :revenue_share,
     :term_start_date,
     :term_end_date,
-    :renewal_term
+    :renewal_term,
+    :revenue_ytd
   )
 
   has_one :publisher_stage, serializer: Api::Publishers::StageSerializer
@@ -33,5 +34,17 @@ class Api::Publishers::Serializer < ActiveModel::Serializer
     object.publisher_members.includes(:user).map do |member|
       Api::Publishers::MembersSerializer.new(member).as_json
     end
+  end
+
+  def revenue_ytd
+    daily_actuals_for_current_year.sum(:total_revenue)
+  end
+
+  def daily_actuals_for_current_year
+    object.daily_actuals.by_date(current_date.beginning_of_year, current_date)
+  end
+
+  def current_date
+    @_current_month ||= Date.today
   end
 end
