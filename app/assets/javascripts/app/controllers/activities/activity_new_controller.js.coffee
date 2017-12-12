@@ -72,8 +72,7 @@
                     $scope.form.agency = activity.agency
                     $scope.form.agency.formatted_name = $scope.form.agency.name
                 if activity.publisher
-                    $scope.form.formatted_name = activity.deal.name
-                    $scope.form.deal = activity.deal
+                    $scope.form.publisher = activity.publisher
                 $scope.form.contacts = activity.contacts
                 $scope.form.date = new Date(activity.happened_at)
                 if activity.timed
