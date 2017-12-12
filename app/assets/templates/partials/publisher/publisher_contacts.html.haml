@@ -1,6 +1,7 @@
 .block
   %div.mb20
     %span.title Contacts
+    %add-button{'ng-click': 'addContact()'} Add
 
   %table.table.table-striped
     %thead
@@ -9,7 +10,7 @@
         %th.left Advertiser
         %th.left Email
         %th.left Phone
-        %th.left Last Touch
+        %th.center Last Touch
       %tbody
         %tr{ ng: { repeat: 'contact in contacts'} }
           %td
@@ -20,4 +21,4 @@
               {{contact.client.name}}
           %td {{contact.email}}
           %td {{contact.phone}}
-          %td {{contact.activity_updated_at  | date : 'shortDate'}}
+          %td.center {{contact.activity_updated_at  | date : 'shortDate'}}

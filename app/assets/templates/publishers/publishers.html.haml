@@ -121,9 +121,9 @@
                 %td
                   %a{'ng-href': '/publishers/{{publisher.id}}'} {{publisher.name}}
                 %td
-                  {{publisher.revenue_ytd}}
+                  {{publisher.revenue_ytd | currency: currency_symbol : 0}}
                 %td.center
-                  {{publisher.estimated_monthly_impressions || 0}}
+                  {{publisher.estimated_monthly_impressions | currency: currency_symbol : 0}}
                 %td
                   .dropdown
                     %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}

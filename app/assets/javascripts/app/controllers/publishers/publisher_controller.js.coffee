@@ -8,7 +8,6 @@
       $scope.getCurrentPublisher()
       $scope.getContactsAndMembers()
       $scope.getCustomFields()
-      $scope.getFillRateByMonth()
       $scope.getDailyRevenueGraph()
       $scope.getPublisherSettings()
 
@@ -24,9 +23,6 @@
     $scope.getCustomFields = ->
       PublisherCustomFieldName.all({show_on_modal: true}).then (cf) ->
         $scope.publisherCustomFields = cf
-
-    $scope.getFillRateByMonth = ->
-      PublisherDetails.fillRateByMonth(id: $routeParams.id)
 
     $scope.getDailyRevenueGraph = ->
       PublisherDetails.dailyRevenueGraph(id: $routeParams.id).then (data) ->
@@ -81,6 +77,19 @@
         resolve:
           publisher: ->
             angular.copy publisher
+
+    $scope.addContact = ->
+      $scope.modalInstance = $modal.open
+        templateUrl: 'modals/contact_add_form.html'
+        size: 'md'
+        controller: 'ContactsAddController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          deal: ->
+            {}
+          publisher: ->
+            $scope.currentPublisher
 
     dailyRevenueChart = (revenueData) ->
       return false if _.isEmpty(revenueData.months)

@@ -819,6 +819,8 @@
       resolve:
         deal: ->
           $scope.currentDeal
+        publisher: ->
+          {}
 
   $scope.backToPrevStage = ->
     if $scope.prevStageId
