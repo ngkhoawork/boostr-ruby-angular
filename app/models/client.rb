@@ -276,6 +276,7 @@ class Client < ActiveRecord::Base
             include: {
               creator: {},
               contacts: {},
+              publisher: { only: [:id, :name] },
               assets: {
                 methods: [
                   :presigned_url
