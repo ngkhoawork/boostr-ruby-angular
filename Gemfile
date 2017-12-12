@@ -116,4 +116,5 @@ group :development, :test do
   source 'https://rails-assets.org' do
     gem 'rails-assets-angular-mocks'
   end
+  gem 'test_after_commit'
 end

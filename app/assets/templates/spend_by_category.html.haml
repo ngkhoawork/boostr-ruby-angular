@@ -1,0 +1,41 @@
+#spend-by-category.z-styles
+  .container-fluid
+    .row.mb20
+      .reports-header
+        .header-cell.main-title
+          Spend By Category
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply', 'current-selection': 'selectedQuery'}
+            %z-filter-field{data: 'categories', type: 'multiselect', 'save-as': '{"category_ids[]": "id"}', id: 'category-field'} Category
+            %z-filter-field{data: 'regions', type: 'multiselect', 'save-as': '{"client_region_ids[]": "id"}'} Region
+            %z-filter-field{data: 'segments', type: 'multiselect', 'save-as': '{"client_segment_ids[]": "id"}'} Segment
+            %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{start_date: "start_date"}', 'order-by': '["-start_date"]', id: 'start-date-field'} Start Date
+            %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{end_date: "end_date"}', 'order-by': '["-end_date"]', id: 'end-date-field'} End Date
+
+        .header-cell
+          .pull-right
+            %download-button{'ng-click': 'export()'}
+              Export
+
+    .row
+      .col-xs-12
+        .block
+          %div.table-wrapper
+            %table.table.table-hover.exportable-table
+              %thead
+                %tr.z-sortable-prime{'sort-name': 'spends', 'z-fixed-header': true, watch: '["spends", "spend_months"]'}
+                  %th
+                    .z-sortable{by: 'category_name', default: true} Category
+                  %th
+                    .z-sortable{by: 'year'} Year
+                  %th{'ng-repeat': 'spend_month in spend_months'}
+                    .z-sortable{by: '["!!revenues[\""+spend_month.id+"\"]", "revenues[\""+spend_month.id+"\"]"]'} {{spend_month.month}}
+                  %th
+                    .z-sortable{by: 'total_revenue'} Total Revenue
+              %tbody
+                %tr{'ng-repeat': 'spend in spends | orderBy : zSort.spends.by : zSort.spends.rev'}
+                  %td {{ spend.category_name }}
+                  %td {{ spend.year }}
+                  %td{'ng-repeat': 'spend_month in spend_months'}
+                    {{ isNumber(spend.revenues[spend_month.id]) ? (spend.revenues[spend_month.id] | currency : '$' : 0) : '' }}
+                  %td {{ spend.total_revenue | currency : '$' : 0 }}

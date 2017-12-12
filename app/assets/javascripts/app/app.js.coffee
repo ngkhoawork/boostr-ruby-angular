@@ -124,6 +124,10 @@
       templateUrl: 'product_monthly_summary.html'
       controller: 'ProductMonthlySummaryController'
 
+    .when '/reports/spend_by_category',
+      templateUrl: 'spend_by_category.html'
+      controller: 'SpendByCategoryController'
+
     .when '/smart_reports/sales_execution_dashboard',
       templateUrl: 'sales_execution_dashboard.html'
       controller: 'SalesExecutionDashboardController'
@@ -175,6 +179,10 @@
     .when '/reports/pipeline_summary_reports',
       templateUrl: 'pipeline_summary_reports.html'
       controller: 'PipelineSummaryReportsController'
+      
+    .when '/reports/spend_by_account',
+      templateUrl: 'spend_by_account.html'
+      controller: 'SpendByAccountController'
 
     .when '/reports/activity_detail_reports',
       templateUrl: 'activity_detail_reports.html'

@@ -136,11 +136,7 @@ describe Facts::AccountProductRevenueFactService do
   end
 
   def account_dimension
-    @account_dimension ||= create(:account_dimension,
-                                  id: client.id,
-                                  name: client.name,
-                                  company_id: client.company_id,
-                                  account_type: 10)
+    @account_dimension ||= client.account_dimensions[0]
   end
 
   def time_dimension

@@ -52,6 +52,8 @@ class Client < ActiveRecord::Base
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
   has_one :account_cf, dependent: :destroy
+  has_one :primary_client_member, -> { order(share: :desc) }, class_name: 'ClientMember'
+  has_one :primary_user, through: :primary_client_member, source: :user
 
   belongs_to :client_category, class_name: 'Option', foreign_key: 'client_category_id'
   belongs_to :client_subcategory, class_name: 'Option', foreign_key: 'client_subcategory_id'
