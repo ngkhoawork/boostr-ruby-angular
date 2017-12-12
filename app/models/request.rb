@@ -17,8 +17,8 @@ class Request < ActiveRecord::Base
 
   after_create :notify_assignee
   after_update do
-    notify_assignee if self.status_changed?
-    notify_requester if self.status_changed?
+    notify_assignee if status_changed?
+    notify_requester if status_changed?
   end
 
   def request_is_completed
@@ -32,22 +32,22 @@ class Request < ActiveRecord::Base
   private
 
   def notify_assignee
-    if self.status == 'New'
-      RequestsMailer.new_request(request_mail_recipients, self.id).deliver_later(queue: "default")
+    if status == 'New'
+      RequestsMailer.new_request(request_mail_recipients, id).deliver_later(wait: 10.seconds, queue: "default")
     end
   end
 
   def request_mail_recipients
-    self.company.users.where("#{self.request_type.downcase}_requests_access": true).map(&:email)
+    company.users.where("#{request_type.downcase}_requests_access": true).map(&:email)
   end
 
   def notify_requester
-    if self.status == 'Completed' || self.status == 'Denied'
-      RequestsMailer.update_request(requester_email, self.id).deliver_later(queue: "default")
+    if status == 'Completed' || status == 'Denied'
+      RequestsMailer.update_request(requester_email + request_mail_recipients, id).deliver_later(wait: 10.seconds, queue: "default")
     end
   end
 
   def requester_email
-    [self.requester.try(:email)]
+    [requester.try(:email)]
   end
 end

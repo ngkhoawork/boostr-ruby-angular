@@ -23,8 +23,8 @@ describe Request do
     it 'triggers email notification upon new revenue request' do
       message_delivery = instance_double(ActionMailer::MessageDelivery)
       allow(RequestsMailer).to receive(:new_request).and_return(message_delivery)
-      allow(message_delivery).to receive(:deliver_later).with(queue: 'default')
-      recipient
+      allow(message_delivery).to receive(:deliver_later).with(wait: 10.seconds, queue: 'default')
+      recipient_email
 
       subject.update(
         status: 'New',
@@ -33,15 +33,15 @@ describe Request do
         company: company
       )
 
-      expect(RequestsMailer).to have_received(:new_request).with(recipient, subject.id)
-      expect(message_delivery).to have_received(:deliver_later).with(queue: 'default')
+      expect(RequestsMailer).to have_received(:new_request).with(recipient_email, subject.id)
+      expect(message_delivery).to have_received(:deliver_later).with(wait: 10.seconds, queue: 'default')
     end
 
     it 'does not send email if status is not New' do
       message_delivery = instance_double(ActionMailer::MessageDelivery)
       allow(RequestsMailer).to receive(:new_request).and_return(message_delivery)
-      allow(message_delivery).to receive(:deliver_later).with(queue: 'default')
-      recipient
+      allow(message_delivery).to receive(:deliver_later).with(wait: 10.seconds, queue: 'default')
+      recipient_email
 
       subject.update(
         status: 'Denied',
@@ -61,7 +61,8 @@ describe Request do
     before do
       request(status: 'New')
       allow(RequestsMailer).to receive(:update_request).and_return(message_delivery)
-      allow(message_delivery).to receive(:deliver_later).with(queue: 'default')
+      allow(message_delivery).to receive(:deliver_later).with(wait: 10.seconds, queue: 'default')
+      recipient_email
     end
 
     it 'sends email upon request rejection' do
@@ -73,8 +74,21 @@ describe Request do
         company: company
       )
 
-      expect(RequestsMailer).to have_received(:update_request).with(requester_email, request.id)
-      expect(message_delivery).to have_received(:deliver_later).with(queue: 'default')
+      expect(RequestsMailer).to have_received(:update_request).with(requester_email + recipient_email, request.id)
+      expect(message_delivery).to have_received(:deliver_later).with(wait: 10.seconds, queue: 'default')
+    end
+
+    it 'sends email upon request completion' do
+      request.update(
+        status: 'Completed',
+        description: 'Testing',
+        request_type: 'Revenue',
+        resolution: 'Let\s totally do it!',
+        company: company
+      )
+
+      expect(RequestsMailer).to have_received(:update_request).with(requester_email + recipient_email, request.id)
+      expect(message_delivery).to have_received(:deliver_later).with(wait: 10.seconds, queue: 'default')
     end
 
     it 'does not send update_request if status is New' do
@@ -106,8 +120,8 @@ describe Request do
     expect(requests_mailer.subject).to eq "You Have a New #{request.request_type} Request"
   end
 
-  def recipient
-    @_recipient ||= [(create :user, revenue_requests_access: true).email]
+  def recipient_email
+    @_recipient_email ||= [(create :user, revenue_requests_access: true).email]
   end
 
   def company

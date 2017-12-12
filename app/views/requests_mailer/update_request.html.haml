@@ -1,6 +1,10 @@
 %p
-  Your request was #{ @request.status }.
+  Your request for Deal:
+  = link_to "#{@request.deal&.name}", api_deal_url(id: @request.deal&.id).sub(/\/api/, '')
+  was #{ @request.status }.
   - if @request.resolution.present?
     The resolution is
     %blockquote{:style => "margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"}
       #{ @request.resolution }
+  %br
+  #{ @request.assignee&.first_name + ' ' + @request.assignee&.last_name }
