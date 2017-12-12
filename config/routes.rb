@@ -288,7 +288,7 @@ Rails.application.routes.draw do
       end
       resources :deal_members, only: [:index, :create, :update, :destroy]
       resources :deal_contacts, only: [:index, :create, :update, :destroy]
-      resources :deal_assets, only: [:index, :update, :create, :destroy]
+      resources :attachments, only: [:index, :update, :create, :destroy]
       get 'latest_log', to: 'integration_logs#latest_log'
     end
     resources :assets, only: [:create] do
@@ -450,6 +450,7 @@ Rails.application.routes.draw do
         get :settings
         get :pipeline_headers
       end
+      resources :attachments, only: [:index, :update, :create, :destroy]
     end
     resources :publisher_details, only: [:show] do
       member do

@@ -45,13 +45,13 @@
 
       $scope.deleteFile = (file) ->
         if (file && file.id && confirm('Are you sure you want to delete "' +  file.original_file_name + '"?'))
-          $http.delete('/api/deals/'+ $routeParams.id + '/deal_assets/' + file.id)
+          $http.delete('/api/deals/'+ $routeParams.id + '/attachments/' + file.id)
           .then (respond) ->
             $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
               return dealFile.id != file.id
 
       $scope.saveOnServer = (file, subtype) ->
-        $http.put '/api/deals/'+ $routeParams.id + '/deal_assets/' + file.id,
+        $http.put '/api/deals/'+ $routeParams.id + '/attachments/' + file.id,
           asset:
             asset_file_name: file.asset_file_name
             asset_file_size: file.asset_file_size
@@ -117,7 +117,7 @@
               folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
               fullFileName = folder + assemblyJson.results[':original'][0].url.substr(assemblyJson.results[':original'][0].url.lastIndexOf('/') + 1);
 
-            $http.post '/api/deals/'+ $routeParams.id + '/deal_assets',
+            $http.post '/api/deals/'+ $routeParams.id + '/attachments',
                 asset:
                   asset_file_name: fullFileName
                   asset_file_size: assemblyJson.results[':original'][0].size

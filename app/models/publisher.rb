@@ -19,6 +19,7 @@ class Publisher < ActiveRecord::Base
 
   has_many :available_types, through: :type_field, source: :options
   has_many :available_renewal_terms, through: :renewal_term_field, source: :options
+  has_many :assets, as: :attachable
 
   belongs_to :client
   belongs_to :company, required: true

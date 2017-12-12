@@ -51,7 +51,7 @@
     if url && url.search('//') == -1 then return '//' + url else url
 
   $scope.getDealFiles = () ->
-    $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
+    $http.get('/api/deals/'+ $routeParams.id + '/attachments')
     .then (respond) ->
       $scope.dealFiles = respond.data
 
@@ -73,7 +73,7 @@
 
   $scope.deleteFile = (file) ->
     if (file && file.id)
-      $http.delete('/api/deals/'+ $routeParams.id + '/deal_assets/' + file.id)
+      $http.delete('/api/deals/'+ $routeParams.id + '/attachments/' + file.id)
       .then (respond) ->
         $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
           return dealFile.id != file.id
@@ -120,7 +120,7 @@
           # console.log assemblyJson.results[':original'][0]
           folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
           fullFileName = folder + assemblyJson.results[':original'][0].name
-        $http.post('/api/deals/'+ $routeParams.id + '/deal_assets',
+        $http.post('/api/deals/'+ $routeParams.id + '/attachments',
           {
             asset:
               asset_file_name: fullFileName
