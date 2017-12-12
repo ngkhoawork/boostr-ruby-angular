@@ -6,6 +6,6 @@ class Api::V2::ActivityTypesController < ApiController
   private
 
   def activity_types
-    ActivityType.where(company_id: current_user.company_id)
+    ActivityType.where(company_id: current_user.company_id).ordered_by_position
   end
 end
