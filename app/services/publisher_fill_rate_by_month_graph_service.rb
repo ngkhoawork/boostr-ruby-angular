@@ -36,6 +36,7 @@ class PublisherFillRateByMonthGraphService
     @daily_actuals ||=
       @publisher
         .daily_actuals
+        .by_date(last_twelve_month.beginning_of_month, current_date.end_of_month)
         .group("to_char(date, 'YYYY-MM')")
         .select(
           "MIN(date) AS date,
@@ -77,5 +78,13 @@ class PublisherFillRateByMonthGraphService
 
   def end_date
     daily_actuals[-1].date
+  end
+
+  def current_date
+    @_current_date ||= Date.today
+  end
+
+  def last_twelve_month
+    @_last_twelve_month ||= current_date - 12.month
   end
 end
