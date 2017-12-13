@@ -68,10 +68,20 @@ class Api::BpEstimatesController < ApplicationController
   end
 
   def status
-    total_seller_estimate = bp_estimates.assigned.collect{|bp_estimate| bp_estimate.estimate_seller || 0}.inject(0){|sum,x| sum + x }.to_s
-    total_mgr_estimate = bp_estimates.assigned.collect{|bp_estimate| bp_estimate.estimate_mgr || 0}.inject(0){|sum,x| sum + x }
-    total_status = bp_estimates.has_status.select('distinct(client_id)').count
-    total_clients = bp_estimates.select('distinct(client_id)').count
+    total_seller_estimate = bp_estimates
+      .assigned
+      .collect{|bp_estimate| bp_estimate.estimate_seller || 0}
+      .inject(0){|sum,x| sum + x }.to_s
+    total_mgr_estimate = bp_estimates
+      .assigned.collect{|bp_estimate| bp_estimate.estimate_mgr || 0}
+      .inject(0){|sum,x| sum + x }
+    total_status = bp_estimates
+      .has_status
+      .select('distinct(client_id)')
+      .count
+    total_clients = bp_estimates
+      .select('distinct(client_id)')
+      .count
     render json: {
       total_seller_estimate: total_seller_estimate,
       total_mgr_estimate: total_mgr_estimate,
