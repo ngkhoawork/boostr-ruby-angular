@@ -10,3 +10,6 @@ ADMIN = 5
 EXEC = 6
 FAKE_USER = 7
 MAX_DAYS_IN_MONTH = 31
+
+# PMP Types
+PMP_TYPES = { guaranteed: 0, non_guaranteed: 1, always_on: 2 }

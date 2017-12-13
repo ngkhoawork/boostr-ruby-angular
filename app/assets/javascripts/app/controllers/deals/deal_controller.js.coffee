@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem, Validation) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType) ->
 
   $scope.showMeridian = true
   $scope.isAdmin = false
@@ -24,6 +24,7 @@
     isEnabled: false
     isLoading: false
     dealLog: null
+  $scope.PMPType = PMPType
 
   ###*
    * FileUpload
@@ -668,8 +669,10 @@
               $scope.errors['ssp_id' + deal_product.id] = "can't be blank"
             if !deal_product.ssp_deal_id
               $scope.errors['ssp_deal_id' + deal_product.id] = "can't be blank"
+            if !deal_product.pmp_type
+              $scope.errors['pmp_type' + deal_product.id] = "can't be blank"
         if !_.isEmpty($scope.errors)
-          $scope.showWarningModal('SSP and SSP Deal-ID fields are required for PMP products.')
+          $scope.showWarningModal('SSP, SSP Deal-ID and PMP Type fields are required for PMP products.')
           return          
         if !stage.open && stage.probability == 0
           $scope.showModal(currentDeal)

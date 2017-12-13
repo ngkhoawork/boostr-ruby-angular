@@ -13,7 +13,9 @@
 					%th.vtop{'ng-if': 'isPmpDeal'}
 						SSP Deal-ID
 						%span.star *
-					%th{'ng-if': 'isPmpDeal'} Is Guaranteed
+					%th{'ng-if': 'isPmpDeal'} 
+						PMP Type
+						%span.star *
 					%th{ ng: { repeat: 'dealProductCfName in dealProductCfNames | orderBy: "position"', if: "!dealProductCfName.disabled" } }
 						{{ dealProductCfName.field_label }}
 					%th Total Budget
@@ -26,7 +28,6 @@
 						%i.fa.fa-trash.delete-product{'ng-if': 'currentDeal.stage.open', 'ng-click': 'deleteDealProduct(deal_product)'}
 					%td{'ng-if': 'isPmpDeal'}
 						.dropdown{'ng-class':'{error: errors["ssp_id"+deal_product.id]}'}
-							/ %span.error-text {{errors["ssp_id"+deal_product.id]}}
 							%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
 								%span.editable{'ng-class': '{"not-selected": !deal_product.ssp_id}'}
 									{{deal_product.ssp.name || 'Select value'}}
@@ -37,14 +38,17 @@
 										%span.text {{ssp.name}}
 					%td{'ng-if': 'isPmpDeal'}
 						.text-field{'ng-class':'{error: errors["ssp_deal_id"+deal_product.id]}'}
-							/ %span.error-text {{errors["ssp_deal_id"+deal_product.id]}}
 							%input.editable{ 'ng-model': "deal_product.ssp_deal_id", name: "ssp_deal_id", placeholder: 'Enter Deal-ID', 'ng-blur': 'updateDealProduct(deal_product)' }
 					%td{'ng-if': 'isPmpDeal'}
-						.boolean-field.show-hide-remainder-form
-							.switch-remainder-form
-								%input.cmn-toggle.cmn-toggle-round-flat{id: "{{'is_guaranteed' + deal_product.id}}", type: 'checkbox', 'ng-model': 'deal_product.is_guaranteed', 'ng-change': "updateDealProduct(deal_product)"}
-								%label{:for => "{{'is_guaranteed' + deal_product.id}}"}
-									%span
+						.dropdown{'ng-class':'{error: errors["pmp_type"+deal_product.id]}'}
+							%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+								%span.editable{'ng-class': '{"not-selected": !deal_product.pmp_type}'}
+									{{PMPType.getName(deal_product.pmp_type) || 'Select value'}}
+								%span.caret
+							%ul.dropdown-menu
+								%li{'ng-repeat': 'pmpType in PMPType.all', 'ng-class': '{active: deal_product.pmp_type == pmpType.id}'}
+									%a{'href': '', 'ng-click': 'deal_product.pmp_type = pmpType.id; updateDealProduct(deal_product)'}
+										%span.text {{pmpType.name}}
 					%td.custom-field-item{ ng: { repeat: 'dealProductCfName in dealProductCfNames | orderBy: "position"', if: "!dealProductCfName.disabled", init: "fieldName = dealProductCfName.field_type + dealProductCfName.field_index" } }
 						.custom-field-item-field{'ng-switch': 'dealProductCfName.field_type', 'ng-class': '{"has-error": !deal_product.deal_product_cf[fieldName]}'}
 							.text-field{ ng: { 'switch-when': 'text' } }

@@ -9,7 +9,7 @@
         %tr
           %th.left Deal ID
           %th.left SSP
-          %th.left Guaranteed
+          %th.left PMP Type
           %th.right Budget
           %th.right Delivered
           %th.right Remaining
@@ -24,7 +24,7 @@
             %strong
               {{ pmpItem.ssp && pmpItem.ssp.name }}
           %td.left
-            {{ pmpItem.is_guaranteed ? 'Yes' : 'No' }}
+            {{ PMPType.getName(pmpItem.pmp_type) }}
           %td.right
             {{ pmpItem.budget_loc | currency:currency_symbol:2 }}
           %td.right

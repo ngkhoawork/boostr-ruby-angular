@@ -29,16 +29,16 @@
             Budget
             %span.star *
           %input.form-control{ 'numbers-only': '', placeholder: 'Budget', ng: { model: 'item.budget_loc', required: true }, name: 'budget' }
-        .col-md-6.form-group{'ng-class':'{error: errors.is_guaranteed}'}
-          %span.error-text {{errors.is_guaranteed}}
-          %label{ for: 'guaranteed' }
-            Guaranteed
+        .col-md-6.form-group{'ng-class':'{error: errors.pmp_type}'}
+          %span.error-text {{errors.pmp_type}}
+          %label{ for: 'pmp_type' }
+            PMP Type
             %span.star *
-          .boolean-field.show-hide-remainder-form
-            .switch-remainder-form
-              %input.cmn-toggle.cmn-toggle-round-flat{ id: 'guaranteed', type: 'checkbox', 'ng-model': 'item.is_guaranteed' }
-              %label{ for: 'guaranteed' }
-                %span
+          %ui-select{ name: 'pmp_type', ng: { model: 'item.pmp_type', required: true }}
+            %ui-select-match{ placeholder: 'PMP Type' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'pmpType.id as pmpType in pmpTypes' }
+              %div{ ng: { bind: { html: 'pmpType.name' } } }
 
     .popup-modal-footer.text-center
       %button.btn.btn-default{ 'type': 'button', 'ng-click': 'closeModal()' } Cancel

@@ -1,6 +1,6 @@
 @app.controller 'PMPController',
-  ['$rootScope', '$scope', '$modal', '$location', '$filter', '$timeout', '$routeParams', 'PMP', 'PMPMember', 'User', 'PMPItem', 'PMPItemDailyActual',
-  ( $rootScope,   $scope,   $modal,   $location,   $filter,   $timeout,   $routeParams,   PMP,   PMPMember,   User,   PMPItem,   PMPItemDailyActual) ->
+  ['$rootScope', '$scope', '$modal', '$location', '$filter', '$timeout', '$routeParams', 'PMP', 'PMPMember', 'User', 'PMPItem', 'PMPItemDailyActual', 'PMPType',
+  ( $rootScope,   $scope,   $modal,   $location,   $filter,   $timeout,   $routeParams,   PMP,   PMPMember,   User,   PMPItem,   PMPItemDailyActual,   PMPType) ->
     $scope.currentPMP = {}
     $scope.currency_symbol = '$'
     $scope.selectedDeliveryItem = {}
@@ -9,6 +9,7 @@
     $scope.isLoading = false
     $scope.allDataLoaded = false
     $scope.page = 1
+    $scope.PMPType = PMPType
     graphData = {}
     
     init = () ->
@@ -413,5 +414,6 @@
         graphData['all'] = null
         $scope.updateDeliveryChart('all') if $scope.selectedDeliveryItem == 'all'
         $scope.updatePriceChart('all') if $scope.selectedPriceItem == 'all'
+    
     init()
   ]

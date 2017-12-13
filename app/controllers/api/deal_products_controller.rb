@@ -96,7 +96,7 @@ class Api::DealProductsController < ApplicationController
       :budget_loc,
       :product_id,
       :ssp_id,
-      :is_guaranteed,
+      :pmp_type,
       :ssp_deal_id,
       {
         deal_product_budgets_attributes: [:id, :budget_loc],

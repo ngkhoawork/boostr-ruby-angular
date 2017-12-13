@@ -5,6 +5,8 @@ class PmpItem < ActiveRecord::Base
   has_many :pmp_item_daily_actuals, dependent: :destroy
   has_many :pmp_item_monthly_actuals, dependent: :destroy
 
+  enum pmp_type: PMP_TYPES
+
   validates :ssp_deal_id, :budget, :budget_loc, presence: true
 
   before_validation :convert_currency

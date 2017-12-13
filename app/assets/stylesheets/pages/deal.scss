@@ -298,6 +298,10 @@
         .stats-col {
             width: 14%;
             padding-right: 5px;
+
+            .title {
+                word-wrap: break-word;
+            }
         }
     }
     .deal-insights {

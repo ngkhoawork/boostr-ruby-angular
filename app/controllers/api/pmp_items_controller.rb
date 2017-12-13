@@ -30,7 +30,7 @@ class Api::PmpItemsController < ApplicationController
       :ssp_id,
       :ssp_deal_id,
       :budget_loc,
-      :is_guaranteed
+      :pmp_type
     )
   end
 

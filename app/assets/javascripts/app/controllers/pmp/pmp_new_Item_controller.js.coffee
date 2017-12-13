@@ -1,10 +1,11 @@
 @app.controller 'PmpNewItemController',
-  ['$scope', '$modalInstance', 'item', 'pmpId', 'PMPItem', 'SSP'
-  ($scope,    $modalInstance,   item,   pmpId,   PMPItem,   SSP) ->
+  ['$scope', '$modalInstance', 'item', 'pmpId', 'PMPItem', 'SSP', 'PMPType',
+  ($scope,    $modalInstance,   item,   pmpId,   PMPItem,   SSP,   PMPType) ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
     $scope.item = item || {}
     $scope.ssps = []
+    $scope.pmpTypes = PMPType.all
 
     init = () ->
       if !_.isEmpty(item)
@@ -17,8 +18,8 @@
     $scope.submitForm = () ->
       # validates empty fields
       $scope.errors = {}
-      fields = ['ssp_id', 'ssp_deal_id', 'budget_loc']
-      titles = ['SSP', 'Deal-ID', 'Budget']
+      fields = ['ssp_id', 'ssp_deal_id', 'budget_loc', 'pmp_type']
+      titles = ['SSP', 'Deal-ID', 'Budget', 'PMP Type']
       fields.forEach (key) ->
         field = $scope.item[key]
         title = titles[_.indexOf(fields, key)]

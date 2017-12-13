@@ -5,6 +5,8 @@ class DealProduct < ActiveRecord::Base
   has_many :deal_product_budgets, -> { order(:start_date) }, dependent: :destroy
   has_one :deal_product_cf, dependent: :destroy
 
+  enum pmp_type: PMP_TYPES
+
   validates :product, presence: true
   validate :active_exchange_rate
 

@@ -79,11 +79,7 @@ class Deal < ActiveRecord::Base
 
   after_update do
     if stage_id_changed?
-      if include_pmp_product?
-        Deal::PmpGenerateService.new(self).perform
-      else
-        Deal::IoGenerateService.new(self).perform
-      end
+      generate_io_or_pmp
       send_ealert
       log_stage_changes
     end
@@ -1724,5 +1720,13 @@ class Deal < ActiveRecord::Base
       new_value: new_budget,
       changed_amount: (new_budget - current_budget)
     ).perform
+  end
+
+  def generate_io_or_pmp
+    if include_pmp_product?
+      Deal::PmpGenerateService.new(self).perform
+    else
+      Deal::IoGenerateService.new(self).perform
+    end
   end
 end
