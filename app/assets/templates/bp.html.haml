@@ -4,13 +4,13 @@
       %h3.pull-left Business Plans
       %ul.bp-filter.pull-left
         %li.title
-          Quarter
+          Business Plan
         %li{ dropdown: true }
           %a{ href: '', dropdown: { toggle: true } }
             %span{ 'ng-if': 'filter.bp.id > 0' }
               {{ filter.bp.name }}
             %span{ 'ng-if': 'filter.bp.id == 0' }
-              Select a quarter
+              Select a Business Plan
             %span.caret
           %ul.dropdown-menu
             %li{ ng: { repeat: 'bp in bps | filter: { name: bpSearch }', class: '{active: bp.id == filter.bp.id}' } }
@@ -60,19 +60,19 @@
           .info-body-wrap
             .info-body
               #progress-number.title
-                {{totalStatus}}/{{totalCount}}
+                {{totalStatus}}/{{totalClients}}
               .description Status
         .info
           .info-body-wrap
             .info-body
               .title
-                {{ totalEstimate(bpEstimates, 'estimate_seller') | humanReadableMoney }}
+                {{ totalSellerEstimate | humanReadableMoney }}
               .description Seller Estimate
         .info
           .info-body-wrap
             .info-body
               .title
-                {{ totalEstimate(bpEstimates, 'estimate_mgr') | humanReadableMoney }}
+                {{ totalMgrEstimate | humanReadableMoney }}
               .description Manager Estimate
         .filter.pull-right
           %div.mb20

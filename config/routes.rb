@@ -210,7 +210,9 @@ Rails.application.routes.draw do
       post :assign_client
       post :add_all_clients
       post :assign_all_clients
-      resources :bp_estimates, only: [:index, :create, :update, :show, :destroy]
+      resources :bp_estimates, only: [:index, :create, :update, :show, :destroy] do 
+        get :status, on: :collection
+      end
     end
     resources :temp_ios, only: [:index, :update]
     resources :display_line_items, only: [:index, :create, :show] do
