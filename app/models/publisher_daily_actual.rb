@@ -3,7 +3,8 @@ class PublisherDailyActual < ActiveRecord::Base
   belongs_to :currency
 
   validates :date, :available_impressions, :filled_impressions, presence: true
-  validate :filled_is_not_more_than_available_impressions
+  validate :filled_is_not_more_than_available_impressions,
+           if: -> (object) { object.filled_impressions && object.available_impressions }
 
   after_validation :calculate_fill_rate
 
