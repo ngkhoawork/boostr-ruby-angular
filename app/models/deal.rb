@@ -138,6 +138,7 @@ class Deal < ActiveRecord::Base
 
   after_commit :setup_egnyte_folders, on: [:create]
   after_commit :update_egnyte_folder, on: [:update]
+  after_commit :create_hoopla_newsflash_event, on: [:create, :update]
 
   set_callback :save, :after, :update_pipeline_fact_callback
 
@@ -1709,5 +1710,11 @@ class Deal < ActiveRecord::Base
     advertiser_changed = previous_changes[:advertiser_id].present?
 
     Egnyte::UpdateDealFolderWorker.perform_async(company.egnyte_integration.id, id, advertiser_changed)
+  end
+
+  def create_hoopla_newsflash_event
+    return unless closed_won? && company.hoopla_configurations.first&.switched_on?
+
+    Hoopla::CreateNewsflashEventOnDealWonWorker.perform_async(id, updated_by, company_id)
   end
 end

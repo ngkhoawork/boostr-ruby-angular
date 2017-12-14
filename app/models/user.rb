@@ -33,6 +33,7 @@ class User < ActiveRecord::Base
   has_many :publishers, through: :publisher_members
   has_many :assignment_rules_users
   has_many :assignment_rules, through: :assignment_rules_users
+  has_one :hoopla_user, inverse_of: :user
 
   ROLES = %w(user admin superadmin supportadmin)
 

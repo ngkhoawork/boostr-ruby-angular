@@ -238,6 +238,7 @@ Rails.application.routes.draw do
       member do
         post :delete_ssp
         post :update_ssp
+        post :sync_hoopla_users
       end
     end
     resources :integration_types, only: [:index]
