@@ -5,7 +5,11 @@
         %div{ng: { include: '"partials/publisher/publisher_main_info.html"'}}
         %div{ng: { include: '"partials/publisher/daily_revenue_chart.html"'}}
         %div{ng: { include: '"partials/publisher/publisher_fill_rate_chart.html"'}}
-        %div{ng: { include: '"partials/publisher/publisher_team_and_split.html"'}}
+        .row
+          .col-xs-6
+            %div{ng: { include: '"partials/publisher/publisher_team_and_split.html"'}}
+          .col-xs-6
+            %upload-file{'deal-files': 'dealFiles', type: 'publisher'}
         %div{ng: { include: '"partials/publisher/publisher_contacts.html"'}}
       .col-xs-3
         %div{ng: { include: '"partials/publisher/publisher_detail.html"'}}

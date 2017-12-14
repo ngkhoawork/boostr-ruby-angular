@@ -43,15 +43,17 @@ class Api::AttachmentsController < ApplicationController
   end
 
   def resource
-    @_resource ||= detect_resource.find(params[:resource_id])
+    @_resource ||= detect_resource
   end
 
   def detect_resource
-    case params[:type]
+    type = params[:deal_id] ? 'deal' : 'publisher'
+
+    case type
     when 'deal'
-      company.deals
+      company.deals.find(params[:deal_id])
     when 'publisher'
-      company.publishers
+      company.publishers.find(params[:publisher_id])
     end
   end
 

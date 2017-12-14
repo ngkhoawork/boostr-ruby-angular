@@ -4,6 +4,7 @@
     templateUrl: 'directives/upload-files.html'
     scope:
       dealFiles: '='
+      type: "@"
     controller: ($scope, $routeParams) ->
       $scope.fileToUpload = null
       $scope.progressBarCur = 0
@@ -43,15 +44,28 @@
         $scope.$apply (scope) ->
           scope.upload e.target.files[0]
 
+      returnUrlByType = () ->
+
+
       $scope.deleteFile = (file) ->
         if (file && file.id && confirm('Are you sure you want to delete "' +  file.original_file_name + '"?'))
-          $http.delete('/api/deals/'+ $routeParams.id + '/attachments/' + file.id)
+          if $scope.type == "publisher"
+            url = '/api/publishers/'+ $routeParams.id + '/attachments/' + file.id
+          else
+            url = '/api/deals/'+ $routeParams.id + '/attachments/' + file.id
+
+          $http.delete(url)
           .then (respond) ->
             $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
               return dealFile.id != file.id
 
       $scope.saveOnServer = (file, subtype) ->
-        $http.put '/api/deals/'+ $routeParams.id + '/attachments/' + file.id,
+        if $scope.type == "publisher"
+          url = '/api/publishers/'+ $routeParams.id + '/attachments/' + file.id
+        else
+          url = '/api/deals/'+ $routeParams.id + '/attachments/' + file.id
+
+        $http.put url,
           asset:
             asset_file_name: file.asset_file_name
             asset_file_size: file.asset_file_size
@@ -117,7 +131,12 @@
               folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
               fullFileName = folder + assemblyJson.results[':original'][0].url.substr(assemblyJson.results[':original'][0].url.lastIndexOf('/') + 1);
 
-            $http.post '/api/deals/'+ $routeParams.id + '/attachments',
+            if $scope.type == "publisher"
+              url = '/api/publishers/'+ $routeParams.id + '/attachments'
+            else
+              url = '/api/deals/'+ $routeParams.id + '/attachments'
+
+            $http.post url,
                 asset:
                   asset_file_name: fullFileName
                   asset_file_size: assemblyJson.results[':original'][0].size

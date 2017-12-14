@@ -1,6 +1,6 @@
 @app.controller 'PablisherController', [
-  '$scope', '$modal', '$filter', '$routeParams', 'Publisher', 'PublisherDetails', 'PublisherMembers', '$rootScope', 'User', 'PublisherCustomFieldName',
-  ($scope,   $modal,   $filter,   $routeParams,   Publisher,   PublisherDetails, PublisherMembers, $rootScope, User, PublisherCustomFieldName) ->
+  '$scope', '$modal', '$filter', '$routeParams', 'Publisher', 'PublisherDetails', 'PublisherMembers', '$rootScope', 'User', 'PublisherCustomFieldName', 'PublisherAttachment'
+  ($scope,   $modal,   $filter,   $routeParams,   Publisher,   PublisherDetails, PublisherMembers, $rootScope, User, PublisherCustomFieldName, PublisherAttachment) ->
 
     $scope.currentPublisher = {}
 
@@ -10,6 +10,12 @@
       $scope.getCustomFields()
       $scope.getDailyRevenueGraph()
       $scope.getPublisherSettings()
+      $scope.getDealFiles()
+
+    $scope.getDealFiles = () ->
+      PublisherAttachment.list(publisher_id: $routeParams.id, type: "publisher").then (res) ->
+        $scope.dealFiles = res
+        console.log($scope.dealFiles)
 
     $scope.getCurrentPublisher = ->
       PublisherDetails.getPublisher(id: $routeParams.id).then (publisher) ->
