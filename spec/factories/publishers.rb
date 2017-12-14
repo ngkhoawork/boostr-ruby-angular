@@ -8,5 +8,15 @@ FactoryGirl.define do
     after(:create) do |publisher|
       create(:address, addressable: publisher)
     end
+
+    factory :publisher_with_assets do
+      transient do
+        assets_count 3
+      end
+
+      after(:create) do |publisher, evaluator|
+        create_list(:asset, evaluator.assets_count, attachable: publisher)
+      end
+    end
   end
 end
