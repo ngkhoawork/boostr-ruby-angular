@@ -16,9 +16,14 @@ class Publisher < ActiveRecord::Base
   has_one :renewal_term_field,
           -> { where(subject_type: 'Publisher', name: 'Renewal Terms') },
           through: :company, source: :fields
+  has_one :member_role_field,
+          -> { where(subject_type: 'Publisher', name: 'Member Role') },
+          through: :company, source: :fields
 
   has_many :available_types, through: :type_field, source: :options
   has_many :available_renewal_terms, through: :renewal_term_field, source: :options
+  has_many :available_member_roles, through: :member_role_field, source: :options
+
   has_many :assets, as: :attachable
 
   belongs_to :client

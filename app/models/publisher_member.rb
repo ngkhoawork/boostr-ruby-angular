@@ -1,6 +1,7 @@
 class PublisherMember < ActiveRecord::Base
   belongs_to :publisher
   belongs_to :user
+  belongs_to :role, class_name: 'Option'
 
   validates :user_id, :publisher_id, presence: true
   validates :user_id, uniqueness: { scope: :publisher_id, message: 'already present as member' }

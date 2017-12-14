@@ -3,6 +3,11 @@ class Api::Publishers::MembersSerializer < ActiveModel::Serializer
     :id,
     :user_id,
     :owner,
-    :name
+    :name,
+    :member_role
   )
+
+  def member_role
+    object.role.as_json(only: [:id, :name])
+  end
 end
