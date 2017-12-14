@@ -17,7 +17,10 @@ class PublisherDailyRevenueGraphService
   private
 
   def daily_actuals
-    @daily_actuals ||= @publisher.daily_actuals.order(:date).to_a
+    @daily_actuals ||= @publisher.daily_actuals
+                                 .by_date(previous_year_date, current_date)
+                                 .order(:date)
+                                 .to_a
   end
 
   def daily_revenue_by_date(date)
@@ -38,5 +41,13 @@ class PublisherDailyRevenueGraphService
 
   def end_date
     daily_actuals[-1].date
+  end
+
+  def current_date
+    @_current_date ||= Date.today
+  end
+
+  def previous_year_date
+    current_date - 1.year
   end
 end

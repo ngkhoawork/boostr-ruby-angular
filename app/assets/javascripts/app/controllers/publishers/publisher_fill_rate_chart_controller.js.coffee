@@ -48,7 +48,7 @@
 
 			xLabels = _.map data, (item) ->
 				month = moment(item.year_month).format('MMMM')
-				percent = Math.round(item.month_filled_impressions / item.month_available_impressions * 100)
+				percent = Math.round(item.month_filled_impressions / item.month_available_impressions * 100) || 0
 				"#{month} #{percent}%"
 
 			x = d3.scale.ordinal().domain(xLabels).rangeRoundBands([0, width])
