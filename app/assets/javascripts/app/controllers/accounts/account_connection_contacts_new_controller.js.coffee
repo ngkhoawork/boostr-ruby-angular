@@ -16,14 +16,6 @@
       else if $scope.currentClient.client_type.option.name == 'Agency'
         $scope.subjectType = 'Advertiser'
 
-#    ClientConnection.all({client_id: $scope.currentClient.id}).then (client_connections) ->
-#      $scope.clients = _.map client_connections, (item) ->
-#        if $scope.currentClient.id == item.advertiser_id
-#          return item.agency
-#        else
-#          return item.advertiser
-
-
     Client.connected_contacts({ id: $scope.currentClient.id, page: 1, per: 10 }).$promise.then (connected_contacts) ->
       $scope.contacts = connected_contacts
 
