@@ -47,9 +47,7 @@ class Api::AttachmentsController < ApplicationController
   end
 
   def detect_resource
-    type = params[:deal_id] ? 'deal' : 'publisher'
-
-    case type
+    case params[:type]
     when 'deal'
       company.deals.find(params[:deal_id])
     when 'publisher'

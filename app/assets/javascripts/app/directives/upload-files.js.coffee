@@ -50,11 +50,11 @@
       $scope.deleteFile = (file) ->
         if (file && file.id && confirm('Are you sure you want to delete "' +  file.original_file_name + '"?'))
           if $scope.type == "publisher"
-            url = '/api/publishers/'+ $routeParams.id + '/attachments/' + file.id
+            url = '/api/publishers/'+ $routeParams.id + '/attachments/' + file.id + '?type=' + $scope.type
           else
-            url = '/api/deals/'+ $routeParams.id + '/attachments/' + file.id
+            url = '/api/deals/'+ $routeParams.id + '/attachments/' + file.id + '?type=' + $scope.type
 
-          $http.delete(url)
+          $http.delete url
           .then (respond) ->
             $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
               return dealFile.id != file.id
@@ -66,6 +66,7 @@
           url = '/api/deals/'+ $routeParams.id + '/attachments/' + file.id
 
         $http.put url,
+          type: $scope.type,
           asset:
             asset_file_name: file.asset_file_name
             asset_file_size: file.asset_file_size
@@ -137,6 +138,7 @@
               url = '/api/deals/'+ $routeParams.id + '/attachments'
 
             $http.post url,
+                type: $scope.type,
                 asset:
                   asset_file_name: fullFileName
                   asset_file_size: assemblyJson.results[':original'][0].size
