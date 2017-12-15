@@ -22,6 +22,7 @@
 
     $scope.getContactsAndMembers = ->
       PublisherDetails.associations(id: $routeParams.id).then (association) ->
+        $scope.memberRoles = association.member_roles
         $scope.contacts = association.contacts
         $scope.publisherMembers = association.members
 
@@ -36,7 +37,6 @@
 
     $scope.getPublisherSettings = ->
       Publisher.publisherSettings().then (settings) ->
-        console.log(settings)
         $scope.publisher_stages = settings.publisher_stages
         $scope.publisher_types = settings.publisher_types
         $scope.renewal_term_fields = settings.renewal_term_fields
@@ -61,7 +61,12 @@
         Publisher.delete(id: publisher.id)
 
     $scope.updateMember = (member) ->
-      PublisherMembers.update(id: member.id, owner: member.owner).then (res) ->
+      params = {}
+      params.owner = member.owner
+      if member.member_role
+        params.role_id = member.member_role.id
+
+      PublisherMembers.update(id: member.id, publisher_member: params).then (res) ->
         $rootScope.$broadcast 'updated_publisher_detail'
 
     $scope.showLinkExistingUser = ->

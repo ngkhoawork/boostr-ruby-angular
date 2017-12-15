@@ -21,6 +21,15 @@
         %td
           {{member.name}}
         %td
-          role
+          .dropdown
+            %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span.editable{'ng-class': '{"not-selected": !member.member_role}'}
+                {{member.member_role.name ? member.member_role.name : 'Select Stage'}}
+              %span.caret
+            %ul.dropdown-menu
+              %li{'ng-repeat': 'role in memberRoles', 'ng-class': '{active: member.member_role.id == role.id}'}
+                %a{'href': '', 'ng-click': 'member.member_role = role; updateMember(member)'}
+                  %span.text {{role.name}}
+
         %td.left
           %z-toggle.comsocre-switcher{'ng-model': 'member.owner', 'ng-change': 'updateMember(member)', 'ng-click': '$event.stopPropagation()'}
