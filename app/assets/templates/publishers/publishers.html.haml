@@ -195,8 +195,11 @@
               .date.pull-right{'ng-class': '{expired: publisher.isExpired && publisher.stage.open}'} {{publisher.created_at | date: 'mediumDate'}}
               %span
                 %a{'ng-href': '{{"/publishers/" + publisher.id}}'} {{publisher.name}}
-              %span Estimated Impressions {{publisher.estimated_monthly_impressions || 0}}
-              %span {{publisher.users.length ? publisher.users.join(', ') : '-'}}
+              %span Estimated Impressions {{publisher.estimated_monthly_impressions | currency: currency_symbol : 0}}
+              %span{ng: {if: 'publisher.publisher_members.length'}}
+                %div{ng: {repeat: "member in publisher.publisher_members"}}
+                  %span
+                    {{member.name}}
               %div.block-menu
                 %div{'dropdown': '', 'keyboard-nav': ''}
                   %i.fa.fa-ellipsis-h{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}

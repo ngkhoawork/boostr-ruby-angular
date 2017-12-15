@@ -1,6 +1,6 @@
 .block
   %div.mb20
-    %span.title Team & Split
+    %span.title Team
     %span{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
       %add-button{ dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } } Add
       %ul.dropdown-menu.new-member-options
@@ -14,10 +14,13 @@
     %thead
       %tr
         %th Member
+        %th Role
         %th.left Owner
     %tbody
       %tr{ ng: { repeat: "member in publisherMembers | orderBy: 'name'"} }
         %td
           {{member.name}}
+        %td
+          role
         %td.left
           %z-toggle.comsocre-switcher{'ng-model': 'member.owner', 'ng-change': 'updateMember(member)', 'ng-click': '$event.stopPropagation()'}

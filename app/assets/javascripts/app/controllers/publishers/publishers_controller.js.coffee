@@ -121,6 +121,7 @@
     getPublishersList = (params) ->
       setLoading(true)
       Publisher.publishersList(params).then (publishers) ->
+        console.log(publishers)
         $scope.allPublishersLoaded = !publishers || publishers.length < per
         if page++ > 1
           $scope.publishers = $scope.publishers.concat(publishers)

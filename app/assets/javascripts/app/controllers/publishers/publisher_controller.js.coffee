@@ -36,6 +36,7 @@
 
     $scope.getPublisherSettings = ->
       Publisher.publisherSettings().then (settings) ->
+        console.log(settings)
         $scope.publisher_stages = settings.publisher_stages
         $scope.publisher_types = settings.publisher_types
         $scope.renewal_term_fields = settings.renewal_term_fields

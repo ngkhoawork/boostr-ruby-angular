@@ -1,5 +1,5 @@
 @app.controller 'PablisherActionsController',
-  ['$scope', '$modalInstance', 'Publisher', 'publisher', 'PublisherCustomFieldName', 'CountriesList', '$rootScope', ($scope, $modalInstance, Publisher, publisher, PublisherCustomFieldName, CountriesList, $rootScope) ->
+  ['$scope', '$modalInstance', 'Publisher', 'publisher', 'PublisherCustomFieldName', 'CountriesList', '$rootScope', '$location', ($scope, $modalInstance, Publisher, publisher, PublisherCustomFieldName, CountriesList, $rootScope, $location) ->
     $scope.publisher = publisher
     $scope.publisherCustomFields = []
 
@@ -55,8 +55,8 @@
           $rootScope.$broadcast 'updated_publisher_detail'
           $scope.cancel()
       else
-        Publisher.create(publisher: $scope.publisher).then (response) ->
-          $rootScope.$broadcast 'updated_publishers'
+        Publisher.create(publisher: $scope.publisher).then (publisher) ->
+          $location.url("/publishers/" + publisher.id)
           $scope.cancel()
 
     handleModalType = () ->
