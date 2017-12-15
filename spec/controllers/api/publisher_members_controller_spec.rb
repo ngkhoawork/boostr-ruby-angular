@@ -15,7 +15,7 @@ describe Api::PublisherMembersController do
     it 'update owner successfully' do
       publisher_member = create :publisher_member, user: user, publisher: publisher, owner: false
 
-      put :update, id: publisher_member.id, owner: true
+      put :update, id: publisher_member.id, publisher_member: { owner: true }
 
       expect(publisher_member.reload.owner).to be_truthy
     end

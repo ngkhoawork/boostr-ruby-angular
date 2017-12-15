@@ -12,6 +12,8 @@ class Api::PublishersController < ApplicationController
 
   def create
     if build_resource.save
+      resource.publisher_members.create(user: current_user, owner: true)
+
       render json: Api::Publishers::Serializer.new(resource), status: :created
     else
       render json: { errors: resource.errors.messages }, status: :unprocessable_entity

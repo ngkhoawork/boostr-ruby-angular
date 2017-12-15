@@ -12,7 +12,7 @@ class Api::PublisherMembersController < ApplicationController
   end
 
   def update
-    if publisher_member.update(owner: params[:owner])
+    if publisher_member.update(publisher_member_params)
       update_owner_field_in_publisher_scope if publisher_member.owner?
 
       render json: publisher_member
@@ -33,5 +33,9 @@ class Api::PublisherMembersController < ApplicationController
 
   def update_owner_field_in_publisher_scope
     publisher_member.publisher.publisher_members.where.not(id: publisher_member.id).update_all(owner: false)
+  end
+
+  def publisher_member_params
+    params.require(:publisher_member).permit(:owner, :role_id)
   end
 end

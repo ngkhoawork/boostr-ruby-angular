@@ -176,7 +176,8 @@ RSpec.describe Api::PublishersController, type: :controller do
     subject { post :create, params }
 
     it 'creates a publisher' do
-      expect{subject}.to change{Publisher.count}.by(1)
+      expect{subject}.to change{Publisher.count}.by(1).and \
+                         change{PublisherMember.count}.by(1)
       expect(response).to have_http_status(201)
       expect(response_body[:id]).to eq Publisher.last.id
     end
