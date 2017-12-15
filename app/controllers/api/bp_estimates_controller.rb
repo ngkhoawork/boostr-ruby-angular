@@ -193,7 +193,6 @@ class Api::BpEstimatesController < ApplicationController
           {
             bp_estimate_products: {
               product: {},
-              advertiser_connections: {},
             }
           },
           :user,
