@@ -131,6 +131,10 @@
       , (err) ->
         setLoading(false, err)
 
+    $scope.deletePublisher = (publisher) ->
+      if confirm('Are you sure you want to delete "' + publisher.name + '"?')
+        Publisher.delete(id: publisher.id).then (res) ->
+
     getPublishersPipeline = (params) ->
       setLoading(true)
       if page is 1

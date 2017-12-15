@@ -196,10 +196,11 @@
               %span
                 %a{'ng-href': '{{"/publishers/" + publisher.id}}'} {{publisher.name}}
               %span Estimated Impressions {{publisher.estimated_monthly_impressions | currency: currency_symbol : 0}}
-              %span{ng: {if: 'publisher.publisher_members.length'}}
-                %div{ng: {repeat: "member in publisher.publisher_members"}}
-                  %span
-                    {{member.name}}
+
+              %div{'ng-repeat': 'user in publisher.users'}
+                %span
+                  {{user.name}}
+
               %div.block-menu
                 %div{'dropdown': '', 'keyboard-nav': ''}
                   %i.fa.fa-ellipsis-h{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}
@@ -207,4 +208,4 @@
                     .dropdown-option
                       %a{href: '', 'ng-click': 'showDealEditModal(publisher)'} Edit
                     .dropdown-option
-                      %a{href: '', 'ng-click': 'deleteDeal(publisher)'} Delete
+                      %a{href: '', 'ng-click': 'deletePublisher(publisher)'} Delete
