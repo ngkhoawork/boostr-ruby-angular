@@ -5,7 +5,7 @@ class PmpItem < ActiveRecord::Base
   has_many :pmp_item_daily_actuals, dependent: :destroy
   has_many :pmp_item_monthly_actuals, dependent: :destroy
 
-  enum pmp_type: PMP_TYPES
+  enum pmp_type: ::PMP_TYPES
 
   validates :ssp_deal_id, :budget, :budget_loc, presence: true
 
@@ -34,8 +34,15 @@ class PmpItem < ActiveRecord::Base
   def calculate_budgets!
     self.budget_delivered = pmp_item_daily_actuals.sum(:revenue)
     self.budget_delivered_loc = pmp_item_daily_actuals.sum(:revenue_loc)
-    self.budget_remaining = [self.budget - self.budget_delivered, 0].max
-    self.budget_remaining_loc = [self.budget_loc - self.budget_delivered_loc, 0].max
+    self.budget_remaining = [budget - budget_delivered, 0].max
+    self.budget_remaining_loc = [budget_loc - budget_delivered_loc, 0].max
+  end
+
+  def calculate_end_date!
+    daily_actual_end_date = pmp_item_daily_actuals.maximum(:end_date)
+    if daily_actual_end_date.present? && end_date < daily_actual_end_date
+      self.end_date = daily_actual_end_date
+    end
   end
 
   def run_rate(days)
@@ -49,20 +56,20 @@ class PmpItem < ActiveRecord::Base
   private
 
   def convert_currency
-    if self.budget_loc.present? && self.budget_loc_changed?
-      self.budget = self.budget_loc * self.pmp.exchange_rate
+    if budget_loc.present? && budget_loc_changed?
+      self.budget = budget_loc * pmp.exchange_rate
     end
   end
 
   def set_budget_remaining_and_delivered
     self.budget_delivered ||= 0
     self.budget_delivered_loc ||= 0
-    self.budget_remaining = [self.budget - self.budget_delivered, 0].max
-    self.budget_remaining_loc = [self.budget_loc - self.budget_delivered_loc, 0].max
+    self.budget_remaining = [budget - budget_delivered, 0].max
+    self.budget_remaining_loc = [budget_loc - budget_delivered_loc, 0].max
   end
 
   def update_pmp_budgets
-    self.pmp.calculate_budgets!
+    pmp.calculate_budgets!
   end
 
   def budgets_changed?

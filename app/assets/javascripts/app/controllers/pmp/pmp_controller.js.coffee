@@ -80,19 +80,27 @@
             graphData[id] = data
             drawChart(data, '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
 
+    getGraphData = (data, attr) ->
+      _.reduce(data, (arr, row) ->
+        if row[attr]?
+          arr.push(parseFloat(row[attr]))
+        arr
+      , [])
+
     getGraphDataSet = (data, svgID) ->
       c = d3.scale.category10()
       switch svgID
         when '#pmp-delivery-chart'
           [
-            {name: 'Bids', graphType: 1, hideTitle: true, active: true, unit: '', color: c(0), values: data.map((item) -> parseFloat(item.bids))}
-            {name: 'Win Rate', graphType: 2, active: true, unit: '%', color: c(2), values: data.map((item) -> parseFloat(item.win_rate))}
-            {name: 'Impressions', graphType: 1, active: true, unit: '', color: c(1), values: data.map((item) -> parseFloat(item.impressions))}          
+            {name: 'Bids', graphType: 1, hideTitle: true, active: true, unit: '', color: c(0), values: getGraphData(data, 'bids')}
+            {name: 'Impressions', graphType: 1, active: true, unit: '', color: c(1), values: getGraphData(data, 'impressions')}    
+            {name: 'Win Rate', graphType: 2, active: true, unit: '%', color: c(2), values: getGraphData(data, 'win_rate')}      
+            {name: 'Render Rate', graphType: 2, hideTitle: true, active: true, unit: '%', color: c(3), values: getGraphData(data, 'render_rate')}
           ]
         when '#pmp-price-revenue-chart'
           [
-            {name: 'Price', graphType: 1, active: true, unit: $scope.currency_symbol, color: c(0), values: data.map((item) -> parseFloat(item.price))}
-            {name: 'Revenue', graphType: 2, active: true, unit: $scope.currency_symbol, color: c(1), values: data.map((item) -> parseFloat(item.revenue_loc))}          
+            {name: 'Price', graphType: 1, active: true, unit: $scope.currency_symbol, color: c(0), values: getGraphData(data, 'price')}
+            {name: 'Revenue', graphType: 2, active: true, unit: $scope.currency_symbol, color: c(1), values: getGraphData(data, 'revenue_loc')}          
           ]
         else []
 

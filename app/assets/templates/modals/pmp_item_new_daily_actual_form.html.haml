@@ -25,28 +25,42 @@
         .col-md-6.form-group{'ng-class':'{error: errors.ad_unit}'}
           %span.error-text {{errors.ad_unit}}
           %label{ for: 'ad_unit' }
-            Ad Unit/Product
+            Ad Unit
             %span.star *
-          %input.form-control{ placeholder: 'Ad Unit/Product', ng: { model: 'dailyActual.ad_unit', required: true }, name: 'ad_unit' }
+          %input.form-control{ placeholder: 'Ad Unit', ng: { model: 'dailyActual.ad_unit', required: true }, name: 'ad_unit' }
+        .col-md-6.form-group{'ng-class':'{error: errors.product_id}'}
+          %span.error-text {{errors.product_id}}
+          %label{ for: 'product_id' }
+            Product
+          %ui-select{ name: 'product_id', ng: { model: 'dailyActual.product_id', required: false }}
+            %ui-select-match{ placeholder: 'Product' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'product.id as product in products' }
+              %div{ ng: { bind: { html: 'product.name' } } }
+      .row
         .col-md-6.form-group{'ng-class':'{error: errors.bids}'}
           %span.error-text {{errors.bids}}
           %label{ for: 'bids' }
             Bids
             %span.star *
           %input.form-control{ 'numbers-only': '', placeholder: 'Bis', ng: { model: 'dailyActual.bids', required: true }, name: 'bids' }
-      .row
         .col-md-6.form-group{'ng-class':'{error: errors.impressions}'}
           %span.error-text {{errors.impressions}}
           %label{ for: 'impressions' }
             Impressions
             %span.star *
           %input.form-control{ 'numbers-only': '', placeholder: 'Impressions', ng: { model: 'dailyActual.impressions', required: true }, name: 'impressions' }
+      .row
         .col-md-6.form-group{'ng-class':'{error: errors.win_rate}'}
           %span.error-text {{errors.win_rate}}
           %label{ for: 'win_rate' }
             Win Rate
-            %span.star *
           %input.form-control{ 'numbers-only': '', placeholder: 'Win Rate', ng: { model: 'dailyActual.win_rate', required: true }, name: 'win_rate' }
+        .col-md-6.form-group{'ng-class':'{error: errors.render_rate}'}
+          %span.error-text {{errors.render_rate}}
+          %label{ for: 'render_rate' }
+            Render Rate
+          %input.form-control{ 'numbers-only': '', placeholder: 'Render Rate', ng: { model: 'dailyActual.render_rate', required: false }, name: 'render_rate' }
       .row
         .col-md-6.form-group{'ng-class':'{error: errors.price}'}
           %span.error-text {{errors.price}}

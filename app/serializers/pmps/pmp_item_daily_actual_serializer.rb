@@ -10,10 +10,16 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
     :revenue_loc,
     :impressions,
     :win_rate,
-    :bids
+    :render_rate,
+    :bids,
+    :product
   )
 
   def ssp_deal_id
-    object.pmp_item.ssp_deal_id
+    object.pmp_item.ssp_deal_id rescue nil
+  end
+
+  def product
+    object.product.serializable_hash(only: [:id, :name]) rescue nil
   end
 end

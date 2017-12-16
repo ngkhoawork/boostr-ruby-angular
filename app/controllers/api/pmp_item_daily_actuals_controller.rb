@@ -45,10 +45,12 @@ class Api::PmpItemDailyActualsController < ApplicationController
     params.require(:pmp_item_daily_actual).permit(
       :date,
       :ad_unit,
+      :product_id,
       :price,
       :revenue_loc,
       :impressions,
       :win_rate,
+      :render_rate,
       :bids,
       :pmp_item_id
     )
@@ -68,7 +70,7 @@ class Api::PmpItemDailyActualsController < ApplicationController
 
   def aggregated_pmp_daily_actuals
     @_aggregated_pmp_daily_actuals ||= pmp.pmp_item_daily_actuals
-      .select('date, sum(price) as price, sum(revenue_loc) as revenue_loc, sum(revenue) as revenue, sum(impressions) as impressions, sum(bids) as bids, avg(win_rate) as win_rate')
+      .select('date, sum(price) as price, sum(revenue_loc) as revenue_loc, sum(revenue) as revenue, sum(impressions) as impressions, sum(bids) as bids, avg(win_rate) as win_rate, avg(render_rate) as render_rate')
       .group('date')
   end
 

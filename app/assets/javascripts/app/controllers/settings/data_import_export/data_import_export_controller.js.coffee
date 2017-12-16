@@ -226,7 +226,7 @@
 
   $scope.showUploadPmpItemDailyActualsModal = () ->
     $scope.modalInstance = $modal.open
-      templateUrl: 'modals/uploader/pmp_item_daily_actual_upload.html'
+      templateUrl: 'modals/pmp_item_daily_actual_upload.html'
       size: 'lg'
       controller: 'CsvUploadController'
       backdrop: 'static'
