@@ -47,4 +47,8 @@ class Api::Publishers::Serializer < ActiveModel::Serializer
   def current_date
     @_current_month ||= Date.today
   end
+
+  def actual_monthly_impressions
+    object.daily_actuals.sum(:available_impressions)
+  end
 end
