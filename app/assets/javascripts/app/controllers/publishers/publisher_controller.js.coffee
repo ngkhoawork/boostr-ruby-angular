@@ -27,7 +27,7 @@
         $scope.publisherMembers = association.members
 
     $scope.getCustomFields = ->
-      PublisherCustomFieldName.all({show_on_modal: true}).then (cf) ->
+      PublisherCustomFieldName.all().then (cf) ->
         $scope.publisherCustomFields = cf
 
     $scope.getDailyRevenueGraph = ->
@@ -49,8 +49,10 @@
       result
 
     $scope.updatePublisher = (publisher) ->
-      publisher.type_id = publisher.type.id
-      publisher.renewal_term_id = publisher.renewal_term.id
+      console.log(publisher)
+
+      publisher.type_id = publisher.type.id if publisher.type
+      publisher.renewal_term_id = publisher.renewal_term.id if publisher.renewal_term
       publisher.publisher_custom_field_attributes = publisher.publisher_custom_field_obj
 
       Publisher.update(id: $scope.currentPublisher.id, publisher: publisher).then (response) ->

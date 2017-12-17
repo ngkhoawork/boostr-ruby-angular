@@ -30,7 +30,7 @@
           %label{ for: 'comscore' }
             Comscore 250
           %br
-          %z-toggle{ng: { model: 'publisher.comscore' }}
+          %z-toggle{'ng-model': 'publisher.comscore', 'ng-click': '$event.stopPropagation()'}
 
       .row
         .form-group.col-xs-6{'ng-class':'{error: errors.type_id}'}
@@ -63,7 +63,7 @@
         .form-group.col-xs-6
           %label{ for: 'estimate-monthly' }
             Revenue Share
-          %input.form-control{placeholder: 'Revenue Share', ng: { model: 'publisher.revenue_share' }, name: 'revenue_share' }
+          %input.form-control{placeholder: 'Revenue Share', type: 'number', ng: { model: 'publisher.revenue_share' }, name: 'revenue_share' }
 
         .form-group.col-xs-6
           %span.error-text

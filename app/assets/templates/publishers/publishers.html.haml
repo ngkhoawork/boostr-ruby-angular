@@ -124,10 +124,10 @@
               %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
                 %td
                   %a{'ng-href': '/publishers/{{publisher.id}}'} {{publisher.name}}
-                %td
+                %td.right
                   {{publisher.revenue_ytd | currency: currency_symbol : 0}}
-                %td.center
-                  {{publisher.estimated_monthly_impressions | currency: currency_symbol : 0}}
+                %td.right
+                  {{publisher.estimated_monthly_impressions | formatMoney: "" : 0}}
                 %td
                   .dropdown
                     %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
@@ -195,7 +195,7 @@
               .date.pull-right{'ng-class': '{expired: publisher.isExpired && publisher.stage.open}'} {{publisher.created_at | date: 'mediumDate'}}
               %span
                 %a{'ng-href': '{{"/publishers/" + publisher.id}}'} {{publisher.name}}
-              %span Estimated Impressions {{publisher.estimated_monthly_impressions | currency: currency_symbol : 0}}
+              %span Estimated Impressions {{publisher.estimated_monthly_impressions}}
 
               %div{'ng-repeat': 'user in publisher.users'}
                 %span

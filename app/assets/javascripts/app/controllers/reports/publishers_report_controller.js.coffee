@@ -33,7 +33,8 @@
 
     getCustomFields = (data) ->
       _.each data, (d) ->
-        $scope.publisherCustomFields = _.pluck(d.publisher_custom_field, 'field_label')
+        if d.publisher_custom_field
+          $scope.publisherCustomFields = _.pluck(d.publisher_custom_field, 'field_label')
         
     getReport = (query) ->
       Publisher.publisherReport(query).then (data) ->

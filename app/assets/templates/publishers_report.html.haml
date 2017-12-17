@@ -33,9 +33,24 @@
                 %th
                   .z-sortable{by: 'type.name'}
                     Type
-                %th.center
+                %th
                   .z-sortable{by: 'estimated_monthly_impressions'}
                     Estimated Monthly Impressions
+                %th
+                  .z-sortable{by: 'actual_monthly_impressions'}
+                    Actual Monthly Impressions
+                %th
+                  .z-sortable{by: 'fill_rate'}
+                    Fill rate
+                %th
+                  .z-sortable{by: 'revenue_lifetime'}
+                    Revenue Lifetime
+                %th
+                  .z-sortable{by: 'revenue_ytd'}
+                    Revenue YTD
+                %th
+                  .z-sortable{by: 'last_export_date'}
+                    Export Date
                 %th.left
                   .z-sortable{by: 'created_at'}
                     Created Date
@@ -47,7 +62,12 @@
                 %td {{publisher.comscore ? 'Active' : 'Inactive'}}
                 %td {{publisher.publisher_stage}}
                 %td {{publisher.type.name}}
-                %td.center {{publisher.estimated_monthly_impressions}}
+                %td {{publisher.estimated_monthly_impressions | formatMoney: "" : 0}}
+                %td {{publisher.actual_monthly_impressions | formatMoney: "" : 0}}
+                %td {{publisher.fill_rate + "%"}}
+                %td {{publisher.revenue_lifetime | currency: currency_symbol : 0}}
+                %td {{publisher.revenue_ytd | currency: currency_symbol : 0}}
+                %td {{publisher.last_export_date | date : 'shortDate'}}
                 %td.left {{publisher.created_at | date : 'shortDate'}}
                 %td{'ng-repeat': 'cf in publisher.publisher_custom_field | orderBy : zSort.by : zSort.rev'}
                   %p{'ng-if': 'cf.field_type == "datetime"'}

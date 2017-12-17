@@ -41,7 +41,7 @@ class Publisher < ActiveRecord::Base
 
   validates :name, presence: true
   validates :website, format: {
-                        with: REGEXP_FOR_URL, message: 'Valid URL required', multiline: true, allow_blank: true
+                        with: REGEXP_FOR_URL, message: 'Website format is not valid.', multiline: true, allow_blank: true
                       }
 
   accepts_nested_attributes_for :address

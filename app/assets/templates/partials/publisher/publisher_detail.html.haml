@@ -35,7 +35,7 @@
     %div.custom-field-item-label
       Revenue Share
     %div.custom-field-item-field
-      %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentPublisher.revenue_share", placeholder: 'Enter Revenue Share', 'ng-blur': 'updatePublisher(currentPublisher)' }
+      %div{'click-to-edit':'click-to-edit', type: "number", postfix: '%', 'ng-model': "currentPublisher.revenue_share", 'on-after-save': 'updatePublisher(currentPublisher)'}
 
   %div.custom-field-item
     %div.custom-field-item-label

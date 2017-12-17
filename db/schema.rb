@@ -1927,7 +1927,7 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.integer  "company_id"
     t.integer  "publisher_stage_id"
     t.integer  "type_id"
-    t.string   "revenue_share"
+    t.integer  "revenue_share"
     t.date     "term_start_date"
     t.date     "term_end_date"
     t.integer  "renewal_term_id"
