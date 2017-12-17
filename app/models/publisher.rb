@@ -5,6 +5,13 @@ class Publisher < ActiveRecord::Base
   has_one :address, as: :addressable, dependent: :destroy
   has_many :activities, dependent: :destroy
   has_many :daily_actuals, class_name: 'PublisherDailyActual'
+  has_many :daily_actuals_for_previous_month,
+           -> { by_date(1.month.ago.beginning_of_month, 1.month.ago.end_of_month) },
+           class_name: 'PublisherDailyActual'
+  has_many :daily_actuals_for_current_year,
+           -> { by_date(Date.today.beginning_of_year, Date.today) },
+           class_name: 'PublisherDailyActual'
+  has_one :last_daily_actual, -> { order(created_at: :desc) }, class_name: 'PublisherDailyActual'
   has_many :contacts
   has_many :publisher_members, dependent: :destroy
   has_many :users, through: :publisher_members

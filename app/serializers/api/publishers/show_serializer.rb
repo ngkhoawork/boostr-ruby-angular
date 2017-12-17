@@ -3,9 +3,9 @@ class Api::Publishers::ShowSerializer < Api::Publishers::Serializer
              :publisher_custom_field_obj, :address
 
   def fill_rate
-    return 0 if fill_rate_sum.to_f.zero?
+    return 0 if fill_rate_sum.zero?
 
-    fill_rate_sum / daily_actuals_for_previous_month.count rescue 0
+    (fill_rate_sum / object.daily_actuals_for_previous_month.size).round(1)
   end
 
   def revenue_lifetime
@@ -13,7 +13,7 @@ class Api::Publishers::ShowSerializer < Api::Publishers::Serializer
   end
 
   def revenue_ytd
-    daily_actuals_for_current_year.sum(:total_revenue)
+    object.daily_actuals_for_current_year.sum(:total_revenue)
   end
 
   def contacts
@@ -30,24 +30,7 @@ class Api::Publishers::ShowSerializer < Api::Publishers::Serializer
 
   private
 
-  def daily_actuals_for_previous_month
-    @_daily_actuals_for_previous_month ||=
-      object.daily_actuals.by_date(previous_month.beginning_of_month, previous_month.end_of_month)
-  end
-
-  def daily_actuals_for_current_year
-    @_daily_actuals_for_current_year ||= object.daily_actuals.by_date(current_date.beginning_of_year, current_date)
-  end
-
   def fill_rate_sum
-    @_fill_rate_sum ||= daily_actuals_for_previous_month.sum(:fill_rate)
-  end
-
-  def current_date
-    @_current_month ||= Date.today
-  end
-
-  def previous_month
-    @_previous_month ||= current_date - 1.month
+    @_fill_rate_sum ||= object.daily_actuals_for_previous_month.sum(:fill_rate).to_f
   end
 end

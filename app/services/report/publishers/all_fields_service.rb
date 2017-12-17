@@ -27,6 +27,10 @@ module Report
             :publisher_stage,
             :type,
             :client,
+            :daily_actuals,
+            :daily_actuals_for_previous_month,
+            :daily_actuals_for_current_year,
+            :last_daily_actual,
             users: :team,
             publisher_custom_field: {
               company: :publisher_custom_field_names

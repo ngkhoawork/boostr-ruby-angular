@@ -37,6 +37,10 @@ class Csv::PublisherAllFieldsReportService < Csv::BaseService
       actual_monthly_impressions
       type publisher_stage
       client created_at
+      fill_rate
+      revenue_lifetime
+      revenue_ytd
+      last_export_date
     )
   end
 
