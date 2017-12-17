@@ -43,7 +43,7 @@ class Csv::PublisherDailyActual
   end
 
   def currency
-    @currency ||= Currency.find_by(curr_symbol: curr_symbol)
+    @currency ||= Currency.where('curr_symbol = :currency OR curr_cd = :currency', currency: curr_symbol).first
   end
 
   def publisher_daily_actual_params

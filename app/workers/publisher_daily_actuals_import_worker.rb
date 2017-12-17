@@ -1,5 +1,5 @@
 class PublisherDailyActualsImportWorker < BaseWorker
-  def perform(company_id, s3_file_path, original_filename)
+  def perform(user_id,  company_id, s3_file_path, original_filename)
     obj = S3_BUCKET.object(s3_file_path)
     if obj && obj.exists?
       tempfile_path = Tempfile.new(original_filename, Dir.tmpdir).path
@@ -7,6 +7,7 @@ class PublisherDailyActualsImportWorker < BaseWorker
 
       begin
         Importers::PublisherDailyActualsService.new(
+          user_id: user_id,
           company_id: company_id,
           file: tempfile_path,
           original_filename: original_filename
