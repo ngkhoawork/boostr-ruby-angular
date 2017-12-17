@@ -3,9 +3,9 @@ class Api::Publishers::ShowSerializer < Api::Publishers::Serializer
              :publisher_custom_field_obj, :address
 
   def fill_rate
-    return 0 if fill_rate_sum.zero?
+    return 0 if sum_of_filled_impressions.zero?
 
-    (fill_rate_sum / object.daily_actuals_for_previous_month.size).round(1)
+    (sum_of_available_impressions / sum_of_filled_impressions * 100).round(1)
   end
 
   def revenue_lifetime
@@ -30,7 +30,28 @@ class Api::Publishers::ShowSerializer < Api::Publishers::Serializer
 
   private
 
-  def fill_rate_sum
-    @_fill_rate_sum ||= object.daily_actuals_for_previous_month.sum(:fill_rate).to_f
+  def daily_actuals_for_previous_month
+    @_daily_actuals_for_previous_month ||=
+      object.daily_actuals.by_date(previous_month.beginning_of_month, previous_month.end_of_month)
+  end
+
+  def daily_actuals_for_current_year
+    @_daily_actuals_for_current_year ||= object.daily_actuals.by_date(current_date.beginning_of_year, current_date)
+  end
+
+  def current_date
+    @_current_month ||= Date.today
+  end
+
+  def previous_month
+    @_previous_month ||= current_date - 1.month
+  end
+
+  def sum_of_available_impressions
+    daily_actuals_for_previous_month.sum(:available_impressions)
+  end
+
+  def sum_of_filled_impressions
+    daily_actuals_for_previous_month.sum(:filled_impressions)
   end
 end
