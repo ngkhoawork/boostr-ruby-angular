@@ -46,7 +46,7 @@
         .form-group.col-xs-6
           %label{ for: 'estimate-monthly' }
             Estimated Monthly Impressions
-          %input.form-control{placeholder: 'Estimated Monthly Impressions', ng: { model: 'publisher.estimated_monthly_impressions' }, name: 'estimated_monthly_impressions' }
+          %input.form-control{placeholder: 'Estimated Monthly Impressions', ng: { model: 'publisher.estimated_monthly_impressions' }, name: 'estimated_monthly_impressions', 'numbers-with-commas': true, value: '0' }
 
       .row
         .form-group.col-md-6.bs-datepicker
