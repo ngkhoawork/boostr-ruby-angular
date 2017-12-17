@@ -142,7 +142,7 @@ describe Csv::PmpItemDailyActual do
       it 'creates new record' do
         product = create :product
         ad_unit = create :ad_unit, product: product
-        csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, ad_unit: ad_unit.name
+        csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, ad_unit: ad_unit.name, win_rate: nil
         csv_pmp_item_daily_actual.save
         expect(csv_pmp_item_daily_actual.pmp_item_daily_actual).to be_persisted
         expect(csv_pmp_item_daily_actual.pmp_item_daily_actual.reload.product).to eq(product)
@@ -159,6 +159,7 @@ describe Csv::PmpItemDailyActual do
       expect {
         described_class.import(file, user.id, 'pmp_item_daily_actual.csv')
       }.to change(PmpItemDailyActual, :count).by(2)
+      p PmpItemDailyActual.all.map(&:win_rate)
     end
 
     it 'creates csv import log' do
@@ -215,7 +216,7 @@ describe Csv::PmpItemDailyActual do
   def file
     @_file = CSV.generate do |csv|
       csv << ['Deal-ID', 'Date', 'Ad Unit', 'Bids', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Render Rate', 'Currency']
-      csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, 60.05, 99, 1000, 9.9, 'USD']
+      csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, nil, 99, 1000, 9.9, 'USD']
       csv << ['ssp001', '11/21/2017', 'Unit 4', 9, 99, 61.05, 99, 500, 9.9, 'USD']
     end
   end

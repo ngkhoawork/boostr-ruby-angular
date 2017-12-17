@@ -14,9 +14,14 @@ class Csv::PmpItemDailyActual
                 :win_rate,
                 :curr_cd
 
+  validates :date, :ad_unit, presence: true
+  validates :bids, :impressions, presence: true, numericality: true
+  validates :win_rate, :render_rate, numericality: true, allow_nil: true
   validate :validate_pmp_item_presence
   validate :validate_deal_id
   validate :validate_date_format
+  validate :validate_ecpm
+  validate :validate_revenue_loc
   
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -24,26 +29,28 @@ class Csv::PmpItemDailyActual
     end
   end
 
-  def valid?
-    prepare_pmp_item_daily_actual
-    pmp_item_daily_actual.valid? & super
-  end
-
   def error_messages
-    keys = errors.messages.keys + pmp_item_daily_actual.errors.messages.keys
-    keys.uniq.map do |attr| 
+    errors.messages.keys.map do |attr| 
       if attr == :base
-        errors.full_messages_for(attr) + pmp_item_daily_actual.errors.full_messages_for(attr)
-      elsif attr == :pmp_item
-        errors.full_messages_for(attr).try(:first)
+        errors.full_messages_for(attr)
       else
-        errors.full_messages_for(attr).try(:first) || pmp_item_daily_actual.errors.full_messages_for(attr).try(:first)
+        errors.full_messages_for(attr).first
       end
-    end.flatten.compact
+    end.flatten
   end
 
   def save
-    prepare_pmp_item_daily_actual
+    pmp_item_daily_actual.date = parsed_date
+    pmp_item_daily_actual.ad_unit = ad_unit
+    pmp_item_daily_actual.pmp_item = pmp_item
+    pmp_item_daily_actual.bids = bids
+    pmp_item_daily_actual.impressions = impressions
+    pmp_item_daily_actual.win_rate = win_rate
+    pmp_item_daily_actual.price = price
+    pmp_item_daily_actual.revenue_loc = revenue_loc
+    pmp_item_daily_actual.render_rate = render_rate
+    pmp_item_daily_actual.product = product
+    pmp_item_daily_actual.imported = true
     pmp_item_daily_actual.save!
   end
 
@@ -99,6 +106,24 @@ class Csv::PmpItemDailyActual
 
   private
 
+  def validate_ecpm
+    validate_numeric('eCPM', price)
+  end
+
+  def validate_revenue_loc
+    validate_numeric('Revenue', revenue_loc)
+  end
+
+  def validate_numeric(name, val)
+    if val.blank?
+      errors.add(:base, "#{name} can't be blank") 
+    elsif val.is_a? String
+      Float(val) rescue errors.add(:base, "#{name} is not a number") 
+    elsif !val.is_a? Numeric
+      errors.add(:base, "#{name} is not a number")
+    end
+  end
+
   def validate_pmp_item_presence
     errors.add(:pmp_item, "with Deal-Id #{ssp_deal_id} could not be found") if pmp_item.nil? && !ssp_deal_id.blank?
   end
@@ -138,20 +163,6 @@ class Csv::PmpItemDailyActual
       return false
     end
     return true
-  end
-
-  def prepare_pmp_item_daily_actual
-    pmp_item_daily_actual.date = parsed_date
-    pmp_item_daily_actual.ad_unit = ad_unit
-    pmp_item_daily_actual.pmp_item = pmp_item
-    pmp_item_daily_actual.bids = bids
-    pmp_item_daily_actual.impressions = impressions
-    pmp_item_daily_actual.win_rate = win_rate
-    pmp_item_daily_actual.price = price
-    pmp_item_daily_actual.revenue_loc = revenue_loc
-    pmp_item_daily_actual.render_rate = render_rate
-    pmp_item_daily_actual.imported = true
-    pmp_item_daily_actual.product = product
   end
 
   def self.build(row, company)

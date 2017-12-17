@@ -5,40 +5,21 @@ class PmpItemDailyActual < ActiveRecord::Base
   belongs_to :product
 
   validates :date, :ad_unit, presence: true
-  validates :bids, :impressions, presence: true, numericality: true
-  validates :win_rate, :render_rate, numericality: true, allow_nil: true
-  validate  :validate_ecpm
-  validate  :validate_revenue_loc
+  validates :bids, :impressions, :revenue_loc, :price, presence: true, numericality: true
+  validates :render_rate, numericality: true, allow_nil: true
 
   scope :latest, -> { order('date DESC') }
 
-  before_validation :convert_currency, :set_default_values
+  before_save :convert_currency
+  before_save :set_default_values 
   after_save :update_pmp_item, if: :not_imported?
   after_save :update_pmp_end_date, if: :not_imported?
   after_destroy { pmp_item.calculate! }
 
   private
 
-  def validate_ecpm
-    validate_numeric('eCPM', price_before_type_cast)
-  end
-
-  def validate_revenue_loc
-    validate_numeric('Revenue', revenue_loc_before_type_cast)
-  end
-
-  def validate_numeric(name, val)
-    if val.blank?
-      errors.add(:base, "#{name} can't be blank") 
-    elsif val.is_a?(String)
-      Float(val) rescue errors.add(:base, "#{name} is not a number") 
-    elsif !val.is_a? Numeric
-      errors.add(:base, "#{name} is not a number")
-    end
-  end
-
   def set_default_values
-    self.win_rate ||= (bids/impressions*100 rescue nil)
+    self.win_rate ||= bids.to_f/impressions.to_f*100 rescue nil
   end
 
   def convert_currency
