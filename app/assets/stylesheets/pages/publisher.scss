@@ -104,6 +104,48 @@
     }
   }
 
+  div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: auto;
+    padding: 10px 20px 10px 20px;
+    background: white;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+    box-shadow: -1px 9px 36px -6px rgba(163,162,180,0.65);
+
+    p {
+      margin: 0;
+      padding: 0;
+    }
+
+    span {
+      display: inline-block;
+      width: auto;
+      text-align: center;
+    }
+
+    p:first-child {
+      color: #FF7E30;
+      font-size: 14px;
+    }
+
+    p:nth-child(2) {
+      width: auto;
+      color: #2B3C49;
+      font-size: 16px;
+      font-weight: bold;
+      margin: 3px 0;
+    }
+
+    p:nth-child(3) {
+      width: auto;
+      color: #A3ACB4;
+      font-size: 12px;
+    }
+  }
+
   .revenue-chart, .publisher-chart {
     height: auto;
     .axis {
@@ -131,17 +173,28 @@
       stroke-width: 1px;
       shape-rendering: crispEdges;
     }
+
     .axis path,
     .axis line {
       fill: none;
       stroke: #d9dde0;
       shape-rendering: crispEdges;
     }
-    .tick {
-      font-size: 12px;
-      .x-tick-text {
-        font-size: 11px;
-      }
+
+    .x-tick-text {
+      font-size: 11px;
+    }
+
+    .line {
+      fill: transparent;
+      stroke: #ff7200;
+      stroke-width: 3px;
+    }
+
+    circle {
+      stroke: #ff7200;
+      fill: #ff7200;
+      cursor: pointer;
     }
   }
 }

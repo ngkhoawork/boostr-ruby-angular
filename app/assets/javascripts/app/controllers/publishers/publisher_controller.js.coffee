@@ -42,14 +42,14 @@
         $scope.renewal_term_fields = settings.renewal_term_fields
 
     transformData = (data) ->
-      result = {values: [], months: []}
+      result = {values: [], months: [], alternative: []}
       data.forEach (d) ->
         result.values.push(d.revenue)
         result.months.push({label: moment(d.date).format('MMM DD'), date: moment(d.date).format('YYYY-MM-DD')})
+        result.alternative.push({date: moment(d.date).format("D-MMM-YY"), close: d.revenue})
       result
 
     $scope.updatePublisher = (publisher) ->
-      console.log(publisher)
 
       publisher.type_id = publisher.type.id if publisher.type
       publisher.renewal_term_id = publisher.renewal_term.id if publisher.renewal_term
@@ -112,87 +112,96 @@
       delay = 1000
       duration = 2000
       margin =
-        top: 10
-        left: 70
-        right: 10
-        bottom: 40
-      minWidth = revenueData.months.length * 60
+        top: 30
+        right: 20
+        bottom: 30
+        left: 50
+      minWidth = revenueData.months.length * 10
       width = chartContainer.width() - margin.left - margin.right
       width = minWidth if width < minWidth
       height = 400
+      parseDate = d3.time.format('%d-%b-%y').parse
+      formatTime = d3.time.format('%e %B')
 
-      months = revenueData.months
-      currentMonthIndex = _.findIndex months, {date: moment().format('YYYY-MM-DD')}
-      colors = d3.scale.category10()
-      dataset = revenueData
+      x = d3.time.scale().range([
+        0
+        width
+      ])
+      y = d3.scale.linear().range([
+        height
+        0
+      ])
+
+      xAxis = d3.svg.axis()
+        .scale(x)
+        .orient('bottom')
+        .outerTickSize(0)
+        .innerTickSize(0)
+        .tickPadding(10)
+        .tickFormat (v, i) ->
+          tick = d3.select(this)
+          tick.attr 'class', 'x-tick-text'
+          return moment(v).format('MMM DD')
+
+      yAxis = d3.svg.axis()
+        .scale(y)
+        .orient('left')
+        .innerTickSize(-width)
+        .tickPadding(10)
+        .outerTickSize(0)
+        .tickFormat (v) -> $filter('formatMoney')(v)
+
+      valueline = d3.svg.line().x((d) ->
+        x d.date
+      ).y((d) ->
+        y d.close
+      )
+
+      div = d3.select("#daily-revenue-chart-container").append('div').attr('class', 'tooltip').style('opacity', 0)
 
       svg = d3.select(chartId)
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
-        .html('')
-        .append('g')
-        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+        .append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-      maxValue = (d3.max [dataset], (item) -> d3.max item.values) || 0
-      yMax = maxValue * 1.2
+      revenueData.alternative.forEach (data) ->
+        data.date = parseDate(data.date)
+        data.close = +data.close
 
-      x = d3.scale.ordinal().domain([0..months.length - 1]).rangePoints([width / months.length, width - width / months.length])
-      y = d3.scale.linear().domain([yMax || 1, 0]).rangeRound([0, height])
-
-      xAxis = d3.svg.axis().scale(x).orient('bottom')
-      .outerTickSize(0)
-      .innerTickSize(0)
-      .tickPadding(10)
-      .tickFormat (v, i) ->
-        tick = d3.select(this)
-        tick.attr 'class', 'x-tick-text'
-        if currentMonthIndex == v
-          tick
-            .style 'font-weight', 'bold'
-            .style 'font-size', '14px'
-        months[v].label
-
-      yAxis = d3.svg.axis().scale(y).orient('left')
-        .innerTickSize(-width)
-        .tickPadding(10)
-        .outerTickSize(0)
-        .ticks(if yMax > 6 then 6 else yMax || 1)
-        .tickFormat (v) -> $filter('formatMoney')(v)
-      yAxis.tickValues([0]) if yMax == 0
+        x.domain d3.extent(revenueData.alternative, (d) ->
+          d.date
+        )
+        y.domain [
+          0
+          d3.max(revenueData.alternative, (d) ->
+            d.close
+          )
+        ]
 
       svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')').call xAxis
       svg.append('g').attr('class', 'axis').call yAxis
 
-      if currentMonthIndex && currentMonthIndex != -1
-        svg.append('line')
-          .attr('class', 'month-line')
-          .attr 'x1', x(currentMonthIndex)
-          .attr 'y1', height
-          .attr 'x2', x(currentMonthIndex)
-          .attr 'y2', height
-          .transition()
-          .delay(delay / 2)
-          .duration(duration / 2)
-          .ease('linear')
-          .attr('y1', 0)
+      svg.append('path').attr('class', 'line')
+        .attr('d', valueline(revenueData.alternative))
+        .transition()
+        .delay(delay / 2)
+        .duration(duration / 2)
 
-      graphLine = d3.svg.line()
-      .x((value, i) -> x(i))
-      .y((value, i) -> y(value))
-      .defined((value, i) -> _.isNumber value)
+      svg.selectAll('dot').data(revenueData.alternative).enter().append('circle').attr('r', 4).attr('cx', (d) ->
+        x d.date
+      ).attr('cy', (d) ->
+        y d.close
+      ).on('mouseover', (d) ->
+        div.transition().duration(200).style 'opacity', .9
+        matrix = @getScreenCTM().translate(+@getAttribute('cx'), +@getAttribute('cy'))
 
-      graphsContainer = svg.append('g').attr('class', 'graphs-container')
-
-      graphs = graphsContainer.selectAll('.graph')
-      .data([dataset])
-      .enter()
-      .append('path')
-      .attr('class', 'graph')
-      .attr 'stroke', "#ff7200"
-      .attr 'd', -> graphLine(_.map months, -> 0)
-      .transition()
-      .duration(duration)
-      .attr 'd', (d) -> graphLine(d.values)
+        div.html("<p>" + moment(d.date).format('MMM DD') + "</p>" + "<span>" + $filter('formatMoney')(d.close) + "</span>")
+          .style('left', window.pageXOffset + matrix.e + - 30 + 'px')
+          .style 'top', window.pageYOffset + matrix.f - 230 + 'px'
+        return
+      ).on 'mouseout', (d) ->
+        div.transition().duration(500).style 'opacity', 0
+        return
 
     $scope.$on 'updated_publisher_detail', ->
       $scope.init()
