@@ -42,7 +42,7 @@
       resource.delete params,
         (resp) ->
           deferred.resolve(resp)
-          $location.url("/publishers")
+          $rootScope.$broadcast 'updated_publishers'
         (err) ->
           deferred.reject(err)
       deferred.promise

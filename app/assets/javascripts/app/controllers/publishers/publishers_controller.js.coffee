@@ -27,6 +27,9 @@
         if !this[id] then this[id] = {}
         this[id].locked = bool
 
+    $scope.teamFilter = (value) ->
+      if value then PublishersFilter.teamFilter = value else PublishersFilter.teamFilter
+
     $scope.filter =
       stages: []
       types: []
@@ -80,12 +83,15 @@
       $scope.getPublishers()
 
     $scope.init = ->
-      $scope.teamFilter = $scope.publisherTypes[0]
+      if $scope.teamFilter()
+        $scope.teamFilter $scope.teamFilter()
+      else
+        $scope.teamFilter $scope.publisherTypes[0]
       $scope.getPublishers()
       $scope.getPublisherSettings()
 
     $scope.filterPublishers = (type) ->
-      $scope.teamFilter = type
+      $scope.teamFilter type
       $scope.getPublishers()
 
     $scope.getPublisherSettings = () ->
@@ -104,7 +110,7 @@
       )
 
     $scope.getPublishers = (nextPage) ->
-      if !nextPage then resetPagination()
+      if !nextPage then page = 1
       params = getParams()
       switch $scope.view
         when 'list'
@@ -130,6 +136,17 @@
         setLoading(false)
       , (err) ->
         setLoading(false, err)
+
+    $scope.showEditModal = (publisher) ->
+      $scope.modalInstance = $modal.open
+        templateUrl: 'modals/publisher_form.html'
+        size: 'md'
+        controller: 'PablisherActionsController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          publisher: ->
+            angular.copy publisher
 
     $scope.deletePublisher = (publisher) ->
       if confirm('Are you sure you want to delete "' + publisher.name + '"?')
@@ -187,6 +204,12 @@
       $scope.init()
 
     $scope.init()
+
+    $scope.usersToString = (users) ->
+      if users
+        names = _.map users, (user) -> user.name
+        names.join ', '
+      else ''
 
     $scope.onMoved = (publisher, publisherIndex, columnIndex) ->
       $scope.history.set publisher.id, 'from',

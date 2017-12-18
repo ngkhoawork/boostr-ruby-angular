@@ -28,6 +28,10 @@
                 Deal
                 %a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}
                     {{activity.deal.name}}
+            %p{'ng-if': 'activity.publisher'}
+                Publisher
+                %a{href: '', 'ng-href': '/publishers/{{activity.publisher.id}}'}
+                    {{activity.publisher.name}}
             %p{'ng-if': 'activity.activity_type.name != "Email"','ng-bind-html': 'getHtml(activity.comment)'}
             %div{'ng-if': 'activity.activity_type.name == "Email"'}
                 %p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}

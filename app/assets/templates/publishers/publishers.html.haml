@@ -64,7 +64,7 @@
         %add-button{'ng-click': 'showNewPublisherModal()'}
           Add Publisher
       .header-item.switch-row
-        %span{'ng-repeat': 'type in publisherTypes', 'ng-class': '{active: type.name == teamFilter.name}', 'ng-click': 'filterPublishers(type)'}
+        %span{'ng-repeat': 'type in publisherTypes', 'ng-class': '{active: type.name == teamFilter().name}', 'ng-click': 'filterPublishers(type)'}
           {{type.name}}
       .header-item.publisher-search
         %i.fa.fa-search
@@ -92,10 +92,10 @@
                 %th
                   .z-sortable{by: 'name', default: true}
                     Name
-                %th
+                %th.right
                   .z-sortable{by: 'revenue_ytd'}
                     Revenue YTD
-                %th
+                %th.right
                   .z-sortable{by: 'estimated_monthly_impressions'}
                     Est. Monthly Impressions
                 %th
@@ -197,15 +197,13 @@
                 %a{'ng-href': '{{"/publishers/" + publisher.id}}'} {{publisher.name}}
               %span Estimated Impressions {{publisher.estimated_monthly_impressions}}
 
-              %div{'ng-repeat': 'user in publisher.users'}
-                %span
-                  {{user.name}}
+              %div {{usersToString(publisher.users)}}
 
               %div.block-menu
                 %div{'dropdown': '', 'keyboard-nav': ''}
                   %i.fa.fa-ellipsis-h{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}
                   .dropdown-menu{'dropdown-menu': '', role: 'menu'}
                     .dropdown-option
-                      %a{href: '', 'ng-click': 'showDealEditModal(publisher)'} Edit
+                      %a{href: '', 'ng-click': 'showEditModal(publisher)'} Edit
                     .dropdown-option
                       %a{href: '', 'ng-click': 'deletePublisher(publisher)'} Delete
