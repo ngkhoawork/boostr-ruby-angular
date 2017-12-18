@@ -53,6 +53,7 @@
 
       publisher.type_id = publisher.type.id if publisher.type
       publisher.renewal_term_id = publisher.renewal_term.id if publisher.renewal_term
+      publisher.publisher_stage_id = publisher.publisher_stage.id if publisher.publisher_stage
       publisher.publisher_custom_field_attributes = publisher.publisher_custom_field_obj
 
       Publisher.update(id: $scope.currentPublisher.id, publisher: publisher).then (response) ->

@@ -4,8 +4,6 @@
       {{currentPublisher.name}}
       %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentPublisher)'}
       %i.fa.fa-trash.delete-deal{'ng-click': 'deletePublisher(currentPublisher)'}
-    %span.stage-label{'ng-show': 'currentPublisher.publisher_stage'}
-      {{currentPublisher.publisher_stage.name}}
   .detail-info
     %a{target: "_blank", href: "{{currentPublisher.website}}"}
       {{currentPublisher.website}}
@@ -46,4 +44,21 @@
             Revenue YTD
           .col-title
             {{ currentPublisher.revenue_ytd ? (currentPublisher.revenue_ytd | currency: '$' : '0') : '$0' }}
+    .stats-col
+      .col-body-wrap
+        .col-body
+          .col-description
+            Current Stage
+          .col-title
+            .dropdown
+              %button.btn.dropdown-toggle.z-dd-ar{'data-toggle': 'dropdown', type: 'button'}
+                %span.title.editable
+                  {{currentPublisher.publisher_stage.name || 'Select stage'}}
+                  %span.no-wrap-line
+                    {{currentPublisher.publisher_stage ? currentPublisher.publisher_stage.probability + '%' : ""}}
+                    %span.caret
+              %ul.dropdown-menu
+                %li{'ng-repeat': 'stage in publisher_stages', 'ng-class': '{active: currentPublisher.publisher_stage.id == stage.id}'}
+                  %a{'href': '', 'ng-click': ' currentPublisher.publisher_stage = stage; updatePublisher(currentPublisher)'}
+                    %span.text {{stage.name}} {{stage.probability}}%
 
