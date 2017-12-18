@@ -64,7 +64,7 @@
         .text-area{ ng: { 'switch-when': 'note' } }
           %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentPublisher.publisher_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pubCustomField.field_label}}', 'ng-blur': 'updatePublisher(currentPublisher)' }
         .currency-field{ ng: { 'switch-when': 'number' } }
-          %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "currentPublisher.publisher_custom_field_obj[fieldName]", 'on-after-save': 'updatePublisher(currentPublisher)'}
+          %div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "currentPublisher.publisher_custom_field_obj[fieldName]", 'on-after-save': 'updatePublisher(currentPublisher)', 'numbers-with-commas': true}
         .currency-field{ ng: { 'switch-when': 'number_4_dec' } }
           %div{'click-to-edit':'click-to-edit', type: "number", decimal: '4', 'ng-model': "currentPublisher.publisher_custom_field_obj[fieldName]", 'on-after-save': 'updatePublisher(currentPublisher)'}
         .currency-field{ ng: { 'switch-when': 'integer' } }

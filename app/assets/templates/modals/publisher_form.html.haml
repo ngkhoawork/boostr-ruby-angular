@@ -82,7 +82,8 @@
           {{pubCustomField.field_label}}
           %span.star{ 'ng-if': "pubCustomField.is_required == true" }
             *
-        %input.form-control{ 'ng-if': "pubCustomField.field_type != 'note' && pubCustomField.field_type != 'datetime' && pubCustomField.field_type != 'boolean' && pubCustomField.field_type != 'dropdown' && pubCustomField.field_type != 'sum'", placeholder: 'Enter {{pubCustomField.field_label}}', ng: { model: 'publisher.publisher_custom_field_obj[fieldName]' }, name: '{{fieldName}}' }
+        %input.form-control{ 'ng-if': "pubCustomField.field_type != 'number' && pubCustomField.field_type != 'note' && pubCustomField.field_type != 'datetime' && pubCustomField.field_type != 'boolean' && pubCustomField.field_type != 'dropdown' && pubCustomField.field_type != 'sum'", placeholder: 'Enter {{pubCustomField.field_label}}', ng: { model: 'publisher.publisher_custom_field_obj[fieldName]' }, name: '{{fieldName}}' }
+        %input.form-control{'ng-if': "pubCustomField.field_type == 'number'", 'msd-elastic': '', 'ng-model': "publisher.publisher_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pubCustomField.field_label}}', 'numbers-with-commas': true}
         %textarea.form-control{ 'ng-if': "pubCustomField.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "publisher.publisher_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pubCustomField.field_label}}' }
         .bs-datepicker
           %input.form-control{ 'ng-if': "pubCustomField.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'publisher.publisher_custom_field_obj[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{pubCustomField.field_label}}' }

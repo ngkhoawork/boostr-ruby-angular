@@ -15,5 +15,6 @@
       parseInt viewValue.replace(/,/g, '')
 
     scope.$watch attrs.ngModel, (value) ->
+      value = 0 if !value
       ngModel.$viewValue = formatWithCommas(value)
       element.val(ngModel.$viewValue)
