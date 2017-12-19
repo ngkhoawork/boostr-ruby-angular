@@ -1,6 +1,6 @@
 @app.controller 'PablisherController', [
-  '$scope', '$modal', '$filter', '$routeParams', 'Publisher', 'PublisherDetails', 'PublisherMembers', '$rootScope', 'User', 'PublisherCustomFieldName', 'PublisherAttachment'
-  ($scope,   $modal,   $filter,   $routeParams,   Publisher,   PublisherDetails, PublisherMembers, $rootScope, User, PublisherCustomFieldName, PublisherAttachment) ->
+  '$scope', '$modal', '$filter', '$routeParams', 'Publisher', 'PublisherDetails', 'PublisherMembers', '$rootScope', 'User', 'PublisherCustomFieldName', 'PublisherAttachment', 'PublisherContact'
+  ($scope,   $modal,   $filter,   $routeParams,   Publisher,   PublisherDetails, PublisherMembers, $rootScope, User, PublisherCustomFieldName, PublisherAttachment, PublisherContact) ->
 
     $scope.currentPublisher = {}
 
@@ -71,6 +71,16 @@
 
       PublisherMembers.update(id: member.id, publisher_member: params).then (res) ->
         $rootScope.$broadcast 'updated_publisher_detail'
+
+    $scope.deleteMember = (member) ->
+      if confirm('Are you sure you want to delete "' +  member.name + '"?')
+        PublisherMembers.delete(id: member.id).then (res) ->
+          $rootScope.$broadcast 'updated_publisher_detail'
+
+    $scope.deleteContact = (contact) ->
+      if confirm('Are you sure you want to delete "' +  contact.name + '"?')
+        PublisherContact.delete(id: contact.id).then (res) ->
+          $rootScope.$broadcast 'updated_publisher_detail'
 
     $scope.showLinkExistingUser = ->
       User.query().$promise.then (users) ->

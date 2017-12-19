@@ -470,8 +470,8 @@ Rails.application.routes.draw do
       put :update_positions, on: :collection
     end
 
-    resources :publisher_members, only: [:create, :update]
-    resources :publisher_contacts, only: [] do
+    resources :publisher_members, only: [:create, :update, :destroy]
+    resources :publisher_contacts do
       put :add, on: :member
     end
   end

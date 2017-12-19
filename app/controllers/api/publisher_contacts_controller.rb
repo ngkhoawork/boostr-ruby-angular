@@ -9,6 +9,12 @@ class Api::PublisherContactsController < ApplicationController
     end
   end
 
+  def destroy
+    contact.destroy
+
+    render nothing: true
+  end
+
   private
 
   def publisher

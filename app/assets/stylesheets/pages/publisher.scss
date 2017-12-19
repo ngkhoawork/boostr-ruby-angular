@@ -198,6 +198,30 @@
         border-color: $secondary-font-color;
       }
     }
+  }
 
+  .member-table, .contact-table {
+    .publisher-delete-icon {
+      color: $secondary-font-color;
+      margin-left: 8px;
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      padding: 4px 6px;
+      font-size: 20px;
+      border-radius: 5px;
+      &:hover {
+        background-color: $secondary-font-color;
+        color: white;
+      }
+    }
+
+    .publisher-delete-icon {
+      visibility: hidden;
+    }
+
+    td:hover .publisher-delete-icon {
+      visibility: visible;
+    }
   }
 }

@@ -10,7 +10,7 @@
               {{ $select.selected.name }}
             %ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }
               %div{ ng: { bind: { html: 'user.name' } } }
-  %table.table.table-striped
+  %table.table.table-striped.member-table
     %thead
       %tr
         %th Member
@@ -20,11 +20,13 @@
       %tr{ ng: { repeat: "member in publisherMembers | orderBy: 'name'"} }
         %td
           {{member.name}}
+
+          %i.fa.fa-trash.publisher-delete-icon{'ng-if': '!member.owner', 'ng-click': 'deleteMember(member)'}
         %td
           .dropdown
             %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
               %span.editable{'ng-class': '{"not-selected": !member.member_role}'}
-                {{member.member_role.name ? member.member_role.name : 'Select Stage'}}
+                {{member.member_role.name ? member.member_role.name : 'Select Role'}}
               %span.caret
             %ul.dropdown-menu
               %li{'ng-repeat': 'role in memberRoles', 'ng-class': '{active: member.member_role.id == role.id}'}

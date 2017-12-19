@@ -21,6 +21,12 @@ class Api::PublisherMembersController < ApplicationController
     end
   end
 
+  def destroy
+    publisher_member.destroy
+
+    render nothing: true
+  end
+
   private
 
   def publisher_member
