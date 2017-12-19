@@ -15,6 +15,16 @@ describe Api::PublisherContactsController, type: :controller do
     end
   end
 
+  describe 'DELETE #destroy' do
+    it 'remove contact from publisher successfully' do
+      contact = create :contact, company: company, publisher: publisher
+
+      delete :destroy, id: contact.id
+
+      expect(contact.reload.publisher_id).to be_nil
+    end
+  end
+
   private
 
   def company

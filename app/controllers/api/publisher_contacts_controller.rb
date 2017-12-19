@@ -10,7 +10,7 @@ class Api::PublisherContactsController < ApplicationController
   end
 
   def destroy
-    contact.destroy
+    contact.update(publisher_id: nil)
 
     render nothing: true
   end
