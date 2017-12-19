@@ -15,10 +15,10 @@ class Request < ActiveRecord::Base
   scope :by_request_type, -> (type) { where(request_type: type) if type.present? }
   scope :by_status, -> (status) { where(status: status) if status.present? }
 
-  after_create :notify_assignee
+  after_create :new_request_notification
   after_update do
-    notify_assignee if status_changed?
-    notify_requester if status_changed?
+    new_request_notification if status_changed?
+    request_complete_notification if status_changed?
   end
 
   def request_is_completed
@@ -31,9 +31,9 @@ class Request < ActiveRecord::Base
 
   private
 
-  def notify_assignee
+  def new_request_notification
     if status == 'New'
-      RequestsMailer.new_request(request_mail_recipients, id).deliver_later(wait: 10.seconds, queue: "default")
+      RequestsMailer.new_request(request_mail_recipients, id).deliver_later(wait: 5.seconds, queue: "default")
     end
   end
 
@@ -41,13 +41,17 @@ class Request < ActiveRecord::Base
     company.users.where("#{request_type.downcase}_requests_access": true).map(&:email)
   end
 
-  def notify_requester
+  def request_complete_notification
     if status == 'Completed' || status == 'Denied'
-      RequestsMailer.update_request(requester_email + request_mail_recipients, id).deliver_later(wait: 10.seconds, queue: "default")
+      RequestsMailer.update_request(requester_email + assignee_email, id).deliver_later(wait: 5.seconds, queue: "default")
     end
   end
 
   def requester_email
     [requester.try(:email)]
+  end
+
+  def assignee_email
+    [assignee&.email]
   end
 end

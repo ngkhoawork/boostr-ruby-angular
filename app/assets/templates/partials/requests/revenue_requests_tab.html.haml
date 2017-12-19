@@ -16,7 +16,7 @@
         %td
           {{request.requester.name}}
         %td
-          %a{'href': '', 'ng-href': '/deals/{{request.deal.id}}'}
+          %a{'href': '', 'target': '_blank', 'ng-href': '/deals/{{request.deal.id}}', 'ng-click': '$event.stopPropagation()'}
             {{request.deal.name}}
         %td
           %a{'href': '', 'target': '_blank', 'ng-href': '/revenue/ios/{{request.deal.io_id}}', 'ng-click': '$event.stopPropagation()'}
