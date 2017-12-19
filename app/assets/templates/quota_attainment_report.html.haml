@@ -1,0 +1,61 @@
+#quota-attainment-report.z-styles.z-report
+  .container-fluid
+    .row.mb20
+      .reports-header
+        .header-cell.main-title
+          Quota Attainment
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply'}
+            %z-filter-field{data: 'userStatus', 'save-as': '{"user_status": "id"}', id: 'user-status'} User status
+            %z-filter-field{data: 'timePeriods', 'save-as': '{"time_period_id": "id"}', 'is-all': 'false', id: 'time-period-field', 'order-by': '["period_type", "start_date"]'} Time period
+
+        .header-cell
+          .pull-right
+            %download-button{'ng-click': 'export()'}
+              Export
+
+    .row
+      .col-xs-12.pl0
+        .block
+          .table-wrapper
+            %table.table.table-hover.nowrap
+              %thead
+                %tr.z-sortable-prime{'z-fixed-header': true, watch: '["members"]'}
+                  %th
+                    %span.z-sortable{by: 'name'} Name
+                  %th
+                    %span.z-sortable{by: 'team.name'} Team
+                  %th.right
+                    %span.z-sortable{by: 'quota'} Quota
+                  %th.right
+                    %span.z-sortable{by: 'revenue'} Revenue
+                  %th.right
+                    %span.z-sortable{by: 'weighted_pipeline'} Pipeline (W)
+                  %th.right
+                    %span.z-sortable{by: 'amount'} Forecast Amt
+                  %th.right
+                    %span.z-sortable{by: 'gap_to_quota'} Gap to Quota
+                  %th.right
+                    %span.z-sortable{by: 'percent_to_quota'} % to Quota
+                  %th.right
+                    %span.z-sortable{by: 'percent_booked'} % Booked
+              %tbody.members{ 'ng-repeat': 'row in members| orderBy: zSort.by : zSort.rev' }
+                %tr
+                  %td
+                    {{ row.name }}
+                  %td
+                    {{ row.team.name }}
+                  %td.right
+                    {{ row.quota | currency: '$': 0 }}
+                  %td.weighted-pipeline.right
+                    {{ row.revenue | currency: '$': 0 }}
+                  %td.weighted-pipeline.right
+                    {{ row.weighted_pipeline | currency: '$': 0 }}
+                  %td.right
+                    {{ row.amount | currency: '$': 0 }}
+                  %td.right
+                    {{ row.gap_to_quota | currency: '$': 0 }}
+                  %td.right
+                    {{ row.percent_to_quota | number: 0 }}%
+                  %td.right
+                    {{ row.percent_booked | number: 0 }}%

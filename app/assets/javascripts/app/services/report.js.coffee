@@ -15,6 +15,10 @@
                 method: 'GET'
                 url: '/api/reports/product_monthly_summary'
                 isArray: false
+            quota_attainment:
+                method: 'GET'
+                url: '/api/reports/quota_attainment'
+                isArray: true
 
         return resource
     ]
