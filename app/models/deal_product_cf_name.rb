@@ -8,6 +8,7 @@ class DealProductCfName < ActiveRecord::Base
   scope :by_type, -> type { where(field_type: type) if type.present? }
   scope :by_index, -> field_index { where(field_index: field_index) if field_index.present? }
   scope :position_asc, -> { order('position asc') }
+  scope :active, -> { where('disabled IS NOT TRUE') }
 
   after_create do
     self.company.deal_product_cfs.update_all(field_name => nil)
@@ -15,17 +16,17 @@ class DealProductCfName < ActiveRecord::Base
 
   def self.get_field_limit(type)
     field_limits = {
-        "currency" => 7,
-        "text" => 5,
-        "note" => 2,
-        "datetime" => 7,
-        "number" => 7,
-        "number_4_dec" => 7,
-        "integer" => 7,
-        "boolean" => 3,
-        "percentage" => 5,
-        "dropdown" => 7,
-        "sum" => 7
+        "currency" => 10,
+        "text" => 10,
+        "note" => 10,
+        "datetime" => 10,
+        "number" => 10,
+        "number_4_dec" => 10,
+        "integer" => 10,
+        "boolean" => 10,
+        "percentage" => 10,
+        "dropdown" => 10,
+        "sum" => 10
     }
     field_limits[type]
   end

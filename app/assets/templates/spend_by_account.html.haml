@@ -1,0 +1,65 @@
+#spend-by-account-report.z-styles.z-report
+  .container-fluid
+    .row.mb20
+      .reports-header
+        .header-cell.main-title
+          Spend By Account Report
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply'}
+            %z-filter-field{data: 'type', 'save-as': '{client_types: "id"}'} Type
+            %z-filter-field{type: 'multiselect', data: 'categories', 'save-as': '{"category_ids[]": "id"}'} Category
+            %z-filter-field{data: 'regions', 'save-as': '{"client_region_ids[]": "id"}'} Region
+            %z-filter-field{data: 'segments', 'save-as': '{"client_segment_ids[]": "id"}'} Segment
+            %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{start_date: "start_date"}', 'order-by': '["-start_date"]', id: 'start-date-field'} Start Date
+            %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{end_date: "end_date"}', 'order-by': '["-end_date"]', id: 'end-date-field'} End Date
+
+        .header-cell
+          .pull-right
+            %download-button{'ng-click': 'export()'}
+              Export
+    .row
+      .col-md-12
+        .block
+          .table-wrapper
+            %table.table.table-hover
+              %thead
+                %tr.z-sortable-prime{'z-fixed-header': true, watch: '"spend_by_account"'}
+                  %th
+                    .z-sortable{by: 'name', default: true}
+                      Name
+                  %th
+                    .z-sortable{by: 'client_type'}
+                      Type
+                  %th
+                    .z-sortable{by: 'category_name'}
+                      Category
+                  %th
+                    .z-sortable{by: 'region_name'}
+                      Region
+                  %th
+                    .z-sortable{by: 'segment_name'}
+                      Segment
+                  %th
+                    .z-sortable{by: 'team_name'}
+                      Team
+                  %th
+                    .z-sortable{by: 'seller_names'}
+                      Seller
+                  %th{'ng-repeat': 'month in months'}
+                    .z-sortable{by: '["!!revenues[\""+month.id+"\"]", "revenues[\""+month.id+"\"]"]'} {{month.label}}
+
+              %tbody{infinite: {scroll: "loadMoreClients()", 'scroll-disabled': 'isLoading || allClientsLoaded'}}
+                %tr{ ng: { repeat: 'account in spend_by_account  | orderBy : zSort.by : zSort.rev' } }
+                  %td {{account.name}}
+                  %td {{account.client_type}}
+                  %td {{account.category_name}}
+                  %td {{account.region_name}}
+                  %td {{account.segment_name}}
+                  %td {{account.team_name}}
+                  %td {{account.seller_names}}
+                  %td{'ng-repeat': 'revenue in account.revenues track by $index'}
+                    {{ revenue ? (revenue | currency: '$' : '0') : '$0' }}
+
+                %tr{ ng: { if: 'spend_by_account.length == 0' }}
+                  %td.center.auto-colspan
+                    No Data for the Filters Selected

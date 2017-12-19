@@ -99,10 +99,10 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
   end
 
   def custom_fields
-    if is_deal && product_row && product_row.deal_product_cf.present?
+    if deal_product && deal_product.deal_product_cf.present?
       deal_product_cf_names.inject({}) do |custom_fields, deal_product_cf_name|
         field_name = deal_product_cf_name.field_name
-        custom_fields[field_name] = product_row.deal_product_cf[field_name]
+        custom_fields[field_name] = deal_product.deal_product_cf[field_name]
         custom_fields
       end
     else
@@ -139,7 +139,7 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
   end
 
   def product_row
-    @_product_row = case object_classname
+    @_product_row ||= case object_classname
       when 'DealProductBudget' then object.deal_product
       when 'ContentFeeProductBudget' then object.content_fee
       when 'DisplayLineItemBudget' then object.display_line_item
@@ -147,7 +147,19 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
   end
 
   def deal_product
-    @_deal_product ||= object.deal_product rescue nil
+    @_deal_product ||= if is_deal
+      product_row
+    else
+      io_deal_product
+    end
+  end
+
+  def io_deal_product
+    @_io_deal_product ||= if product_row.io
+      product_row.io.deal.deal_products.find{ |item| item.product_id == product_row.product_id } rescue nil
+    else
+      nil
+    end
   end
 
   def company

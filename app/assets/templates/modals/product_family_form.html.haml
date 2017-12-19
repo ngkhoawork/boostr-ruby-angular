@@ -1,0 +1,24 @@
+#product-family-modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header.text-center
+      {{ formType }} Product Family
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+      .form-group{ ng: { class:'{error: errors.name}'} }
+        %span.error-text {{errors.name}}
+        %label{ for: 'name' } Name
+        %span.star *
+        %input.form-control{ placeholder: 'Name', ng: { model: 'product_family.name' }, name: 'name' }
+
+      .form-group
+        %label{ for: 'active' } Active
+        .show-hide-remainder-form
+          .switch-remainder-form
+            %input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'product_family.active'}
+            %label{:for => "rem-act-modal-toggle"}
+              %span
+
+
+    .popup-modal-footer.text-center
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

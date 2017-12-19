@@ -11,23 +11,41 @@ feature 'Deals' do
 
   describe 'showing a list of deals filtered by stages' do
     let!(:another_open_stage) { create :stage, company: company, position: 2, probability: 50, name: 'Proposal' }
-    let!(:closed_stage) { create :stage, company: company, open: false, position: 3, probability: 100, name: 'Won' }
-    let!(:open_deal) { create :deal, company: company, stage: open_stage, advertiser: advertiser }
-    let!(:another_open_deal) { create :deal, company: company, stage: another_open_stage, advertiser: advertiser }
-    let!(:closed_deal) { create :deal, company: company, stage: closed_stage, advertiser: advertiser }
-    let!(:closed_deal2) { create :deal, company: company, stage: closed_stage, advertiser: advertiser }
+    let!(:closed_stage) { create :stage, company: company, position: 3, probability: 90, name: 'Won' }
+    let!(:another_open_deal) do
+      create :deal, company: company, stage: another_open_stage,
+                    advertiser: advertiser, created_by: user.id, updated_by: user.id
+    end
+    let!(:closed_deal) do
+      create :deal, company: company, stage: closed_stage,
+                    advertiser: advertiser, created_by: user.id, updated_by: user.id,
+                    closed_at: Date.today
+    end
+    let!(:closed_deal2) do
+      create :deal, company: company, stage: closed_stage,
+                    advertiser: advertiser, created_by: user.id, updated_by: user.id,
+                    closed_at: Date.today
+    end
+    let!(:open_deal) do
+      create :deal,
+        company: company,
+        stage: open_stage,
+        advertiser: advertiser,
+        created_by: user.id,
+        updated_by: user.id
+    end
 
     before do
       set_client_type(advertiser, company, 'Advertiser')
       set_client_type(agency, company, 'Agency')
-      open_deal.created_by = user.id
-      open_deal.updated_by = user.id
+
       login_as user, scope: :user
-      visit '/deals'
-      expect(page).to have_css('#deals')
     end
 
     it 'shows all open deals initially, then filters on stage clicks then deletes a couple', js: true do
+      visit '/deals'
+      expect(page).to have_css('#deals')
+
       expect(page).to have_css('.deals-table .deal-column', count: 3)
       expect(page).to have_css('.deals-table .deal-block', count: 4)
 

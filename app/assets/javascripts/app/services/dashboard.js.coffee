@@ -6,11 +6,11 @@
 
   @get = (params) ->
     deferred = $q.defer()
-    resource.get params, (team) ->
-#    resource.get params, (team) ->
-      deferred.resolve(team)
+    resource.get params, (data) ->
+      deferred.resolve(data)
+    , (error) ->
+      deferred.reject(error)
     deferred.promise
 
   return
-
 ]

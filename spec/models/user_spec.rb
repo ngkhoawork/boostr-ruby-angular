@@ -8,12 +8,19 @@ end
 RSpec.describe User, type: :model do
   let(:company) { Company.first }
   let(:user) { create :user }
+  let(:user_dimension) { UserDimension.find_by_id(user.id) }
 
   context 'before_update' do
     it 'promotes user to an admin if user type is changed to ADMIN' do
       expect(user.user_type).to_not eq ADMIN
       user.update(user_type: ADMIN)
       expect(user.user_type).to eq ADMIN
+    end
+  end
+
+  context 'after_create' do
+    it "user dimension with same id is created" do
+      expect(user_dimension.id).to equal(user.id)
     end
   end
 

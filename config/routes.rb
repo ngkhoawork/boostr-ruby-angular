@@ -179,7 +179,11 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :time_dimensions, only: [:index]
+    resources :time_dimensions, only: [:index] do
+      collection do
+        get :revenue_fact_dimension_months
+      end
+    end
 
     resources :countries, only: [:index]
     resources :api_configurations do
@@ -197,6 +201,7 @@ Rails.application.routes.draw do
 
     resources :users, only: [:index, :update] do
       collection do
+        post 'import'
         post 'starting_page'
         get :signed_in_user
       end
@@ -210,6 +215,7 @@ Rails.application.routes.draw do
       collection do
         get :search_clients
         get :filter_options
+        get :category_options
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index, :create, :update, :destroy] do
@@ -251,9 +257,11 @@ Rails.application.routes.draw do
         get :metadata
       end
     end
-    resources :revenue, only: [:index, :create] do
+    resources :revenue, only: [:create] do
       collection do
         get :forecast_detail
+        get :report_by_category, defaults: { format: :json }
+        get :report_by_account, defaults: { format: :json }
       end
     end
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
@@ -288,6 +296,7 @@ Rails.application.routes.draw do
     resources :deal_product_budgets, only: [:index, :create]
     resources :deal_products, only: [:index, :create]
     resources :stages, only: [:index, :create, :show, :update]
+    resources :product_families, only: [:index, :create, :update, :destroy]
     resources :products, only: [:index, :create, :update] do
       resources :ad_units, only: [:index, :create, :update, :destroy]
     end
@@ -320,6 +329,8 @@ Rails.application.routes.draw do
     end
     resources :forecasts, only: [:index, :show] do
       collection do
+        get :revenue_data
+        get :pipeline_data
         get :old_detail
         get :detail
         get :old_product_detail
@@ -327,7 +338,11 @@ Rails.application.routes.draw do
         post :run_forecast_calculation
       end
     end
-    resources :fields, only: [:index]
+    resources :fields, only: [:index] do
+      collection do
+        get :client_base_options
+      end
+    end
     resources :options, only: [:create, :update, :destroy]
     resources :validations, only: [:index, :update] do
       collection do
@@ -387,7 +402,13 @@ Rails.application.routes.draw do
     end
 
     resource :weighted_pipelines, only: [:show]
-    resource :dashboard, only: [:show]
+
+    resource :dashboard, only: [:show] do
+      collection do
+        get :pacing_alerts
+      end
+    end
+
     resource :company, only: [:show, :update]
     resources :initiatives, only: [:index, :create, :update, :destroy] do
       get 'smart_report', on: :collection

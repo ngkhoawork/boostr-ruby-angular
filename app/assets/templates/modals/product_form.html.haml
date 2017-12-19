@@ -11,19 +11,11 @@
         %input.form-control{ placeholder: 'Name', ng: { model: 'product.name' }, name: 'name' }
 
       .form-group
-        %label{ for: 'product-line' } Product Line
-        %ui-select{ name: 'product-line', ng: { model: 'product.product_line.option_id', disabled: true } }
-          %ui-select-match{ placeholder: 'Product Line' }
-            {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'option.id as option in product.product_line.options | filter: { name: $select.search }' }
-            %div{ ng: { bind: { html: 'option.name' } } }
-
-      .form-group
         %label{ for: 'family' } Family
-        %ui-select{ name: 'family', ng: { model: 'product.product_family.option_id', disabled: true } }
+        %ui-select{ name: 'family', ng: { model: 'product.product_family_id', disabled: true } }
           %ui-select-match{ placeholder: 'Family' }
             {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'option.id as option in product.product_family.options | filter: { name: $select.search }' }
+          %ui-select-choices{ repeat: 'option.id as option in product_families | filter: { name: $select.search }' }
             %div{ ng: { bind: { html: 'option.name' } } }
 
       .form-group

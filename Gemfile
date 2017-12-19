@@ -35,7 +35,6 @@ gem 'griddler-sendgrid'
 gem 'aws-sdk'
 gem 'responders'
 gem 'roar'
-gem 'money'
 gem 'countries'
 gem 'faraday'
 gem 'attr_encrypted', '~> 3.0.0'
@@ -52,6 +51,8 @@ gem 'active_record_union'
 gem 'user_agent_parser'
 gem 'geocoder'
 gem 'rack-cors', :require => 'rack/cors'
+gem 'smarter_csv'
+gem 'daemons'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
@@ -118,4 +119,5 @@ group :development, :test do
   source 'https://rails-assets.org' do
     gem 'rails-assets-angular-mocks'
   end
+  gem 'test_after_commit'
 end

@@ -1,6 +1,7 @@
 class AccountDimensionUpdaterService < BaseService
 
   def perform
+    return if client.deleted_at
     update_or_create_dimension if params_changed?
   end
 
@@ -21,6 +22,8 @@ class AccountDimensionUpdaterService < BaseService
       category_id: client.client_category_id,
       subcategory_id: client.client_subcategory_id,
       holding_company_id: client.holding_company_id,
+      client_region_id: client.client_region_id,
+      client_segment_id: client.client_segment_id,
       company_id: client.company_id }
   end
 

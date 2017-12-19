@@ -4,13 +4,14 @@ class NewForecastMember
   delegate :id, to: :member
   delegate :name, to: :member
 
-  attr_accessor :member, :time_period, :product, :start_date, :end_date, :quarter, :year
+  attr_accessor :member, :time_period, :product_family, :product, :start_date, :end_date, :quarter, :year
 
-  def initialize(member, time_period, product = nil, quarter = nil, year = nil)
+  def initialize(member, time_period, product_family = nil, product = nil, quarter = nil, year = nil)
     self.member = member
     self.time_period = time_period
     self.start_date = time_period.start_date
     self.end_date = time_period.end_date
+    self.product_family = product_family
     self.product = product
     self.quarter = quarter
     self.year = year
@@ -22,62 +23,6 @@ class NewForecastMember
 
   def type
     'member'
-  end
-
-  def cache_key
-    parts = []
-    parts << member.id
-    parts << member.updated_at
-    parts << start_date
-    parts << end_date
-    # Weighted pipeline
-    open_deals.each do |deal|
-      parts << deal.id
-      parts << deal.updated_at
-      parts << deal.stage.id
-      parts << deal.stage.updated_at
-    end
-
-    # Revenue
-    clients.each do |client|
-      parts << client.id
-      parts << client.updated_at
-    end
-
-    ios.each do |io|
-      parts << io.id
-      parts << io.updated_at
-      io.content_fee_product_budgets.each do |content_fee_product_budget|
-        parts << content_fee_product_budget.id
-        parts << content_fee_product_budget.updated_at
-      end
-
-      io.display_line_items.each do |display_line_item|
-        parts << display_line_item.id
-        parts << display_line_item.updated_at
-        display_line_item.display_line_item_budgets.each do |display_line_item_budget|
-          parts << display_line_item_budget.id
-          parts << display_line_item_budget.updated_at
-        end
-      end
-
-      io.io_members.each do |io_member|
-        parts << io_member.id
-        parts << io_member.updated_at
-      end
-    end
-
-    # Week over week
-    snapshots.each do |snapshot|
-      parts << snapshot.id
-      parts << snapshot.updated_at
-    end
-    # Stages?
-    stages.each do |stage|
-      parts << stage.id
-      parts << stage.updated_at
-    end
-    Digest::MD5.hexdigest(parts.join)
   end
 
   def stages
@@ -106,16 +51,17 @@ class NewForecastMember
       weighted_pipeline: 0.0,
       quota: {}
     }
-    if product.nil?
+
+    if product_ids.nil?
       revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id = ?", forecast_time_dimension.id, member.id)
         .select("SUM(amount) AS revenue_amount")
       pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id = ?", forecast_time_dimension.id, member.id)
         .select("stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
         .group("stage_dimension_id")
-    else
-      revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id = ? AND product_dimension_id = ?", forecast_time_dimension.id, member.id, product.id)
+    elsif product_ids.count > 0
+      revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id = ? AND product_dimension_id IN (?)", forecast_time_dimension.id, member.id, product_ids)
         .select("SUM(amount) AS revenue_amount")
-      pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id = ? AND product_dimension_id = ?", forecast_time_dimension.id, member.id, product.id)
+      pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id = ? AND product_dimension_id IN (?)", forecast_time_dimension.id, member.id, product_ids)
         .select("stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
         .group("stage_dimension_id")
     end
@@ -238,6 +184,14 @@ class NewForecastMember
 
   def ios
     @ios ||= member.ios.for_time_period(start_date, end_date).to_a
+  end
+
+  def product_ids
+    @_product_ids ||= if product.present?
+      [product.id]
+    elsif product_family.present?
+      product_family.products.collect(&:id)
+    end
   end
 
   def clients

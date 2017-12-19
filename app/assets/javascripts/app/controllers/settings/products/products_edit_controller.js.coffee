@@ -1,16 +1,14 @@
 @app.controller "ProductsEditController",
-['$scope', '$modalInstance', '$filter', 'Product', 'Field', 'product',
-($scope, $modalInstance, $filter, Product, Field, product) ->
+['$scope', '$modalInstance', '$filter', 'Product', 'ProductFamily', 'Field', 'product',
+( $scope,   $modalInstance,   $filter,   Product,   ProductFamily,   Field,   product) ->
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.revenue_types = ['Display', 'Content-Fee']
 
+  ProductFamily.all(active: true).then (product_families) ->
+    $scope.product_families = product_families
   Field.defaults(product, 'Product').then (fields) ->
-#    $scope.product.pricing_type = product.pricing_type
-#    product.pricing_type = Field.field(product, 'Pricing Type')
-#    product.product_line = Field.field(product, 'Product Line')
-#    product.product_family = Field.field(product, 'Product Family')
     $scope.product = product
 
   $scope.submitForm = () ->

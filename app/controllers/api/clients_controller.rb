@@ -1,4 +1,5 @@
 class Api::ClientsController < ApplicationController
+  include CleanPagination
   respond_to :json, :csv
 
   def index
@@ -171,9 +172,9 @@ class Api::ClientsController < ApplicationController
     client = company.clients.find(params[:client_id])
     if client && client.client_type
       if client.client_type.name == "Agency"
-        contacts = client.agency_contacts
-      elsif client.client_type.name == "Advertiser"
         contacts = client.advertiser_contacts
+      elsif client.client_type.name == "Advertiser"
+        contacts = client.agency_contacts
       end
       if params[:name]
         contacts = contacts.where('contacts.name ilike ?', "%#{params[:name]}%")
@@ -188,25 +189,11 @@ class Api::ClientsController < ApplicationController
   end
 
   def connected_client_contacts
-    client = company.clients.find(params[:client_id])
-    if client && client.client_type
-      if client.client_type.name == "Agency"
-        render json: client.client_contacts.where(contact_id: client.agency_contacts.ids)
-          .preload(contact: [:non_primary_client_contacts, :address, :values, :primary_client_contact])
-          .limit(limit)
-          .offset(offset),
-            each_serializer: ClientContacts::ClientContactsForClientSerializer,
-                             contact_options: company_job_level_options
-      elsif client.client_type.name == "Advertiser"
-        render json: client.client_contacts.where(contact_id: client.advertiser_contacts.ids)
-          .preload(contact: [:non_primary_client_contacts, :address, :values, :primary_client_contact])
-          .limit(limit)
-          .offset(offset),
-            each_serializer: ClientContacts::ClientContactsForClientSerializer,
-                             contact_options: company_job_level_options
-      end
-    else
-      render json: []
+    max_per_page = 10
+
+    paginate connected_client_contacts_relation.count, max_per_page do |limit, offset|
+      render json: connected_client_contacts_relation.limit(limit).offset(offset),
+             each_serializer: ClientContacts::ConnectedClientContactsSerializer
     end
   end
 
@@ -246,6 +233,9 @@ class Api::ClientsController < ApplicationController
                 :currency5,
                 :currency6,
                 :currency7,
+                :currency8,
+                :currency9,
+                :currency10,
                 :currency_code1,
                 :currency_code2,
                 :currency_code3,
@@ -253,13 +243,29 @@ class Api::ClientsController < ApplicationController
                 :currency_code5,
                 :currency_code6,
                 :currency_code7,
+                :currency_code8,
+                :currency_code9,
+                :currency_code10,
                 :text1,
                 :text2,
                 :text3,
                 :text4,
                 :text5,
+                :text6,
+                :text7,
+                :text8,
+                :text9,
+                :text10,
                 :note1,
                 :note2,
+                :note3,
+                :note4,
+                :note5,
+                :note6,
+                :note7,
+                :note8,
+                :note9,
+                :note10,
                 :datetime1,
                 :datetime2,
                 :datetime3,
@@ -267,6 +273,9 @@ class Api::ClientsController < ApplicationController
                 :datetime5,
                 :datetime6,
                 :datetime7,
+                :datetime8,
+                :datetime9,
+                :datetime10,
                 :number1,
                 :number2,
                 :number3,
@@ -274,6 +283,9 @@ class Api::ClientsController < ApplicationController
                 :number5,
                 :number6,
                 :number7,
+                :number8,
+                :number9,
+                :number10,
                 :integer1,
                 :integer2,
                 :integer3,
@@ -281,14 +293,29 @@ class Api::ClientsController < ApplicationController
                 :integer5,
                 :integer6,
                 :integer7,
+                :integer8,
+                :integer9,
+                :integer10,
                 :boolean1,
                 :boolean2,
                 :boolean3,
+                :boolean4,
+                :boolean5,
+                :boolean6,
+                :boolean7,
+                :boolean8,
+                :boolean9,
+                :boolean10,
                 :percentage1,
                 :percentage2,
                 :percentage3,
                 :percentage4,
                 :percentage5,
+                :percentage6,
+                :percentage7,
+                :percentage8,
+                :percentage9,
+                :percentage10,
                 :dropdown1,
                 :dropdown2,
                 :dropdown3,
@@ -296,13 +323,19 @@ class Api::ClientsController < ApplicationController
                 :dropdown5,
                 :dropdown6,
                 :dropdown7,
+                :dropdown8,
+                :dropdown9,
+                :dropdown10,
                 :number_4_dec1,
                 :number_4_dec2,
                 :number_4_dec3,
                 :number_4_dec4,
                 :number_4_dec5,
                 :number_4_dec6,
-                :number_4_dec7
+                :number_4_dec7,
+                :number_4_dec8,
+                :number_4_dec9,
+                :number_4_dec10
         ]
       }
     )
@@ -328,6 +361,10 @@ class Api::ClientsController < ApplicationController
     end
   end
 
+  def client_record
+    @_client_record ||= company.clients.find(params[:client_id])
+  end
+
   def company
     @company ||= current_user.company
   end
@@ -350,6 +387,32 @@ class Api::ClientsController < ApplicationController
     end
 
     @suggest_clients
+  end
+
+  def connected_client_contacts_relation
+    clcons ||= related_client_contact_relation
+      .where(primary: false)
+      .joins(:client, :contact)
+      .preload(:client, contact: [:address, :primary_client])
+      .order('clients.name')
+  end
+
+  def related_client_contact_relation
+    if client_record.client_type.present? && client_record.client_type.name == 'Advertiser'
+      related_agency_client_contacts
+    else
+      related_advertiser_client_contacts
+    end
+  end
+
+  def related_agency_client_contacts
+    ClientContact.where(client_id: client_record.id)
+  end
+
+  def related_advertiser_client_contacts
+    ClientContact
+      .where('contact_id in (?)', client_record.primary_contacts.ids)
+      .where('client_contacts.client_id in (?)', client_record.advertisers.ids)
   end
 
   def company_job_level_options

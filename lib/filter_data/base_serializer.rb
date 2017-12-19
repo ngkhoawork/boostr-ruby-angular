@@ -5,6 +5,7 @@ class FilterData::BaseSerializer < ActiveModel::Serializer
   has_many :advertisers, serializer: Deals::AdvertiserSerializer
   has_many :agencies, serializer: Deals::AgencySerializer
   has_many :currencies, serializer: Deals::FilterData::CurrencySerializer
+  has_many :teams, serializer: Deals::FilterData::TeamSerializer
 
   private
 
@@ -14,6 +15,10 @@ class FilterData::BaseSerializer < ActiveModel::Serializer
 
   def members
     object.users
+  end
+
+  def teams
+    object.teams
   end
 
   def advertisers

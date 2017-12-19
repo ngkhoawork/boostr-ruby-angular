@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171031005746) do
+ActiveRecord::Schema.define(version: 20171207032805) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -44,13 +43,13 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   create_table "account_cfs", force: :cascade do |t|
     t.integer  "company_id"
     t.integer  "client_id"
-    t.decimal  "currency1",      precision: 15, scale: 2
-    t.decimal  "currency2",      precision: 15, scale: 2
-    t.decimal  "currency3",      precision: 15, scale: 2
-    t.decimal  "currency4",      precision: 15, scale: 2
-    t.decimal  "currency5",      precision: 15, scale: 2
-    t.decimal  "currency6",      precision: 15, scale: 2
-    t.decimal  "currency7",      precision: 15, scale: 2
+    t.decimal  "currency1",       precision: 15, scale: 2
+    t.decimal  "currency2",       precision: 15, scale: 2
+    t.decimal  "currency3",       precision: 15, scale: 2
+    t.decimal  "currency4",       precision: 15, scale: 2
+    t.decimal  "currency5",       precision: 15, scale: 2
+    t.decimal  "currency6",       precision: 15, scale: 2
+    t.decimal  "currency7",       precision: 15, scale: 2
     t.string   "currency_code1"
     t.string   "currency_code2"
     t.string   "currency_code3"
@@ -72,28 +71,28 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.datetime "datetime5"
     t.datetime "datetime6"
     t.datetime "datetime7"
-    t.decimal  "number1",        precision: 15, scale: 2
-    t.decimal  "number2",        precision: 15, scale: 2
-    t.decimal  "number3",        precision: 15, scale: 2
-    t.decimal  "number4",        precision: 15, scale: 2
-    t.decimal  "number5",        precision: 15, scale: 2
-    t.decimal  "number6",        precision: 15, scale: 2
-    t.decimal  "number7",        precision: 15, scale: 2
-    t.decimal  "integer1",       precision: 15
-    t.decimal  "integer2",       precision: 15
-    t.decimal  "integer3",       precision: 15
-    t.decimal  "integer4",       precision: 15
-    t.decimal  "integer5",       precision: 15
-    t.decimal  "integer6",       precision: 15
-    t.decimal  "integer7",       precision: 15
+    t.decimal  "number1",         precision: 15, scale: 2
+    t.decimal  "number2",         precision: 15, scale: 2
+    t.decimal  "number3",         precision: 15, scale: 2
+    t.decimal  "number4",         precision: 15, scale: 2
+    t.decimal  "number5",         precision: 15, scale: 2
+    t.decimal  "number6",         precision: 15, scale: 2
+    t.decimal  "number7",         precision: 15, scale: 2
+    t.decimal  "integer1",        precision: 15
+    t.decimal  "integer2",        precision: 15
+    t.decimal  "integer3",        precision: 15
+    t.decimal  "integer4",        precision: 15
+    t.decimal  "integer5",        precision: 15
+    t.decimal  "integer6",        precision: 15
+    t.decimal  "integer7",        precision: 15
     t.boolean  "boolean1"
     t.boolean  "boolean2"
     t.boolean  "boolean3"
-    t.decimal  "percentage1",    precision: 5,  scale: 2
-    t.decimal  "percentage2",    precision: 5,  scale: 2
-    t.decimal  "percentage3",    precision: 5,  scale: 2
-    t.decimal  "percentage4",    precision: 5,  scale: 2
-    t.decimal  "percentage5",    precision: 5,  scale: 2
+    t.decimal  "percentage1",     precision: 5,  scale: 2
+    t.decimal  "percentage2",     precision: 5,  scale: 2
+    t.decimal  "percentage3",     precision: 5,  scale: 2
+    t.decimal  "percentage4",     precision: 5,  scale: 2
+    t.decimal  "percentage5",     precision: 5,  scale: 2
     t.string   "dropdown1"
     t.string   "dropdown2"
     t.string   "dropdown3"
@@ -101,15 +100,61 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.string   "dropdown5"
     t.string   "dropdown6"
     t.string   "dropdown7"
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
-    t.decimal  "number_4_dec1",  precision: 15, scale: 4
-    t.decimal  "number_4_dec2",  precision: 15, scale: 4
-    t.decimal  "number_4_dec3",  precision: 15, scale: 4
-    t.decimal  "number_4_dec4",  precision: 15, scale: 4
-    t.decimal  "number_4_dec5",  precision: 15, scale: 4
-    t.decimal  "number_4_dec6",  precision: 15, scale: 4
-    t.decimal  "number_4_dec7",  precision: 15, scale: 4
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+    t.decimal  "number_4_dec1",   precision: 15, scale: 4
+    t.decimal  "number_4_dec2",   precision: 15, scale: 4
+    t.decimal  "number_4_dec3",   precision: 15, scale: 4
+    t.decimal  "number_4_dec4",   precision: 15, scale: 4
+    t.decimal  "number_4_dec5",   precision: 15, scale: 4
+    t.decimal  "number_4_dec6",   precision: 15, scale: 4
+    t.decimal  "number_4_dec7",   precision: 15, scale: 4
+    t.decimal  "currency8",       precision: 15, scale: 2
+    t.decimal  "currency9",       precision: 15, scale: 2
+    t.decimal  "currency10",      precision: 15, scale: 2
+    t.string   "currency_code8"
+    t.string   "currency_code9"
+    t.string   "currency_code10"
+    t.string   "text6"
+    t.string   "text7"
+    t.string   "text8"
+    t.string   "text9"
+    t.string   "text10"
+    t.text     "note3"
+    t.text     "note4"
+    t.text     "note5"
+    t.text     "note6"
+    t.text     "note7"
+    t.text     "note8"
+    t.text     "note9"
+    t.text     "note10"
+    t.datetime "datetime8"
+    t.datetime "datetime9"
+    t.datetime "datetime10"
+    t.decimal  "number8",         precision: 15, scale: 2
+    t.decimal  "number9",         precision: 15, scale: 2
+    t.decimal  "number10",        precision: 15, scale: 2
+    t.decimal  "integer8",        precision: 15
+    t.decimal  "integer9",        precision: 15
+    t.decimal  "integer10",       precision: 15
+    t.boolean  "boolean4"
+    t.boolean  "boolean5"
+    t.boolean  "boolean6"
+    t.boolean  "boolean7"
+    t.boolean  "boolean8"
+    t.boolean  "boolean9"
+    t.boolean  "boolean10"
+    t.decimal  "percentage6",     precision: 5,  scale: 2
+    t.decimal  "percentage7",     precision: 5,  scale: 2
+    t.decimal  "percentage8",     precision: 5,  scale: 2
+    t.decimal  "percentage9",     precision: 5,  scale: 2
+    t.decimal  "percentage10",    precision: 5,  scale: 2
+    t.string   "dropdown8"
+    t.string   "dropdown9"
+    t.string   "dropdown10"
+    t.decimal  "number_4_dec8",   precision: 15, scale: 4
+    t.decimal  "number_4_dec9",   precision: 15, scale: 4
+    t.decimal  "number_4_dec10",  precision: 15, scale: 4
   end
 
   add_index "account_cfs", ["client_id"], name: "index_account_cfs_on_client_id", using: :btree
@@ -122,8 +167,12 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer "subcategory_id"
     t.integer "holding_company_id"
     t.integer "company_id"
+    t.integer "client_region_id"
+    t.integer "client_segment_id"
   end
 
+  add_index "account_dimensions", ["client_region_id"], name: "index_account_dimensions_on_client_region_id", using: :btree
+  add_index "account_dimensions", ["client_segment_id"], name: "index_account_dimensions_on_client_segment_id", using: :btree
   add_index "account_dimensions", ["company_id"], name: "index_account_dimensions_on_company_id", using: :btree
   add_index "account_dimensions", ["holding_company_id"], name: "index_account_dimensions_on_holding_company_id", using: :btree
 
@@ -145,11 +194,10 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "time_dimension_id"
     t.integer  "account_dimension_id"
     t.integer  "company_id"
-    t.integer  "weighted_amount"
-    t.integer  "unweighted_amount"
+    t.decimal  "weighted_amount"
+    t.decimal  "unweighted_amount"
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
-    t.datetime "process_ran_at"
   end
 
   add_index "account_product_pipeline_facts", ["account_dimension_id"], name: "index_account_product_pipeline_facts_on_account_dimension_id", using: :btree
@@ -165,7 +213,6 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "revenue_amount"
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
-    t.datetime "process_ran_at"
   end
 
   add_index "account_product_revenue_facts", ["account_dimension_id"], name: "index_account_product_revenue_facts_on_account_dimension_id", using: :btree
@@ -280,42 +327,6 @@ ActiveRecord::Schema.define(version: 20171031005746) do
 
   add_index "addresses", ["addressable_id", "addressable_type"], name: "index_addresses_on_addressable_id_and_addressable_type", using: :btree
 
-  create_table "advertiser_agency_pipeline_facts", force: :cascade do |t|
-    t.integer  "advertiser_id"
-    t.integer  "agency_id"
-    t.integer  "company_id"
-    t.integer  "time_dimension_id"
-    t.integer  "weighted_amount"
-    t.integer  "unweighted_amount"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.datetime "process_ran_at"
-  end
-
-  add_index "advertiser_agency_pipeline_facts", ["advertiser_id"], name: "index_advertiser_agency_pipeline_facts_on_advertiser_id", using: :btree
-  add_index "advertiser_agency_pipeline_facts", ["agency_id"], name: "index_advertiser_agency_pipeline_facts_on_agency_id", using: :btree
-  add_index "advertiser_agency_pipeline_facts", ["company_id"], name: "index_advertiser_agency_pipeline_facts_on_company_id", using: :btree
-  add_index "advertiser_agency_pipeline_facts", ["time_dimension_id"], name: "index_advertiser_agency_pipeline_facts_on_time_dimension_id", using: :btree
-  add_index "advertiser_agency_pipeline_facts", ["unweighted_amount"], name: "index_advertiser_agency_pipeline_facts_on_unweighted_amount", using: :btree
-  add_index "advertiser_agency_pipeline_facts", ["weighted_amount"], name: "index_advertiser_agency_pipeline_facts_on_weighted_amount", using: :btree
-
-  create_table "advertiser_agency_revenue_facts", force: :cascade do |t|
-    t.integer  "advertiser_id"
-    t.integer  "agency_id"
-    t.integer  "company_id"
-    t.integer  "time_dimension_id"
-    t.integer  "revenue_amount"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.datetime "process_ran_at"
-  end
-
-  add_index "advertiser_agency_revenue_facts", ["advertiser_id"], name: "index_advertiser_agency_revenue_facts_on_advertiser_id", using: :btree
-  add_index "advertiser_agency_revenue_facts", ["agency_id"], name: "index_advertiser_agency_revenue_facts_on_agency_id", using: :btree
-  add_index "advertiser_agency_revenue_facts", ["company_id"], name: "index_advertiser_agency_revenue_facts_on_company_id", using: :btree
-  add_index "advertiser_agency_revenue_facts", ["revenue_amount"], name: "index_advertiser_agency_revenue_facts_on_revenue_amount", using: :btree
-  add_index "advertiser_agency_revenue_facts", ["time_dimension_id"], name: "index_advertiser_agency_revenue_facts_on_time_dimension_id", using: :btree
-
   create_table "agreements", force: :cascade do |t|
     t.integer  "influencer_id"
     t.string   "fee_type"
@@ -337,11 +348,11 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.string   "api_email"
     t.string   "encrypted_password"
     t.string   "encrypted_password_iv"
-    t.boolean  "recurring",                  default: false
     t.text     "encrypted_json_api_key"
     t.text     "encrypted_json_api_key_iv"
     t.string   "network_code"
     t.string   "integration_provider"
+    t.boolean  "recurring",                  default: false
   end
 
   add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
@@ -513,8 +524,8 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.string   "name"
     t.integer  "primary_contact_id"
     t.integer  "billing_contact_id"
-    t.datetime "created_at",                                                                                                                           null: false
-    t.datetime "updated_at",                                                                                                                           null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
     t.integer  "quantity"
     t.integer  "cost"
     t.datetime "start_date"
@@ -525,10 +536,10 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
-    t.boolean  "enable_operative_extra_fields",     default: false
     t.boolean  "requests_enabled",                  default: false
-    t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "enable_operative_extra_fields",     default: false
     t.boolean  "influencer_enabled",                default: false
+    t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "forecast_gap_to_quota_positive",    default: true
   end
 
@@ -564,13 +575,13 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   create_table "contact_cfs", force: :cascade do |t|
     t.integer  "company_id"
     t.integer  "contact_id"
-    t.decimal  "currency1",      precision: 15, scale: 2
-    t.decimal  "currency2",      precision: 15, scale: 2
-    t.decimal  "currency3",      precision: 15, scale: 2
-    t.decimal  "currency4",      precision: 15, scale: 2
-    t.decimal  "currency5",      precision: 15, scale: 2
-    t.decimal  "currency6",      precision: 15, scale: 2
-    t.decimal  "currency7",      precision: 15, scale: 2
+    t.decimal  "currency1",       precision: 15, scale: 2
+    t.decimal  "currency2",       precision: 15, scale: 2
+    t.decimal  "currency3",       precision: 15, scale: 2
+    t.decimal  "currency4",       precision: 15, scale: 2
+    t.decimal  "currency5",       precision: 15, scale: 2
+    t.decimal  "currency6",       precision: 15, scale: 2
+    t.decimal  "currency7",       precision: 15, scale: 2
     t.string   "currency_code1"
     t.string   "currency_code2"
     t.string   "currency_code3"
@@ -592,28 +603,28 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.datetime "datetime5"
     t.datetime "datetime6"
     t.datetime "datetime7"
-    t.decimal  "number1",        precision: 15, scale: 2
-    t.decimal  "number2",        precision: 15, scale: 2
-    t.decimal  "number3",        precision: 15, scale: 2
-    t.decimal  "number4",        precision: 15, scale: 2
-    t.decimal  "number5",        precision: 15, scale: 2
-    t.decimal  "number6",        precision: 15, scale: 2
-    t.decimal  "number7",        precision: 15, scale: 2
-    t.decimal  "integer1",       precision: 15
-    t.decimal  "integer2",       precision: 15
-    t.decimal  "integer3",       precision: 15
-    t.decimal  "integer4",       precision: 15
-    t.decimal  "integer5",       precision: 15
-    t.decimal  "integer6",       precision: 15
-    t.decimal  "integer7",       precision: 15
+    t.decimal  "number1",         precision: 15, scale: 2
+    t.decimal  "number2",         precision: 15, scale: 2
+    t.decimal  "number3",         precision: 15, scale: 2
+    t.decimal  "number4",         precision: 15, scale: 2
+    t.decimal  "number5",         precision: 15, scale: 2
+    t.decimal  "number6",         precision: 15, scale: 2
+    t.decimal  "number7",         precision: 15, scale: 2
+    t.decimal  "integer1",        precision: 15
+    t.decimal  "integer2",        precision: 15
+    t.decimal  "integer3",        precision: 15
+    t.decimal  "integer4",        precision: 15
+    t.decimal  "integer5",        precision: 15
+    t.decimal  "integer6",        precision: 15
+    t.decimal  "integer7",        precision: 15
     t.boolean  "boolean1"
     t.boolean  "boolean2"
     t.boolean  "boolean3"
-    t.decimal  "percentage1",    precision: 5,  scale: 2
-    t.decimal  "percentage2",    precision: 5,  scale: 2
-    t.decimal  "percentage3",    precision: 5,  scale: 2
-    t.decimal  "percentage4",    precision: 5,  scale: 2
-    t.decimal  "percentage5",    precision: 5,  scale: 2
+    t.decimal  "percentage1",     precision: 5,  scale: 2
+    t.decimal  "percentage2",     precision: 5,  scale: 2
+    t.decimal  "percentage3",     precision: 5,  scale: 2
+    t.decimal  "percentage4",     precision: 5,  scale: 2
+    t.decimal  "percentage5",     precision: 5,  scale: 2
     t.string   "dropdown1"
     t.string   "dropdown2"
     t.string   "dropdown3"
@@ -621,15 +632,61 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.string   "dropdown5"
     t.string   "dropdown6"
     t.string   "dropdown7"
-    t.decimal  "number_4_dec1",  precision: 15, scale: 4
-    t.decimal  "number_4_dec2",  precision: 15, scale: 4
-    t.decimal  "number_4_dec3",  precision: 15, scale: 4
-    t.decimal  "number_4_dec4",  precision: 15, scale: 4
-    t.decimal  "number_4_dec5",  precision: 15, scale: 4
-    t.decimal  "number_4_dec6",  precision: 15, scale: 4
-    t.decimal  "number_4_dec7",  precision: 15, scale: 4
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.decimal  "number_4_dec1",   precision: 15, scale: 4
+    t.decimal  "number_4_dec2",   precision: 15, scale: 4
+    t.decimal  "number_4_dec3",   precision: 15, scale: 4
+    t.decimal  "number_4_dec4",   precision: 15, scale: 4
+    t.decimal  "number_4_dec5",   precision: 15, scale: 4
+    t.decimal  "number_4_dec6",   precision: 15, scale: 4
+    t.decimal  "number_4_dec7",   precision: 15, scale: 4
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+    t.decimal  "currency8",       precision: 15, scale: 2
+    t.decimal  "currency9",       precision: 15, scale: 2
+    t.decimal  "currency10",      precision: 15, scale: 2
+    t.string   "currency_code8"
+    t.string   "currency_code9"
+    t.string   "currency_code10"
+    t.string   "text6"
+    t.string   "text7"
+    t.string   "text8"
+    t.string   "text9"
+    t.string   "text10"
+    t.text     "note3"
+    t.text     "note4"
+    t.text     "note5"
+    t.text     "note6"
+    t.text     "note7"
+    t.text     "note8"
+    t.text     "note9"
+    t.text     "note10"
+    t.datetime "datetime8"
+    t.datetime "datetime9"
+    t.datetime "datetime10"
+    t.decimal  "number8",         precision: 15, scale: 2
+    t.decimal  "number9",         precision: 15, scale: 2
+    t.decimal  "number10",        precision: 15, scale: 2
+    t.decimal  "integer8",        precision: 15
+    t.decimal  "integer9",        precision: 15
+    t.decimal  "integer10",       precision: 15
+    t.boolean  "boolean4"
+    t.boolean  "boolean5"
+    t.boolean  "boolean6"
+    t.boolean  "boolean7"
+    t.boolean  "boolean8"
+    t.boolean  "boolean9"
+    t.boolean  "boolean10"
+    t.decimal  "percentage6",     precision: 5,  scale: 2
+    t.decimal  "percentage7",     precision: 5,  scale: 2
+    t.decimal  "percentage8",     precision: 5,  scale: 2
+    t.decimal  "percentage9",     precision: 5,  scale: 2
+    t.decimal  "percentage10",    precision: 5,  scale: 2
+    t.string   "dropdown8"
+    t.string   "dropdown9"
+    t.string   "dropdown10"
+    t.decimal  "number_4_dec8",   precision: 15, scale: 4
+    t.decimal  "number_4_dec9",   precision: 15, scale: 4
+    t.decimal  "number_4_dec10",  precision: 15, scale: 4
   end
 
   add_index "contact_cfs", ["company_id"], name: "index_contact_cfs_on_company_id", using: :btree
@@ -717,7 +774,6 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.datetime "updated_at",                                  null: false
     t.integer  "revenue_calculation_pattern", default: 0,     null: false
     t.integer  "product_mapping",             default: 0,     null: false
-    t.boolean  "exclude_child_line_items",    default: false
   end
 
   add_index "datafeed_configuration_details", ["api_configuration_id"], name: "index_datafeed_configuration_details_on_api_configuration_id", using: :btree
@@ -759,13 +815,13 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   create_table "deal_custom_fields", force: :cascade do |t|
     t.integer  "company_id"
     t.integer  "deal_id"
-    t.decimal  "currency1",      precision: 15, scale: 2
-    t.decimal  "currency2",      precision: 15, scale: 2
-    t.decimal  "currency3",      precision: 15, scale: 2
-    t.decimal  "currency4",      precision: 15, scale: 2
-    t.decimal  "currency5",      precision: 15, scale: 2
-    t.decimal  "currency6",      precision: 15, scale: 2
-    t.decimal  "currency7",      precision: 15, scale: 2
+    t.decimal  "currency1",       precision: 15, scale: 2
+    t.decimal  "currency2",       precision: 15, scale: 2
+    t.decimal  "currency3",       precision: 15, scale: 2
+    t.decimal  "currency4",       precision: 15, scale: 2
+    t.decimal  "currency5",       precision: 15, scale: 2
+    t.decimal  "currency6",       precision: 15, scale: 2
+    t.decimal  "currency7",       precision: 15, scale: 2
     t.string   "currency_code1"
     t.string   "currency_code2"
     t.string   "currency_code3"
@@ -787,30 +843,30 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.datetime "datetime5"
     t.datetime "datetime6"
     t.datetime "datetime7"
-    t.decimal  "number1",        precision: 15, scale: 2
-    t.decimal  "number2",        precision: 15, scale: 2
-    t.decimal  "number3",        precision: 15, scale: 2
-    t.decimal  "number4",        precision: 15, scale: 2
-    t.decimal  "number5",        precision: 15, scale: 2
-    t.decimal  "number6",        precision: 15, scale: 2
-    t.decimal  "number7",        precision: 15, scale: 2
-    t.decimal  "integer1",       precision: 15
-    t.decimal  "integer2",       precision: 15
-    t.decimal  "integer3",       precision: 15
-    t.decimal  "integer4",       precision: 15
-    t.decimal  "integer5",       precision: 15
-    t.decimal  "integer6",       precision: 15
-    t.decimal  "integer7",       precision: 15
+    t.decimal  "number1",         precision: 15, scale: 2
+    t.decimal  "number2",         precision: 15, scale: 2
+    t.decimal  "number3",         precision: 15, scale: 2
+    t.decimal  "number4",         precision: 15, scale: 2
+    t.decimal  "number5",         precision: 15, scale: 2
+    t.decimal  "number6",         precision: 15, scale: 2
+    t.decimal  "number7",         precision: 15, scale: 2
+    t.decimal  "integer1",        precision: 15
+    t.decimal  "integer2",        precision: 15
+    t.decimal  "integer3",        precision: 15
+    t.decimal  "integer4",        precision: 15
+    t.decimal  "integer5",        precision: 15
+    t.decimal  "integer6",        precision: 15
+    t.decimal  "integer7",        precision: 15
     t.boolean  "boolean1"
     t.boolean  "boolean2"
     t.boolean  "boolean3"
-    t.decimal  "percentage1",    precision: 5,  scale: 2
-    t.decimal  "percentage2",    precision: 5,  scale: 2
-    t.decimal  "percentage3",    precision: 5,  scale: 2
-    t.decimal  "percentage4",    precision: 5,  scale: 2
-    t.decimal  "percentage5",    precision: 5,  scale: 2
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.decimal  "percentage1",     precision: 5,  scale: 2
+    t.decimal  "percentage2",     precision: 5,  scale: 2
+    t.decimal  "percentage3",     precision: 5,  scale: 2
+    t.decimal  "percentage4",     precision: 5,  scale: 2
+    t.decimal  "percentage5",     precision: 5,  scale: 2
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
     t.string   "dropdown1"
     t.string   "dropdown2"
     t.string   "dropdown3"
@@ -825,13 +881,13 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "sum5"
     t.integer  "sum6"
     t.integer  "sum7"
-    t.decimal  "number_4_dec1",  precision: 15, scale: 4
-    t.decimal  "number_4_dec2",  precision: 15, scale: 4
-    t.decimal  "number_4_dec3",  precision: 15, scale: 4
-    t.decimal  "number_4_dec4",  precision: 15, scale: 4
-    t.decimal  "number_4_dec5",  precision: 15, scale: 4
-    t.decimal  "number_4_dec6",  precision: 15, scale: 4
-    t.decimal  "number_4_dec7",  precision: 15, scale: 4
+    t.decimal  "number_4_dec1",   precision: 15, scale: 4
+    t.decimal  "number_4_dec2",   precision: 15, scale: 4
+    t.decimal  "number_4_dec3",   precision: 15, scale: 4
+    t.decimal  "number_4_dec4",   precision: 15, scale: 4
+    t.decimal  "number_4_dec5",   precision: 15, scale: 4
+    t.decimal  "number_4_dec6",   precision: 15, scale: 4
+    t.decimal  "number_4_dec7",   precision: 15, scale: 4
     t.string   "link1"
     t.string   "link2"
     t.string   "link3"
@@ -839,6 +895,58 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.string   "link5"
     t.string   "link6"
     t.string   "link7"
+    t.decimal  "currency8",       precision: 15, scale: 2
+    t.decimal  "currency9",       precision: 15, scale: 2
+    t.decimal  "currency10",      precision: 15, scale: 2
+    t.string   "currency_code8"
+    t.string   "currency_code9"
+    t.string   "currency_code10"
+    t.string   "text6"
+    t.string   "text7"
+    t.string   "text8"
+    t.string   "text9"
+    t.string   "text10"
+    t.text     "note3"
+    t.text     "note4"
+    t.text     "note5"
+    t.text     "note6"
+    t.text     "note7"
+    t.text     "note8"
+    t.text     "note9"
+    t.text     "note10"
+    t.datetime "datetime8"
+    t.datetime "datetime9"
+    t.datetime "datetime10"
+    t.decimal  "number8",         precision: 15, scale: 2
+    t.decimal  "number9",         precision: 15, scale: 2
+    t.decimal  "number10",        precision: 15, scale: 2
+    t.decimal  "integer8",        precision: 15
+    t.decimal  "integer9",        precision: 15
+    t.decimal  "integer10",       precision: 15
+    t.boolean  "boolean4"
+    t.boolean  "boolean5"
+    t.boolean  "boolean6"
+    t.boolean  "boolean7"
+    t.boolean  "boolean8"
+    t.boolean  "boolean9"
+    t.boolean  "boolean10"
+    t.decimal  "percentage6",     precision: 5,  scale: 2
+    t.decimal  "percentage7",     precision: 5,  scale: 2
+    t.decimal  "percentage8",     precision: 5,  scale: 2
+    t.decimal  "percentage9",     precision: 5,  scale: 2
+    t.decimal  "percentage10",    precision: 5,  scale: 2
+    t.string   "dropdown8"
+    t.string   "dropdown9"
+    t.string   "dropdown10"
+    t.integer  "sum8"
+    t.integer  "sum9"
+    t.integer  "sum10"
+    t.decimal  "number_4_dec8",   precision: 15, scale: 4
+    t.decimal  "number_4_dec9",   precision: 15, scale: 4
+    t.decimal  "number_4_dec10",  precision: 15, scale: 4
+    t.string   "link8"
+    t.string   "link9"
+    t.string   "link10"
   end
 
   add_index "deal_custom_fields", ["company_id"], name: "index_deal_custom_fields_on_company_id", using: :btree
@@ -979,6 +1087,55 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.decimal  "number_4_dec5",   precision: 15, scale: 4
     t.decimal  "number_4_dec6",   precision: 15, scale: 4
     t.decimal  "number_4_dec7",   precision: 15, scale: 4
+    t.decimal  "currency8",       precision: 15, scale: 2
+    t.decimal  "currency9",       precision: 15, scale: 2
+    t.decimal  "currency10",      precision: 15, scale: 2
+    t.string   "currency_code8"
+    t.string   "currency_code9"
+    t.string   "currency_code10"
+    t.string   "text6"
+    t.string   "text7"
+    t.string   "text8"
+    t.string   "text9"
+    t.string   "text10"
+    t.text     "note3"
+    t.text     "note4"
+    t.text     "note5"
+    t.text     "note6"
+    t.text     "note7"
+    t.text     "note8"
+    t.text     "note9"
+    t.text     "note10"
+    t.datetime "datetime8"
+    t.datetime "datetime9"
+    t.datetime "datetime10"
+    t.decimal  "number8",         precision: 15, scale: 2
+    t.decimal  "number9",         precision: 15, scale: 2
+    t.decimal  "number10",        precision: 15, scale: 2
+    t.decimal  "integer8",        precision: 15
+    t.decimal  "integer9",        precision: 15
+    t.decimal  "integer10",       precision: 15
+    t.boolean  "boolean4"
+    t.boolean  "boolean5"
+    t.boolean  "boolean6"
+    t.boolean  "boolean7"
+    t.boolean  "boolean8"
+    t.boolean  "boolean9"
+    t.boolean  "boolean10"
+    t.decimal  "percentage6",     precision: 5,  scale: 2
+    t.decimal  "percentage7",     precision: 5,  scale: 2
+    t.decimal  "percentage8",     precision: 5,  scale: 2
+    t.decimal  "percentage9",     precision: 5,  scale: 2
+    t.decimal  "percentage10",    precision: 5,  scale: 2
+    t.string   "dropdown8"
+    t.string   "dropdown9"
+    t.string   "dropdown10"
+    t.integer  "sum8"
+    t.integer  "sum9"
+    t.integer  "sum10"
+    t.decimal  "number_4_dec8",   precision: 15, scale: 4
+    t.decimal  "number_4_dec9",   precision: 15, scale: 4
+    t.decimal  "number_4_dec10",  precision: 15, scale: 4
   end
 
   add_index "deal_product_cfs", ["company_id"], name: "index_deal_product_cfs_on_company_id", using: :btree
@@ -987,11 +1144,14 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   create_table "deal_products", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "product_id"
-    t.decimal  "budget",     precision: 15, scale: 2, default: 0.0
-    t.datetime "created_at",                                         null: false
-    t.datetime "updated_at",                                         null: false
-    t.boolean  "open",                                default: true
-    t.decimal  "budget_loc", precision: 15, scale: 2, default: 0.0
+    t.decimal  "budget",        precision: 15, scale: 2, default: 0.0
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
+    t.boolean  "open",                                   default: true
+    t.decimal  "budget_loc",    precision: 15, scale: 2, default: 0.0
+    t.integer  "ssp_id"
+    t.boolean  "is_guaranteed"
+    t.string   "ssp_deal_id"
   end
 
   add_index "deal_products", ["deal_id"], name: "index_deal_products_on_deal_id", using: :btree
@@ -1044,6 +1204,7 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "initiative_id"
     t.string   "closed_reason_text"
     t.datetime "next_steps_due"
+    t.string   "ssp_deal_id"
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree
@@ -1066,7 +1227,6 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "api_configuration_id"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
-    t.integer  "date_range_type",        default: 0
   end
 
   add_index "dfp_report_queries", ["api_configuration_id"], name: "index_dfp_report_queries_on_api_configuration_id", using: :btree
@@ -1089,29 +1249,28 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.decimal  "ctr",                   precision: 5,  scale: 4
     t.decimal  "video_avg_view_rate",   precision: 5,  scale: 4
     t.decimal  "video_completion_rate", precision: 5,  scale: 4
-    t.boolean  "is_estimated",                                   default: false
   end
 
   add_index "display_line_item_budgets", ["display_line_item_id"], name: "index_display_line_item_budgets_on_display_line_item_id", using: :btree
 
   create_table "display_line_items", force: :cascade do |t|
-    t.integer  "io_id",                      limit: 8
-    t.integer  "line_number",                limit: 8
+    t.integer  "io_id"
+    t.integer  "line_number"
     t.string   "ad_server"
-    t.integer  "quantity",                   limit: 8
+    t.integer  "quantity"
     t.decimal  "budget",                               precision: 15, scale: 2
     t.string   "pricing_type"
-    t.integer  "product_id",                 limit: 8
+    t.integer  "product_id"
     t.decimal  "budget_delivered",                     precision: 15, scale: 2
     t.decimal  "budget_remaining",                     precision: 15, scale: 2
-    t.integer  "quantity_delivered",         limit: 8
-    t.integer  "quantity_remaining",         limit: 8
+    t.integer  "quantity_delivered"
+    t.integer  "quantity_remaining"
     t.date     "start_date"
     t.date     "end_date"
-    t.integer  "daily_run_rate",             limit: 8
+    t.integer  "daily_run_rate"
     t.integer  "num_days_til_out_of_budget", limit: 8
-    t.integer  "quantity_delivered_3p",      limit: 8
-    t.integer  "quantity_remaining_3p",      limit: 8
+    t.integer  "quantity_delivered_3p"
+    t.integer  "quantity_remaining_3p"
     t.decimal  "budget_delivered_3p",                  precision: 15, scale: 2
     t.decimal  "budget_remaining_3p",                  precision: 15, scale: 2
     t.datetime "created_at",                                                                  null: false
@@ -1119,7 +1278,7 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.decimal  "price",                                precision: 15, scale: 2
     t.integer  "balance",                    limit: 8
     t.datetime "last_alert_at"
-    t.integer  "temp_io_id",                 limit: 8
+    t.integer  "temp_io_id"
     t.string   "ad_server_product"
     t.decimal  "budget_loc",                           precision: 15, scale: 2, default: 0.0
     t.decimal  "budget_delivered_loc",                 precision: 15, scale: 2, default: 0.0
@@ -1127,9 +1286,9 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.decimal  "budget_delivered_3p_loc",              precision: 15, scale: 2, default: 0.0
     t.decimal  "budget_remaining_3p_loc",              precision: 15, scale: 2, default: 0.0
     t.integer  "balance_loc",                limit: 8
-    t.integer  "daily_run_rate_loc",         limit: 8
+    t.integer  "daily_run_rate_loc"
     t.decimal  "ctr",                                  precision: 5,  scale: 4
-    t.integer  "clicks",                     limit: 8
+    t.integer  "clicks"
     t.text     "ad_unit"
   end
 
@@ -1170,16 +1329,14 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.string   "recipients"
     t.boolean  "automatic_send"
     t.boolean  "same_all_stages"
-    t.integer  "agency",               limit: 2, default: 0
-    t.integer  "deal_type",            limit: 2, default: 0
-    t.integer  "source_type",          limit: 2, default: 0
-    t.integer  "next_steps",           limit: 2, default: 0
-    t.integer  "closed_reason",        limit: 2, default: 0
-    t.integer  "intiative",            limit: 2, default: 0
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
-    t.integer  "delay",                          default: 60
-    t.boolean  "show_billing_contact",           default: false
+    t.integer  "agency",          limit: 2, default: 0
+    t.integer  "deal_type",       limit: 2, default: 0
+    t.integer  "source_type",     limit: 2, default: 0
+    t.integer  "next_steps",      limit: 2, default: 0
+    t.integer  "closed_reason",   limit: 2, default: 0
+    t.integer  "intiative",       limit: 2, default: 0
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
   end
 
   add_index "ealerts", ["company_id"], name: "index_ealerts_on_company_id", using: :btree
@@ -1210,6 +1367,18 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   add_index "fields", ["company_id"], name: "index_fields_on_company_id", using: :btree
   add_index "fields", ["deleted_at"], name: "index_fields_on_deleted_at", using: :btree
   add_index "fields", ["subject_type"], name: "index_fields_on_subject_type", using: :btree
+
+  create_table "filter_queries", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "company_id"
+    t.integer  "user_id"
+    t.string   "query_type"
+    t.boolean  "global",        default: false
+    t.text     "filter_params"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+    t.boolean  "default",       default: false
+  end
 
   create_table "forecast_calculation_logs", force: :cascade do |t|
     t.integer  "company_id"
@@ -1364,18 +1533,18 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   create_table "ios", force: :cascade do |t|
     t.integer  "advertiser_id"
     t.integer  "agency_id"
-    t.decimal  "budget",             precision: 15, scale: 2
+    t.decimal  "budget",                       precision: 15, scale: 2
     t.date     "start_date"
     t.date     "end_date"
-    t.integer  "external_io_number"
+    t.integer  "external_io_number", limit: 8
     t.integer  "io_number"
-    t.datetime "created_at",                                                  null: false
-    t.datetime "updated_at",                                                  null: false
+    t.datetime "created_at",                                                            null: false
+    t.datetime "updated_at",                                                            null: false
     t.string   "name"
     t.integer  "company_id"
     t.integer  "deal_id"
-    t.decimal  "budget_loc",         precision: 15, scale: 2, default: 0.0
-    t.string   "curr_cd",                                     default: "USD"
+    t.decimal  "budget_loc",                   precision: 15, scale: 2, default: 0.0
+    t.string   "curr_cd",                                               default: "USD"
   end
 
   add_index "ios", ["advertiser_id"], name: "index_ios_on_advertiser_id", using: :btree
@@ -1420,6 +1589,7 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.decimal "revenue_loc", precision: 15, scale: 2
     t.integer "impressions"
     t.decimal "win_rate"
+    t.decimal "bids",        precision: 15, scale: 2
   end
 
   add_index "pmp_item_daily_actuals", ["pmp_item_id"], name: "index_pmp_item_daily_actuals_on_pmp_item_id", using: :btree
@@ -1437,13 +1607,16 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   create_table "pmp_items", force: :cascade do |t|
     t.integer "pmp_id"
     t.integer "ssp_id"
-    t.string  "deal_id"
+    t.string  "ssp_deal_id"
     t.decimal "budget",               precision: 15, scale: 2
     t.decimal "budget_delivered",     precision: 15, scale: 2
     t.decimal "budget_remaining",     precision: 15, scale: 2
     t.decimal "budget_loc",           precision: 15, scale: 2
     t.decimal "budget_delivered_loc", precision: 15, scale: 2
     t.decimal "budget_remaining_loc", precision: 15, scale: 2
+    t.decimal "run_rate_7_days"
+    t.decimal "run_rate_30_days"
+    t.boolean "is_guaranteed",                                 default: false
   end
 
   add_index "pmp_items", ["pmp_id"], name: "index_pmp_items_on_pmp_id", using: :btree
@@ -1453,8 +1626,8 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "user_id"
     t.integer  "pmp_id"
     t.integer  "share"
-    t.datetime "start_date"
-    t.datetime "end_date"
+    t.datetime "from_date"
+    t.datetime "to_date"
   end
 
   add_index "pmp_members", ["pmp_id"], name: "index_pmp_members_on_pmp_id", using: :btree
@@ -1473,9 +1646,8 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.decimal  "budget_remaining_loc", precision: 15, scale: 2
     t.datetime "start_date"
     t.datetime "end_date"
-    t.decimal  "7_day_run_rate"
-    t.decimal  "30_day_run_rate"
     t.string   "curr_cd",                                       default: "USD"
+    t.integer  "deal_id"
   end
 
   add_index "pmps", ["company_id"], name: "index_pmps_on_company_id", using: :btree
@@ -1496,27 +1668,36 @@ ActiveRecord::Schema.define(version: 20171031005746) do
 
   create_table "product_dimensions", force: :cascade do |t|
     t.integer  "company_id"
-    t.string   "name"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
-    t.string   "revenue_type"
   end
 
   add_index "product_dimensions", ["company_id"], name: "index_product_dimensions_on_company_id", using: :btree
+
+  create_table "product_families", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "name"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.boolean  "active",     default: true
+  end
+
+  add_index "product_families", ["company_id"], name: "index_product_families_on_company_id", using: :btree
 
   create_table "products", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
     t.string   "product_line"
-    t.string   "family"
     t.string   "revenue_type"
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.boolean  "active",                default: true
     t.boolean  "is_influencer_product", default: false
+    t.integer  "product_family_id"
   end
 
   add_index "products", ["company_id"], name: "index_products_on_company_id", using: :btree
+  add_index "products", ["product_family_id"], name: "index_products_on_product_family_id", using: :btree
 
   create_table "quota", force: :cascade do |t|
     t.integer  "time_period_id"
@@ -1629,10 +1810,6 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   add_index "snapshots", ["user_id"], name: "index_snapshots_on_user_id", using: :btree
   add_index "snapshots", ["year", "quarter"], name: "index_snapshots_on_year_and_quarter", using: :btree
 
-  create_table "ssps", force: :cascade do |t|
-    t.string "name"
-  end
-
   create_table "stage_dimensions", force: :cascade do |t|
     t.integer  "company_id"
     t.string   "name"
@@ -1689,8 +1866,8 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.datetime "dimensionattributeorder_start_date_time"
     t.datetime "dimensionattributeorder_end_date_time"
     t.string   "dimensionattributeorder_agency"
-    t.datetime "dimensionattributeline_item_start_date_time"
-    t.datetime "dimensionattributeline_item_end_date_time"
+    t.date     "dimensionattributeline_item_start_date_time"
+    t.date     "dimensionattributeline_item_end_date_time"
     t.string   "dimensionattributeline_item_cost_type"
     t.integer  "dimensionattributeline_item_cost_per_unit",          limit: 8
     t.integer  "dimensionattributeline_item_goal_quantity",          limit: 8
@@ -1704,6 +1881,7 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "company_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "source_file_row_number",                             limit: 8
   end
 
   create_table "temp_ios", force: :cascade do |t|
@@ -1711,15 +1889,15 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.integer  "company_id"
     t.string   "advertiser"
     t.string   "agency"
-    t.decimal  "budget",             precision: 15, scale: 2, default: 0.0
+    t.decimal  "budget",                       precision: 15, scale: 2, default: 0.0
     t.date     "start_date"
     t.date     "end_date"
-    t.integer  "external_io_number"
-    t.datetime "created_at",                                                  null: false
-    t.datetime "updated_at",                                                  null: false
+    t.integer  "external_io_number", limit: 8
+    t.datetime "created_at",                                                            null: false
+    t.datetime "updated_at",                                                            null: false
     t.integer  "io_id"
-    t.decimal  "budget_loc",         precision: 15, scale: 2, default: 0.0
-    t.string   "curr_cd",                                     default: "USD"
+    t.decimal  "budget_loc",                   precision: 15, scale: 2, default: 0.0
+    t.string   "curr_cd",                                               default: "USD"
   end
 
   add_index "temp_ios", ["company_id"], name: "index_temp_ios_on_company_id", using: :btree
@@ -1821,9 +1999,9 @@ ActiveRecord::Schema.define(version: 20171031005746) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
+    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
-    t.boolean  "revenue_requests_access",             default: false
   end
 
   add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree
@@ -1920,6 +2098,7 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   add_foreign_key "deal_product_cf_names", "companies"
   add_foreign_key "deal_product_cf_options", "deal_product_cf_names"
   add_foreign_key "deal_product_cfs", "companies"
+  add_foreign_key "deal_products", "ssps"
   add_foreign_key "dfp_report_queries", "api_configurations"
   add_foreign_key "display_line_item_budgets", "display_line_items"
   add_foreign_key "display_line_items", "ios"
@@ -1954,8 +2133,10 @@ ActiveRecord::Schema.define(version: 20171031005746) do
   add_foreign_key "pmp_members", "pmps"
   add_foreign_key "pmp_members", "users"
   add_foreign_key "pmps", "companies"
+  add_foreign_key "pmps", "deals"
   add_foreign_key "print_items", "ios"
   add_foreign_key "product_dimensions", "companies"
+  add_foreign_key "product_families", "companies"
   add_foreign_key "requests", "companies"
   add_foreign_key "requests", "deals"
   add_foreign_key "requests", "users", column: "assignee_id"

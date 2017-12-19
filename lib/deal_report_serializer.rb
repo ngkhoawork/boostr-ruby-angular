@@ -48,7 +48,7 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def latest_activity
-    object.latest_happened_activity.serializable_hash(only: [:happened_at, :activity_type_name, :comment]) rescue nil
+    object.latest_happened_activity.serializable_hash(only: [:happened_at, :activity_type_name]) rescue nil
   end
 
   def type
@@ -67,7 +67,7 @@ class DealReportSerializer < ActiveModel::Serializer
 
     grouped_budgets = object.deal_product_budgets
     .select{ |budget| selected_products.include?(budget.deal_product_id) }
-    .group_by(&:start_date)
+    .group_by{|budget| budget.start_date.beginning_of_month}
     .collect{|key, value| {start_date: key, budget: value.map(&:budget).compact.reduce(:+)} }
 
     budgets = []

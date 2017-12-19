@@ -84,13 +84,13 @@ RSpec.describe Api::ContactCfNamesController, type: :controller do
     end
 
     it 'disallows creation of new fields over limit' do
-      create_list :contact_cf_name, 2, field_type: 'note', company: company
+      create_list :contact_cf_name, 10, field_type: 'note', company: company
       cf_name_params(field_type: 'note')
 
       expect{
         post :create, contact_cf_name: cf_name_params
         expect(response.status).to eq(422)
-        expect(json_response['errors']).to eq("field_type" => ["Note reached it's limit of 2"])
+        expect(json_response['errors']).to eq("field_type" => ["Note reached it's limit of 10"])
       }.to_not change(ContactCfName, :count)
     end
   end

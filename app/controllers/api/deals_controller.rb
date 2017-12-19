@@ -585,6 +585,9 @@ class Api::DealsController < ApplicationController
                 :currency5,
                 :currency6,
                 :currency7,
+                :currency8,
+                :currency9,
+                :currency10,
                 :currency_code1,
                 :currency_code2,
                 :currency_code3,
@@ -592,13 +595,29 @@ class Api::DealsController < ApplicationController
                 :currency_code5,
                 :currency_code6,
                 :currency_code7,
+                :currency_code8,
+                :currency_code9,
+                :currency_code10,
                 :text1,
                 :text2,
                 :text3,
                 :text4,
                 :text5,
+                :text6,
+                :text7,
+                :text8,
+                :text9,
+                :text10,
                 :note1,
                 :note2,
+                :note3,
+                :note4,
+                :note5,
+                :note6,
+                :note7,
+                :note8,
+                :note9,
+                :note10,
                 :datetime1,
                 :datetime2,
                 :datetime3,
@@ -606,6 +625,9 @@ class Api::DealsController < ApplicationController
                 :datetime5,
                 :datetime6,
                 :datetime7,
+                :datetime8,
+                :datetime9,
+                :datetime10,
                 :number1,
                 :number2,
                 :number3,
@@ -613,6 +635,9 @@ class Api::DealsController < ApplicationController
                 :number5,
                 :number6,
                 :number7,
+                :number8,
+                :number9,
+                :number10,
                 :integer1,
                 :integer2,
                 :integer3,
@@ -620,14 +645,29 @@ class Api::DealsController < ApplicationController
                 :integer5,
                 :integer6,
                 :integer7,
+                :integer8,
+                :integer9,
+                :integer10,
                 :boolean1,
                 :boolean2,
                 :boolean3,
+                :boolean4,
+                :boolean5,
+                :boolean6,
+                :boolean7,
+                :boolean8,
+                :boolean9,
+                :boolean10,
                 :percentage1,
                 :percentage2,
                 :percentage3,
                 :percentage4,
                 :percentage5,
+                :percentage6,
+                :percentage7,
+                :percentage8,
+                :percentage9,
+                :percentage10,
                 :dropdown1,
                 :dropdown2,
                 :dropdown3,
@@ -635,6 +675,9 @@ class Api::DealsController < ApplicationController
                 :dropdown5,
                 :dropdown6,
                 :dropdown7,
+                :dropdown8,
+                :dropdown9,
+                :dropdown10,
                 :sum1,
                 :sum2,
                 :sum3,
@@ -642,6 +685,9 @@ class Api::DealsController < ApplicationController
                 :sum5,
                 :sum6,
                 :sum7,
+                :sum8,
+                :sum9,
+                :sum10,
                 :number_4_dec1,
                 :number_4_dec2,
                 :number_4_dec3,
@@ -649,6 +695,9 @@ class Api::DealsController < ApplicationController
                 :number_4_dec5,
                 :number_4_dec6,
                 :number_4_dec7,
+                :number_4_dec8,
+                :number_4_dec9,
+                :number_4_dec10,
                 :link1,
                 :link2,
                 :link3,
@@ -656,6 +705,9 @@ class Api::DealsController < ApplicationController
                 :link5,
                 :link6,
                 :link7,
+                :link8,
+                :link9,
+                :link10
             ]
         }
     ).merge(modifying_user: current_user)
@@ -755,6 +807,16 @@ class Api::DealsController < ApplicationController
   def product_ids
     @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
       params[:product_ids]
+    elsif product_family
+      product_family.products.collect(&:id)
+    else
+      nil
+    end
+  end
+
+  def product_family
+    @_product_family ||= if params[:product_family_id] && params[:product_family_id] != 'all'
+      company.product_families.find_by(id: params[:product_family_id])
     else
       nil
     end
@@ -844,6 +906,7 @@ class Api::DealsController < ApplicationController
   def all_ordered_deals_by_stage(stage)
     deals_with_stage = deals.where(stage: stage)
       .by_seller_id(params[:member_id])
+      .by_team_id(params[:team_id])
       .for_client(params[:advertiser_id])
       .for_client(params[:agency_id])
       .by_budget_range(params[:budget_from], params[:budget_to])

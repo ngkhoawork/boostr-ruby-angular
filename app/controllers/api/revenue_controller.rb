@@ -1,15 +1,5 @@
 class Api::RevenueController < ApplicationController
-  respond_to :json
-
-  def index
-    if params[:time_period_id].present? || params[:quarter].present?
-      render json: crevenues
-    elsif params[:year].present?
-      render json: quarterly_ios
-    else
-      render json: revenues
-    end
-  end
+  respond_to :json, :csv
 
   def forecast_detail
     if valid_time_period?
@@ -31,43 +21,33 @@ class Api::RevenueController < ApplicationController
     render json: revenues
   end
 
-  private
-
-  def quarterly_revenues
-
-    revs = current_user.company.revenues
-      .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", year, year)
-      .as_json
-    revs.map do |revenue|
-      revenue[:quarters] = []
-      revenue[:year] = year
-      if revenue['end_date'] == revenue['start_date']
-        revenue['end_date'] += 1.day
-      end
-      revenue_range = revenue['start_date'] .. revenue['end_date']
-      revenue['months'] = []
-      month = Date.parse("#{year-1}1201")
-      while month = month.next_month and month.year == year do
-        month_range = month.at_beginning_of_month..month.at_end_of_month
-        if month_range.overlaps? revenue_range
-          overlap = [revenue['start_date'], month_range.begin].max..[revenue['end_date'], month_range.end].min
-          revenue['months'].push((overlap.end.to_time - overlap.begin.to_time) / (revenue['end_date'].to_time - revenue['start_date'].to_time))
-        else
-          revenue['months'].push 0
-        end
-      end
-
-      quarters.each do |quarter|
-        if quarter[:range].overlaps? revenue_range
-          overlap = [revenue['start_date'], quarter[:start_date]].max..[revenue['end_date'], quarter[:end_date]].min
-          revenue[:quarters].push ((overlap.end - overlap.begin)  / (revenue['end_date'] - revenue['start_date']))
-        else
-          revenue[:quarters].push 0
-        end
-      end
+  def report_by_category
+    respond_to do |format|
+      format.json {
+        render json: revenue_by_category_report,
+               each_serializer: Report::RevenueByCategorySerializer
+      }
+      format.csv {
+        send_data Csv::RevenueByCategoryService.new(revenue_by_category_report).perform,
+                  filename: "reports-revenue_by_category-#{DateTime.current}.csv"
+      }
     end
-    revs
   end
+
+  def report_by_account
+    respond_to do |format|
+      format.json {
+        render json: revenue_by_account_report,
+               each_serializer: Report::RevenueByAccountSerializer
+      }
+      format.csv {
+        send_data Csv::RevenueByAccountService.new(revenue_by_account_report).perform,
+                  filename: "reports-revenue_by_account-#{DateTime.current}.csv"
+      }
+    end
+  end
+
+  private
 
   def quarterly_ios
     if params[:team_id] == 'all' && params[:user_id] == 'all'
@@ -200,9 +180,11 @@ class Api::RevenueController < ApplicationController
         product_ios.each do |index, item|
           sum_period_budget, split_period_budget = 0, 0
           io_team_users.each do |user|
-            result = io_obj.for_product_forecast_page(item[:product], start_date, end_date, user)
-            sum_period_budget += result[0] if sum_period_budget == 0
-            split_period_budget += result[1]
+            if item[:product]
+              result = io_obj.for_product_forecast_page(item[:product], start_date, end_date, user)
+              sum_period_budget += result[0] if sum_period_budget == 0
+              split_period_budget += result[1]
+            end
           end
           product_ios[index]['in_period_amt'] = sum_period_budget
           product_ios[index]['in_period_split_amt'] = split_period_budget
@@ -215,86 +197,6 @@ class Api::RevenueController < ApplicationController
     else
       member_or_team.quarterly_product_ios(product_ids, time_period.start_date, time_period.end_date)
     end
-  end
-
-  def revenues
-    rss = []
-    if params[:filter] == 'all' && current_user.leader?
-      rss = current_user.company.revenues
-    elsif params[:filter] == 'team'
-      team.members.each do |m|
-        m.clients.each do |c|
-          c.revenues.each do |r|
-            rss += [r] if !rss.include?(r)
-          end
-        end
-      end
-    elsif params[:filter] == 'upside'
-      if current_user.leader?
-        current_user.teams.first.all_members.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance > 0").each do |r|
-                rss += [r] if !rss.include?(r)
-              end
-            end
-          end
-        end
-        current_user.teams.first.all_leaders.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance > 0").each do |r|
-                rss += [r] if !rss.include?(r)
-              end
-            end
-          end
-        end
-      else
-        current_user.clients.each do |c|
-          if c.client_members.where(user_id: current_user.id).first.share > 0
-            c.revenues.where("revenues.balance > 0").each do |r|
-              rss += [r] if !rss.include?(r)
-            end
-          end
-        end
-      end
-    elsif params[:filter] == 'risk'
-      if current_user.leader?
-        current_user.teams.first.all_members.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance < 0").each do |r|
-                rss += [r] if !rss.include?(r)
-              end
-            end
-          end
-        end
-        current_user.teams.first.all_leaders.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance < 0").each do |r|
-                rss += [r] if !rss.include?(r)
-              end
-            end
-          end
-        end
-      else
-        current_user.clients.each do |c|
-          if c.client_members.where(user_id: current_user.id).first.share > 0
-            c.revenues.where("revenues.balance < 0").each do |r|
-              rss += [r] if !rss.include?(r)
-            end
-          end
-        end
-      end
-    else # mine/default
-      current_user.clients.each do |c|
-        c.revenues.each do |r|
-          rss += [r] if !rss.include?(r)
-        end
-      end
-    end
-    return rss
   end
 
   def time_period
@@ -365,6 +267,16 @@ class Api::RevenueController < ApplicationController
   def product_ids
     @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
       params[:product_ids]
+    elsif product_family
+      product_family.products.collect(&:id)
+    else
+      nil
+    end
+  end
+
+  def product_family
+    @_product_family ||= if params[:product_family_id] && params[:product_family_id] != 'all'
+      company.product_families.find_by(id: params[:product_family_id])
     else
       nil
     end
@@ -390,6 +302,10 @@ class Api::RevenueController < ApplicationController
     end
   end
 
+  def company
+    @_company ||= current_user.company
+  end
+
   def member
     @member ||= if params[:user_id]
       current_user.company.users.find(params[:user_id])
@@ -404,7 +320,34 @@ class Api::RevenueController < ApplicationController
     @team ||= current_user.company.teams.find(params[:team_id])
   end
 
-  def crevenues
-    @crevenues ||= member_or_team.crevenues(start_date, end_date, product)
+  def revenue_by_category_report
+    Report::RevenueByCategoryService.new(revenue_by_category_report_params).perform
+  end
+
+  def revenue_by_account_report
+    Report::RevenueByAccountService.new(revenue_by_account_report_params).perform
+  end
+
+  def revenue_by_category_report_params
+    %i(start_date end_date category_ids).each { |param_name| params.require(param_name) }
+
+    params.permit(:start_date, :end_date, client_region_ids: [], client_segment_ids: [], category_ids: [])
+          .merge!(company_id: current_user.company_id)
+  end
+
+  def revenue_by_account_report_params
+    %i(start_date end_date).each { |param_name| params.require(param_name) }
+
+    params
+      .permit(
+        :client_types,
+        :start_date,
+        :end_date,
+        :page,
+        :per_page,
+        category_ids: [],
+        client_region_ids: [],
+        client_segment_ids: []
+      ).merge!(company_id: current_user.company_id)
   end
 end

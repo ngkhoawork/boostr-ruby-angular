@@ -113,6 +113,14 @@
             .col-sm-4
               .panel
                 .panel-body
+                  %h4 Users Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadUsersModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Users
+            .col-sm-4
+              .panel
+                .panel-body
                   %h4 Influencer Content Fee Import
                   %li.import
                     %a.upload{ href: '', ng: { click: 'showUploadInfluencerContentFeesModal()' } }

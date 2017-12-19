@@ -51,6 +51,10 @@ class Team < ActiveRecord::Base
     end
   end
 
+  def leader_and_member_ids
+    [leader_id] | members.pluck(:id)
+  end
+
   def all_children
     temp_children = Team.where(parent_id: self.id)
     children = []
@@ -81,49 +85,25 @@ class Team < ActiveRecord::Base
   end
 
   def all_deals_for_time_period(start_date, end_date)
-    deals.where(open: true).for_time_period(start_date, end_date) + children.map {|c| c.all_deals_for_time_period(start_date, end_date) } + (leader.nil? ? [] : leader.all_deals_for_time_period(start_date, end_date))
+    team_deals = team_deals_for_time_period(start_date, end_date)
+    all_deals = children.inject(team_deals) do |all_deals, c|
+      all_deals.union(c.all_deals_for_time_period(start_date, end_date))
+    end
+    if leader
+      all_deals.union(leader.all_deals_for_time_period(start_date, end_date))
+    else
+      all_deals
+    end
+  end
+
+  def team_deals_for_time_period(start_date, end_date)
+    deals.where(open: true).for_time_period(start_date, end_date)
   end
 
   def all_revenues_for_time_period(start_date, end_date)
     rs = revenues.for_time_period(start_date, end_date) + children.map {|c| c.all_revenues_for_time_period(start_date, end_date)}
     rs.flatten.map {|r| r.set_period_budget(start_date, end_date)}
     return rs
-  end
-
-  def crevenues(start_date, end_date, product = nil)
-    all_users = all_members + all_leaders
-
-    ios = Io.for_company(company_id).for_io_members(all_users.map(&:id)).for_time_period(start_date, end_date).distinct
-
-    @crevenues ||= ios.each_with_object([]) do |io, memo|
-      sum_period_budget, split_period_budget = 0, 0
-
-      io_users = io.users.pluck(:id)
-      io_team_users = all_users.select do |user|
-        io_users.include?(user.id)
-      end
-
-      io_team_users.each do |user|
-        result = 0
-        if product.present?
-          result = io.for_product_forecast_page(product, start_date, end_date, user)
-        else
-          result = io.for_forecast_page(start_date, end_date, user)
-        end
-        sum_period_budget += result[0] if sum_period_budget == 0
-        split_period_budget += result[1]
-      end
-
-      memo << {
-        id: io.id,
-        name: io.name,
-        agency: io.get_agency,
-        advertiser: io.advertiser.name,
-        budget: io.budget.to_s,
-        sum_period_budget: sum_period_budget,
-        split_period_budget: split_period_budget
-      }
-    end
   end
 
   def quarterly_ios(start_date, end_date)

@@ -142,7 +142,9 @@ class Deal < ActiveRecord::Base
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
   scope :by_name, -> (name) { where('deals.name ilike ?', "%#{name}%") }
   scope :by_product_id, -> (product_id) { joins(:products).where(products: { id: product_id } ) if product_id.present? }
-  scope :by_team_id, -> (team_id) { joins(deal_members: :user).where(users: { team_id: team_id }) if team_id.present? }
+  scope :by_team_id, -> (team_id) do
+    joins(:deal_members).where(deal_members: { user_id: Team.find(team_id).leader_and_member_ids }) if team_id.present?
+  end
   scope :by_seller_id, -> (seller_id) do
     joins(:deal_members).where(deal_members: { user_id: seller_id }) if seller_id.present?
   end
@@ -186,6 +188,10 @@ class Deal < ActiveRecord::Base
         e_date = end_date
       end
       update_pipeline_fact_date(s_date, e_date)
+    end
+
+    if open_changed?
+      update_pipeline_fact(self)
     end
   end
 
@@ -613,11 +619,10 @@ class Deal < ActiveRecord::Base
   end
 
   def latest_activity_csv_string
-    if latest_happened_activity.present? && !latest_happened_activity.activity_type_name.eql?('Email')
+    if latest_happened_activity.present?
       data = ''
       data += "Date: #{latest_happened_activity.happened_at.strftime("%m-%d-%Y %H:%M:%S")}\n"
       data += "Type: #{latest_happened_activity.activity_type_name}\n"
-      data += "Note: #{latest_happened_activity.comment}"
     else
       ''
     end
@@ -691,7 +696,7 @@ class Deal < ActiveRecord::Base
 
         deal_product_budgets = deal.deal_product_budgets
           .select{ |budget| selected_products.include?(budget.deal_product_id) }
-          .group_by(&:start_date)
+          .group_by{|budget| budget.start_date.beginning_of_month}
           .collect{|key, value| {start_date: key, budget: value.map(&:budget).compact.reduce(:+)} }
 
         range.each do |product_time|

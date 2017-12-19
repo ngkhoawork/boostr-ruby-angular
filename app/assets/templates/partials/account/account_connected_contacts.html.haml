@@ -5,37 +5,53 @@
 
     %table.table.table-striped
         %thead
-            %tr
-                %th.left Name
-                %th.left {{ currentClient.client_type.option.name == 'Advertiser' ? 'Agency' : 'Advertiser' }}
-                %th.left Position
-                %th.left Email
-                %th.left Phone
-                %th.left Status
-        %tbody{ ng: { repeat: 'connected_contact in connected_client_contacts'} }
-            %tr{ ng: { repeat: 'clientContact in connected_contact._clientContacts'} }
+            %tr.z-sortable-prime{'sort-name': 'connected_client_contacts', watch: '"connected_client_contacts"'}
+                %th
+                    .z-sortable{ by: 'contact.name' } Name
+                %th
+                    .z-sortable{ by: 'client.name' } {{ isAdvertiser ? 'Agency' : 'Advertiser' }}
+                %th
+                    .z-sortable{ by: 'contact.position' } Position
+                %th
+                    .z-sortable{ by: 'contact.address.email' } Email
+                %th
+                    .z-sortable{ by: 'contact.address.mobile' } Phone
+                %th
+                    .z-sortable{ by: 'is_active' } Status
+        %tbody
+            %tr{ ng: { repeat: 'client_contact in connected_client_contacts | orderBy : zSort.connected_client_contacts.by : zSort.connected_client_contacts.rev'} }
                 %td
-                    %a{'ng-href': '/contacts/{{connected_contact.contact.id}}'} {{ connected_contact.contact.name }}
-                    %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnectionContact(connected_contact)'}
+                    %a{'ng-href': '/contacts/{{client_contact.contact.id}}'} {{ client_contact.contact.name }}
+                    %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnectionContact(client_contact)'}
+                %td{ng: {if: 'isAdvertiser'}}
+                    %a{'ng-href': '/accounts/{{client_contact.contact.primary_client.id}}'}
+                        {{ client_contact.contact.primary_client.name }}
+                %td{ng: {if: 'isAgency'}}
+                    %a{'ng-href': '/accounts/{{client_contact.client.id}}'}
+                        {{ client_contact.client.name }}
                 %td
-                    %a{'ng-href': '/accounts/{{clientContact.client.id}}'}
-                        {{ clientContact.client.name }}
+                    {{ client_contact.contact.position }}
                 %td
-                    {{ connected_contact.contact.position }}
+                    {{ client_contact.contact.address.email }}
                 %td
-                    {{ connected_contact.contact.address.email }}
-                %td
-                    {{ connected_contact.contact.address.mobile }}
+                    {{ client_contact.contact.address.mobile }}
                 %td.left
                     .dropdown
                         %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
                             %span.editable
-                                {{clientContact.is_active ? 'Active' : 'Inactive'}}
+                                {{client_contact.is_active ? 'Active' : 'Inactive'}}
                             %span.caret
                         %ul.dropdown-menu
-                            %li{'ng-class': '{active: clientContact.is_active == true}'}
-                                %a{'href': '', 'ng-click': 'updateClientContactStatus(clientContact, true)'}
+                            %li{'ng-class': '{active: client_contact.is_active == true}'}
+                                %a{'href': '', 'ng-click': 'updateClientContactStatus(client_contact, true)'}
                                     %span.text Active
-                            %li{'ng-class': '{active: clientContact.is_active == false}'}
-                                %a{'href': '', 'ng-click': 'updateClientContactStatus(clientContact, false)'}
+                            %li{'ng-class': '{active: client_contact.is_active == false}'}
+                                %a{'href': '', 'ng-click': 'updateClientContactStatus(client_contact, false)'}
                                     %span.text Inactive
+
+    .custom-pagination{'bgf-pagination': 'bgf-pagination',
+        'collection': 'connected_client_contacts',
+        'per-page': '10',
+        'link-group-size': "2",
+        'client-limit': "100",
+        'url': 'connectedClientContactUrl'}

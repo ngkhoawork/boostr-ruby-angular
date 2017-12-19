@@ -8,6 +8,7 @@
           %z-filter{'on-apply': 'onFilterApply'}
             %z-filter-field{data: 'teams', type: 'team', 'save-as': '{id: "id"}', 'on-change': 'updateSellers', default: 'defaultTeam'} Team
             %z-filter-field{data: 'sellers', 'save-as': '{user_id: "id"}'} Seller
+            %z-filter-field{data: 'productFamilies', 'save-as': '{product_family_id: "id"}'} Product Family
             %z-filter-field{data: 'products', type: 'multiselect', 'save-as': '{"product_ids[]": "id"}'} Products
             %z-filter-field{data: 'timePeriods', 'save-as': '{time_period_id: "id"}', 'is-all': 'false', 'order-by': '["period_type", "start_date"]', id: 'time-period-field'} Time period
             %div{style: 'order: 1; margin: 0 10px'}
@@ -42,6 +43,8 @@
                 %tr.z-sortable-prime{'sort-name': 'forecast'}
                   %th
                     .z-sortable{by: 'product.name', default: true} Product
+                  %th
+                    .z-sortable{by: 'product.product_family.name'} Product Family
                   %th{'ng-repeat': 'stage in stages'}
                     .z-sortable{by: '"weighted_pipeline_by_stage[\""+stage.id+"\"]"'} {{stage.probability}}%
                   %th
@@ -56,6 +59,8 @@
                 %tr{'ng-repeat': 'product_forecast in forecastData | orderBy : zSort.forecast.by : zSort.forecast.rev'}
                   %td
                     {{product_forecast.product.name}}
+                  %td
+                    {{product_forecast.product.product_family.name}}
                   %td{'ng-repeat': 'stage in stages'}
                     {{(product_forecast.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
                   %td
@@ -70,6 +75,7 @@
                   %td
                     %strong
                       Total
+                  %td
                   %td{'ng-repeat': 'stage in stages'}
                     %strong
                       {{(totalForecastData.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}

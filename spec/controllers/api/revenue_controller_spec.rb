@@ -19,49 +19,154 @@ RSpec.describe Api::RevenueController, type: :controller do
     end
   end
 
-  describe 'GET #index' do
-    context 'user' do
-      before do
-        create(:io_member, user: user, io: io, share: 100)
-        2.times { create :content_fee, io: io, product: product, budget: 20_000 }
+  describe '#report_by_category' do
+    let!(:account_revenue_fact) do
+      create(
+        :account_revenue_fact,
+        account_dimension: account_dimension,
+        revenue_amount: 10_000,
+        company: user.company,
+        category_id: category.id,
+        time_dimension: time_dimension
+      )
+    end
+    let(:params) do
+      {
+        format: :json,
+        start_date: time_dimension.start_date,
+        end_date: time_dimension.end_date
+      }
+    end
+    subject { get :report_by_category, params }
+
+    before(:each) { subject }
+
+    context 'when params include appropriate "category_ids"' do
+      let(:params) { super().merge(category_ids: [category.id]) }
+
+      it 'has an appropriate structure' do
+        expect(response).to be_success
+        expect(response_json).to be_kind_of Array
+        expect(response_item).to have_key :category_name
+        expect(response_item).to have_key :year
+        expect(response_item).to have_key :revenues
+        expect(response_item).to have_key :total_revenue
+        expect(response_item[:revenues]).to be_kind_of Hash
+      end
+      it { expect(response_item[:category_name]).to eq category.name }
+
+      context 'and when params include appropriate "region_id"' do
+        let(:params) { super().merge(client_region_ids: [region.id]) }
+
+        it { expect(response_json).not_to be_empty }
       end
 
-      it 'has proper revenue data' do
-        get :index, format: :json, time_period_id: time_period.id, member_id: user.id.to_s
-        response_json = JSON.parse(response.body)
+      context 'and when options include appropriate "segment_id"' do
+        let(:params) { super().merge(client_segment_ids: [segment.id]) }
 
-        expect(response_json[0]['name']).to eq(io.name)
-        expect(response_json[0]['advertiser']).to eq(advertiser.name)
-        expect(response_json[0]['budget']).to eq('40000.0')
-        expect(response_json[0]['sum_period_budget']).to eq(40000.0)
+        it { expect(response_json).not_to be_empty }
+      end
+
+      context 'and when options does not include appropriate "region_id"' do
+        let(:params) { super().merge(client_region_ids: [-1]) }
+
+        it { expect(response_json).to be_empty }
+      end
+
+      context 'and when options does not include appropriate "segment_id"' do
+        let(:params) { super().merge(client_segment_ids: [-1]) }
+
+        it { expect(response_json).to be_empty }
       end
     end
 
-    context 'team' do
-      before do
-        create(:io_member, user: user, io: io, share: 100)
-        2.times { create :content_fee, io: io, product: product, budget: 20_000 }
+    context 'when params does not include appropriate "category_ids"' do
+      let(:params) { super().merge(category_ids: [-1]) }
 
-        create(:io_member, user: another_user, io: io_for_another_user, share: 80)
-        2.times { create :content_fee, io: io_for_another_user, product: product, budget: 10_000 }
+      it { expect(response_item).to be_nil }
+    end
+  end
+
+  describe '#report_by_account' do
+    let!(:account_revenue_fact) do
+      create(
+        :account_revenue_fact,
+        account_dimension: account_dimension,
+        revenue_amount: 10_000,
+        company: user.company,
+        category_id: category.id,
+        time_dimension: time_dimension
+      )
+    end
+    let(:params) do
+      {
+        format: :json,
+        start_date: time_dimension.start_date,
+        end_date: time_dimension.end_date
+      }
+    end
+    subject { get :report_by_account, params }
+
+    before(:each) { subject }
+
+    context 'when params include appropriate "category_ids"' do
+      let(:params) { super().merge(category_ids: [category.id]) }
+
+      it 'has an appropriate structure' do
+        expect(response).to be_success
+        expect(response_json).to be_kind_of Array
+        expect(response_item).to have_key :name
+        expect(response_item).to have_key :client_type
+        expect(response_item).to have_key :category_name
+        expect(response_item).to have_key :region_name
+        expect(response_item).to have_key :segment_name
+        expect(response_item).to have_key :seller_names
+        expect(response_item).to have_key :revenues
+        expect(response_item).to have_key :total_revenue
+        expect(response_item[:revenues]).to be_kind_of Array
+      end
+      it { expect(response_item[:category_name]).to eq category.name }
+
+      context 'and when params include appropriate "region_ids"' do
+        let(:params) { super().merge(client_region_ids: [region.id]) }
+
+        it { expect(response_json).not_to be_empty }
       end
 
-      it 'has proper revenue data' do
-        get :index, format: :json, time_period_id: time_period.id, team_id: team.id.to_s
-        response_json = response_json(response.body)
+      context 'and when options include appropriate "segment_ids"' do
+        let(:params) { super().merge(client_segment_ids: [segment.id]) }
 
-        expect(select_values(response_json, 'name')).to include(io.name && io_for_another_user.name)
-        expect(select_values(response_json, 'advertiser')).to include(advertiser.name)
-        expect(select_values(response_json, 'budget')).to include('40000.0' && '20000.0')
-        expect(select_values(response_json, 'sum_period_budget')).to include(40000.0 && 20000.0)
+        it { expect(response_json).not_to be_empty }
       end
+
+      context 'and when options does not include appropriate "region_ids"' do
+        let(:params) { super().merge(client_region_ids: [-1]) }
+
+        it { expect(response_json).to be_empty }
+      end
+
+      context 'and when options does not include appropriate "segment_id"' do
+        let(:params) { super().merge(client_segment_ids: [-1]) }
+
+        it { expect(response_json).to be_empty }
+      end
+    end
+
+    context 'when params does not include appropriate "category_ids"' do
+      let(:params) { super().merge(category_ids: [-1]) }
+
+      it { expect(response_item).to be_nil }
     end
   end
 
   private
 
-  def response_json(body)
-    @_response_json ||= JSON.parse(body)
+  def response_json
+    @_response_json ||= JSON.parse(response.body, symbolize_names: true)
+  end
+
+  def response_item
+    @_response_item ||= response_json[0]
   end
 
   def select_values(json, key)
@@ -90,11 +195,6 @@ RSpec.describe Api::RevenueController, type: :controller do
                               deal: another_deal
   end
 
-
-  def advertiser
-    @_advertiser ||= create(:client)
-  end
-
   def deal
     @_deal ||= create :deal, products: [product]
   end
@@ -109,5 +209,59 @@ RSpec.describe Api::RevenueController, type: :controller do
 
   def team
     @_team ||= create :parent_team, members: [user, another_user], company: company
+  end
+
+  def category_field
+    @_category_field ||= create(:field, name: 'Category', subject_type: 'Client')
+  end
+
+  def region_field
+    @_region_field ||= create(:field, name: 'Region', subject_type: 'Client')
+  end
+
+  def segment_field
+    @_segment_field ||= create(:field, name: 'Segment', subject_type: 'Client')
+  end
+
+  def category
+    @_category ||= create(:option, field: category_field, company: company)
+  end
+
+  def region
+    @_region ||= create(:option, field: region_field, company: company)
+  end
+
+  def segment
+    @_segment ||= create(:option, field: segment_field, company: company)
+  end
+
+  def holding_company
+    @_holding_company ||= create(:holding_company)
+  end
+
+  def advertiser
+    @_advertiser ||=
+      create(
+        :client,
+        :advertiser,
+        holding_company: holding_company,
+        company: company,
+        client_region_id: region.id,
+        client_segment_id: segment.id
+      )
+  end
+
+  def account_dimension
+    @_account_dimension ||= advertiser.account_dimensions.last
+  end
+
+  def time_dimension
+    @_time_dimension ||=
+      create(
+        :time_dimension,
+        start_date: Date.today.beginning_of_month,
+        end_date: Date.today.end_of_month,
+        days_length: Time.days_in_month(Time.current.month)
+      )
   end
 end

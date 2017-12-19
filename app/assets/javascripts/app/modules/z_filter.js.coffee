@@ -2,6 +2,7 @@
 	angular.module('zFilterModule', [])
 
 	.controller 'ZFilterController', ['$scope', 'localStorageService', 'ReportQuery', ($scope, LS, ReportQuery) ->
+		$scope.ctrl = this
 		ctrl = this
 		ctrl.reportName = _.last(window.location.pathname.split('/'))
 		$scope.recentQueries = LS.get(ctrl.reportName) || []
@@ -61,6 +62,11 @@
 			ctrl.checkApplied()
 		ctrl.checkApplied = ->
 			$scope.isFilterApplied = _.isEqual ctrl.query, ctrl.appliedQuery
+
+		$scope.$watch('ctrl.query', (query) =>
+			$scope.currentSelection = query
+		, true)
+
 		ctrl
 	]
 
@@ -70,6 +76,7 @@
 		transclude: true
 		scope:
 			onApply: '='
+			currentSelection: '='
 		controller: 'ZFilterController'
 		templateUrl: 'modules/z_filter.html'
 		link: ($scope, el, attrs, ctrl, trans) ->
