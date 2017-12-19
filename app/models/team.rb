@@ -51,6 +51,10 @@ class Team < ActiveRecord::Base
     end
   end
 
+  def leader_and_member_ids
+    [leader_id] | members.pluck(:id)
+  end
+
   def all_children
     temp_children = Team.where(parent_id: self.id)
     children = []

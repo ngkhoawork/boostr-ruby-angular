@@ -25,6 +25,26 @@
 			.filter-row
 				.filter-name
 					%div
+						Team
+				.filter-dropdown
+					%i.fa.fa-close{'ng-show': 'filter.selected.team', 'ng-click': 'filter.reset("team")'}
+					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.team}'}
+							{{filter.selected.team.name || 'Select an team'}}
+							%span.caret
+						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
+							.form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+								%i.fa.fa-search
+								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+							%span.dropdown-title Select from list
+							.dropdown-block
+								.dropdown-option{'ng-repeat': "team in filter.teams | filter: filtering  | orderBy: 'name'", role: 'menuitem'}
+									%a{href: '', 'ng-click': 'filter.select("team", team)'} {{team.name}}
+
+
+			.filter-row
+				.filter-name
+					%div
 						Advertiser
 				.filter-dropdown
 					%i.fa.fa-close{'ng-show': 'filter.selected.advertiser', 'ng-click': 'filter.reset("advertiser")'}
