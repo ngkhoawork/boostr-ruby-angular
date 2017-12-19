@@ -184,8 +184,9 @@
 
             alignColumnsHeight = ->
                 columns = angular.element('.column-body')
+                minHeight = angular.element(window).height() - columns.offset().top
                 maxHeight =  _.chain(columns).map((el) -> angular.element(el).outerHeight()).max().value()
-                columns.css('min-height', maxHeight)
+                columns.css('min-height', Math.max(minHeight, maxHeight))
 
             getDealParams = ->
                 params = {filter: $scope.teamFilter().param}

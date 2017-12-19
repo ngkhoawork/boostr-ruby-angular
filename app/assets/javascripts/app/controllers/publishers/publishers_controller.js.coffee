@@ -107,7 +107,7 @@
       params = _.extend(
           params
           $scope.filter.get()
-          _.omit $scope.teamFilter, 'name'
+          _.omit $scope.teamFilter(), 'name'
       )
 
     $scope.getPublishers = (nextPage) ->
@@ -279,9 +279,9 @@
 
     alignColumnsHeight = ->
       columns = angular.element('.column-body')
+      minHeight = angular.element(window).height() - columns.offset().top
       maxHeight =  _.chain(columns).map((el) -> angular.element(el).outerHeight()).max().value()
-      console.log maxHeight
-      columns.css('min-height', maxHeight)
+      columns.css('min-height', Math.max(minHeight, maxHeight))
 
     $scope.$on 'updated_publishers', ->
       if $scope.view != 'columns' then return;
