@@ -89,16 +89,32 @@
     }
   }
 
-  .editable {
+  .editable, .editable-input {
     cursor: pointer;
     padding: 5px 8px;
     border-radius: 4px;
     border-bottom: 1px dashed $secondary-font-color;
+    background-color: transparent;
     &:hover {
       border-color: transparent;
       border-bottom-color: $secondary-font-color;
       background-color: $separate-line-color;
     }
+    &:focus {
+      outline: none;
+      border: 1px dashed $secondary-font-color;
+      &:hover {
+        background-color: inherit;
+      }
+    }
+  }
+  .editable-field {
+    padding: 5px 8px;
+    background-color: transparent;
+    border: 1px dashed $secondary-font-color;
+  }
+  div[click-to-edit] {
+    display: inline-block;
   }
   .publisher-inner {
     .dropdown {

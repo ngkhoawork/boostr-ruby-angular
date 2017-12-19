@@ -175,7 +175,7 @@
             $scope.submitForm = ->
                 $scope.errors = {}
 
-                fields = ['deal', 'advertiser', 'agency', 'contacts', 'date', 'comment']
+                fields = ['deal', 'advertiser', 'agency', 'publisher', 'contacts', 'date', 'comment']
                 if $scope.showReminderForm
                     fields.push('reminderName', 'reminderDate', 'reminderComment')
 
@@ -183,17 +183,22 @@
                     field = $scope.form[key]
                     switch key
                         when 'deal'
-                            if !field && !$scope.form.advertiser && !$scope.form.agency
+                            if !field && !$scope.form.advertiser && !$scope.form.agency && !$scope.form.publisher
                                 return $scope.errors[key] = 'At least one is required'
                             if field && typeof field != 'object'
                                 return $scope.errors[key] = 'Record doesn\'t exist'
                         when 'advertiser'
-                            if !field && !$scope.form.deal && !$scope.form.agency
+                            if !field && !$scope.form.deal && !$scope.form.agency && !$scope.form.publisher
                                 return $scope.errors[key] = ' '
                             if field && typeof field != 'object'
                                 return $scope.errors[key] = 'Record doesn\'t exist'
                         when 'agency'
-                            if !field && !$scope.form.advertiser && !$scope.form.deal
+                            if !field && !$scope.form.advertiser && !$scope.form.deal && !$scope.form.publisher
+                                return $scope.errors[key] = ' '
+                            if field && typeof field != 'object'
+                                return $scope.errors[key] = 'Record doesn\'t exist'
+                        when 'publisher'
+                            if !field && !$scope.form.deal && !$scope.form.advertiser && !$scope.form.agency
                                 return $scope.errors[key] = ' '
                             if field && typeof field != 'object'
                                 return $scope.errors[key] = 'Record doesn\'t exist'

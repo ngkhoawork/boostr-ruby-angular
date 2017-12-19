@@ -107,7 +107,7 @@
                 %th
                   .z-sortable{by: 'renewal_term.name'}
                     Renewal Term
-                %th
+                %th{width: '200px'}
                   .z-sortable{by: 'revenue_share'}
                     Revenue Share
                 %th
@@ -157,7 +157,7 @@
                         %a{'href': '', 'ng-click': ' publisher.renewal_term = term; updatePublisher(publisher)'}
                           %span.text {{term.name}}
                 %td
-                  %input.editable{'ng-class': '{"not-selected": !publisher.revenue_share}', placeholder: "Revenue Share", 'ng-model': "publisher.revenue_share", 'ng-blur': 'updatePublisher(publisher)' }
+                  %div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', postfix: '%', 'ng-model': "publisher.revenue_share", 'on-after-save': 'updatePublisher(publisher)'}
                 %td
                   %span.datetime-field.bs-datepicker
                     %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !publisher.term_start_date}', model: 'publisher.term_start_date', click: 'startedAtOpened = !startedAtOpened', change: 'updatePublisher(publisher)' }, 'is-open': 'startedAtOpened' }
@@ -179,7 +179,7 @@
               {{stage.name}}
               %i ({{stage.publishers_count || 0}})
             %span
-              Estimated Impressions {{stage.estimated_monthly_impressions_sum || 0}}
+              Est. Imp. {{stage.estimated_monthly_impressions_sum | formatMoney : ''}}
             %svg{width: '17', height: '72'}
               %polygon{points: '-2,-7 15, 36, -2, 79'}
           .column-body{'dnd-list': 'stage.publishers',

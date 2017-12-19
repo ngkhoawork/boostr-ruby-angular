@@ -188,4 +188,16 @@
       cursor: pointer;
     }
   }
+  .campaign-details {
+    .editable-field {
+      padding: 5px 8px;
+      border: 1px dashed $secondary-font-color;
+      max-width: 100px;
+      &:focus {
+        background-color: inherit;
+        border-color: $secondary-font-color;
+      }
+    }
+
+  }
 }
