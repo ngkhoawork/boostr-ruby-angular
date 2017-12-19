@@ -44,7 +44,7 @@ RSpec.describe Api::V2::EmailThreadsController, type: :controller do
       params = {
         email_guid: '123456',
         thread_id: '111',
-        gmail_query_string: '=&to=Sergey%20Guzhvay%20%3Csergey%40zazmic.com%3E&to=Vitaliy%20Jorzh%20%3Cvitaliy.jorzh%40zazmic.com%3E&to=&=&cc=&=&bcc=&subjectbox=test&composeid=3&from=Sergey%20Guzhvay%20%3Csergey@zazmic.com%3E&subject=test&draft=15f4db8d79ffc5a3&bwd=&rm=&ac=%5B%5D&adc=&ishtml=1&body=%3Cdiv%20dir%3D%22ltr%22%3E111%3C%2Fdiv%3E&pte=&pti=&bpfs=&uet=&pbgt=&pbgas=&pbgir='
+        gmail_query_string: {subject: "333", from: "test1@gmail.com", to: ["test@gmail.com"], body: "test"}
       }
 
       expect do
