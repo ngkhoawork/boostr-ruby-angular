@@ -29,6 +29,7 @@
   'bgf.paginateAnything'
   'LocalStorageModule'
   'zFilterModule'
+  'ngTextTruncate'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->

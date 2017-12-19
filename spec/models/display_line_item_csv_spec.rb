@@ -6,7 +6,7 @@ describe DisplayLineItemCsv do
     subject { line_item_csv }
 
     before do
-      exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
+      exchange_rate(currency: currency(curr_cd: 'BRL'), rate: 1.5)
     end
 
     it { is_expected.to validate_presence_of(:company_id) }
@@ -32,35 +32,35 @@ describe DisplayLineItemCsv do
 
     context 'multicurrency' do
       it 'is valid if io has exchange rate' do
-        exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
-        io(curr_cd: 'GBP')
+        exchange_rate(currency: currency(curr_cd: 'BRL'), rate: 1.5)
+        io(curr_cd: 'BRL')
         line_item_csv(external_io_number: io.external_io_number)
         expect(line_item_csv).to be_valid
       end
 
       it 'is valid if temp_io has exchange rate' do
-        exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
-        temp_io(curr_cd: 'GBP')
+        exchange_rate(currency: currency(curr_cd: 'BRL'), rate: 1.5)
+        temp_io(curr_cd: 'BRL')
         line_item_csv(external_io_number: temp_io.external_io_number)
         expect(line_item_csv).to be_valid
       end
 
       it 'fails if io has no exchange rate' do
-        exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
-        io(curr_cd: 'GBP')
+        exchange_rate(currency: currency(curr_cd: 'BRL'), rate: 1.5)
+        io(curr_cd: 'BRL')
         exchange_rate.destroy
         line_item_csv(external_io_number: io.external_io_number)
         expect(line_item_csv).not_to be_valid
-        expect(line_item_csv.errors.full_messages).to eql(["Budget has no exchange rate for GBP found at #{io.created_at.strftime("%m/%d/%Y")}"])
+        expect(line_item_csv.errors.full_messages).to eql(["Budget has no exchange rate for BRL found at #{io.created_at.strftime("%m/%d/%Y")}"])
       end
 
       it 'fails if temp_io has no exchange_rate' do
-        exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
-        temp_io(curr_cd: 'GBP')
+        exchange_rate(currency: currency(curr_cd: 'BRL'), rate: 1.5)
+        temp_io(curr_cd: 'BRL')
         exchange_rate.destroy
         line_item_csv(external_io_number: temp_io.external_io_number)
         expect(line_item_csv).not_to be_valid
-        expect(line_item_csv.errors.full_messages).to eql(["Budget has no exchange rate for GBP found at #{temp_io.created_at.strftime("%m/%d/%Y")}"])
+        expect(line_item_csv.errors.full_messages).to eql(["Budget has no exchange rate for BRL found at #{temp_io.created_at.strftime("%m/%d/%Y")}"])
       end
     end
 
@@ -269,8 +269,8 @@ describe DisplayLineItemCsv do
 
   context 'multicurrency Io' do
     it 'sets local currency values according to exchange rate' do
-      exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
-      io(curr_cd: 'GBP')
+      exchange_rate(currency: currency(curr_cd: 'BRL'), rate: 1.5)
+      io(curr_cd: 'BRL')
       line_item_csv(
         external_io_number: io.external_io_number,
         budget: '10000',
