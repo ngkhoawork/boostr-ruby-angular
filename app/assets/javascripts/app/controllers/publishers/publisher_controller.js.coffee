@@ -12,6 +12,20 @@
       $scope.getPublisherSettings()
       $scope.getDealFiles()
 
+    $scope._scope = -> this
+
+    $scope.isUrlValid = (url) ->
+      regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
+      regexp.test url
+
+    $scope.getUrlHostname = (url) ->
+      a = document.createElement 'a'
+      a.href = $scope.fixUrl url
+      a.hostname
+
+    $scope.fixUrl = (url) ->
+      if url && url.search('//') == -1 then return '//' + url else url
+
     $scope.getDealFiles = () ->
       PublisherAttachment.list(publisher_id: $routeParams.id, type: "publisher").then (res) ->
         $scope.dealFiles = res
@@ -173,6 +187,8 @@
       svg = d3.select(chartId)
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
+        .style('height', 'auto')
+        .html('')
         .append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
       revenueData.alternative.forEach (data) ->

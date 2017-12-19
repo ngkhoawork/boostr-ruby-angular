@@ -157,7 +157,7 @@
                         %a{'href': '', 'ng-click': ' publisher.renewal_term = term; updatePublisher(publisher)'}
                           %span.text {{term.name}}
                 %td
-                  %div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', postfix: '%', 'ng-model': "publisher.revenue_share", 'on-after-save': 'updatePublisher(publisher)'}
+                  %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': "publisher.revenue_share", 'on-after-save': 'updatePublisher(publisher)'}
                 %td
                   %span.datetime-field.bs-datepicker
                     %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !publisher.term_start_date}', model: 'publisher.term_start_date', click: 'startedAtOpened = !startedAtOpened', change: 'updatePublisher(publisher)' }, 'is-open': 'startedAtOpened' }
@@ -171,7 +171,7 @@
 
     .row.publishers-container{'ng-if': 'view == "columns"'}
       .publishers-table{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
-        .publisher-column{'ng-repeat': 'stage in publishersPipeline'}
+        .publisher-column{'ng-repeat': 'stage in publishersPipeline', 'ng-init': 'columnIndex = $index'}
           .column-header{'z-coloring-stage': '{color: baseColor, stage: stage}'}
             %span
               {{stage.probability}}%

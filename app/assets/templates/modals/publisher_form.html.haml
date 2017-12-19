@@ -59,11 +59,11 @@
             Term End Date
           %input.form-control{readonly: true, name: 'term_end_date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'publisher.term_end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
 
-      .row
+      .row.hide-input-arrows
         .form-group.col-xs-6
           %label{ for: 'estimate-monthly' }
             Revenue Share
-          %input.form-control{placeholder: 'Revenue Share', type: 'number', ng: { model: 'publisher.revenue_share' }, name: 'revenue_share' }
+          %input.form-control{placeholder: 'Revenue Share', type: 'number', step: '0.01', ng: { model: 'publisher.revenue_share' }, name: 'revenue_share' }
 
         .form-group.col-xs-6
           %span.error-text

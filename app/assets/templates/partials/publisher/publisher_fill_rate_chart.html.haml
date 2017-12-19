@@ -1,7 +1,8 @@
 .block
-  %div.mb20
-    %span.title Fill Rate by Month
-  .table-wrapper
-    %div#fill-rate-chart-container.mb20{'ng-controller': 'PublisherFillRateChartController'}
-      %div#fill-rate-chart-tooltip
-      %svg#fill-rate-chart.publisher-chart
+    %div.mb20
+        %span.title Fill Rate by Month
+    .table-wrapper
+        %div#fill-rate-chart-container{'ng-controller': 'PublisherFillRateChartController'}
+            %div#fill-rate-chart-tooltip
+            %svg#fill-rate-chart.publisher-chart
+                %text{x: '0', y: '10', fill: 'black'} No data available

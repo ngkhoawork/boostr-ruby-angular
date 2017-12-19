@@ -5,11 +5,10 @@
 		CHART_ID = '#fill-rate-chart'
 
 		PublisherDetails.fillRateByMonth(id: $routeParams.id).then (data) ->
-			if data && data.length
-				drawChart(data, CHART_ID)
+			drawChart(data, CHART_ID)
 
 		drawChart = (data, chartId) ->
-			if !data then return
+			if !data || !data.length then return
 			chartContainer = angular.element(chartId + '-container')
 			tooltip = d3.select(chartId + '-tooltip')
 			delay = 500

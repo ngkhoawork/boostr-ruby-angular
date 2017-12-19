@@ -127,7 +127,6 @@
     getPublishersList = (params) ->
       setLoading(true)
       Publisher.publishersList(params).then (publishers) ->
-        console.log(publishers)
         $scope.allPublishersLoaded = !publishers || publishers.length < per
         if page++ > 1
           $scope.publishers = $scope.publishers.concat(publishers)
@@ -216,7 +215,6 @@
         publisher: publisherIndex
         column: columnIndex
       $scope.history.lock(publisher.id, true)
-
       $scope.publishersPipeline[columnIndex].publishers.splice(publisherIndex, 1)
 
     $scope.onInserted = (publisher, publisherIndex, columnIndex) ->
@@ -227,25 +225,22 @@
     $scope.onDrop = (publisher, newStage) ->
       if publisher.publisher_stage_id is newStage.id then return
       publisher.publisher_stage_id = newStage.id
-      if !newStage.open && newStage.probability == 0
-#        $scope.showClosePublisherModal(publisher)
-      else
-        if $scope.history[publisher.id] && $scope.history[publisher.id].locked
-          return publisher
-        Publisher.update(id: publisher.id, publisher: publisher).then (publisher) ->
-          $scope.history.lock(publisher.id, false)
-        , (err) ->
-          if err && err.data && err.data.errors && Object.keys(err.data.errors).length
-            errors = err.data.errors
-            errorsStack = []
-            for key, error of errors
-              errorsStack.push error
-          else if err && err.statusText
-            errorsStack = [err.statusText]
-          if errorsStack.length
-            $scope.undoLastMove(publisher.id)
-#            $timeout ->
-#              $scope.showPublisherErrors(publisher.id, errorsStack)
+      if $scope.history[publisher.id] && $scope.history[publisher.id].locked
+        return publisher
+      Publisher.update(id: publisher.id, publisher: publisher).then (publisher) ->
+        $scope.history.lock(publisher.id, false)
+      , (err) ->
+        if err && err.data && err.data.errors && Object.keys(err.data.errors).length
+          errors = err.data.errors
+          errorsStack = []
+          for key, error of errors
+            errorsStack.push error
+        else if err && err.statusText
+          errorsStack = [err.statusText]
+        if errorsStack.length
+          $scope.undoLastMove(publisher.id)
+#          $timeout ->
+#            $scope.showPublisherErrors(publisher.id, errorsStack)
       publisher
 
     $scope.undoLastMove = (publisherId) ->
