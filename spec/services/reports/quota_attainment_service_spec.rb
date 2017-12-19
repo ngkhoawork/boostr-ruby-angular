@@ -2,14 +2,12 @@ require 'rails_helper'
 
 describe Report::QuotaAttainmentService do
   it 'is invalid without time_period_id' do
-    quota_attainment_service = described_class.new(company, {})
     quota_attainment_service.valid?
     expect(quota_attainment_service.errors.full_messages).to include("Time period can't be blank")
   end
 
   it 'is invalid with non-existing time_period_id' do
-    quota_attainment_service = described_class.new(company, {time_period_id: time_period.id + 1})
-    quota_attainment_service.valid?
+    quota_attainment_service({time_period_id: time_period.id + 1}).valid?
     expect(quota_attainment_service.errors.full_messages).to include("Time period - #{time_period.id + 1} can't be found")
   end
 
@@ -18,9 +16,8 @@ describe Report::QuotaAttainmentService do
       forecast_revenue_fact
       forecast_pipeline_fact
       quota
+      quota_attainment_service({time_period_id: time_period.id})
     end
-
-    let(:quota_attainment_service) { described_class.new(company, {time_period_id: time_period.id}) }
 
     subject { quota_attainment_service.perform }
 
@@ -54,8 +51,10 @@ describe Report::QuotaAttainmentService do
 
     it 'sum team members revenue and weighted_pipeline for leader' do
       other_user = create :user, company: company, team: team
-      create_list :forecast_pipeline_fact, 2, forecast_time_dimension: forecast_time_dimension, user_dimension_id: other_user.id, amount: 300, stage_dimension_id: stage.id
-      create_list :forecast_revenue_fact, 2, forecast_time_dimension: forecast_time_dimension, user_dimension_id: other_user.id, amount: 150
+      create_list :forecast_pipeline_fact, 2, forecast_time_dimension: forecast_time_dimension, 
+                  user_dimension_id: other_user.id, amount: 300, stage_dimension_id: stage.id
+      create_list :forecast_revenue_fact, 2, forecast_time_dimension: forecast_time_dimension, 
+                  user_dimension_id: other_user.id, amount: 150
       team.update(leader_id: user.id)
       leader_data = subject.detect{|u| u[:is_leader]}
       expect(leader_data[:revenue]).to eq(550)
@@ -66,8 +65,10 @@ describe Report::QuotaAttainmentService do
       before do
         child_team = create :child_team, parent: team, company: company
         other_user = create :user, company: company, team: child_team
-        create_list :forecast_pipeline_fact, 2, forecast_time_dimension: forecast_time_dimension, user_dimension_id: other_user.id, amount: 300, stage_dimension_id: stage.id
-        create_list :forecast_revenue_fact, 2, forecast_time_dimension: forecast_time_dimension, user_dimension_id: other_user.id, amount: 150
+        create_list :forecast_pipeline_fact, 2, forecast_time_dimension: forecast_time_dimension, 
+                    user_dimension_id: other_user.id, amount: 300, stage_dimension_id: stage.id
+        create_list :forecast_revenue_fact, 2, forecast_time_dimension: forecast_time_dimension, 
+                    user_dimension_id: other_user.id, amount: 150
         team.update(leader_id: user.id)
       end
 
@@ -92,34 +93,30 @@ describe Report::QuotaAttainmentService do
     subject { quota_attainment_service.perform }
 
     context 'without user_status' do
-      let(:quota_attainment_service) { described_class.new(company, {time_period_id: time_period.id}) }
-
       it 'returns all user data' do
+        quota_attainment_service({time_period_id: time_period.id})
         expect(subject.length).to eq(2)
       end
     end
 
     context 'with all user_status' do
-      let(:quota_attainment_service) { described_class.new(company, {time_period_id: time_period.id, user_status: 'all'}) }
-      
       it 'returns all user data' do
+        quota_attainment_service({time_period_id: time_period.id, user_status: 'all'})
         expect(subject.length).to eq(2)
       end
     end
 
     context 'with active status' do
-      let(:quota_attainment_service) { described_class.new(company, {time_period_id: time_period.id, user_status: 'active'}) }
-      
       it 'returns active user data' do
+        quota_attainment_service({time_period_id: time_period.id, user_status: 'active'})
         expect(subject.length).to eq(1)
         expect(subject.first[:is_active]).to be true
       end
     end
 
     context 'with inactive status' do
-      let(:quota_attainment_service) { described_class.new(company, {time_period_id: time_period.id, user_status: 'inactive'}) }
-      
       it 'returns inactive user data' do
+        quota_attainment_service({time_period_id: time_period.id, user_status: 'inactive'})
         expect(subject.length).to eq(1)
         expect(subject.first[:is_active]).to be false
       end
@@ -149,8 +146,10 @@ describe Report::QuotaAttainmentService do
   end
 
   def forecast_revenue_fact
-    create :forecast_revenue_fact, forecast_time_dimension: forecast_time_dimension, user_dimension_id: user.id, amount: 100
-    create :forecast_revenue_fact, forecast_time_dimension: forecast_time_dimension, user_dimension_id: user.id, amount: 150
+    create :forecast_revenue_fact, forecast_time_dimension: forecast_time_dimension, 
+            user_dimension_id: user.id, amount: 100
+    create :forecast_revenue_fact, forecast_time_dimension: forecast_time_dimension, 
+            user_dimension_id: user.id, amount: 150
   end
 
   def stage
@@ -158,12 +157,18 @@ describe Report::QuotaAttainmentService do
   end
 
   def forecast_pipeline_fact
-    create :forecast_pipeline_fact, forecast_time_dimension: forecast_time_dimension, user_dimension_id: user.id, amount: 200, stage_dimension_id: stage.id
-    create :forecast_pipeline_fact, forecast_time_dimension: forecast_time_dimension, user_dimension_id: user.id, amount: 250, stage_dimension_id: stage.id
+    create :forecast_pipeline_fact, forecast_time_dimension: forecast_time_dimension, 
+            user_dimension_id: user.id, amount: 200, stage_dimension_id: stage.id
+    create :forecast_pipeline_fact, forecast_time_dimension: forecast_time_dimension, 
+            user_dimension_id: user.id, amount: 250, stage_dimension_id: stage.id
   end
 
   def quota
     create :quota, user: user, company: company, time_period: time_period, value: 1000
     create :quota, user: user, company: company, time_period: time_period, value: 100
+  end
+
+  def quota_attainment_service(params={})
+    @_quota_attainment_service ||= described_class.new(company, params)
   end
 end

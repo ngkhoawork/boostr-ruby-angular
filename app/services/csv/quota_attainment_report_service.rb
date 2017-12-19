@@ -13,24 +13,14 @@ class Csv::QuotaAttainmentReportService < Csv::BaseService
   end
 
   def sorted_records
-    decorated_records.sort_by{|e| [e.team_name, e.is_leader? ? 0 : 1]}
+    decorated_records.sort_by{|e| [e.team, e.is_leader? ? 0 : 1]}
   end
 
   def generate_csv
     CSV.generate do |csv|
       csv << headers
       sorted_records.each do |record|
-        csv << [
-          record.name,
-          record.team_name,
-          record.quota,
-          record.revenue,
-          record.weighted_pipeline,
-          record.amount,
-          record.gap_to_quota,
-          record.percent_to_quota,
-          record.percent_booked
-        ]
+        csv << headers_as_symbols.map { |attr| record.send(attr) }
       end
     end
   end
@@ -47,5 +37,15 @@ class Csv::QuotaAttainmentReportService < Csv::BaseService
       '% to Quota',
       '% Booked'
     ]
+  end
+
+  def headers_as_symbols
+    @_headers_as_symbols ||= headers.map do |el| 
+      el.downcase
+        .gsub(' ','_')
+        .gsub('%','percent')
+        .tr('()','')
+        .to_sym 
+    end
   end
 end

@@ -8,7 +8,7 @@ class Csv::QuotaAttainmentDecorator
     row[:name]    
   end
 
-  def team_name
+  def team
     row[:team][:name] rescue ''
   end
 
@@ -20,11 +20,11 @@ class Csv::QuotaAttainmentDecorator
     ActiveSupport::NumberHelper.number_to_currency(row[:revenue], precision: 0, unit: '$')
   end
 
-  def weighted_pipeline
+  def pipeline_w
     ActiveSupport::NumberHelper.number_to_currency(row[:weighted_pipeline], precision: 0, unit: '$')
   end
 
-  def amount
+  def forecast_amt
     ActiveSupport::NumberHelper.number_to_currency(row[:amount], precision: 0, unit: '$')
   end
 

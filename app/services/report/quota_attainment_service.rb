@@ -48,18 +48,14 @@ class Report::QuotaAttainmentService
       child_data, child_leader_data = generate_data(team.children)
       if team.leader.present?
         unless child_leader_data.empty?
-          parent_data[team.leader_id][:revenue] += child_leader_data.inject(0){|sum,e| sum + e[:revenue] }
-          parent_data[team.leader_id][:weighted_pipeline] += child_leader_data.inject(0){|sum,e| sum + e[:weighted_pipeline] }
+          parent_data[team.leader_id] = leader_data(parent_data[team.leader_id], child_leader_data)
           parent_data[team.leader_id] = user_data(team.leader, team, parent_data[team.leader_id])
         end
         leader_data << parent_data[team.leader_id].slice(:revenue, :weighted_pipeline)
       else
-        parent_leader_data = {}
-        parent_leader_data[:revenue] = parent_data.values.inject(0){ |sum,e| sum + e[:revenue] }
-        parent_leader_data[:weighted_pipeline] = parent_data.values.inject(0){ |sum,e| sum + e[:weighted_pipeline] }
+        parent_leader_data = leader_data({}, parent_data.values)
         unless child_leader_data.empty?
-          parent_leader_data[:revenue] += child_leader_data.inject(0){|sum,e| sum + e[:revenue] }
-          parent_leader_data[:weighted_pipeline] += child_leader_data.inject(0){|sum,e| sum + e[:weighted_pipeline] }
+          parent_leader_data = leader_data(parent_leader_data, child_leader_data)
         end
         leader_data << parent_leader_data
       end
@@ -76,19 +72,6 @@ class Report::QuotaAttainmentService
 
   def time_period
     @time_period ||= company.time_periods.find_by_id(time_period_id)
-  end
-
-  def init_record(user, team)
-    {
-      id: user.id,
-      name: user.name,
-      is_leader: user.leader?,
-      is_active: user.is_active,
-      team: team.slice(:id, :name),
-      weighted_pipeline: 0,
-      revenue: 0,
-      quota: 0
-    }
   end
 
   def start_date
@@ -119,25 +102,48 @@ class Report::QuotaAttainmentService
 
   def pipeline_data(user_ids)
     if forecast_time_dimension.present?
-      ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?)", forecast_time_dimension.id, user_ids)
-        .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
-        .group("user_dimension_id, stage_dimension_id")
+      ForecastPipelineFact
+        .joins("LEFT JOIN stages ON stages.id = forecast_pipeline_facts.stage_dimension_id")
+        .select("forecast_pipeline_facts.user_dimension_id AS user_id, forecast_pipeline_facts.stage_dimension_id as stage_id, AVG(stages.probability) AS probability, SUM(forecast_pipeline_facts.amount) AS pipeline_amount")
+        .where("forecast_pipeline_facts.forecast_time_dimension_id = ? AND forecast_pipeline_facts.user_dimension_id IN (?)", forecast_time_dimension.id, user_ids)
+        .group("forecast_pipeline_facts.user_dimension_id, forecast_pipeline_facts.stage_dimension_id")
     else
       []
     end
   end
 
   def user_data(user, team, data)
-      data ||= init_record(user, team)
-      data[:amount] = data[:weighted_pipeline] + data[:revenue]
-      quota = user.quotas.for_time_period(start_date, end_date).sum(:value)
-      data[:quota] = quota
-      data[:percent_to_quota] = (quota > 0 ? data[:amount] / quota * 100 : 100)
-      data[:percent_booked] = (quota > 0 ? data[:revenue] / quota * 100 : 100)
-      gap_to_quota = (quota - data[:amount]).to_f
-      gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
-      data[:gap_to_quota] = gap_to_quota
-      data
+    data ||= init_record(user, team)
+    data[:amount] = data[:weighted_pipeline] + data[:revenue]
+    quota = user.quotas.for_time_period(start_date, end_date).sum(:value)
+    data[:quota] = quota
+    data[:percent_to_quota] = (quota > 0 ? data[:amount] / quota * 100 : 100)
+    data[:percent_booked] = (quota > 0 ? data[:revenue] / quota * 100 : 100)
+    gap_to_quota = (quota - data[:amount]).to_f
+    gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
+    data[:gap_to_quota] = gap_to_quota
+    data
+  end
+
+  def leader_data(data, child_data)
+    data[:revenue] ||= 0
+    data[:weighted_pipeline] ||= 0
+    data[:revenue] += child_data.inject(0) {|sum, d| sum+d[:revenue]}
+    data[:weighted_pipeline] += child_data.inject(0) {|sum, d| sum+d[:weighted_pipeline]}
+    data
+  end
+
+  def init_record(user, team)
+    {
+      id: user.id,
+      name: user.name,
+      is_leader: user.leader?,
+      is_active: user.is_active,
+      team: team.slice(:id, :name),
+      weighted_pipeline: 0,
+      revenue: 0,
+      quota: 0
+    }
   end
 
   def team_data(team)
@@ -156,13 +162,11 @@ class Report::QuotaAttainmentService
     pipeline_data(user_ids).each do |item|
       user = users.detect {|user| user.id == item.user_id}
       data[user.id] ||= init_record(user, team)
-      data[user.id][:weighted_pipeline] += item.pipeline_amount.to_f * company.stages.find(item.stage_id).probability.to_f / 100
+      data[user.id][:weighted_pipeline] += item.pipeline_amount.to_f * item.probability.to_f / 100
     end
 
     if team.leader.present?
-      data[team.leader_id] ||= init_record(team.leader, team)
-      data[team.leader_id][:revenue] = data.values.inject(0){|sum,e| sum + e[:revenue] }
-      data[team.leader_id][:weighted_pipeline] = data.values.inject(0){|sum,e| sum + e[:weighted_pipeline] }
+      data[team.leader_id] = leader_data(init_record(team.leader, team), data.values)
       data[team.leader_id] = user_data(team.leader, team, data[team.leader_id])
     end
 
