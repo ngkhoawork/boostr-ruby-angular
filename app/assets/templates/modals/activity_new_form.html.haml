@@ -45,7 +45,7 @@
                             %label{style: 'display: block'}
                                 or Publisher
                             %input.form-control{'placeholder': 'Choose Publisher', 'ng-model': 'form.publisher', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchPublishers($viewValue)'}
-                    .col-xs-6{'ng-if': '!isInfluencerEnabled'}
+                    -#.col-xs-6{'ng-if': 'isInfluencerEnabled'}
                         .form-group{'ng-class':'{error: errors.influencer}'}
                             %span.error-text {{errors.influencer}}
                             %label{style: 'display: block'}

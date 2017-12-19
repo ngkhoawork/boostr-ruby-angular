@@ -178,7 +178,14 @@
                         columns[stage.index].open = stage.open
                         columns[stage.index].push deal
                 $scope.columns = columns
-                $timeout addScrollEvent
+                $timeout ->
+                    addScrollEvent()
+                    alignColumnsHeight()
+
+            alignColumnsHeight = ->
+                columns = angular.element('.column-body')
+                maxHeight =  _.chain(columns).map((el) -> angular.element(el).outerHeight()).max().value()
+                columns.css('min-height', maxHeight)
 
             getDealParams = ->
                 params = {filter: $scope.teamFilter().param}

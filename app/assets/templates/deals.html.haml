@@ -178,7 +178,7 @@
 				%button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
 					Add filter
-		.row.deals-container{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPipelineLoading || allPipelineLoaded', 'scroll-distance': '0.5'}}
+		.row.deals-container{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5'}}
 			.deals-table
 				.deal-column{'ng-repeat': 'stage in stages', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
 					.column-header

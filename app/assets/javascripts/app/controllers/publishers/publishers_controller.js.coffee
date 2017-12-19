@@ -99,6 +99,7 @@
         $scope.publisher_stages = $scope.filter.stages = settings.publisher_stages
         $scope.publisher_types = $scope.filter.types = settings.publisher_types
         $scope.renewal_term_fields = $scope.filter.renewal_term_fields = settings.renewal_term_fields
+        $scope.filter.customFields = settings.custom_field_names
 
     getParams = ->
       params = {per, page}
@@ -161,7 +162,9 @@
           $scope.publishersPipeline = _.map data.headers, (stage) ->
             _.extend stage, _.findWhere data.pipeline, id: stage.id
           page++
-          $timeout -> addScrollEvent()
+          $timeout ->
+            addScrollEvent()
+            alignColumnsHeight()
           setLoading(false)
         , (err) ->
           setLoading(false, err)
@@ -173,6 +176,9 @@
             stage.publishers = [].concat stage.publishers, (stagePipeline && stagePipeline.publishers) || []
             stage
           page++
+          $timeout ->
+            addScrollEvent()
+            alignColumnsHeight()
           setLoading(false)
         , (err) ->
           setLoading(false, err)
@@ -270,6 +276,12 @@
           headers.css 'top', 0
       $scope.$on '$destroy', ->
         $document.unbind 'scroll'
+
+    alignColumnsHeight = ->
+      columns = angular.element('.column-body')
+      maxHeight =  _.chain(columns).map((el) -> angular.element(el).outerHeight()).max().value()
+      console.log maxHeight
+      columns.css('min-height', maxHeight)
 
     $scope.$on 'updated_publishers', ->
       if $scope.view != 'columns' then return;
