@@ -15,10 +15,36 @@ describe Api::PublisherContactsController, type: :controller do
     end
   end
 
+  describe 'POST #create' do
+    it 'create contact successfully' do
+      expect{
+        post :create, contact: contact_params
+      }.to change{Contact.count}.by(1)
+    end
+
+    it 'failed to create contact' do
+      expect{
+        post :create, contact: { name: 'Name' }
+      }.not_to change{Contact.count}
+    end
+  end
+
+  describe 'PUT #update' do
+    it 'update contact successfully' do
+      put :update, id: contact.id, contact: contact_params
+
+      expect(contact.reload.name).to eq contact_params[:name]
+    end
+
+    it 'failed to update contact' do
+      put :update, id: contact.id, contact: { name: '' }
+
+      expect(contact.reload.name).not_to be_nil
+    end
+  end
+
   describe 'DELETE #destroy' do
     it 'remove contact from publisher successfully' do
-      contact = create :contact, company: company, publisher: publisher
-
       delete :destroy, id: contact.id
 
       expect(contact.reload.publisher_id).to be_nil
@@ -37,5 +63,24 @@ describe Api::PublisherContactsController, type: :controller do
   
   def publisher
     @_publisher ||= create :publisher, company: company
+  end
+
+  def contact
+    @_contact ||= create :contact, company: company, publisher: publisher
+  end
+
+  def contact_params
+    @_contact_params ||= {
+      name: 'Aisha Joy',
+      position: 'Regional  Analyst',
+      publisher_id: publisher.id,
+      address_attributes: {
+        email: 'test@email.com'
+      }
+    }
+  end
+
+  def address
+    attributes_for(:address)
   end
 end

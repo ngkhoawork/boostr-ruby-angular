@@ -471,7 +471,7 @@ Rails.application.routes.draw do
     end
 
     resources :publisher_members, only: [:create, :update, :destroy]
-    resources :publisher_contacts, only: [:destroy] do
+    resources :publisher_contacts, only: [:create, :update, :destroy] do
       put :add, on: :member
     end
   end
