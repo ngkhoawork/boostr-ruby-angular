@@ -23,6 +23,7 @@ class User < ActiveRecord::Base
   has_many :display_line_items, through: :ios
   has_many :audit_logs
   has_many :filter_queries
+  has_many :email_threads
 
   ROLES = %w(user admin superadmin supportadmin)
 

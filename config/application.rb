@@ -36,5 +36,12 @@ module Boostr
     config.autoload_paths << Rails.root.join('validators')
 
     config.active_job.queue_adapter = :sidekiq
+
+    config.middleware.insert_before 0, "Rack::Cors" do
+      allow do
+        origins 'mail.google.com'
+        resource '*', :headers => :any, :methods => [:get, :post, :options]
+      end
+    end
   end
 end
