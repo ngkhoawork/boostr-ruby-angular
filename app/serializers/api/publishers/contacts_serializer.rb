@@ -7,7 +7,10 @@ class Api::Publishers::ContactsSerializer < ActiveModel::Serializer
     :name,
     :activity_updated_at,
     :phone,
-    :client
+    :client,
+    :address,
+    :publisher,
+    :contact_cf
   )
 
   private
@@ -18,5 +21,9 @@ class Api::Publishers::ContactsSerializer < ActiveModel::Serializer
 
   def client
     object.client&.serializable_hash(only: [:id, :name])
+  end
+
+  def publisher
+    object.publisher&.serializable_hash(only: [:id, :name])
   end
 end

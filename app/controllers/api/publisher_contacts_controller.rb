@@ -20,7 +20,6 @@ class Api::PublisherContactsController < ApplicationController
   end
 
   def update
-    # binding.pry
     if contact.update(contact_params)
       render json: contact
     else
