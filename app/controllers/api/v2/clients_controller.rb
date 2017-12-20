@@ -61,12 +61,6 @@ class Api::V2::ClientsController < ApiController
     render nothing: true
   end
 
-  def search_clients
-    render json: suggest_clients
-                  .order(:name)
-                  .pluck_to_struct(:id, :name, :client_type_id)
-  end
-
   def sellers
     client = company.clients.find(params[:client_id])
     if client.present?
@@ -126,15 +120,12 @@ class Api::V2::ClientsController < ApiController
   end
 
   def suggest_clients
-    return @suggest_clients if @suggest_clients
+    return @search_clients if defined?(@search_clients)
 
-    @suggest_clients = company.clients.by_name_and_type_with_limit(params[:name], params[:client_type_id])
-
-    if params[:assoc] && client
-      @suggest_clients = @suggest_clients.excepting_client_associations(client, params[:assoc])
-    end
-
-    @suggest_clients
+    @search_clients = company.clients
+                        .where('name ilike ?', "%#{params[:name]}%")
+                        .by_type_id(params[:client_type_id])
+                        .limit(10)
   end
 
   def activity_clients

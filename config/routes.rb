@@ -77,7 +77,6 @@ Rails.application.routes.draw do
       post 'resend_confirmation' => 'forgot_password#create'
 
       resources :user_token, only: [:create]
-      resources :token_check, only: [:index]
 
       resource :dashboard, only: [:show]
       resources :states, only: [:index]
@@ -96,9 +95,6 @@ Rails.application.routes.draw do
       resources :clients, only: [:index, :show, :create, :update, :destroy] do
         get :sellers
         resources :client_members, only: [:index, :create, :update, :destroy]
-        collection do
-          get :search_clients
-        end
         resources :client_contacts, only: [:index] do
           collection do
             get :related_clients
@@ -129,31 +125,6 @@ Rails.application.routes.draw do
 
       resources :deal_custom_field_names, only: [:index]
       resources :products, only: [:index]
-
-      resources :email_threads do
-        get :all_opens
-
-        collection do
-          post :create_thread
-          get :all_emails
-          get :search_by
-          get :all_not_opened_emails
-          post :all_threads
-        end
-      end
-
-      resources :gmail_extension, only: [:index]
-
-      resources :validations, only: [] do
-        collection do
-          get :account_base_fields
-          get :deal_base_fields
-        end
-      end
-
-      resources :account_cf_names, only: [:index]
-      resources :holding_companies, only: [:index]
-      resources :contact_cf_names, only: [:index]
     end # API V2 END
 
     resources :dfp_imports do
@@ -432,10 +403,6 @@ Rails.application.routes.draw do
 				get :pipeline_and_revenue
 				get :activity_pacing
 			end
-    end
-
-    resources :mailtrack, only: [] do
-      get '/:pixel', to: 'mailtrack#open_mail', on: :collection
     end
 
     resources :filter_queries, only: [:index, :create, :update, :destroy]

@@ -1,7 +1,6 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation'
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation) ->
-
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation'
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName, Currency, CurrentUser, Validation) ->
   $scope.init = ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
@@ -109,8 +108,7 @@
     Deal.create(deal: $scope.deal).then(
       (deal) ->
         $modalInstance.close(deal)
-        if options.type != 'gmail'
-          $location.path('/deals' + '/' + deal.id)
+        $location.path('/deals' + '/' + deal.id)
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
@@ -166,5 +164,4 @@
         $scope.populateClientTarget = false
 
   $scope.init()
-
 ]
