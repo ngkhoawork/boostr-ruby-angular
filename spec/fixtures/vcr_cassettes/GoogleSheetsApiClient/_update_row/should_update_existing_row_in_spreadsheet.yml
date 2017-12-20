@@ -1,0 +1,616 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://www.googleapis.com/oauth2/v3/token
+    body:
+      encoding: ASCII-8BIT
+      string: grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJib29zdHItc2VydmljZS1hY2NvdW50QGJvb3N0ci1pbnRlZ3JhdGlvbi5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsImF1ZCI6Imh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL29hdXRoMi92My90b2tlbiIsImV4cCI6MTUxNDIyNzIzMiwiaWF0IjoxNTE0MjI3MTEyLCJzY29wZSI6Imh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL2F1dGgvc3ByZWFkc2hlZXRzIn0.quArNSdQxB-9LLnW2swMi-g4v7vy9Rzum0WArYMyhTPiVXOI92M9l-gd_T8-dlm6M4ZaT-yrwaXubC0LuTv5fie_ds-H0NCfEk9ji5AeIj6yZvQs_9ByZThOJiOAq-0WTKnm9KzJ3E_0HGc8b_ArlRBp9ZFSHOcDX_ARjEjwYfvJyCDUOpSRUkWrYMN9fltVgYYmIXAn2wmIg7E_6VwOiYfU-WyMkjuXlxjVYVNXORqvKF1maFWWog4uhvfAUT1CPteuxFM3g_4ojcRf2s2D6ad9ez810W9xZ_68GKz6bGI2J0QuYsr1DUBTwWoXHgnN5Xw67kKLeQ4Zaj4ILZ62Pw
+    headers:
+      User-Agent:
+      - Faraday v0.11.0
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Pragma:
+      - no-cache
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Date:
+      - Mon, 25 Dec 2017 18:39:32 GMT
+      Vary:
+      - Origin
+      - X-Origin
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      Server:
+      - GSE
+      Alt-Svc:
+      - hq=":443"; ma=2592000; quic=51303431; quic=51303339; quic=51303338; quic=51303337;
+        quic=51303335,quic=":443"; ma=2592000; v="41,39,38,37,35"
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+         "access_token": "ya29.c.ElouBXX2p-1KpyLlaMGeHhh5HUVcK4fDGwtvloGGBhKohl85mM89EjoARPLXHbzmemC8RjXPLAdXRr1BEBRI5ziaB3HN5taSRngl3mv5ll4IEzXCFaNvxM2ALao",
+         "token_type": "Bearer",
+         "expires_in": 3600
+        }
+    http_version: 
+  recorded_at: Mon, 25 Dec 2017 18:39:32 GMT
+- request:
+    method: get
+    uri: https://sheets.googleapis.com/v4/spreadsheets/1ADkamKx7LJB1SzXmCMy29Yw3ocA0VBeJ5mrV3ugz0Wg/values/A:A
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - |-
+        Boostrcrm/0.0.0 google-api-ruby-client/0.9.28 Mac OS X/10.13.2
+         (gzip)
+      Accept:
+      - "*/*"
+      Accept-Encoding:
+      - gzip,deflate
+      Date:
+      - Mon, 25 Dec 2017 18:39:32 GMT
+      Authorization:
+      - Bearer ya29.c.ElouBXX2p-1KpyLlaMGeHhh5HUVcK4fDGwtvloGGBhKohl85mM89EjoARPLXHbzmemC8RjXPLAdXRr1BEBRI5ziaB3HN5taSRngl3mv5ll4IEzXCFaNvxM2ALao
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Mon, 25 Dec 2017 18:39:33 GMT
+      Server:
+      - ESF
+      Cache-Control:
+      - private
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - SAMEORIGIN
+      Alt-Svc:
+      - hq=":443"; ma=2592000; quic=51303431; quic=51303339; quic=51303338; quic=51303337;
+        quic=51303335,quic=":443"; ma=2592000; v="41,39,38,37,35"
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "range": "Sheet1!A1:A2164",
+          "majorDimension": "ROWS",
+          "values": [
+            [
+              "id"
+            ],
+            [
+              "1"
+            ],
+            [
+              "2"
+            ],
+            [
+              "3"
+            ],
+            [
+              "4"
+            ],
+            [
+              "5"
+            ],
+            [
+              "6"
+            ],
+            [
+              "7"
+            ],
+            [
+              "8"
+            ],
+            [
+              "9"
+            ],
+            [
+              "10"
+            ],
+            [
+              "11"
+            ],
+            [
+              "12"
+            ],
+            [
+              "13"
+            ],
+            [
+              "14"
+            ],
+            [
+              "15"
+            ],
+            [
+              "17"
+            ],
+            [
+              "18"
+            ],
+            [
+              "19"
+            ],
+            [
+              "20"
+            ],
+            [
+              "21"
+            ],
+            [
+              "19202"
+            ],
+            [
+              "19201"
+            ],
+            [
+              "23"
+            ],
+            [
+              "24"
+            ],
+            [
+              "25"
+            ],
+            [
+              "26"
+            ],
+            [
+              "27"
+            ],
+            [
+              "28"
+            ],
+            [
+              "29"
+            ],
+            [
+              "30"
+            ],
+            [
+              "31"
+            ],
+            [
+              "32"
+            ],
+            [
+              "33"
+            ],
+            [
+              "36"
+            ],
+            [
+              "37"
+            ],
+            [
+              "40"
+            ],
+            [
+              "41"
+            ],
+            [
+              "44"
+            ],
+            [
+              "45"
+            ],
+            [
+              "48"
+            ],
+            [
+              "49"
+            ]
+          ]
+        }
+    http_version: 
+  recorded_at: Mon, 25 Dec 2017 18:39:33 GMT
+- request:
+    method: post
+    uri: https://sheets.googleapis.com/v4/spreadsheets/1ADkamKx7LJB1SzXmCMy29Yw3ocA0VBeJ5mrV3ugz0Wg/values/A:AP:append?valueInputOption=raw
+    body:
+      encoding: UTF-8
+      string: '{"values":[[2000,"Deal 1","Rodriguez-Green"]]}'
+    headers:
+      User-Agent:
+      - |-
+        Boostrcrm/0.0.0 google-api-ruby-client/0.9.28 Mac OS X/10.13.2
+         (gzip)
+      Accept:
+      - "*/*"
+      Accept-Encoding:
+      - gzip,deflate
+      Date:
+      - Mon, 25 Dec 2017 18:39:33 GMT
+      Authorization:
+      - Bearer ya29.c.ElouBXX2p-1KpyLlaMGeHhh5HUVcK4fDGwtvloGGBhKohl85mM89EjoARPLXHbzmemC8RjXPLAdXRr1BEBRI5ziaB3HN5taSRngl3mv5ll4IEzXCFaNvxM2ALao
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '46'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Mon, 25 Dec 2017 18:39:33 GMT
+      Server:
+      - ESF
+      Cache-Control:
+      - private
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - SAMEORIGIN
+      Alt-Svc:
+      - hq=":443"; ma=2592000; quic=51303431; quic=51303339; quic=51303338; quic=51303337;
+        quic=51303335,quic=":443"; ma=2592000; v="41,39,38,37,35"
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "spreadsheetId": "1ADkamKx7LJB1SzXmCMy29Yw3ocA0VBeJ5mrV3ugz0Wg",
+          "tableRange": "Sheet1!A1:AU42",
+          "updates": {
+            "spreadsheetId": "1ADkamKx7LJB1SzXmCMy29Yw3ocA0VBeJ5mrV3ugz0Wg",
+            "updatedRange": "Sheet1!A43:C43",
+            "updatedRows": 1,
+            "updatedColumns": 3,
+            "updatedCells": 3
+          }
+        }
+    http_version: 
+  recorded_at: Mon, 25 Dec 2017 18:39:34 GMT
+- request:
+    method: post
+    uri: https://www.googleapis.com/oauth2/v3/token
+    body:
+      encoding: ASCII-8BIT
+      string: grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJib29zdHItc2VydmljZS1hY2NvdW50QGJvb3N0ci1pbnRlZ3JhdGlvbi5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsImF1ZCI6Imh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL29hdXRoMi92My90b2tlbiIsImV4cCI6MTUxNDIyNzIzNCwiaWF0IjoxNTE0MjI3MTE0LCJzY29wZSI6Imh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL2F1dGgvc3ByZWFkc2hlZXRzIn0.Bg4UzQF3lpWUgaaQcn-H8htWYa38f5kfP9ot8VpIqNv8XDpxHikKCdaA1BlnbUu4W-qJV-WsXTvshKtmlomkBlbTtzjPDCMvWTHbMhERwOCCwyJUFuY9Meczsclq1AbamVKhl6Pe3vJlKLbFq37z234-EtLqGVXTQZucRkplSCjHbWyjNVmo6MZSoJijk3ydT4bc8vcUFJLskm3SmKlArAvp1xpvtE6ritpkdxMygbsgASWg1sG90u1AEcYgeEXIP2I2X6u1hdfYP-ho4Z3iAiTLuhVvSau6Hwk1Lvt2Q8yR6ZOQ8IOckKD8HXWGMslprgN7YIvRCwMnq6PwURmwjA
+    headers:
+      User-Agent:
+      - Faraday v0.11.0
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Pragma:
+      - no-cache
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Date:
+      - Mon, 25 Dec 2017 18:39:34 GMT
+      Vary:
+      - Origin
+      - X-Origin
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      Server:
+      - GSE
+      Alt-Svc:
+      - hq=":443"; ma=2592000; quic=51303431; quic=51303339; quic=51303338; quic=51303337;
+        quic=51303335,quic=":443"; ma=2592000; v="41,39,38,37,35"
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+         "access_token": "ya29.c.ElouBVAU13Nt85tS15XiYMua0vc5I_Fq2UPeGaWaf80ugY3-MuhMbDKun3DSh5LujKqUagm5kKQFFdIj1IuDw6m_7fbCQ5B_tapg6dlA9kGH7t89uC1tMRNMpoc",
+         "token_type": "Bearer",
+         "expires_in": 3600
+        }
+    http_version: 
+  recorded_at: Mon, 25 Dec 2017 18:39:34 GMT
+- request:
+    method: get
+    uri: https://sheets.googleapis.com/v4/spreadsheets/1ADkamKx7LJB1SzXmCMy29Yw3ocA0VBeJ5mrV3ugz0Wg/values/A:A
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - |-
+        Boostrcrm/0.0.0 google-api-ruby-client/0.9.28 Mac OS X/10.13.2
+         (gzip)
+      Accept:
+      - "*/*"
+      Accept-Encoding:
+      - gzip,deflate
+      Date:
+      - Mon, 25 Dec 2017 18:39:34 GMT
+      Authorization:
+      - Bearer ya29.c.ElouBVAU13Nt85tS15XiYMua0vc5I_Fq2UPeGaWaf80ugY3-MuhMbDKun3DSh5LujKqUagm5kKQFFdIj1IuDw6m_7fbCQ5B_tapg6dlA9kGH7t89uC1tMRNMpoc
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Mon, 25 Dec 2017 18:39:34 GMT
+      Server:
+      - ESF
+      Cache-Control:
+      - private
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - SAMEORIGIN
+      Alt-Svc:
+      - hq=":443"; ma=2592000; quic=51303431; quic=51303339; quic=51303338; quic=51303337;
+        quic=51303335,quic=":443"; ma=2592000; v="41,39,38,37,35"
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "range": "Sheet1!A1:A2164",
+          "majorDimension": "ROWS",
+          "values": [
+            [
+              "id"
+            ],
+            [
+              "1"
+            ],
+            [
+              "2"
+            ],
+            [
+              "3"
+            ],
+            [
+              "4"
+            ],
+            [
+              "5"
+            ],
+            [
+              "6"
+            ],
+            [
+              "7"
+            ],
+            [
+              "8"
+            ],
+            [
+              "9"
+            ],
+            [
+              "10"
+            ],
+            [
+              "11"
+            ],
+            [
+              "12"
+            ],
+            [
+              "13"
+            ],
+            [
+              "14"
+            ],
+            [
+              "15"
+            ],
+            [
+              "17"
+            ],
+            [
+              "18"
+            ],
+            [
+              "19"
+            ],
+            [
+              "20"
+            ],
+            [
+              "21"
+            ],
+            [
+              "19202"
+            ],
+            [
+              "19201"
+            ],
+            [
+              "23"
+            ],
+            [
+              "24"
+            ],
+            [
+              "25"
+            ],
+            [
+              "26"
+            ],
+            [
+              "27"
+            ],
+            [
+              "28"
+            ],
+            [
+              "29"
+            ],
+            [
+              "30"
+            ],
+            [
+              "31"
+            ],
+            [
+              "32"
+            ],
+            [
+              "33"
+            ],
+            [
+              "36"
+            ],
+            [
+              "37"
+            ],
+            [
+              "40"
+            ],
+            [
+              "41"
+            ],
+            [
+              "44"
+            ],
+            [
+              "45"
+            ],
+            [
+              "48"
+            ],
+            [
+              "49"
+            ],
+            [
+              "2000"
+            ]
+          ]
+        }
+    http_version: 
+  recorded_at: Mon, 25 Dec 2017 18:39:34 GMT
+- request:
+    method: put
+    uri: https://sheets.googleapis.com/v4/spreadsheets/1ADkamKx7LJB1SzXmCMy29Yw3ocA0VBeJ5mrV3ugz0Wg/values/A43:AP43?valueInputOption=raw
+    body:
+      encoding: UTF-8
+      string: '{"values":[[2000,"Deal 1","Rodriguez-Green"]]}'
+    headers:
+      User-Agent:
+      - |-
+        Boostrcrm/0.0.0 google-api-ruby-client/0.9.28 Mac OS X/10.13.2
+         (gzip)
+      Accept:
+      - "*/*"
+      Accept-Encoding:
+      - gzip,deflate
+      Date:
+      - Mon, 25 Dec 2017 18:39:34 GMT
+      Authorization:
+      - Bearer ya29.c.ElouBVAU13Nt85tS15XiYMua0vc5I_Fq2UPeGaWaf80ugY3-MuhMbDKun3DSh5LujKqUagm5kKQFFdIj1IuDw6m_7fbCQ5B_tapg6dlA9kGH7t89uC1tMRNMpoc
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '46'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Mon, 25 Dec 2017 18:39:35 GMT
+      Server:
+      - ESF
+      Cache-Control:
+      - private
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - SAMEORIGIN
+      Alt-Svc:
+      - hq=":443"; ma=2592000; quic=51303431; quic=51303339; quic=51303338; quic=51303337;
+        quic=51303335,quic=":443"; ma=2592000; v="41,39,38,37,35"
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "spreadsheetId": "1ADkamKx7LJB1SzXmCMy29Yw3ocA0VBeJ5mrV3ugz0Wg",
+          "updatedRange": "Sheet1!A43:C43",
+          "updatedRows": 1,
+          "updatedColumns": 3,
+          "updatedCells": 3
+        }
+    http_version: 
+  recorded_at: Mon, 25 Dec 2017 18:39:35 GMT
+recorded_with: VCR 3.0.3
