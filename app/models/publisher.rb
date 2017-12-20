@@ -52,7 +52,6 @@ class Publisher < ActiveRecord::Base
                   against: :name,
                   using: {
                     tsearch: {
-                      dictionary: :english,
                       prefix: true,
                       any_word: true
                     },
