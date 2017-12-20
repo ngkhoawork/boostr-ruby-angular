@@ -42,8 +42,6 @@
           zError '#start-date-field', 'Add a Start Date'
         if !query.end_date
           zError '#end-date-field', 'Add an End Date'
-        return
-
       getAccounts(query)
 
 
