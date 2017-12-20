@@ -28,10 +28,6 @@
               {{filter.selected.stage ? filter.selected.stage.probability + '% - ' + filter.selected.stage.name : 'Select a stage'}}
               %span.caret
             .dropdown-menu{'dropdown-menu': '', role: 'menu'}
-              .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
-                %i.fa.fa-search
-                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
-              %span.dropdown-title Select from list
               .dropdown-option{'ng-repeat': 'stage in filter.stages | filter: filter.searching | limitTo: 10', role: 'menuitem'}
                 %a{href: '', 'ng-click': 'filter.select("stage", stage)'} {{stage.name}} {{stage.probability}}%
       .filter-row
@@ -45,32 +41,43 @@
               {{filter.selected.type.name || 'Select a type'}}
               %span.caret
             .dropdown-menu{'dropdown-menu': '', role: 'menu'}
-              .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
-                %i.fa.fa-search
-                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
-              %span.dropdown-title Select from list
-              .dropdown-option{'ng-repeat': 'type in filter.types | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+              .dropdown-option{'ng-repeat': 'type in filter.types', role: 'menuitem'}
                 %a{href: '', 'ng-click': 'filter.select("type", type)'} {{type.name}}
 
-      -#.filter-row{'ng-repeat': 'customField in filter.customFields'}
+      .filter-row{'ng-repeat': 'customField in filter.customFields', 'ng-switch': 'customField.type'}
         .filter-name
-          %div
-            {{customField.field_label}}
-        .filter-input
-          %input.form-control.dropdown-button{'placeholder': 'Enter {{customField.field_label}}', 'ng-model': 'filter.search'}
-        -#.filter-dropdown{'ng-if': 'customField'}
-          %i.fa.fa-close{'ng-show': 'filter.selected.type', 'ng-click': 'filter.reset("type")'}
+          %div {{customField.field_label}}
+
+        .filter-dropdown.filter-date{'ng-switch-when': 'datetime'}
+          %i.fa.fa-close{'ng-show': 'filter.selected.customFields[customField.id]', 'ng-click': 'filter.reset(customField.id, true)'}
+          .dropdown-button{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{selected: filter.selected.customFields[customField.id]}', model: 'filter.selected.customFields[customField.id]', click: 'filter.dateOpened[customField.id] = !filter.dateOpened[customField.id]' }, 'is-open': 'filter.dateOpened[customField.id]' }
+            {{(filter.selected.customFields[customField.id] | date) || 'Select ' + customField.field_label}}
+            %span.caret
+
+        .filter-dropdown{'ng-switch-when': 'boolean'}
+          %i.fa.fa-close{'ng-show': 'filter.selected.customFields[customField.id] !== undefined', 'ng-click': 'filter.reset(customField.id, true)'}
           %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
-            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.type}'}
-              {{filter.selected.type.name || 'Select a type'}}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.customFields[customField.id] !== undefined}'}
+              {{filter.selected.customFields[customField.id] !== undefined ? filter.selected.customFields[customField.id] : 'Select ' + customField.field_label}}
               %span.caret
             .dropdown-menu{'dropdown-menu': '', role: 'menu'}
-              .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
-                %i.fa.fa-search
-                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
-              %span.dropdown-title Select from list
-              .dropdown-option{'ng-repeat': 'type in filter.types | filter: filter.searching | limitTo: 10', role: 'menuitem'}
-                %a{href: '', 'ng-click': 'filter.select("type", type)'} {{type.name}}
+              .dropdown-option{role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select(customField.id, true, true)'} true
+              .dropdown-option{role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select(customField.id, false, true)'} false
+
+        .filter-dropdown{'ng-switch-when': 'dropdown'}
+          %i.fa.fa-close{'ng-show': 'filter.selected.customFields[customField.id]', 'ng-click': 'filter.reset(customField.id, true)'}
+          %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.customFields[customField.id]}'}
+              {{filter.selected.customFields[customField.id] || 'Select ' + customField.field_label}}
+              %span.caret
+            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+              .dropdown-option{'ng-repeat': 'option in customField.field_options', role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select(customField.id, option, true)'} {{option}}
+
+        .filter-input{'ng-switch-default': '', 'ng-class': '{selected: filter.selected.customFields[customField.id]}'}
+          %input.form-control.dropdown-button{'placeholder': 'Enter {{customField.field_label}}', 'ng-model': 'filter.selected.customFields[customField.id]'}
 
 
     .footer

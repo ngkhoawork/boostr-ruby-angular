@@ -34,6 +34,7 @@ class Api::Publishers::SettingsSerializer
       .inject([]) do |acc, field_name|
         acc << {
           id: field_name.id,
+          type: field_name.field_type,
           field_label: field_name.field_label,
           field_options: field_name.publisher_custom_field_options.map(&:value)
         }

@@ -46,6 +46,7 @@
         filter.comscore = s.comscore.value if _.isBoolean s.comscore.value
         filter.publisher_stage_id = s.stage.id if s.stage
         filter.type_id = s.type.id if s.type
+        _.each s.customFields, (value, id) -> filter["custom_field_#{id}"] = value
         filter
       apply: (reset) ->
         $scope.getPublishers()
@@ -56,12 +57,9 @@
           return item.name.toString().toUpperCase().indexOf($scope.filter.search.toUpperCase()) > -1
         else
           return item.toString().toUpperCase().indexOf($scope.filter.search.toUpperCase()) > -1
-      reset: (key) ->
-        PublishersFilter.reset(key)
-      resetAll: ->
-        PublishersFilter.resetAll()
-      select: (key, value) ->
-        PublishersFilter.select(key, value)
+      reset: PublishersFilter.reset
+      resetAll: PublishersFilter.resetAll
+      select: PublishersFilter.select
       onDropdownToggle: ->
         this.search = ''
       open: ->
@@ -70,8 +68,6 @@
         this.isOpen = false
 
     resetPagination = ->
-      $scope.publishers = []
-      $scope.publishersPipeline = []
       page = 1
       $scope.isPublishersLoading = false
       $scope.allPublishersLoaded = false
@@ -111,7 +107,7 @@
       )
 
     $scope.getPublishers = (nextPage) ->
-      if !nextPage then page = 1
+      if !nextPage then resetPagination()
       params = getParams()
       switch $scope.view
         when 'list'
