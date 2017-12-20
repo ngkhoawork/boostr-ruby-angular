@@ -200,7 +200,7 @@
   }
 
   .member-table, .contact-table {
-    .publisher-delete-icon {
+    .publisher-delete-icon, .publisher-edit-icon {
       color: $secondary-font-color;
       margin-left: 8px;
       cursor: pointer;
@@ -215,11 +215,15 @@
       }
     }
 
-    .publisher-delete-icon {
+    .publisher-delete-icon, .publisher-edit-icon {
       visibility: hidden;
     }
 
     td:hover .publisher-delete-icon {
+      visibility: visible;
+    }
+
+    td:hover .publisher-edit-icon {
       visibility: visible;
     }
   }

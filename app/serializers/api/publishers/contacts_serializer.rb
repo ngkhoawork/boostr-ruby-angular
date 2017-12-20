@@ -10,7 +10,8 @@ class Api::Publishers::ContactsSerializer < ActiveModel::Serializer
     :client,
     :address,
     :publisher,
-    :contact_cf
+    :contact_cf,
+    :publisher_id
   )
 
   private

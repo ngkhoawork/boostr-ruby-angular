@@ -7,7 +7,6 @@
     %thead
       %tr
         %th.left Name
-        %th.left Advertiser
         %th.left Email
         %th.left Phone
         %th.center Last Touch
@@ -16,10 +15,8 @@
           %td
             %a{'ng-href': '/contacts/{{contact.id}}', target: "_blank"}
               {{contact.name}}
+            %i.fa.fa-pencil.publisher-edit-icon{'ng-click': 'editContact(contact)'}
             %i.fa.fa-trash.publisher-delete-icon{'ng-click': 'deleteContact(contact)'}
-          %td
-            %a{'ng-href': '/accounts/{{contact.client.id}}', target: "_blank"}
-              {{contact.client.name}}
           %td {{contact.email}}
           %td {{contact.phone}}
           %td.center {{contact.activity_updated_at  | date : 'shortDate'}}

@@ -118,16 +118,25 @@
 
     $scope.addContact = ->
       $scope.modalInstance = $modal.open
-        templateUrl: 'modals/contact_add_form.html'
+        templateUrl: 'modals/publisher_contact_form.html'
         size: 'md'
-        controller: 'ContactsAddController'
+        controller: 'PublisherContactController'
         backdrop: 'static'
         keyboard: false
         resolve:
-          deal: ->
+          contact: ->
             {}
-          publisher: ->
-            $scope.currentPublisher
+
+    $scope.editContact = (contact) ->
+      $scope.modalInstance = $modal.open
+        templateUrl: 'modals/publisher_contact_form.html'
+        size: 'md'
+        controller: 'PublisherContactController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          contact: ->
+            angular.copy contact
 
     dailyRevenueChart = (revenueData) ->
       return false if _.isEmpty(revenueData.months)

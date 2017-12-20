@@ -1,0 +1,104 @@
+#contact_modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header
+      {{ formType }} Contact
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+      .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
+        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+          %i.fa.fa-warning
+          <strong style="text-transform: capitalize">{{field}}</strong>
+          {{error}}
+
+      .form-group{'ng-class':'{error: errors.name}'}
+        %span.error-text {{errors.name}}
+        %label{ for: 'name' } Name
+        %span.star *
+        %input.form-control{ name: 'name', placeholder: 'Name', ng: { model: 'publisherContact.name' } }
+
+      .form-group{'ng-class':'{error: errors.publisher_id}'}
+        %span.error-text {{errors.publisher_id}}
+        %label{ for: 'publisher' } Works At
+        %span.star *
+        %ui-select{ name: 'publisher', ng: { model: 'publisherContact.publisher_id', disabled: true, keyup: 'getPublishers($select.search)' } }
+          %ui-select-match{ placeholder: 'Select An Publisher', "allow-clear": 'true' }
+            {{ $select.selected.name || publisherContact.publisher.name || currentPublisher.name }}
+          %ui-select-choices{ repeat: 'publisher.id as publisher in publishers | filter: { name: $select.search }' }
+            %div{ ng: { bind: { html: 'publisher.name' } } }
+
+      .form-group{'ng-class':'{error: errors.email}'}
+        %span.error-text {{errors.email}}
+        %label{ for: 'email' } Email
+        %span.star *
+        %input#email.form-control{ name: 'email', placeholder: 'Email', ng: { model: 'publisherContact.address.email' } }
+      .row
+        .col-sm-6
+          .form-group{ style: 'margin-right: 0' }
+            %label{ for: 'mobile' } Mobile
+            %input.form-control{ name: 'mobile', placeholder: 'Mobile Number', ng: { model: 'publisherContact.address.mobile' } }
+        .col-sm-6
+          .form-group{ style: 'margin-left: 0' }
+            %label{ for: 'office' } Office
+            %input.form-control{ name: 'office', placeholder: 'Office Number', ng: { model: 'publisherContact.address.phone' } }
+      .form-group
+        %label{ for: 'position' } Position
+        %input.form-control{ name: 'position', placeholder: 'Position', ng: { model: 'publisherContact.position' } }
+      .form-group
+        %label{ for: 'note' } Note
+        %textarea.form-control{'msd-elastic': '', name: 'note', placeholder: 'Type your note here', ng: { model: 'publisherContact.note' } }
+
+      .form-group{ng: {repeat: 'contactCfName in contactCfNames | orderBy: "position"', init: "fieldName = contactCfName.field_type + contactCfName.field_index", if: "contactCfName.show_on_modal && !contactCfName.disabled", class:'{error: errors[fieldName]}'}}
+        %span.error-text {{errors[fieldName]}}
+        %label{ for: '{{fieldName}}', ng: { if: "contactCfName.field_type != 'sum'" } }
+          {{contactCfName.field_label}}
+          %span.star{ 'ng-if': "contactCfName.is_required == true" }
+            *
+        %input.form-control{ 'ng-if': "contactCfName.field_type != 'note' && contactCfName.field_type != 'datetime' && contactCfName.field_type != 'boolean' && contactCfName.field_type != 'dropdown' && contactCfName.field_type != 'sum'", placeholder: 'Enter {{contactCfName.field_label}}', ng: { model: 'publisherContact.contact_cf[fieldName]' }, name: '{{fieldName}}' }
+        %textarea.form-control{ 'ng-if': "contactCfName.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "publisherContact.contact_cf[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{contactCfName.field_label}}' }
+        .bs-datepicker
+          %input.form-control{ 'ng-if': "contactCfName.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'publisherContact.contact_cf[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{contactCfName.field_label}}' }
+        .show-hide-remainder-form{ ng: { if: "contactCfName.field_type == 'boolean' " } }
+          .switch-remainder-form
+            %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}", type: 'checkbox', 'ng-model': 'publisherContact.contact_cf[fieldName]'}
+            %label{:for => "{{fieldName}}"}
+              %span
+        %ui-select{ name: '{{fieldName}}', ng: { if: "contactCfName.field_type == 'dropdown'", model: 'publisherContact.contact_cf[fieldName]', disabled: true } }
+          %ui-select-match{ placeholder: 'Select value' }
+            {{ $select.selected.value }}
+          %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in contactCfName.contact_cf_options | filter: { value: $select.search }' }
+            %div{ ng: { bind: { html: 'customFieldOption.value' } } }
+
+      .form-group.text-center{'ng-hide': 'showAddressFields'}
+        %a.btn.add-btn{ 'ng-click': 'showAddressFields = true'}
+          %i.fa.fa-plus
+          Add Address
+      %div{ 'ng-show': 'showAddressFields' }
+        .form-group
+          %label{ for: 'street1' } Address
+          %input.form-control{ name: 'street1', placeholder: 'Address', ng: { model: 'publisherContact.address.street1' } }
+        .form-group
+          .row
+            .col-xs-5
+              %label{ for: 'city' } City
+              %input.form-control{ name: 'city', placeholder: 'City', ng: { model: 'publisherContact.address.city' }  }
+            .col-xs-4.fat
+              %label{ for: 'state' } State
+              %ui-select.bo-state-select{ name: 'state', ng: { model: 'publisherContact.address.state', disabled: true } }
+                %ui-select-match{ placeholder: 'State' }
+                  {{ $select.selected.name }}
+                %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
+                  %div{ ng: { bind: { html: 'state.name' } } }
+            .col-xs-3
+              %label{ for: 'zip' } Postal code
+              %input.form-control{ name: 'zip', placeholder: 'Postal code', ng: { model: 'publisherContact.address.zip' }  }
+        .form-group
+          %label{ for: 'country' } Country
+          %ui-select{ name: 'country', ng: { model: 'publisherContact.address.country', disabled: true } }
+            %ui-select-match{ placeholder: 'Country' }
+              {{ $select.selected }}
+            %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
+              %div {{ country }}
+
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
