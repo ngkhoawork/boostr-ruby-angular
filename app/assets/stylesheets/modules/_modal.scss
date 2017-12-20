@@ -6,11 +6,6 @@
   width: 90%;
 }
 
-.modal-email {
-  min-width: 600px;
-  width: 868px;
-}
-
 .modal-dialog {
   .modal-header {
     min-height: 70px;
@@ -32,6 +27,8 @@
       }
     }
   }
+
+
 
   .modal-footer {
     border-top-width: 0;
@@ -177,8 +174,6 @@
     textarea {
       padding: 13px 12px 12px;
       resize: none;
-      max-height: 300px;
-      overflow: auto;
     }
   }
   .related {

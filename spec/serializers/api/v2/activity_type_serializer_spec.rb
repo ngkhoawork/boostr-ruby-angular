@@ -9,10 +9,7 @@ RSpec.describe Api::V2::ActivityTypeSerializer do
         :id,
         :action,
         :name,
-        :icon,
-        :position,
-        :active,
-        :css_class
+        :icon
       )
   end
 
@@ -22,10 +19,7 @@ RSpec.describe Api::V2::ActivityTypeSerializer do
         activity_type.id,
         activity_type.name,
         activity_type.action,
-        activity_type.icon,
-        activity_type.position,
-        activity_type.active,
-        activity_type.css_class
+        activity_type.icon
       )
   end
 

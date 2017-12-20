@@ -346,8 +346,8 @@
                     backdrop: 'static'
                     keyboard: false
                     resolve:
-                        deal: -> {}
-                        options: -> {}
+                        deal: ->
+                            {}
 
             $scope.showCloseDealModal = (currentDeal) ->
                 $scope.modalInstance = $modal.open
