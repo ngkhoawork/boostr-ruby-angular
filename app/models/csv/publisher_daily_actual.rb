@@ -34,12 +34,7 @@ class Csv::PublisherDailyActual
   end
 
   def publisher
-    @publisher ||= Publisher.where(
-      '(id = :id OR name = :name) AND company_id = :company_id',
-      id: publisher_id,
-      name: publisher_name,
-      company_id: company_id
-    ).first
+    @publisher ||= sync_publisher(fetch_publisher_by_id_or_name)
   end
 
   def currency
@@ -56,6 +51,21 @@ class Csv::PublisherDailyActual
       currency: currency,
       publisher: publisher
     }
+  end
+
+  def fetch_publisher_by_id_or_name
+    Publisher.where(
+      '(id = :id OR name = :name) AND company_id = :company_id',
+      id: publisher_id,
+      name: publisher_name,
+      company_id: company_id
+    ).first
+  end
+
+  def sync_publisher(publisher)
+    return unless publisher
+
+    (publisher.name == publisher_name) ? publisher : publisher.update(name: publisher_name)
   end
 
   def formatted_date
