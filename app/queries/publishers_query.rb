@@ -9,7 +9,7 @@ class PublishersQuery < BaseQuery
       .by_created_at(options[:created_at_start], options[:created_at_end])
       .my_publishers(options[:my_publishers_bool], options[:current_user])
       .my_team_publishers(options[:my_team_publishers_bool], options[:current_user])
-      .by_custom_fields(options[:custom_field_names])
+      .by_custom_fields(custom_field_inputs)
       .search_by_name(options[:q])
   end
 
@@ -17,6 +17,10 @@ class PublishersQuery < BaseQuery
 
   def default_relation
     Publisher.all.extending(Scopes)
+  end
+
+  def custom_field_inputs
+    options.select { |key, _value| key =~ /\Acustom_field_[\d]+\z/ }
   end
 
   module Scopes
@@ -67,12 +71,17 @@ class PublishersQuery < BaseQuery
       by_team_id Team.find_by(leader: current_user).id
     end
 
-    def by_custom_fields(custom_field_name_opts)
-      return self if custom_field_name_opts.nil?
+    def by_custom_fields(custom_field_inputs)
+      return self if custom_field_inputs.blank?
 
-      generate_custom_field_opts(custom_field_name_opts).inject(self) do |scope, custom_field_opt|
-        scope.by_custom_field_attr(custom_field_opt[:attr_name], custom_field_opt[:attr_value])
-      end
+      publisher_custom_field_options(custom_field_inputs)
+        .inject(self) do |scope, (attr_name, attr_value)|
+          scope.by_custom_field_attr(attr_name, attr_value)
+        end
+    end
+
+    def search_by_name(q)
+      q.present? ? super : self
     end
 
     def by_custom_field_attr(attr_name, attr_value)
@@ -81,18 +90,12 @@ class PublishersQuery < BaseQuery
       joins(:publisher_custom_field).where(publisher_custom_fields: { attr_name => attr_value })
     end
 
-    def generate_custom_field_opts(custom_field_name_opts)
-      custom_field_name_opts.inject([]) do |acc, custom_field_name_opt|
-        custom_field = PublisherCustomFieldName.find(custom_field_name_opt[:id])
-        acc << {
-          attr_name: custom_field.fetch_attr_name_for_publisher_custom_field,
-          attr_value: custom_field_name_opt[:field_option]
-        }
+    def publisher_custom_field_options(opts)
+      opts.inject({}) do |acc, (key, value)|
+        custom_field_name = PublisherCustomFieldName.find_by(id: key.to_s.split('_')[-1])
+        acc[custom_field_name.fetch_attr_name_for_publisher_custom_field] = value if custom_field_name
+        acc
       end
-    end
-
-    def search_by_name(q)
-      q.present? ? super : self
     end
   end
 end

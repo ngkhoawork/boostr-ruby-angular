@@ -107,14 +107,7 @@ RSpec.describe Api::PublishersController, type: :controller do
 
     context 'when custom fields params are included' do
       let(:params) do
-        {
-          custom_field_names: [
-            {
-              id: publisher_custom_field_name.id,
-              field_option: custom_field_value
-            }
-          ]
-        }
+        { "custom_field_#{publisher_custom_field_name.id}" => custom_field_value }
       end
 
       before do

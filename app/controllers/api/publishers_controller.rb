@@ -79,35 +79,14 @@ class Api::PublishersController < ApplicationController
 
   def filter_params
     params
-      .permit(
-        :q,
-        :comscore,
-        :publisher_stage_id,
-        :type_id,
-        :my_publishers_bool,
-        :my_team_publishers_bool,
-        custom_field_names: [:id, :field_option]
-      ).merge(
-        current_user: current_user,
-        company_id: current_user.company_id
-      )
+      .permit(*filter_param_keys)
+      .merge(current_user: current_user, company_id: current_user.company_id)
   end
 
   def pipeline_params
     params
-      .permit(
-        :q,
-        :comscore,
-        :type_id,
-        :my_publishers_bool,
-        :my_team_publishers_bool,
-        :page,
-        :per,
-        custom_field_names: [:id, :field_option]
-      ).merge(
-        current_user: current_user,
-        company_id: current_user.company_id
-      )
+      .permit(*pipeline_param_keys)
+      .merge(current_user: current_user, company_id: current_user.company_id)
   end
 
   def publisher_params
@@ -234,5 +213,20 @@ class Api::PublishersController < ApplicationController
 
   def pipeline_headers_params
     pipeline_params.except!(:page, :per)
+  end
+
+  def filter_param_keys
+    [
+      :q,
+      :comscore,
+      :publisher_stage_id,
+      :type_id,
+      :my_publishers_bool,
+      :my_team_publishers_bool
+    ].push(*params.keys.grep(/\Acustom_field_[\d]+\z/))
+  end
+
+  def pipeline_param_keys
+    filter_param_keys + [:page, :per]
   end
 end

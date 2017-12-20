@@ -127,7 +127,6 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
       expect(response_body[:comscore]).to eq publisher.comscore
       expect(response_body[:website]).to eq publisher.website
       expect(response_body[:estimated_monthly_impressions]).to eq publisher.estimated_monthly_impressions
-      expect(response_body[:actual_monthly_impressions]).to eq publisher.actual_monthly_impressions
     end
   end
 
