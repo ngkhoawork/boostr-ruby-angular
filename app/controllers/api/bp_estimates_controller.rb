@@ -39,9 +39,6 @@ class Api::BpEstimatesController < ApplicationController
       end
       respond_to do |format|
         format.json {
-          response.headers['X-Total-Count'] = bp_estimates.select('distinct(client_id)').count.to_s
-          # response.headers['X-Seller-Estimate'] = bp_estimates.collect{|bp_estimate| bp_estimate.estimate_seller || 0}.inject(0){|sum,x| sum + x }.to_s
-          # response.headers['X-Mgr-Estimate'] = bp_estimates.collect{|bp_estimate| bp_estimate.estimate_mgr || 0}.inject(0){|sum,x| sum + x }
           if limit.present? && offset.present?
             bp_data = bp_estimates.limit(limit).offset(offset)
           else
@@ -68,6 +65,29 @@ class Api::BpEstimatesController < ApplicationController
     else
       render json: { error: 'Business Plan Not Found' }, status: :not_found
     end
+  end
+
+  def status
+    total_seller_estimate = bp_estimates
+      .assigned
+      .collect{|bp_estimate| bp_estimate.estimate_seller || 0}
+      .inject(0){|sum,x| sum + x }.to_s
+    total_mgr_estimate = bp_estimates
+      .assigned.collect{|bp_estimate| bp_estimate.estimate_mgr || 0}
+      .inject(0){|sum,x| sum + x }
+    total_status = bp_estimates
+      .has_status
+      .select('distinct(client_id)')
+      .count
+    total_clients = bp_estimates
+      .select('distinct(client_id)')
+      .count
+    render json: {
+      total_seller_estimate: total_seller_estimate,
+      total_mgr_estimate: total_mgr_estimate,
+      total_status: total_status,
+      total_clients: total_clients
+    }, status: :ok
   end
 
   def create
@@ -168,25 +188,39 @@ class Api::BpEstimatesController < ApplicationController
                methods: [:time_dimension]
        })
     else
-      @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).completed(completed)
-      case params[:filter]
-        when 'my'
-          @bp_estimates = @bp_estimates.where(user_id: current_user.id)
-        when 'team'
-          member_ids = current_user.all_team_members.collect{ |member| member.id}
-          member_ids << current_user.id
-          @bp_estimates = @bp_estimates.where("user_id in (?)", member_ids)
-        else
-          if user.present?
-            @bp_estimates = @bp_estimates.where(user_id: user.id)
-          elsif team.present?
-            member_ids = team.all_members.collect{ |member| member.id}
-            @bp_estimates = @bp_estimates.where("user_id in (?)", member_ids)
-          end
-      end
-      @bp_estimates = @bp_estimates.order("clients.name")
+      @bp_estimates = bp.bp_estimates
+        .includes(
+          {
+            bp_estimate_products: {
+              product: {},
+            }
+          },
+          :user,
+          :client
+        )
+        .unassigned(unassigned)
+        .incomplete(incomplete)
+        .completed(completed)
+        .by_user_ids(member_ids)
+        .order_by_client_name
     end
-    @bp_estimates
+  end
+
+  def member_ids
+    @_member_ids ||= case params[:filter]
+      when 'my'
+        [current_user.id]
+      when 'team'
+        current_user.teams.map(&:all_sales_reps).flatten.collect{ |member| member.id}
+      else
+        if user.present?
+          [user.id]
+        elsif team.present?
+          team.all_sales_reps.collect{ |member| member.id}
+        else
+          company.all_sales_reps
+        end
+      end
   end
 
   def bp_estimate_params

@@ -19,9 +19,6 @@
         get:
           method: 'GET'
           url: '/api/bps/:bp_id/bp_estimates'
-          transformResponse: (data, headers) ->
-            resource.totalCount = headers()['x-total-count']
-            angular.fromJson(data)
 
         update:
           method: 'PUT'
@@ -30,6 +27,10 @@
         save:
           method: 'POST'
           transformRequest: transformRequest
+
+        get_status:
+          method: 'GET'
+          url: '/api/bps/:bp_id/bp_estimates/status'
 
       resource.totalCount = 0
 
@@ -42,6 +43,12 @@
         deferred = $q.defer()
         resource.save params, (bp_estimate) ->
           deferred.resolve(bp_estimate)
+        deferred.promise
+
+      @get_status = (params) ->
+        deferred = $q.defer()
+        resource.get_status params, (response) ->
+          deferred.resolve(response)
         deferred.promise
 
       @update = (params) ->
