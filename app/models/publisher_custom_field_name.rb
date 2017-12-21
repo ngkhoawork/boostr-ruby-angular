@@ -9,6 +9,7 @@ class PublisherCustomFieldName < ActiveRecord::Base
   validate :amount_of_custom_fields_per_type
 
   before_create :assign_index
+  after_create :remove_custom_fields_values
 
   scope :by_company, -> (id) { where(company_id: id) }
   scope :by_type,  -> type { where(field_type: type) }
@@ -38,6 +39,14 @@ class PublisherCustomFieldName < ActiveRecord::Base
 
   def assign_index
     self.field_index = maximal_existed_index.next rescue INDEX_FOR_FIRST_CF
+  end
+
+  def remove_custom_fields_values
+    company.publisher_custom_fields.update_all(field_name => nil)
+  end
+
+  def field_name
+    field_type + field_index.to_s
   end
 
   def amount_of_custom_fields_per_type
