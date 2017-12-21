@@ -36,17 +36,17 @@ class Csv::PublisherAllFieldsReportDecorator
   end
 
   def fill_rate
-    return 0 if fill_rate_sum_for_previous_month.zero?
+    return '0%' if fill_rate_sum_for_previous_month.zero?
 
-    (fill_rate_sum_for_previous_month / @record.daily_actuals_for_previous_month.size).round(1)
+    "#{(fill_rate_sum_for_previous_month / @record.daily_actuals_for_previous_month.size).round(1)}%"
   end
 
   def revenue_lifetime
-    @record.daily_actuals.to_a.sum(&:total_revenue)
+    "#{curr_symbol}#{@record.daily_actuals.to_a.sum(&:total_revenue)}"
   end
 
   def revenue_ytd
-    @record.daily_actuals_for_current_year.to_a.sum(&:total_revenue)
+    "#{curr_symbol}#{@record.daily_actuals_for_current_year.to_a.sum(&:total_revenue)}"
   end
 
   def last_export_date
@@ -63,5 +63,9 @@ class Csv::PublisherAllFieldsReportDecorator
 
   def fill_rate_sum_for_previous_month
     @_fill_rate_sum ||= @record.daily_actuals_for_previous_month.to_a.sum(&:fill_rate)
+  end
+
+  def curr_symbol
+    @record.daily_actuals.first&.currency&.curr_symbol
   end
 end
