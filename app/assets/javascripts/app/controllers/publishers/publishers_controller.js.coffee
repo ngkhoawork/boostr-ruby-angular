@@ -12,7 +12,7 @@
     $scope.allPublishersLoaded = false
     $scope.publisherTypes = [
       {name: 'My Publishers', my_publishers_bool: true}
-      {name: 'My Team\'s publishers', my_team_publishers_bool: true}
+      {name: 'My Team\'s Publishers', my_team_publishers_bool: true}
       {name: 'All'}
     ]
 
