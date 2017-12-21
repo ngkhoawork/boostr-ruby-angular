@@ -38,15 +38,19 @@ class Api::Publishers::ShowSerializer < Api::Publishers::Serializer
     @_daily_actuals_for_current_year ||= daily_actuals.by_date(current_date.beginning_of_year, current_date)
   end
 
+  def daily_actuals_for_past_90_days
+    @_daily_actuals_for_past_90_days ||= daily_actuals.by_date(current_date - 90.days, current_date)
+  end
+
   def current_date
     @_current_month ||= Date.today
   end
 
   def sum_of_available_impressions
-    daily_actuals.sum(:available_impressions)
+    daily_actuals_for_past_90_days.sum(:available_impressions)
   end
 
   def sum_of_filled_impressions
-    daily_actuals.sum(:filled_impressions)
+    daily_actuals_for_past_90_days.sum(:filled_impressions)
   end
 end

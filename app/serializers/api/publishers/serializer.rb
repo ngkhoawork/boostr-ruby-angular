@@ -49,18 +49,11 @@ class Api::Publishers::Serializer < ActiveModel::Serializer
   end
 
   def actual_monthly_impressions
-    daily_actuals.sum(:available_impressions) / count_of_month rescue nil
+    daily_actuals.sum(:available_impressions) / 3 rescue nil
   end
 
   def daily_actuals
     @_daily_actuals ||= object.daily_actuals
-  end
-
-  def daily_actuals_dates
-    @daily_actuals_dates ||= daily_actuals.pluck(:date)
-  end
-
-  def count_of_month
-    daily_actuals_dates.map { |date| date.strftime("%B %Y") }.uniq.count
+                              .by_date(current_date - 90.days, Date.current)
   end
 end
