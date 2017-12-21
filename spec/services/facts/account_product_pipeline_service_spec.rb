@@ -9,6 +9,12 @@ describe Facts::AccountProductPipelineFactService do
       DisplayLineItem.skip_callback(:save, :after, :update_revenue_fact_callback)
     end
 
+    after do
+      Io.set_callback(:save, :after, :update_revenue_fact_callback)
+      ContentFee.set_callback(:save, :after, :update_revenue_fact_callback)
+      DisplayLineItem.set_callback(:save, :after, :update_revenue_fact_callback)
+    end
+
     context 'when there are existing records in account pipeline table' do
       let!(:account_product_pipeline_fact) do
         create(:account_product_pipeline_fact,
