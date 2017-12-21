@@ -2,7 +2,7 @@ class PmpItem < ActiveRecord::Base
   belongs_to :pmp, required: true
   belongs_to :ssp, required: true
 
-  has_many :pmp_item_daily_actuals, dependent: :destroy
+  has_many :pmp_item_daily_actuals, -> { order(date: :asc) }, dependent: :destroy
   has_many :pmp_item_monthly_actuals, dependent: :destroy
 
   enum pmp_type: ::PMP_TYPES
@@ -47,7 +47,7 @@ class PmpItem < ActiveRecord::Base
 
   def run_rate(days)
     if pmp_item_daily_actuals.count >= days
-      pmp_item_daily_actuals.latest.limit(days).sum(:revenue_loc) / days
+      pmp_item_daily_actuals.latest.limit(days).to_a.sum(&:revenue_loc) / days
     else
       nil
     end

@@ -16,6 +16,8 @@ class Pmp < ActiveRecord::Base
   scope :by_advertiser_name, -> (name) { joins(:advertiser).where('clients.name ilike ?', "%#{name}%") if name.present? }
   scope :by_agency_name, -> (name) { joins(:agency).where('clients.name ilike ?', "%#{name}%") if name.present? }
   scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) if (start_date && end_date).present? }
+  scope :for_time_period, -> (start_date, end_date) { where('pmps.start_date <= ? AND pmps.end_date >= ?', end_date, start_date) }
+  scope :by_user, -> (user) { includes(:pmp_members).where('pmp_members.user_id = ?', user.id) }
 
   before_create :set_budget_remaining_and_delivered
   after_save :update_pmp_members_date
