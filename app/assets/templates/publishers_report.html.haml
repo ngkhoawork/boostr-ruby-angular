@@ -26,7 +26,7 @@
                     Name
                 %th
                   .z-sortable{by: 'comscore'}
-                    Comscore
+                    Comscore 250
                 %th
                   .z-sortable{by: 'publisher_stage'}
                     Stage
@@ -48,9 +48,6 @@
                 %th
                   .z-sortable{by: 'revenue_ytd'}
                     Revenue YTD
-                %th
-                  .z-sortable{by: 'last_export_date'}
-                    Export Date
                 %th.left
                   .z-sortable{by: 'created_at'}
                     Created Date
@@ -59,7 +56,7 @@
             %tbody
               %tr{'ng-repeat': 'publisher in publishers | orderBy : zSort.by : zSort.rev'}
                 %td {{publisher.name}}
-                %td {{publisher.comscore ? 'Active' : 'Inactive'}}
+                %td {{publisher.comscore ? 'True' : 'False'}}
                 %td {{publisher.publisher_stage}}
                 %td {{publisher.type.name}}
                 %td {{publisher.estimated_monthly_impressions | formatMoney: "" : 0}}
@@ -67,7 +64,6 @@
                 %td {{publisher.fill_rate + "%"}}
                 %td {{publisher.revenue_lifetime | currency: currency_symbol : 0}}
                 %td {{publisher.revenue_ytd | currency: currency_symbol : 0}}
-                %td {{publisher.last_export_date | date : 'shortDate'}}
                 %td.left {{publisher.created_at | date : 'shortDate'}}
                 %td{'ng-repeat': 'cf in publisher.publisher_custom_field | orderBy : zSort.by : zSort.rev'}
                   %p{'ng-if': 'cf.field_type == "datetime"'}
