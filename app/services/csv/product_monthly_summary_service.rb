@@ -52,6 +52,7 @@ class Csv::ProductMonthlySummaryService < Csv::BaseService
   def custom_headers
     custom_field_names.map {|cf| cf['field_label']}
   end
+  
   def headers_as_symbols
     @_headers_as_symbols ||= headers.map { |el| el.downcase.gsub(' ','_').to_sym }
   end

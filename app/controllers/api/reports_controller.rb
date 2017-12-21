@@ -48,6 +48,22 @@ class Api::ReportsController < ApplicationController
     end
   end
 
+  def quota_attainment
+    if quota_attainment_service.valid?
+      respond_to do |format|
+        format.json {
+          render json: quota_attainment_service.perform
+        }
+        format.csv {
+          send_data Csv::QuotaAttainmentReportService.new(company, quota_attainment_service.perform).perform,
+                    filename: "reports-#{Date.today}.csv"
+        }
+      end
+    else
+      render json: { errors: quota_attainment_service.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def user_activity_reports
@@ -168,5 +184,9 @@ class Api::ReportsController < ApplicationController
 
   def product_monthly_summary_serializer
     Report::ProductMonthlySummaryService.new(company, params).perform
+  end
+
+  def quota_attainment_service
+    @_quota_attainment_service ||= Report::QuotaAttainmentService.new(company, params)
   end
 end

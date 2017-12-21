@@ -197,6 +197,10 @@
       templateUrl: 'influencer_budget_detail.html'
       controller: 'InfluencerBudgetDetailController'
 
+    .when '/reports/quota_attainment',
+      templateUrl: 'quota_attainment_report.html'
+      controller: 'QuotaAttainmentReportController'
+
     .when '/requests',
       templateUrl: 'requests.html'
       controller: 'RequestsController'
