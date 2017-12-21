@@ -62,13 +62,17 @@ class PublishersQuery < BaseQuery
 
     def my_team_publishers(my_team_publishers_bool, current_user)
       return self if my_team_publishers_bool.nil? || current_user.nil?
-      return by_lead_id(current_user) if current_user.leader?
+      return by_leader_and_member_id(current_user) if current_user.leader?
 
       current_user.team_id.nil? ? none : by_team_id(current_user.team_id)
     end
 
-    def by_lead_id(current_user)
-      by_team_id Team.find_by(leader: current_user).id
+    def by_leader_and_member_id(leader)
+      by_member_id(leader_and_member_ids_for(leader)).uniq
+    end
+
+    def leader_and_member_ids_for(leader)
+      Team.find_by(leader: leader).member_ids << leader.id
     end
 
     def by_custom_fields(custom_field_inputs)
