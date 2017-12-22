@@ -180,11 +180,10 @@ describe Api::BillingSummaryController do
   def create_gbp_currency
     @_gbp_currency ||=
       (
-        Currency.find_by(curr_cd: 'GBP', curr_symbol: '£', name: 'Great Britain Pound') ||
-        create(:currency, curr_cd: 'GBP', curr_symbol: '£', name: 'Great Britain Pound')
+        Currency.find_by(curr_cd: 'GBP', curr_symbol: '£', name: 'Great Britain Pound') || create(:currency, curr_cd: 'GBP', curr_symbol: '£', name: 'Great Britain Pound')
       ).tap do |c|
         c.exchange_rates << exchange_rate
-      end
+    end
   end
 
   def exchange_rate

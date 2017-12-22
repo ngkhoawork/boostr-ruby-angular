@@ -1,4 +1,3 @@
-!!!
 %html
   %head
     %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
@@ -6,7 +5,6 @@
     = stylesheet_link_tag    'application', media: 'all'
     = javascript_include_tag 'application'
     = csrf_meta_tags
-    = render 'layouts/favicon'
     %base{ href: "/" }
 
   %body{ ng: { app: "Boostr" } }
@@ -22,14 +20,4 @@
         currentUserIsLeader = false
     :javascript
       currentUserRoles = #{current_user.roles}
-    %header
-      - if content_for? :nav
-        = yield :nav
-      - else
-        = render 'layouts/nav'
-    :javascript
-      (function(t,a,l,k,u,s,e){if(!t[u]){t[u]=function(){(t[u].q=t[u].q||[]).push(arguments)},t[u].l=1*new Date();s=a.createElement(l),e=a.getElementsByTagName(l)[0];s.async=1;s.src=k;e.parentNode.insertBefore(s,e)}})(window,document,'script','//www.talkus.io/plugin.beta.js','talkus');
-      if(location.hostname!='localhost' && location.hostname!='127.0.0.1') {
-        talkus('init', 'qu346HQax2ut3MQr4');
-      }
-    = yield
+    %div{'ng-view': true}
