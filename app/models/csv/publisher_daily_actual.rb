@@ -34,7 +34,7 @@ class Csv::PublisherDailyActual
   end
 
   def publisher
-    @publisher ||= sync_publisher(fetch_publisher_by_id_or_name)
+    @publisher ||= sync_publisher_name(fetch_publisher_by_id_or_name)
   end
 
   def currency
@@ -54,21 +54,28 @@ class Csv::PublisherDailyActual
   end
 
   def fetch_publisher_by_id_or_name
-    Publisher.where(
-      '(id = :id OR name = :name) AND company_id = :company_id',
-      id: publisher_id,
-      name: publisher_name,
-      company_id: company_id
-    ).first
+    if publisher_id
+      Publisher.find_by(id: publisher_id, company_id: company_id)
+    elsif publisher_name
+      Publisher.where(
+        'LOWER(name) = :downcased_name AND company_id = :company_id',
+        downcased_name: publisher_name.downcase,
+        company_id: company_id
+      ).first
+    end
   end
 
-  def sync_publisher(publisher)
-    return unless publisher
+  def sync_publisher_name(publisher)
+    return unless publisher && publisher_name
 
-    (publisher.name == publisher_name) ? publisher : publisher.update(name: publisher_name)
+    publisher.update(name: publisher_name) unless publisher.name.downcase == publisher_name.downcase
+
+    publisher
   end
 
   def formatted_date
     @formatted_date ||= Date.strptime(date.gsub(/[-:]/, '/'), '%m/%d/%Y')
+  rescue
+    @formatted_date ||= Date.parse(date)
   end
 end
