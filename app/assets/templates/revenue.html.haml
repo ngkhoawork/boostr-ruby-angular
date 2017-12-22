@@ -1,9 +1,9 @@
 #revenue.z-styles
   .container-fluid
     .row.revenue-header.mb20
-      .header-item
+      .header-item.title
         .main-title Revenue
-
+        %add-button{'ng-click': 'addPmp()', 'ng-if': "filter.revenue == 'pmp'"} Add PMP
       .header-item
         %div.filter-row
           %span{ ng: { repeat: 'revenueFilter in revenueFilters', class: '{active: filter.revenue == revenueFilter.value}', click: 'setFilter("revenue", revenueFilter.value)'} }
@@ -108,9 +108,9 @@
                 %th.right
                   %span.z-sortable{by: 'budget_loc'} Budget
                 %th.right
-                  %a.add-button{href: '', 'ng-click': 'addPmp()'}
-                    = inline_svg "icons/button-plus-icon.svg" 
-                    Add PMP
+                  / %a.add-button{href: '', 'ng-click': 'addPmp()'}
+                  /   = inline_svg "icons/button-plus-icon.svg" 
+                  /   Add PMP
 
             %tbody{ 'ng-include': "'partials/revenue_pmp_rows.html'" }
 
