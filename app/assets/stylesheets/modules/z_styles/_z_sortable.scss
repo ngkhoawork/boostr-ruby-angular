@@ -7,3 +7,11 @@
         margin-left: 5px;
     }
 }
+
+.table thead tr.z-sortable-second {
+  height: 63px !important;
+  max-height: 63px !important;
+  th {
+    vertical-align: bottom !important;
+  }
+}

@@ -85,6 +85,7 @@
           t.deals = data.totals.total_deals
           t.pipelineRatio = data.totals.ratio
           t.aveDealSize = data.totals.average_deal_size
+          t.grouped_budgets = data.totals.grouped_budgets
 
       $scope.findDealProductBudgetBudget = (dealProductBudgets, productTime) ->
         productTimeDate = new Date(productTime)

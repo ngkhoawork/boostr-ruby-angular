@@ -46,7 +46,7 @@
           .table-wrapper
             %table.table.table-hover
               %thead
-                %tr.z-sortable-prime{'z-fixed-header': true, watch: '"deals"'}
+                %tr.z-sortable-prime.z-sortable-second{'z-fixed-header': true, watch: '"deals"'}
                   %th
                     .z-sortable{by: 'users[0].first_name'} Team Member
                   %th
@@ -80,7 +80,10 @@
                   %th
                     .z-sortable{by: 'end_date'} End Date
                   %th{ ng: { repeat: 'productTime in productRange track by $index' } }
-                    .z-sortable{by: '"deal_product_budgets["+$index+"]"'} {{ productTime | date: 'MMM-yy' }}
+                    %div.mb10.text-left
+                      {{ totals.grouped_budgets[productTime] | currency:'$':0 }}
+                    .z-sortable{by: '"deal_product_budgets["+$index+"]"'}
+                      {{ productTime | date: 'MMM-yy' }}
                   %th{ ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: 'fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index' } }
                     .z-sortable{by: '"deal_custom_field[\""+fieldName+"\"]"'} {{dealCustomFieldName.field_label}}
               %tbody.nowrap{'infinite-scroll': "loadMoreData()"}
