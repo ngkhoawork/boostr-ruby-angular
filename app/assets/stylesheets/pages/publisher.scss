@@ -58,7 +58,7 @@
   #fill-rate-chart {
     .tick {
       text {
-        font-size: 14px;
+        font-size: 12px;
       }
     }
     .total-imp-rect {
@@ -81,6 +81,33 @@
       }
     }
   }
+
+  .legend-container {
+    margin-left: 50px;
+
+    .legend {
+      display: inline-flex;
+      padding: 0 7px;
+
+      .line {
+        width: 15px;
+        height: 15px;
+        margin-right: 8px;
+        margin-top: 2px;
+      }
+
+      .filled {
+        border-radius: 4px;
+        background-color: #FF7E30;
+      }
+
+      .available {
+        border-radius: 4px;
+        background-color: #BEC1C4;
+      }
+    }
+  }
+
   #fill-rate-chart-tooltip {
     position: fixed;
     display: none;

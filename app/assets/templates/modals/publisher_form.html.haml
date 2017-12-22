@@ -63,7 +63,7 @@
         .form-group.col-xs-6
           %label{ for: 'estimate-monthly' }
             Revenue Share
-          %input.form-control{placeholder: 'Revenue Share', type: 'number', step: '0.01', ng: { model: 'publisher.revenue_share' }, name: 'revenue_share' }
+          %input.form-control{placeholder: 'Revenue Share', type: 'number', max: "100", ng: { model: 'publisher.revenue_share' }, name: 'revenue_share' }
 
         .form-group.col-xs-6
           %span.error-text
