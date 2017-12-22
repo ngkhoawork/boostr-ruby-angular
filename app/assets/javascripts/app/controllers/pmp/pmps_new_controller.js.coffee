@@ -21,6 +21,10 @@
         $scope.agencies.push pmp.agency
         $scope.formType = 'Edit'
         $scope.submitText = 'Update'
+      Field.defaults({}, 'Client').then (fields) ->
+        client_types = Field.findClientTypes(fields)
+        client_types.options.forEach (option) ->
+          $scope[option.name] = option.id
       Currency.active_currencies().then (currencies) ->
         $scope.currencies = currencies
         user_currency = _.find(currencies, {curr_cd: $rootScope.currentUser.default_currency})
@@ -83,16 +87,15 @@
 
     $scope.$on 'newClient', (event, client) ->
       if $scope.populateClient
-        Field.defaults(client, 'Client').then (fields) ->
-          client_type = Field.field(client, 'Client Type')
-          switch client_type.option.name
-            when 'Advertiser'
-              $scope.advertisers.push client
-              $scope.pmp['advertiser_id'] = client.id
-            when 'Agency'
-              $scope.agencies.push client
-              $scope.pmp['agency_id'] = client.id
-          $scope.populateClient = false
+        client_type = Field.field(client, 'Client Type')
+        switch client_type.option.name
+          when 'Advertiser'
+            $scope.advertisers.push client
+            $scope.pmp['advertiser_id'] = client.id
+          when 'Agency'
+            $scope.agencies.push client
+            $scope.pmp['agency_id'] = client.id
+        $scope.populateClient = false
 
     loadClients = (query, type_id) ->
       Client.search_clients( name: query, client_type_id: type_id ).$promise.then (clients) ->
@@ -100,7 +103,7 @@
           $scope.advertisers = clients
         if type_id == $scope.Agency
           $scope.agencies = clients
-    
+
     searchTimeout = null
     $scope.searchClients = (query, type_id) ->
       if searchTimeout
