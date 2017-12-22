@@ -26,7 +26,7 @@ class Api::ContactsController < ApplicationController
         require 'timeout'
         begin
           status = Timeout::timeout(120) {
-            send_data Contact.to_csv(current_user.company, results), filename: "contacts-#{Date.today}.csv"
+            send_data Csv::ContactsService.new(current_user.company, results).perform, filename: "contacts-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return
