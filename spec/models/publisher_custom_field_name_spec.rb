@@ -60,6 +60,10 @@ describe 'PublisherCustomFieldName' do
   end
 
   def publisher_custom_field_name(opts={})
-    PublisherCustomFieldName.new(valid_publisher_custom_field_name_params.merge(opts))
+    company.publisher_custom_field_names.new(valid_publisher_custom_field_name_params.merge(opts))
+  end
+
+  def company
+    @_company ||= create :company
   end
 end
