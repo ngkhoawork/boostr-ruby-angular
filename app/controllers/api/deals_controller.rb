@@ -132,25 +132,11 @@ class Api::DealsController < ApplicationController
       .except(:limit, :order, :offset, :preload)
       .pluck_to_struct(:id, :budget, 'stages.probability as probability')
 
-    deal_ids = deals.to_a.collect{|deal| deal.id}
-
-    deal_product_budgets = DealProductBudget
-    .joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
-    .where("deal_products.deal_id in (?)", deal_ids)
-    .order("start_date asc")
-
-    deal_product_budgets = deal_product_budgets.where("deal_products.product_id = ?", product_filter) if product_filter
-    grouped_budgets = deal_product_budgets
-    .group_by{|budget| budget.start_date.beginning_of_month}
-    .collect{|key, value| {key => value.map(&:budget).compact.reduce(:+)} }
-    .reduce(:merge)
-
     unweighted = deals.map{ |d| d.budget }.compact.reduce(:+).to_f
     weighted = deals.map{ |d| d.budget.to_f * d.probability / 100 }.compact.reduce(:+)
     ratio = ((weighted / unweighted * 100) / 100).round(2) rescue 0
 
     totals = {
-      grouped_budgets: grouped_budgets,
       pipeline_unweighted: unweighted.round,
       pipeline_weighted: weighted.round,
       ratio: ratio,
@@ -159,6 +145,21 @@ class Api::DealsController < ApplicationController
     }
 
     render json: {totals: totals}
+  end
+
+  def pipeline_report_monthly_budgets
+    deal_ids = pipeline_report_relation.collect{|deal| deal.id}
+
+    monthly_budgets = DealProductBudget
+    .joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
+    .where("deal_products.deal_id in (?)", deal_ids)
+    .for_product_id(product_filter)
+    .order("start_date asc")
+    .group_by{|budget| budget.start_date.beginning_of_month}
+    .collect{|key, value| {key => value.map(&:budget).compact.reduce(:+)} }
+    .reduce(:merge)
+
+    render json: { monthly_budgets: monthly_budgets }
   end
 
   def pipeline_report
