@@ -144,4 +144,6 @@
           tooltip.classed 'active', false
           d3.select('#total-text-' + i).classed 'active', false
 
+      $(".legend-container").show()
+
 ]
