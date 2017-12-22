@@ -53,8 +53,8 @@ class Csv::PublisherAllFieldsReportDecorator
     "#{curr_symbol}#{sum_revenue_ytd}"
   end
 
-  def last_export_date
-    record.last_daily_actual&.created_at
+  def export_date
+    Date.current
   end
 
   def custom_fields

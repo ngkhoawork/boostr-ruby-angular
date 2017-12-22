@@ -40,7 +40,7 @@ class Csv::PublisherAllFieldsReportService < Csv::BaseService
       fill_rate
       revenue_lifetime
       revenue_ytd
-      last_export_date
+      export_date
     )
   end
 
