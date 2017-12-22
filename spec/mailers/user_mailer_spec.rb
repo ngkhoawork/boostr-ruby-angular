@@ -12,7 +12,6 @@ RSpec.describe UserMailer, :type => :mailer do
         values_attributes: [{field_id: field.id, option_id: option.id, value: nil}],
         closed_reason_text: 'too high'
       )
-      deal.reload
       @deal_budget = number_to_currency(deal.budget_loc.to_i, precision: 0, unit: deal.currency.curr_symbol)
       @mail = UserMailer.lost_deal_email(['manager@boostrcrm.com'], deal)
     end
