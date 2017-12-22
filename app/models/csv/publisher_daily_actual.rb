@@ -76,6 +76,6 @@ class Csv::PublisherDailyActual
   def formatted_date
     @formatted_date ||= Date.strptime(date.gsub(/[-:]/, '/'), '%m/%d/%Y')
   rescue
-    @formatted_date ||= Date.parse(date)
+    raise 'Date format does not fit MM/DD/YYYY pattern'
   end
 end
