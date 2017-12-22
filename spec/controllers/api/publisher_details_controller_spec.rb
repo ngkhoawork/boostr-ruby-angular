@@ -14,24 +14,6 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
 
   before { sign_in user }
 
-  describe '#extended_fields' do
-    let(:response_first_custom_field) { response_body[:publisher_custom_field][0] }
-
-    subject { get :extended_fields, id: publisher.id }
-
-    before do
-      publisher.create_publisher_custom_field(company: company, text1: publisher_custom_field_option.value)
-    end
-
-    it 'returns publisher\'s fields' do
-      subject
-      expect(response).to have_http_status(200)
-      expect(response_first_custom_field[:field_label]).to eq publisher_custom_field_name.field_label
-      expect(response_first_custom_field[:field_type]).to eq publisher_custom_field_name.field_type
-      expect(response_first_custom_field[:field_value]).to eq publisher_custom_field_option.value
-    end
-  end
-
   describe '#activities' do
     let!(:activity) { Activity.create!(company: company, user: user) }
 

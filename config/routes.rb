@@ -454,7 +454,6 @@ Rails.application.routes.draw do
     end
     resources :publisher_details, only: [:show] do
       member do
-        get :extended_fields
         get :associations
         get :activities
         get :fill_rate_by_month_graph
@@ -471,9 +470,7 @@ Rails.application.routes.draw do
     end
 
     resources :publisher_members, only: [:create, :update, :destroy]
-    resources :publisher_contacts, only: [:create, :update, :destroy] do
-      put :add, on: :member
-    end
+    resources :publisher_contacts, only: [:create, :update, :destroy]
   end
 
   mount Sidekiq::Web => '/sidekiq'

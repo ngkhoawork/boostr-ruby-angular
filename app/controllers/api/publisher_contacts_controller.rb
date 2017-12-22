@@ -1,14 +1,6 @@
 class Api::PublisherContactsController < ApplicationController
   respond_to :json
 
-  def add
-    if contact.update(publisher: publisher)
-      render json: contact
-    else
-      render json: { errors: contact.errors.messages }, status: :unprocessable_entity
-    end
-  end
-
   def create
     contact = company.contacts.new(contact_params)
 
