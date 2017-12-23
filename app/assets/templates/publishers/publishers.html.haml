@@ -184,8 +184,9 @@
                       %li{'ng-repeat': 'term in renewal_term_fields', 'ng-class': '{active: publisher.renewal_term.id == term.id}'}
                         %a{'href': '', 'ng-click': ' publisher.renewal_term = term; updatePublisher(publisher)'}
                           %span.text {{term.name}}
-                %td
-                  %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': "publisher.revenue_share", 'on-after-save': 'updatePublisher(publisher)'}
+                %td.hide-input-arrows
+                  %span{id: 'revenue-share-{{publisher.id}}', 'editable-number': 'publisher.revenue_share', blur: 'submit', onbeforesave: 'checkRevenueShare(publisher, $data)', onaftersave: 'updatePublisher(publisher)'}
+                    {{(publisher.revenue_share || 0) | number : 0}}%
                 %td
                   %span.datetime-field.bs-datepicker
                     %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !publisher.term_start_date}', model: 'publisher.term_start_date', click: 'startedAtOpened = !startedAtOpened', change: 'updatePublisher(publisher)' }, 'is-open': 'startedAtOpened' }

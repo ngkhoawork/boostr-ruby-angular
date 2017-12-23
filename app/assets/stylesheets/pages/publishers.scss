@@ -108,6 +108,10 @@
       }
     }
   }
+  .editable-input {
+    height: auto;
+    border: 1px dashed $secondary-font-color;
+  }
   .editable-field {
     padding: 5px 8px;
     background-color: transparent;

@@ -1,6 +1,6 @@
 @app.controller 'PablishersController', [
-  '$scope', '$q', '$document', '$timeout', '$modal', 'Publisher', 'PublishersFilter', 'localStorageService'
-  ($scope,   $q,   $document,   $timeout,   $modal,   Publisher,   PublishersFilter,   localStorageService) ->
+  '$scope', '$q', '$document', '$timeout', '$modal', 'Publisher', 'PublishersFilter', 'localStorageService', 'zError'
+  ($scope,   $q,   $document,   $timeout,   $modal,   Publisher,   PublishersFilter,   localStorageService,   zError) ->
 
     $scope.baseColor = '#81B130'
     $scope.publishers = []
@@ -181,6 +181,11 @@
 
     $scope.loadMorePublishers = ->
       $scope.getPublishers(true)
+
+    $scope.checkRevenueShare = (publisher, newValue) ->
+      if newValue < 0 or newValue > 100
+        zError "#revenue-share-#{publisher.id}", 'Number should be between 0 and 100'
+        return false
 
     $scope.updatePublisher = (publisher) ->
       publisher.renewal_term_id = publisher.renewal_term.id if publisher.renewal_term

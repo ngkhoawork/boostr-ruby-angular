@@ -34,8 +34,9 @@
   %div.custom-field-item
     %div.custom-field-item-label
       Revenue Share
-    %div.custom-field-item-field
-      %div{'click-to-edit':'click-to-edit', type: "number", postfix: '%', 'ng-model': "currentPublisher.revenue_share", 'on-after-save': 'updatePublisher(currentPublisher)'}
+    %div.custom-field-item-field.hide-input-arrows{style: 'width: 50px'}
+      %span{id: 'revenue-share-{{currentPublisher.id}}', 'editable-number': 'currentPublisher.revenue_share', blur: 'submit', onbeforesave: 'checkRevenueShare(currentPublisher, $data)', onaftersave: 'updatePublisher(currentPublisher)'}
+        {{(currentPublisher.revenue_share || 0) | number : 0}}%
 
   %div.custom-field-item
     %div.custom-field-item-label

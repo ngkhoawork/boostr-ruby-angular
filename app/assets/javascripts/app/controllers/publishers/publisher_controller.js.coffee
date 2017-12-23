@@ -1,6 +1,6 @@
 @app.controller 'PablisherController', [
-  '$scope', '$modal', '$filter', '$routeParams', 'Publisher', 'PublisherDetails', 'PublisherMembers', '$rootScope', 'User', 'PublisherCustomFieldName', 'PublisherAttachment', 'PublisherContact'
-  ($scope,   $modal,   $filter,   $routeParams,   Publisher,   PublisherDetails, PublisherMembers, $rootScope, User, PublisherCustomFieldName, PublisherAttachment, PublisherContact) ->
+  '$scope', '$modal', '$filter', '$routeParams', 'Publisher', 'PublisherDetails', 'PublisherMembers', '$rootScope', 'User', 'PublisherCustomFieldName', 'PublisherAttachment', 'PublisherContact', 'zError'
+  ($scope,   $modal,   $filter,   $routeParams,   Publisher,   PublisherDetails,   PublisherMembers,   $rootScope,   User,   PublisherCustomFieldName,   PublisherAttachment,   PublisherContact,   zError) ->
 
     $scope.currentPublisher = {}
 
@@ -63,8 +63,12 @@
         result.alternative.push({date: moment(d.date).format("D-MMM-YY"), close: d.revenue})
       result
 
-    $scope.updatePublisher = (publisher) ->
+    $scope.checkRevenueShare = (publisher, newValue) ->
+      if newValue < 0 or newValue > 100
+        zError "#revenue-share-#{publisher.id}", 'Number should be between 0 and 100'
+        return false
 
+    $scope.updatePublisher = (publisher) ->
       publisher.type_id = publisher.type.id if publisher.type
       publisher.renewal_term_id = publisher.renewal_term.id if publisher.renewal_term
       publisher.publisher_stage_id = publisher.publisher_stage.id if publisher.publisher_stage
