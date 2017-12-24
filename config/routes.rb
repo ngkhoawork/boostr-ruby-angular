@@ -143,6 +143,7 @@ Rails.application.routes.draw do
       end
 
       resources :gmail_extension, only: [:index]
+      resources :calendar_extension, only: [:index]
 
       resources :validations, only: [] do
         collection do
