@@ -334,8 +334,12 @@
       controller: 'signOutController'
 
     .when '/api/gmail_extension/',
-      templateUrl: 'gmail_extension.html'
+      templateUrl: 'blank.html'
       controller: 'GmailExtensionController'
+
+    .when '/api/calendar_extension/',
+      templateUrl: 'blank.html'
+      controller: 'CalendarExtensionController'
 
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
