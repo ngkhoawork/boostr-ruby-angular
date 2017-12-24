@@ -1,0 +1,23 @@
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+    %title boostr
+    = stylesheet_link_tag    'application', media: 'all'
+    = javascript_include_tag 'application'
+    = csrf_meta_tags
+    %base{ href: "/" }
+
+  %body{ ng: { app: "Boostr" } }
+    :javascript
+      transloaditTemplates = #{TRANSLOADIT_TEMPLATES.to_json}
+    :javascript
+      userType = parseInt('#{current_user.user_type }')
+    - if current_user.leader?
+      :javascript
+        currentUserIsLeader = true
+    - else
+      :javascript
+        currentUserIsLeader = false
+    :javascript
+      currentUserRoles = #{current_user.roles}
+    %div{'ng-view': true}
