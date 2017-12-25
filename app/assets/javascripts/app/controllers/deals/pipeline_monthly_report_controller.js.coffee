@@ -2,7 +2,6 @@
     '$scope', '$modal', '$window', '$sce', 'Deal', 'Field', 'Product', 'Seller', 'Team', 'TimePeriod', 'DealCustomFieldName', 'Stage', '$httpParamSerializer'
     ($scope,   $modal,   $window,   $sce,   Deal,   Field,   Product,   Seller,   Team,   TimePeriod,   DealCustomFieldName,   Stage,   $httpParamSerializer) ->
       $scope.page = 1
-      $scope.deals = []
       $scope.teams = []
       $scope.types = []
       $scope.stages = []

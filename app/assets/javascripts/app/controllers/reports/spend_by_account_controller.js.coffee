@@ -1,7 +1,6 @@
 @app.controller 'SpendByAccountController',
   ['$scope', 'SpendByAccount', 'zError', '$window', '$httpParamSerializer', 'Field', '$q', 'TimeDimension', '$timeout', ($scope, SpendByAccount, zError, $window, $httpParamSerializer, Field, $q, TimeDimension, $timeout) ->
     appliedFilter = {}
-    $scope.spend_by_account = []
     $scope.category = []
     $scope.type = [
       {id: 10, name: "Advertiser"},

@@ -2,7 +2,6 @@
     '$scope', '$window', '$httpParamSerializer', 'Report', 'Team', 'Seller', 'Stage'
     ($scope,   $window,   $httpParamSerializer,   Report,   Team,   Seller,   Stage) ->
 
-        $scope.deals = []
         $scope.teams = []
         $scope.sellers = []
         $scope.stages = []
