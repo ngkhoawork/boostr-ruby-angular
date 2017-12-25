@@ -10,7 +10,7 @@ class UserMailer < ApplicationMailer
   end
 
   def lost_deal_email(recipients, deal)
-    @deal = deal
+    @deal = deal.reload
     @deal_budget = lost_deal_budget_for(deal)
     @deal_member = deal.user_with_highest_share
     subject = lost_deal_subject_for(deal)
