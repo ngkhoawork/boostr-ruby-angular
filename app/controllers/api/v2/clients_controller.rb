@@ -9,6 +9,8 @@ class Api::V2::ClientsController < ApiController
     else
       results = clients
                   .by_type_id(params[:client_type_id])
+                  .by_name(params[:search])
+                  .preload(:address)
                   .order(:name)
                   .distinct
     end

@@ -2,6 +2,7 @@ class Api::V2::ClientListSerializer < ActiveModel::Serializer
   attributes(
     :id,
     :name,
+    :formatted_name,
     :contacts_count,
     :deals_count,
     :type_name
@@ -15,5 +16,9 @@ class Api::V2::ClientListSerializer < ActiveModel::Serializer
     else
       ''
     end
+  end
+
+  def formatted_name
+    name + object.address&.formatted_name
   end
 end
