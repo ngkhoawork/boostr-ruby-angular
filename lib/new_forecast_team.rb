@@ -21,6 +21,14 @@ class NewForecastTeam
     'team'
   end
 
+  def company
+    @_company ||= team.company
+  end
+
+  def forecast_gap_to_quota_positive
+    @_forecast_gap_to_quota_positive ||= company.forecast_gap_to_quota_positive
+  end
+
   def parents
     return @parents if defined?(@parents)
     @parents = []
@@ -67,6 +75,10 @@ class NewForecastTeam
     users = team.all_members + team.all_leaders
   end
 
+  def user_ids
+    @_user_ids ||= users.map{|user| user.id}.uniq
+  end
+
   def quarters
     return @quarters if defined?(@quarters)
 
@@ -82,16 +94,71 @@ class NewForecastTeam
     @non_leader_members ||= members.reject{ |m| m.member.leader? }
   end
 
+  def team_members
+    @_team_members ||= team.children.inject({}) do |result, child|
+      child.all_members.each do |user|
+        result[user.id] ||= []
+        result[user.id] << child
+      end
+      child.all_leaders.each do |user|
+        result[user.id] ||= []
+        result[user.id] << child
+      end
+      result
+    end
+  end
+
   def forecasts_data
     return @forecasts_data if defined?(@forecasts_data)
 
-    forecast_time_dimension = ForecastTimeDimension.find_by(id: time_period.id)
+    @forecasts_data = forecast_initial_data
 
-    company = team.company
+    add_revenue_data(@forecasts_data)
 
-    forecast_gap_to_quota_positive = company.forecast_gap_to_quota_positive
+    add_pmp_revenue_data(@forecasts_data)
 
-    @forecasts_data = {
+    add_pipeline_data(@forecasts_data)
+
+    add_user_data(@forecasts_data)
+
+    add_team_data(@forecasts_data)
+
+    @forecasts_data
+  end
+
+  def pmp_revenue_data
+    @_pmp_revenue_data ||= ForecastPmpRevenueFact
+      .by_time_dimension_id(forecast_time_dimension.id)
+      .by_user_dimension_ids(user_ids)
+      .by_product_dimension_ids(product_ids)
+      .select("user_dimension_id AS user_id, SUM(amount) AS revenue_amount")
+      .group("user_dimension_id")
+  end
+
+  def revenue_data
+    @_revenue_data ||= ForecastRevenueFact
+      .by_time_dimension_id(forecast_time_dimension.id)
+      .by_user_dimension_ids(user_ids)
+      .by_product_dimension_ids(product_ids)
+      .select("user_dimension_id AS user_id, SUM(amount) AS revenue_amount")
+      .group("user_dimension_id")
+  end
+
+  def pipeline_data
+    @_pipeline_data ||= ForecastPipelineFact
+      .by_time_dimension_id(forecast_time_dimension.id)
+      .by_user_dimension_ids(user_ids)
+      .by_product_dimension_ids(product_ids)
+      .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
+      .group("user_dimension_id, stage_dimension_id")
+  end
+
+  def forecast_time_dimension
+    @_forecast_time_dimension ||= ForecastTimeDimension.find_by(id: time_period.id)
+  end
+
+  def forecast_initial_data
+    {
       stages: company.stages,
       product: product ? {
         id: product.id,
@@ -108,168 +175,119 @@ class NewForecastTeam
       weighted_pipeline: 0.0,
       quota: 0.0,
     }
-    user_ids = users.map{|user| user.id}
-    user_ids.uniq!
+  end
 
-    team_members = {}
-    team.children.each do |child|
-      child.all_members.each do |user|
-        team_members[user.id] ||= []
-        team_members[user.id] << child
-      end
-      child.all_leaders.each do |user|
-        team_members[user.id] ||= []
-        team_members[user.id] << child
-      end
-    end
+  def build_team_data(team)
+    {
+      id: team.id,
+      name: team.name,
+      type: 'team',
+      quarter: quarter,
+      year: year,
+      unweighted_pipeline: 0,
+      weighted_pipeline: 0,
+      unweighted_pipeline_by_stage: {},
+      weighted_pipeline_by_stage: {},
+      wow_weighted_pipeline: 0,
+      revenue: 0,
+      wow_revenue: 0,
+      quota: 0
+    }
+  end
 
-    if product_ids.nil?
-      revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?)", forecast_time_dimension.id, user_ids)
-        .select("user_dimension_id AS user_id, SUM(amount) AS revenue_amount")
-        .group("user_dimension_id")
-      pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?)", forecast_time_dimension.id, user_ids)
-        .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
-        .group("user_dimension_id, stage_dimension_id")
-    elsif product_ids.count > 0
-      revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id in (?)", forecast_time_dimension.id, user_ids, product_ids)
-        .select("user_dimension_id AS user_id, SUM(amount) AS revenue_amount")
-        .group("user_dimension_id")
-      pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id in (?)", forecast_time_dimension.id, user_ids, product_ids)
-        .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
-        .group("user_dimension_id, stage_dimension_id")
-    end
+  def build_member_data(user)
+    {
+      id: user.id,
+      name: user.name,
+      is_leader: user.leader?,
+      type: 'member',
+      quarter: quarter,
+      year: year,
+      unweighted_pipeline: 0,
+      weighted_pipeline: 0,
+      unweighted_pipeline_by_stage: {},
+      weighted_pipeline_by_stage: {},
+      wow_weighted_pipeline: 0,
+      revenue: 0,
+      wow_revenue: 0,
+      quota: 0
+    }
+  end
 
+  def add_revenue_data(data)
     revenue_data.each do |item|
       user = company.users.find(item.user_id)
-      @forecasts_data[:revenue] += item.revenue_amount.to_f
       if team_members[item.user_id] && team_members[item.user_id].count > 0
         team_members[item.user_id].each do |team|
-          @forecasts_data[:teams][team.id] ||= {
-            id: team.id,
-            name: team.name,
-            type: 'team',
-            quarter: quarter,
-            year: year,
-            unweighted_pipeline: 0,
-            weighted_pipeline: 0,
-            unweighted_pipeline_by_stage: {},
-            weighted_pipeline_by_stage: {},
-            wow_weighted_pipeline: 0,
-            revenue: 0,
-            wow_revenue: 0,
-            quota: 0
-          }
-          @forecasts_data[:teams][team.id][:revenue] ||= 0.0
-          @forecasts_data[:teams][team.id][:revenue] += item.revenue_amount.to_f
+          data[:teams][team.id] ||= build_team_data(team)
+          add_revenue_item(data[:teams][team.id], item)
         end
       else
-        @forecasts_data[:members][item.user_id] ||= {
-          id: user.id,
-          name: user.name,
-          is_leader: user.leader?,
-          type: 'member',
-          quarter: quarter,
-          year: year,
-          unweighted_pipeline: 0,
-          weighted_pipeline: 0,
-          unweighted_pipeline_by_stage: {},
-          weighted_pipeline_by_stage: {},
-          wow_weighted_pipeline: 0,
-          revenue: 0,
-          wow_revenue: 0,
-          quota: 0
-        }
-        @forecasts_data[:members][item.user_id][:revenue] ||= 0.0
-        @forecasts_data[:members][item.user_id][:revenue] += item.revenue_amount.to_f
+        data[:members][item.user_id] ||= build_member_data(user)
+        add_revenue_item(data[:members][item.user_id], item)
       end
-      # @forecasts_data[:revenue] += item.revenue_amount.to_f
-    end
 
+      add_revenue_item(data, item)
+    end
+  end
+
+  def add_pmp_revenue_data(data)
+    pmp_revenue_data.each do |item|
+      user = company.users.find(item.user_id)
+      if team_members[item.user_id] && team_members[item.user_id].count > 0
+        team_members[item.user_id].each do |team|
+          data[:teams][team.id] ||= build_team_data(team)
+          add_revenue_item(data[:teams][team.id], item)
+        end
+      else
+        data[:members][item.user_id] ||= build_member_data(user)
+        add_revenue_item(data[:members][item.user_id], item)
+      end
+
+      add_revenue_item(data, item)
+    end
+  end
+
+  def add_revenue_item(data, item)
+    data[:revenue] ||= 0.0
+    data[:revenue] += item.revenue_amount.to_f
+  end
+
+  def add_pipeline_data(data)
     pipeline_data.each do |item|
       user = company.users.find(item.user_id)
       weighted_amount = item.pipeline_amount.to_f * company.stages.find(item.stage_id).probability.to_f / 100
       if team_members[item.user_id] && team_members[item.user_id].count > 0
         team_members[item.user_id].each do |team|
-          @forecasts_data[:teams][team.id] ||= {
-            id: team.id,
-            name: team.name,
-            type: 'team',
-            quarter: quarter,
-            year: year,
-            unweighted_pipeline: 0,
-            weighted_pipeline: 0,
-            unweighted_pipeline_by_stage: {},
-            weighted_pipeline_by_stage: {},
-            wow_weighted_pipeline: 0,
-            revenue: 0,
-            wow_revenue: 0,
-            quota: 0
-          }
-
-          @forecasts_data[:teams][team.id][:unweighted_pipeline] ||= 0.0
-          @forecasts_data[:teams][team.id][:unweighted_pipeline] += item.pipeline_amount.to_f
-
-          @forecasts_data[:teams][team.id][:unweighted_pipeline_by_stage] ||= {}
-          @forecasts_data[:teams][team.id][:unweighted_pipeline_by_stage][item.stage_id] ||= 0.0
-          @forecasts_data[:teams][team.id][:unweighted_pipeline_by_stage][item.stage_id] += item.pipeline_amount
-
-          @forecasts_data[:teams][team.id][:weighted_pipeline] ||= 0.0
-          @forecasts_data[:teams][team.id][:weighted_pipeline] += weighted_amount
-
-          @forecasts_data[:teams][team.id][:weighted_pipeline_by_stage] ||= {}
-          @forecasts_data[:teams][team.id][:weighted_pipeline_by_stage][item.stage_id] ||= 0.0
-          @forecasts_data[:teams][team.id][:weighted_pipeline_by_stage][item.stage_id] += weighted_amount
+          data[:teams][team.id] ||= build_team_data(team)
+          add_pipeline_item(data[:teams][team.id], item, weighted_amount)
         end
       else
-        @forecasts_data[:members][item.user_id] ||= {
-          id: user.id,
-          name: user.name,
-          is_leader: user.leader?,
-          type: 'member',
-          quarter: quarter,
-          year: year,
-          unweighted_pipeline: 0,
-          weighted_pipeline: 0,
-          unweighted_pipeline_by_stage: {},
-          weighted_pipeline_by_stage: {},
-          wow_weighted_pipeline: 0,
-          revenue: 0,
-          wow_revenue: 0,
-          quota: 0
-        }
-
-        @forecasts_data[:members][item.user_id][:unweighted_pipeline] ||= 0.0
-        @forecasts_data[:members][item.user_id][:unweighted_pipeline] += item.pipeline_amount.to_f
-
-        @forecasts_data[:members][item.user_id][:unweighted_pipeline_by_stage] ||= {}
-        @forecasts_data[:members][item.user_id][:unweighted_pipeline_by_stage][item.stage_id] ||= 0.0
-        @forecasts_data[:members][item.user_id][:unweighted_pipeline_by_stage][item.stage_id] += item.pipeline_amount
-
-
-        @forecasts_data[:members][item.user_id][:weighted_pipeline] ||= 0.0
-        @forecasts_data[:members][item.user_id][:weighted_pipeline] += weighted_amount
-
-        @forecasts_data[:members][item.user_id][:weighted_pipeline_by_stage] ||= {}
-        @forecasts_data[:members][item.user_id][:weighted_pipeline_by_stage][item.stage_id] ||= 0.0
-        @forecasts_data[:members][item.user_id][:weighted_pipeline_by_stage][item.stage_id] += weighted_amount
+        data[:members][item.user_id] ||= build_member_data(user)
+        add_pipeline_item(data[:members][item.user_id], item, weighted_amount)
       end
 
-      @forecasts_data[:unweighted_pipeline] ||= 0.0
-      @forecasts_data[:unweighted_pipeline] += item.pipeline_amount.to_f
-
-      @forecasts_data[:unweighted_pipeline_by_stage] ||= {}
-      @forecasts_data[:unweighted_pipeline_by_stage][item.stage_id] ||= 0.0
-      @forecasts_data[:unweighted_pipeline_by_stage][item.stage_id] += item.pipeline_amount
-
-
-      @forecasts_data[:weighted_pipeline] ||= 0.0
-      @forecasts_data[:weighted_pipeline] += weighted_amount
-
-      @forecasts_data[:weighted_pipeline_by_stage] ||= {}
-      @forecasts_data[:weighted_pipeline_by_stage][item.stage_id] ||= 0.0
-      @forecasts_data[:weighted_pipeline_by_stage][item.stage_id] += weighted_amount
+      add_pipeline_item(data, item, weighted_amount)
     end
+  end
 
+  def add_pipeline_item(data, item, weighted_amount)
+    data[:unweighted_pipeline] ||= 0.0
+    data[:unweighted_pipeline] += item.pipeline_amount.to_f
+
+    data[:unweighted_pipeline_by_stage] ||= {}
+    data[:unweighted_pipeline_by_stage][item.stage_id] ||= 0.0
+    data[:unweighted_pipeline_by_stage][item.stage_id] += item.pipeline_amount
+
+    data[:weighted_pipeline] ||= 0.0
+    data[:weighted_pipeline] += weighted_amount
+
+    data[:weighted_pipeline_by_stage] ||= {}
+    data[:weighted_pipeline_by_stage][item.stage_id] ||= 0.0
+    data[:weighted_pipeline_by_stage][item.stage_id] += weighted_amount
+  end
+
+  def add_user_data(data)
     users.each do |user|
       snapshots = user.snapshots.two_recent_for_time_period(start_date, end_date)
       wow_weighted_pipeline = (snapshots.first.weighted_pipeline - snapshots.last.weighted_pipeline rescue 0)
@@ -277,155 +295,114 @@ class NewForecastTeam
       
       if team_members[user.id] && team_members[user.id].count > 0
         team_members[user.id].each do |team|
-          @forecasts_data[:teams][team.id] ||= {
-            id: team.id,
-            name: team.name,
-            type: 'team',
-            quarter: quarter,
-            year: year,
-            unweighted_pipeline: 0,
-            weighted_pipeline: 0,
-            unweighted_pipeline_by_stage: {},
-            weighted_pipeline_by_stage: {},
-            wow_weighted_pipeline: 0,
-            revenue: 0,
-            wow_revenue: 0,
-            quota: 0
-          }
-          @forecasts_data[:teams][team.id][:wow_weighted_pipeline] ||= 0.0
-          @forecasts_data[:teams][team.id][:wow_weighted_pipeline] += wow_weighted_pipeline
-
-          @forecasts_data[:teams][team.id][:wow_revenue] ||= 0.0
-          @forecasts_data[:teams][team.id][:wow_revenue] += wow_revenue
-
+          data[:teams][team.id] ||= build_team_data(team)
+          add_wow_data(data[:teams][team.id], wow_weighted_pipeline, wow_revenue)
         end
       else
-        @forecasts_data[:members][user.id] ||= {
-          id: user.id,
-          name: user.name,
-          is_leader: user.leader?,
-          type: 'member',
-          quarter: quarter,
-          year: year,
-          unweighted_pipeline: 0,
-          weighted_pipeline: 0,
-          unweighted_pipeline_by_stage: {},
-          weighted_pipeline_by_stage: {},
-          wow_weighted_pipeline: 0,
-          revenue: 0,
-          wow_revenue: 0,
-          quota: 0
-        }
-        @forecasts_data[:members][user.id][:wow_weighted_pipeline] ||= 0.0
-        @forecasts_data[:members][user.id][:wow_weighted_pipeline] += wow_weighted_pipeline
-
-        @forecasts_data[:members][user.id][:wow_revenue] ||= 0.0
-        @forecasts_data[:members][user.id][:wow_revenue] += wow_revenue
-
-        quota = user.quotas.for_time_period(start_date, end_date).sum(:value)
-
-        if user.leader?
-          @forecasts_data[:members][user.id][:quota] = 0
-        else
-          @forecasts_data[:members][user.id][:quota] = quota
-        end
-        @forecasts_data[:members][user.id][:amount] = (@forecasts_data[:members][user.id][:weighted_pipeline] || 0) + (@forecasts_data[:members][user.id][:revenue] || 0)
-
-        gap_to_quota = (quota - @forecasts_data[:members][user.id][:amount]).to_f
-        gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
-
-        @forecasts_data[:members][user.id][:percent_to_quota] = (quota > 0 ? @forecasts_data[:members][user.id][:amount] / quota * 100 : 100)
-        @forecasts_data[:members][user.id][:percent_booked] = (quota > 0 ? @forecasts_data[:members][user.id][:revenue] / quota * 100 : 100)
-        @forecasts_data[:members][user.id][:gap_to_quota] = gap_to_quota
-
-        incomplete_deals = user.deals.active.closed.at_percent(0).closed_in(user.company.deals_needed_calculation_duration)
-        complete_deals = user.deals.active.at_percent(100).closed_in(user.company.deals_needed_calculation_duration)
-        if (incomplete_deals.count + complete_deals.count) > 0
-          win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f))
-        else
-          win_rate = 0.0
-        end
-        if complete_deals.count > 0
-          average_deal_size = complete_deals.average(:budget).round(0)
-        else
-          average_deal_size = 0
-        end
-
-        if gap_to_quota <= 0 && forecast_gap_to_quota_positive
-          new_deals_needed = 0
-        elsif gap_to_quota > 0 && !forecast_gap_to_quota_positive
-          new_deals_needed = 0
-        elsif average_deal_size <= 0 or win_rate <= 0
-          new_deals_needed = 'N/A'
-        else
-          new_deals_needed = (gap_to_quota.abs / (win_rate * average_deal_size)).ceil
-        end
-
-        @forecasts_data[:members][user.id][:new_deals_needed] = new_deals_needed
+        data[:members][user.id] ||= build_member_data(user)
+        add_wow_data(data[:members][user.id], wow_weighted_pipeline, wow_revenue)
+        add_user_other_data(data[:members][user.id], user)
       end
 
-      @forecasts_data[:wow_weighted_pipeline] ||= 0.0
-      @forecasts_data[:wow_weighted_pipeline] += wow_weighted_pipeline
-
-      @forecasts_data[:wow_revenue] ||= 0.0
-      @forecasts_data[:wow_revenue] += wow_revenue
+      add_wow_data(data, wow_weighted_pipeline, wow_revenue)
     end
+  end
 
+  def add_team_data(data)
     team.children.each do |team|
-      @forecasts_data[:teams][team.id] ||= {
-        id: team.id,
-        name: team.name,
-        type: 'team',
-        quarter: quarter,
-        year: year,
-        unweighted_pipeline: 0,
-        weighted_pipeline: 0,
-        unweighted_pipeline_by_stage: {},
-        weighted_pipeline_by_stage: {},
-        wow_weighted_pipeline: 0,
-        revenue: 0,
-        wow_revenue: 0,
-        quota: 0
-      }
-      quota = (team.leader ? team.leader.quotas.for_time_period(start_date, end_date).sum(:value) : 0)
+      data[:teams][team.id] ||= build_team_data(team)
+      add_team_other_data(data[:teams][team.id], team)
+    end
+  end
 
-      @forecasts_data[:teams][team.id][:quota] = quota
-      @forecasts_data[:teams][team.id][:amount] = (@forecasts_data[:teams][team.id][:weighted_pipeline] || 0) + (@forecasts_data[:teams][team.id][:revenue] || 0)
+  def add_user_other_data(data, user)
+    quota = user.quotas.for_time_period(start_date, end_date).sum(:value)
 
-      gap_to_quota = (quota - @forecasts_data[:teams][team.id][:amount]).to_f
-      gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
+    if user.leader?
+      data[:quota] = 0
+    else
+      data[:quota] = quota
+    end
+    data[:amount] = (data[:weighted_pipeline] || 0) + (data[:revenue] || 0)
 
-      @forecasts_data[:teams][team.id][:percent_to_quota] = (quota > 0 ? @forecasts_data[:teams][team.id][:amount] / quota * 100 : 100)
-      @forecasts_data[:teams][team.id][:percent_booked] = (quota > 0 ? @forecasts_data[:teams][team.id][:revenue] / quota * 100 : 100)
-      @forecasts_data[:teams][team.id][:gap_to_quota] = gap_to_quota
+    gap_to_quota = (quota - data[:amount]).to_f
+    gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
 
-      all_team_members = (team.all_members.nil? ? []:team.all_members)
-      complete_dealsincomplete_deals = Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_team_members.map{|member| member.id}).active.at_percent(100).closed_in(team.company.deals_needed_calculation_duration)
-      incomplete_deals = Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_team_members.map{|member| member.id}).active.closed.at_percent(0).closed_in(team.company.deals_needed_calculation_duration)
-      if (incomplete_deals.count + complete_deals.count) > 0
-        win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f))
-      else
-        win_rate = 0.0
-      end
-      if complete_deals.count > 0
-        average_deal_size = complete_deals.average(:budget).round(0)
-      else
-        average_deal_size = 0
-      end
-      
-      if gap_to_quota <= 0 && forecast_gap_to_quota_positive
-        new_deals_needed = 0
-      elsif gap_to_quota > 0 && !forecast_gap_to_quota_positive
-        new_deals_needed = 0
-      elsif average_deal_size <= 0 or win_rate <= 0
-        new_deals_needed = 'N/A'
-      else
-        new_deals_needed = (gap_to_quota.abs / (win_rate * average_deal_size)).ceil
-      end
-      @forecasts_data[:teams][team.id][:new_deals_needed] = new_deals_needed
+    data[:percent_to_quota] = (quota > 0 ? data[:amount] / quota * 100 : 100)
+    data[:percent_booked] = (quota > 0 ? data[:revenue] / quota * 100 : 100)
+    data[:gap_to_quota] = gap_to_quota
+
+    incomplete_deals = user.deals.active.closed.at_percent(0).closed_in(user.company.deals_needed_calculation_duration)
+    complete_deals = user.deals.active.at_percent(100).closed_in(user.company.deals_needed_calculation_duration)
+    if (incomplete_deals.count + complete_deals.count) > 0
+      win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f))
+    else
+      win_rate = 0.0
+    end
+    if complete_deals.count > 0
+      average_deal_size = complete_deals.average(:budget).round(0)
+    else
+      average_deal_size = 0
     end
 
-    @forecasts_data
+    if gap_to_quota <= 0 && forecast_gap_to_quota_positive
+      new_deals_needed = 0
+    elsif gap_to_quota > 0 && !forecast_gap_to_quota_positive
+      new_deals_needed = 0
+    elsif average_deal_size <= 0 or win_rate <= 0
+      new_deals_needed = 'N/A'
+    else
+      new_deals_needed = (gap_to_quota.abs / (win_rate * average_deal_size)).ceil
+    end
+
+    data[:new_deals_needed] = new_deals_needed
+  end
+
+  def add_team_other_data(data, team)
+    quota = (team.leader ? team.leader.quotas.for_time_period(start_date, end_date).sum(:value) : 0)
+
+    data[:quota] = quota
+    data[:amount] = (data[:weighted_pipeline] || 0) + (data[:revenue] || 0)
+
+    gap_to_quota = (quota - data[:amount]).to_f
+    gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
+
+    data[:percent_to_quota] = (quota > 0 ? data[:amount] / quota * 100 : 100)
+    data[:percent_booked] = (quota > 0 ? data[:revenue] / quota * 100 : 100)
+    data[:gap_to_quota] = gap_to_quota
+
+    all_team_members = (team.all_members.nil? ? []:team.all_members)
+    complete_deals = Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_team_members.map{|member| member.id}).active.at_percent(100).closed_in(team.company.deals_needed_calculation_duration)
+    incomplete_deals = Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_team_members.map{|member| member.id}).active.closed.at_percent(0).closed_in(team.company.deals_needed_calculation_duration)
+    if (incomplete_deals.count + complete_deals.count) > 0
+      win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f))
+    else
+      win_rate = 0.0
+    end
+    if complete_deals.count > 0
+      average_deal_size = complete_deals.average(:budget).round(0)
+    else
+      average_deal_size = 0
+    end
+    
+    if gap_to_quota <= 0 && forecast_gap_to_quota_positive
+      new_deals_needed = 0
+    elsif gap_to_quota > 0 && !forecast_gap_to_quota_positive
+      new_deals_needed = 0
+    elsif average_deal_size <= 0 or win_rate <= 0
+      new_deals_needed = 'N/A'
+    else
+      new_deals_needed = (gap_to_quota.abs / (win_rate * average_deal_size)).ceil
+    end
+    data[:new_deals_needed] = new_deals_needed
+  end
+
+  def add_wow_data(data, wow_weighted_pipeline, wow_revenue)
+    data[:wow_weighted_pipeline] ||= 0.0
+    data[:wow_weighted_pipeline] += wow_weighted_pipeline
+
+    data[:wow_revenue] ||= 0.0
+    data[:wow_revenue] += wow_revenue
   end
 
   def weighted_pipeline_by_stage
@@ -468,13 +445,10 @@ class NewForecastTeam
 
     @wow_revenue = forecasts_data[:wow_revenue]
     @wow_revenue
-    # (users.sum{|user_item| (user_item.try(:wow_revenue) || 0)}).to_f
-    # (teams.sum(&:wow_revenue) + members.sum(&:wow_revenue) + (leader.try(:wow_revenue) || 0)).to_f
   end
 
   def amount
-    @amount ||= weighted_pipeline + revenue
-    # (teams.sum(&:amount) + non_leader_members.sum(&:amount) + (leader.try(:amount) || 0)).to_f
+    @_amount ||= weighted_pipeline + revenue
   end
 
   def percent_to_quota
