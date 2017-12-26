@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   get 'switch_user', to: 'switch_user#set_current_user'
   get 'switch_user/remember_user', to: 'switch_user#remember_user'
 
+  get 'extension_localstorage', to: 'extension_localstorage#index'
+
   namespace :api do
     scope module: :v1, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 1) do
       post 'forgot_password' => 'forgot_password#create'
