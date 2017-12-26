@@ -24,7 +24,7 @@
       %td
         Comment:
       %td
-        {{activity.comment}}
+        %div{ng: {'text-truncate': 'activity.comment', 'tt-chars-threshold': '500', 'tt-no-toggling': 'tt-no-toggling'}}
     %tr
       %td
         Attendees:

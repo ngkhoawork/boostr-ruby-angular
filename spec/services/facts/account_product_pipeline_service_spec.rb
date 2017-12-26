@@ -9,6 +9,12 @@ describe Facts::AccountProductPipelineFactService do
       DisplayLineItem.skip_callback(:save, :after, :update_revenue_fact_callback)
     end
 
+    after do
+      Io.set_callback(:save, :after, :update_revenue_fact_callback)
+      ContentFee.set_callback(:save, :after, :update_revenue_fact_callback)
+      DisplayLineItem.set_callback(:save, :after, :update_revenue_fact_callback)
+    end
+
     context 'when there are existing records in account pipeline table' do
       let!(:account_product_pipeline_fact) do
         create(:account_product_pipeline_fact,
@@ -31,7 +37,7 @@ describe Facts::AccountProductPipelineFactService do
       let!(:time_dimension) do
         create(:time_dimension, start_date: deal_product_budget.start_date - 1, end_date: deal_product_budget.start_date + 1)
       end
-      let!(:account_dimension) { create(:account_dimension, id: advertiser.id, company_id: company.id) }
+      let(:account_dimension) { advertiser.account_dimensions[0] }
 
       subject(:perform_service) { described_class.perform(company_id: company.id, time_dimension: time_dimension) }
 
@@ -74,7 +80,7 @@ describe Facts::AccountProductPipelineFactService do
   end
 
   def account_dimension
-    create(:account_dimension, id: advertiser.id, company_id: company.id)
+    advertiser.account_dimensions[0]
   end
 
   def time_dimension_in_bounds

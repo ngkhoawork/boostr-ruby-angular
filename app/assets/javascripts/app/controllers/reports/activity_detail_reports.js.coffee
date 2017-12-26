@@ -49,7 +49,7 @@
 			e.stopPropagation()
 			$scope.modalInstance = $modal.open
 				templateUrl: 'modals/activity_emails.html'
-				size: 'lg'
+				size: 'email'
 				controller: 'ActivityEmailsController'
 				backdrop: 'static'
 				keyboard: false

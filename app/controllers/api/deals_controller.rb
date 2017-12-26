@@ -906,6 +906,7 @@ class Api::DealsController < ApplicationController
   def all_ordered_deals_by_stage(stage)
     deals_with_stage = deals.where(stage: stage)
       .by_seller_id(params[:member_id])
+      .by_team_id(params[:team_id])
       .for_client(params[:advertiser_id])
       .for_client(params[:agency_id])
       .by_budget_range(params[:budget_from], params[:budget_to])

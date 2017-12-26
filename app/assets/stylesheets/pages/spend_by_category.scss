@@ -1,0 +1,30 @@
+#spend-by-category {
+  padding-left: 25px;
+  padding-right: 25px;
+  .reports-header {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  .filters-block {
+    padding-left: 60px;
+    a {
+      font-weight: normal;
+      color: $main-color;
+      &.empty {
+        color: #B5BDC4;
+        //color: $secondary-font-color;
+      }
+    }
+    .dropdown-menu {
+      li {
+        &.active {
+          color: white;
+        }
+        a {
+          color: inherit;
+        }
+      }
+    }
+    vertical-align: middle;
+  }
+}

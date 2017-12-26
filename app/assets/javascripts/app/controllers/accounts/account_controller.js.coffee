@@ -13,6 +13,7 @@
   $scope.errors = {}
   $scope.contactSearchText = ""
   $scope.clientContactUrl = 'api/clients/' + $routeParams.id + '/client_contacts?primary=true'
+  $scope.connectedClientContactUrl = 'api/clients/' + $routeParams.id + '/connected_client_contacts'
   $scope.url = 'api/resources'
   $scope.object = { userToLink: null }
 
@@ -54,19 +55,6 @@
     ClientConnection.all({client_id: $scope.currentClient.id}).then (client_connections) ->
       $scope.client_connections = client_connections
 
-  $scope.getClientConnectedContacts = ->
-    Client.connected_contacts({id: $scope.currentClient.id}).$promise.then (connected_contacts) ->
-      $scope.connected_contacts = connected_contacts
-
-  $scope.getClientConnectedClientContacts = ->
-    Client.connected_client_contacts({id: $scope.currentClient.id}).$promise.then (connected_client_contacts) ->
-      $scope.connected_client_contacts = _.map connected_client_contacts, (clientContact) ->
-        if ($scope.currentClient.client_type.option.name == 'Advertiser')
-          clientContact._clientContacts = [_.extend clientContact.contact.primary_client_contact, clientContact]
-        else
-          clientContact._clientContacts = clientContact.contact.non_primary_client_contacts
-        clientContact
-
   $scope.getChildClients = ->
     Client.child_clients({id: $scope.currentClient.id}).$promise.then (child_clients) ->
       $scope.child_clients = child_clients
@@ -82,8 +70,6 @@
   $scope.setClient = (client) ->
     $scope.currentClient = client
     $scope.activities = client.activities.concat(client.agency_activities)
-#    $scope.initActivity()
-#    $scope.getContacts()
     $scope.getDeals($scope.currentClient)
     $scope.getClientConnections()
     $scope.initReminder()
@@ -94,10 +80,11 @@
     $scope.getClientMembers()
 
     account_type = Field.field($scope.currentClient, 'Client Type')
+    $scope.isAdvertiser = account_type.option.name == "Advertiser"
+    $scope.isAgency = account_type.option.name == "Agency"
     $scope.getIOs(account_type.option.name)
-    if account_type.option && account_type.option.name == "Advertiser"
+    if account_type.option && $scope.isAdvertiser
       $scope.getChildClients()
-    $scope.getClientConnectedClientContacts()
     $scope.categoryOptions = Field.findFieldOptions($scope.currentClient.fields, 'Category')
     $scope.segmentOptions = Field.findFieldOptions($scope.currentClient.fields, 'Segment')
     $scope.regionOptions = Field.findFieldOptions($scope.currentClient.fields, 'Region')
@@ -266,17 +253,10 @@
           $scope.getChildClients()
       )
 
-  $scope.deleteAccountConnectionContact = (contact) ->
+  $scope.deleteAccountConnectionContact = (client_contact) ->
     if confirm("Click Ok to remove the account or Cancel")
-      if ($scope.currentClient.client_type.option.name == 'Agency')
-        ClientContact.delete(client_id: contact.non_primary_client_contact.client_id, id: contact.non_primary_client_contact.id).$promise.then (client) ->
-          $scope.getClientConnectedClientContacts()
-      else if ($scope.currentClient.client_type.option.name == 'Advertiser')
-        _.each contact.non_primary_client_contacts, (client_contact) ->
-          if client_contact.contact_id == contact.id
-            ClientContact.delete(client_id: $scope.currentClient.id, id: client_contact.id).$promise.then (client) ->
-              $scope.getClientConnectedClientContacts()
-
+      ClientContact.delete(client_contact).$promise.then (result) ->
+        $scope.$broadcast('pagination:reload')
 
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open
@@ -333,7 +313,7 @@
   $scope.showEmailsModal = (activity) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/activity_emails.html'
-      size: 'lg'
+      size: 'email'
       controller: 'ActivityEmailsController'
       backdrop: 'static'
       keyboard: false
@@ -371,6 +351,7 @@
       keyboard: false
       resolve:
         deal: $scope.setupNewDeal
+		options: -> {}
 
   $scope.showNewAccountConnectionContactModal = ->
     $scope.modalInstance = $modal.open
@@ -384,7 +365,7 @@
           $scope.currentClient
     .result.then (updated_contact) ->
       if updated_contact
-        $scope.getClientConnectedClientContacts()
+        $scope.$broadcast('pagination:reload')
 
   $scope.showNewAccountConnectionModal = ->
     $scope.modalInstance = $modal.open
@@ -562,14 +543,13 @@
   $scope.$on 'updated_contacts', ->
 #    $scope.getContacts()
     $scope.$broadcast('pagination:reload');
-    $scope.getClientConnectedClientContacts()
 
   $scope.$on 'updated_activities', ->
     $scope.init()
 
   $scope.$on 'updated_client_connections', ->
     $scope.getClientConnections()
-    $scope.getClientConnectedClientContacts()
+    $scope.$broadcast('pagination:reload')
 
   $scope.$on 'updated_current_contact', ->
     $scope.client_contacts.push(Contact.get())
@@ -583,7 +563,7 @@
 #      $scope.client_members.push(args.clientMember)
 
   $scope.$on 'new_client_connection', ->
-    $scope.getClientConnectedClientContacts()
+    $scope.$broadcast('pagination:reload')
 
   $scope.$on 'updated_reminders', ->
     $scope.initReminder()
@@ -887,5 +867,5 @@
           $scope.Advertiser
     .result.then (updated_contact) ->
       if (updated_contact)
-        $scope.getClientConnectedClientContacts()
+        $scope.$broadcast('pagination:reload')
 ]

@@ -10,6 +10,8 @@ class Field < ActiveRecord::Base
 
   scope :client_category_fields, -> { where(subject_type: 'Client', name: 'Category') }
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
+  scope :client_region_fields, -> { where(subject_type: 'Client', name: 'Region') }
+  scope :client_segment_fields, -> { where(subject_type: 'Client', name: 'Segment') }
 
 
   VALUE_TYPES = ['Text', 'Number', 'Decimal', 'Percent', 'Money', 'Datetime', 'Option', 'Object']

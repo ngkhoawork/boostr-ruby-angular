@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$scope', '$window', '$timeout', '$document', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate', 'DealsFilter', 'TimePeriod', 'shadeColor',
-    ( $rootScope,   $scope,   $window,   $timeout,   $document,   $filter,   $modal,   $q,   $location,   Deal,   Stage,   ExchangeRate,   DealsFilter,   TimePeriod,   shadeColor ) ->
+    ['$rootScope', '$scope', '$window', '$timeout', '$document', '$filter', '$modal', '$q', '$location', 'Deal', 'Team', 'Stage', 'ExchangeRate', 'DealsFilter', 'TimePeriod', 'shadeColor',
+    ( $rootScope,   $scope,   $window,   $timeout,   $document,   $filter,   $modal,   $q,   $location,   Deal, Team,   Stage,   ExchangeRate,   DealsFilter,   TimePeriod,   shadeColor ) ->
             formatMoney = $filter('formatMoney')
 
             $scope.isLoading = false
@@ -34,6 +34,7 @@
             $scope.filter =
                 currencies: []
                 members: []
+                teams: []
                 advertisers: []
                 agencies: []
                 timePeriods: []
@@ -153,6 +154,7 @@
                     f = if previous then this.appliedSelection else this.selected
                     query = {}
                     query.member_id = f.member.id if f.member
+                    query.team_id = f.team.id if f.team
                     query.advertiser_id = f.advertiser.id if f.advertiser
                     query.agency_id = f.agency.id if f.agency
                     query.budget_from = f.budget.min if f.budget
@@ -194,9 +196,11 @@
                     deals_info: Deal.deals_info_by_stage(params)
                     filter: Deal.filter_data()
                     stages: Stage.query().$promise
-                    timePeriods: TimePeriod.all()
+                    timePeriods: TimePeriod.all(),
+                    teams: Team.all(all_teams: true)
                 }).then (data) ->
                     $scope.filter.members = data.filter.members
+                    $scope.filter.teams = data.filter.teams
                     $scope.filter.advertisers = data.filter.advertisers
                     $scope.filter.agencies = data.filter.agencies
                     $scope.filter.currencies = data.filter.currencies
@@ -342,8 +346,8 @@
                     backdrop: 'static'
                     keyboard: false
                     resolve:
-                        deal: ->
-                            {}
+                        deal: -> {}
+                        options: -> {}
 
             $scope.showCloseDealModal = (currentDeal) ->
                 $scope.modalInstance = $modal.open

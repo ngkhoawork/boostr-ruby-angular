@@ -1,4 +1,5 @@
 class Api::ClientsController < ApplicationController
+  include CleanPagination
   respond_to :json, :csv
 
   def index
@@ -171,9 +172,9 @@ class Api::ClientsController < ApplicationController
     client = company.clients.find(params[:client_id])
     if client && client.client_type
       if client.client_type.name == "Agency"
-        contacts = client.agency_contacts
-      elsif client.client_type.name == "Advertiser"
         contacts = client.advertiser_contacts
+      elsif client.client_type.name == "Advertiser"
+        contacts = client.agency_contacts
       end
       if params[:name]
         contacts = contacts.where('contacts.name ilike ?', "%#{params[:name]}%")
@@ -188,25 +189,11 @@ class Api::ClientsController < ApplicationController
   end
 
   def connected_client_contacts
-    client = company.clients.find(params[:client_id])
-    if client && client.client_type
-      if client.client_type.name == "Agency"
-        render json: client.client_contacts.where(contact_id: client.agency_contacts.ids)
-          .preload(contact: [:non_primary_client_contacts, :address, :values, :primary_client_contact])
-          .limit(limit)
-          .offset(offset),
-            each_serializer: ClientContacts::ClientContactsForClientSerializer,
-                             contact_options: company_job_level_options
-      elsif client.client_type.name == "Advertiser"
-        render json: client.client_contacts.where(contact_id: client.advertiser_contacts.ids)
-          .preload(contact: [:non_primary_client_contacts, :address, :values, :primary_client_contact])
-          .limit(limit)
-          .offset(offset),
-            each_serializer: ClientContacts::ClientContactsForClientSerializer,
-                             contact_options: company_job_level_options
-      end
-    else
-      render json: []
+    max_per_page = 10
+
+    paginate connected_client_contacts_relation.count, max_per_page do |limit, offset|
+      render json: connected_client_contacts_relation.limit(limit).offset(offset),
+             each_serializer: ClientContacts::ConnectedClientContactsSerializer
     end
   end
 
@@ -374,6 +361,10 @@ class Api::ClientsController < ApplicationController
     end
   end
 
+  def client_record
+    @_client_record ||= company.clients.find(params[:client_id])
+  end
+
   def company
     @company ||= current_user.company
   end
@@ -396,6 +387,32 @@ class Api::ClientsController < ApplicationController
     end
 
     @suggest_clients
+  end
+
+  def connected_client_contacts_relation
+    clcons ||= related_client_contact_relation
+      .where(primary: false)
+      .joins(:client, :contact)
+      .preload(:client, contact: [:address, :primary_client])
+      .order('clients.name')
+  end
+
+  def related_client_contact_relation
+    if client_record.client_type.present? && client_record.client_type.name == 'Advertiser'
+      related_agency_client_contacts
+    else
+      related_advertiser_client_contacts
+    end
+  end
+
+  def related_agency_client_contacts
+    ClientContact.where(client_id: client_record.id)
+  end
+
+  def related_advertiser_client_contacts
+    ClientContact
+      .where('contact_id in (?)', client_record.primary_contacts.ids)
+      .where('client_contacts.client_id in (?)', client_record.advertisers.ids)
   end
 
   def company_job_level_options

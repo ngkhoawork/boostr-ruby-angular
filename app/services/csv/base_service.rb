@@ -16,7 +16,7 @@ class Csv::BaseService
       csv << headers
 
       decorated_records.each do |record|
-        csv << headers.map { |attr| record.send(attr.downcase.gsub(' ', '_')) }
+        csv << headers.map { |attr| record.public_send(attr.parameterize('_')) }
       end
     end
   end

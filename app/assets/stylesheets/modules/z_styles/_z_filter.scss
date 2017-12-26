@@ -44,6 +44,8 @@
                 }
             }
             .dropdown-menu {
+                overflow-y: auto;
+                max-height: 50vh;
                 padding: 10px 0;
                 .active {
                     background-color: #dfe1e3;

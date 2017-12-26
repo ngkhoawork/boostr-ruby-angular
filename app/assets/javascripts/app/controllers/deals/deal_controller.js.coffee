@@ -16,6 +16,7 @@
   $scope.currency_symbol = '$'
   $scope.ealertReminder = false
   $scope.activitiesOrder = '-happened_at'
+  $scope.activities = []
   $anchorScroll()
   $scope.operativeIntegration =
     isEnabled: false
@@ -154,6 +155,10 @@
    * END FileUpload
   ###
 
+  loadActivities = ->
+    Activity.all(deal_id: $routeParams.id).then (activities) ->
+      $scope.activities = activities
+
   $scope.init = (initialLoad) ->
     $scope.actRemColl = false
     $scope.currentDeal = {}
@@ -163,9 +168,6 @@
       if initialLoad
         checkCurrentUserDealShare(deal.members)
         getOperativeIntegration(deal.id)
-      $scope.activities = deal.activities.map (activity) ->
-        activity.activity_type_name = activity.activity_type && activity.activity_type.name
-        activity
     , (err) ->
       if(err && err.status == 404)
         $location.url('/deals')
@@ -317,6 +319,7 @@
         Field.defaults(member, 'Client').then (fields) ->
           member.role = Field.field(member, 'Member Role')
 
+    loadActivities()
     Field.defaults(deal, 'Deal').then (fields) ->
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
@@ -839,7 +842,7 @@
       $scope.errors[key] = error && error[0]
 
   $scope.$on 'updated_activities', ->
-    $scope.init()
+    loadActivities()
 
   $scope.init(true)
 
@@ -893,7 +896,7 @@
   $scope.showEmailsModal = (activity) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/activity_emails.html'
-      size: 'lg'
+      size: 'email'
       controller: 'ActivityEmailsController'
       backdrop: 'static'
       keyboard: false
@@ -1072,4 +1075,5 @@
 
   $scope.$watch 'currentUser', (currentUser) ->
     $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser
+
 ]

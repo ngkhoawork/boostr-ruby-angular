@@ -1,7 +1,7 @@
 class AccountDimension < ActiveRecord::Base
   enum account_type: { advertiser: 10, agency: 11 }
 
-  belongs_to :client
+  belongs_to :client, foreign_key: :id
   belongs_to :holding_company
   belongs_to :company
 

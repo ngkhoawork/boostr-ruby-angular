@@ -29,6 +29,7 @@
   'bgf.paginateAnything'
   'LocalStorageModule'
   'zFilterModule'
+  'ngTextTruncate'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -124,6 +125,10 @@
       templateUrl: 'product_monthly_summary.html'
       controller: 'ProductMonthlySummaryController'
 
+    .when '/reports/spend_by_category',
+      templateUrl: 'spend_by_category.html'
+      controller: 'SpendByCategoryController'
+
     .when '/smart_reports/sales_execution_dashboard',
       templateUrl: 'sales_execution_dashboard.html'
       controller: 'SalesExecutionDashboardController'
@@ -175,6 +180,10 @@
     .when '/reports/pipeline_summary_reports',
       templateUrl: 'pipeline_summary_reports.html'
       controller: 'PipelineSummaryReportsController'
+      
+    .when '/reports/spend_by_account',
+      templateUrl: 'spend_by_account.html'
+      controller: 'SpendByAccountController'
 
     .when '/reports/activity_detail_reports',
       templateUrl: 'activity_detail_reports.html'
@@ -187,6 +196,10 @@
     .when '/reports/influencer_budget_detail',
       templateUrl: 'influencer_budget_detail.html'
       controller: 'InfluencerBudgetDetailController'
+
+    .when '/reports/quota_attainment',
+      templateUrl: 'quota_attainment_report.html'
+      controller: 'QuotaAttainmentReportController'
 
     .when '/requests',
       templateUrl: 'requests.html'
@@ -320,6 +333,10 @@
       templateUrl: 'sign_out.html'
       controller: 'signOutController'
 
+    .when '/api/gmail_extension/',
+      templateUrl: 'gmail_extension.html'
+      controller: 'GmailExtensionController'
+
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
@@ -372,7 +389,10 @@
     if $rootScope.currentUser then updateTalkus($rootScope.currentUser)
 
   updateTalkus = (user) ->
-    if location.hostname is 'localhost' or location.hostname is '127.0.0.1' then return
+    if location.hostname is 'localhost' or
+        location.hostname is '127.0.0.1' or
+        location.pathname.indexOf('/api/gmail_extension/') is 0
+      return
     talkus('init', 'qu346HQax2ut3MQr4',
       id: user.id
       name: user.name

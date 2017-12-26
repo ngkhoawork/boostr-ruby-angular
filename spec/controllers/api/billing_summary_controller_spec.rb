@@ -178,7 +178,12 @@ describe Api::BillingSummaryController do
   end
 
   def create_gbp_currency
-    create(:currency, curr_cd: 'GBP', curr_symbol: '£', name: 'Great Britain Pound', exchange_rates: [exchange_rate])
+    @_gbp_currency ||=
+      (
+        Currency.find_by(curr_cd: 'GBP', curr_symbol: '£', name: 'Great Britain Pound') || create(:currency, curr_cd: 'GBP', curr_symbol: '£', name: 'Great Britain Pound')
+      ).tap do |c|
+        c.exchange_rates << exchange_rate
+    end
   end
 
   def exchange_rate

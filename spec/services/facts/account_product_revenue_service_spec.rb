@@ -10,6 +10,12 @@ describe Facts::AccountProductRevenueFactService do
       DisplayLineItem.skip_callback(:save, :after, :update_revenue_fact_callback)
     end
 
+    after do
+      Io.set_callback(:save, :after, :update_revenue_fact_callback)
+      ContentFee.set_callback(:save, :after, :update_revenue_fact_callback)
+      DisplayLineItem.set_callback(:save, :after, :update_revenue_fact_callback)
+    end
+
     subject(:service_perform) { described_class.perform(time_dimension: time_dimension, company_id: company.id) }
 
     context 'calculation for content fee products' do
@@ -136,11 +142,7 @@ describe Facts::AccountProductRevenueFactService do
   end
 
   def account_dimension
-    @account_dimension ||= create(:account_dimension,
-                                  id: client.id,
-                                  name: client.name,
-                                  company_id: client.company_id,
-                                  account_type: 10)
+    @account_dimension ||= client.account_dimensions[0]
   end
 
   def time_dimension

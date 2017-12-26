@@ -1,5 +1,5 @@
 class Api::RevenueController < ApplicationController
-  respond_to :json
+  respond_to :json, :csv
 
   def forecast_detail
     if valid_time_period?
@@ -19,6 +19,32 @@ class Api::RevenueController < ApplicationController
     revenues = Revenue.import(csv_file, current_user.company.id)
 
     render json: revenues
+  end
+
+  def report_by_category
+    respond_to do |format|
+      format.json {
+        render json: revenue_by_category_report,
+               each_serializer: Report::RevenueByCategorySerializer
+      }
+      format.csv {
+        send_data Csv::RevenueByCategoryService.new(revenue_by_category_report).perform,
+                  filename: "reports-revenue_by_category-#{DateTime.current}.csv"
+      }
+    end
+  end
+
+  def report_by_account
+    respond_to do |format|
+      format.json {
+        render json: revenue_by_account_report,
+               each_serializer: Report::RevenueByAccountSerializer
+      }
+      format.csv {
+        send_data Csv::RevenueByAccountService.new(revenue_by_account_report).perform,
+                  filename: "reports-revenue_by_account-#{DateTime.current}.csv"
+      }
+    end
   end
 
   private
@@ -292,5 +318,36 @@ class Api::RevenueController < ApplicationController
 
   def team
     @team ||= current_user.company.teams.find(params[:team_id])
+  end
+
+  def revenue_by_category_report
+    Report::RevenueByCategoryService.new(revenue_by_category_report_params).perform
+  end
+
+  def revenue_by_account_report
+    Report::RevenueByAccountService.new(revenue_by_account_report_params).perform
+  end
+
+  def revenue_by_category_report_params
+    %i(start_date end_date category_ids).each { |param_name| params.require(param_name) }
+
+    params.permit(:start_date, :end_date, client_region_ids: [], client_segment_ids: [], category_ids: [])
+          .merge!(company_id: current_user.company_id)
+  end
+
+  def revenue_by_account_report_params
+    %i(start_date end_date).each { |param_name| params.require(param_name) }
+
+    params
+      .permit(
+        :client_types,
+        :start_date,
+        :end_date,
+        :page,
+        :per_page,
+        category_ids: [],
+        client_region_ids: [],
+        client_segment_ids: []
+      ).merge!(company_id: current_user.company_id)
   end
 end

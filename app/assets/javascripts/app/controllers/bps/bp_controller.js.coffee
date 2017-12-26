@@ -1,6 +1,6 @@
 @app.controller 'BPController',
-  ['$scope', '$rootScope', '$window', '$document', '$modal', 'BP', 'BpEstimate', 'Team', 'User'
-    ($scope, $rootScope, $window, $document, $modal, BP, BpEstimate, Team, User) ->
+  ['$scope', '$rootScope', '$window', '$document', '$modal', 'BP', 'BpEstimate', 'Team', 'Seller'
+    ($scope, $rootScope, $window, $document, $modal, BP, BpEstimate, Team, Seller) ->
 
       class McSort
         constructor: (opts) ->
@@ -53,12 +53,14 @@
       $scope.selectedTeam = {id: null, name: 'All'}
       $scope.selectedUser = defaultUser
       $scope.bpEstimates = []
-      $scope.totalClients = 0
-      $scope.totalStatus = 0
       $scope.isLoading = false
       $scope.hasMoreBps = true
       $scope.page = 1
       $scope.totalCount = 0
+      $scope.totalClients = 0
+      $scope.totalStatus = 0
+      $scope.totalSellerEstimate = 0
+      $scope.totalMgrEstimate = 0
 
       $scope.dataType = "weighted"
       $scope.notification = null
@@ -112,7 +114,7 @@
       $scope.$watch 'filter.team', (nextTeam, prevTeam) ->
         if nextTeam.id then $scope.filter.user = defaultUser
         $scope.setFilter('team', nextTeam)
-        Team.all_members({team_id: nextTeam.id || 'all'}).then (users) ->
+        Seller.query({id: nextTeam.id || 'all'}).$promise.then (users) ->
           $scope.users = users
           $scope.users.unshift(defaultUser)
 
@@ -196,6 +198,7 @@
           $scope.bpEstimates = []
           $scope.hasMoreBps = true
           $scope.page = 1
+          loadStatus()
           loadBPData()
 
       $scope.loadMoreBps = ->
@@ -267,7 +270,6 @@
           }
           $scope.isLoading = true
           BpEstimate.all(filters).then (data) ->
-            $scope.totalCount = BpEstimate.resource.totalCount
             $scope.revenues = data.current.revenues
             $scope.pipelines = data.current.pipelines
 
@@ -284,28 +286,29 @@
             else
               $scope.bpEstimates = $scope.bpEstimates.concat(_.map data.bp_estimates, buildBPEstimate)
             
-            calculateStatus()
             setMcSort()
             $scope.isLoading = false
             if data.bp_estimates.length == 0
               $scope.hasMoreBps = false
 
+      loadStatus = () ->
+        if $scope.selectedBP.id
+          filters = {
+            bp_id: $scope.selectedBP.id,
+            filter: $scope.selectedFilter.value
+            team_id: $scope.selectedTeam.id
+            user_id: $scope.selectedUser.id
+          }
+          $scope.isLoading = true
+          BpEstimate.get_status(filters).then (data) ->
+            $scope.totalClients = data.total_clients
+            $scope.totalStatus = data.total_status
+            $scope.totalSellerEstimate = data.total_seller_estimate
+            $scope.totalMgrEstimate = data.total_mgr_estimate
+            calculateStatus()
+            $scope.isLoading = false
 
       calculateStatus = () ->
-        $scope.totalClients = (_.uniq (_.map $scope.bpEstimates, 'client_id')).length
-        client_estimates = {}
-        _.each $scope.bpEstimates, (item) ->
-          if (item.user_id)
-            if (item.estimate_seller && item.estimate_seller > 0)
-              if (client_estimates[item.client_id] == undefined)
-                client_estimates[item.client_id] = 1
-            else
-              client_estimates[item.client_id] = 0
-        count = 0
-        for i of client_estimates
-          count += client_estimates[i]
-        $scope.totalStatus = count
-        percentage = 0
         if ($scope.totalClients > 0)
           percentage = $scope.totalStatus * 100 / $scope.totalClients
         drawProgressCircle(percentage)
@@ -317,7 +320,6 @@
       $scope.updateBpEstimateProduct = (bpEstimate) ->
         BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data) ->
           replaceBpEstimate(data)
-          calculateStatus()
           calculateChange(data)
 
       $scope.unassignBpEstimate = (bpEstimate) ->
@@ -329,6 +331,7 @@
 
 
       calculateChange = (bpEstimate) ->
+        loadStatus()
         targetBpEstimate = _.find($scope.bpEstimates, {id: bpEstimate.id})
         if targetBpEstimate.estimate_seller > 0 && targetBpEstimate.year_revenue > 0
           targetBpEstimate.year_change = (parseFloat(targetBpEstimate.estimate_seller) / parseFloat(targetBpEstimate.year_revenue) - 1) * 100

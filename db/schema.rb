@@ -11,11 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171207032805) do
+ActiveRecord::Schema.define(version: 20171213215450) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pg_stat_statements"
+  enable_extension "pg_trgm"
+  enable_extension "fuzzystrmatch"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -168,8 +170,12 @@ ActiveRecord::Schema.define(version: 20171207032805) do
     t.integer "subcategory_id"
     t.integer "holding_company_id"
     t.integer "company_id"
+    t.integer "client_region_id"
+    t.integer "client_segment_id"
   end
 
+  add_index "account_dimensions", ["client_region_id"], name: "index_account_dimensions_on_client_region_id", using: :btree
+  add_index "account_dimensions", ["client_segment_id"], name: "index_account_dimensions_on_client_segment_id", using: :btree
   add_index "account_dimensions", ["company_id"], name: "index_account_dimensions_on_company_id", using: :btree
   add_index "account_dimensions", ["holding_company_id"], name: "index_account_dimensions_on_holding_company_id", using: :btree
 
@@ -264,6 +270,7 @@ ActiveRecord::Schema.define(version: 20171207032805) do
     t.string   "google_event_id"
     t.integer  "agency_id"
     t.string   "uuid"
+    t.integer  "publisher_id"
   end
 
   add_index "activities", ["activity_type_id"], name: "index_activities_on_activity_type_id", using: :btree
@@ -272,6 +279,7 @@ ActiveRecord::Schema.define(version: 20171207032805) do
   add_index "activities", ["company_id"], name: "index_activities_on_company_id", using: :btree
   add_index "activities", ["created_by"], name: "index_activities_on_created_by", using: :btree
   add_index "activities", ["deal_id"], name: "index_activities_on_deal_id", using: :btree
+  add_index "activities", ["publisher_id"], name: "index_activities_on_publisher_id", using: :btree
   add_index "activities", ["updated_by"], name: "index_activities_on_updated_by", using: :btree
   add_index "activities", ["user_id"], name: "index_activities_on_user_id", using: :btree
 
@@ -434,7 +442,7 @@ ActiveRecord::Schema.define(version: 20171207032805) do
     t.integer  "user_id"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
-    t.decimal  "changed_amount", precision: 15, scale: 2
+    t.decimal  "changed_amount", precision: 12, scale: 2
   end
 
   add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree
@@ -576,6 +584,7 @@ ActiveRecord::Schema.define(version: 20171207032805) do
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "influencer_enabled",                default: false
     t.boolean  "forecast_gap_to_quota_positive",    default: true
+    t.boolean  "publishers_enabled",                default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -739,11 +748,13 @@ ActiveRecord::Schema.define(version: 20171207032805) do
     t.datetime "deleted_at"
     t.datetime "activity_updated_at"
     t.text     "note"
+    t.integer  "publisher_id"
   end
 
   add_index "contacts", ["client_id"], name: "index_contacts_on_client_id", using: :btree
   add_index "contacts", ["company_id"], name: "index_contacts_on_company_id", using: :btree
   add_index "contacts", ["deleted_at"], name: "index_contacts_on_deleted_at", using: :btree
+  add_index "contacts", ["publisher_id"], name: "index_contacts_on_publisher_id", using: :btree
 
   create_table "content_fee_product_budgets", force: :cascade do |t|
     t.integer  "content_fee_id"
@@ -1180,14 +1191,14 @@ ActiveRecord::Schema.define(version: 20171207032805) do
   create_table "deal_products", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "product_id"
-    t.decimal  "budget",        precision: 15, scale: 2, default: 0.0
-    t.datetime "created_at",                                            null: false
-    t.datetime "updated_at",                                            null: false
-    t.boolean  "open",                                   default: true
-    t.decimal  "budget_loc",    precision: 15, scale: 2, default: 0.0
+    t.decimal  "budget",      precision: 15, scale: 2, default: 0.0
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+    t.boolean  "open",                                 default: true
+    t.decimal  "budget_loc",  precision: 15, scale: 2, default: 0.0
     t.integer  "ssp_id"
-    t.boolean  "is_guaranteed"
     t.string   "ssp_deal_id"
+    t.integer  "pmp_type"
   end
 
   add_index "deal_products", ["deal_id"], name: "index_deal_products_on_deal_id", using: :btree
@@ -1269,24 +1280,23 @@ ActiveRecord::Schema.define(version: 20171207032805) do
   add_index "dfp_report_queries", ["api_configuration_id"], name: "index_dfp_report_queries_on_api_configuration_id", using: :btree
 
   create_table "display_line_item_budgets", force: :cascade do |t|
-    t.integer  "display_line_item_id"
-    t.integer  "external_io_number"
-    t.float    "budget"
+    t.integer  "display_line_item_id",  limit: 8
+    t.integer  "external_io_number",    limit: 8
+    t.decimal  "budget",                          precision: 15, scale: 2, default: 0.0
     t.date     "start_date"
     t.date     "end_date"
-    t.datetime "created_at",                                                         null: false
-    t.datetime "updated_at",                                                         null: false
-    t.decimal  "budget_loc",            precision: 15, scale: 2, default: 0.0
-    t.string   "billing_status",                                 default: "Pending"
-    t.boolean  "manual_override",                                default: false
-    t.decimal  "ad_server_budget",      precision: 15, scale: 2
-    t.integer  "ad_server_quantity"
-    t.integer  "quantity"
-    t.integer  "clicks"
-    t.decimal  "ctr",                   precision: 5,  scale: 4
-    t.decimal  "video_avg_view_rate",   precision: 5,  scale: 4
-    t.decimal  "video_completion_rate", precision: 5,  scale: 4
-    t.boolean  "is_estimated",                                   default: false
+    t.datetime "created_at",                                                                   null: false
+    t.datetime "updated_at",                                                                   null: false
+    t.decimal  "budget_loc",                      precision: 15, scale: 2, default: 0.0
+    t.string   "billing_status",                                           default: "Pending"
+    t.boolean  "manual_override",                                          default: false
+    t.decimal  "ad_server_budget",                precision: 15, scale: 2
+    t.integer  "ad_server_quantity",    limit: 8
+    t.integer  "quantity",              limit: 8
+    t.integer  "clicks",                limit: 8
+    t.decimal  "ctr",                             precision: 5,  scale: 4
+    t.decimal  "video_avg_view_rate",             precision: 5,  scale: 4
+    t.decimal  "video_completion_rate",           precision: 5,  scale: 4
   end
 
   add_index "display_line_item_budgets", ["display_line_item_id"], name: "index_display_line_item_budgets_on_display_line_item_id", using: :btree
@@ -1380,6 +1390,32 @@ ActiveRecord::Schema.define(version: 20171207032805) do
   end
 
   add_index "ealerts", ["company_id"], name: "index_ealerts_on_company_id", using: :btree
+
+  create_table "email_opens", force: :cascade do |t|
+    t.string   "ip"
+    t.string   "device"
+    t.string   "email"
+    t.string   "guid"
+    t.datetime "opened_at"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.string   "location"
+    t.boolean  "is_gmail",   default: false
+  end
+
+  create_table "email_threads", force: :cascade do |t|
+    t.string   "email_guid"
+    t.integer  "user_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.string   "thread_id"
+    t.string   "body"
+    t.string   "subject"
+    t.string   "recipient_email"
+    t.string   "from"
+    t.string   "sender"
+    t.string   "recipient"
+  end
 
   create_table "exchange_rates", force: :cascade do |t|
     t.integer "company_id"
@@ -1624,22 +1660,25 @@ ActiveRecord::Schema.define(version: 20171207032805) do
     t.integer "pmp_item_id"
     t.date    "date"
     t.string  "ad_unit"
-    t.decimal "price",       precision: 15, scale: 2
-    t.decimal "revenue",     precision: 15, scale: 2
-    t.decimal "revenue_loc", precision: 15, scale: 2
-    t.integer "impressions"
+    t.decimal "price",                 precision: 15, scale: 2
+    t.decimal "revenue",               precision: 15, scale: 2
+    t.decimal "revenue_loc",           precision: 15, scale: 2
+    t.integer "impressions", limit: 8
     t.decimal "win_rate"
-    t.decimal "bids",        precision: 15, scale: 2
+    t.integer "bids",        limit: 8
+    t.decimal "render_rate"
+    t.integer "product_id"
   end
 
   add_index "pmp_item_daily_actuals", ["pmp_item_id"], name: "index_pmp_item_daily_actuals_on_pmp_item_id", using: :btree
+  add_index "pmp_item_daily_actuals", ["product_id"], name: "index_pmp_item_daily_actuals_on_product_id", using: :btree
 
   create_table "pmp_item_monthly_actuals", force: :cascade do |t|
-    t.integer  "pmp_item_id"
-    t.decimal  "amount",      precision: 15, scale: 2
-    t.decimal  "amount_loc",  precision: 15, scale: 2
-    t.datetime "start_date"
-    t.datetime "end_date"
+    t.integer "pmp_item_id"
+    t.decimal "amount",      precision: 15, scale: 2
+    t.decimal "amount_loc",  precision: 15, scale: 2
+    t.date    "start_date"
+    t.date    "end_date"
   end
 
   add_index "pmp_item_monthly_actuals", ["pmp_item_id"], name: "index_pmp_item_monthly_actuals_on_pmp_item_id", using: :btree
@@ -1656,38 +1695,38 @@ ActiveRecord::Schema.define(version: 20171207032805) do
     t.decimal "budget_remaining_loc", precision: 15, scale: 2
     t.decimal "run_rate_7_days"
     t.decimal "run_rate_30_days"
-    t.boolean "is_guaranteed",                                 default: false
+    t.integer "pmp_type"
   end
 
   add_index "pmp_items", ["pmp_id"], name: "index_pmp_items_on_pmp_id", using: :btree
   add_index "pmp_items", ["ssp_id"], name: "index_pmp_items_on_ssp_id", using: :btree
 
   create_table "pmp_members", force: :cascade do |t|
-    t.integer  "user_id"
-    t.integer  "pmp_id"
-    t.integer  "share"
-    t.datetime "from_date"
-    t.datetime "to_date"
+    t.integer "user_id"
+    t.integer "pmp_id"
+    t.integer "share"
+    t.date    "from_date"
+    t.date    "to_date"
   end
 
   add_index "pmp_members", ["pmp_id"], name: "index_pmp_members_on_pmp_id", using: :btree
   add_index "pmp_members", ["user_id"], name: "index_pmp_members_on_user_id", using: :btree
 
   create_table "pmps", force: :cascade do |t|
-    t.integer  "company_id"
-    t.integer  "advertiser_id"
-    t.integer  "agency_id"
-    t.string   "name"
-    t.decimal  "budget",               precision: 15, scale: 2
-    t.decimal  "budget_delivered",     precision: 15, scale: 2
-    t.decimal  "budget_remaining",     precision: 15, scale: 2
-    t.decimal  "budget_loc",           precision: 15, scale: 2
-    t.decimal  "budget_delivered_loc", precision: 15, scale: 2
-    t.decimal  "budget_remaining_loc", precision: 15, scale: 2
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.string   "curr_cd",                                       default: "USD"
-    t.integer  "deal_id"
+    t.integer "company_id"
+    t.integer "advertiser_id"
+    t.integer "agency_id"
+    t.string  "name"
+    t.decimal "budget",               precision: 15, scale: 2
+    t.decimal "budget_delivered",     precision: 15, scale: 2
+    t.decimal "budget_remaining",     precision: 15, scale: 2
+    t.decimal "budget_loc",           precision: 15, scale: 2
+    t.decimal "budget_delivered_loc", precision: 15, scale: 2
+    t.decimal "budget_remaining_loc", precision: 15, scale: 2
+    t.date    "start_date"
+    t.date    "end_date"
+    t.string  "curr_cd",                                       default: "USD"
+    t.integer "deal_id"
   end
 
   add_index "pmps", ["company_id"], name: "index_pmps_on_company_id", using: :btree
@@ -1740,6 +1779,160 @@ ActiveRecord::Schema.define(version: 20171207032805) do
 
   add_index "products", ["company_id"], name: "index_products_on_company_id", using: :btree
   add_index "products", ["product_family_id"], name: "index_products_on_product_family_id", using: :btree
+
+  create_table "publisher_custom_field_names", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "field_index"
+    t.string   "field_type"
+    t.string   "field_label"
+    t.boolean  "is_required",   default: false
+    t.integer  "position"
+    t.boolean  "show_on_modal", default: false
+    t.boolean  "disabled",      default: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
+
+  add_index "publisher_custom_field_names", ["company_id"], name: "index_publisher_custom_field_names_on_company_id", using: :btree
+
+  create_table "publisher_custom_field_options", force: :cascade do |t|
+    t.integer  "publisher_custom_field_name_id"
+    t.string   "value"
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  add_index "publisher_custom_field_options", ["publisher_custom_field_name_id"], name: "index_publisher_cf_options_on_publisher_cf_name_id", using: :btree
+
+  create_table "publisher_custom_fields", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "publisher_id"
+    t.decimal  "currency1",     precision: 15, scale: 2
+    t.decimal  "currency2",     precision: 15, scale: 2
+    t.decimal  "currency3",     precision: 15, scale: 2
+    t.decimal  "currency4",     precision: 15, scale: 2
+    t.decimal  "currency5",     precision: 15, scale: 2
+    t.decimal  "currency6",     precision: 15, scale: 2
+    t.decimal  "currency7",     precision: 15, scale: 2
+    t.string   "text1"
+    t.string   "text2"
+    t.string   "text3"
+    t.string   "text4"
+    t.string   "text5"
+    t.text     "note1"
+    t.text     "note2"
+    t.datetime "datetime1"
+    t.datetime "datetime2"
+    t.datetime "datetime3"
+    t.datetime "datetime4"
+    t.datetime "datetime5"
+    t.datetime "datetime6"
+    t.datetime "datetime7"
+    t.decimal  "number1",       precision: 15, scale: 2
+    t.decimal  "number2",       precision: 15, scale: 2
+    t.decimal  "number3",       precision: 15, scale: 2
+    t.decimal  "number4",       precision: 15, scale: 2
+    t.decimal  "number5",       precision: 15, scale: 2
+    t.decimal  "number6",       precision: 15, scale: 2
+    t.decimal  "number7",       precision: 15, scale: 2
+    t.decimal  "number_4_dec1", precision: 15, scale: 4
+    t.decimal  "number_4_dec2", precision: 15, scale: 4
+    t.decimal  "number_4_dec3", precision: 15, scale: 4
+    t.decimal  "number_4_dec4", precision: 15, scale: 4
+    t.decimal  "integer1",      precision: 15
+    t.decimal  "integer2",      precision: 15
+    t.decimal  "integer3",      precision: 15
+    t.decimal  "integer4",      precision: 15
+    t.decimal  "integer5",      precision: 15
+    t.decimal  "integer6",      precision: 15
+    t.decimal  "integer7",      precision: 15
+    t.boolean  "boolean1"
+    t.boolean  "boolean2"
+    t.boolean  "boolean3"
+    t.decimal  "percentage1",   precision: 5,  scale: 2
+    t.decimal  "percentage2",   precision: 5,  scale: 2
+    t.decimal  "percentage3",   precision: 5,  scale: 2
+    t.decimal  "percentage4",   precision: 5,  scale: 2
+    t.decimal  "percentage5",   precision: 5,  scale: 2
+    t.string   "dropdown1"
+    t.string   "dropdown2"
+    t.string   "dropdown3"
+    t.string   "dropdown4"
+    t.string   "dropdown5"
+    t.string   "dropdown6"
+    t.string   "dropdown7"
+    t.integer  "sum1"
+    t.integer  "sum2"
+    t.integer  "sum3"
+    t.integer  "sum4"
+    t.integer  "sum5"
+    t.integer  "sum6"
+    t.integer  "sum7"
+    t.string   "link1"
+    t.string   "link2"
+    t.string   "link3"
+    t.string   "link4"
+    t.string   "link5"
+    t.string   "link6"
+    t.string   "link7"
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+  end
+
+  add_index "publisher_custom_fields", ["company_id"], name: "index_publisher_custom_fields_on_company_id", using: :btree
+  add_index "publisher_custom_fields", ["publisher_id"], name: "index_publisher_custom_fields_on_publisher_id", using: :btree
+
+  create_table "publisher_daily_actuals", force: :cascade do |t|
+    t.integer  "publisher_id"
+    t.date     "date"
+    t.integer  "available_impressions"
+    t.integer  "filled_impressions"
+    t.integer  "fill_rate"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "publisher_daily_actuals", ["publisher_id"], name: "index_publisher_daily_actuals_on_publisher_id", using: :btree
+
+  create_table "publisher_members", force: :cascade do |t|
+    t.integer  "publisher_id"
+    t.integer  "user_id"
+    t.boolean  "owner",        default: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+  end
+
+  add_index "publisher_members", ["publisher_id"], name: "index_publisher_members_on_publisher_id", using: :btree
+  add_index "publisher_members", ["user_id"], name: "index_publisher_members_on_user_id", using: :btree
+
+  create_table "publisher_stages", force: :cascade do |t|
+    t.integer  "company_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "publisher_stages", ["company_id"], name: "index_publisher_stages_on_company_id", using: :btree
+
+  create_table "publishers", force: :cascade do |t|
+    t.string   "name"
+    t.boolean  "comscore"
+    t.string   "website"
+    t.integer  "estimated_monthly_impressions"
+    t.integer  "actual_monthly_impressions"
+    t.integer  "client_id"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+    t.datetime "deleted_at"
+    t.integer  "company_id"
+    t.integer  "publisher_stage_id"
+    t.integer  "type_id"
+  end
+
+  add_index "publishers", ["client_id"], name: "index_publishers_on_client_id", using: :btree
+  add_index "publishers", ["comscore"], name: "index_publishers_on_comscore", using: :btree
+  add_index "publishers", ["name"], name: "index_publishers_on_name", using: :btree
+  add_index "publishers", ["publisher_stage_id"], name: "index_publishers_on_publisher_stage_id", using: :btree
+  add_index "publishers", ["type_id"], name: "index_publishers_on_type_id", using: :btree
 
   create_table "quota", force: :cascade do |t|
     t.integer  "time_period_id"
@@ -1830,6 +2023,23 @@ ActiveRecord::Schema.define(version: 20171207032805) do
   add_index "revenues", ["company_id"], name: "index_revenues_on_company_id", using: :btree
   add_index "revenues", ["product_id"], name: "index_revenues_on_product_id", using: :btree
   add_index "revenues", ["user_id"], name: "index_revenues_on_user_id", using: :btree
+
+  create_table "sales_stages", force: :cascade do |t|
+    t.integer  "sales_stageable_id"
+    t.string   "sales_stageable_type"
+    t.integer  "company_id"
+    t.string   "name"
+    t.integer  "probability"
+    t.boolean  "open"
+    t.boolean  "active"
+    t.integer  "position"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "sales_stages", ["company_id"], name: "index_sales_stages_on_company_id", using: :btree
+  add_index "sales_stages", ["sales_stageable_id"], name: "index_sales_stages_on_sales_stageable_id", using: :btree
+  add_index "sales_stages", ["sales_stageable_type"], name: "index_sales_stages_on_sales_stageable_type", using: :btree
 
   create_table "snapshots", force: :cascade do |t|
     t.integer  "company_id"
@@ -2173,6 +2383,7 @@ ActiveRecord::Schema.define(version: 20171207032805) do
   add_foreign_key "ios", "companies"
   add_foreign_key "ios", "deals"
   add_foreign_key "pmp_item_daily_actuals", "pmp_items"
+  add_foreign_key "pmp_item_daily_actuals", "products"
   add_foreign_key "pmp_item_monthly_actuals", "pmp_items"
   add_foreign_key "pmp_items", "pmps"
   add_foreign_key "pmp_items", "ssps"

@@ -3,6 +3,11 @@
 ($resource, $q, $rootScope, $filter) ->
 
   resource = $resource '/api/fields/:id', { id: '@id' },
+    client_base_options: {
+      isArray: false
+      method: "GET"
+      url: 'api/fields/client_base_options'
+    }
 
   @all = (params) ->
     deferred = $q.defer()
@@ -78,5 +83,12 @@
 
   @findSources = (fields) ->
     $filter('filter')(fields, { name: 'Deal Source' })[0]
+
+  @client_base_options = (params) ->
+    deferred = $q.defer()
+    resource.client_base_options params, (data) ->
+      deferred.resolve(data)
+    deferred.promise
+
   return
 ]

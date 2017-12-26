@@ -212,7 +212,8 @@
 											%b {{activity.type}}
 									%td
 										%a{href: '', 'ng-href': '/accounts/{{activity.advertiser.id}}'} {{activity.advertiser.name}}
-									%td {{activity.comments}}
+									%td
+										%div{ng: {'text-truncate': 'activity.comments', 'tt-chars-threshold': '250'}}
 									%td
 										%div{'ng-repeat': 'contact in activity.contacts'}
 											%a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}

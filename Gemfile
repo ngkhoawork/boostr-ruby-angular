@@ -48,6 +48,9 @@ gem 'pluck_to_hash'
 gem 'upsert'
 gem 'hashie'
 gem 'active_record_union'
+gem 'user_agent_parser'
+gem 'geocoder'
+gem 'rack-cors', :require => 'rack/cors'
 gem 'smarter_csv'
 gem 'daemons'
 
@@ -116,4 +119,5 @@ group :development, :test do
   source 'https://rails-assets.org' do
     gem 'rails-assets-angular-mocks'
   end
+  gem 'test_after_commit'
 end

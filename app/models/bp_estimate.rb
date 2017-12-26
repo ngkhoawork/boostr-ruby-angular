@@ -10,6 +10,9 @@ class BpEstimate < ActiveRecord::Base
   scope :completed, -> (value) { if value == true then where('bp_estimates.user_id IS NULL OR (bp_estimates.estimate_seller IS NOT NULL AND bp_estimates.estimate_seller != 0)') end }
   scope :unassigned, -> (value) { if value == true then where('bp_estimates.user_id IS NULL') end}
   scope :assigned, -> { where('bp_estimates.user_id IS NOT NULL') }
+  scope :has_status, -> { where('bp_estimates.user_id IS NOT NULL AND bp_estimates.estimate_seller > 0 AND bp_estimates.client_id IS NOT NULL') }
+  scope :by_user_ids, -> (user_ids) { where(user_id: user_ids) if user_ids && user_ids.count > 0 }
+  scope :order_by_client_name, -> { order('clients.name') }
 
   after_update do
     total = bp_estimate_products.sum(:estimate_seller)
@@ -39,6 +42,10 @@ class BpEstimate < ActiveRecord::Base
     time_dimensions = TimeDimension.where("start_date = ? and end_date = ?", bp.time_period.start_date, bp.time_period.end_date).to_a
     year_time_dimensions = TimeDimension.where("start_date = ? and end_date = ?", bp.time_period.start_date - 1.years, bp.time_period.end_date -  1.years).to_a
     prev_time_dimensions = TimeDimension.where("start_date = ? and end_date = ?", (bp.time_period.start_date - 3.months).beginning_of_month, (bp.time_period.end_date -  3.months).end_of_month).to_a
+    time_dimension_name = time_dimensions[0].name if time_dimensions.count > 0
+    year_time_dimension_name = year_time_dimensions[0].name if year_time_dimensions.count > 0
+    prev_time_dimension_name = prev_time_dimensions[0].name if prev_time_dimensions.count > 0
+    products = company.products.active
     CSV.generate do |csv|
       header = [
         "Account",
@@ -47,15 +54,20 @@ class BpEstimate < ActiveRecord::Base
         "Segment",
         "Primary Agency",
         "Seller",
-        "Q2-2017 Pipeline (W)",
-        "Q2-2017 Revenue",
-        "Q2-2017 Estimate",
+        "#{time_dimension_name} Pipeline (W)",
+        "#{time_dimension_name} Revenue",
+        "#{time_dimension_name} Estimate",
         "Mgr Estimate",
-        "Q2-2016 Revenue",
+        "#{year_time_dimension_name} Revenue",
         "% Change - YoY",
-        "Q1-2017 Revenue",
+        "#{prev_time_dimension_name} Revenue",
         "% Change - QoQ"
       ]
+
+      products.each do |product|
+        header << "#{product.name} Seller Estimate"
+        header << "#{product.name} Mgr Estimate"
+      end
 
       csv << header
       bp_estimates
@@ -133,6 +145,23 @@ class BpEstimate < ActiveRecord::Base
           '$' + prev_revenue_amount.to_s,
           prev_change ? prev_change.to_i.to_s + '%' : prev_change
         ]
+
+        product_data = bp_estimate.bp_estimate_products.inject({}) do |result, bp_estimate_product|
+          result[bp_estimate_product.product_id] = {
+            estimate_seller: bp_estimate_product.estimate_seller || 0,
+            estimate_mgr: bp_estimate_product.estimate_mgr || 0,
+          }
+          result
+        end
+
+
+
+        products.each do |product|
+          estimate_seller = product_data[product.id] ? product_data[product.id][:estimate_seller] : 0
+          estimate_mgr = product_data[product.id] ? product_data[product.id][:estimate_mgr] : 0
+          line << "$#{estimate_seller}"
+          line << "$#{estimate_mgr}"
+        end
         
         csv << line
       end

@@ -205,15 +205,21 @@ describe Api::DisplayLineItemsController, type: :controller do
   end
 
   def create_gbp_currency
-    @_gbp_currency ||= create :currency,
-                              curr_cd: 'GBP',
-                              curr_symbol: '£',
-                              name: 'Great Britain Pound',
-                              exchange_rates: [exchange_rate]
+    @_gbp_currency ||=
+      (
+        Currency.find_by(curr_cd: 'GBP', curr_symbol: '£', name: 'Great Britain Pound') ||
+        create(:currency, curr_cd: 'GBP', curr_symbol: '£', name: 'Great Britain Pound')
+      ).tap do |c|
+        c.exchange_rates << exchange_rate unless c.exchange_rates.include?(exchange_rate)
+      end
   end
 
   def exchange_rate
-    @_exchange_rate ||= create(:exchange_rate, company: company, rate: 1.2)
+    @_exchange_rate ||= create(:exchange_rate, company: company, rate: 1.2, currency: currency)
+  end
+
+  def currency
+    @_currency ||= Currency.first || create(:currency)
   end
 
   def create_item

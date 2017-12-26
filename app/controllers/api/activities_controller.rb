@@ -4,7 +4,7 @@ class Api::ActivitiesController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        render json: activities.preload(:assets, :agency, :client, :creator, deal: [:stage, :advertiser], contacts: [:address])
+        render json: activities.preload(:activity_type, :assets, :agency, :client, :creator, deal: [:stage, :advertiser], contacts: [:address])
       }
       format.csv {
         send_data activity_csv_report, filename: "activity-detail-reports-#{Date.today}.csv"
@@ -120,6 +120,8 @@ class Api::ActivitiesController < ApplicationController
       else
         []
       end
+    elsif params[:deal_id]
+      Activity.for_company(current_user.company_id).for_deal(params[:deal_id]).order(happened_at: :desc)
     else
       if params[:filter] == "detail"
         filtered_activities

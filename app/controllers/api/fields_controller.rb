@@ -5,6 +5,10 @@ class Api::FieldsController < ApplicationController
     render json: fields
   end
 
+  def client_base_options
+    render json: client_base_options_data
+  end
+
   private
 
   def company
@@ -19,4 +23,11 @@ class Api::FieldsController < ApplicationController
     @fields ||= company.fields.includes(options: [:suboptions]).where(subject_type: subject)
   end
 
+  def client_base_options_data
+    {
+      categories: company.fields.client_category_fields.to_options,
+      regions: company.fields.client_region_fields.to_options,
+      segments: company.fields.client_segment_fields.to_options
+    }
+  end
 end
