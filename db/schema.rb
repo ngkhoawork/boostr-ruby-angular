@@ -1385,6 +1385,32 @@ ActiveRecord::Schema.define(version: 20171226211153) do
 
   add_index "ealerts", ["company_id"], name: "index_ealerts_on_company_id", using: :btree
 
+  create_table "email_opens", force: :cascade do |t|
+    t.string   "ip"
+    t.string   "device"
+    t.string   "email"
+    t.string   "guid"
+    t.datetime "opened_at"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.string   "location"
+    t.boolean  "is_gmail",   default: false
+  end
+
+  create_table "email_threads", force: :cascade do |t|
+    t.string   "email_guid"
+    t.integer  "user_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.string   "thread_id"
+    t.string   "body"
+    t.string   "subject"
+    t.string   "recipient_email"
+    t.string   "from"
+    t.string   "sender"
+    t.string   "recipient"
+  end
+
   create_table "exchange_rates", force: :cascade do |t|
     t.integer "company_id"
     t.date    "start_date"
