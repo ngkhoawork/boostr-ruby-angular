@@ -22,6 +22,7 @@ gem 'paranoia', '~> 2.0'
 gem 'jbuilder'
 gem 'chronic'
 gem 'sidekiq'
+gem 'sidekiq-cron'
 gem 'sinatra', '>= 1.3.0', require: nil
 gem 'clockwork'
 gem 'newrelic_rpm'

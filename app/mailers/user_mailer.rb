@@ -215,6 +215,12 @@ class UserMailer < ApplicationMailer
     end
   end
 
+  def stopped_pmp_email(recipients, pmps)
+    @pmps = pmps
+
+    mail(to: recipients, subject: "PMP Digest - PMP's without revenue today")
+  end
+
   private
 
   def lost_deal_subject_for(deal)

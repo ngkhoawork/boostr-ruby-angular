@@ -92,6 +92,7 @@ class Company < ActiveRecord::Base
     notifications.find_or_initialize_by(name: 'New Deal', active: true)
     notifications.find_or_initialize_by(name: 'Lost Deal', active: true)
     notifications.find_or_initialize_by(name: 'Pipeline Changes Reports', active: true)
+    notifications.find_or_initialize_by(name: Notification::PMP_STOPPED_RUNNING, active: true)
 
     activity_types.find_or_initialize_by(name:'Initial Meeting', action:'had initial meeting with', icon:'/assets/icons/meeting.png', position: 1)
     activity_types.find_or_initialize_by(name:'Pitch', action:'pitched to', icon:'/assets/icons/pitch.png', position: 2)

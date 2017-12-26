@@ -1,0 +1,6 @@
+%p
+  The following PMP's did not have revenue today and may have stopped:
+
+- @pmps.each do |pmp|
+  %p
+    #{pmp.name} - #{pmp.agency.try(:name) || 'N/A'} - #{pmp.advertiser.try(:name) || 'N/A'} - #{number_to_currency(pmp.budget) || 'N/A'}
