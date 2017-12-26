@@ -1541,7 +1541,7 @@ class Deal < ActiveRecord::Base
 
       recipients = notification.recipients_arr
 
-      UserMailer.lost_deal_email(recipients, self).deliver_later(queue: 'default') if recipients.any?
+      UserMailer.lost_deal_email(recipients, self).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
     end
   end
 
