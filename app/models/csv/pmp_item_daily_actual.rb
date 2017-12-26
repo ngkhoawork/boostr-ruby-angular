@@ -66,12 +66,23 @@ class Csv::PmpItemDailyActual
     end
   end
 
+  def product
+    return nil if self.ad_unit.blank?
+    ad_unit = AdUnit.where('lower(name) = ?', self.ad_unit.downcase).first
+    if ad_unit
+      ad_unit.product
+    else
+      Product.where('lower(name) = ?', self.ad_unit.downcase).first
+    end
+  end
+
   def self.import(file, current_user_id, file_path)
     company = User.find(current_user_id).try(:company)
     return unless company.present?
 
     pmp_item_ids = []
     pmp_ids = []
+    pmp_change = {time_period_ids: [], product_ids: [], user_ids: []}
     import_log = CsvImportLog.new(company_id: company.id, object_name: 'pmp_item_daily_actual', source: 'ui')
     import_log.set_file_source(file_path)
 
@@ -81,10 +92,16 @@ class Csv::PmpItemDailyActual
       csv_pmp_item_daily_actual = self.build(row, company)
       if csv_pmp_item_daily_actual.valid?
         begin
-          pmp_item_ids << csv_pmp_item_daily_actual.pmp_item.id
-          pmp_ids << csv_pmp_item_daily_actual.pmp_item.pmp.id
           csv_pmp_item_daily_actual.save
           import_log.count_imported
+
+          pmp_item_ids << csv_pmp_item_daily_actual.pmp_item.id
+          pmp_ids << csv_pmp_item_daily_actual.pmp_item.pmp.id
+
+          pmp = csv_pmp_item_daily_actual.pmp_item.pmp
+          pmp_change[:time_period_ids] += company.time_periods.for_time_period(pmp.start_date, pmp.end_date).collect{|item| item.id}
+          pmp_change[:user_ids] += pmp.pmp_members.collect{|item| item.user_id}
+          pmp_change[:product_ids] += [csv_pmp_item_daily_actual.product&.id]
         rescue Exception => e
           import_log.count_failed
           import_log.log_error ['Internal Server Error', row.to_h.compact.to_s, e.class]
@@ -102,6 +119,12 @@ class Csv::PmpItemDailyActual
     PmpItemMonthlyActual.generate(pmp_item_ids.uniq)
     PmpItem.calculate(pmp_item_ids.uniq)
     Pmp.calculate_end_date(pmp_ids.uniq)
+
+    pmp_change[:time_period_ids] = pmp_change[:time_period_ids].uniq
+    pmp_change[:user_ids] = pmp_change[:user_ids].uniq
+    pmp_change[:product_ids] = pmp_change[:product_ids].uniq
+
+    ForecastPmpRevenueCalculatorWorker.perform_async(pmp_change)
   end
 
   private
@@ -134,16 +157,6 @@ class Csv::PmpItemDailyActual
 
   def validate_deal_id
     errors.add(:base, "Deal-ID can't be blank") if ssp_deal_id.blank?
-  end
-
-  def product
-    return nil if self.ad_unit.blank?
-    ad_unit = AdUnit.where('lower(name) = ?', self.ad_unit.downcase).first
-    if ad_unit
-      ad_unit.product
-    else
-      Product.where('lower(name) = ?', self.ad_unit.downcase).first
-    end
   end
 
   def parsed_date
