@@ -41,7 +41,7 @@ class Api::Publishers::Serializer < ActiveModel::Serializer
   end
 
   def daily_actuals_for_current_year
-    daily_actuals.by_date(current_date.beginning_of_year, current_date)
+    object.daily_actuals.by_date(current_date.beginning_of_year, current_date)
   end
 
   def current_date
