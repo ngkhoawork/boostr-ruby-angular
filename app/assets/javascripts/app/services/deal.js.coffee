@@ -47,6 +47,9 @@
     pipeline_report_totals:
       method: 'GET'
       url: '/api/deals/pipeline_report_totals'
+    pipeline_report_monthly_budgets:
+      method: 'GET'
+      url: '/api/deals/pipeline_report_monthly_budgets'
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report', {},
     query:  {
@@ -90,6 +93,12 @@
   @pipeline_report_totals = (params) ->
     deferred = $q.defer()
     resource.pipeline_report_totals params, (response) ->
+      deferred.resolve(response)
+    deferred.promise
+
+  @pipeline_report_monthly_budgets = (params) ->
+    deferred = $q.defer()
+    resource.pipeline_report_monthly_budgets params, (response) ->
       deferred.resolve(response)
     deferred.promise
 
