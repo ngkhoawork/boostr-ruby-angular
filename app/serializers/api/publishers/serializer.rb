@@ -45,15 +45,14 @@ class Api::Publishers::Serializer < ActiveModel::Serializer
   end
 
   def current_date
-    @_current_month ||= Date.today
+    @_current_month ||= Date.current
   end
 
   def actual_monthly_impressions
-    daily_actuals.sum(:available_impressions) / 3 rescue nil
+    daily_actuals_for_90_days.sum(:available_impressions) / 3 rescue nil
   end
 
-  def daily_actuals
-    @_daily_actuals ||= object.daily_actuals
-                              .by_date(current_date - 90.days, Date.current)
+  def daily_actuals_for_90_days
+    @_daily_actuals_for_90_days ||= object.daily_actuals.by_date(Date.current - 90.days, Date.current)
   end
 end
