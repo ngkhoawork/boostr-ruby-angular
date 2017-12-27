@@ -59,11 +59,11 @@
                 %td {{publisher.comscore ? 'True' : 'False'}}
                 %td {{publisher.publisher_stage}}
                 %td {{publisher.type.name}}
-                %td {{publisher.estimated_monthly_impressions | formatMoney: "" : 0}}
-                %td {{publisher.actual_monthly_impressions | formatMoney: "" : 0}}
+                %td.center {{publisher.estimated_monthly_impressions | formatMoney: "" : 0}}
+                %td.center {{publisher.actual_monthly_impressions | formatMoney: "" : 0}}
                 %td {{publisher.fill_rate + "%"}}
-                %td {{publisher.revenue_lifetime | currency: currency_symbol : 0}}
-                %td {{publisher.revenue_ytd | currency: currency_symbol : 0}}
+                %td.center {{publisher.revenue_lifetime | currency: currency_symbol : 0}}
+                %td.center {{publisher.revenue_ytd | currency: currency_symbol : 0}}
                 %td.left {{publisher.created_at | date : 'shortDate'}}
                 %td{'ng-repeat': 'cf in publisher.publisher_custom_field | orderBy : zSort.by : zSort.rev'}
                   %p{'ng-if': 'cf.field_type == "datetime"'}
