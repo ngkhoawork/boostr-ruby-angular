@@ -7,6 +7,7 @@ class Pmp < ActiveRecord::Base
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
 
   has_many :pmp_members, dependent: :destroy
+  has_many :users, through: :pmp_members, dependent: :destroy
   has_many :pmp_items, dependent: :destroy
   has_many :pmp_item_daily_actuals, through: :pmp_items, dependent: :destroy
 
@@ -34,7 +35,37 @@ class Pmp < ActiveRecord::Base
     ON pmps.id=items.pmp_id").where('(items.last_date IS NULL OR items.last_date < ?) AND pmps.end_date >= ?', Date.yesterday, Date.today) }
 
   before_create :set_budget_remaining_and_delivered
-  after_save :update_pmp_members_date
+
+
+  after_save do
+    update_pmp_members_date
+    update_revenue_fact_callback
+  end
+
+  after_destroy :update_revenue_fact
+
+  set_callback :save, :after, :update_revenue_fact_callback
+
+  def update_revenue_fact_callback
+    if start_date_changed? || end_date_changed?
+      if start_date_was && end_date_was
+        s_date = [start_date_was, start_date].min
+        e_date = [end_date_was, end_date].max
+      else
+        s_date = start_date
+        e_date = end_date
+      end
+      options = {
+        start_date: s_date,
+        end_date: e_date
+      }
+      Forecast::PmpRevenueCalcTriggerService.new(self, 'date', options).perform
+    end
+  end
+
+  def update_revenue_fact
+    Forecast::PmpRevenueCalcTriggerService.new(self, 'item', {}).perform
+  end
   
   def self.calculate_end_date(ids)
     Pmp.where(id: ids).find_each do |pmp|

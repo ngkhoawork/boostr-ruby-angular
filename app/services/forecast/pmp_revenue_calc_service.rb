@@ -39,7 +39,7 @@ class Forecast::PmpRevenueCalcService
     @_forecast_pmp_revenue_fact ||= ForecastPmpRevenueFact.find_or_initialize_by(
       forecast_time_dimension_id: forecast_time_dimension.id,
       user_dimension_id: user.id,
-      product_dimension_id: product.id
+      product_dimension_id: product&.id
     )
   end
 

@@ -11,8 +11,20 @@ class PmpItem < ActiveRecord::Base
 
   before_validation :convert_currency
   before_save :set_budget_remaining_and_delivered
-  after_save :update_pmp_budgets, if: :budgets_changed?
-  after_destroy :update_pmp_budgets
+
+  after_save do
+    update_pmp_budgets if budgets_changed?
+    update_revenue_fact if budget_changed? || budget_loc_changed? || pmp_type_changed?
+  end
+
+  after_destroy do
+    update_pmp_budgets
+    update_revenue_fact
+  end
+
+  def update_revenue_fact
+    Forecast::PmpRevenueCalcTriggerService.new(pmp, 'item', {}).perform
+  end
 
   def self.calculate(ids)
     PmpItem.where(id: ids).find_each do |pmp_item|
