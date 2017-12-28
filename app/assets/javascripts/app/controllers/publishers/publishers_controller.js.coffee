@@ -46,7 +46,7 @@
         filter.comscore = s.comscore.value if _.isBoolean s.comscore.value
         filter.publisher_stage_id = s.stage.id if s.stage
         filter.type_id = s.type.id if s.type
-        _.each s.customFields, (value, id) -> filter["custom_field_#{id}"] = value if value
+        _.each s.customFields, (value, id) -> filter["custom_field_#{id}"] = value if _.isBoolean(value) || value
         filter
       apply: (reset) ->
         $scope.getPublishers()
