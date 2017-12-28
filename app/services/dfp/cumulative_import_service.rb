@@ -101,7 +101,7 @@ module DFP
       quantity_delivered = [goal_quantity, total_impressions].min
       price = row[:dimensionattributeline_item_cost_per_unit]
       budget_delivered = price * total_impressions / 1_000
-      budget = (row[:dimensionattributeline_item_goal_quantity] / price * 1_000) / adjustment_service.cpm_budget_adjustment_factor_reversed
+      budget = row[:dimensionattributeline_item_goal_quantity] * 0.001 * price / adjustment_service.cpm_budget_adjustment_factor_reversed
 
       line_item_params = {
           io_name: row[:dimensionorder_name],
