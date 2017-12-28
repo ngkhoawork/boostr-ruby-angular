@@ -13,11 +13,7 @@ class Importers::BaseService < BaseService
     parsed_csv.each do |row|
       import_row(row)
     end
-<<<<<<< HEAD
-    csv_import_log.set_file_source(file)
-=======
     csv_import_log.set_file_source(file_name)
->>>>>>> Csv import headers change
     csv_import_log.save
   end
 
@@ -27,10 +23,7 @@ class Importers::BaseService < BaseService
 
   def import_row(row)
     csv_object = build_csv(row)
-<<<<<<< HEAD
     csv_import_log.count_processed
-=======
->>>>>>> Add publisher csv importer
 
     if csv_object.valid?
       begin
@@ -47,11 +40,7 @@ class Importers::BaseService < BaseService
   end
 
   def csv_import_log
-<<<<<<< HEAD
     @csv_import_log ||= CsvImportLog.new(company_id: company_id, object_name: import_subject, source: import_source)
-=======
-    @csv_import_log ||= CsvImportLog.new(company_id: company_id, object_name: import_subject)
->>>>>>> Add publisher csv importer
   end
 
   def parser_options
@@ -62,48 +51,22 @@ class Importers::BaseService < BaseService
     raise NotImplementedError, 'build_csv(row) method should be implemented in your class'
   end
 
-<<<<<<< HEAD
   def import_source
     raise NotImplementedError, 'import_source method should be implemented in your class. Return nil if non ui source'
   end
-
-  def open_file
-    begin
-      File.open(file, 'r:ISO-8859-1')
-    rescue Exception => e
-      csv_import_log = CsvImportLog.new(company_id: company_id, object_name: import_subject, source: import_source)
-=======
-  def open_file
-=======
-  def import_source
-    raise NotImplementedError, 'import_source method should be implemented in your class. Return nil if non ui source'
-  end
->>>>>>> Csv import headers change
 
   def open_file
     begin
       File.open(file, 'r:bom|utf-8')
     rescue Exception => e
-<<<<<<< HEAD
-      puts e
-      csv_import_log = CsvImportLog.new(company_id: company_id, object_name: import_subject)
->>>>>>> Add publisher csv importer
-      csv_import_log.set_file_source(file)
-=======
       csv_import_log = CsvImportLog.new(company_id: company_id, object_name: import_subject, source: import_source)
       csv_import_log.set_file_source(file_name)
->>>>>>> Csv import headers change
       csv_import_log.log_error [e.class.to_s, e.message]
       csv_import_log.save
     end
   end
-<<<<<<< HEAD
-end
-=======
 
   def file_name
     @original_filename || file
   end
->>>>>>> Csv import headers change
 end
->>>>>>> Add publisher csv importer

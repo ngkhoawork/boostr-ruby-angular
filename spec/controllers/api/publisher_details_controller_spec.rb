@@ -51,7 +51,7 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
 
     subject { get :fill_rate_by_month_graph, id: publisher.id }
 
-    it 'returns expressions info by months' do
+    xit 'returns expressions info by months' do
       subject
       expect(response).to have_http_status(200)
       expect(response_body).to be_a_kind_of Array
@@ -78,7 +78,7 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
 
     subject { get :daily_revenue_graph, id: publisher.id }
 
-    it 'returns revenues info by dates' do
+    xit 'returns revenues info by dates' do
       subject
       expect(response).to have_http_status(200)
       expect(response_body).to be_a_kind_of Array
