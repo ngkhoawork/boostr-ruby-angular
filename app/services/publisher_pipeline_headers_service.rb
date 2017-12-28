@@ -17,13 +17,15 @@ class PublisherPipelineHeadersService < Report::BaseService
 
   private
 
-  def required_param_keys
-    @required_option_keys ||= %i(company_id).freeze
+  def validate_params!(params)
+    # Refuse if some of necessary params are absent
+    if (required_param_keys - params.keys).present?
+      raise ArgumentError, "some of required params (#{required_param_keys.join(', ')}) are missed"
+    end
   end
 
-  def optional_param_keys
-    @optional_option_keys ||=
-      %i(q comscore type_id team_id my_publishers_bool my_team_publishers_bool current_user).freeze
+  def required_param_keys
+    @required_option_keys ||= %i(company_id).freeze
   end
 
   def publisher_stages
