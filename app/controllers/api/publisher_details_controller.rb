@@ -27,6 +27,6 @@ class Api::PublisherDetailsController < ApplicationController
   end
 
   def publisher_activities
-    publisher.activities.order(id: :desc).preload(:creator, :activity_type, :client, :contacts, :deal)
+    publisher.activities.order(happened_at: :desc).preload(:creator, :activity_type, :client, :contacts, :deal)
   end
 end
