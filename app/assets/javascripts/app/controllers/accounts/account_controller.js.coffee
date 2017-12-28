@@ -313,7 +313,7 @@
   $scope.showEmailsModal = (activity) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/activity_emails.html'
-      size: 'lg'
+      size: 'email'
       controller: 'ActivityEmailsController'
       backdrop: 'static'
       keyboard: false
@@ -351,6 +351,7 @@
       keyboard: false
       resolve:
         deal: $scope.setupNewDeal
+		options: -> {}
 
   $scope.showNewAccountConnectionContactModal = ->
     $scope.modalInstance = $modal.open

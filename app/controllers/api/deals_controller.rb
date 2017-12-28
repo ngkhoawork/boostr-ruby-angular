@@ -147,6 +147,21 @@ class Api::DealsController < ApplicationController
     render json: {totals: totals}
   end
 
+  def pipeline_report_monthly_budgets
+    deal_ids = pipeline_report_relation.collect{|deal| deal.id}
+
+    monthly_budgets = DealProductBudget
+    .joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
+    .where("deal_products.deal_id in (?)", deal_ids)
+    .for_product_id(product_filter)
+    .order("start_date asc")
+    .group_by{|budget| budget.start_date.beginning_of_month}
+    .collect{|key, value| {key => value.map(&:budget).compact.reduce(:+)} }
+    .reduce(:merge)
+
+    render json: { monthly_budgets: monthly_budgets }
+  end
+
   def pipeline_report
     respond_to do |format|
       filtered_deals = pipeline_report_relation
@@ -906,6 +921,7 @@ class Api::DealsController < ApplicationController
   def all_ordered_deals_by_stage(stage)
     deals_with_stage = deals.where(stage: stage)
       .by_seller_id(params[:member_id])
+      .by_team_id(params[:team_id])
       .for_client(params[:advertiser_id])
       .for_client(params[:agency_id])
       .by_budget_range(params[:budget_from], params[:budget_to])

@@ -6,5 +6,4 @@ FactoryGirl.define do
 		stage_dimension
 		amount "0.00"
   end
-
 end

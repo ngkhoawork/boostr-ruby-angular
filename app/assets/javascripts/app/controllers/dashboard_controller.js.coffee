@@ -162,8 +162,8 @@
                     backdrop: 'static'
                     keyboard: false
                     resolve:
-                        deal: ->
-                            {}
+                        deal: -> {}
+                        options: -> {}
 
             $scope.showReminderModal = ->
                 $scope.modalInstance = $modal.open
@@ -344,7 +344,7 @@
             $scope.showEmailsModal = (activity) ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/activity_emails.html'
-                    size: 'lg'
+                    size: 'email'
                     controller: 'ActivityEmailsController'
                     backdrop: 'static'
                     keyboard: false

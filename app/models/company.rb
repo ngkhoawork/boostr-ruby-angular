@@ -150,6 +150,10 @@ class Company < ActiveRecord::Base
     self.class.teams_tree_members_for(self)
   end
 
+  def all_sales_reps
+    users.by_user_type([SELLER, SALES_MANAGER])
+  end
+
   def self.teams_tree_members_for(instance)
     User.where("users.id IN (#{teams_tree_members_sql(instance)})")
   end

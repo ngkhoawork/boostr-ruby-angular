@@ -142,7 +142,9 @@ class Deal < ActiveRecord::Base
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
   scope :by_name, -> (name) { where('deals.name ilike ?', "%#{name}%") }
   scope :by_product_id, -> (product_id) { joins(:products).where(products: { id: product_id } ) if product_id.present? }
-  scope :by_team_id, -> (team_id) { joins(deal_members: :user).where(users: { team_id: team_id }) if team_id.present? }
+  scope :by_team_id, -> (team_id) do
+    joins(:deal_members).where(deal_members: { user_id: Team.find(team_id).leader_and_member_ids }) if team_id.present?
+  end
   scope :by_seller_id, -> (seller_id) do
     joins(:deal_members).where(deal_members: { user_id: seller_id }) if seller_id.present?
   end
@@ -1539,7 +1541,7 @@ class Deal < ActiveRecord::Base
 
       recipients = notification.recipients_arr
 
-      UserMailer.lost_deal_email(recipients, self).deliver_later(queue: 'default') if recipients.any?
+      UserMailer.lost_deal_email(recipients, self).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
     end
   end
 
