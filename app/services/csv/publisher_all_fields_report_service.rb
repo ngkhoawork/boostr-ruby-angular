@@ -20,7 +20,7 @@ class Csv::PublisherAllFieldsReportService < Csv::BaseService
   end
 
   def generate_base_columns(record)
-    base_headers.map { |attr| record.send(attr.downcase.gsub(' ', '_')) }
+    base_headers.map { |attr| record.send(attr.parameterize.underscore) }
   end
 
   def generate_custom_field_columns(record)
@@ -28,20 +28,22 @@ class Csv::PublisherAllFieldsReportService < Csv::BaseService
   end
 
   def base_headers
-    %w(
-      id
-      name
-      comscore
-      website
-      estimated_monthly_impressions
-      actual_monthly_impressions
-      type publisher_stage
-      client created_at
-      fill_rate
-      revenue_lifetime
-      revenue_ytd
-      export_date
-    )
+    [
+      'Id',
+      'Name',
+      'Comscore',
+      'Website',
+      'Estimated Monthly Impressions',
+      'Monthly Impressions (90-Day Avg)',
+      'Fill Rate (90-Day Avg)',
+      'Type',
+      'Publisher Stage',
+      'Client',
+      'Created At',
+      'Revenue Lifetime',
+      'Revenue Ytd',
+      'Export Date'
+    ]
   end
 
   def custom_field_headers

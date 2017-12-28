@@ -38,25 +38,37 @@ class Report::Publishers::AllFieldsSerializer < ActiveModel::Serializer
     object.users.map { |user| user.team&.serializable_hash(only: [:id, :name]) }.compact
   end
 
-  def fill_rate
-    return 0 if fill_rate_sum_for_previous_month.zero?
-
-    (fill_rate_sum_for_previous_month / object.daily_actuals_for_previous_month.size).round(1)
-  end
-
   def revenue_lifetime
-    object.daily_actuals.to_a.sum(&:total_revenue)
+    object.daily_actuals.to_a.sum(&:total_revenue) rescue nil
   end
 
   def revenue_ytd
-    object.daily_actuals_for_current_year.to_a.sum(&:total_revenue)
+    object.daily_actuals_for_current_year.to_a.sum(&:total_revenue) rescue nil
   end
 
   def last_export_date
     object.last_daily_actual&.created_at
   end
 
-  def fill_rate_sum_for_previous_month
-    @_fill_rate_sum ||= object.daily_actuals_for_previous_month.to_a.sum(&:fill_rate)
+  def fill_rate
+    return 0 if sum_of_filled_impressions.zero?
+
+    (100 / sum_of_available_impressions.to_f * sum_of_filled_impressions).round(1)
+  end
+
+  def sum_of_available_impressions
+    daily_actuals_for_past_90_days.sum(:available_impressions)
+  end
+
+  def sum_of_filled_impressions
+    daily_actuals_for_past_90_days.sum(:filled_impressions)
+  end
+
+  def actual_monthly_impressions
+    daily_actuals_for_past_90_days.sum(:available_impressions) / 3 rescue nil
+  end
+
+  def daily_actuals_for_past_90_days
+    @_daily_actuals_for_past_90_days ||= object.daily_actuals.by_date(Date.current - 90.days, Date.current)
   end
 end

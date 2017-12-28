@@ -1,11 +1,12 @@
 class Csv::PublisherAllFieldsReportDecorator
+  include ActionView::Helpers::NumberHelper
+
   DELEGATE_TO_PUBLISHER_ATTRIBUTES =
     %i(
       id
       name
       comscore
       website
-      actual_monthly_impressions
       estimated_monthly_impressions
     ).freeze
 
@@ -35,10 +36,17 @@ class Csv::PublisherAllFieldsReportDecorator
     record.created_at.to_date
   end
 
-  def fill_rate
-    return '0%' if fill_rate_sum_for_previous_month.zero?
+  def monthly_impressions_90_day_avg
+    number_to_human(
+      daily_actuals_for_past_90_days.sum(:available_impressions) / 3,
+      monthly_impressions_options
+    ).gsub(' ', '') rescue nil
+  end
 
-    "#{(fill_rate_sum_for_previous_month / record.daily_actuals_for_previous_month.size).round(1)}%"
+  def fill_rate_90_day_avg
+    return '0%' if sum_of_filled_impressions.zero?
+
+    "#{(100 / sum_of_available_impressions.to_f * sum_of_filled_impressions).round(1)}%"
   end
 
   def revenue_lifetime
@@ -67,19 +75,39 @@ class Csv::PublisherAllFieldsReportDecorator
 
   attr_reader :record
 
-  def fill_rate_sum_for_previous_month
-    @_fill_rate_sum ||= record.daily_actuals_for_previous_month.to_a.sum(&:fill_rate)
-  end
-
   def curr_symbol
     record.daily_actuals.first&.currency&.curr_symbol
   end
 
   def sum_revenue_lifetime
-    @_sum_revenue_lifetime ||= record.daily_actuals.to_a.sum(&:total_revenue)
+    @_sum_revenue_lifetime ||= record.daily_actuals.to_a.sum(&:total_revenue) rescue 0
   end
 
   def sum_revenue_ytd
-    @_sum_revenue_ytd ||= record.daily_actuals_for_current_year.to_a.sum(&:total_revenue)
+    @_sum_revenue_ytd ||= record.daily_actuals_for_current_year.to_a.sum(&:total_revenue) rescue 0
+  end
+
+  def daily_actuals_for_past_90_days
+    @_daily_actuals_for_past_90_days ||= record.daily_actuals.by_date(Date.current - 90.days, Date.current)
+  end
+
+  def sum_of_available_impressions
+    daily_actuals_for_past_90_days.sum(:available_impressions)
+  end
+
+  def sum_of_filled_impressions
+    daily_actuals_for_past_90_days.sum(:filled_impressions)
+  end
+
+  def monthly_impressions_options
+    {
+      precision: 1,
+      significant: false,
+      units: {
+        thousand: 'K',
+        million: 'M',
+        billion: 'B'
+      }
+    }
   end
 end
