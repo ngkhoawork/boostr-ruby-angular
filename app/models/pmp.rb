@@ -18,6 +18,20 @@ class Pmp < ActiveRecord::Base
   scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) if (start_date && end_date).present? }
   scope :for_time_period, -> (start_date, end_date) { where('pmps.start_date <= ? AND pmps.end_date >= ?', end_date, start_date) }
   scope :by_user, -> (user) { includes(:pmp_members).where('pmp_members.user_id = ?', user.id) }
+  scope :stopped, -> () { joins("LEFT JOIN 
+    (
+      SELECT pmp_items.pmp_id, MAX(actuals.last_date) AS last_date 
+      FROM pmp_items 
+      LEFT JOIN 
+        (
+          SELECT pmp_item_id, MAX(date) AS last_date 
+          FROM pmp_item_daily_actuals 
+          GROUP BY pmp_item_id
+        ) AS actuals
+      ON actuals.pmp_item_id=pmp_items.id 
+      GROUP BY pmp_items.pmp_id
+    ) AS items 
+    ON pmps.id=items.pmp_id").where('(items.last_date IS NULL OR items.last_date < ?) AND pmps.end_date >= ?', Date.yesterday, Date.today) }
 
   before_create :set_budget_remaining_and_delivered
   after_save :update_pmp_members_date
