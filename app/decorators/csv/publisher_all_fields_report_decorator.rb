@@ -1,6 +1,4 @@
 class Csv::PublisherAllFieldsReportDecorator
-  include ActionView::Helpers::NumberHelper
-
   DELEGATE_TO_PUBLISHER_ATTRIBUTES =
     %i(
       id
@@ -37,10 +35,7 @@ class Csv::PublisherAllFieldsReportDecorator
   end
 
   def monthly_impressions_90_day_avg
-    number_to_human(
-      daily_actuals_for_past_90_days.sum(:available_impressions) / 3,
-      monthly_impressions_options
-    ).gsub(' ', '') rescue nil
+    daily_actuals_for_past_90_days.sum(:available_impressions) / 3 rescue nil
   end
 
   def fill_rate_90_day_avg
@@ -97,17 +92,5 @@ class Csv::PublisherAllFieldsReportDecorator
 
   def sum_of_filled_impressions
     daily_actuals_for_past_90_days.sum(:filled_impressions)
-  end
-
-  def monthly_impressions_options
-    {
-      precision: 1,
-      significant: false,
-      units: {
-        thousand: 'K',
-        million: 'M',
-        billion: 'B'
-      }
-    }
   end
 end
