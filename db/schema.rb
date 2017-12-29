@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171226211153) do
+ActiveRecord::Schema.define(version: 20171229211747) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1710,6 +1710,8 @@ ActiveRecord::Schema.define(version: 20171226211153) do
     t.decimal "run_rate_7_days"
     t.decimal "run_rate_30_days"
     t.integer "pmp_type"
+    t.boolean "is_stopped",                                    default: false
+    t.date    "stopped_at"
   end
 
   add_index "pmp_items", ["pmp_id"], name: "index_pmp_items_on_pmp_id", using: :btree

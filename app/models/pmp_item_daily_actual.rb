@@ -59,9 +59,12 @@ class PmpItemDailyActual < ActiveRecord::Base
       old_pmp_item.calculate!
       pmp_item.calculate!
     elsif revenue_changed? || revenue_loc_changed?
-      pmp_item.calculate!
+      pmp_item.calculate_budgets!
+      pmp_item.calculate_run_rates!
+      pmp_item.save!
     elsif date_changed?
       pmp_item.calculate_run_rates!
+      pmp_item.update_stopped_status!
       pmp_item.save!
     end
   end

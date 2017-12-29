@@ -9,6 +9,8 @@ class PmpItem < ActiveRecord::Base
 
   validates :ssp_deal_id, :budget, :budget_loc, presence: true
 
+  scope :by_stopped, -> (is_stopped) { where(is_stopped: is_stopped) }
+
   before_validation :convert_currency
   before_save :set_budget_remaining_and_delivered
 
@@ -35,6 +37,7 @@ class PmpItem < ActiveRecord::Base
   def calculate!
     calculate_budgets!
     calculate_run_rates!
+    update_stopped_status!
     self.save!
   end
 
@@ -51,9 +54,18 @@ class PmpItem < ActiveRecord::Base
   end
 
   def calculate_end_date!
-    daily_actual_end_date = pmp_item_daily_actuals.maximum(:end_date)
     if daily_actual_end_date.present? && end_date < daily_actual_end_date
       self.end_date = daily_actual_end_date
+    end
+  end
+
+  def update_stopped_status!
+    if pmp.opened? && is_stopped == true && daily_actual_end_date >= Time.now.in_time_zone('Pacific Time (US & Canada)').to_date
+      self.is_stopped = false
+      self.stopped_at = nil
+    elsif pmp.opened? && is_stopped == false && daily_actual_end_date < Time.now.in_time_zone('Pacific Time (US & Canada)').to_date - 1.day
+      self.is_stopped = true
+      self.stopped_at = daily_actual_end_date + 1.day
     end
   end
 
@@ -63,6 +75,10 @@ class PmpItem < ActiveRecord::Base
     else
       nil
     end
+  end
+
+  def daily_actual_end_date
+    pmp_item_daily_actuals.maximum(:date)
   end
 
   private
