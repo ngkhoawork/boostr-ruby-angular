@@ -276,6 +276,7 @@ Rails.application.routes.draw do
       collection do
         get :pipeline_report
         get :pipeline_report_totals
+        get :pipeline_report_monthly_budgets
         get :pipeline_summary_report
         get :won_deals
         get :filter_data
