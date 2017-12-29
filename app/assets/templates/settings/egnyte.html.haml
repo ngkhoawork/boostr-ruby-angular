@@ -1,0 +1,32 @@
+#egnyte.z-detail-page.z-styles
+  .container-fluid
+    .row
+      .col-xs-6
+        .mb20
+          .header-item
+            .main-title
+              Egnyte
+        .block
+          .mb20
+            %span.title
+              Connect Account
+          %form{ ng: { submit: 'submitForm()' } }
+            .form-group{'ng-class':'{error: errors.domain}'}
+              %label{ for: 'domain' }
+                Domain
+                %span.star *
+              %span.error-text
+                {{errors.domain}}
+              %input.form-control{ placeholder: 'Egnyte App Domain', ng: { model: 'egnyte.domain', required: true }, name: 'domain'  }
+            .form-group{'ng-class':'{error: errors.clientId}'}
+              %label{ for: 'clientId' }
+                Client ID
+                %span.star *
+              %span.error-text
+                {{errors.clientId}}
+              %input.form-control{ placeholder: 'Client ID', ng: { model: 'egnyte.clientId', required: true }, name: 'clientId'  }
+            .form-group.center
+              %button.btn.btn-primary.btn-lg{ type: 'submit' }
+                Connect Account
+
+

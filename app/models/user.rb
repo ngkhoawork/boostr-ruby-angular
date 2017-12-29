@@ -101,6 +101,10 @@ class User < ActiveRecord::Base
     self.company.influencer_enabled
   end
 
+  def company_egnyte_enabled
+    self.company.egnyte_enabled
+  end
+
   def company_publisher_enabled
     self.company.publishers_enabled
   end

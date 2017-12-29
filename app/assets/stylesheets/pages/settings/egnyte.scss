@@ -1,0 +1,43 @@
+#egnyte {
+  .form-group {
+    label {
+      display: inline-block;
+      max-width: 100%;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #818689;
+    }
+
+    .star {
+      color: #ed5063;
+    }
+
+    input {
+      background-color: white;
+      font-weight: bold;
+    }
+
+    input::placeholder {
+      font-weight: 100;
+    }
+
+    .error-text {
+      float: right;
+      color: #ed5063;
+    }
+  }
+
+  .error {
+    input {
+      border-color: #ed5063;
+    }
+  }
+
+  .btn-lg {
+    padding: 10px 25px;
+  }
+
+  .title {
+    font-weight: 100;
+  }
+}

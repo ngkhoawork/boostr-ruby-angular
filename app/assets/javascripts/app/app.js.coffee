@@ -322,6 +322,10 @@
       templateUrl: 'settings/validations.html'
       controller: 'SettingsValidationsController'
 
+    .when '/settings/egnyte',
+      templateUrl: 'settings/egnyte.html'
+      controller: 'SettingsEgnyteController'
+
     .when '/bps',
       templateUrl: 'bp.html'
       controller: 'BPController'

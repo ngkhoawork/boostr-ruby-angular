@@ -499,6 +499,8 @@ Rails.application.routes.draw do
 
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
+
+    resources :egnyte
   end
 
   mount Sidekiq::Web => '/sidekiq'
