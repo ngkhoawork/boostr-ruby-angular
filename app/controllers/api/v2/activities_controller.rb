@@ -64,7 +64,9 @@ class Api::V2::ActivitiesController < ApiController
   end
 
   def activities
-    if params[:contact_id]
+    if params[:google_event_id]
+      current_user.activities.where(google_event_id: params[:google_event_id])
+    elsif params[:contact_id]
       Activity.for_company(company_id).for_contact(params[:contact_id])
     elsif params[:page] && params[:filter] == "client"
       client_activities

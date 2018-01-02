@@ -40,7 +40,7 @@ module Boostr
     config.middleware.insert_before 0, "Rack::Cors" do
       allow do
         origins 'mail.google.com', 'calendar.google.com'
-        resource '*', :headers => :any, :methods => [:get, :post, :options]
+        resource '*', :headers => :any, :methods => [:get, :post, :put, :options]
       end
     end
   end
