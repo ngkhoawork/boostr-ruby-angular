@@ -154,6 +154,7 @@ Rails.application.routes.draw do
       resources :account_cf_names, only: [:index]
       resources :holding_companies, only: [:index]
       resources :contact_cf_names, only: [:index]
+      resources :leads, only: [:create]
     end # API V2 END
 
     resources :dfp_imports do
