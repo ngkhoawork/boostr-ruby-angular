@@ -1,0 +1,229 @@
+#publishers {
+  position: relative;
+  overflow-x: hidden;
+
+  .z-sliding-filter {
+    top: 0;
+    .dropdown-menu {
+      min-width: 100%;
+    }
+  }
+  .publisher-inner {
+    margin: 0 25px;
+  }
+
+  .not-selected {
+    color: #a9acae;
+  }
+
+  .datetime-field {
+    table {
+      tbody, thead {
+        tr {
+          height: 0 !important;
+        }
+      }
+    }
+  }
+
+  .editable::placeholder {
+    color: #a9acae;
+  }
+
+  .publisher-header {
+    display: flex;
+    align-items: center;
+    .header-item {
+      margin-right: 30px;
+      white-space: nowrap;
+      &:last-child {
+        margin: 0;
+      }
+      &.view-toggle {
+        margin: 0 30px 0 auto;
+        height: 40px;
+        .view-toggle-inner {
+          height: 56px;
+          margin-top: -8px;
+          font-size: 20px;
+          i.fa {
+            margin-right: 8px;
+          }
+          div {
+            border-radius: 4px;
+            padding: 0 10px;
+            &.active {
+              color: $main-color;
+            }
+            &:hover {
+              background-color: #e8e8ea;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+    }
+    .add-btn {
+      position: relative;
+      top: 2px;
+    }
+    .publisher-search {
+      width: 30%;
+      position: relative;
+      i.fa {
+        position: absolute;
+        font-size: 20px;
+        color: lighten($secondary-font-color, 15%);
+        top: 13px;
+        left: 10px;
+      }
+      input {
+        width: 100%;
+        padding-left: 38px;
+        background-color: white;
+      }
+    }
+    .download-btn {
+      position: relative;
+      top: 0;
+    }
+  }
+
+  .editable, .editable-input {
+    cursor: pointer;
+    padding: 5px 8px;
+    border-radius: 4px;
+    border-bottom: 1px dashed $secondary-font-color;
+    background-color: transparent;
+    &:hover {
+      border-color: transparent;
+      border-bottom-color: $secondary-font-color;
+      background-color: $separate-line-color;
+    }
+    &:focus {
+      outline: none;
+      border: 1px dashed $secondary-font-color;
+      &:hover {
+        background-color: inherit;
+      }
+    }
+  }
+  .editable-input {
+    height: auto;
+    border: 1px dashed $secondary-font-color;
+  }
+  .editable-field {
+    padding: 5px 8px;
+    background-color: transparent;
+    border: 1px dashed $secondary-font-color;
+  }
+  div[click-to-edit] {
+    display: inline-block;
+  }
+  .publisher-inner {
+    .dropdown {
+      display: inline-block;
+      button:not(.add-btn) {
+        background-color: inherit;
+        border: none;
+        color: inherit;
+        padding: 0;
+        &:active {
+          outline: none;
+          box-shadow: none;
+        }
+        span.not-selected {
+          color: #a9acae;
+        }
+      }
+      .dropdown-menu {
+        top: calc(100% + 10px);
+        li {
+          a {
+            color: $main-font-color;
+            &:hover {
+              color: $main-color;
+            }
+          }
+          &.active > a {
+            color: white;
+          }
+        }
+      }
+    }
+  }
+  .publishers-container {
+    margin-left: -40px;
+    margin-right: -40px;
+  }
+}
+
+#publisher-report {
+  font-family: "Avenir Next", Arial, serif;
+  padding-left: 25px;
+  padding-right: 25px;
+
+  .inner-publisher {
+    max-width: 1600px;
+    padding: 0 15px;
+  }
+
+  .required {
+    color: $error-color;
+  }
+
+  .date-range-container {
+    border: 1px solid #D7E4F1;
+    border-radius: 4px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    background-color: white;
+    position: absolute;
+    .date-range-inner {
+      padding: 10px 15px 25px;
+    }
+    .dropdown-wrap {
+      .filters-block {
+        display: inline-block;
+        margin: 0 15px;
+        td {
+          padding-right: 0;
+        }
+      }
+    }
+  }
+  .dropdown {
+    .search-field {
+      margin-bottom: 5px;
+      padding: 5px;
+      border-width: 1px;
+      border-radius: 4px;
+    }
+  }
+
+  .filters-block {
+    a {
+      font-weight: normal;
+      color: $main-color;
+      &.empty {
+        color: #B5BDC4;
+      }
+    }
+    .dropdown-menu {
+      li {
+        &.active {
+          color: white;
+        }
+        a {
+          color: inherit;
+        }
+      }
+    }
+    vertical-align: middle;
+  }
+  .header-cell {
+    padding-left: 0;
+    &:first-child {
+      padding-right: 30px;
+    }
+  }
+}

@@ -4,7 +4,7 @@ class Api::ActivitiesController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        render json: activities.preload(:activity_type, :assets, :agency, :client, :creator, deal: [:stage, :advertiser], contacts: [:address])
+        render json: activities.preload(:activity_type, :assets, :agency, :client, :creator, :publisher, deal: [:stage, :advertiser], contacts: [:address])
       }
       format.csv {
         send_data activity_csv_report, filename: "activity-detail-reports-#{Date.today}.csv"
@@ -90,6 +90,7 @@ class Api::ActivitiesController < ApplicationController
       :deal_id,
       :client_id,
       :agency_id,
+      :publisher_id,
       :user_id,
       :activity_type_id,
       :activity_type_name,

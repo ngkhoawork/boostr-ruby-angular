@@ -18,8 +18,8 @@ Rails.application.routes.draw do
   get 'switch_user', to: 'switch_user#set_current_user'
   get 'switch_user/remember_user', to: 'switch_user#remember_user'
 
-  namespace :api do
-    scope module: :v1, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 1) do
+  namespace :api, defaults: { format: :json } do
+    scope module: :v1, constraints: ApiConstraints.new(version: 1) do
       post 'forgot_password' => 'forgot_password#create'
       post 'resend_confirmation' => 'forgot_password#create'
 
@@ -72,7 +72,7 @@ Rails.application.routes.draw do
       resources :users, only: [:index, :update]
     end # API V1 END
 
-    scope module: :v2, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 2) do
+    scope module: :v2, constraints: ApiConstraints.new(version: 2) do
       post 'forgot_password' => 'forgot_password#create'
       post 'resend_confirmation' => 'forgot_password#create'
 
@@ -288,7 +288,7 @@ Rails.application.routes.draw do
       end
       resources :deal_members, only: [:index, :create, :update, :destroy]
       resources :deal_contacts, only: [:index, :create, :update, :destroy]
-      resources :deal_assets, only: [:index, :update, :create, :destroy]
+      resources :attachments, only: [:index, :update, :create, :destroy]
       get 'latest_log', to: 'integration_logs#latest_log'
     end
     resources :assets, only: [:create] do
@@ -443,6 +443,34 @@ Rails.application.routes.draw do
     end
 
     resources :filter_queries, only: [:index, :create, :update, :destroy]
+    resources :publishers, only: [:index, :create, :update, :destroy] do
+      collection do
+        get :pipeline
+        get :all_fields_report
+        get :settings
+        get :pipeline_headers
+      end
+      resources :attachments, only: [:index, :update, :create, :destroy]
+    end
+    resources :publisher_details, only: [:show] do
+      member do
+        get :associations
+        get :activities
+        get :fill_rate_by_month_graph
+        get :daily_revenue_graph
+      end
+    end
+    resources :publisher_custom_field_names, only: [:index, :create, :update, :destroy]
+    resources :publisher_daily_actuals, only: [] do
+      post :import, on: :collection
+    end
+
+    resources :sales_stages, only: [:index, :create, :update] do
+      put :update_positions, on: :collection
+    end
+
+    resources :publisher_members, only: [:create, :update, :destroy]
+    resources :publisher_contacts, only: [:create, :update, :destroy]
   end
 
   mount Sidekiq::Web => '/sidekiq'

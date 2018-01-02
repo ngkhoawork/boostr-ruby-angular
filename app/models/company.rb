@@ -49,6 +49,11 @@ class Company < ActiveRecord::Base
   has_many :influencer_content_fees, through: :influencers
   has_many :audit_logs
   has_many :filter_queries
+  has_many :publisher_stages, dependent: :destroy
+  has_many :sales_stages, dependent: :destroy
+  has_many :publishers, dependent: :destroy
+  has_many :publisher_custom_field_names, dependent: :destroy
+  has_many :publisher_custom_fields, through: :publishers
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -83,8 +88,10 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Segment', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contact', name: 'Job Level', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Multiple', name: 'Attachment Type', value_type: 'Option', locked: true)
-
     fields.find_or_initialize_by(subject_type: 'Influencer', name: 'Network', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Publisher Type', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Renewal Terms', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Member Role', value_type: 'Option', locked: true)
 
     notifications.find_or_initialize_by(name: 'Closed Won', active: true)
     notifications.find_or_initialize_by(name: 'Stage Changed', active: true)
@@ -112,12 +119,13 @@ class Company < ActiveRecord::Base
 
   def settings
     [
-      { name: 'Deals', fields: fields.where(subject_type: 'Deal')        },
-      { name: 'Clients', fields: fields.where(subject_type: 'Client')    },
-      { name: 'Products', fields: fields.where(subject_type: 'Product')  },
-      { name: 'Contacts', fields: fields.where(subject_type: 'Contact')  },
+      { name: 'Deals', fields: fields.where(subject_type: 'Deal') },
+      { name: 'Clients', fields: fields.where(subject_type: 'Client') },
+      { name: 'Products', fields: fields.where(subject_type: 'Product') },
+      { name: 'Contacts', fields: fields.where(subject_type: 'Contact') },
       { name: 'Multiple', fields: fields.where(subject_type: 'Multiple') },
-      { name: 'Influencers', fields: fields.where(subject_type: 'Influencer') }
+      { name: 'Influencers', fields: fields.where(subject_type: 'Influencer') },
+      { name: 'Publishers', fields: fields.where(subject_type: 'Publisher') }
     ]
   end
 

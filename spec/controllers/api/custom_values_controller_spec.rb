@@ -15,7 +15,7 @@ describe Api::CustomValuesController do
       response_json = JSON.parse(response.body)
 
       expect(response).to be_success
-      expect(response_json.length).to eq(6)
+      expect(response_json.length).to eq(7)
     end
   end
 end

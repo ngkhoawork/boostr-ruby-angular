@@ -6,6 +6,6 @@ class Csv::ActivityDetailService < Csv::BaseService
   end
 
   def headers
-    %w(Date Type Comments Advertiser Agency Contacts Deal Creator Team)
+    %w(Date Type Comments Advertiser Agency Contacts Deal Publisher Creator Team)
   end
 end
