@@ -17,8 +17,10 @@ class Request < ActiveRecord::Base
 
   after_create :new_request_notification
   after_update do
-    new_request_notification if status_changed?
-    request_complete_notification if status_changed?
+    if status_changed?
+      new_request_notification
+      request_complete_notification
+    end
   end
 
   def request_is_completed
@@ -38,7 +40,7 @@ class Request < ActiveRecord::Base
   end
 
   def request_mail_recipients
-    company.users.where("#{request_type.downcase}_requests_access": true).map(&:email)
+    company.users.where("#{request_type.downcase}_requests_access": true).pluck(:email)
   end
 
   def request_complete_notification
