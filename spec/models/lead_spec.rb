@@ -19,6 +19,12 @@ describe 'Lead' do
 
       expect(Lead.rejected.count).to eq 4
     end
+
+    it '#by_company_id' do
+      create_list :lead, 5, company: company
+
+      expect(Lead.by_company_id(company.id).count).to eq 5
+    end
   end
 
   private

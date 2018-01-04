@@ -2,7 +2,7 @@ class Api::LeadsController < ApplicationController
   respond_to :json
 
   def index
-    
+    render json: filtered_leads
   end
 
   def accept
@@ -21,5 +21,9 @@ class Api::LeadsController < ApplicationController
 
   def lead
     Lead.find(params[:id])    
+  end
+
+  def filtered_leads
+    LeadsQuery.new(params.merge(user: current_user)).perform
   end
 end
