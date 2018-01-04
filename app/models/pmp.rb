@@ -13,6 +13,7 @@ class Pmp < ActiveRecord::Base
 
   validates :name, :start_date, :end_date, :curr_cd, presence: true
 
+  scope :for_pmp_members, -> (user_ids) { joins(:pmp_members).where('pmp_members.user_id in (?)', user_ids) }
   scope :by_name, -> (name) { where('pmps.name ilike ?', "%#{name}%") if name.present? }
   scope :by_advertiser_name, -> (name) { joins(:advertiser).where('clients.name ilike ?', "%#{name}%") if name.present? }
   scope :by_agency_name, -> (name) { joins(:agency).where('clients.name ilike ?', "%#{name}%") if name.present? }

@@ -22,7 +22,6 @@
     revenue_data:
       method: 'GET'
       url: '/api/forecasts/revenue_data'
-      isArray: true
     pipeline_data:
       method: 'GET'
       url: '/api/forecasts/pipeline_data'

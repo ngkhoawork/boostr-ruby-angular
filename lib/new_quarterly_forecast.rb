@@ -103,6 +103,7 @@ class NewQuarterlyForecast
   end
 
   def pmp_revenue_data
+    puts "=============pmp revenue"
     @_pmp_revenue_data ||= ActiveRecord::Base.connection.execute(pmp_revenue_sql)
   end
 
