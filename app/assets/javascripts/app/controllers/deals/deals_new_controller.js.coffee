@@ -1,7 +1,7 @@
 @app.controller 'DealsNewController',
 ['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation'
 ($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation) ->
-
+  console.log options
   $scope.init = ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
