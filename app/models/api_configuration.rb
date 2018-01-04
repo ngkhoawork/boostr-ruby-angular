@@ -4,7 +4,9 @@ class ApiConfiguration < ActiveRecord::Base
   INTEGRATION_PROVIDERS = {
     'DFP': 'DfpApiConfiguration',
     'operative': 'OperativeApiConfiguration',
-    'Operative Datafeed': 'OperativeDatafeedConfiguration'
+    'Operative Datafeed': 'OperativeDatafeedConfiguration',
+    'Asana Connect': 'AsanaConnectConfiguration',
+    'Google Sheets': 'GoogleSheetsConfiguration'
   }
 
   belongs_to :company

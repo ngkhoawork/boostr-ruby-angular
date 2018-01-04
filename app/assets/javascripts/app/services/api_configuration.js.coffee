@@ -7,10 +7,12 @@
           method: 'GET'
           url: 'api/api_configurations/metadata'
           isArray: false
-        update: {
+        update:
           method: 'PUT'
           url: '/api/api_configurations/:id'
-        }
+        service_account_email:
+          method: 'GET'
+          url: 'api/api_configurations/service_account_email'
 
       @all = (params) ->
         deferred = $q.defer()
@@ -42,6 +44,12 @@
       @metadata = (params) ->
         deferred = $q.defer()
         resource.metadata params, (data) ->
+          deferred.resolve(data)
+        deferred.promise
+
+      @service_account_email = (params) ->
+        deferred = $q.defer()
+        resource.service_account_email params, (data) ->
           deferred.resolve(data)
         deferred.promise
 

@@ -32,6 +32,10 @@ class Api::ApiConfigurationsController < ApplicationController
     render json: ApiConfiguration.metadata(sti_routing_param)
   end
 
+  def service_account_email
+    render json: { service_account_email: SERVICE_ACCOUNT_EMAIL }
+  end
+
   private
 
   def api_configuration
@@ -79,6 +83,10 @@ class Api::ApiConfigurationsController < ApplicationController
                                                                                   :revenue_calculation_pattern,
                                                                                   :product_mapping,
                                                                                   :exclude_child_line_items
+                                                                                ],
+                                              google_sheets_details_attributes: [
+                                                                                  :id,
+                                                                                  :sheet_id
                                                                                 ])
   end
 

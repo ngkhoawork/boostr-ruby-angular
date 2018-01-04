@@ -1723,6 +1723,10 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def updated?
+    created_at != updated_at
+  end
+
   def update_pipeline_fact(deal)
     company = deal.company
     time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date)
