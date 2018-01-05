@@ -1,8 +1,10 @@
-@app.controller "ActivityNewController",
-    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Field', 'Contact', 'Reminder', 'activity', 'options', '$http'
-        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Field, Contact, Reminder, activity, options, $http) ->
+@app.controller "ActivityNewController", [
+    '$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Field', 'Contact', 'Publisher', 'Reminder', 'activity', 'options', '$http'
+    ($scope,   $rootScope,   $modalInstance,   Activity,   ActivityType,   Deal,   Client,   Field,   Contact,   Publisher,   Reminder,   activity,   options,   $http) ->
 
             $scope.types = []
+            $scope.isPublisherEnabled = _isPublisherEnabled
+#            $scope.isInfluencerEnabled = _isCompanyInfluencerEnabled
             $scope.showRelated = true
             $scope.showMeridian = true
             $scope.isEdit = Boolean activity
@@ -51,6 +53,10 @@
                     when 'gmail'
                         $scope.showRelated = true
                         $scope.form = _.extend $scope.form, options.data
+                    when 'publisher'
+                        $scope.form.publisher = options.data
+                        $scope.form.advertiser =
+                            id: $scope.form.publisher.client_id
 
             #edit mode
             if activity
@@ -65,6 +71,8 @@
                 if activity.agency
                     $scope.form.agency = activity.agency
                     $scope.form.agency.formatted_name = $scope.form.agency.name
+                if activity.publisher
+                    $scope.form.publisher = activity.publisher
                 $scope.form.contacts = activity.contacts
                 $scope.form.date = new Date(activity.happened_at)
                 if activity.timed
@@ -95,8 +103,9 @@
                     type.iconName = type.name.split(" ").join("-").toLowerCase()
                 $scope.types = activityTypes
                 if activity
-                    $scope.selectedType = _.findWhere(activityTypes, name: activity.activity_type_name)
-                    $scope.form.type = activity.activity_type_id
+                    activityType = activity.activity_type
+                    $scope.selectedType = activityType || _.findWhere(activityTypes, name: activity.activity_type_name)
+                    $scope.form.type = (activityType && activityType.id) || activity.activity_type_id
                 else
                     $scope.selectedType = activityTypes[0]
                     $scope.form.type = activityTypes[0].id
@@ -105,6 +114,9 @@
 
             Contact.query().$promise.then (contacts) ->
                 $scope.contacts = contacts
+
+            $scope.searchPublishers = (str) ->
+                Publisher.publishersList(q: str).then (publishers) -> publishers
 
             Field.defaults({}, 'Client').then (fields) ->
                 client_types = Field.findClientTypes(fields)
@@ -163,7 +175,7 @@
             $scope.submitForm = ->
                 $scope.errors = {}
 
-                fields = ['deal', 'advertiser', 'agency', 'contacts', 'date', 'comment']
+                fields = ['deal', 'advertiser', 'agency', 'publisher', 'contacts', 'date', 'comment']
                 if $scope.showReminderForm
                     fields.push('reminderName', 'reminderDate', 'reminderComment')
 
@@ -171,17 +183,22 @@
                     field = $scope.form[key]
                     switch key
                         when 'deal'
-                            if !field && !$scope.form.advertiser && !$scope.form.agency
+                            if !field && !$scope.form.advertiser && !$scope.form.agency && !$scope.form.publisher
                                 return $scope.errors[key] = 'At least one is required'
                             if field && typeof field != 'object'
                                 return $scope.errors[key] = 'Record doesn\'t exist'
                         when 'advertiser'
-                            if !field && !$scope.form.deal && !$scope.form.agency
+                            if !field && !$scope.form.deal && !$scope.form.agency && !$scope.form.publisher
                                 return $scope.errors[key] = ' '
                             if field && typeof field != 'object'
                                 return $scope.errors[key] = 'Record doesn\'t exist'
                         when 'agency'
-                            if !field && !$scope.form.advertiser && !$scope.form.deal
+                            if !field && !$scope.form.advertiser && !$scope.form.deal && !$scope.form.publisher
+                                return $scope.errors[key] = ' '
+                            if field && typeof field != 'object'
+                                return $scope.errors[key] = 'Record doesn\'t exist'
+                        when 'publisher'
+                            if !field && !$scope.form.deal && !$scope.form.advertiser && !$scope.form.agency
                                 return $scope.errors[key] = ' '
                             if field && typeof field != 'object'
                                 return $scope.errors[key] = 'Record doesn\'t exist'
@@ -223,6 +240,9 @@
                     activityData.deal_id = null
                     activityData.client_id = $scope.form.advertiser && $scope.form.advertiser.id || null
                     activityData.agency_id = $scope.form.agency && $scope.form.agency.id || null
+                if $scope.form.publisher
+                    activityData.publisher_id = $scope.form.publisher.id
+                    activityData.client_id = activityData.client_id || $scope.form.publisher.client_id
 
                 if $scope.form.contacts.length
                     $scope.form.contacts = $scope.form.contacts.map (c) ->
@@ -300,4 +320,4 @@
                     else
                         $modalInstance.close(activity)
                         $rootScope.$broadcast 'dashboard.updateBlocks', ['activities']
-    ]
+]

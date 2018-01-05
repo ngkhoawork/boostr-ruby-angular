@@ -32,8 +32,6 @@
 
         $scope.quarters = []
         $scope.forecast = {}
-        $scope.revenues = []
-        $scope.deals = []
 
         ($scope.updateSellers = (team) ->
             Seller.query({id: (team && team.id) || 'all'}).$promise.then (sellers) ->

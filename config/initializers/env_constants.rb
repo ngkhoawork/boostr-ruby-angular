@@ -13,3 +13,4 @@ MAX_DAYS_IN_MONTH = 31
 
 # PMP Types
 PMP_TYPES = { guaranteed: 0, non_guaranteed: 1, always_on: 2 }
+REGEXP_FOR_URL = /\A(http|https):\/\/|[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}(:[0-9]{1,5})?(\/.*)?\z/ix

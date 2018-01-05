@@ -8,8 +8,6 @@
         $scope.timePeriods = []
         $scope.quarters = []
         $scope.forecast = {}
-        $scope.revenues = []
-        $scope.deals = []
         $scope.isLoading = false
 
         $scope.scrollTo = (id) ->

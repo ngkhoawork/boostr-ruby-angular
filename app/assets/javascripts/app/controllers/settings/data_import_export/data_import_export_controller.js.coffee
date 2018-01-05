@@ -223,6 +223,21 @@
           undefined
         metadata: ->
           false
+          
+  $scope.showUploadPublisherModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/publisher_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/publisher_daily_actuals/import'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
 
   $scope.showUploadPmpItemDailyActualsModal = () ->
     $scope.modalInstance = $modal.open

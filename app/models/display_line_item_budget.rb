@@ -28,7 +28,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
   attr_accessor :has_dfp_budget_correction
 
-  before_save :correct_budget_loc, if: -> { has_dfp_budget_correction }
+  before_save :correct_budget, if: -> { has_dfp_budget_correction }
   before_save :set_cpd_price_type_budget, if: -> { has_dfp_budget_correction }
 
   set_callback :save, :after, :update_revenue_fact_callback
@@ -317,9 +317,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
     end
   end
 
-  def correct_budget_loc
+  def correct_budget
     if max_monthly_budget_exceeded? || max_budget_loc_exceeded?
       self.budget_loc = corrected_budget
+      self.budget = corrected_budget
       display_line_item.budget_delivered_loc = corrected_budget
       display_line_item.budget_remaining_loc = 0
     end
@@ -334,10 +335,12 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   def max_monthly_budget_exceeded?
+    return sum_of_monthly_budgets > display_line_item.budget_loc if has_dfp_budget_correction
     sum_of_monthly_budgets > (display_line_item.budget_loc + BUDGET_BUFFER)
   end
 
   def max_budget_loc_exceeded?
+    return budget_loc.truncate(2) > display_line_item.budget_loc if has_dfp_budget_correction
     budget_loc.truncate(2) > (display_line_item.budget_loc + BUDGET_BUFFER)
   end
 

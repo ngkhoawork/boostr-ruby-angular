@@ -2,12 +2,13 @@ class Api::AccountCfNamesController < ApplicationController
   respond_to :json
 
   def index
-    render json: account_cf_names.order("position asc").as_json({include: {
-                                                                             account_cf_options: {
-                                                                                     only: [:id, :value]
-                                                                             }
-                                                                     }
-                                                                     })
+    render json: account_cf_names.order(:position)
+                                 .includes(:account_cf_options)
+                                 .as_json({include: {
+                                   account_cf_options: {
+                                     only: [:id, :value]
+                                   }
+                                 }})
   end
 
   def show

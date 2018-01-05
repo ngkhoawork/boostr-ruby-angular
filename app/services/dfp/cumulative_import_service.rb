@@ -93,14 +93,15 @@ module DFP
     def import_temp_row(row)
       goal_quantity = adjustment_service.perform(row[:dimensionattributeline_item_goal_quantity]).to_i
       total_impressions = row[:columntotal_line_item_level_impressions].to_i
+
       if total_impressions >= goal_quantity
         total_impressions = goal_quantity
       end
 
-      quantity_delivered = [ goal_quantity, total_impressions ].min
+      quantity_delivered = [goal_quantity, total_impressions].min
       price = row[:dimensionattributeline_item_cost_per_unit]
-      non_cpd_booked_revenue = row[:dimensionattributeline_item_non_cpd_booked_revenue]
       budget_delivered = price * total_impressions / 1_000
+      budget = row[:dimensionattributeline_item_goal_quantity] * 0.001 * price / adjustment_service.cpm_budget_adjustment_factor_reversed
 
       line_item_params = {
           io_name: row[:dimensionorder_name],
@@ -118,7 +119,7 @@ module DFP
           pricing_type: row[:dimensionattributeline_item_cost_type],
           price: price,
           quantity: goal_quantity,
-          budget: adjustment_service.perform(non_cpd_booked_revenue),
+          budget: budget,
           quantity_delivered: quantity_delivered,
           clicks: row[:columntotal_line_item_level_clicks],
           ctr: row[:columntotal_line_item_level_ctr],

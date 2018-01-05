@@ -183,3 +183,47 @@
                 %td{ colspan: "7"}
                   %center
                     No data available
+
+    %br
+    .row
+      .col-xs-4.quota-period
+        .row
+          .col-xs-12
+            Publisher Custom Fields
+
+    .row
+      .col-xs-12
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.left Position
+                %th.left Name
+                %th.left Type
+                %th.left Required
+                %th.left Show on Modal
+                %th.left Disabled
+                %th.action-column
+            %tbody
+              %tr{ ng: { repeat: 'publisher_custom_field_name in publisher_custom_field_names', if: 'publisher_custom_field_names.length > 0' } }
+                %td.left
+                  {{ publisher_custom_field_name.position }}
+                %td.left
+                  {{ publisher_custom_field_name.field_label }}
+                %td.left
+                  {{ publisher_custom_field_name.field_type }}
+                %td.left
+                  {{ publisher_custom_field_name.is_required ? "Yes" : "No" }}
+                %td.left
+                  {{ publisher_custom_field_name.show_on_modal ? "Yes" : "No" }}
+                %td.left
+                  {{ publisher_custom_field_name.disabled ? "Yes" : "No" }}
+                %td.action-td
+                  %a.edit-team{ href: '', ng: { click: 'editModal(publisher_custom_field_name, "publisher")' } }
+                    = inline_svg 'icons/pencil.svg'
+                  %a.delete-team{ href: '', ng: { click: 'delete(publisher_custom_field_name, "publisher")' } }
+                    = inline_svg 'icons/trash.svg'
+              %tr{ ng: { if: '!publisher_custom_field_names || publisher_custom_field_names.length == 0' } }
+                %td{ colspan: '7' }
+                  %center
+                    No data available

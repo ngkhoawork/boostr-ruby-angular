@@ -1,57 +1,62 @@
 .table-wrapper
-	%table.table.table-hover
-		%thead
-			%tr.z-sortable-prime{'z-fixed-header': true, watch: '"activities"'}
-				%th.left{width: "120"}
-					.z-sortable{by: '-happened_at', default: true}
-						Date
-				%th.left{width: "130"}
-					.z-sortable{by: 'activity_type_name'}
-						Type
-				%th.left{width: "auto"}
-					.z-sortable{by: 'comment'}
-						Comments
-				%th.left{width: "150"}
-					.z-sortable{by: 'client.name'}
-						Advertiser
-				%th.left{width: "150"}
-					.z-sortable{by: 'agency.name'}
-						Agency
-				%th.left{width: "150"}
-					.z-sortable{by: 'contacts[0].name'}
-						Contact
-				%th.left{width: "150"}
-					.z-sortable{by: 'deal.name'}
-						Deal
-				%th.left{width: "150"}
-					.z-sortable{by: 'creator.first_name'}
-						Creator
-				%th.left{width: "150"}
-					.z-sortable{by: 'team_creator'}
-						Team
-		%tbody
-			%tr{ ng: { if: 'activities.length > 0', repeat: 'activity in activities | orderBy : zSort.by : zSort.rev' } }
-				%td.left.nowrap
-					{{ activity.happened_at | date: 'MM-dd-yyyy' }}
-					%i.fa.fa-pencil.z-icon.mr8{'ng-click': 'showActivityEditModal(activity)'}
-				%td.left {{ activity.activity_type_name }}
-				%td.left
-					%div{ng: {if: 'activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250'}}
-					%div{'ng-if': 'activity.activity_type_name == "Email"'}
-						%p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
-						%button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity, $event)'}
-							Show email
-				%td.left
-					%a{'ng-href': '/accounts/{{activity.client.id}}'} {{ activity.client.name }}
-				%td.left
-					%a{'ng-href': '/accounts/{{activity.agency.id}}'} {{ activity.agency.name }}
-				%td.left
-					%div{ ng: { repeat: 'contact in activity.contacts' } }
-						%a{'ng-href': '/contacts/{{contact.id}}'} {{ contact.name }}
-				%td.left
-					%a{'ng-href': '/deals/{{activity.deal.id}}'} {{ activity.deal.name }}
-				%td.left {{ activity.creator.first_name + " " + activity.creator.last_name }}
-				%td.left {{ activity.team_creator }}
-			%tr{ ng: { if: 'activities.length == 0' }}
-				%td.center.auto-colspan
-					No Data for the Filters Selected
+  %table.table.table-hover
+    %thead
+      %tr.z-sortable-prime{'z-fixed-header': true, watch: '"activities"'}
+        %th.left{width: "120"}
+          .z-sortable{by: '-happened_at', default: true}
+            Date
+        %th.left{width: "130"}
+          .z-sortable{by: 'activity_type_name'}
+            Type
+        %th.left{width: "auto"}
+          .z-sortable{by: 'comment'}
+            Comments
+        %th.left{width: "150"}
+          .z-sortable{by: 'client.name'}
+            Advertiser
+        %th.left{width: "150"}
+          .z-sortable{by: 'agency.name'}
+            Agency
+        %th.left{width: "150"}
+          .z-sortable{by: 'contacts[0].name'}
+            Contact
+        %th.left{width: "150"}
+          .z-sortable{by: 'deal.name'}
+            Deal
+        %th.left{width: "150"}
+          .z-sortable{by: 'publisher.name'}
+            Publisher
+        %th.left{width: "150"}
+          .z-sortable{by: 'creator.first_name'}
+            Creator
+        %th.left{width: "150"}
+          .z-sortable{by: 'team_creator'}
+            Team
+    %tbody
+      %tr{ ng: { if: 'activities.length > 0', repeat: 'activity in activities | orderBy : zSort.by : zSort.rev' } }
+        %td.left.nowrap
+          {{ activity.happened_at | date: 'MM-dd-yyyy' }}
+          %i.fa.fa-pencil.z-icon.mr8{'ng-click': 'showActivityEditModal(activity)'}
+        %td.left {{ activity.activity_type_name }}
+        %td.left
+          %div{'ng-if': 'activity.activity_type_name != "Email"','ng-bind-html': 'getHtml(activity.comment)'}
+          %div{'ng-if': 'activity.activity_type_name == "Email"'}
+            %p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
+            %button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity, $event)'}
+              Show email
+        %td.left
+          %a{'ng-href': '/accounts/{{activity.client.id}}'} {{ activity.client.name }}
+        %td.left
+          %a{'ng-href': '/accounts/{{activity.agency.id}}'} {{ activity.agency.name }}
+        %td.left
+          %div{ ng: { repeat: 'contact in activity.contacts' } }
+            %a{'ng-href': '/contacts/{{contact.id}}'} {{ contact.name }}
+        %td.left
+          %a{'ng-href': '/deals/{{activity.deal.id}}'} {{ activity.deal.name }}
+        %td.left
+          %a{'ng-href': '/publishers/{{activity.publisher.id}}'} {{ activity.publisher.name }}
+        %td.left {{ activity.creator.first_name + " " + activity.creator.last_name }}
+        %td.left {{ activity.team_creator }}
+      %tr{ ng: { if: 'activities.length == 0' }}
+        %td.center.auto-colspan
+          No Data for the Filters Selected

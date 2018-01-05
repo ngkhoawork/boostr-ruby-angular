@@ -50,6 +50,11 @@ class Company < ActiveRecord::Base
   has_many :influencer_content_fees, through: :influencers
   has_many :audit_logs
   has_many :filter_queries
+  has_many :publisher_stages, dependent: :destroy
+  has_many :sales_stages, dependent: :destroy
+  has_many :publishers, dependent: :destroy
+  has_many :publisher_custom_field_names, dependent: :destroy
+  has_many :publisher_custom_fields, through: :publishers
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -84,8 +89,10 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Segment', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contact', name: 'Job Level', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Multiple', name: 'Attachment Type', value_type: 'Option', locked: true)
-
     fields.find_or_initialize_by(subject_type: 'Influencer', name: 'Network', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Publisher Type', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Renewal Terms', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Member Role', value_type: 'Option', locked: true)
 
     notifications.find_or_initialize_by(name: 'Closed Won', active: true)
     notifications.find_or_initialize_by(name: 'Stage Changed', active: true)
@@ -94,18 +101,7 @@ class Company < ActiveRecord::Base
     notifications.find_or_initialize_by(name: 'Pipeline Changes Reports', active: true)
     notifications.find_or_initialize_by(name: Notification::PMP_STOPPED_RUNNING, active: true)
 
-    activity_types.find_or_initialize_by(name:'Initial Meeting', action:'had initial meeting with', icon:'/assets/icons/meeting.png', position: 1)
-    activity_types.find_or_initialize_by(name:'Pitch', action:'pitched to', icon:'/assets/icons/pitch.png', position: 2)
-    activity_types.find_or_initialize_by(name:'Proposal', action:'sent proposal to', icon:'/assets/icons/proposal.png', position: 3)
-    activity_types.find_or_initialize_by(name:'Feedback', action:'received feedback from', icon:'/assets/icons/feedback.png', position: 4)
-    activity_types.find_or_initialize_by(name:'Agency Meeting', action:'had agency meeting with', icon:'/assets/icons/agency-meeting.png', position: 5)
-    activity_types.find_or_initialize_by(name:'Client Meeting', action:'had client meeting with', icon:'/assets/icons/client-meeting.png', position: 6)
-    activity_types.find_or_initialize_by(name:'Entertainment', action:'had client entertainment with', icon:'/assets/icons/entertainment.png', position: 7)
-    activity_types.find_or_initialize_by(name:'Campaign Review', action:'reviewed campaign with', icon:'/assets/icons/campaign-review.png', position: 8)
-    activity_types.find_or_initialize_by(name:'QBR', action:'Quarterly Business Review with', icon:'/assets/icons/qbr.png', position: 9)
-    activity_types.find_or_initialize_by(name:'Email', action:'emailed to', icon:'/assets/icons/email.png', position: 10, editable: false)
-    activity_types.find_or_initialize_by(name:'Post Sale Meeting', action:'had post sale meeting with', icon:'/assets/icons/post-sale.png', position: 11)
-    activity_types.find_or_initialize_by(name:'Internal Meeting', action:'had internal meeting with', icon:'/assets/icons/internal-meeting.png', position: 12)
+    setup_default_activity_types
 
     ealerts.find_or_initialize_by(recipients: nil, automatic_send: false, same_all_stages: true)
 
@@ -114,12 +110,13 @@ class Company < ActiveRecord::Base
 
   def settings
     [
-      { name: 'Deals', fields: fields.where(subject_type: 'Deal')        },
-      { name: 'Clients', fields: fields.where(subject_type: 'Client')    },
-      { name: 'Products', fields: fields.where(subject_type: 'Product')  },
-      { name: 'Contacts', fields: fields.where(subject_type: 'Contact')  },
+      { name: 'Deals', fields: fields.where(subject_type: 'Deal') },
+      { name: 'Clients', fields: fields.where(subject_type: 'Client') },
+      { name: 'Products', fields: fields.where(subject_type: 'Product') },
+      { name: 'Contacts', fields: fields.where(subject_type: 'Contact') },
       { name: 'Multiple', fields: fields.where(subject_type: 'Multiple') },
-      { name: 'Influencers', fields: fields.where(subject_type: 'Influencer') }
+      { name: 'Influencers', fields: fields.where(subject_type: 'Influencer') },
+      { name: 'Publishers', fields: fields.where(subject_type: 'Publisher') }
     ]
   end
 
@@ -243,5 +240,20 @@ class Company < ActiveRecord::Base
     validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'deal_source_value')
     validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'agency')
     validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'next_steps')
+  end
+
+  def setup_default_activity_types
+    activity_types.find_or_initialize_by(name:'Initial Meeting', action:'had initial meeting with', icon:'/assets/icons/meeting.png', css_class: 'bstr-initial-meeting', position: 1)
+    activity_types.find_or_initialize_by(name:'Pitch', action:'pitched to', icon:'/assets/icons/pitch.png', css_class: 'bstr-pitch', position: 2)
+    activity_types.find_or_initialize_by(name:'Proposal', action:'sent proposal to', icon:'/assets/icons/proposal.png', css_class: 'bstr-proposal', position: 3)
+    activity_types.find_or_initialize_by(name:'Feedback', action:'received feedback from', icon:'/assets/icons/feedback.png', css_class: 'bstr-feedback', position: 4)
+    activity_types.find_or_initialize_by(name:'Agency Meeting', action:'had agency meeting with', icon:'/assets/icons/agency-meeting.png', css_class: 'bstr-agency-meeting', position: 5)
+    activity_types.find_or_initialize_by(name:'Client Meeting', action:'had client meeting with', icon:'/assets/icons/client-meeting.png', css_class: 'bstr-client-meeting', position: 6)
+    activity_types.find_or_initialize_by(name:'Entertainment', action:'had client entertainment with', icon:'/assets/icons/entertainment.png', css_class: 'bstr-entertainment', position: 7)
+    activity_types.find_or_initialize_by(name:'Campaign Review', action:'reviewed campaign with', icon:'/assets/icons/campaign-review.png', css_class: 'bstr-campaign-review', position: 8)
+    activity_types.find_or_initialize_by(name:'QBR', action:'Quarterly Business Review with', icon:'/assets/icons/qbr.png', css_class: 'bstr-qbr', position: 9)
+    activity_types.find_or_initialize_by(name:'Email', action:'emailed to', icon:'/assets/icons/email.png', css_class: 'bstr-email', editable: false, position: 10)
+    activity_types.find_or_initialize_by(name:'Post Sale Meeting', action:'had post sale meeting with', icon:'/assets/icons/post-sale.png', css_class: 'bstr-post-sale-meeting', position: 11)
+    activity_types.find_or_initialize_by(name:'Internal Meeting', action:'had internal meeting with', icon:'/assets/icons/internal-meeting.png', css_class: 'bstr-internal-meeting', position: 12)
   end
 end

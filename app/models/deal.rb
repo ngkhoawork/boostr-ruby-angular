@@ -382,6 +382,7 @@ class Deal < ActiveRecord::Base
             activities: {
               include: {
                 creator: {},
+                publisher: { only: [:id, :name] },
                 contacts: {},
                 assets: {
                   methods: [

@@ -1,0 +1,31 @@
+#stages {
+  .dndDraggingSource {
+    display: none;
+  }
+
+  .dndPlaceholder {
+    margin-bottom: 10px;
+    height: 50px;
+    list-style-type: none;
+  }
+
+  .dndDragging {
+    box-shadow: none;
+    opacity: 1;
+    height: 70px;
+  }
+
+  .publisher-table {
+    tr {
+      cursor: pointer;
+    }
+  }
+
+  .title-row {
+    display: flex;
+    .add-btn {
+      top: 0;
+      margin-right: 20px;
+    }
+  }
+}

@@ -101,7 +101,8 @@
                     options: ->
                         type: 'contact'
                         data: $scope.currentContact
-                        isAdvertiser: $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
+                        isAdvertiser: $scope.currentContact.primary_client_json &&
+                            $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
 
         $scope.showActivityEditModal = (activity) ->
             $scope.modalInstance = $modal.open
@@ -116,7 +117,8 @@
                     options: ->
                         type: 'contact'
                         data: $scope.currentContact
-                        isAdvertiser: $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
+                        isAdvertiser: $scope.currentContact.primary_client_json &&
+                            $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
 
         $scope.showEmailsModal = (activity) ->
             $scope.modalInstance = $modal.open

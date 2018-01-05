@@ -112,7 +112,7 @@
   buildBPEstimate = (item) ->
     data = angular.copy(item)
     revenue = _.find $scope.revenues, (o) ->
-      return o.time_dimension_id == item.time_dimension.id
+      return item.time_dimension && (o.time_dimension_id == item.time_dimension.id)
 
     data.revenue = 0
 
@@ -351,7 +351,7 @@
       keyboard: false
       resolve:
         deal: $scope.setupNewDeal
-		options: -> {}
+        options: -> {}
 
   $scope.showNewAccountConnectionContactModal = ->
     $scope.modalInstance = $modal.open

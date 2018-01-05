@@ -45,7 +45,7 @@
             color: $secondary-font-color;
             min-height: 30px;
         }
-        .filter-dropdown {
+        .filter-dropdown, .filter-input {
             width: 63%;
             display: inline-block;
             position: relative;
@@ -196,6 +196,33 @@
 
                             }
                         }
+                    }
+                }
+            }
+        }
+        .filter-row {
+            .filter-input {
+                input {
+                    background-color: transparent;
+                    cursor: text;
+                    border: none;
+                    border-bottom: 1px solid lighten($secondary-font-color, 40%);
+                    height: auto;
+                }
+                &.selected {
+                    input {
+                        color: $main-font-color;
+                        font-weight: bold;
+                        font-size: 14px;
+                    }
+                }
+            }
+            .filter-date {
+                .dropdown-menu {
+                    right: 0;
+                    left: auto !important;
+                    table[role="grid"] {
+                        outline: none;
                     }
                 }
             }

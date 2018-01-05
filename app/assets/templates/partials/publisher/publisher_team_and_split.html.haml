@@ -1,0 +1,37 @@
+.block
+  %div.mb20
+    %span.title Team
+    %span{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
+      %add-button{ dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } } Add
+      %ul.dropdown-menu.new-member-options
+        %li.existing-user-options
+          %ui-select{ name: 'user-list', ng: { model: 'userToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingUser($item)' }
+            %ui-select-match{ placeholder: 'start typing their name here' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }
+              %div{ ng: { bind: { html: 'user.name' } } }
+  %table.table.table-striped.member-table
+    %thead
+      %tr
+        %th Member
+        %th Role
+        %th.left Owner
+    %tbody
+      %tr{ ng: { repeat: "member in publisherMembers | orderBy: 'name'"} }
+        %td
+          {{member.name}}
+
+          %i.fa.fa-trash.publisher-delete-icon{'ng-if': '!member.owner', 'ng-click': 'deleteMember(member)'}
+        %td
+          .dropdown
+            %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span.editable{'ng-class': '{"not-selected": !member.member_role}'}
+                {{member.member_role.name ? member.member_role.name : 'Select Role'}}
+              %span.caret
+            %ul.dropdown-menu
+              %li{'ng-repeat': 'role in memberRoles', 'ng-class': '{active: member.member_role.id == role.id}'}
+                %a{'href': '', 'ng-click': 'member.member_role = role; updateMember(member)'}
+                  %span.text {{role.name}}
+
+        %td.left
+          %z-toggle.comsocre-switcher{'ng-model': 'member.owner', 'ng-change': 'updateMember(member)', 'ng-click': '$event.stopPropagation()'}

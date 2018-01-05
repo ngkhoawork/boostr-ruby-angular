@@ -2,7 +2,6 @@
     '$scope', '$modal', '$window', '$sce', 'Deal', 'Field', 'Product', 'Seller', 'Team', 'TimePeriod', 'DealCustomFieldName', 'Stage', '$httpParamSerializer'
     ($scope,   $modal,   $window,   $sce,   Deal,   Field,   Product,   Seller,   Team,   TimePeriod,   DealCustomFieldName,   Stage,   $httpParamSerializer) ->
       $scope.page = 1
-      $scope.deals = []
       $scope.teams = []
       $scope.types = []
       $scope.stages = []
@@ -62,6 +61,7 @@
           query.team_id = query.team_id || 'all'
         appliedFilter = query
         getTotals(query)
+        getMonthlyBudgets(query)
         getData(query)
 
       getData = (query) ->
@@ -85,6 +85,10 @@
           t.deals = data.totals.total_deals
           t.pipelineRatio = data.totals.ratio
           t.aveDealSize = data.totals.average_deal_size
+
+      getMonthlyBudgets = (query) ->
+        Deal.pipeline_report_monthly_budgets(query).then (data) ->
+          $scope.monthly_budgets = data.monthly_budgets
 
       $scope.findDealProductBudgetBudget = (dealProductBudgets, productTime) ->
         productTimeDate = new Date(productTime)

@@ -26,6 +26,8 @@ class User < ActiveRecord::Base
   has_many :audit_logs
   has_many :filter_queries
   has_many :email_threads
+  has_many :publisher_members, dependent: :destroy
+  has_many :publishers, through: :publisher_members
 
   ROLES = %w(user admin superadmin supportadmin)
 
@@ -99,6 +101,10 @@ class User < ActiveRecord::Base
 
   def company_influencer_enabled
     self.company.influencer_enabled
+  end
+
+  def company_publisher_enabled
+    self.company.publishers_enabled
   end
 
   def company_forecast_gap_to_quota_positive
