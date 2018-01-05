@@ -1,0 +1,22 @@
+.block
+  %div.mb20
+    %span.title Contacts
+    %add-button{'ng-click': 'addContact()'} Add
+
+  %table.table.table-striped.contact-table
+    %thead
+      %tr
+        %th.left Name
+        %th.left Email
+        %th.left Mobile
+        %th.center Last Touch
+      %tbody
+        %tr{ ng: { repeat: 'contact in contacts'} }
+          %td
+            %a{'ng-href': '/contacts/{{contact.id}}', target: "_blank"}
+              {{contact.name}}
+            %i.fa.fa-pencil.publisher-edit-icon{'ng-click': 'editContact(contact)'}
+            %i.fa.fa-trash.publisher-delete-icon{'ng-click': 'deleteContact(contact)'}
+          %td {{contact.email}}
+          %td {{contact.address.mobile}}
+          %td.center {{contact.activity_updated_at  | date : 'shortDate'}}

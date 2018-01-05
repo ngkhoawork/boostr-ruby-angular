@@ -2,12 +2,12 @@ class Api::DealCustomFieldNamesController < ApplicationController
   respond_to :json
 
   def index
-    render json: deal_custom_field_names.order("position asc").as_json({
-        include: {
-            deal_custom_field_options: {
-                only: [:id, :value]
-            }
+    render json: deal_custom_field_names.order(:position).includes(:deal_custom_field_options).as_json({
+      include: {
+        deal_custom_field_options: {
+          only: [:id, :value]
         }
+      }
     })
   end
 

@@ -41,6 +41,10 @@ class Csv::ActivityDetailDecorator
     activity.team_creator rescue EMPTY_LINE
   end
 
+  def publisher
+    activity.publisher.name rescue EMPTY_LINE
+  end
+
   private
 
   attr_reader :activity

@@ -5,7 +5,7 @@ class RequestsMailer < ApplicationMailer
     begin
       @request = Request.find(request_id)
       subject = "You Have a New #{@request.request_type} Request"
-      mail(to: recipients, subject: subject)
+      mail(to: recipients&.uniq, subject: subject)
     rescue ActiveRecord::RecordNotFound
     end
   end
@@ -14,7 +14,7 @@ class RequestsMailer < ApplicationMailer
     begin
       @request = Request.find(request_id)
       subject = "#{@request.request_type} Request for Deal #{@request.deal.name}"
-      mail(to: recipients, subject: subject)
+      mail(to: recipients&.uniq, subject: subject)
     rescue ActiveRecord::RecordNotFound
     end
   end

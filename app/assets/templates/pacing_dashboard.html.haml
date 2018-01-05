@@ -54,7 +54,7 @@
 								%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_quarter track by $index'}
 									{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
 							%tr
-								%td YoY
+								%td Last Year
 								%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_year_quarter track by $index'}
 									{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
 						%tbody
@@ -73,7 +73,7 @@
 								%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_quarter track by $index'}
 									{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
 							%tr
-								%td YoY
+								%td Last Year
 								%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_year_quarter track by $index'}
 									{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
 
@@ -117,7 +117,7 @@
 							%td{'ng-repeat': 'val in newDeals.previous_quarter track by $index'}
 								{{val}}
 						%tr
-							%td YoY
+							%td Last Year
 							%td{'ng-repeat': 'val in newDeals.previous_year_quarter track by $index'}
 								{{val}}
 
@@ -136,6 +136,6 @@
 							%td{'ng-repeat': 'val in wonDeals.previous_quarter track by $index'}
 								{{val | currency: '$' : '0'}}
 						%tr
-							%td YoY
+							%td Last Year
 							%td{'ng-repeat': 'val in wonDeals.previous_year_quarter track by $index'}
 								{{val | currency: '$' : '0'}}

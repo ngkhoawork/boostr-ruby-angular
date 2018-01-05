@@ -1,0 +1,258 @@
+#publisher {
+  .publisher-stats {
+    .publisher-title {
+      display: flex;
+      align-items: center;
+    }
+
+    .stats-body {
+      display: flex;
+      flex: 1;
+      justify-content: space-around;
+      align-items: center;
+      padding: 35px 0 15px;
+    }
+
+    .stats-col {
+      width: auto;
+      height: auto;
+      margin-right: -4px;
+      text-align: center;
+      position: relative;
+      display: inline-block;
+
+      .col-description {
+        color: #818689;
+      }
+
+      .col-title {
+        font-size: 18px;
+        font-weight: 600;
+
+      }
+    }
+  }
+
+  .comscore-label {
+    margin-top: 8px;
+  }
+
+  .comsocre-switcher {
+    margin-top: 5px;
+  }
+
+  .custom-field-item {
+    padding-bottom: 5px;
+
+    .custom-field-item-label {
+      font-weight: bold;
+    }
+  }
+
+  #daily-revenue-chart-container {
+    display: inline-block;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  #fill-rate-chart {
+    .tick {
+      text {
+        font-size: 12px;
+      }
+    }
+    .total-imp-rect {
+      fill: #C0BBBE;
+      &:hover {
+        fill: darken(#C0BBBE, 5%)
+      }
+    }
+    .imp-rect {
+      fill: #FF7200;
+      &:hover {
+        fill: darken(#FF7200, 5%)
+      }
+    }
+    .total-text {
+      opacity: 0;
+      transition: opacity 300ms;
+      &.active {
+        opacity: 1;
+      }
+    }
+  }
+
+  .legend-container {
+    margin-left: 50px;
+    display: none;
+
+    .legend {
+      display: inline-flex;
+      padding: 0 7px;
+
+      .line {
+        width: 15px;
+        height: 15px;
+        margin-right: 8px;
+        margin-top: 2px;
+      }
+
+      .filled {
+        border-radius: 4px;
+        background-color: #FF7E30;
+      }
+
+      .available {
+        border-radius: 4px;
+        background-color: #BEC1C4;
+      }
+    }
+  }
+
+  #fill-rate-chart-tooltip {
+    position: fixed;
+    display: none;
+    padding: 10px;
+    border: 1px solid $main-font-color;
+    background-color: white;
+    color: $main-font-color;
+    border-radius: 5px;
+    font-weight: bold;
+    &.active {
+      display: block;
+    }
+  }
+
+  div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: auto;
+    padding: 10px 20px 10px 20px;
+    background: white;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+    box-shadow: -1px 9px 36px -6px rgba(163,162,180,0.65);
+
+    p {
+      margin: 0;
+      padding: 0;
+    }
+
+    span {
+      display: inline-block;
+      width: auto;
+      text-align: center;
+    }
+
+    p:first-child {
+      color: #FF7E30;
+      font-size: 14px;
+    }
+
+    p:nth-child(2) {
+      width: auto;
+      color: #2B3C49;
+      font-size: 16px;
+      font-weight: bold;
+      margin: 3px 0;
+    }
+
+    p:nth-child(3) {
+      width: auto;
+      color: #A3ACB4;
+      font-size: 12px;
+    }
+  }
+
+  .revenue-chart, .publisher-chart {
+    .axis {
+      font: 10px sans-serif;
+    }
+    .data-rect {
+      stroke-width: 2;
+      stroke: rgba(255, 255, 255, 0);
+      transition: stroke 350ms;
+    }
+    .hovered {
+      stroke: #847f85;
+    }
+    .graph {
+      fill: transparent;
+      stroke-width: 3px;
+    }
+    .month-line {
+      stroke: #BEC1C4;
+      stroke-width: 2px;
+    }
+    .max-line {
+      stroke: black;
+      stroke-dasharray: 3, 3;
+      stroke-width: 1px;
+      shape-rendering: crispEdges;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #d9dde0;
+      shape-rendering: crispEdges;
+    }
+
+    .x-tick-text {
+      font-size: 11px;
+    }
+
+    .line {
+      fill: transparent;
+      stroke: #ff7200;
+      stroke-width: 3px;
+    }
+
+    circle {
+      stroke: #ff7200;
+      fill: #ff7200;
+      cursor: pointer;
+    }
+  }
+  .campaign-details {
+    .editable-field {
+      padding: 5px 8px;
+      border: 1px dashed $secondary-font-color;
+      max-width: 100px;
+      &:focus {
+        background-color: inherit;
+        border-color: $secondary-font-color;
+      }
+    }
+  }
+
+  .member-table, .contact-table {
+    .publisher-delete-icon, .publisher-edit-icon {
+      color: $secondary-font-color;
+      margin-left: 8px;
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      padding: 4px 6px;
+      font-size: 20px;
+      border-radius: 5px;
+      &:hover {
+        background-color: $secondary-font-color;
+        color: white;
+      }
+    }
+
+    .publisher-delete-icon, .publisher-edit-icon {
+      visibility: hidden;
+    }
+
+    td:hover .publisher-delete-icon {
+      visibility: visible;
+    }
+
+    td:hover .publisher-edit-icon {
+      visibility: visible;
+    }
+  }
+}

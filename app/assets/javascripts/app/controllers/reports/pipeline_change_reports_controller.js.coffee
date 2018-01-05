@@ -2,7 +2,6 @@
 	'$scope', '$window', '$document', '$httpParamSerializer', '$location', 'PipelineChangeReportService', 'zError'
 	($scope,   $window,   $document,   $httpParamSerializer,   $location,   PipelineChangeReportService,   zError) ->
 
-		$scope.report_data_items = []
 		$scope.changeTypes = [
 			{id: 1, name: 'New Deals'}
 			{id: 2, name: 'Won Deals'}

@@ -70,7 +70,7 @@
 
 
 		$scope.$on 'updated_activities', ->
-			getReport getQuery(true)
+			getReport appliedFilter
 
 		$scope.exportReports = ->
 			url = '/api/activities.csv'

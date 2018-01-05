@@ -1,0 +1,141 @@
+#publisher_modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header
+      {{formType}} Publisher
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+      .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
+        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+          %i.fa.fa-warning
+          {{error}}
+
+      .form-group{'ng-class':'{error: errors.name}'}
+        %span.error-text {{errors.name}}
+        %label{ for: 'name' }
+          Name
+        %span.star *
+        %input.form-control{ placeholder: 'Name', ng: { model: 'publisher.name' }, name: 'name' }
+
+      .row
+        .form-group.col-xs-6
+          %label{ for: 'publisher-stage' }
+            Stage
+          %ui-select{ stage: 'pablisher-stage', ng: { model: 'publisher.publisher_stage_id', disabled: true } }
+            %ui-select-match{ placeholder: 'Stage', "allow-clear": 'true' }
+              {{ $select.selected.name }} {{$select.selected.probability}}%
+            %ui-select-choices{ repeat: 'stage.id as stage in publisher_stages' }
+              %div{ ng: { bind: { html: 'stage.name+" "+stage.probability+"%"' } } }
+
+        .form-group.col-xs-6
+          %label{ for: 'comscore' }
+            Comscore 250
+          %br
+          %z-toggle{'ng-model': 'publisher.comscore', 'ng-click': '$event.stopPropagation()'}
+
+      .row
+        .form-group.col-xs-6{'ng-class':'{error: errors.type_id}'}
+          %span.error-text {{errors.type_id}}
+          %label{ for: 'publisher-stage' }
+            Publisher Type
+          %ui-select{ type: 'publisher-type', ng: { model: 'publisher.type_id', disabled: true } }
+            %ui-select-match{ placeholder: 'Publisher Type', "allow-clear": 'true' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'type.id as type in publisher_types' }
+              %div{ ng: { bind: { html: 'type.name' } } }
+
+        .form-group.col-xs-6
+          %label{ for: 'estimate-monthly' }
+            Estimated Monthly Impressions
+          %input.form-control{placeholder: 'Estimated Monthly Impressions', ng: { model: 'publisher.estimated_monthly_impressions' }, name: 'estimated_monthly_impressions', 'numbers-with-commas': true, value: '0' }
+
+      .row
+        .form-group.col-md-6.bs-datepicker
+          %label{ for: 'start-date' }
+            Term Start Date
+          %input.form-control{readonly: true, name: 'term_start_date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'publisher.term_start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+
+        .form-group.col-md-6.bs-datepicker
+          %label{ for: 'end-date' }
+            Term End Date
+          %input.form-control{readonly: true, name: 'term_end_date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'publisher.term_end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
+
+      .row.hide-input-arrows
+        .form-group.col-xs-6
+          %label{ for: 'estimate-monthly' }
+            Revenue Share
+          %input.form-control{placeholder: 'Revenue Share', type: 'number', max: "100", ng: { model: 'publisher.revenue_share' }, name: 'revenue_share' }
+
+        .form-group.col-xs-6
+          %span.error-text
+          %label{ for: 'publisher-term' }
+            Renewal Term
+          %ui-select{ type: 'publisher-term', ng: { model: 'publisher.renewal_term_id', disabled: true } }
+            %ui-select-match{ placeholder: 'Renewal Term', "allow-clear": 'true' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'term.id as term in renewal_term_fields' }
+              %div{ ng: { bind: { html: 'term.name' } } }
+
+
+      .form-group{ng: {repeat: 'pubCustomField in publisherCustomFields | orderBy: "position"', init: "fieldName = pubCustomField.field_type + pubCustomField.field_index", if: "!pubCustomField.disabled", class:'{error: errors[fieldName]}'}}
+        %span.error-text {{errors[fieldName]}}
+        %label{ for: '{{fieldName}}', ng: { if: "pubCustomField.field_type != 'sum'" } }
+          {{pubCustomField.field_label}}
+          %span.star{ 'ng-if': "pubCustomField.is_required == true" }
+            *
+        %input.form-control{ 'ng-if': "pubCustomField.field_type != 'number' && pubCustomField.field_type != 'note' && pubCustomField.field_type != 'datetime' && pubCustomField.field_type != 'boolean' && pubCustomField.field_type != 'dropdown' && pubCustomField.field_type != 'sum'", placeholder: 'Enter {{pubCustomField.field_label}}', ng: { model: 'publisher.publisher_custom_field_obj[fieldName]' }, name: '{{fieldName}}' }
+        %input.form-control{'ng-if': "pubCustomField.field_type == 'number'", 'msd-elastic': '', 'ng-model': "publisher.publisher_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pubCustomField.field_label}}', 'numbers-with-commas': true}
+        %textarea.form-control{ 'ng-if': "pubCustomField.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "publisher.publisher_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pubCustomField.field_label}}' }
+        .bs-datepicker
+          %input.form-control{ 'ng-if': "pubCustomField.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'publisher.publisher_custom_field_obj[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{pubCustomField.field_label}}' }
+        .show-hide-remainder-form{ ng: { if: "pubCustomField.field_type == 'boolean' " } }
+          .switch-remainder-form
+            %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}", type: 'checkbox', 'ng-model': 'publisher.publisher_custom_field_obj[fieldName]'}
+            %label{:for => "{{fieldName}}"}
+              %span
+        %ui-select{ name: '{{fieldName}}', ng: { if: "pubCustomField.field_type == 'dropdown'", model: 'publisher.publisher_custom_field_obj[fieldName]', disabled: true } }
+          %ui-select-match{ placeholder: 'Select value' }
+            {{ $select.selected.value }}
+          %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in pubCustomField.publisher_custom_field_options | filter: { value: $select.search }' }
+            %div{ ng: { bind: { html: 'customFieldOption.value' } } }
+
+
+      .form-group{'ng-class':'{error: errors.website}'}
+        %span.error-text {{errors.website}}
+        %label{ for: 'website' }
+          Website
+        %input.form-control{ placeholder: 'Website', ng: { model: 'publisher.website' }, name: 'website' }
+
+      .form-group.text-center{'ng-hide': 'showAddressFields'}
+        %a.btn.add-btn{ 'ng-click': 'showAddressFields = true'}
+          %i.fa.fa-plus
+          Add Address
+      %div{ 'ng-show': 'showAddressFields' }
+        .form-group
+          %label{ for: 'street1' } Address
+          %input.form-control{ name: 'street1', placeholder: 'Address', ng: { model: 'publisher.address.street1' } }
+        .form-group
+          .row
+            .col-xs-5
+              %label{ for: 'city' } City
+              %input.form-control{ name: 'city', placeholder: 'City', ng: { model: 'publisher.address.city' }  }
+            .col-xs-4.fat
+              %label{ for: 'state' } State
+              %ui-select.bo-state-select{ name: 'state', ng: { model: 'publisher.address.state', disabled: true } }
+                %ui-select-match{ placeholder: 'State' }
+                  {{ $select.selected.name }}
+                %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
+                  %div{ ng: { bind: { html: 'state.name' } } }
+            .col-xs-3
+              %label{ for: 'zip' } Postal code
+              %input.form-control{ name: 'zip', placeholder: 'Postal code', ng: { model: 'publisher.address.zip' }  }
+        .form-group
+          %label{ for: 'country' } Country
+          %ui-select{ name: 'country', ng: { model: 'publisher.address.country', disabled: true } }
+            %ui-select-match{ placeholder: 'Country' }
+              {{ $select.selected }}
+            %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
+              %div {{ country }}
+
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

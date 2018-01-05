@@ -1,6 +1,6 @@
 @app.controller "ContactsAddController",
-['$scope', '$modal', '$modalInstance', '$filter', 'Contact', 'Deal', 'DealContact', 'deal',
-($scope, $modal, $modalInstance, $filter, Contact, Deal, DealContact, deal) ->
+['$scope', '$modal', '$modalInstance', '$filter', 'Contact', 'Deal', 'DealContact', 'deal', 'publisher', 'PublisherContact', '$rootScope',
+($scope, $modal, $modalInstance, $filter, Contact, Deal, DealContact, deal, publisher, PublisherContact, $rootScope) ->
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.searchText = ""
@@ -25,19 +25,29 @@
     _.findWhere(deal.deal_contacts, contact_id: contact.id)
 
   $scope.addContact = (contact) ->
-    DealContact.create(deal_id: deal.id, deal_contact: { contact_id: contact.id }).then(
-      (deal_contact) ->
-        deal.deal_contacts.push deal_contact
-      (resp) ->
-        false
-    )
+    if !_.isEmpty(deal)
+      DealContact.create(deal_id: deal.id, deal_contact: { contact_id: contact.id }).then(
+        (deal_contact) ->
+          deal.deal_contacts.push deal_contact
+        (resp) ->
+          false
+      )
+    else
+      PublisherContact.addContact(id: contact.id, publisher_id: publisher.id).then (res) ->
+        $rootScope.$broadcast 'updated_publisher_detail'
+
 
   $scope.cancel = ->
     $modalInstance.close()
 
   $scope.$on 'newContact', (e, contact) ->
-    DealContact.all(deal_id: deal.id).then (contacts) ->
-      $scope.contacts = contacts
+    if !_.isEmpty(deal)
+      DealContact.all(deal_id: deal.id).then (contacts) ->
+        $scope.contacts = contacts
+    else
+      Contact.all1({ per: 10 }).then (contacts) ->
+        $scope.contacts = contacts
+
 
   $scope.createContact = () ->
     $scope.modalInstance = $modal.open

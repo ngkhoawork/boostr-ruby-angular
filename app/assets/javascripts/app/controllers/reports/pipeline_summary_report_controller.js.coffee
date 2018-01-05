@@ -2,7 +2,6 @@
 	['$scope', '$window', '$location', '$httpParamSerializer', '$httpParamSerializerJQLike', '$routeParams', 'Report', 'Team', 'Seller', 'Stage', 'Field', 'DealCustomFieldName'
 	( $scope,   $window,   $location,   $httpParamSerializer,   $httpParamSerializerJQLike,   $routeParams,   Report,   Team,   Seller,   Stage,   Field,   DealCustomFieldName ) ->
 
-		$scope.deals = []
 		$scope.teams = []
 		$scope.sellers = []
 		$scope.stages = []

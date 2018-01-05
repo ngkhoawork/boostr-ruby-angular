@@ -11,6 +11,7 @@
         {name: 'FORECAST', url: '/forecast'}
         {name: 'REVENUE', url: '/revenue'}
         {name: 'ACCOUNTS', url: '/accounts'}
+        {name: 'PUBLISHERS', url: '/publishers'} if _isPublisherEnabled
         {name: 'CONTACTS', url: '/contacts'}
         {name: 'INFLUENCERS', url: '/influencers'} if _isCompanyInfluencerEnabled
         {name: 'BUSINESS PLANS', url: '/bps'}
@@ -31,6 +32,7 @@
             {name: 'Spend by Account', url: '/reports/spend_by_account'}
             {name: 'Spend by Category', url: '/reports/spend_by_category'}
             {name: 'Quota Attainment', url: '/reports/quota_attainment'}
+            {name: 'Publishers', url: '/reports/publishers'}
         ]}
         {name: 'SMART INSIGHTS', url: '/smart_reports', dropdown: [
             {name: 'Sales Execution Dashboard', url: '/smart_reports/sales_execution_dashboard'}

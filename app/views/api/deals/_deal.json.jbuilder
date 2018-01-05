@@ -117,6 +117,15 @@ end
 json.values deal.values
 json.fields deal.fields
 
+json.activities deal.activities.order(happened_at: :desc) do |activity|
+  json.extract! activity, :id, :happened_at, :comment, :activity_type
+  json.creator activity.creator
+  json.deal activity.deal
+  json.client activity.client
+  json.contacts activity.contacts
+  json.publisher activity.publisher&.serializable_hash(only: [:id, :name])
+end
+
 json.initiatives deal.company.initiatives, :id, :name
 
 if deal.initiative.present?

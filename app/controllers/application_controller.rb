@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include PagesHelper
   before_filter :authenticate_user!
   after_filter :set_csrf_cookie
   rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
@@ -41,13 +42,5 @@ class ApplicationController < ActionController::Base
     else
       'application'
     end
-  end
-
-  def limit
-    params[:per].present? ? params[:per].to_i : 10
-  end
-
-  def offset
-    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
   end
 end

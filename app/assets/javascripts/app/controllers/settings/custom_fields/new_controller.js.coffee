@@ -1,6 +1,6 @@
 @app.controller "SettingsDealCustomFieldNamesNewController",
-['$scope', '$modalInstance', '$q', '$filter', 'DealCustomFieldName', 'DealProductCfName', 'AccountCfName', 'ContactCfName', 'User', 'TimePeriod', 'customFieldName',
-($scope, $modalInstance, $q, $filter, DealCustomFieldName, DealProductCfName, AccountCfName, ContactCfName, User, TimePeriod, customFieldName) ->
+['$scope', '$modalInstance', '$q', '$filter', 'DealCustomFieldName', 'DealProductCfName', 'AccountCfName', 'ContactCfName', 'PublisherCustomFieldName', 'User', 'TimePeriod', 'customFieldName',
+($scope, $modalInstance, $q, $filter, DealCustomFieldName, DealProductCfName, AccountCfName, ContactCfName, PublisherCustomFieldName, User, TimePeriod, customFieldName) ->
 
   $scope.init = () ->
     $scope.formType = "New"
@@ -12,6 +12,7 @@
       { name: 'Deal Product', value: 'deal_product' }
       { name: 'Account', value: 'account' }
       { name: 'Contact', value: 'contact' }
+      { name: 'Publisher', value: 'publisher' }
     ]
 
     $scope.customFieldOptions = [ {id: null, value: ""} ]
@@ -37,6 +38,8 @@
       ContactCfName.field_type_list
     else if field_object == 'account'
       AccountCfName.field_type_list
+    else if field_object == 'publisher'
+      PublisherCustomFieldName.field_type_list
 
   $scope.submitForm = () ->
     $scope.errors = {}
@@ -91,6 +94,15 @@
 
     if $scope.customFieldName.field_object == 'contact'
       ContactCfName.create(contact_cf_name: $scope.customFieldName).then(
+        (customFieldName) ->
+          $modalInstance.close()
+        (resp) ->
+          $scope.responseErrors = resp.data.errors
+          $scope.buttonDisabled = false
+      )
+
+    if $scope.customFieldName.field_object == 'publisher'
+      PublisherCustomFieldName.create(publisher_custom_field_name: $scope.customFieldName).then(
         (customFieldName) ->
           $modalInstance.close()
         (resp) ->

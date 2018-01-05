@@ -19,11 +19,12 @@
                                 %i.activity-icon.fa{'class': '{{type.css_class}}'}
                                 %span.text {{type.name}}
             %div{'ng-if': 'showRelated'}
-                .form-group{'ng-class':'{error: errors.deal}', style: 'margin-bottom: 5px'}
+                .form-group{'ng-class':'{error: errors.deal}'}
                     %span.error-text {{errors.deal}}
                     %label
                         Related to Deal
                     %input.form-control{'placeholder': 'Choose Deal', 'ng-model': 'form.deal', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)', 'typeahead-on-select': 'onDealSelect($item, $model, $label, $event)'}
+
                 .advertiser-agency
                     .form-group.advertiser-field{'ng-class':'{error: errors.advertiser}'}
                         %span.error-text {{errors.advertiser}}
@@ -36,6 +37,21 @@
                             or Agency
                         %input.form-control{'placeholder': 'Choose Agency', 'ng-model': 'form.agency', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "agency")'}
                     %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openAccountModal()'}
+
+                .row
+                    .col-xs-6{'ng-if': 'isPublisherEnabled'}
+                        .form-group{'ng-class':'{error: errors.publisher}'}
+                            %span.error-text {{errors.publisher}}
+                            %label{style: 'display: block'}
+                                or Publisher
+                            %input.form-control{'placeholder': 'Choose Publisher', 'ng-model': 'form.publisher', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchPublishers($viewValue)'}
+                    -#.col-xs-6{'ng-if': 'isInfluencerEnabled'}
+                        .form-group{'ng-class':'{error: errors.influencer}'}
+                            %span.error-text {{errors.influencer}}
+                            %label{style: 'display: block'}
+                                Influencer
+                            %input.form-control{'placeholder': 'Choose Influencer', 'ng-model': 'form.influencer', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchInfluencers($viewValue)'}
+
             %div{'ng-if': 'currentContact && !isEdit'}
                 .activity-contact
                     {{selectedType.action | firstUppercase}}
