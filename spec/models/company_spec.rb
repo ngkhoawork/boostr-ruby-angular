@@ -35,6 +35,26 @@ RSpec.describe Company, type: :model do
       billing_contact_option = contact_role_field.options.find_by(name: 'Billing', company: company, locked: true)
       expect(billing_contact_option).to be
     end
+
+    context 'default activity types' do
+      it 'creates default activity types' do
+        expect {
+          create :company
+        }.to change(ActivityType, :count).by(12)
+      end
+
+      it 'assigns defult activity type values' do
+        company = create :company
+
+        expect(company.activity_types.by_name('Email').last).to have_attributes(
+          action:'emailed to',
+          icon:'/assets/icons/email.png',
+          position: 10,
+          editable: false,
+          css_class: 'bstr-email'
+        )
+      end
+    end
   end
 
   describe '#validation_for' do
