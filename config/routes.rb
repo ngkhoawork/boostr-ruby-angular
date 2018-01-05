@@ -341,6 +341,8 @@ Rails.application.routes.draw do
     resources :forecasts, only: [:index, :show] do
       collection do
         get :revenue_data
+        get :pmp_data
+        get :pmp_product_data
         get :pipeline_data
         get :old_detail
         get :detail

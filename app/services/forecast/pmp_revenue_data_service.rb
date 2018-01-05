@@ -1,22 +1,35 @@
 class Forecast::PmpRevenueDataService
-  def initialize(company, params)
+  def initialize(company, params, is_product = false)
     @company             = company
     @team_id             = params[:team_id]
     @product_family_id   = params[:product_family_id]
     @product_id          = params[:product_id]
-    @member_id           = params[:member_id]
+    @member_id           = params[:member_id] if params[:member_id]
+    @member_id           = params[:user_id] if params[:user_id]
     @time_period_id      = params[:time_period_id]
+    @is_product          = is_product
   end
 
   def perform
-    ActiveModel::ArraySerializer.new(
-      data_for_serializer,
-      each_serializer: Forecast::PmpRevenueDataSerializer,
-      filter_start_date: start_date,
-      filter_end_date: end_date,
-      product_ids: product_ids,
-      member_ids: member_ids,
-    )
+    if is_product
+      ActiveModel::ArraySerializer.new(
+        data_for_serializer,
+        each_serializer: Forecast::PmpRevenueProductDataSerializer,
+        filter_start_date: start_date,
+        filter_end_date: end_date,
+        product_ids: product_ids,
+        member_ids: member_ids,
+      )
+    else
+      ActiveModel::ArraySerializer.new(
+        data_for_serializer,
+        each_serializer: Forecast::PmpRevenueDataSerializer,
+        filter_start_date: start_date,
+        filter_end_date: end_date,
+        product_ids: product_ids,
+        member_ids: member_ids,
+      )
+    end
   end
 
   private
@@ -26,6 +39,7 @@ class Forecast::PmpRevenueDataService
               :product_family_id,
               :product_id,
               :member_id,
+              :is_product,
               :time_period_id
 
   def data_for_serializer
@@ -77,25 +91,23 @@ class Forecast::PmpRevenueDataService
   end
 
   def members
-    @_members ||= if member_id
+    @_members ||= if member_id && member_id != 'all'
       [member]
-    elsif team_id
+    elsif team_id && team_id != 'all'
       team.all_members + team.all_leaders
-    else
-      raise ActiveRecord::RecordNotFound
     end
   end
 
   def member_ids
-    @_member_ids ||= members.collect(&:id) if members
+    @_member_ids ||= members.collect(&:id) if members.present?
   end
 
   def member
-    @_member ||= company.users.find(member_id)
+    @_member ||= company.users.find(member_id) if member_id != 'all'
   end
 
   def team
-    @_team ||= company.teams.find(team_id)
+    @_team ||= company.teams.find(team_id) if team_id != 'all'
   end
 
   def product

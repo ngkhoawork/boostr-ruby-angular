@@ -96,12 +96,9 @@
 						, ->
 							link.removeClass('loading-subtable')
 					when 'revenue'
-						Forecast.revenue_data(params).$promise.then (data) ->
-							revenues = data.revenue_data
-							pmp_revenues = data.pmp_revenue_data
+						Forecast.revenue_data(params).$promise.then (revenues) ->
 							$scope.weighted_pipeline = null
 							$scope.revenues = revenues
-							$scope.pmp_revenues = pmp_revenues
 							$scope.sort.revenues = new McSort(
 								column: "name",
 								compareFn: (column, a, b) ->
@@ -112,6 +109,12 @@
 											a[column] - b[column]
 								dataset: $scope.revenues
 							)
+							$timeout onSubtableLoad
+						, ->
+							link.removeClass('loading-subtable')
+
+						Forecast.pmp_data(params).$promise.then (pmp_revenues) ->
+							$scope.pmp_revenues = pmp_revenues
 							$scope.sort.pmp_revenues = new McSort(
 								column: "name",
 								compareFn: (column, a, b) ->

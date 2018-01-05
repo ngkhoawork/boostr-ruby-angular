@@ -104,10 +104,15 @@ class Api::ForecastsController < ApplicationController
   end
 
   def revenue_data
-    render json: {
-      revenue_data: forecast_revenue_data_serializer,
-      pmp_revenue_data: forecast_pmp_revenue_data_serializer,
-    }
+    render json: forecast_revenue_data_serializer
+  end
+
+  def pmp_product_data
+    render json: forecast_pmp_revenue_product_data_serializer
+  end
+
+  def pmp_data
+    render json: forecast_pmp_revenue_data_serializer
   end
 
   def show
@@ -285,6 +290,10 @@ class Api::ForecastsController < ApplicationController
 
   def forecast_pmp_revenue_data_serializer
     Forecast::PmpRevenueDataService.new(company, params).perform
+  end
+
+  def forecast_pmp_revenue_product_data_serializer
+    Forecast::PmpRevenueDataService.new(company, params, true).perform
   end
 
   def forecast_pipeline_data_serializer

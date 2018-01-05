@@ -1,9 +1,9 @@
-class Forecast::PmpRevenueDataSerializer < ActiveModel::Serializer
+class Forecast::PmpRevenueProductDataSerializer < ActiveModel::Serializer
   attributes  :id, :name, :agency,
               :advertiser, :budget, 
               :sum_period_budget, :split_period_budget,
               :start_date, :end_date,
-              :months, :quarters
+              :products
 
   has_many :pmp_members, serializer: Pmps::PmpMemberSerializer
 
@@ -23,12 +23,8 @@ class Forecast::PmpRevenueDataSerializer < ActiveModel::Serializer
     partial_amounts[1]
   end
 
-  def months
+  def products
     partial_amounts[2]
-  end
-
-  def quarters
-    partial_amounts[3]
   end
 
   private
@@ -50,7 +46,7 @@ class Forecast::PmpRevenueDataSerializer < ActiveModel::Serializer
   end
 
   def partial_amounts
-    @_partial_amounts ||= Pmp::FilteredRevenueDataService
+    @_partial_amounts ||= Pmp::FilteredRevenueProductDataService
       .new(object, filter_start_date, filter_end_date, member_ids, product_ids)
       .perform
   end

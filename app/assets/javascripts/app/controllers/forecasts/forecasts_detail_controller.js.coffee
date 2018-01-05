@@ -8,6 +8,7 @@
         $scope.appliedFilter = {}
         $scope.switch =
             revenues: 'quarters'
+            pmp_revenues: 'quarters'
             deals: 'quarters'
             set: (key, val) ->
                 this[key] = val
@@ -100,17 +101,19 @@
         addDetailAmounts = (data, type) ->
             qs = ['Q1', 'Q2', 'Q3', 'Q4']
             ms = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-            suffix = if type == 'revenues' then 's' else if type == 'deals' then '_amounts'
+            suffix = if type == 'revenues' || type == 'pmp_revenues' then 's' else if type == 'deals' then '_amounts'
             quarters = {}
             months = {}
             for q, i in qs
                 for item in data
-                    if item['quarter' + suffix][i] != null
+                    amount = item['quarter' + suffix][i]
+                    if amount != null && amount != undefined
                         quarters[i] = q
                         break
             for m, i in ms
                 for item in data
-                    if item['month' + suffix][i] != null
+                    amount = item['month' + suffix][i]
+                    if amount != null && amount != undefined
                         months[i] = m
                         break
             data.detail_amounts =
@@ -150,10 +153,15 @@
                     parseRevenueBudgets data
                     addDetailAmounts data, 'revenues'
                     $scope.revenues = data
-                    Deal.forecast_detail(query).then (data) ->
-                        parseDealBudgets data
-                        addDetailAmounts data, 'deals'
-                        $scope.deals = data
+                    Forecast.pmp_data(query).$promise.then (pmp_data) ->
+                        parseRevenueBudgets pmp_data
+                        addDetailAmounts pmp_data, 'pmp_revenues'
+                        $scope.pmp_revenues = pmp_data
+                        console.log($scope);
+                        Deal.forecast_detail(query).then (deal_data) ->
+                            parseDealBudgets deal_data
+                            addDetailAmounts deal_data, 'deals'
+                            $scope.deals = deal_data
 
         tableToCSV = (el) ->
             table = angular.element(el)
