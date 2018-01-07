@@ -46,6 +46,9 @@ class Forecast::PmpRevenueCalcService
   def pmp_item_budgets(monthly_value, pmp_item, pmp_member, pmp)
     share = pmp_member.share
     pmp_actuals = pmp_item.pmp_item_daily_actuals
+
+    return 0 if pmp_actuals.count == 0
+
     actual_start_date = pmp_actuals.first.date
     actual_end_date = pmp_actuals.last.date
     run_rate = pmp_item_run_rate(pmp_item)
