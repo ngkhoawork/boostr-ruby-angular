@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :dfp_report_query do
     report_type 1
 weekly_recurrence_day 1

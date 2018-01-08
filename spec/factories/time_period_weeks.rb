@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :time_period_week do
     week 1
     start_date '1/1/2017'

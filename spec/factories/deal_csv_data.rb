@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :deal_csv_data, class: Hash do
     id nil
     name { FFaker::NatoAlphabet.callsign }

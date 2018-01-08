@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :publisher do
     client
     name { FFaker::Company.name }

@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :forecast_pipeline_fact do
     forecast_time_dimension
 		user_dimension

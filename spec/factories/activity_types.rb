@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :activity_type do
     name    { FFaker::HipsterIpsum.word }
     action  { FFaker::HipsterIpsum.phrase }

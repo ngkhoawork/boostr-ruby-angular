@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :activity do
     activity_type_id 1
     activity_type_name "Phone Call"

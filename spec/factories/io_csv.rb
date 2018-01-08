@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :io_csv do
     io_external_number { rand(1000..9999) }
     io_name { FFaker::Product.product_name }

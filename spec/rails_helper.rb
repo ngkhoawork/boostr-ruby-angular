@@ -16,6 +16,8 @@ end
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
+ENV['S3_BUCKET_NAME'] ||= 'test'
+
 require 'spec_helper'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
@@ -54,7 +56,7 @@ ActiveRecord::Migration.maintain_test_schema!
 Capybara.javascript_driver = :webkit
 
 RSpec.configure do |config|
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
   config.include Devise::TestHelpers, type: :controller
   config.include Warden::Test::Helpers
   config.include Helpers
@@ -78,7 +80,7 @@ RSpec.configure do |config|
     end
 
     DatabaseCleaner.start
-    FactoryGirl.create(:company)
+    FactoryBot.create(:company)
   end
 
   config.after do
@@ -86,4 +88,15 @@ RSpec.configure do |config|
   end
 
   config.infer_spec_type_from_file_location!
+end
+
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end
+
+Capybara::Webkit.configure do |config|
+  config.block_unknown_urls
 end

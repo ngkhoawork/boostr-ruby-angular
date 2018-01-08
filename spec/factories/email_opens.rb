@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :email_open do
     email "example@gmail.com"
     guid "12345"

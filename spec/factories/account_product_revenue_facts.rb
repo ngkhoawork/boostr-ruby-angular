@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :account_product_revenue_fact do
     account_dimension nil
     time_dimension nil

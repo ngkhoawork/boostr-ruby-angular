@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :dfp_api_configuration do
     json_api_key { { some_key: ''} }
     company

@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :asset_csv do
     original_file_name { FFaker::BaconIpsum.word }
     attachable_id nil

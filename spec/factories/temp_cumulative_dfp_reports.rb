@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :temp_cumulative_dfp_report do
     dimensionorder_name "MyString"
     dimensionadvertiser_name "MyString"

@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :dfp_report_monthly_csv_data, class: Hash do
     dimensionorder_id '1234'
     dimensionline_item_id '4321'

@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :influencer do
     company nil
 		name "MyString"

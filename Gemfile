@@ -3,8 +3,8 @@ source 'https://rubygems.org'
 ruby '2.3.4'
 
 gem 'rails', '4.2.3'
-gem 'pg'
-gem 'pg_search'
+gem 'pg', '= 0.20' # Locked until deprecation warning with PGconn is fixed
+gem 'pg_search', '= 2.1.1'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.1.0'
@@ -12,9 +12,9 @@ gem 'jquery-rails'
 gem 'puma'
 gem 'bootstrap-sass', '~> 3.3.5'
 gem 'devise'
-gem 'devise_invitable', '~> 1.3.4'
+gem 'devise_invitable', '~> 1.3.6'
 gem 'knock', git: 'https://github.com/trizes/knock.git', branch: 'master'
-gem 'rollbar', '~> 2.14.0'
+gem 'rollbar'
 gem 'activeadmin', '~> 1.0.0'
 gem 'haml-rails', '~> 0.9'
 gem 'angular-rails-templates'
@@ -23,7 +23,6 @@ gem 'paranoia', '~> 2.0'
 gem 'jbuilder'
 gem 'chronic'
 gem 'sidekiq'
-gem 'sinatra', '>= 1.3.0', require: nil
 gem 'clockwork'
 gem 'newrelic_rpm'
 gem 'awesome_print'
@@ -33,14 +32,14 @@ gem 'rubyzip'
 gem 'font-awesome-rails'
 gem 'griddler'
 gem 'griddler-sendgrid'
-gem 'aws-sdk'
+gem 'aws-sdk-s3'
 gem 'responders'
-gem 'roar'
+gem 'roar', '~> 1.0.4'
 gem 'countries'
 gem 'faraday'
 gem 'attr_encrypted', '~> 3.0.0'
 gem 'net-sftp', require: false
-gem 'google-dfp-api'
+gem 'google-dfp-api', '=0.20.0' # Locking DFP integration gem due to some changes in recent version
 gem 'clean_pagination'
 gem 'switch_user'
 gem 'oauth2'
@@ -81,7 +80,7 @@ group :production, :staging do
 end
 
 group :test do
-  gem 'shoulda-matchers', require: false
+  gem 'shoulda-matchers'
   gem 'vcr'
   gem 'webmock'
   gem 'simplecov', require: false
@@ -92,11 +91,14 @@ group :development do
   gem 'bullet'
   gem 'letter_opener'
   gem 'meta_request'
+
+  # Access an IRB console on exception pages or by using <%= console %> in views
+  gem 'web-console'
 end
 
 group :development, :test do
-  gem 'rspec-rails', '~> 3.0'
-  gem 'factory_girl_rails'
+  gem 'rspec-rails', '~> 3.7.0'
+  gem 'factory_bot_rails'
   gem 'capybara'
   gem 'jasmine-rails'
   gem 'launchy'
@@ -112,8 +114,6 @@ group :development, :test do
   gem 'reek'
 
   gem 'capybara-webkit'
-  # Access an IRB console on exception pages or by using <%= console %> in views
-  gem 'web-console', '~> 2.0'
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'

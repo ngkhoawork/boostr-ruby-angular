@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :field do
     subject_type "Deal"
     value_type "Option"

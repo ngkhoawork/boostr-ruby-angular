@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :activity_csv_data, class: Hash do
     id nil
     date '01/01/2016'

@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :filter_query do
     sequence(:name) { |n| "Filter Query #{n}" }
     query_type 'pipeline_summary_report'

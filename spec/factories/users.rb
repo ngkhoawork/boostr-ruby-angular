@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :user do
     email { rand(999999).to_s + FFaker::Internet.email }
     password { FFaker::Internet.password }

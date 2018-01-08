@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :deal_product_cf_name do
     company nil
     field_index 1

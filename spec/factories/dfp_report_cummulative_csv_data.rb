@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :dfp_report_cummulative_csv_data, class: Hash do
     dimensionorder_name "Hershey test_301"
     dimensionadvertiser_name "Hershey"

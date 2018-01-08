@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :validation do
     company { Company.first }
     factor { FFaker::HipsterIpsum.phrase }

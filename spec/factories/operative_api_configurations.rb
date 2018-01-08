@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :operative_api_configuration do
     integration_type OperativeApiConfiguration
     integration_provider 'operative'

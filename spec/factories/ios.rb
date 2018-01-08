@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :io do
     sequence(:name) { |n| "Io name_#{n}" }
     deal

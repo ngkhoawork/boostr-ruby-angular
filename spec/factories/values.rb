@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :value do
 
     before(:create) do |item|

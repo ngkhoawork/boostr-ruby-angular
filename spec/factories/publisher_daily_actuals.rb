@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :publisher_daily_actual do
     currency
     date 1.day.ago
