@@ -1,1 +1,13 @@
-%h1 HELLO
+:javascript
+    window.addEventListener('message', function (e) {
+        if (e.origin === 'https://calendar.google.com') {
+            if (e.data.expression) {
+                var expression = window[e.data.expression];
+                if (typeof expression === 'function') expression(e.data.params);
+            }
+        }
+    });
+    function setToken(token) {localStorage.setItem('extensionToken', token)}
+    function removeToken() {localStorage.removeItem('extensionToken')}
+
+    window.parent.postMessage({expression: 'checkAuthorization', params: localStorage.getItem('extensionToken')}, '*');
