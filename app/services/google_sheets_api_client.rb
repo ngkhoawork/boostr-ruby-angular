@@ -69,6 +69,9 @@ class GoogleSheetsApiClient
 
   def authorize_service
     service.client_options.application_name = APPLICATION_NAME
-    service.authorization = Google::Auth.get_application_default(SCOPE)
+    service.authorization = Google::Auth::DefaultCredentials.make_creds(
+      scope: SCOPE,
+      json_key_io: StringIO.new(ENV['GOOGLE_SHEETS_CREDENTIALS'])
+    )
   end
 end
