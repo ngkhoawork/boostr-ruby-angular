@@ -1,7 +1,7 @@
 class Api::V2::DealsController < ApiController
   respond_to :json
 
-  before_filter :set_current_user, only: [:update, :create]
+  before_filter :set_current_user, only: [:update, :create, :find_by_id]
 
   def index
     if params[:name].present?
@@ -121,6 +121,10 @@ class Api::V2::DealsController < ApiController
   def won_deals
     won_deals = company.deals.includes(:users, :stage, :advertiser, :agency, :deal_members).at_percent(100)
     render json: won_deals, each_serializer: Api::V2::Deals::SingleSerializer
+  end
+
+  def find_by_id
+    render json: Api::V2::Deals::FindByIdSerializer.new(deal)
   end
 
   private
