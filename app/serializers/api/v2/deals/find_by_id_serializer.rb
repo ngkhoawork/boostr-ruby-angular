@@ -6,6 +6,6 @@ class Api::V2::Deals::FindByIdSerializer < ActiveModel::Serializer
   end
 
   def agency
-    object.agency.serializable_hash(only: [:id, :name])
+    object.agency.serializable_hash(only: [:id, :name]) rescue nil
   end
 end
