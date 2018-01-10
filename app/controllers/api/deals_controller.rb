@@ -904,13 +904,13 @@ class Api::DealsController < ApplicationController
     team_stages.reduce({}) do |res, stage|
       ordered_deals = all_ordered_deals_by_stage(stage)
 
-      unweighted_budget = ordered_deals.to_a.sum(&:budget).to_i
+      unweighted_budget = ordered_deals.to_a.sum { |d| d.budget.to_f }
       weighted_budget = stage.probability.zero? ? 0 : unweighted_budget * (stage.probability.to_f / 100.to_f)
 
       res.tap do |obj|
         obj[stage.id] = {
           count: ordered_deals.count,
-          unweighted: unweighted_budget,
+          unweighted: unweighted_budget.to_i,
           weighted: weighted_budget.to_i
         }
       end
