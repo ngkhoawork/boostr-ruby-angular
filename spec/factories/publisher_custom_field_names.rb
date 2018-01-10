@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :publisher_custom_field_name do
     company
 

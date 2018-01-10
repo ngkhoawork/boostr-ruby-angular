@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :product do
     name { FFaker::Product.product_name }
     revenue_type 'Content-Fee'

@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :quota do
     value 10000
     user

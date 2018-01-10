@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :deal_member do
     share { rand(100) }
     user

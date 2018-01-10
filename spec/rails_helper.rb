@@ -56,7 +56,7 @@ ActiveRecord::Migration.maintain_test_schema!
 Capybara.javascript_driver = :webkit
 
 RSpec.configure do |config|
-  config.include FactoryBot::Syntax::Methods
+  config.include FactoryGirl::Syntax::Methods
   config.include Devise::TestHelpers, type: :controller
   config.include Warden::Test::Helpers
   config.include Helpers
@@ -80,7 +80,7 @@ RSpec.configure do |config|
     end
 
     DatabaseCleaner.start
-    FactoryBot.create(:company)
+    FactoryGirl.create(:company)
   end
 
   config.after do

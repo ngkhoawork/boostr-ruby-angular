@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :csv_import_log do
     rows_processed 1
 rows_imported 1

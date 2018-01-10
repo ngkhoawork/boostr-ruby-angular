@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :influencer_content_fee do
     influencer nil
 		content_fee nil

@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :request do
     association :requester, factory: :user
     association :assignee, factory: :user

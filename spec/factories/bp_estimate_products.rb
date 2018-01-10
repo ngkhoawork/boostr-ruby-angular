@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :bp_estimate_product do
     bp_estimate nil
     product nil

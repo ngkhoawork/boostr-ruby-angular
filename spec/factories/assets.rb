@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :asset do
     asset_file_name { FFaker::BaconIpsum.word }
     asset_file_size { FFaker::Address.building_number }

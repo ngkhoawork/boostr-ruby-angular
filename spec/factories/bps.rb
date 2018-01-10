@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :bp do
     name "MyString"
     time_period nil

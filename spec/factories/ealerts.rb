@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :ealert do
     company nil
 recipients "MyString"

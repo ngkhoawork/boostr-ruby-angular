@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :client_csv_data, class: Hash do
     id nil
     name { FFaker::Company.name }

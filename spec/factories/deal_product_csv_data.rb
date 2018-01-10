@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :deal_product_csv_data, class: Hash do
     deal_id nil
     deal_name nil

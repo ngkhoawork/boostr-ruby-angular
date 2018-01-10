@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :operative_datafeed_configuration do
     integration_type OperativeDatafeedConfiguration
     integration_provider 'Operative Datafeed'

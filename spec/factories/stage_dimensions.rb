@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :stage_dimension do
     company nil
     name "MyString"

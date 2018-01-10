@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :display_line_item_budget do
     display_line_item nil
     external_io_number 1

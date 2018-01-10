@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :account_pipeline_fact do
     company_id 1
     account_dimension_id 1

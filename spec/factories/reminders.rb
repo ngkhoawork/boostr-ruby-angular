@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :reminder do
     name { FFaker::HipsterIpsum.word }
     comment { FFaker::HipsterIpsum.sentence }

@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :account_dimension do
     name FFaker::Lorem.phrase
     trait :advertiser do

@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :display_line_item_budget_csv_operative do
     company_id nil
     line_number 1

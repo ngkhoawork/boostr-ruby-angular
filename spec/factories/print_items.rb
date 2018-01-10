@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :print_item do
     io nil
 ad_unit "MyString"

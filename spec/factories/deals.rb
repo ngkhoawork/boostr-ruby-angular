@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :deal do
     start_date Date.new(2015, 7, 29)
     end_date Date.new(2015, 8, 29)

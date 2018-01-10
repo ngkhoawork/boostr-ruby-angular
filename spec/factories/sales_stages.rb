@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :sales_stage do
     company
     name { FFaker::Lorem.phrase }

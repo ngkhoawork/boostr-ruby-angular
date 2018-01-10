@@ -98,7 +98,7 @@ end
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.7.0'
-  gem 'factory_bot_rails'
+  gem 'factory_girl_rails', '=4.8.0'
   gem 'capybara'
   gem 'jasmine-rails'
   gem 'launchy'

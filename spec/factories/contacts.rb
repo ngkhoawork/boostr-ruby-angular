@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :contact do
     name { FFaker::Name.name }
     position { FFaker::Job.title }

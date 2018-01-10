@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :time_dimension do
     name { FFaker::BaconIpsum.word }
     start_date { Date.today }

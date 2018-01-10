@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :temp_io do
     name 'MyString'
     company

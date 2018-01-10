@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :display_line_item do
     io nil
     line_number { rand(1..99) }

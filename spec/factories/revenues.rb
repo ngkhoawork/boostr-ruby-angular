@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :revenue do
     budget 30_000
     budget_remaining 15_000

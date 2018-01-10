@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :account_product_pipeline_fact do
     product_dimension nil
     time_dimension nil

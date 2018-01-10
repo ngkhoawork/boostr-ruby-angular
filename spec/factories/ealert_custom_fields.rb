@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :ealert_custom_field do
     company nil
 ealert nil

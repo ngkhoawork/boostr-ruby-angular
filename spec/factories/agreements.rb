@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :agreement do
     influencer nil
 fee_type "MyString"

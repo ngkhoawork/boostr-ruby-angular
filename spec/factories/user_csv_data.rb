@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :user_csv_data, class: Hash do
     email FFaker::Internet.email
     name 'First Name'

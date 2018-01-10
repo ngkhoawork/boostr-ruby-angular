@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :account_cf do
     company nil
     currency1 "9.99"

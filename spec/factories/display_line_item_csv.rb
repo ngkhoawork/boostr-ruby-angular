@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :display_line_item_csv do
     io_name 'test_123'
     external_io_number '1'

@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :advertiser_agency_revenue_fact do
     advertiser_id 1
 agency_id 1

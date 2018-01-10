@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :deal_contact do
     deal
     contact

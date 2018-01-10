@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :currency do
     curr_cd 'USD'
     curr_symbol '$'

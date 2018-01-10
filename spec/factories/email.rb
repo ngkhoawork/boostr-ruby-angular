@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :email, class: Hash do
     initialize_with { attributes }
 

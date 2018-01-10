@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :team do
     name { FFaker::HipsterIpsum.word }
     company

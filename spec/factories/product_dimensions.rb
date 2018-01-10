@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :product_dimension do
     name "MyString"
     revenue_type "MyString"

@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :address do
     street1 { FFaker::AddressUS.street_address }
     street2 { FFaker::Address.secondary_address }

@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :content_fee_product_budget do
     budget 5
     start_date "2015-01-01"

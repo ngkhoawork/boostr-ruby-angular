@@ -1,4 +1,4 @@
-FactoryBot.define do
+FactoryGirl.define do
   factory :influencer_content_fee_csv, class: Csv::InfluencerContentFee do
     io_number { rand(1000..9999) }
     influencer_id { rand(1000..9999) }
