@@ -7,11 +7,9 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   self.representation_wrap = :salesOrder
 
   property :sales_order_type, as: :name, exec_context: :decorator, wrap: :salesOrderType,
-           if: -> (options) { options[:enable_operative_extra_fields].eql?(false) && options[:buzzfeed].eql?(false) }
+           if: -> (options) { options[:enable_operative_extra_fields].eql?(false) }
   property :mashable_sales_order_type, as: :name, exec_context: :decorator, wrap: :salesOrderType,
-           if: -> (options) { options[:enable_operative_extra_fields].eql?(true) && options[:buzzfeed].eql?(false) }
-  property :buzzfeed_order_type, as: :name, exec_context: :decorator, wrap: :salesOrderType,
-           if: -> (options) { options[:buzzfeed].eql?(true) }
+           if: -> (options) { options[:enable_operative_extra_fields].eql?(true) }
 
   property :alternate_id, as: :alternateId, exec_context: :decorator
   property :next_steps, as: :nextSteps
@@ -20,7 +18,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
 
   property :accounts, decorator: Operative::AccountsRepresenter, exec_context: :decorator
   property :custom_fields, decorator: Operative::CustomFieldsRepresenter, exec_context: :decorator,
-           if: -> (options) { options[:enable_operative_extra_fields].eql? true }
+           if: -> (options) { options[:enable_operative_extra_fields].eql?(true) || options[:buzzfeed].eql?(true) }
 
   property :sales_stage_name, as: 'v2:name', wrap: 'v2:salesStage', exec_context: :decorator,
            if: -> (options) { (options[:create].eql?(true) || options[:closed_lost].eql?(false)) }
