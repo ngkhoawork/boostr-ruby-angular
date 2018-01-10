@@ -5,6 +5,6 @@ class ApiConstraints
 
   def matches?(req)
     req.headers['Accept']
-    .include?("application/vnd.boostr.v#{@version}")
+    &.include?("application/vnd.boostr.v#{@version}")
   end
 end
