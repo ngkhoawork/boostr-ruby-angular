@@ -1,12 +1,14 @@
 class Stage < ActiveRecord::Base
   belongs_to :company
+  belongs_to :sales_process
   has_many :deals
 
-  default_scope { order('active, position') }
+  default_scope { order('sales_process_id, active, position') }
   scope :closed_won_for_company, -> (company_id) { where(company_id: company_id, active: true, open: false, probability: 100) }
   scope :for_company, -> (company_id) { where(company_id: company_id) }
   scope :is_open, -> (status) { where(open: status) unless status.nil? }
   scope :active, -> { where(active: true) }
+  scope :is_active, -> (status) { where(active: status) unless status.nil? }
 
   validates :name, presence: true
 

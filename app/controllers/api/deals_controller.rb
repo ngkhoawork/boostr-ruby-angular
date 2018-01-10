@@ -330,7 +330,10 @@ class Api::DealsController < ApplicationController
   end
 
   def all_deals_header
-    render json: deals_info_by_stage
+    render json: {
+      deals_info: deals_info_by_stage,
+      stages: team_stages
+    }
   end
 
   private
@@ -883,39 +886,35 @@ class Api::DealsController < ApplicationController
   end
 
   def serialized_deals
-    company.stages.reduce([]) do |arr, stage|
-
+    team_stages.reduce([]) do |arr, stage|
       ordered_deals = all_ordered_deals_by_stage(stage)
 
-      arr <<
-        ordered_deals.limit(limit).offset(offset).includes(
+      arr << ordered_deals.limit(limit).offset(offset).includes(
           :advertiser,
           :agency,
           :deal_custom_field,
           :users,
           :stage,
           :currency
-        ).distinct
+        )
     end.flatten
   end
 
   def deals_info_by_stage
-    deals_info_by_stage = {}
-
-    company.stages.reduce([]) do |arr, stage|
+    team_stages.reduce({}) do |res, stage|
       ordered_deals = all_ordered_deals_by_stage(stage)
 
-      unweighted_budget = ordered_deals.sum(:budget).to_i
+      unweighted_budget = ordered_deals.to_a.sum(&:budget).to_i
       weighted_budget = stage.probability.zero? ? 0 : unweighted_budget * (stage.probability.to_f / 100.to_f)
 
-      arr << deals_info_by_stage[stage.id] = {
-        count: ordered_deals.count,
-        unweighted: unweighted_budget,
-        weighted: weighted_budget.to_i
-      }
+      res.tap do |obj|
+        obj[stage.id] = {
+          count: ordered_deals.count,
+          unweighted: unweighted_budget,
+          weighted: weighted_budget.to_i
+        }
+      end
     end
-
-    deals_info_by_stage
   end
 
   def all_ordered_deals_by_stage(stage)
@@ -929,6 +928,7 @@ class Api::DealsController < ApplicationController
       .by_start_date(params[:start_start_date], params[:start_end_date])
       .for_time_period(time_period.try(:start_date), time_period.try(:end_date))
       .by_created_date(params[:created_start_date], params[:created_end_date])
+      .distinct
 
     closed_year = Date.new(params[:closed_year].to_i) if params[:closed_year].present?
 
@@ -937,5 +937,9 @@ class Api::DealsController < ApplicationController
 
   def company_teams_data
     company.teams.pluck_to_struct(:id, :name, :leader_id)
+  end
+
+  def team_stages
+    @team_stages ||= team.try(:sales_process).try(:stages).try(:active) || company.default_sales_process.try(:stages).try(:active)
   end
 end

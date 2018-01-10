@@ -61,6 +61,7 @@ class Company < ActiveRecord::Base
   has_many :publisher_custom_field_names, dependent: :destroy
   has_many :publisher_custom_fields, through: :publishers
   has_many :ssp_advertisers
+  has_many :sales_processes
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -215,6 +216,10 @@ class Company < ActiveRecord::Base
     teams.pluck(:leader_id) + users.in_a_team.ids
   end
 
+  def default_sales_process
+    sales_processes.where(name: 'DEFAULT').try(:first)
+  end
+  
   protected
 
   def setup_default_options(field, names)
