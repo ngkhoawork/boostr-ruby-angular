@@ -16,7 +16,7 @@ class Csv::User
 
     self.user_type = user_type&.downcase
     self.status = status&.downcase
-    self.is_admin = is_admin.to_s.downcase == 'true' ? true :false
+    self.is_admin = is_admin.to_s.downcase == 'true' ? true : false
   end
 
   def perform
