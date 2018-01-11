@@ -8,6 +8,7 @@ class LeadsQuery
     relation
       .by_relation(options)
       .by_status(options[:status])
+      .includes(:contact, :user)
   end
 
   private

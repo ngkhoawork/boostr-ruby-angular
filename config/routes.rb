@@ -476,6 +476,7 @@ Rails.application.routes.draw do
       member do
         get :accept
         get :reject
+        get :reassign
       end
     end
   end
