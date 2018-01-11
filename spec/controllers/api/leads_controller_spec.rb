@@ -10,6 +10,7 @@ describe Api::LeadsController do
       get :accept, id: lead.id
 
       expect(lead.reload.status).to eq Lead::ACCEPTED
+      expect(lead.reload.accepted_at).not_to be_nil
     end
   end
 
@@ -20,6 +21,15 @@ describe Api::LeadsController do
       get :reject, id: lead.id
 
       expect(lead.reload.status).to eq Lead::REJECTED
+      expect(lead.reload.rejected_at).not_to be_nil
+    end
+  end
+  
+  describe 'GET #reassign' do
+    it 'reassign lead successfully' do
+      get :reassign, id: lead.id, user_id: user.id
+
+      expect(lead.reload.user_id).to eq user.id
     end
   end
 
