@@ -1,17 +1,20 @@
 #deal.z-styles.z-detail-page
-	.container-fluid.pad
-		.col-xs-9
-			%div{'ng-include': '"partials/deal/deal_stats.html"'}
-			%div{'ng-include': '"partials/deal/deal_products.html"'}
-			%div{'ng-include': '"partials/deal/deal_io_details.html"'}
-			%div{'ng-include': '"partials/deal/deal_contacts.html"'}
-			.row
-				.col-xs-6
-					%div{'ng-include': '"partials/deal/deal_members.html"'}
-				.col-xs-6
-					%upload-file{'deal-files': 'dealFiles', type: "deal"}
-		.col-xs-3
-			%div{'ng-include': '"partials/deal/deal_next_steps.html"'}
-			%div{'ng-include': '"partials/deal/deal_insights.html"'}
-			%div{'ng-include': '"partials/deal/deal_campaign_details.html"'}
-			%div{'ng-include': '"partials/dashboard/activity.html"'}
+  .container-fluid.pad
+    .col-xs-9
+      %div{'ng-include': '"partials/deal/deal_stats.html"'}
+      %div{'ng-include': '"partials/deal/deal_products.html"'}
+      %div{'ng-include': '"partials/deal/deal_io_details.html"'}
+      %div{'ng-include': '"partials/deal/deal_contacts.html"'}
+      .row
+        .col-xs-6
+          %div{'ng-include': '"partials/deal/deal_members.html"'}
+        .col-xs-6
+          .attachments.block
+            %div.mb20
+              %add-button{'ng-click': 'egnyteClick()'} Egnyte
+          -#%upload-file{'deal-files': 'dealFiles', type: "deal"}
+    .col-xs-3
+      %div{'ng-include': '"partials/deal/deal_next_steps.html"'}
+      %div{'ng-include': '"partials/deal/deal_insights.html"'}
+      %div{'ng-include': '"partials/deal/deal_campaign_details.html"'}
+      %div{'ng-include': '"partials/dashboard/activity.html"'}

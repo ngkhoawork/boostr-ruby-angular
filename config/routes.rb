@@ -501,6 +501,7 @@ Rails.application.routes.draw do
     resources :publisher_contacts, only: [:create, :update, :destroy]
 
     resources :egnyte
+    get '/egnyte_oauth_callback', to: 'egnyte#egnyte_oauth_callback'
   end
 
   mount Sidekiq::Web => '/sidekiq'
