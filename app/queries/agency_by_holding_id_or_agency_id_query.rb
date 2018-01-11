@@ -35,7 +35,8 @@ class AgencyByHoldingIdOrAgencyIdQuery
 
     def by_account_id(account_id)
       return self unless account_id
-      where('account_dimensions.id = ?', account_id)
+
+      where('account_dimensions.id IN (?)', account_id)
     end
 
     def by_agency_type

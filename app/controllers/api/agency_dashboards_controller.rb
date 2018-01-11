@@ -108,7 +108,7 @@ class Api::AgencyDashboardsController < ApplicationController
 
   def agencies_ids
     @_agencies ||= AccountDimension.agencies_by_holding_company_or_agency_id(filter_params[:holding_company_id],
-                                                                            filter_params[:account_id],
+                                                                            filter_params[:account_ids],
                                                                             current_user_company_id).pluck(:id)
   end
 
@@ -130,6 +130,6 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def filter_params
-    params.permit(:start_date, :end_date, :holding_company_id, :account_id)
+    params.permit(:start_date, :end_date, :holding_company_id, account_ids: [])
   end
 end

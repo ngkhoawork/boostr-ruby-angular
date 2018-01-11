@@ -76,6 +76,7 @@
 		transclude: true
 		scope:
 			onApply: '='
+			onReset: '='
 			currentSelection: '='
 		controller: 'ZFilterController'
 		templateUrl: 'modules/z_filter.html'
@@ -128,6 +129,8 @@
 				query.default = !query.default
 				ctrl.saveQuery query
 			$scope.resetFilter = ->
+				if _.isFunction $scope.onReset
+					$scope.onReset()
 				ctrl.query = {}
 				ctrl.loadedQuery = {}
 				ctrl.checkApplied()
