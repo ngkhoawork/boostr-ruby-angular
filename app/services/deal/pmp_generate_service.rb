@@ -76,6 +76,7 @@ class Deal::PmpGenerateService
   def pmp_item_params(deal_product)
     {
       pmp_id: pmp.id,
+      product_id: deal_product.product_id,
       ssp_id: deal_product.ssp_id,
       ssp_deal_id: deal_product.ssp_deal_id,
       budget: deal_product.budget,

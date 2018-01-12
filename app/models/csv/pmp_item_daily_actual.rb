@@ -49,7 +49,6 @@ class Csv::PmpItemDailyActual
     pmp_item_daily_actual.price = price
     pmp_item_daily_actual.revenue_loc = revenue_loc
     pmp_item_daily_actual.render_rate = render_rate
-    pmp_item_daily_actual.product = product
     pmp_item_daily_actual.imported = true
     pmp_item_daily_actual.save!
   end
@@ -60,7 +59,7 @@ class Csv::PmpItemDailyActual
 
   def pmp_item_daily_actual
     @_pmp_item_daily_actual ||= if pmp_item.present?
-      ::PmpItemDailyActual.find_or_initialize_by(pmp_item_id: pmp_item.id, date: parsed_date, product_id: product.try(:id))
+      ::PmpItemDailyActual.find_or_initialize_by(pmp_item_id: pmp_item.id, date: parsed_date)
     else
       ::PmpItemDailyActual.new
     end
@@ -101,7 +100,7 @@ class Csv::PmpItemDailyActual
           pmp = csv_pmp_item_daily_actual.pmp_item.pmp
           pmp_change[:time_period_ids] += company.time_periods.for_time_period(pmp.start_date, pmp.end_date).collect{|item| item.id}
           pmp_change[:user_ids] += pmp.pmp_members.collect{|item| item.user_id}
-          pmp_change[:product_ids] += [csv_pmp_item_daily_actual.product&.id]
+          pmp_change[:product_ids] += [csv_pmp_item_daily_actual.pmp_item&.product_id]
         rescue Exception => e
           import_log.count_failed
           import_log.log_error ['Internal Server Error', row.to_h.compact.to_s, e.class]

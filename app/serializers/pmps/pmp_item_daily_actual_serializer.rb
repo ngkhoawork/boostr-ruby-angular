@@ -20,6 +20,6 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
   end
 
   def product
-    object.product.serializable_hash(only: [:id, :name]) rescue nil
+    object.pmp_item.product.serializable_hash(only: [:id, :name]) rescue nil
   end
 end

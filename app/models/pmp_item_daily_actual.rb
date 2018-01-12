@@ -2,7 +2,6 @@ class PmpItemDailyActual < ActiveRecord::Base
   attr_accessor :imported
 
   belongs_to :pmp_item, required: true
-  belongs_to :product
 
   validates :date, :ad_unit, presence: true
   validates :bids, :impressions, :revenue_loc, :price, presence: true, numericality: true
@@ -11,6 +10,7 @@ class PmpItemDailyActual < ActiveRecord::Base
   scope :latest, -> { order('date DESC') }
 
   delegate :pmp, to: :pmp_item, allow_nil: true
+  delegate :product, to: :pmp_item, allow_nil: true
 
   before_save :convert_currency
   before_save :set_default_values
@@ -19,27 +19,11 @@ class PmpItemDailyActual < ActiveRecord::Base
     if not_imported?
       update_pmp_item
       update_pmp_end_date
-      update_revenue_fact_callback
     end
   end
 
   after_destroy do
     pmp_item.calculate!
-    update_revenue_fact
-  end
-
-  def update_revenue_fact_callback
-    if pmp_item_id_changed? || revenue_changed? || revenue_loc_changed?
-      options = { products: [product] }
-    elsif product_id_changed?
-      product_was = Product.find_by_id(product_id_was) if product_id_was
-      options = { products: [product, product_was] }
-    end
-    Forecast::PmpRevenueCalcTriggerService.new(pmp, 'product', options).perform if options.present?
-  end
-
-  def update_revenue_fact
-    Forecast::PmpRevenueCalcTriggerService.new(pmp, 'product', { products: [product] }).perform
   end
 
   private

@@ -46,4 +46,5 @@ RSpec.describe PmpItem, 'associations' do
   it { should belong_to(:ssp) }
   it { should have_many(:pmp_item_daily_actuals) }
   it { should have_many(:pmp_item_monthly_actuals) }
+  it { should belong_to(:product) }
 end

@@ -11,10 +11,15 @@ class Pmps::PmpItemSerializer < ActiveModel::Serializer
     :budget_remaining_loc,
     :run_rate_7_days,
     :run_rate_30_days,
-    :pmp_type
+    :pmp_type,
+    :product
   )
 
   def ssp
     object.ssp.serializable_hash(only: [:id, :name]) rescue nil
+  end
+
+  def product
+    object.product.serializable_hash(only: [:id, :name]) rescue nil
   end
 end

@@ -1,17 +1,13 @@
 @app.controller 'PmpItemNewDailyActualController',
-  ['$scope', '$modalInstance', 'dailyActual', 'pmpId', 'pmpItems', 'PMPItemDailyActual', 'Product',
-  ($scope,    $modalInstance,   dailyActual,   pmpId,   pmpItems,   PMPItemDailyActual,   Product) ->
+  ['$scope', '$modalInstance', 'dailyActual', 'pmpId', 'pmpItems', 'PMPItemDailyActual'
+  ($scope,    $modalInstance,   dailyActual,   pmpId,   pmpItems,   PMPItemDailyActual) ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
     $scope.dailyActual = dailyActual || {}
     $scope.pmpItems = pmpItems || []
-    $scope.products = []
 
     init = () ->
-      Product.all(revenue_type: 'PMP').then (data) ->
-        $scope.products = data
       if !_.isEmpty(dailyActual)
-        $scope.dailyActual['product_id'] = $scope.dailyActual.product && $scope.dailyActual.product.id
         $scope.formType = 'Edit'
         $scope.submitText = 'Update'
 

@@ -39,6 +39,18 @@
               {{ $select.selected.name }}
             %ui-select-choices{ repeat: 'pmpType.id as pmpType in pmpTypes' }
               %div{ ng: { bind: { html: 'pmpType.name' } } }
+              
+      .row
+        .col-md-6.form-group{'ng-class':'{error: errors.product_id}'}
+          %span.error-text {{errors.product_id}}
+          %label{ for: 'product_id' }
+            Product
+            %span.star *
+          %ui-select{ name: 'product_id', ng: { model: 'item.product_id', required: false }}
+            %ui-select-match{ placeholder: 'Product' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'product.id as product in products' }
+              %div{ ng: { bind: { html: 'product.name' } } }
 
     .popup-modal-footer.text-center
       %button.btn.btn-default{ 'type': 'button', 'ng-click': 'closeModal()' } Cancel

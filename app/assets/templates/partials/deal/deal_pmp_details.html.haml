@@ -59,6 +59,7 @@
           %tr
             %th.left Deal ID
             %th.left SSP
+            %th.left Product
             %th.left PMP Type
             %th.right Budget
             %th.right Delivered
@@ -73,6 +74,8 @@
               %strong
                 {{ pmpItem.ssp && pmpItem.ssp.name }}
             %td.left
+              {{ pmpItem.product && pmpItem.product.name }}
+            %td.left
               {{ PMPType.getName(pmpItem.pmp_type) }}
             %td.right
               {{ pmpItem.budget_loc | currency:currentPMP.currency_symbol:2 }}
@@ -85,5 +88,5 @@
             %td.right
               {{ (pmpItem.run_rate_30_days | currency:currentPMP.currency_symbol:2) || 'N/A' }}
           %tr{ ng: { if: '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' } }
-            %td.center{ 'colspan': '8' }
+            %td.center{ 'colspan': '9' }
               No data available

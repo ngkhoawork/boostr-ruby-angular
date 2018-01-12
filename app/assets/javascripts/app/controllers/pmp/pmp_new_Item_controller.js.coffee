@@ -1,25 +1,29 @@
 @app.controller 'PmpNewItemController',
-  ['$scope', '$modalInstance', 'item', 'pmpId', 'PMPItem', 'SSP', 'PMPType',
-  ($scope,    $modalInstance,   item,   pmpId,   PMPItem,   SSP,   PMPType) ->
+  ['$scope', '$modalInstance', 'item', 'pmpId', 'PMPItem', 'SSP', 'PMPType', 'Product'
+  ($scope,    $modalInstance,   item,   pmpId,   PMPItem,   SSP,   PMPType,   Product) ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
     $scope.item = item || {}
     $scope.ssps = []
+    $scope.products = []
     $scope.pmpTypes = PMPType.all
 
     init = () ->
       if !_.isEmpty(item)
-        item.ssp_id = item.ssp && item.ssp.id
+        $scope.item.product_id = item.product && item.product.id
+        $scope.item.ssp_id = item.ssp && item.ssp.id
         $scope.formType = 'Edit'
         $scope.submitText = 'Update'
       SSP.all().then (ssps) ->
         $scope.ssps = ssps
+      Product.all(revenue_type: 'PMP', active: true).then (data) ->
+        $scope.products = data
 
     $scope.submitForm = () ->
       # validates empty fields
       $scope.errors = {}
-      fields = ['ssp_id', 'ssp_deal_id', 'budget_loc', 'pmp_type']
-      titles = ['SSP', 'Deal-ID', 'Budget', 'PMP Type']
+      fields = ['ssp_id', 'ssp_deal_id', 'budget_loc', 'pmp_type', 'product_id']
+      titles = ['SSP', 'Deal-ID', 'Budget', 'PMP Type', 'Product']
       fields.forEach (key) ->
         field = $scope.item[key]
         title = titles[_.indexOf(fields, key)]

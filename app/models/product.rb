@@ -4,7 +4,7 @@ class Product < ActiveRecord::Base
   has_many :deal_products
   has_many :values, as: :subject
   has_many :ad_units
-  has_many :pmp_item_daily_actuals
+  has_many :pmp_items
 
   validates :name, presence: true
 

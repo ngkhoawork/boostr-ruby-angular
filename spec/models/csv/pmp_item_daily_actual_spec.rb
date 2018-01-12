@@ -124,11 +124,11 @@ describe Csv::PmpItemDailyActual do
   end
 
   describe 'saves to pmp_item_daily_actuals' do
-    context 'with duplicated product, deal-id, date' do
+    context 'with duplicated deal-id, date' do
       it 'updates existing record' do
         csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual
         csv_pmp_item_daily_actual.save
-        duplicated = build :csv_pmp_item_daily_actual, date: csv_pmp_item_daily_actual.date, ad_unit: csv_pmp_item_daily_actual.ad_unit, ssp_deal_id: csv_pmp_item_daily_actual.ssp_deal_id, price: 1000, revenue_loc: 1000, impressions: 100, bids: 100
+        duplicated = build :csv_pmp_item_daily_actual, date: csv_pmp_item_daily_actual.date, ad_unit: 'Unit 1', ssp_deal_id: csv_pmp_item_daily_actual.ssp_deal_id, price: 1000, revenue_loc: 1000, impressions: 100, bids: 100
         duplicated.save
         csv_pmp_item_daily_actual.pmp_item_daily_actual.reload
         expect(csv_pmp_item_daily_actual.pmp_item_daily_actual.price).to eq(1000)
@@ -140,12 +140,9 @@ describe Csv::PmpItemDailyActual do
 
     context 'with new data' do
       it 'creates new record' do
-        product = create :product
-        ad_unit = create :ad_unit, product: product
-        csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, ad_unit: ad_unit.name, win_rate: nil
+        csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, win_rate: nil
         csv_pmp_item_daily_actual.save
         expect(csv_pmp_item_daily_actual.pmp_item_daily_actual).to be_persisted
-        expect(csv_pmp_item_daily_actual.pmp_item_daily_actual.reload.product).to eq(product)
       end
     end
   end
@@ -159,7 +156,6 @@ describe Csv::PmpItemDailyActual do
       expect {
         described_class.import(file, user.id, 'pmp_item_daily_actual.csv')
       }.to change(PmpItemDailyActual, :count).by(2)
-      p PmpItemDailyActual.all.map(&:win_rate)
     end
 
     it 'creates csv import log' do

@@ -10,6 +10,7 @@ class Pmp < ActiveRecord::Base
   has_many :users, through: :pmp_members, dependent: :destroy
   has_many :pmp_items, dependent: :destroy
   has_many :pmp_item_daily_actuals, through: :pmp_items, dependent: :destroy
+  has_many :products, through: :pmp_items
 
   validates :name, :start_date, :end_date, :curr_cd, presence: true
 
@@ -23,15 +24,12 @@ class Pmp < ActiveRecord::Base
 
   before_create :set_budget_remaining_and_delivered
 
-
   after_save do
     update_pmp_members_date
     update_revenue_fact_callback
   end
 
   after_destroy :update_revenue_fact
-
-  set_callback :save, :after, :update_revenue_fact_callback
 
   def update_revenue_fact_callback
     if start_date_changed? || end_date_changed?

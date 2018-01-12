@@ -71,8 +71,7 @@ class Forecast::PmpRevenueCalcService
         total += pmp_actuals.inject(0) do |actual_total, pmp_actual|
           if pmp_actual.date >= range_start_date &&
               pmp_actual.date <= range_end_date &&
-              (product&.id == pmp_actual.product_id)
-
+              product&.id == pmp_item.product_id
             split_amount = pmp_actual.revenue.to_f * share / 100.0
             monthly_value[month_name] ||= 0
             monthly_value[month_name] += split_amount

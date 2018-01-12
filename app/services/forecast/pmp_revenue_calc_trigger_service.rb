@@ -48,10 +48,7 @@ class Forecast::PmpRevenueCalcTriggerService
     when 'product'
       options[:products]
     else
-      pmp.pmp_item_daily_actuals
-        .includes({ product: {} })
-        .collect{|item| item.product}
-        .uniq
+      pmp.products.distinct
     end
   end
 

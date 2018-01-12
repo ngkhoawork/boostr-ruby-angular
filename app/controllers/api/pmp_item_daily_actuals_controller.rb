@@ -45,7 +45,6 @@ class Api::PmpItemDailyActualsController < ApplicationController
     params.require(:pmp_item_daily_actual).permit(
       :date,
       :ad_unit,
-      :product_id,
       :price,
       :revenue_loc,
       :impressions,

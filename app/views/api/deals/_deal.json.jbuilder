@@ -133,6 +133,7 @@ if !deal.stage.open && deal.stage.probability == 100 && deal.pmp.present?
     json.pmp_items deal.pmp.pmp_items do |pmp_item|
       json.extract! pmp_item, :ssp_deal_id, :pmp_type, :budget, :budget_delivered, :budget_remaining_loc, :budget_loc, :budget_delivered_loc, :budget_remaining_loc 
       json.ssp pmp_item.ssp
+      json.product pmp_item.product, :id, :name
     end
   end
 end

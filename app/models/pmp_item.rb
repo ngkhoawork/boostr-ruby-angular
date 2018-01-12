@@ -1,6 +1,7 @@
 class PmpItem < ActiveRecord::Base  
   belongs_to :pmp, required: true
   belongs_to :ssp, required: true
+  belongs_to :product
 
   has_many :pmp_item_daily_actuals, -> { order(date: :asc) }, dependent: :destroy
   has_many :pmp_item_monthly_actuals, dependent: :destroy
@@ -16,7 +17,11 @@ class PmpItem < ActiveRecord::Base
 
   after_save do
     update_pmp_budgets if budgets_changed?
-    update_revenue_fact if budget_changed? || budget_loc_changed? || pmp_type_changed?
+    if product_id_changed?
+      update_revenue_fact([product, product_was])
+    elsif pmp_type_changed? || budgets_changed?
+      update_revenue_fact 
+    end
   end
 
   after_destroy do
@@ -24,8 +29,8 @@ class PmpItem < ActiveRecord::Base
     update_revenue_fact
   end
 
-  def update_revenue_fact
-    Forecast::PmpRevenueCalcTriggerService.new(pmp, 'item', {}).perform
+  def update_revenue_fact(products=[product])
+    Forecast::PmpRevenueCalcTriggerService.new(pmp, 'product', { products: products.compact }).perform
   end
 
   def self.calculate(ids)
@@ -102,5 +107,9 @@ class PmpItem < ActiveRecord::Base
 
   def budgets_changed?
     budget_loc_changed? || budget_changed? || budget_remaining_changed? || budget_remaining_loc_changed? || budget_delivered_changed? || budget_delivered_loc_changed?
+  end
+
+  def product_was
+    Product.find(product_id_was) if product_id_was
   end
 end
