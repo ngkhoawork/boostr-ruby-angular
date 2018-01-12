@@ -477,6 +477,7 @@ Rails.application.routes.draw do
         get :accept
         get :reject
         get :reassign
+        get :reopen
       end
     end
   end
