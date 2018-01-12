@@ -23,6 +23,12 @@ class Api::LeadsController < ApplicationController
     render nothing: true
   end
 
+  def reopen
+    lead.update(user_id: nil, reopened_at: Time.now)
+
+    render nothing: true
+  end
+
   private
 
   def lead
