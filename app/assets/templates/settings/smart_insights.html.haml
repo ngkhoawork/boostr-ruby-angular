@@ -22,9 +22,9 @@
                   %td.danger
                     .col-sm-8.col-sm-offset-2
                       %input.form-control.text-center{ type: 'text', 'ng-model': 'company.red_threshold', placeholder: 0, 'ng-blur': 'updateCompany()' }
-                %tr{ 'ng-repeat': 'stage in stages | orderBy: "probability"' }
+                %tr{ 'ng-repeat': 'stage in stages | orderBy: [sales_process.id, position]' }
                   %td
-                    {{ stage.name }} ({{ stage.probability }}%)
+                    {{ stage.sales_process.name}} {{ stage.name }} ({{ stage.probability }}%)
                   %td.warning
                     .col-sm-8.col-sm-offset-2
                       %input.form-control.text-center{ type: 'text', 'ng-model': 'stage.yellow_threshold', placeholder: 0, 'ng-blur': 'updateStage(stage)' }

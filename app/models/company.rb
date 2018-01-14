@@ -229,8 +229,6 @@ class Company < ActiveRecord::Base
   end
 
   def setup_default_validations
-    validations.find_or_initialize_by(factor: 'Billing Contact', value_type: 'Number')
-    validations.find_or_initialize_by(factor: 'Account Manager', value_type: 'Number')
     validations.find_or_initialize_by(factor: 'Disable Deal Won', value_type: 'Boolean')
     validations.find_or_initialize_by(factor: 'Billing Contact Full Address', value_type: 'Boolean')
     validations.find_or_initialize_by(factor: 'Restrict Deal Reopen', value_type: 'Boolean')

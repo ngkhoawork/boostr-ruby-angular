@@ -7,6 +7,10 @@
     angular.toJson(original)
 
   resource = $resource '/api/validations/:id', { id: '@id' },
+    create:
+      method: 'POST'
+      transformRequest: transformRequest
+      url: '/api/validations'
     update:
       method: 'PUT'
       transformRequest: transformRequest
