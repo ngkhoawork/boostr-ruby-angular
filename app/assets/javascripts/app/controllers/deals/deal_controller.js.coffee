@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation', 'DealAttachment'
-( $scope, $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation, DealAttachment) ->
+['$scope', '$routeParams', 'Company', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation', 'DealAttachment'
+( $scope, $routeParams, Company,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation, DealAttachment) ->
 
   $scope.showMeridian = true
   $scope.isAdmin = false
@@ -28,39 +28,41 @@
   ###
 
   $scope.fileToUploadTst = null
-  # $scope.progressBarMax = 0
   $scope.progressBarCur = 0
   $scope.uploadedFiles = []
   $scope.dealFiles = []
   $scope.dealCustomFieldNames = []
   $scope.dealProductCfNames = []
   $scope.activeDealProductCfLength = 0
+  $scope.egnyteConnected = false
 
   $scope._scope = -> this
 
-  $scope.egnyteClick = () ->
+  CurrentUser.get().$promise.then (user) ->
+    $scope.currentUser = user
+
+  $scope.getCurrentCompany = () ->
+    Company.get().$promise.then (company) ->
+      $scope.company = company
+      if(company.egnyte_connected)
+        $scope.egnyteConnected = true
+        $scope.egnyte(company.egnyte_access_token, company.egnyte_app_domain)
+
+  $scope.egnyte = (token, domain) ->
     req =
       method: 'POST'
-      url: 'https://appboostrcrm.qa-egnyte.com/pubapi/v2/navigate'
-      headers: 'Content-Type': 'application/json', 'Authorization': 'Bearer umd9q5by53tkn87dymqaak9z'
+      url: 'https://' + domain + '/pubapi/v2/navigate'
+      headers: 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token
       data: embedded: true, path: "/Shared/Deal1"
 
     $http(req).then ((response) ->
-      $scope.embeddedUrl = response.data.redirect
-
-      $scope.modalInstance = $modal.open
-        templateUrl: 'modals/egnyte_modal.html'
-        size: 'lg'
-        controller: 'EgnyteModalController'
-        backdrop: 'static'
-        keyboard: false
-        resolve:
-          egnyte: ->
-            $scope.embeddedUrl
+      $scope.embeddedUrl = $sce.trustAsResourceUrl(response.data.redirect)
       return
     ), (error) ->
       console.log error
       return
+
+  $scope.getCurrentCompany()
 
   $scope.isUrlValid = (url) ->
     regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/

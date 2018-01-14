@@ -4,15 +4,14 @@
       %div{'ng-include': '"partials/deal/deal_stats.html"'}
       %div{'ng-include': '"partials/deal/deal_products.html"'}
       %div{'ng-include': '"partials/deal/deal_io_details.html"'}
+      %div{'ng-if': 'currentUser.company_egnyte_enabled', 'ng-include': '"partials/deal/deal_egnyte.html"'}
       %div{'ng-include': '"partials/deal/deal_contacts.html"'}
       .row
         .col-xs-6
           %div{'ng-include': '"partials/deal/deal_members.html"'}
-        .col-xs-6
+        .col-xs-6{'ng-if': '!currentUser.company_egnyte_enabled'}
           .attachments.block
-            %div.mb20
-              %add-button{'ng-click': 'egnyteClick()'} Egnyte
-          -#%upload-file{'deal-files': 'dealFiles', type: "deal"}
+            %upload-file{'deal-files': 'dealFiles', type: "deal"}
     .col-xs-3
       %div{'ng-include': '"partials/deal/deal_next_steps.html"'}
       %div{'ng-include': '"partials/deal/deal_insights.html"'}

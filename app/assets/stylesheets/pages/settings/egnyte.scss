@@ -40,4 +40,11 @@
   .title {
     font-weight: 100;
   }
+
+  .connected-block {
+    .disconnect {
+      color: red;
+      cursor: pointer;
+    }
+  }
 }

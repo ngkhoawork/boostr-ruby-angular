@@ -1,0 +1,7 @@
+.contacts.block
+  %div.mb20
+    %span.title Egnyte
+  %div{'ng-if': 'egnyteConnected'}
+    %iframe{width: "1000px", height: "400px", "ng-src": "{{embeddedUrl}}" }
+  %div{'ng-if': '!egnyteConnected'}
+    Egnyte disabled.

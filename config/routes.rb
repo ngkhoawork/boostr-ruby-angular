@@ -502,6 +502,8 @@ Rails.application.routes.draw do
 
     resources :egnyte
     get '/egnyte_oauth_callback', to: 'egnyte#egnyte_oauth_callback'
+    get '/save_token', to: 'egnyte#save_token'
+    get '/update_egnyte_settings', to: 'egnyte#update_egnyte_settings'
   end
 
   mount Sidekiq::Web => '/sidekiq'

@@ -182,6 +182,7 @@ class User < ActiveRecord::Base
           :is_admin,
           :roles,
           :company_influencer_enabled,
+          :company_egnyte_enabled,
           :company_forecast_gap_to_quota_positive,
           :has_forecast_permission
         ]

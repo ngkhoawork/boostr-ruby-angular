@@ -1,8 +1,9 @@
 ActiveAdmin.register Company do
-  permit_params :name, :ealert_reminder, :influencer_enabled, :primary_contact_id, :billing_contact_id, :quantity, :cost,
-  :start_date, :end_date, :requests_enabled, :publishers_enabled, :gmail_enabled, :gcalendar_enabled, :egnyte_enabled,
+  permit_params :name, :ealert_reminder, :influencer_enabled, :primary_contact_id, :billing_contact_id, :quantity,
+  :cost, :start_date, :end_date, :requests_enabled, :publishers_enabled, :gmail_enabled, :gcalendar_enabled,
   billing_address_attributes: [ :street1, :street2, :city, :state, :zip, :website, :phone ],
-  physical_address_attributes: [ :street1, :street2, :city, :state, :zip ]
+  physical_address_attributes: [ :street1, :street2, :city, :state, :zip ],
+  egnyte_integration_attributes: [ :id, :app_domain, :enabled ]
 
   index do
     selectable_column
@@ -17,6 +18,7 @@ ActiveAdmin.register Company do
     column :publishers_enabled
     column :gmail_enabled
     column :gcalendar_enabled
+    column :egnyte_app_domain
     actions
   end
 
@@ -32,6 +34,7 @@ ActiveAdmin.register Company do
       row :publishers_enabled
       row :gmail_enabled
       row :gcalendar_enabled
+      row :egnyte_app_domain
     end
 
     panel "Billing Address" do
@@ -80,6 +83,7 @@ ActiveAdmin.register Company do
       f.input :publishers_enabled
       f.input :gmail_enabled
       f.input :gcalendar_enabled
+      f.input :egnyte_app_domain
     end
 
     f.inputs "Billing Address", for: [:billing_address, f.object.billing_address || Address.new] do |ba|
