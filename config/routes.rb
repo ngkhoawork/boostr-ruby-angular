@@ -481,8 +481,9 @@ Rails.application.routes.draw do
         get :accept
         get :reject
         get :reassign
-        get :reopen
       end
+
+      get :users, on: :collection
     end
   end
 

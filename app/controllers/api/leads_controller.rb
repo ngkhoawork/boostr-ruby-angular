@@ -23,10 +23,8 @@ class Api::LeadsController < ApplicationController
     render nothing: true
   end
 
-  def reopen
-    lead.update(status: nil, user_id: nil, reopened_at: Time.now)
-
-    render nothing: true
+  def users
+    render json: current_user.company.users.as_json(override: true, only: [:id], methods: [:name])
   end
 
   private

@@ -214,22 +214,6 @@ describe Api::LeadsController do
     end
   end
 
-  describe 'GET #reopen' do
-    it 'reopen lead successfully' do
-      lead.update(user: user, status: Lead::REJECTED)
-
-      expect(lead.user_id).not_to be_nil
-      expect(lead.status).not_to be_nil
-      expect(lead.reopened_at).to be_nil
-
-      get :reopen, id: lead.id
-
-      expect(lead.reload.user_id).to be_nil
-      expect(lead.reload.status).to be_nil
-      expect(lead.reload.reopened_at).not_to be_nil
-    end
-  end
-
   private
 
   def company

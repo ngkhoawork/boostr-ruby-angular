@@ -9,5 +9,7 @@ FactoryGirl.define do
     state 'NY'
     budget 10_000
     notes 'Please asap'
+    rejected_at Time.now
+    reopened_at Time.now - 2.day
   end
 end
