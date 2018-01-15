@@ -353,6 +353,10 @@
       templateUrl: 'publishers/publisher.html'
       controller: 'PablisherController'
 
+    .when '/leads',
+      templateUrl: 'leads.html'
+      controller: 'LeadsController'
+
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])

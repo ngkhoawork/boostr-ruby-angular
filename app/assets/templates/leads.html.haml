@@ -1,0 +1,61 @@
+#leads.z-styles
+    .container-fluid.leads-inner
+        .row.leads-header.mb20
+            .header-item
+                .main-title Leads
+            .header-item
+                %z-toggle-list{list: 'teamFilters', selected: 'selectedTeamFilter', 'on-change': 'onFilterChange($selected)'}
+            .header-item
+            -#.header-item
+                %z-toggle-list{list: 'typeFilters', vertical: 'false', 'on-change': 'onFilterChange($selected)'}
+        .row.mb30
+            %z-toggle-list{list: 'typeFilters', vertical: 'false', 'on-change': 'onFilterChange($selected)'}
+
+        .row
+            .leads-table
+                .leads-header-tr
+                    .leads-th STATUS
+                    .leads-th LEADS DETAILS
+                    .leads-th COMPANY
+                    .leads-th DEAL DETAILS
+                    .leads-th
+                .leads-tr{'ng-repeat': 'i in [1, 2, 3, 4]'}
+                    .leads-td
+                        .leads-td-inner
+                            .td-title
+                                %a{href: ''} Judy Newseller
+                            .td-info Reassigned 12/31/2017
+                            .td-info 0 Days Untouched
+                            .td-action Reassign
+
+                    .leads-td
+                        .leads-td-inner
+                            .td-title Mary Manager
+                            %div mary@boostrcrm.com
+                            .td-info Editorial Assistant
+                            .td-list
+                                %div
+                                    Contact Exist:
+                                %div
+                                    %div
+                                        %a{href: ''} contact 1
+                    .leads-td
+                        .leads-td-inner
+                            .td-title boostr
+                            .td-info New York, USA
+                            .td-list
+                                %div
+                                    Account Exist:
+                                %div
+                                    %a{href: ''} account 1
+                                    %a{href: ''} account 2
+                                    %a{href: ''} account 3
+                    .leads-td
+                        .leads-td-inner
+                            .td-title
+                                Budget: {{(10000) | currency : '$' : 0}}
+                            %div{ng: {'text-truncate': '"Lorem ipsum dolor sit amet, consectetur adipisicing elit. At maxime nesciunt quaerat sapiente, sit voluptate? Aspernatur cumque dolorem ducimus et incidunt, itaque non placeat provident sed, tempora velit veniam voluptas."', 'tt-chars-threshold': '100'}}
+                    .leads-td
+                        .leads-td-inner
+                            .leads-btn.hollow Reject
+                            .leads-btn Start Qualification
