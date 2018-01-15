@@ -102,7 +102,7 @@ class User < ActiveRecord::Base
   end
 
   def company_egnyte_enabled
-    self.company.egnyte_enabled
+    company.egnyte_integration_enabled
   end
 
   def company_publisher_enabled

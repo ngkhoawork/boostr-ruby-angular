@@ -500,10 +500,12 @@ Rails.application.routes.draw do
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
 
-    resources :egnyte
-    get '/egnyte_oauth_callback', to: 'egnyte#egnyte_oauth_callback'
-    get '/save_token', to: 'egnyte#save_token'
-    get '/update_egnyte_settings', to: 'egnyte#update_egnyte_settings'
+    resource :egnyte_integration, only: [:show, :create, :update] do
+      collection do
+        get :oauth_settings
+        get :oauth_callback
+      end
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'

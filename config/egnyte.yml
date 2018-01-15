@@ -1,0 +1,9 @@
+test:
+  client_id: d79k62ecxmejnt5t7kdp7pnh
+  client_secret: RkhkdQ9JWg6vnz8BBpWvX799Tfc58ssCvYrYQF9gj2aNRAJHTQ
+development:
+  client_id: d79k62ecxmejnt5t7kdp7pnh
+  client_secret: RkhkdQ9JWg6vnz8BBpWvX799Tfc58ssCvYrYQF9gj2aNRAJHTQ
+staging:
+  client_id: d79k62ecxmejnt5t7kdp7pnh
+  client_secret: RkhkdQ9JWg6vnz8BBpWvX799Tfc58ssCvYrYQF9gj2aNRAJHTQ

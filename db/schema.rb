@@ -1388,6 +1388,18 @@ ActiveRecord::Schema.define(version: 20180202233414) do
 
   add_index "ealerts", ["company_id"], name: "index_ealerts_on_company_id", using: :btree
 
+  create_table "egnyte_integrations", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "app_domain"
+    t.string   "access_token"
+    t.boolean  "connected",    default: false
+    t.boolean  "enabled",      default: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+  end
+
+  add_index "egnyte_integrations", ["company_id"], name: "index_egnyte_integrations_on_company_id", using: :btree
+
   create_table "email_opens", force: :cascade do |t|
     t.string   "ip"
     t.string   "device"

@@ -14,11 +14,11 @@ ActiveAdmin.register Company do
     column :ealert_reminder
     column :requests_enabled
     column :influencer_enabled
-    column :egnyte_enabled
     column :publishers_enabled
     column :gmail_enabled
     column :gcalendar_enabled
-    column :egnyte_app_domain
+    column :egnyte_integration_enabled
+    column :egnyte_integration_app_domain
     actions
   end
 
@@ -30,11 +30,9 @@ ActiveAdmin.register Company do
       row :ealert_reminder
       row :requests_enabled
       row :influencer_enabled
-      row :egnyte_enabled
       row :publishers_enabled
       row :gmail_enabled
       row :gcalendar_enabled
-      row :egnyte_app_domain
     end
 
     panel "Billing Address" do
@@ -67,6 +65,13 @@ ActiveAdmin.register Company do
         row :end_date
       end
     end
+
+    panel "Egnyte Integration" do
+      attributes_table_for company do
+        row('Enabled') { |company| company.egnyte_integration_enabled }
+        row('App Domain') { |company| company.egnyte_integration_app_domain }
+      end
+    end
   end
 
   filter :name
@@ -79,11 +84,9 @@ ActiveAdmin.register Company do
       f.input :ealert_reminder
       f.input :requests_enabled
       f.input :influencer_enabled
-      f.input :egnyte_enabled
       f.input :publishers_enabled
       f.input :gmail_enabled
       f.input :gcalendar_enabled
-      f.input :egnyte_app_domain
     end
 
     f.inputs "Billing Address", for: [:billing_address, f.object.billing_address || Address.new] do |ba|
@@ -112,7 +115,13 @@ ActiveAdmin.register Company do
       f.input :end_date, as: :datepicker
     end
 
+    panel "Egnyte Integration" do
+      f.inputs for: [:egnyte_integration, f.object.egnyte_integration || EgnyteIntegration.new] do |ei|
+        ei.input :app_domain
+        ei.input :enabled
+      end
+    end
+
     f.actions
   end
-
 end
