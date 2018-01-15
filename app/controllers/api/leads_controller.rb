@@ -24,7 +24,7 @@ class Api::LeadsController < ApplicationController
   end
 
   def reopen
-    lead.update(user_id: nil, reopened_at: Time.now)
+    lead.update(status: nil, user_id: nil, reopened_at: Time.now)
 
     render nothing: true
   end
