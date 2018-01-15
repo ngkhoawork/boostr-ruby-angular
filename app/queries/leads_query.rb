@@ -8,7 +8,7 @@ class LeadsQuery
     relation
       .by_relation(options)
       .by_status(options[:status])
-      .includes(:contact, :user)
+      .includes(:contact, :user, :company)
   end
 
   private
