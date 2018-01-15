@@ -32,7 +32,7 @@
                 Publisher
                 %a{href: '', 'ng-href': '/publishers/{{activity.publisher.id}}'}
                     {{activity.publisher.name}}
-            %p{'ng-if': 'activity.activity_type.name != "Email"','ng-bind-html': 'getHtml(activity.comment)'}
+            %div{ng: {if: 'activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250'}}
             %div{'ng-if': 'activity.activity_type.name == "Email"'}
                 %p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
                 %button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity)'}
