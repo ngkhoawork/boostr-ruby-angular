@@ -31,7 +31,9 @@ class Emails::EmailOpenDecorator
   end
 
   def location
-    geo_ip = Geocoder.search(@request.remote_ip).first.data.symbolize_keys
+    location = Geocoder.search(@request.remote_ip || @request.user_ip)
+
+    geo_ip = location.present? ? location.first.data.symbolize_keys : { city: 'Unknown' }
 
     geo_ip[:city].present? ? geo_ip[:city] : geo_ip[:country_name]
   end
