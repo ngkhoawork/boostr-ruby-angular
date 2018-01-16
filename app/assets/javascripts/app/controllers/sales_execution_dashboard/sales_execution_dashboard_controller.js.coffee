@@ -131,17 +131,17 @@
 
       calculateKPIs = () =>
 
-        SalesExecutionDashboard.activity_summary("member_ids[]": $scope.selectedMemberList, time_period: $scope.activitySummaryChoice).then (data) ->
+        SalesExecutionDashboard.activity_summary("member_ids[]": $scope.selectedMemberList.concat($scope.selectedLeaderList), time_period: $scope.activitySummaryChoice).then (data) ->
           ActivitySummaryDataStore.setData(data)
           $scope.dataActivitySummary = ActivitySummaryDataStore.getData()
           $scope.optionsActivitySummary = ActivitySummaryDataStore.getOptions()
 
-        SalesExecutionDashboard.deal_loss_summary("member_ids[]": $scope.selectedMemberList, time_period: $scope.dealLossSummaryChoice).then (data) ->
+        SalesExecutionDashboard.deal_loss_summary("member_ids[]": $scope.selectedMemberList.concat($scope.selectedLeaderList), time_period: $scope.dealLossSummaryChoice).then (data) ->
           DealLossSummaryDataStore.setData(data)
           $scope.dataDealLossSummary = DealLossSummaryDataStore.getData()
           $scope.optionsDealLossSummary = DealLossSummaryDataStore.getOptions()
 
-        SalesExecutionDashboard.deal_loss_stages("member_ids[]": $scope.selectedMemberList, time_period: $scope.dealLossSummaryChoice).then (data) ->
+        SalesExecutionDashboard.deal_loss_stages("member_ids[]": $scope.selectedMemberList.concat($scope.selectedLeaderList), time_period: $scope.dealLossSummaryChoice).then (data) ->
           DealLossStagesDataStore.setData(data)
           $scope.dataDealLossStages = DealLossStagesDataStore.getData()
           $scope.optionsDealLossStages = DealLossStagesDataStore.getOptions()
@@ -149,7 +149,7 @@
         SalesExecutionDashboard.kpis("member_ids[]": $scope.selectedMemberList.concat($scope.selectedLeaderList), time_period: $scope.kpisChoice).then (data) ->
           $scope.kpis = data[0]
 
-        SalesExecutionDashboard.all("member_ids[]": $scope.selectedMemberList, team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
+        SalesExecutionDashboard.all("member_ids[]": $scope.selectedMemberList.concat($scope.selectedLeaderList), team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
           $scope.topDeals = _.map data[0].top_deals, (item) ->
             item.advertiser_name = item.advertiser.name
             item.stage_probability = item.stage.probability
