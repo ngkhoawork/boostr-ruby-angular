@@ -392,7 +392,7 @@ Rails.application.routes.draw do
       end
     end
     resources :options, only: [:create, :update, :destroy]
-    resources :validations, only: [:index, :update, :create] do
+    resources :validations, only: [:index, :update, :create, :destroy] do
       collection do
         get :account_base_fields
         get :deal_base_fields

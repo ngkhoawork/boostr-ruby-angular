@@ -8,6 +8,7 @@ class SalesProcess < ActiveRecord::Base
 
   scope :is_active, -> (status) { where(active: status) unless status.nil? }
   
+  after_save :update_stages
   before_destroy :check_default_sales_process
 
   private
@@ -20,5 +21,11 @@ class SalesProcess < ActiveRecord::Base
 
   def check_default_sales_process
     name != 'DEFAULT'
+  end
+
+  def update_stages
+    if active_changed? && active == false
+      stages.update_all(active: false)
+    end
   end
 end

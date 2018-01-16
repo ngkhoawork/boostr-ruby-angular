@@ -44,6 +44,11 @@ class Api::ValidationsController < ApplicationController
     )
   end
 
+  def destroy
+    validation.destroy
+    render nothing: true
+  end
+
   private
 
   def validation
