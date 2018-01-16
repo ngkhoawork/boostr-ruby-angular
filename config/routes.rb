@@ -156,6 +156,23 @@ Rails.application.routes.draw do
       resources :contact_cf_names, only: [:index]
     end # API V2 END
 
+    namespace :dataexport, defaults: { format: :json }, constraints: ApiConstraints.new(dataexport: true) do
+      resources :user_token, only: [:create]
+
+      resources :users, only: [:index]
+      resources :products, only: [:index]
+      resources :ios, only: [:index]
+      resources :accounts, only: [:index]
+      resources :deals, only: [:index]
+      resources :display_line_items, only: [:index]
+      resources :stages, only: [:index]
+      resources :deal_members, only: [:index]
+      resources :deal_products, only: [:index]
+      resources :deal_product_budgets, only: [:index]
+      resources :io_members, only: [:index]
+      resources :display_line_item_budgets, only: [:index]
+    end
+
     resources :dfp_imports do
       collection do
         post 'import'
@@ -230,7 +247,7 @@ Rails.application.routes.draw do
     resources :account_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :contact_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_reports, only: [:index]
-    
+
     resources :bps, only: [:index, :create, :update, :show, :destroy] do
       get :seller_total_estimates
       get :account_total_estimates
@@ -239,7 +256,7 @@ Rails.application.routes.draw do
       post :assign_client
       post :add_all_clients
       post :assign_all_clients
-      resources :bp_estimates, only: [:index, :create, :update, :show, :destroy] do 
+      resources :bp_estimates, only: [:index, :create, :update, :show, :destroy] do
         get :status, on: :collection
       end
     end
