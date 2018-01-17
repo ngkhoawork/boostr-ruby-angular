@@ -82,6 +82,7 @@ class Api::ClientsController < ApplicationController
     else
       client = company.clients.new(client_params)
       client.created_by = current_user.id
+
       if client.save
         render json: client, status: :created
       else
@@ -218,7 +219,8 @@ class Api::ClientsController < ApplicationController
 
   def client_params
     params.require(:client).permit(
-      :name, :website, :note, :client_type_id, :client_category_id, :client_subcategory_id, :parent_client_id, :client_region_id, :client_segment_id, :holding_company_id,
+      :name, :website, :note, :client_type_id, :client_category_id, :client_subcategory_id, :parent_client_id,
+      :client_region_id, :client_segment_id, :holding_company_id, :lead_id,
       { 
         address_attributes: [:country, :street1, :street2, :city, :state, :zip, :phone, :email],
         values_attributes: [:id, :field_id, :option_id, :value],

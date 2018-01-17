@@ -18,7 +18,6 @@ class Api::V2::LeadsController < ApiController
   def lead_params
     params
       .require(:lead)
-      .permit(:first_name, :last_name, :title, :email, :company_name, :country, :state, :budget, :notes)
-      .merge(company_id: 11)
+      .permit(:first_name, :last_name, :title, :email, :company_name, :country, :state, :budget, :notes, :company_id)
   end
 end

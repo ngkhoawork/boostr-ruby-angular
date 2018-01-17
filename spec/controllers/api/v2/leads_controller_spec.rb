@@ -20,7 +20,7 @@ describe Api::V2::LeadsController do
   private
 
   def company
-    @_company ||= create(:company, id: 11)
+    @_company ||= create :company
   end
 
   def user
@@ -28,6 +28,6 @@ describe Api::V2::LeadsController do
   end
 
   def valid_lead_params
-    attributes_for :lead
+    attributes_for(:lead).merge(company_id: company.id)
   end
 end

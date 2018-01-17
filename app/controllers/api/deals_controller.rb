@@ -582,6 +582,7 @@ class Api::DealsController < ApplicationController
         :initiative_id,
         :closed_reason_text,
         :created_at,
+        :lead_id,
         {
             values_attributes: [
                 :id,

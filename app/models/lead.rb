@@ -2,10 +2,13 @@ class Lead < ActiveRecord::Base
   ACCEPTED = 'accepted'.freeze
   REJECTED = 'rejected'.freeze
 
+  has_many :deals
+
+  has_one :contact
+  has_one :client
+
   belongs_to :company
   belongs_to :user
-  belongs_to :contact
-  belongs_to :client
 
   scope :new_records, -> { where(status: nil) }
   scope :accepted, -> { where(status: ACCEPTED) }
@@ -21,7 +24,7 @@ class Lead < ActiveRecord::Base
   private
 
   def match_contact
-    self.update(contact_id: matched_contact.id) if matched_contact.present?
+    self.update(contact: matched_contact) if matched_contact.present?
   end
 
   def matched_contact
