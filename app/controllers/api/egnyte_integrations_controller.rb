@@ -35,6 +35,14 @@ class Api::EgnyteIntegrationsController < ApplicationController
     end
   end
 
+  def disconnect_egnyte
+    if resource.update(access_token: nil)
+      render json: resource
+    else
+      render json: { errors: resource.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   def oauth_settings
     if resource.app_domain.present?
       state_token = Egnyte::Actions::BuildAuthorizationUri.generate_state_token(resource.app_domain)
@@ -58,6 +66,8 @@ class Api::EgnyteIntegrationsController < ApplicationController
       raise oauth_request.parsed_response_body.inspect unless oauth_request.success?
 
       resource.update(access_token: oauth_request.parsed_response_body[:access_token])
+    else
+      resource.update(access_token: nil)
     end
 
     redirect_to website_egnyte_settings_uri
@@ -75,7 +85,7 @@ class Api::EgnyteIntegrationsController < ApplicationController
   end
 
   def resource_params
-    params.require(:egnyte_integration).permit(:app_domain, :egnyte_enabled, :deal_folder_tree, :account_folder_tree)
+    params.require(:egnyte_integration).permit(:app_domain, :egnyte_enabled, :deal_folder_tree, :account_folder_tree, :connected, :access_token)
   end
 
   def build_user_authorization_uri(state_token)

@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', 'Company', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation', 'DealAttachment'
-( $scope, $routeParams, Company,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation, DealAttachment) ->
+['$scope', '$routeParams', 'Company', 'Egnyte', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation', 'DealAttachment'
+( $scope, $routeParams, Company, Egnyte,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation, DealAttachment) ->
 
   $scope.showMeridian = true
   $scope.isAdmin = false
@@ -42,11 +42,11 @@
     $scope.currentUser = user
 
   $scope.getCurrentCompany = () ->
-    Company.get().$promise.then (company) ->
-      $scope.company = company
-      if(company.egnyte_connected)
+    Egnyte.show().then (egnyteSettings) ->
+      $scope.company = egnyteSettings
+      if(egnyteSettings.connected)
         $scope.egnyteConnected = true
-        $scope.egnyte(company.egnyte_access_token, company.egnyte_app_domain)
+        $scope.egnyte(egnyteSettings.access_token, egnyteSettings.app_domain)
 
   $scope.egnyte = (token, domain) ->
     req =
@@ -56,6 +56,7 @@
       data: embedded: true, path: "/Shared/Deal1"
 
     $http(req).then ((response) ->
+      console.log(response)
       $scope.embeddedUrl = $sce.trustAsResourceUrl(response.data.redirect)
       return
     ), (error) ->

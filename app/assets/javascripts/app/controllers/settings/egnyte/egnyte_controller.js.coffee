@@ -18,27 +18,20 @@
       vars
 
     $scope.init = () ->
-      getToken()
-      Company.get().$promise.then (company) ->
-        $scope.company = company
+      Egnyte.show().then (egnyteSettings) ->
+        $scope.egnyteSettings = egnyteSettings
 
-    getToken = () ->
-      params = currentParams()
-      if params.access_token
-        Egnyte.saveToken(params).then (response) ->
-          $location.url($location.path());
+    $scope.disconnectEgnyte = (egnyte) ->
+      Egnyte.saveToken(connected: egnyte.connected)
 
-    $scope.updateEgnyte = (type, company) ->
-      switch type
-        when 'disable'
-          Egnyte.updateEgnyteSettings(egnyte_connected: $scope.company.egnyte_connected)
-        when 'disconnect'
-          Egnyte.updateEgnyteSettings(action_type: 'disconnect').then () ->
-            $scope.init()
+    $scope.removeEgnyte = (egnyteSettings) ->
+      if confirm('Are you sure?')
+        Egnyte.disconnect().then () ->
+          $scope.init()
 
     $scope.init()
 
     $scope.submitForm = ->
-      Egnyte.index().then (response) ->
-        $window.location.href = response.egnyteTokenUrl
+      Egnyte.egnyteSetup().then (response) ->
+        $window.location.href = response.egnyte_login_uri
 ]

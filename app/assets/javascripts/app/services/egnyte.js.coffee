@@ -1,20 +1,23 @@
 @service.service 'Egnyte',
   ['$resource', ( $resource ) ->
-    resource = $resource 'api/egnyte', {id: '@id'},
-      index:
+    resource = $resource '/api/egnyte_integration', {id: '@id'},
+      show:
         method: 'GET'
-        url: '/api/egnyte'
+        url: '/api/egnyte_integration'
+      egnyte_setup:
+        method: 'GET'
+        url: '/api/egnyte_integration/oauth_settings'
       save_token:
+        method: 'PUT'
+        url: '/api/egnyte_integration'
+      disconnect_egnyte:
         method: 'GET'
-        url: '/api/save_token'
-      update_egnyte_settings:
-        method: 'GET'
-        url: '/api/update_egnyte_settings'
+        url: '/api/egnyte_integration/disconnect_egnyte'
 
-
-    this.index = (params) -> resource.index(params).$promise
+    this.show = (params) -> resource.show(params).$promise
+    this.egnyteSetup = (params) -> resource.egnyte_setup(params).$promise
     this.saveToken = (params) -> resource.save_token(params).$promise
-    this.updateEgnyteSettings = (params) -> resource.update_egnyte_settings(params).$promise
+    this.disconnect = (params) -> resource.disconnect_egnyte(params).$promise
 
     return
   ]
