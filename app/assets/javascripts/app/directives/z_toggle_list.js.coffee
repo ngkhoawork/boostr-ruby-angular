@@ -9,18 +9,18 @@
     template: """
         <div class="z-toggle-list toggle-active">
             <div class="selected-line"></div>
-            <div class="z-toggle-list-item" ng-repeat="item in list" ng-class="{active: item == $selected}" ng-click="setItem(item)">
+            <div class="z-toggle-list-item" ng-repeat="item in list" ng-class="{active: item == selected}" ng-click="setItem(item)">
                 <span>{{item.name}}</span>
             </div>
         </div>
     """
     link: (scope, el, attrs) ->
         if scope.vertical then el.addClass 'vertical'
-        scope.$selected = scope.selected || scope.list[0]
+        scope.selected = scope.selected || scope.list[0]
 
         scope.setItem = (item) ->
-            scope.onChange({$selected: item})
-            scope.$selected = item
+            scope.selected = item
+            $timeout -> scope.onChange({$selected: item})
             updateLine()
 
         $timeout -> updateLine()

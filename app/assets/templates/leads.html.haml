@@ -4,12 +4,10 @@
             .header-item
                 .main-title Leads
             .header-item
-                %z-toggle-list{list: 'teamFilters', selected: 'selectedTeamFilter', 'on-change': 'onFilterChange($selected)'}
+                %z-toggle-list{list: 'teamFilters', selected: 'teamFilter', 'on-change': 'onFilterChange($selected)'}
             .header-item
-            -#.header-item
-                %z-toggle-list{list: 'typeFilters', vertical: 'false', 'on-change': 'onFilterChange($selected)'}
         .row.mb30
-            %z-toggle-list{list: 'typeFilters', vertical: 'false', 'on-change': 'onFilterChange($selected)'}
+            %z-toggle-list{list: 'statusFilters', selected: 'statusFilter', 'on-change': 'onFilterChange($selected)'}
 
         .row
             .leads-table
@@ -19,14 +17,15 @@
                     .leads-th COMPANY
                     .leads-th DEAL DETAILS
                     .leads-th
-                .leads-tr{'ng-repeat': 'i in [1, 2, 3, 4]'}
+                .leads-tr{'ng-repeat': 'lead in leads'}
                     .leads-td
                         .leads-td-inner
                             .td-title
-                                %a{href: ''} Judy Newseller
+                                %a{href: ''} {{lead.name}}
                             .td-info Reassigned 12/31/2017
                             .td-info 0 Days Untouched
-                            .td-action Reassign
+                            .td-action{'ng-click': 'showReassignModal(lead)'}
+                                Reassign
 
                     .leads-td
                         .leads-td-inner
