@@ -58,6 +58,7 @@ class Api::ContactsController < ApplicationController
       if contact_params[:client_id].present?
         contact = current_user.company.contacts.new(contact_params)
         contact.created_by = current_user.id
+
         if contact.save
           render json: contact, status: :created
         else
@@ -66,7 +67,6 @@ class Api::ContactsController < ApplicationController
       else
         render json: { errors: { "primary account": ["can't be blank"] } }, status: :unprocessable_entity
       end
-
     end
   end
 
@@ -74,6 +74,7 @@ class Api::ContactsController < ApplicationController
     if contact_params[:client_id].present? || params[:unassign] == true
       if contact.update_attributes(contact_params)
         contact.update_primary_client if params[:contact][:set_primary_client]
+
         render json: contact, serializer: ContactUpdateSerializer, status: :accepted
       else
         render json: { errors: contact.errors.messages }, status: :unprocessable_entity
@@ -86,6 +87,7 @@ class Api::ContactsController < ApplicationController
 
   def destroy
     contact.destroy
+
     render nothing: true
   end
 
@@ -140,6 +142,7 @@ class Api::ContactsController < ApplicationController
       :position,
       :note,
       :client_id,
+      :lead_id,
       address_attributes: [
         :id,
         :country,

@@ -5,6 +5,7 @@ class Contact < ActiveRecord::Base
   belongs_to :client
   belongs_to :account_dimension
   belongs_to :publisher
+  belongs_to :lead
 
   has_one :primary_client, through: :primary_client_contact, source: :client
   has_one :primary_client_contact, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'

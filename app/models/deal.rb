@@ -14,6 +14,7 @@ class Deal < ActiveRecord::Base
   belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
   belongs_to :initiative
+  belongs_to :lead
 
   # Restrict with exception is used to rollback any
   # other potential dependent: :destroy relations
