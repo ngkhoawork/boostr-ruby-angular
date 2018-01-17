@@ -22,6 +22,7 @@
         currentUserIsLeader = false
     :javascript
       currentUserRoles = #{current_user.roles}
+      companyEgnyteSettings = #{current_user.company.egnyte_integration.to_json}
     %header
       - if content_for? :nav
         = yield :nav

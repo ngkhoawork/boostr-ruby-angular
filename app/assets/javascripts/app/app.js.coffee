@@ -402,6 +402,9 @@
   $rootScope.transloaditTemplates = transloaditTemplates
   $rootScope.userType = userType
   $rootScope.currentUserRoles = currentUserRoles
+  if companyEgnyteSettings
+    $rootScope.companyEgnyteEnabled = companyEgnyteSettings.enabled
+
   currentUserRoles.isAdmin = -> _.contains this, 'admin'
   currentUserRoles.isSuperAdmin = -> _.contains this, 'superadmin'
 

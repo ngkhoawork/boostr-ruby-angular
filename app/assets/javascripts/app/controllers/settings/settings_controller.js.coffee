@@ -26,6 +26,6 @@
             {title: 'Permissions',        url: '/settings/permissions',        icon: 'gear',                description: 'Manage permissions for data visibility or editibility on forecast and ios.'}
             {title: 'Validations',        url: '/settings/validations',        icon: 'check-square-o',      description: 'Configure required data for Accounts and Deals.'}
             {title: 'Activity Types',     url: '/settings/activity_types',     icon: 'users',               description: 'Create, edit and reorder Activity Types.'}
-            {title: 'Egnyte',             url: '/settings/egnyte',             icon: 'gear',                description: 'Setup Egnyte'}
+            {title: 'Egnyte',             url: '/settings/egnyte',             icon: 'gear',                description: 'Setup Egnyte'} if $scope.companyEgnyteEnabled
         ]
     ]
