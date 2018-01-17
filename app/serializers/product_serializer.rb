@@ -7,7 +7,8 @@ class ProductSerializer < ActiveModel::Serializer
     :revenue_type,
     :active,
     :values,
-    :is_influencer_product
+    :is_influencer_product,
+    :margin
   )
 
   def product_family
