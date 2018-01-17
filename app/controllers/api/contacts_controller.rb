@@ -143,6 +143,7 @@ class Api::ContactsController < ApplicationController
       :note,
       :client_id,
       :lead_id,
+      :web_lead,
       address_attributes: [
         :id,
         :country,

@@ -1,6 +1,6 @@
 class Api::Leads::IndexSerializer < ActiveModel::Serializer
   attributes :id, :name, :title, :email, :country, :state, :budget, :notes, :created_at, :accepted_at,
-             :rejected_at, :reassigned_at, :reopened_at, :user, :contact, :clients, :untouched_days
+             :rejected_at, :reassigned_at, :reopened_at, :user, :contact, :clients, :untouched_days, :client
 
   def contact
     object.contact.serializable_hash(only: [:id, :name]) rescue nil
@@ -18,6 +18,10 @@ class Api::Leads::IndexSerializer < ActiveModel::Serializer
     if object.company_name.present?
       company.clients.by_name(object.company_name).as_json(override: true, only: [:id, :name])
     end
+  end
+
+  def client
+    object.client.serializable_hash(only: [:id, :name]) rescue nil
   end
 
   private
