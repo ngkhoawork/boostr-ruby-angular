@@ -1,0 +1,20 @@
+#leads-reassign-modal.popup-modal
+    .popup-modal-header
+        Lead Reassign
+        %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+        %div
+            .form-group
+                %label{ for: 'user' }
+                    Seller
+                .assign-row
+                    %ui-select{ name: 'user', ng: { model: 'deal.user_id', required: true } }
+                        %ui-select-match{ placeholder: 'Pick from list or search' }
+                            {{$select.selected.name}}
+                        %ui-select-choices{ repeat: 'user.id as user in users | filter: { name: $select.search }' }
+                            %div {{user.name}}
+                    .leads-btn Assign
+        .delimiter OR
+        .leads-btn Reassign to Next Available
+    -#.popup-modal-footer
+        %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
