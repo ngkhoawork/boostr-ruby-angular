@@ -25,7 +25,7 @@ class Api::V2::ClientListSerializer < ActiveModel::Serializer
   end
 
   def city
-  	object.address.city
+    object.address.city
   end
 
   def state
