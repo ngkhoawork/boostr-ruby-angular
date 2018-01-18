@@ -1,13 +1,17 @@
 class Api::EgnyteIntegrationsController < ApplicationController
   respond_to :json
 
-  def self.host
-    Rails.application.config.action_mailer.default_url_options.tap do |host_options|
-      break "#{host_options[:host]}:#{host_options[:port]}"
+  class << self
+    def website_egnyte_settings_uri
+      "https://#{host}/settings/egnyte"
+    end
+
+    def host
+      Rails.application.config.action_mailer.default_url_options.tap do |host_options|
+        break "#{host_options[:host]}:#{host_options[:port]}"
+      end
     end
   end
-
-  WEBSITE_EGNYTE_SETTINGS_URI = "#{host}/settings/egnyte".freeze
 
   def show
     render json: resource
@@ -17,7 +21,7 @@ class Api::EgnyteIntegrationsController < ApplicationController
     @resource = company.build_egnyte_integration(resource_params)
 
     if resource.save
-      render json: resource
+      render json: resource, status: :created
     else
       render json: { errors: resource.errors.messages }, status: :unprocessable_entity
     end
@@ -33,11 +37,11 @@ class Api::EgnyteIntegrationsController < ApplicationController
 
   def oauth_settings
     if resource.app_domain.present?
-      state = EgnyteIntegration.generate_state_token(resource.app_domain)
+      state_token = Egnyte::Actions::BuildAuthorizationUri.generate_state_token(resource.app_domain)
 
-      resource.update(access_token: state)
+      resource.update(access_token: state_token)
 
-      render json: { egnyte_login_uri: build_user_authorization_uri(state) }
+      render json: { egnyte_login_uri: build_user_authorization_uri(state_token) }
     else
       render json: { errors: ['app_domain must be setup'] }, status: :bad_request
     end
@@ -56,7 +60,7 @@ class Api::EgnyteIntegrationsController < ApplicationController
       resource.update(access_token: oauth_request.parsed_response_body[:access_token])
     end
 
-    redirect_to WEBSITE_EGNYTE_SETTINGS_URI
+    redirect_to website_egnyte_settings_uri
   end
 
   private
@@ -71,14 +75,14 @@ class Api::EgnyteIntegrationsController < ApplicationController
   end
 
   def resource_params
-    params.require(:egnyte_integration).permit(:app_domain, :egnyte_enabled)
+    params.require(:egnyte_integration).permit(:app_domain, :egnyte_enabled, :deal_folder_tree, :account_folder_tree)
   end
 
-  def build_user_authorization_uri(state)
-    Egnyte::Actions::BuildUserAuthorizationUri.new(
+  def build_user_authorization_uri(state_token)
+    Egnyte::Actions::BuildAuthorizationUri.new(
       domain: resource.app_domain,
       redirect_uri: oauth_callback_api_egnyte_integration_url,
-      state: state
+      state: state_token
     ).perform
   end
 

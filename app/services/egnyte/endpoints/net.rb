@@ -1,5 +1,5 @@
 class Egnyte::Endpoints::Net
-  BODY_SUPPORTED_METHODS = %i(post put patch).freeze
+  PAYLOAD_SUPPORTED_METHODS = %i(post put patch).freeze
   SUCCESS_STATUS_CODES = %w(200 201 204)
   CONFIGS = {
     client_id: ENV['egnyte_client_id'],
@@ -10,9 +10,7 @@ class Egnyte::Endpoints::Net
   delegate :code, to: :response, prefix: true, allow_nil: true
 
   def perform
-    @response = send_request
-    @parsed_response_body = JSON.parse(@response.body, symbolize_names: true)
-    @response
+    @response = send_request.tap { |response| @parsed_response_body = JSON.parse(response.body, symbolize_names: true) }
   end
 
   def success?
@@ -29,7 +27,7 @@ class Egnyte::Endpoints::Net
 
   def build_request_object
     net_http_class.new(uri).tap do |request_object|
-      request_object.body = URI.encode_www_form(request_params) if BODY_SUPPORTED_METHODS.include?(request_method)
+      request_object.body = payload if PAYLOAD_SUPPORTED_METHODS.include?(request_method)
       request_headers.each { |key, value| request_object[key] = value }
     end
   end
@@ -39,13 +37,13 @@ class Egnyte::Endpoints::Net
   end
 
   def uri
-    @uri ||= URI(hosted_path).tap do |uri|
-      uri.query = URI.encode_www_form(request_params) unless BODY_SUPPORTED_METHODS.include?(request_method)
+    @uri ||= URI("https://#{domain}/#{path}").tap do |uri|
+      uri.query = URI.encode_www_form(request_params) unless PAYLOAD_SUPPORTED_METHODS.include?(request_method)
     end
   end
 
-  def hosted_path
-    path.include?(host) ? path : "#{host}/#{path}"
+  def payload
+    request_params.to_json
   end
 
   def request_params
@@ -60,7 +58,7 @@ class Egnyte::Endpoints::Net
     raise NotImplementedError, __method__
   end
 
-  def host
+  def domain
     raise NotImplementedError, __method__
   end
 

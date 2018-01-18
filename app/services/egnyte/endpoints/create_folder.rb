@@ -1,11 +1,11 @@
-class Egnyte::Endpoints::Oauth < Egnyte::Endpoints::Net
+class Egnyte::Endpoints::CreateFolder < Egnyte::Endpoints::Net
   class << self
     def required_option_keys
-      %i(domain redirect_uri code)
+      %i(domain folder_path access_token)
     end
 
     def predefined_request_params
-      { grant_type: 'authorization_code' }
+      { action: 'add_folder' }
     end
   end
 
@@ -28,20 +28,18 @@ class Egnyte::Endpoints::Oauth < Egnyte::Endpoints::Net
   end
 
   def path
-    'puboauth/token'
-  end
-
-  def payload
-    URI.encode_www_form(request_params)
+    "pubapi/v1/fs/#{@options[:folder_path]}"
   end
 
   def request_params
     {
-      code: @options[:code],
-      redirect_uri: @options[:redirect_uri],
-      client_id: CONFIGS[:client_id],
-      client_secret: CONFIGS[:client_secret],
-      grant_type: predefined_request_params[:grant_type]
+      action: predefined_request_params[:action]
+    }
+  end
+
+  def request_headers
+    {
+      'Authorization' => "Bearer #{@options[:access_token]}"
     }
   end
 end
