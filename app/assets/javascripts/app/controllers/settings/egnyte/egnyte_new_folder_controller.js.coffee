@@ -8,7 +8,6 @@
     formValidation()
     if Object.keys($scope.errors).length > 0 then return
 
-
   formValidation = () ->
     $scope.errors = {}
     fields = ['name']

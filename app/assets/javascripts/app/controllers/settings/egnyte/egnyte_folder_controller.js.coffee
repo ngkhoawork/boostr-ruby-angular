@@ -56,8 +56,4 @@
       else
         $scope.showSubButton = false
         $scope.showParentButton = false
-
-
-
-
 ]
