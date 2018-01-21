@@ -1,0 +1,15 @@
+%li
+  .block{"ng-click" => "activeFolder($event, b)"}
+    .folder-title
+      %span.click-trigger.triangle-down
+      %i.fa.fa-folder-open
+      .folder-info
+        .content-info
+          %div
+            %p
+              {{ b.title }}
+          %div
+            %p.additional-info{"ng-if" => "b.root"}
+              value=Deal
+            %p.additional-info{"ng-if" => "!b.root"}
+              {{b.nodes ? b.nodes.length : 0}} Files

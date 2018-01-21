@@ -18,8 +18,22 @@
               .col-xs-10
                 %p.disconnect.right{'ng-click': 'removeEgnyte(egnyteSettings)'}
                   Disconnect Account
-
-
-
+  .container-fluid{"ng-controller": "EgnyteFolderController"}
+    .row
+      .col-xs-6
+        .mb20
+        .egnyte-header
+          .header-item
+            .main-title
+              Structure
+          .header-item{'ng-if': 'showParentButton'}
+            %add-button{'ng-click': 'createFolder("parent")'}
+              {{click}}
+              Add Parent Folder
+          .header-item{'ng-if': 'showSubButton'}
+            %add-button{'ng-click': 'createFolder("sub")'}
+              Add Sub Folder
+        .tree
+          %tree{'src': "folders"}
 
 
