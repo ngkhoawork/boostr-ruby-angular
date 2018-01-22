@@ -297,7 +297,7 @@ class Api::V2::DealsController < ApiController
   def suggest_deals
     return @search_deals if defined?(@search_deals)
 
-    @search_deals = company.deals.by_name("%#{params[:name]}%")
+    @search_deals = company.deals.by_name(params[:name])
   end
 
   def activity_deals

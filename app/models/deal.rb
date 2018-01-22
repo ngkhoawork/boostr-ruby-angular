@@ -163,7 +163,6 @@ class Deal < ActiveRecord::Base
   scope :by_stage_ids, -> (stage_ids) { where(stage_id: stage_ids) if stage_ids.present? }
   scope :by_options, -> (option_id) { joins(:options).where(options: { id: option_id }) if option_id.any? }
   scope :by_ids, -> (ids) { where('deals.id in (?)', ids) if ids.present? }
-  scope :by_name, -> (name) { where('deals.name ilike ?', name) }
   scope :with_all_options, -> (option_ids) do
     if option_ids.present? && !option_ids.empty?
       ids = Value.where(subject_type: 'Deal')
