@@ -18,7 +18,7 @@ class Api::LeadsController < ApplicationController
   end
 
   def reassign
-    lead.update(user_id: determine_assignee, reassigned_at: Time.now)
+    lead.update(user_id: determine_assignee, reassigned_at: Time.now, status: nil)
 
     render nothing: true
   end
