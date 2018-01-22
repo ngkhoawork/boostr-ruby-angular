@@ -1,0 +1,21 @@
+%p
+  Title: #{@lead.title}
+
+%p
+  Email: #{@lead.email}
+
+%p
+  City: #{@lead.state}
+
+%p
+  Country: #{@lead.country}
+
+%p
+  Company: #{@lead.company.name}
+
+%p
+  Budget: #{@lead.budget}
+
+%p
+  Reply to lead creator - 
+  = mail_to @lead.email, @lead.name

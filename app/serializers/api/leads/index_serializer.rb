@@ -1,5 +1,5 @@
 class Api::Leads::IndexSerializer < ActiveModel::Serializer
-  attributes :id, :name, :title, :email, :country, :state, :budget, :notes, :created_at, :accepted_at,
+  attributes :id, :name, :title, :email, :country, :state, :budget, :notes, :created_at, :accepted_at, :company_name,
              :rejected_at, :reassigned_at, :reopened_at, :user, :contact, :clients, :untouched_days, :client
 
   def contact
