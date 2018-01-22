@@ -22,7 +22,7 @@
         $scope.egnyteSettings = egnyteSettings
 
     $scope.disconnectEgnyte = (egnyte) ->
-      Egnyte.saveToken(connected: egnyte.connected)
+      Egnyte.updateConfiguration(connected: egnyte.connected)
 
     $scope.removeEgnyte = (egnyteSettings) ->
       if confirm('Are you sure?')

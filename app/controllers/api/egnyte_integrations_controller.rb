@@ -85,7 +85,10 @@ class Api::EgnyteIntegrationsController < ApplicationController
   end
 
   def resource_params
-    params.require(:egnyte_integration).permit(:app_domain, :egnyte_enabled, :deal_folder_tree, :account_folder_tree, :connected, :access_token)
+    params
+        .require(:egnyte_integration)
+        .permit!
+        .slice(:app_domain, :egnyte_enabled, :deal_folder_tree, :account_folder_tree)
   end
 
   def build_user_authorization_uri(state_token)

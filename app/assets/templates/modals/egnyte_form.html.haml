@@ -13,12 +13,12 @@
           %i.fa.fa-warning
           {{error}}
 
-      .form-group{'ng-class':'{error: errors.name}'}
-        %span.error-text {{errors.name}}
-        %label{ for: 'name' }
-          Name
+      .form-group{'ng-class':'{error: errors.title}'}
+        %span.error-text {{errors.title}}
+        %label{ for: 'title' }
+          Title
         %span.star *
-        %input.form-control{ placeholder: 'Name', ng: { model: 'folder.name' }, name: 'name' }
+        %input.form-control{ placeholder: 'Title', ng: { model: 'newFolder.title' }, name: 'title' }
 
     .modal-footer.text-center
       %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } Create

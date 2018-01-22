@@ -3,23 +3,24 @@ app.directive 'tree', ->
     restrict: 'E'
     replace: true
     scope: t: '=src'
-    template: '<ul class="folders"><branch ng-repeat="c in t.nodes" src="c"></branch></ul>'
+    template: '<ul class="folders"><branch ng-repeat="c in t.nodes" src="c" parent="t"></branch></ul>'
   }
 app.directive 'branch', ($compile) ->
   {
     restrict: 'E'
     replace: true
-    scope: b: '=src'
+    scope: { b: '=src', parentFolder: '=parent' }
     templateUrl: 'directives/folder-structure.html'
     controller: ($scope, $rootScope) ->
       $scope.activeFolder = (event, folder) ->
         if $(event.target).hasClass('block')
-          $rootScope.$broadcast 'handleActionButtons', folder
+          $rootScope.$broadcast 'handleActionButtons', folder, $scope.parentFolder
         else
           $rootScope.$broadcast 'handleActionButtons'
 
     link: (scope, element, attrs) ->
       has_subfolders = angular.isArray(scope.b.nodes)
+
       if has_subfolders
         element.append '<tree src="b"></tree>'
         $compile(element.contents()) scope

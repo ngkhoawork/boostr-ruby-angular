@@ -16,7 +16,7 @@
 
     this.show = (params) -> resource.show(params).$promise
     this.egnyteSetup = (params) -> resource.egnyte_setup(params).$promise
-    this.saveToken = (params) -> resource.save_token(params).$promise
+    this.updateConfiguration = (params) -> resource.save_token(params).$promise
     this.disconnect = (params) -> resource.disconnect_egnyte(params).$promise
 
     return

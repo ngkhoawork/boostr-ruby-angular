@@ -1,20 +1,43 @@
-@app.controller 'EgnyteNewFolderController', ['$scope', '$modalInstance', 'folder', ( $scope, $modalInstance, folder ) ->
-  $scope.folder = folder
+@app.controller 'EgnyteNewFolderController',
+  ['$scope', '$modalInstance', 'contentInfo', 'Egnyte', '$rootScope'
+    ( $scope, $modalInstance, contentInfo, Egnyte, $rootScope ) ->
+      $scope.contentInfo = contentInfo
+      $scope.newFolder = { nodes: [] }
 
-  $scope.cancel = ->
-    $modalInstance.close()
+      $scope.cancel = ->
+        $modalInstance.close()
 
-  $scope.submitForm = () ->
-    formValidation()
-    if Object.keys($scope.errors).length > 0 then return
+      $scope.submitForm = () ->
+        activeFolder = $scope.contentInfo.activated
+        folders = deepNestedFolder(_.first($scope.contentInfo.folders.nodes))
+        type = $scope.contentInfo.type
+        parentFolder = $scope.contentInfo.parentFolder
 
-  formValidation = () ->
-    $scope.errors = {}
-    fields = ['name']
+        if type == 'sub'
+          activeFolder.nodes.push $scope.newFolder
+          updateFolderStructure(JSON.stringify(folders))
 
-    fields.forEach (key) ->
-      field = $scope.folder[key]
-      switch key
-        when 'name'
-          if !field then return $scope.errors[key] = 'Name is required'
+        else
+          $scope.newFolder.nodes.push activeFolder
+          parentFolder.nodes.push $scope.newFolder
+          updatedParent = parentFolder.nodes.filter((folder) ->
+            folder.title != activeFolder.title
+          )
+          parentFolder.nodes = updatedParent
+          updateFolderStructure(JSON.stringify(folders))
+
+      deepNestedFolder = (nodes) ->
+        delete nodes['$$hashKey']
+        _.each nodes, (nestedNodes) ->
+          if _.isObject(nestedNodes) && !nestedNodes.nodes && !_.isArray(nestedNodes)
+            nestedNodes.nodes = []
+          if _.isArray(nestedNodes) || nestedNodes.nodes
+            deepNestedFolder(nestedNodes)
+
+      updateFolderStructure = (folders) ->
+        Egnyte.updateConfiguration({egnyte_integration: {deal_folder_tree: folders}}).then (res) ->
+          $rootScope.$broadcast 'updateFolderStructure'
+          $scope.cancel()
+
+
 ]

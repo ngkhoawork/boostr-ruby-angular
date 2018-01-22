@@ -1,40 +1,20 @@
 @app.controller 'EgnyteFolderController',
-  ['$scope', '$modal', ( $scope, $modal ) ->
+  ['$scope', '$modal', 'Egnyte', ($scope, $modal, Egnyte) ->
     $scope.showParentButton = false
     $scope.showSubButton = false
 
-    $scope.folders = nodes: [
-      {
-        id: 1,
-        title: 'Deal'
-        root: true
-        nodes: [
-          {
-            id: 2,
-            title: 'Images'
-            nodes: [
-              { id: 3, title: 'Mockups' }
-              { id: 4, title: 'Templates' }
-              { id: 50, title: 'PNG', nodes: [
-                { id: 50, title: 'test', nodes: [
-                  { id: 50, title: 'test', nodes: [] }
-                  ]}
-              ] }
-            ]
-          }
-          {
-            id: 5,
-            title: 'Proposal'
-            nodes: [
-              { id: 6, title: 'Good Proposals' }
-              { id: 7, title: 'Bad Proposals' }
-            ]
-          }
-        ]
-      }
-    ]
+    $scope.init = () ->
+      $scope.showFolderStructure()
 
-    $scope.createFolder = () ->
+    $scope.showFolderStructure = () ->
+      Egnyte.show().then (egnyteSettings) ->
+        egnyteSettings.deal_folder_tree.root = true
+        $scope.folders = {nodes: [egnyteSettings.deal_folder_tree]}
+
+    $scope.$on 'updateFolderStructure', ->
+      $scope.showFolderStructure()
+
+    $scope.createFolder = (type) ->
       $scope.modalInstance = $modal.open
         templateUrl: 'modals/egnyte_form.html'
         size: 'md'
@@ -42,10 +22,12 @@
         backdrop: 'static'
         keyboard: false
         resolve:
-          folder: ->
-            {}
+          contentInfo: ->
+            { folders: $scope.folders, activated: $scope.activatedFolder, parentFolder: $scope.parentFolder, type: type }
 
-    $scope.$on 'handleActionButtons', (event, folder) ->
+    $scope.$on 'handleActionButtons', (event, folder, parentFolder) ->
+      $scope.activatedFolder = folder
+      $scope.parentFolder = parentFolder
       if folder
         if folder.root
           $scope.showParentButton = false
@@ -56,4 +38,6 @@
       else
         $scope.showSubButton = false
         $scope.showParentButton = false
+
+    $scope.init()
 ]
