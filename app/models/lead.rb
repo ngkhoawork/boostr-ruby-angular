@@ -15,7 +15,7 @@ class Lead < ActiveRecord::Base
   scope :rejected, -> { where(status: REJECTED) }
   scope :by_company_id, -> (company_id) { where(company_id: company_id) }
 
-  after_create :match_contact
+  after_create :match_contact, :assign_reviewer
 
   def name
     first_name + last_name rescue first_name || last_name
@@ -24,11 +24,15 @@ class Lead < ActiveRecord::Base
   private
 
   def match_contact
-    self.update(contact: matched_contact) if matched_contact.present?
+    self.contact = matched_contact if matched_contact.present?
   end
 
   def matched_contact
     @_matched_contact ||=
       company.contacts.joins(:address).find_by(addresses: { email: email }) if company.present?
+  end
+
+  def assign_reviewer
+    update_columns(user_id: company.users.sample(1).first.id)
   end
 end

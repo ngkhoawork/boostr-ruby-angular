@@ -7,6 +7,8 @@ class Api::V2::LeadsController < ApiController
     lead = Lead.new(lead_params)
 
     if lead.save
+      LeadsMailer.new_leads_assignment(lead).deliver_now
+
       render json: { status: 'Lead was successfully created' }, status: :created
     else
       render json: { errors: lead.errors.messages }, status: :unprocessable_entity
