@@ -70,11 +70,11 @@
                             .td-action{'ng-if': 'statusFilter.id !== "new_leads"', 'ng-click': 'showReassignModal(lead)'} Create Deal
                     .leads-td{'ng-switch-when': 'new_leads'}
                         .leads-td-inner
-                            .leads-btn.hollow{'ng-click': 'reject()'} Reject
-                            .leads-btn{'ng-click': 'accept()'} Start Qualification
+                            .leads-btn.hollow{'ng-click': 'reject(lead)'} Reject
+                            .leads-btn{'ng-click': 'accept(lead)'} Start Qualification
                     .leads-td{'ng-switch-when': 'accepted'}
                         .leads-td-inner
-                            .leads-btn.hollow{'ng-click': 'reject()'} Reject
+                            .leads-btn.hollow{'ng-click': 'reject(lead)'} Reject
                     .leads-td{'ng-switch-when': 'rejected'}
-                        .leads-td-inner{'ng-click': 'reassign()'}
+                        .leads-td-inner{'ng-click': 'reassign(lead)'}
                             .leads-btn Take Ownership

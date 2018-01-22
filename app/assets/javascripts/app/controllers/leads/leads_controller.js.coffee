@@ -44,14 +44,14 @@
                     lead: -> lead
 
 
-        $scope.reassign = ->
-            params = {}
+        $scope.reassign = (lead) ->
+            params = {id: lead.id}
             params.user_id = $scope.currentUser.id if $scope.currentUser
             Leads.reassign(params)
 
-        $scope.accept = ->
-            Leads.accept()
+        $scope.accept = (lead) ->
+            Leads.accept(id: lead.id)
 
-        $scope.reject = ->
-            Leads.reject()
+        $scope.reject = (lead) ->
+            Leads.reject(id: lead.id)
 ]
