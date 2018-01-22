@@ -1,29 +1,33 @@
-@directives.directive 'zToggleList', ['$timeout', ($timeout)->
+@directives.directive 'zToggleList', ['$timeout', 'localStorageService', ($timeout, LS)->
     restrict: 'E'
     replace: true
     scope:
         list: '='
         selected: '='
         vertical: '='
+        localstorage: '@'
         onChange: '&'
     template: """
         <div class="z-toggle-list toggle-active">
             <div class="selected-line"></div>
-            <div class="z-toggle-list-item" ng-repeat="item in list" ng-class="{active: item == selected}" ng-click="setItem(item)">
+            <div class="z-toggle-list-item" ng-repeat="item in list" ng-class="{active: item.id == selected.id}" ng-click="setItem(item)">
                 <span>{{item.name}}</span>
             </div>
         </div>
     """
     link: (scope, el, attrs) ->
         if scope.vertical then el.addClass 'vertical'
-        scope.selected = scope.selected || scope.list[0]
+        storedValue = LS.get(scope.localstorage) if scope.localstorage
+        scope.selected = scope.selected || storedValue || scope.list[0]
 
         scope.setItem = (item) ->
             scope.selected = item
-            $timeout -> scope.onChange({$selected: item})
+            LS.set(scope.localstorage, item) if scope.localstorage
             updateLine()
+            $timeout ->
+                scope.onChange({$selected: item})
 
-        $timeout -> updateLine()
+        $timeout -> scope.setItem(scope.selected)
 
         updateLine = ->
             duration = 250
@@ -36,28 +40,28 @@
                 nextWidth = nextSelection.outerWidth()
                 nextHeight = nextSelection.outerHeight()
                 switch true
-                    when prevPosition.left > nextPosition.left #LEFT
+                    when prevSelection && prevPosition.left > nextPosition.left #LEFT
                         step1 =
                             width: prevPosition.left + prevSelection.outerWidth() - nextPosition.left
                             left: nextPosition.left
                         step2 =
                             width: nextSelection.outerWidth() + nextWidth * .1
                             left: nextPosition.left - nextWidth * .05
-                    when nextPosition.left > prevPosition.left #RIGHT
+                    when prevSelection && nextPosition.left > prevPosition.left #RIGHT
                         step1 =
                             width: nextPosition.left + nextSelection.outerWidth() - prevPosition.left
                             left: prevPosition.left
                         step2 =
                             width: nextSelection.outerWidth() + nextWidth * .1
                             left: nextPosition.left - nextWidth * .05
-                    when scope.vertical && prevPosition.top > nextPosition.top #UP
+                    when prevSelection && scope.vertical && prevPosition.top > nextPosition.top #UP
                         step1 =
                             height: prevPosition.top + prevSelection.outerHeight() - nextPosition.top
                             top: nextPosition.top
                         step2 =
                             height: prevSelection.outerHeight() + nextHeight * .1
                             top: nextPosition.top - nextHeight * .05
-                    when scope.vertical && nextPosition.top > prevPosition.top #DOWN
+                    when prevSelection && scope.vertical && nextPosition.top > prevPosition.top #DOWN
                         step1 =
                             height: nextPosition.top + nextSelection.outerHeight() - prevPosition.top
                             top: prevPosition.top
@@ -71,8 +75,7 @@
                         else
                             width: nextSelection.outerWidth() + nextWidth * .1
                             left: nextPosition.left - nextWidth * .05
-                        step1 = step2
-                        duration = 0
+                        return line.css step2
 
                 line.animate(step1, duration).animate(step2, duration)
 ]
