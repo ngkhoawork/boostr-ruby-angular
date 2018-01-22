@@ -15,8 +15,16 @@
         display: table;
         table-layout: fixed;
         width: 100%;
+        margin-bottom: 20px;
         .leads-tr, .leads-header-tr {
             display: table-row;
+        }
+        .leads-tr {
+            &:last-child {
+                .leads-td {
+                    padding-bottom: 0;
+                }
+            }
         }
         .leads-th {
             color: $secondary-font-color;
@@ -26,8 +34,17 @@
             display: table-cell;
             height: 1px;
             vertical-align: top;
+            &:first-child {
+                width: 80px;
+            }
             &:last-child {
                 width: 200px;
+                .leads-td-inner {
+                    //display: flex;
+                    justify-content: center;
+                    //flex-direction: column;
+                    //align-items: center;
+                }
             }
         }
         .leads-th, .leads-td-inner {
@@ -54,13 +71,15 @@
         .leads-td-inner {
             background: white;
             height: 100%;
+            display: flex;
+            flex-direction: column;
             .td-title {
                 font-size: 16px;
                 font-weight: bold;
             }
             .td-list {
-                margin-top: 15px;
                 //line-height: 20px;
+                margin-bottom: 10px;
                 display: flex;
                 & > div:first-child {
                     margin-right: 10px;
@@ -73,12 +92,13 @@
                 }
             }
             .td-info {
+                margin-bottom: 10px;
                 color: lighten($secondary-font-color, 10%);
                 font-size: 13px;
                 padding: 2px 0;
             }
             .td-action {
-                margin-top: 15px;
+                margin-top: auto;
                 font-weight: bold;
                 color: $main-color;
                 cursor: pointer;
@@ -88,7 +108,33 @@
             color: $secondary-color;
         }
         .leads-btn {
-            margin: 10px 0;
+            margin: 5px 0;
+        }
+        .dropdown {
+            //position: static;
+            border-bottom: 1px dashed lighten($secondary-font-color, 10%);
+            padding: 0 8px 3px;
+            cursor: pointer;
+            i.fa {
+                color: lighten($secondary-font-color, 10%);
+                padding-left: 15px;
+            }
+            .dropdown-menu {
+                padding: 10px 0;
+                .dropdown-option {
+                    a {
+                        display: block;
+                        cursor: pointer;
+                        padding: 6px 20px;
+                        color: $main-font-color;
+                        &:hover, &:focus {
+                            background-color: #EDEFF0;
+                            outline: none;
+                        }
+
+                    }
+                }
+            }
         }
     }
 }

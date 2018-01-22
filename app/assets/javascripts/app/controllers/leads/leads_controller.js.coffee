@@ -3,34 +3,36 @@
     ($scope,   $modal,   Leads) ->
 
         $scope.leads = []
-        #    status -> new_leads, accepted, rejected
-        #    relation -> my, team, all
         $scope.teamFilters = [
             {id: 'my', name: 'My Leads'}
             {id: 'team', name: 'My Team\'s Leads'}
             {id: 'all', name: 'All'}
         ]
         $scope.statusFilters = [
-            {id: 'new_leads', name: 'New Leads', icon: 'external-link'}
-            {id: 'accepted', name: 'Accepted', icon: 'check-square-o'}
-            {id: 'rejected', name: 'Rejected', icon: 'square-o'}
+            {id: 'new_leads', name: 'New Leads'}
+            {id: 'accepted', name: 'Accepted'}
+            {id: 'rejected', name: 'Rejected'}
         ]
-        $scope.teamFilter = $scope.teamFilters[0]
-        $scope.statusFilter = $scope.statusFilters[0]
+
+        $scope.teamFilter = null
+        $scope.statusFilter = null
 
         $scope.setTeamFilter = (item) -> $scope.teamFilter = item
         $scope.setTypeFilter = (item) -> $scope.statusFilter = item
 
-        $scope.onFilterChange = (item) ->
-            console.log 'SELECTED', item
-            console.log $scope.teamFilter, $scope.statusFilter
+        $scope.onFilterChange = (key, item) ->
+            $scope[key] = item
+            getLeads()
 
-        do getLeads = ->
-            params = {}
-#                relation: $scope.teamFilter.id
-#                status: $scope.statusFilter.id
+        getLeads = ->
+            if !$scope.teamFilter || !$scope.statusFilter then return
+            params =
+                relation: $scope.teamFilter.id
+                status: $scope.statusFilter.id
             Leads.get(params).then (data) ->
-                console.log data
+                data.status = params.status
+                data.reverse() # --------------------------------------------------------------------------------------
+                console.log data[0]
                 $scope.leads = data
 
         $scope.showReassignModal = (lead) ->
@@ -40,4 +42,16 @@
                 size: 'md'
                 resolve:
                     lead: -> lead
+
+
+        $scope.reassign = ->
+            params = {}
+            params.user_id = $scope.currentUser.id if $scope.currentUser
+            Leads.reassign(params)
+
+        $scope.accept = ->
+            Leads.accept()
+
+        $scope.reject = ->
+            Leads.reject()
 ]
