@@ -8,13 +8,11 @@
                 %label{ for: 'user' }
                     Seller
                 .assign-row
-                    %ui-select{ name: 'user', ng: { model: 'deal.user_id', required: true } }
+                    %ui-select{'ng-model': 'form.selectedUser'}
                         %ui-select-match{ placeholder: 'Pick from list or search' }
                             {{$select.selected.name}}
-                        %ui-select-choices{ repeat: 'user.id as user in users | filter: { name: $select.search }' }
+                        %ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }
                             %div {{user.name}}
-                    .leads-btn Assign
+                    .leads-btn{'ng-click': 'assign(form.selectedUser)'} Assign
         .delimiter OR
-        .leads-btn Reassign to Next Available
-    -#.popup-modal-footer
-        %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
+        .leads-btn{'ng-click': 'assign()'} Reassign to Next Available
