@@ -26,7 +26,7 @@
                     .leads-td
                         .leads-td-inner
                             .td-title {{lead.user.name}}
-                            .td-info Reassigned 12/31/2017
+                            .td-info Reassigned {{lead.reassigned_at | date : "short"}}
                             .td-info {{lead.untouched_days}} Day{{lead.untouched_days !== 1 ? 's' : ''}} Untouched
                             .td-action{'ng-click': 'showReassignModal(lead)'} Reassign
 
@@ -42,7 +42,7 @@
                                         %a{target: '_blank', 'ng-href': '/contacts/{{lead.contact.id}}'} {{lead.contact.name}}
                             .td-list{'ng-if': '!lead.contact'}
                                 %div No Contact Exists
-                            .td-action{'ng-if': 'statusFilter.id !== "new_leads"', 'ng-click': 'showReassignModal(lead)'} Create Contact
+                            .td-action{'ng-if': 'statusFilter.id !== "new_leads"', 'ng-click': 'showContactModal(lead)'} Create Contact
                     .leads-td
                         .leads-td-inner
                             .td-title {{lead.company_name}}
@@ -61,13 +61,13 @@
                                     %a{target: '_blank', 'ng-repeat': 'client in lead.clients', 'ng-href': '/accounts/{{client.id}}'} {{client.name}}
                             .td-list{'ng-if': '!lead.clients.length'}
                                 %div No Account Exists
-                            .td-action{'ng-if': 'leads.status !== "new_leads"', 'ng-click': 'showReassignModal(lead)'} Create Account
+                            .td-action{'ng-if': 'leads.status !== "new_leads"', 'ng-click': 'showAccountModal(lead)'} Create Account
                     .leads-td
                         .leads-td-inner
                             .td-title
                                 Budget: {{lead.budget | currency : '$' : 0}}
                             %div{ng: {'text-truncate': 'lead.notes', 'tt-chars-threshold': '100'}}
-                            .td-action{'ng-if': 'statusFilter.id !== "new_leads"', 'ng-click': 'showReassignModal(lead)'} Create Deal
+                            .td-action{'ng-if': 'statusFilter.id !== "new_leads"', 'ng-click': 'showDealModal(lead)'} Create Deal
                     .leads-td{'ng-switch-when': 'new_leads'}
                         .leads-td-inner
                             .leads-btn.hollow{'ng-click': 'reject(lead)'} Reject

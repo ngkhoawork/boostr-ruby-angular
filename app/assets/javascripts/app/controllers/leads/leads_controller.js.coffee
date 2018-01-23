@@ -43,6 +43,30 @@
                 resolve:
                     lead: -> lead
 
+        $scope.showDealModal = ->
+            $modal.open
+                templateUrl: 'modals/deal_form.html'
+                controller: 'DealsNewController'
+                size: 'md'
+                resolve:
+                    deal: -> {}
+                    options: -> {}
+
+        $scope.showAccountModal = ->
+            $modal.open
+                templateUrl: 'modals/client_form.html'
+                controller: 'AccountsNewController'
+                size: 'md'
+                resolve:
+                    client: -> {}
+
+        $scope.showContactModal = ->
+            $modal.open
+                templateUrl: 'modals/contact_form.html'
+                controller: 'ContactsNewController'
+                size: 'md'
+                resolve:
+                    contact: -> {}
 
         $scope.reassign = (lead) ->
             params = {id: lead.id}
@@ -54,4 +78,6 @@
 
         $scope.reject = (lead) ->
             Leads.reject(id: lead.id)
+
+        $scope.$on 'updated_leads', getLeads
 ]
