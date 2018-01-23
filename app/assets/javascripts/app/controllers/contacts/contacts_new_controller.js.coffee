@@ -1,6 +1,6 @@
 @app.controller "ContactsNewController",
-['$scope', '$rootScope', '$modal', '$modalInstance', 'Contact', 'Client', 'contact', 'CountriesList', 'ContactCfName'
-($scope, $rootScope, $modal, $modalInstance, Contact, Client, contact, CountriesList, ContactCfName) ->
+['$scope', '$rootScope', '$modal', '$modalInstance', 'Contact', 'Client', 'contact', 'CountriesList', 'ContactCfName', 'options'
+($scope, $rootScope, $modal, $modalInstance, Contact, Client, contact, CountriesList, ContactCfName, options) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
@@ -51,6 +51,9 @@
 
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true
+
+    $scope.contact.lead = options.lead if options.lead
+
     Contact.create(contact: $scope.contact).then(
       (contact) ->
         Contact.set(contact.id)
@@ -80,6 +83,7 @@
       keyboard: false
       resolve:
         client: -> {}
+        options: -> {}
 
   # Prevent multiple extraneous calls to the server as user inputs search term
   searchTimeout = null;

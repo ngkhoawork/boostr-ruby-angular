@@ -57,6 +57,6 @@
       backdrop: 'static'
       keyboard: false
       resolve:
-        contact: ->
-          {}
+        contact: -> {}
+        options: -> {}
 ]

@@ -138,6 +138,7 @@
               option: option
             }
           }
+        options: -> {}
     # This will clear out the populateClient field if the form is dismissed
     $scope.modalInstance.result.then(
       null

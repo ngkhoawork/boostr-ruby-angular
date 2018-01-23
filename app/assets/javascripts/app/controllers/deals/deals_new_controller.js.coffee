@@ -106,6 +106,10 @@
 
     if Object.keys($scope.errors).length > 0 then return
 
+    if options.lead
+      $scope.deal.lead_id = options.lead.id
+      $scope.deal.web_lead = true
+
     Deal.create(deal: $scope.deal).then(
       (deal) ->
         $modalInstance.close(deal)
@@ -149,6 +153,7 @@
               option: option
             }
           }
+        options: -> {}
     # This will clear out the populateClient field if the form is dismissed
     $scope.modalInstance.result.then(
       null

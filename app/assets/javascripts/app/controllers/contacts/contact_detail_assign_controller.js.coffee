@@ -34,4 +34,5 @@
                     keyboard: false
                     resolve:
                         client: -> {}
+                        options: -> {}
     ]

@@ -29,6 +29,9 @@
       address_attributes: address_attributes
       values_attributes: values_attributes
       account_cf_attributes: original.account_cf
+    if original.lead
+      send.client.lead_id = original.lead.id
+      send.client.web_lead = true
     angular.toJson(send)
 
   resource = $resource '/api/clients/:id', { id: '@id' },

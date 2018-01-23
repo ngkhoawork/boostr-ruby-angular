@@ -43,30 +43,32 @@
                 resolve:
                     lead: -> lead
 
-        $scope.showDealModal = ->
+        $scope.showDealModal = (lead) ->
             $modal.open
                 templateUrl: 'modals/deal_form.html'
                 controller: 'DealsNewController'
                 size: 'md'
                 resolve:
                     deal: -> {}
-                    options: -> {}
+                    options: -> {lead}
 
-        $scope.showAccountModal = ->
+        $scope.showAccountModal = (lead) ->
             $modal.open
                 templateUrl: 'modals/client_form.html'
                 controller: 'AccountsNewController'
                 size: 'md'
                 resolve:
                     client: -> {}
+                    options: -> {lead}
 
-        $scope.showContactModal = ->
+        $scope.showContactModal = (lead) ->
             $modal.open
                 templateUrl: 'modals/contact_form.html'
                 controller: 'ContactsNewController'
                 size: 'md'
                 resolve:
                     contact: -> {}
+                    options: -> {lead}
 
         $scope.reassign = (lead) ->
             params = {id: lead.id}
