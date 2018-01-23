@@ -20,7 +20,7 @@
       $scope.errors['revenue_type'] = 'Revenue Type is required'
     $scope.product.margin = parseInt($scope.product.margin)
     if $scope.product.margin < 1 || $scope.product.margin > 100
-      $scope.errors['margin'] = 'Margin should be in a range of 1 to 100'
+      $scope.errors['margin'] = 'Enter a valid margin between 1 and 100'
 
     if Object.keys($scope.errors).length > 0 then return
     
