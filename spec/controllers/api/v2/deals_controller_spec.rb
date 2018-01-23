@@ -157,4 +157,14 @@ RSpec.describe Api::V2::DealsController, type: :controller do
       end
     end
   end
+
+  describe 'GET #find_by_id' do
+    it 'return proper deal data' do
+      get :find_by_id, id: deal.id
+
+      expect(response).to be_success
+      expect(json_response['id']).to eq deal.id
+      expect(json_response['name']).to eq deal.name
+    end
+  end
 end
