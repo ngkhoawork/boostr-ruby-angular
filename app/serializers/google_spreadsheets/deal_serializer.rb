@@ -29,7 +29,7 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def seller
-    seller_user.name
+    seller_user&.name
   end
 
   def agency
@@ -37,11 +37,11 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def region
-    seller_user.team&.name
+    seller_user&.team&.name
   end
 
   def budget
-    object.budget
+    object.budget.to_f
   end
 
   alias_method :creative_ideas_needed, :empty
@@ -51,6 +51,6 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   private
 
   def seller_user
-    @_seller ||= object.deal_members.order(:share).first.user
+    @_seller ||= object.deal_members.order(:share).first&.user
   end
 end
