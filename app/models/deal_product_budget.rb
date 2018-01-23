@@ -18,7 +18,7 @@ class DealProductBudget < ActiveRecord::Base
   scope :all_products, -> do
     joins(deal_product: { deal: :stage })
     .where('(deals.open IS true) OR (stages.open IS false AND stages.probability=0)')
-  end 
+  end
 
   validates :start_date, :end_date, presence: true
 
@@ -238,7 +238,7 @@ class DealProductBudget < ActiveRecord::Base
         import_log.count_imported
 
         deal_product.update_budget if deal_product_is_new
-        deal_product.deal.update_total_budget if deal_product_is_new
+        DealTotalBudgetUpdaterService.call(deal_product.deal) if deal_product_is_new
       else
         import_log.count_failed
         import_log.log_error(deal_product.errors.full_messages)

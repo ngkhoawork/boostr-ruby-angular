@@ -19,7 +19,8 @@ class Api::V2::DealProductsController < ApiController
       deal_product = deal.deal_products.new(converted_params)
       deal_product.update_periods if params[:deal_product][:deal_product_budgets_attributes]
       if deal_product.save
-        deal.update_total_budget
+        DealTotalBudgetUpdaterService.call(deal)
+
         render deal
       else
         render json: { errors: deal_product.errors.messages }, status: :unprocessable_entity
@@ -31,7 +32,8 @@ class Api::V2::DealProductsController < ApiController
     exchange_rate = deal.exchange_rate
     converted_params = ConvertCurrency.call(exchange_rate, deal_product_params)
     if deal_product.update_attributes(converted_params)
-      deal.update_total_budget
+      DealTotalBudgetUpdaterService.call(deal)
+
       render deal
     else
       render json: { errors: deal_product.errors.messages }, status: :unprocessable_entity
@@ -43,7 +45,8 @@ class Api::V2::DealProductsController < ApiController
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity
     else
       deal_product.destroy
-      deal.update_total_budget
+      DealTotalBudgetUpdaterService.call(deal)
+
       render deal
     end
   end

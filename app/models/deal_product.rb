@@ -27,7 +27,7 @@ class DealProduct < ActiveRecord::Base
     end
 
     if should_update_deal_budget
-      deal.update_total_budget
+      DealTotalBudgetUpdaterService.call(deal)
     end
   end
 
@@ -265,7 +265,7 @@ class DealProduct < ActiveRecord::Base
       if deal_product.update_attributes(deal_product_params)
         import_log.count_imported
 
-        deal_product.deal.update_total_budget
+        DealTotalBudgetUpdaterService.call(deal_product.deal)
 
         import_custom_field(deal_product, row) if @has_custom_field_rows
       else

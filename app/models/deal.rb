@@ -529,17 +529,6 @@ class Deal < ActiveRecord::Base
     array
   end
 
-  def update_total_budget
-    current_budget = self.budget.nil? ? 0 : self.budget
-    new_budget = deal_product_budgets.sum(:budget)
-    new_budget_loc = deal_product_budgets.sum(:budget_loc)
-
-    log_budget_changes(current_budget, new_budget)
-
-    self.assign_attributes(budget: new_budget, budget_loc: new_budget_loc)
-    self.save(validate: false)
-  end
-
   def exchange_rate
     company.exchange_rate_for(currency: self.curr_cd)
   end
@@ -1742,6 +1731,16 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def log_budget_changes(current_budget, new_budget)
+    AuditLogService.new(
+      record: self,
+      type: AuditLog::BUDGET_CHANGE_TYPE,
+      old_value: current_budget,
+      new_value: new_budget,
+      changed_amount: (new_budget - current_budget)
+    ).perform
+  end
+
   private
 
   def self.import_deal_custom_field(deal, row)
@@ -1778,16 +1777,6 @@ class Deal < ActiveRecord::Base
       type: AuditLog::STAGE_CHANGE_TYPE,
       old_value: previous_stage_id,
       new_value: stage_id
-    ).perform
-  end
-
-  def log_budget_changes(current_budget, new_budget)
-    AuditLogService.new(
-      record: self,
-      type: AuditLog::BUDGET_CHANGE_TYPE,
-      old_value: current_budget,
-      new_value: new_budget,
-      changed_amount: (new_budget - current_budget)
     ).perform
   end
 end
