@@ -1,6 +1,6 @@
 class Api::Leads::IndexSerializer < ActiveModel::Serializer
   attributes :id, :name, :title, :email, :country, :state, :budget, :notes, :created_at, :accepted_at, :company_name,
-             :rejected_at, :reassigned_at, :reopened_at, :user, :contact, :clients, :untouched_days, :client, :company_name
+             :rejected_at, :reassigned_at, :reopened_at, :user, :contact, :clients, :untouched_days, :client, :deals, :company_name
 
   def contact
     object.contact.serializable_hash(only: [:id, :name]) rescue nil
@@ -22,6 +22,10 @@ class Api::Leads::IndexSerializer < ActiveModel::Serializer
 
   def client
     object.client.serializable_hash(only: [:id, :name]) rescue nil
+  end
+
+  def deals
+    object.deals.serializable_hash(only: [:id, :name, :budget]) rescue nil
   end
 
   private

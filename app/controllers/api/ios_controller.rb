@@ -6,7 +6,7 @@ class Api::IosController < ApplicationController
   end
 
   def show
-    render json: io.full_json
+    render json: io, serializer: Ios::IoSerializer
   end
 
   def create
