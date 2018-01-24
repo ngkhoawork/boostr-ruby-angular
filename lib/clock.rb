@@ -59,4 +59,11 @@ module Clockwork
     AdvertiserAgencyRevenueCalculationWorker.perform_async
   end
 
+  every(1.hour, 'Leads reminder after 24 hours', at: '**:00') do
+    Leads::ReminderNotificationsWorker.perform_async
+  end
+
+  every(1.hour, 'Leads reassignment after 48 hours', at: '**:10') do
+    Leads::ReassignmentNotificationsWorker.perform_async
+  end
 end

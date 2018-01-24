@@ -1,6 +1,8 @@
 class Api::Leads::IndexSerializer < ActiveModel::Serializer
   attributes :id, :name, :title, :email, :country, :state, :budget, :notes, :created_at, :accepted_at, :company_name,
-             :rejected_at, :reassigned_at, :reopened_at, :user, :contact, :clients, :untouched_days, :client, :deals, :company_name
+             :rejected_at, :reassigned_at, :user, :contact, :clients, :untouched_days, :client
+
+  has_many :deals, serializer: Api::Leads::DealSerializer
 
   def contact
     object.contact.serializable_hash(only: [:id, :name]) rescue nil
@@ -24,10 +26,6 @@ class Api::Leads::IndexSerializer < ActiveModel::Serializer
     object.client.serializable_hash(only: [:id, :name]) rescue nil
   end
 
-  def deals
-    object.deals.serializable_hash(only: [:id, :name, :budget]) rescue nil
-  end
-
   private
 
   def company
@@ -35,6 +33,6 @@ class Api::Leads::IndexSerializer < ActiveModel::Serializer
   end
 
   def date_for_untouched_calculation
-    object.reopened_at.present? ? object.reopened_at : object.created_at
+    object.reassigned_at.present? ? object.reassigned_at : object.created_at
   end
 end
