@@ -1,46 +1,42 @@
-#quotas
-  #nav.transparent
-    .container
-      .row
-        .col-xs-12
-          %ul.nav.nav-tabs
-            %li.pull-right.last
-              %a.add-user{ href: '', ng: { click: 'showModal()' } }
-                = inline_svg 'icons/add.svg'
-                Add User
-
+#quotas.z-styles
   .container
-    .row
-      .col-xs-12
-        %h3
-          Quotas
+    .row.mb20.header
+      .header-item
+        .main-title Quotas
+      .header-item
+        %add-button.plus-btn{ ng: { click: 'showModal()'} }
+          Add Quota
+      .header-item.filter
+        %div.filter-title Quota Period
+        %div{ dropdown: true }
+          %a.dropdown-selected{ href: '', dropdown: { toggle: true }}
+            {{ currentTimePeriod.name }} ({{ currentTimePeriod.start_date | date: 'shortDate'}} - {{ currentTimePeriod.end_date | date: 'shortDate' }})
+            %span.caret
+          %ul.dropdown-menu
+            %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id == currentTimePeriod.id}' } }
+              %a{ href: '', ng: { click: 'updateTimePeriod(timePeriod.id)' } }
+                {{ timePeriod.name }} ({{ timePeriod.start_date | date: 'shortDate'}} - {{ timePeriod.end_date | date: 'shortDate' }})
 
     .row
-      .col-xs-4.quota-period
-        .row
-          .col-xs-12
-            Quota Period
-        .row
-          .col-xs-12{ dropdown: true }
-            %a{ href: '', dropdown: { toggle: true }}
-              {{ currentTimePeriod.name }} ({{ currentTimePeriod.start_date | date: 'shortDate'}} - {{ currentTimePeriod.end_date | date: 'shortDate' }})
-              %span.caret
-            %ul.dropdown-menu
-              %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id == currentTimePeriod.id}' } }
-                %a{ href: '', ng: { click: 'updateTimePeriod(timePeriod.id)' } }
-                  {{ timePeriod.name }} ({{ timePeriod.start_date | date: 'shortDate'}} - {{ timePeriod.end_date | date: 'shortDate' }})
-    .row
-      .col-xs-12
+      .block
         .table-wrapper
           %table.table.table-hover.table-striped
             %thead
               %tr
                 %th.left User
-                %th.right Total Quota ($)
+                %th.left Type
+                %th.left Product
+                %th.left Product Family
+                %th.right Quota ($)
             %tbody
               %tr{ ng: { repeat: 'quota in quotas | orderBy: "::user_name"' } }
                 %td.left
                   {{ quota.user_name }}
-                  = inline_svg 'icons/profile.svg', class: 'svg pull-left'
+                %td.left
+                  {{ quota.value_type | firstUppercase}}
+                %td.left
+                  {{ quota.product_type == 'Product' ? quota.product.name : '' }}
+                %td.left
+                  {{ quota.product_type == 'ProductFamily' ? quota.product.name : '' }}
                 %td.right
                   %input.editable-control.text-center{ type: 'text', 'ng-model': 'quota.value', placeholder: "0", 'ng-blur': 'updateQuota(quota)', 'ng-style': "{width:'100px'}" }
