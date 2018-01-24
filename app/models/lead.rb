@@ -14,6 +14,7 @@ class Lead < ActiveRecord::Base
   scope :accepted, -> { where(status: ACCEPTED) }
   scope :rejected, -> { where(status: REJECTED) }
   scope :by_company_id, -> (company_id) { where(company_id: company_id) }
+  scope :reassigned_at_between_24_and_48_hours, -> { where(reassigned_at: (Time.now + 24.hours)..(Time.now + 48.hours)) }
 
   after_create :match_contact, :assign_reviewer
 
