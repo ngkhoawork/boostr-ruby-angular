@@ -38,13 +38,6 @@ class Api::PmpsController < ApplicationController
 
   private
 
-  def pmps_serializer
-    ActiveModel::ArraySerializer.new(
-      pmps,
-      each_serializer: Pmps::PmpListSerializer
-    )
-  end
-
   def pmp_params
     params.require(:pmp).permit(
       :name,
@@ -59,22 +52,23 @@ class Api::PmpsController < ApplicationController
     )
   end
 
-  def limit
-    params[:per].present? ? params[:per].to_i : 10
+  def filter_params
+    params.permit(
+      :name,
+      :start_date,
+      :end_date
+    ).merge(company_id: company.id)
   end
 
-  def offset
-    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
+  def pmps_serializer
+    ActiveModel::ArraySerializer.new(
+      by_pages(pmps),
+      each_serializer: Pmps::PmpListSerializer
+    )
   end
 
   def pmps
-    @_pmps ||= pmps_by_name
-      .union(pmps_by_agency)
-      .union(pmps_by_advertiser)
-      .includes(:agency, :advertiser)
-      .by_start_date(params[:start_date], params[:end_date])
-      .limit(limit)
-      .offset(offset)
+    PmpsQuery.new(filter_params).perform
   end
 
   def pmp
@@ -83,21 +77,5 @@ class Api::PmpsController < ApplicationController
 
   def company
     @_company ||= current_user.company
-  end
-
-  def company_pmps
-    @_company_pmps ||= company.pmps
-  end
-
-  def pmps_by_name
-    @_pmps_by_name ||= company_pmps.by_name(params[:name])
-  end
-
-  def pmps_by_agency
-    @_pmps_by_agency ||= company_pmps.by_agency_name(params[:name])
-  end
-
-  def pmps_by_advertiser
-    @_pmps_by_advertiser ||= company_pmps.by_advertiser_name(params[:name])
   end
 end

@@ -2,13 +2,7 @@ class Api::PmpItemDailyActualsController < ApplicationController
   respond_to :json
 
   def index
-    if params[:pmp_item_id].present? && params[:pmp_item_id] == 'all'
-      render json: aggregated_pmp_daily_actuals.as_json
-    elsif params[:pmp_item_id].present?
-      render json: pmp_item_daily_actuals, each_serializer: Pmps::PmpItemDailyActualSerializer
-    else
-      render json: pmp_daily_actuals, each_serializer: Pmps::PmpItemDailyActualSerializer
-    end
+    render json: pmp_actuals_serializer
   end
 
   def import
@@ -55,29 +49,43 @@ class Api::PmpItemDailyActualsController < ApplicationController
     )
   end
 
-  def pmp
-    @_pmp ||= company.pmps.find(params[:pmp_id])
+  def filter_params
+    params.permit(
+      :pmp_item_id,
+      :pmp_id
+    )
   end
 
-  def pmp_item
-    @_pmp_item ||= pmp.pmp_items.find(params[:pmp_item_id])
+  def pmp_actuals_serializer
+    if params[:pmp_item_id] == 'all'
+      aggregated_actuals_serializer
+    else
+      filtered_actuals_serializer
+    end
   end
 
-  def pmp_item_daily_actuals
-    @_pmp_item_daily_actuals ||= pmp_item.pmp_item_daily_actuals.order(:date)
+  def aggregated_actuals
+    PmpAggregatedActualsQuery.new(params).perform
   end
 
-  def aggregated_pmp_daily_actuals
-    @_aggregated_pmp_daily_actuals ||= pmp.pmp_item_daily_actuals
-      .select('date, sum(price) as price, sum(revenue_loc) as revenue_loc, sum(revenue) as revenue, sum(impressions) as impressions, sum(bids) as bids, avg(win_rate) as win_rate, avg(render_rate) as render_rate')
-      .group('date')
+  def aggregated_actuals_serializer
+    ActiveModel::ArraySerializer.new(
+      aggregated_actuals,
+      each_serializer: Pmps::PmpAggregatedActualSerializer
+    )
   end
 
-  def pmp_daily_actuals
-    @_pmp_daily_actuals ||= pmp.pmp_item_daily_actuals
-      .order(:pmp_item_id, :date)
-      .limit(limit)
-      .offset(offset)
+  def filtered_actuals
+    data = PmpItemDailyActualsQuery.new(params).perform
+    data = by_pages(data) if !params[:pmp_item_id]
+    data
+  end
+
+  def filtered_actuals_serializer
+    ActiveModel::ArraySerializer.new(
+      filtered_actuals,
+      each_serializer: Pmps::PmpItemDailyActualSerializer
+    )
   end
 
   def pmp_item_daily_actual
@@ -86,13 +94,5 @@ class Api::PmpItemDailyActualsController < ApplicationController
 
   def company
     @_company ||= current_user.company
-  end
-
-  def limit
-    params[:per].present? ? params[:per].to_i : 10
-  end
-
-  def offset
-    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
   end
 end
