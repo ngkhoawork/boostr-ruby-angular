@@ -20,7 +20,10 @@ class Pmp::FilteredRevenueDataService
               :end_date
 
   def pmp_items
-    @_pmp_items ||= pmp.pmp_items
+    @_pmp_items ||= pmp.pmp_items.inject([]) do |result, pmp_item|
+      result << pmp_item if product_ids.nil? || product_ids.include?(pmp_item.product_id)
+      result
+    end
   end
 
   def pmp_users
@@ -55,7 +58,6 @@ class Pmp::FilteredRevenueDataService
 
     actual_start_date = pmp_actuals.first.date
     actual_end_date = pmp_actuals.last.date
-    run_rate = pmp_item_run_rate(pmp_item)
 
     (start_date.mon..end_date.mon).to_a.inject([0, 0]) do |monthly_total, index|
       month = index.to_s
@@ -77,32 +79,41 @@ class Pmp::FilteredRevenueDataService
       ].min
 
       if range_start_date <= actual_end_date && range_end_date >= actual_start_date
-        monthly_data = pmp_actuals.inject([0, 0]) do |actual_total, pmp_actual|
-          if pmp_actual.date >= range_start_date &&
-              pmp_actual.date <= range_end_date &&
-              (product_ids.nil? || product_ids.include?(pmp_actual.product_id))
-            actual_total[0] += pmp_actual.revenue.to_f
-            actual_total[1] += pmp_actual.revenue.to_f * share / 100.0
-            months[index - 1] += pmp_actual.revenue.to_f
-            quarters[(index - 1) / 3] += pmp_actual.revenue.to_f
-          end
-          actual_total
-        end
+        monthly_data = pmp_item_actuals_amount(pmp_item, range_start_date, range_end_date, share, index)
         monthly_total[0] += monthly_data[0]
         monthly_total[1] += monthly_data[1]
       end
 
       if product_ids.nil?
-        remaining_days = [(range_end_date - [range_start_date - 1.days, actual_end_date].max).to_i, 0].max
-        amount = run_rate.to_f * remaining_days
-        split_amount = run_rate.to_f * remaining_days * share / 100.0
+        amount = pmp_item_projection_amount(pmp_item, range_start_date, range_end_date, actual_end_date, share, index)
         monthly_total[0] += amount
         monthly_total[1] += amount * share / 100.0
-        months[index - 1] += amount
-        quarters[(index - 1) / 3] += amount
       end
       monthly_total
     end
+  end
+
+  def pmp_item_actuals_amount(pmp_item, range_start_date, range_end_date, share, index)
+    pmp_item.pmp_item_daily_actuals.inject([0, 0]) do |actual_total, pmp_actual|
+      if pmp_actual.date >= range_start_date &&
+          pmp_actual.date <= range_end_date
+        actual_total[0] += pmp_actual.revenue.to_f
+        actual_total[1] += pmp_actual.revenue.to_f * share / 100.0
+        months[index - 1] += pmp_actual.revenue.to_f
+        quarters[(index - 1) / 3] += pmp_actual.revenue.to_f
+      end
+      actual_total
+    end
+  end
+
+  def pmp_item_projection_amount(pmp_item, range_start_date, range_end_date, actual_end_date, share, index)
+    run_rate = pmp_item_run_rate(pmp_item)
+    remaining_days = [(range_end_date - [range_start_date - 1.days, actual_end_date].max).to_i, 0].max
+    amount = run_rate.to_f * remaining_days
+    split_amount = run_rate.to_f * remaining_days * share / 100.0
+    months[index - 1] += amount
+    quarters[(index - 1) / 3] += amount
+    amount
   end
 
   def year
@@ -146,13 +157,7 @@ class Pmp::FilteredRevenueDataService
   def pmp_item_run_rate(pmp_item)
     case pmp_item.pmp_type
       when 'non_guaranteed'
-        if pmp_item.run_rate_30_days
-          pmp_item.run_rate_30_days
-        elsif pmp_item.run_rate_7_days
-          pmp_item.run_rate_7_days
-        else
-          0
-        end
+        pmp_item.run_rate_30_days || pmp_item.run_rate_7_days || 0
       when 'guaranteed'
         pmp_item.pmp_item_daily_actuals.sum(:revenue) / pmp_item.pmp_item_daily_actuals.count
       else

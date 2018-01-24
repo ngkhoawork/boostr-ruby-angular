@@ -54,7 +54,7 @@ class Forecast::PmpRevenueDataService
   end
 
   def pmp_has_products?(pmp)
-    pmp.pmp_item_daily_actuals.each do |item|
+    pmp.pmp_items.each do |item|
       return true if product_ids.include?(item.product_id)
     end
     false

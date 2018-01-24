@@ -17,7 +17,10 @@ class Forecast::PmpRevenueCalcService
     total = pmps.inject(0) do |pmp_total, pmp|
       pmp_member = pmp_user_member(pmp)
       pmp_total += pmp.pmp_items.inject(0) do |total, pmp_item|
-        total += pmp_item_budgets(monthly_value, pmp_item, pmp_member, pmp)
+        if product&.id == pmp_item.product_id
+          total += pmp_item_budgets(monthly_value, pmp_item, pmp_member, pmp)
+        end
+        total
       end
       pmp_total
     end
@@ -51,7 +54,6 @@ class Forecast::PmpRevenueCalcService
 
     actual_start_date = pmp_actuals.first.date
     actual_end_date = pmp_actuals.last.date
-    run_rate = pmp_item_run_rate(pmp_item)
 
     months.inject(0) do |total, month_row|
       month_name = month_row[:start_date].strftime('%b-%y')
@@ -67,40 +69,43 @@ class Forecast::PmpRevenueCalcService
         pmp_member.to_date,
         month_row[:end_date]
       ].min
+
       if range_start_date <= actual_end_date && range_end_date >= actual_start_date
-        total += pmp_actuals.inject(0) do |actual_total, pmp_actual|
-          if pmp_actual.date >= range_start_date &&
-              pmp_actual.date <= range_end_date &&
-              product&.id == pmp_item.product_id
-            split_amount = pmp_actual.revenue.to_f * share / 100.0
-            monthly_value[month_name] ||= 0
-            monthly_value[month_name] += split_amount
-            actual_total += split_amount
-          end
-          actual_total
-        end
+        total += pmp_item_actuals_amount(monthly_value, pmp_item, range_start_date, range_end_date, share, month_name)
       end
 
       if product.nil?
-        remaining_days = [(range_end_date - [range_start_date - 1.days, actual_end_date].max).to_i, 0].max
-        split_amount = run_rate.to_f * remaining_days * share / 100.0
-        monthly_value[month_name] += split_amount
-        total += split_amount
+        total += pmp_item_projection_amount(monthly_value, pmp_item, range_start_date, range_end_date, actual_end_date, share, month_name)
       end
       total
     end
   end
 
+  def pmp_item_actuals_amount(monthly_value, pmp_item, range_start_date, range_end_date, share, month_name)
+    pmp_item.pmp_item_daily_actuals.inject(0) do |actual_total, pmp_actual|
+      if pmp_actual.date >= range_start_date &&
+          pmp_actual.date <= range_end_date
+        split_amount = pmp_actual.revenue.to_f * share / 100.0
+        monthly_value[month_name] ||= 0
+        monthly_value[month_name] += split_amount
+        actual_total += split_amount
+      end
+      actual_total
+    end
+  end
+
+  def pmp_item_projection_amount(monthly_value, pmp_item, range_start_date, range_end_date, actual_end_date, share, month_name)
+    run_rate = pmp_item_run_rate(pmp_item)
+    remaining_days = [(range_end_date - [range_start_date - 1.days, actual_end_date].max).to_i, 0].max
+    split_amount = run_rate.to_f * remaining_days * share / 100.0
+    monthly_value[month_name] += split_amount
+    split_amount
+  end
+
   def pmp_item_run_rate(pmp_item)
     case pmp_item.pmp_type 
       when 'non_guaranteed'
-        if pmp_item.run_rate_30_days
-          pmp_item.run_rate_30_days
-        elsif pmp_item.run_rate_7_days
-          pmp_item.run_rate_7_days
-        else
-          0
-        end
+        pmp_item.run_rate_30_days || pmp_item.run_rate_7_days || 0
       when 'guaranteed'
         pmp_item.pmp_item_daily_actuals.sum(:revenue) / pmp_item.pmp_item_daily_actuals.count
       else
@@ -121,9 +126,7 @@ class Forecast::PmpRevenueCalcService
 
   def pmp_user_member(pmp)
     pmp.pmp_members.inject(nil) do |member, pmp_member|
-      if pmp_member.user_id == user.id
-        member = pmp_member
-      end
+      member = pmp_member if pmp_member.user_id == user.id
       member
     end
   end
