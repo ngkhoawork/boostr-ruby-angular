@@ -115,7 +115,7 @@ RSpec.describe Pmp, 'model' do
   end
 
   def currency
-    @_currency ||= Currency.find_by_curr_cd('EUR')
+    @_currency ||= create :currency, curr_cd: 'EUR', curr_symbol: '€', name: 'Euro'
   end
 
   def exchange_rate

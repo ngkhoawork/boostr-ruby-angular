@@ -4,7 +4,7 @@ describe Pmps::PmpItemDailyActualSerializer do
   it 'serialize pmp_item_daily_actual' do
     expect(serializer.id).to eq(pmp_item_daily_actual.id)
     expect(serializer.pmp_item_id).to eq(pmp_item_daily_actual.pmp_item_id)
-    expect(serializer.date).to eq(pmp_item_daily_actual.date.strftime('%m/%d/%Y'))
+    expect(serializer.date).to eq(pmp_item_daily_actual.date)
     expect(serializer.ad_unit).to eq(pmp_item_daily_actual.ad_unit)
     expect(serializer.price).to eq(pmp_item_daily_actual.price)
     expect(serializer.revenue).to eq(pmp_item_daily_actual.revenue)

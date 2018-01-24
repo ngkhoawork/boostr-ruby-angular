@@ -6,7 +6,7 @@ FactoryGirl.define do
     curr_cd 'USD'
     association :advertiser, factory: :client
     association :agency, factory: :client
-    association :deal, factory: :deal
+    deal
 
     before(:create) do |item|
       item.company = Company.first if item.company.blank?

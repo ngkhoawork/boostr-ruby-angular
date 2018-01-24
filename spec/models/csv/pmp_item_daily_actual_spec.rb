@@ -1,112 +1,6 @@
 require 'rails_helper'
 
-describe Csv::PmpItemDailyActual do
-  it 'is valid with ssp_deal_id with matching pmp_item and date with correct format' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to be_empty
-  end
-
-  it 'is invalid without ssp_deal_id' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual
-    csv_pmp_item_daily_actual.ssp_deal_id = ''
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Deal-ID can't be blank")
-    expect(csv_pmp_item_daily_actual.error_messages).not_to include("Pmp item with Deal-Id  could not be found")
-    expect(csv_pmp_item_daily_actual.error_messages).not_to include("Pmp item can't be blank")
-  end
-
-  it 'is invalid with no matching ssp_deal_id' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual
-    csv_pmp_item_daily_actual.ssp_deal_id = 'no matching'
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Pmp item with Deal-Id no matching could not be found")
-  end
-
-  it 'is invalid with wrong date format' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, date: '99/99/9999'
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Date - 99/99/9999 must be in valid date format")
-  end
-
-  it 'is invalid without date' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, date: nil
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Date can't be blank")
-    expect(csv_pmp_item_daily_actual.error_messages).not_to include("Date -  must be in valid date format")
-  end
-
-  it 'is invalid without ad_unit' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, ad_unit: nil
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Ad unit can't be blank")
-  end
-
-  it 'is invalid without bids' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, bids: nil
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Bids can't be blank")
-    expect(csv_pmp_item_daily_actual.error_messages).not_to include("Bids is not a number")
-  end
-
-  it 'is invalid with non-numeric bids' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, bids: 'string'
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Bids is not a number")
-  end
-
-  it 'is invalid without impressions' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, impressions: nil
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Impressions can't be blank")
-    expect(csv_pmp_item_daily_actual.error_messages).not_to include("Impressions is not a number")
-  end
-
-  it 'is invalid with non-numeric impressions' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, impressions: 'string'
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Impressions is not a number")
-  end
-
-  it 'is invalid with non-numeric win_rate' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, win_rate: 'string'
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Win rate is not a number")
-  end
-
-  it 'is invalid with non-numeric render_rate' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, render_rate: 'string'
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Render rate is not a number")
-  end
-
-  it 'is invalid without eCPM' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, price: nil
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("eCPM can't be blank")
-    expect(csv_pmp_item_daily_actual.error_messages).not_to include("eCPM is not a number")
-  end
-
-  it 'is invalid with non-numeric eCPM' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, price: 'string'
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("eCPM is not a number")
-  end
-
-
-  it 'is invalid without revenue_loc' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, revenue_loc: nil
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Revenue can't be blank")
-    expect(csv_pmp_item_daily_actual.error_messages).not_to include("Revenue is not a number")
-  end
-
-  it 'is invalid with non-numeric revenue_loc' do
-    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, revenue_loc: 'string'
-    csv_pmp_item_daily_actual.valid?
-    expect(csv_pmp_item_daily_actual.error_messages).to include("Revenue is not a number")
-  end
-
+describe Csv::PmpItemDailyActual, 'model' do
   describe 'validates attributes' do
     context 'with valid attributes' do
       it 'returns true' do
@@ -223,5 +117,65 @@ describe Csv::PmpItemDailyActual do
       csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, 60, 99, 999, 9.9, 'USD']
       csv << ['ssp001', '11/21/2017', 'Unit 4', 'String', 99, 60, 99, 999, 19.9, 'USD']
     end
+  end
+end
+
+RSpec.describe Csv::PmpItemDailyActual, 'validations' do
+  it 'is valid with ssp_deal_id with matching pmp_item and date with correct format' do
+    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual
+    expect(csv_pmp_item_daily_actual).to be_valid
+  end
+
+  it { should validate_presence_of(:date) }
+  it { should validate_presence_of(:ad_unit) }
+  it { should validate_presence_of(:bids) }
+  it { should validate_presence_of(:impressions) }
+  it { should validate_numericality_of(:impressions) }
+  it { should validate_numericality_of(:bids) }
+  it { should validate_numericality_of(:win_rate) }
+  it { should validate_numericality_of(:render_rate) }
+  it { should allow_value(nil).for(:win_rate) }
+  it { should allow_value(nil).for(:render_rate) }
+
+  it 'is invalid without ssp_deal_id' do
+    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual
+    csv_pmp_item_daily_actual.ssp_deal_id = ''
+    expect(csv_pmp_item_daily_actual).not_to be_valid
+    expect(csv_pmp_item_daily_actual.error_messages).to include("Deal-ID can't be blank")
+    expect(csv_pmp_item_daily_actual.error_messages.count).to eq(1)
+  end
+
+  it 'is invalid with no matching ssp_deal_id' do
+    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual
+    csv_pmp_item_daily_actual.ssp_deal_id = 'no matching'
+    expect(csv_pmp_item_daily_actual).not_to be_valid
+    expect(csv_pmp_item_daily_actual.error_messages).to include("Pmp item with Deal-Id no matching could not be found")
+  end
+
+  it 'is invalid with wrong date format' do
+    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, date: '99/99/9999'
+    expect(csv_pmp_item_daily_actual).not_to be_valid
+    expect(csv_pmp_item_daily_actual.error_messages).to include("Date - 99/99/9999 must be in valid date format")
+  end
+
+  it 'is invalid without eCPM' do
+    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, price: nil
+    expect(csv_pmp_item_daily_actual).not_to be_valid
+  end
+
+  it 'is invalid with non-numeric eCPM' do
+    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, price: 'string'
+    expect(csv_pmp_item_daily_actual).not_to be_valid
+  end
+
+
+  it 'is invalid without revenue_loc' do
+    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, revenue_loc: nil
+    expect(csv_pmp_item_daily_actual).not_to be_valid
+  end
+
+  it 'is invalid with non-numeric revenue_loc' do
+    csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual, revenue_loc: 'string'
+    expect(csv_pmp_item_daily_actual).not_to be_valid
   end
 end
