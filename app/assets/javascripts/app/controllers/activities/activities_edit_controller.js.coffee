@@ -171,8 +171,8 @@
           backdrop: 'static'
           keyboard: false
           resolve:
-            contact: ->
-              {}
+            contact: -> {}
+            options: -> {}
 
       $scope.$on 'newContact', (event, contact) ->
         if $scope.populateContact

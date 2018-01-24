@@ -763,8 +763,8 @@
       backdrop: 'static'
       keyboard: false
       resolve:
-        contact: ->
-          {}
+        contact: -> {}
+        options: -> {}
 
   $scope.showNewActivityModal = ->
     $scope.modalInstance = $modal.open
