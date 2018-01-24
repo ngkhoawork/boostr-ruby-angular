@@ -31,7 +31,6 @@
   ###
 
   $scope.fileToUploadTst = null
-  # $scope.progressBarMax = 0
   $scope.progressBarCur = 0
   $scope.uploadedFiles = []
   $scope.dealFiles = []
@@ -381,9 +380,6 @@
     )
   $scope.$on 'deal_product_added', (e, deal) ->
     $scope.setCurrentDeal(deal)
-    # $scope.currentDeal = deal
-    # $scope.selectedStageId = deal.stage_id
-    # $scope.setBudgetPercent(deal)
 
   $scope.resetDealProduct = ->
     $scope.deal_product = {

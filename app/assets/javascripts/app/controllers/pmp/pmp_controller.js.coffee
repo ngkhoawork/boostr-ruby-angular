@@ -105,7 +105,6 @@
         else []
 
     drawChart = (data, containerID, svgID) ->
-      # return if data.length == 0
       chartContainer = angular.element(containerID)
       margin =
           top: 35

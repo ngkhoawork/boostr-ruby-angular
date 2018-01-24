@@ -103,16 +103,19 @@
                         $scope.totalForecastData.weighted_pipeline_by_stage[index] += parseFloat(val)
                 query.team_id = query.id
                 delete query.id
-                Revenue.forecast_detail(query).$promise.then (data) ->
-                    parseBudget data
-                    $scope.revenues = data
+                return Revenue.forecast_detail(query).$promise
+            .then (data) ->
+                parseBudget data
+                $scope.revenues = data
 
-                    Forecast.pmp_product_data(query).$promise.then (data) ->
-                        $scope.pmp_revenues = parsePmpData data
-                        Deal.forecast_detail(query).then (data) ->
-                            parseBudget data
-                            $scope.deals = data
-                            $scope.isLoading = false
+                return Forecast.pmp_product_data(query).$promise
+            .then (data) ->
+                $scope.pmp_revenues = parsePmpData data
+                return Deal.forecast_detail(query)
+            .then (data) ->
+                parseBudget data
+                $scope.deals = data
+                $scope.isLoading = false
 
         tableToCSV = (el) ->
             table = angular.element(el)

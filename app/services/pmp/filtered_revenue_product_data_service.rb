@@ -113,13 +113,7 @@ class Pmp::FilteredRevenueProductDataService
   def pmp_item_run_rate(pmp_item)
     case pmp_item.pmp_type
       when 'non_guaranteed'
-        if pmp_item.run_rate_30_days
-          pmp_item.run_rate_30_days
-        elsif pmp_item.run_rate_7_days
-          pmp_item.run_rate_7_days
-        else
-          0
-        end
+        pmp_item.run_rate_30_days || pmp_item.run_rate_7_days || 0
       when 'guaranteed'
         pmp_item.pmp_item_daily_actuals.sum(:revenue) / pmp_item.pmp_item_daily_actuals.count
       else

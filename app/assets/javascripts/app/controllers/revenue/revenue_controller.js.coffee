@@ -107,9 +107,6 @@
         keyboard: false
         resolve:
           io: -> io
-      .result.then (updated_io) ->
-        # if (updated_io)
-          # $scope.init()
 
     $scope.showAssignIOModal = (tempIO) ->
       $scope.modalInstance = $modal.open
@@ -121,17 +118,6 @@
         resolve:
           tempIO: ->
             tempIO
-      .result.then (updated_temp_io) ->
-        # if (updated_temp_io)
-          # $scope.init()
-
-    $scope.$on 'updated_ios', ->
-      # $scope.init()
-      # IO.query().$promise
-
-    $scope.$on 'updated_pmp', ->
-      # $scope.init()
-      # PMP.query().$promise
 
     $scope.deleteIo = (io, $event) ->
       $event.stopPropagation();

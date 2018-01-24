@@ -22,12 +22,7 @@
         if !field then $scope.errors[key] = title + ' is required'
       if !_.isEmpty($scope.errors) then return
 
-      if $scope.formType == 'New'
-        createPmpItemDailyActual()
-      else
-        updatePmpItemDailyActual()
-
-    createPmpItemDailyActual = () ->
+      updatePmpItemDailyActual()
 
     updatePmpItemDailyActual = () ->
       PMPItemDailyActual.update(pmp_id: pmpId, id: $scope.dailyActual.id, pmp_item_daily_actual: $scope.dailyActual).then(

@@ -39,8 +39,7 @@ class NewProductForecast
       data[item.product_id][:weighted_pipeline_by_stage][item.stage_id] += weighted_amount
     end
 
-    @forecasts_data = data.map{|index, item| item}
-    @forecasts_data
+    @forecasts_data = data.values
   end
 
   def init_data
@@ -75,21 +74,17 @@ class NewProductForecast
   end
 
   def product_ids
-    @_product_ids ||= products.inject([]) do |result, product_item|
-      result << product_item.id
-      result
-    end
+    @_product_ids ||= products.map(&:id)
   end
 
   def user_ids
     @_user_ids ||= if user.present?
-      user_ids = [user.id]
+      [user.id]
     elsif team.present?
-      user_ids = team.all_members.map{|user| user.id} + team.all_leaders.map{|user| user.id}
-      user_ids.uniq
+      (team.all_members.map(&:id) + team.all_leaders.map(&:id)).uniq
     else
       teams.inject([]) do |result, team_item|
-        result += team_item.all_members.map{|user| user.id} + team_item.all_leaders.map{|user| user.id}
+        result += team_item.all_members.map(&:id) + team_item.all_leaders.map(&:id)
       end.uniq
     end
   end

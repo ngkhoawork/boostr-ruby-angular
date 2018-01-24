@@ -64,34 +64,63 @@ class NewQuarterlyForecast
   end
 
   def pipeline_sql
-    @_pipeline_sql ||= "SELECT stage_dimension_id AS stage_id, avg(s.total) AS pipeline_amount, json_object_agg(key, val) AS monthly_amount
+    @_pipeline_sql ||= "SELECT
+        stage_dimension_id AS stage_id,
+        avg(s.total) AS pipeline_amount,
+        json_object_agg(key, val) AS monthly_amount
       FROM (
-          SELECT stage_dimension_id, SUM(amount) AS total, key, SUM(value::numeric) AS val
-          FROM forecast_pipeline_facts t, jsonb_each_text(monthly_amount)
-          WHERE  forecast_time_dimension_id = #{forecast_time_dimension.id} AND user_dimension_id IN (#{user_ids.count > 0 ? user_ids.join(', ') : 0})
+          SELECT
+            stage_dimension_id,
+            SUM(amount) AS total,
+            key,
+            SUM(value::numeric) AS val
+          FROM
+            forecast_pipeline_facts t,
+            jsonb_each_text(monthly_amount)
+          WHERE
+            forecast_time_dimension_id = #{forecast_time_dimension.id}
+            AND user_dimension_id IN (#{user_ids.count > 0 ? user_ids.join(', ') : 0})
           GROUP BY stage_dimension_id, key
           ) s
       GROUP BY stage_dimension_id"
   end
 
   def revenue_sql
-    @_revenue_sql ||= "SELECT avg(s.total) AS revenue_amount, json_object_agg(key, val) AS monthly_amount " +
-      "FROM ( " +
-          "SELECT SUM(amount) AS total, key, SUM(value::numeric) AS val " +
-          "FROM forecast_revenue_facts t, jsonb_each_text(monthly_amount) " +
-          "WHERE  forecast_time_dimension_id = #{forecast_time_dimension.id} AND user_dimension_id IN (#{user_ids.join(', ')}) " +
-          "GROUP BY key " +
-          ") s "
+    @_revenue_sql ||= "SELECT
+        avg(s.total) AS revenue_amount,
+        json_object_agg(key, val) AS monthly_amount
+      FROM (
+          SELECT
+            SUM(amount) AS total,
+            key,
+            SUM(value::numeric) AS val
+          FROM
+            forecast_revenue_facts t,
+            jsonb_each_text(monthly_amount)
+          WHERE
+            forecast_time_dimension_id = #{forecast_time_dimension.id}
+            AND user_dimension_id IN (#{user_ids.join(', ')})
+          GROUP BY key
+          ) s "
   end
 
   def pmp_revenue_sql
-    @_pmp_revenue_sql ||= "SELECT avg(s.total) AS revenue_amount, json_object_agg(key, val) AS monthly_amount " +
-      "FROM ( " +
-          "SELECT SUM(amount) AS total, key, SUM(value::numeric) AS val " +
-          "FROM forecast_pmp_revenue_facts t, jsonb_each_text(monthly_amount) " +
-          "WHERE  forecast_time_dimension_id = #{forecast_time_dimension.id} AND user_dimension_id IN (#{user_ids.join(', ')}) " +
-          "GROUP BY key " +
-          ") s "
+    @_pmp_revenue_sql ||= "SELECT
+        avg(s.total) AS revenue_amount,
+        json_object_agg(key, val) AS monthly_amount
+      FROM (
+          SELECT
+            SUM(amount) AS total,
+            key,
+            SUM(value::numeric) AS val
+          FROM
+            forecast_pmp_revenue_facts t,
+            jsonb_each_text(monthly_amount)
+          WHERE
+            forecast_time_dimension_id = #{forecast_time_dimension.id}
+            AND user_dimension_id IN (#{user_ids.join(', ')})
+          GROUP BY key
+          ) s "
   end
 
   def pipeline_data
@@ -103,7 +132,6 @@ class NewQuarterlyForecast
   end
 
   def pmp_revenue_data
-    puts "=============pmp revenue"
     @_pmp_revenue_data ||= ActiveRecord::Base.connection.execute(pmp_revenue_sql)
   end
 
@@ -118,7 +146,7 @@ class NewQuarterlyForecast
     @_month_to_quarter ||= (start_date.to_date..end_date.to_date)
       .inject({}) do |result, d|
         month_index = d.strftime("%b-%y")
-        result[month_index] = 'q' + ((d.month - 1) / 3 + 1).to_s + '-' + d.year.to_s
+        result[month_index] = quarter_year_name(d)
         result
       end
   end
@@ -127,30 +155,39 @@ class NewQuarterlyForecast
     return @quarterly_quota if defined?(@quarterly_quota)
     start_date = time_period.start_date
     end_date = time_period.end_date
-    quarters = (start_date.to_date..end_date.to_date).map { |d| { start_date: d.beginning_of_quarter, end_date: d.end_of_quarter } }.uniq
+    quarters = (start_date.to_date..end_date.to_date)
+      .map { |d| { start_date: d.beginning_of_quarter, end_date: d.end_of_quarter } }
+      .uniq
     @quarterly_quota = {}
     
     if user.present?
       quarters.each do |quarter_row|
-        @quarterly_quota['q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s] = user.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+        quarter = quarter_year_name(quarter_row[:start_date])
+        @quarterly_quota[quarter] = user.quotas
+            .for_time_period(quarter_row[:start_date], quarter_row[:end_date])
+            .sum(:value)
       end
     elsif team.present?
       leader = team.leader
       quarters.each do |quarter_row|
-        quarter = 'q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s
+        quarter = quarter_year_name(quarter_row[:start_date])
         @quarterly_quota[quarter] ||= 0
         if leader.present?
-          @quarterly_quota[quarter] += leader.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+          @quarterly_quota[quarter] += leader.quotas
+              .for_time_period(quarter_row[:start_date], quarter_row[:end_date])
+              .sum(:value)
         end
       end
     else
       teams.each do |team_item|
         leader = team_item.leader
         quarters.each do |quarter_row|
-          quarter = 'q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s
+          quarter = quarter_year_name(quarter_row[:start_date])
           @quarterly_quota[quarter] ||= 0
           if leader.present?
-            @quarterly_quota[quarter] += leader.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+            @quarterly_quota[quarter] += leader.quotas
+                .for_time_period(quarter_row[:start_date], quarter_row[:end_date])
+                .sum(:value)
           end
         end
       end
@@ -179,9 +216,7 @@ class NewQuarterlyForecast
         quarterly_weighted_pipeline_by_stage: {},
         quarterly_quota: quarterly_quota
       },
-      quarters: (start_date.to_date..end_date.to_date)
-        .map { |d| 'q' + ((d.month - 1) / 3 + 1).to_s + '-' + d.year.to_s }
-        .uniq
+      quarters: month_to_quarter.values.uniq
     }
 
     if user.present?
@@ -199,21 +234,18 @@ class NewQuarterlyForecast
 
   def user_ids
     @_user_ids ||= if user.present?
-      user_ids = [user.id]
+      [user.id]
     elsif team.present?
-      user_ids = team.all_members.map{|user| user.id} + team.all_leaders.map{|user| user.id}
-      user_ids.uniq
+      (team.all_members.map(&:id) + team.all_leaders.map(&:id)).uniq
     else
       teams.inject([]) do |result, team_item|
-        result += team_item.all_members.map{|user| user.id} + team_item.all_leaders.map{|user| user.id}
+        result += team_item.all_members.map(&:id) + team_item.all_leaders.map(&:id)
       end.uniq
     end
   end
 
   def leader
-    @_leader ||= if team.present?
-      team.leader
-    end
+    @_leader ||= team&.leader
   end
 
   def quarters
@@ -221,5 +253,9 @@ class NewQuarterlyForecast
 
     @quarters_data = forecasts_data[:quarters]
     @quarters_data
+  end
+
+  def quarter_year_name(date)
+    'q' + ((date.month - 1) / 3 + 1).to_s + '-' + date.year.to_s
   end
 end

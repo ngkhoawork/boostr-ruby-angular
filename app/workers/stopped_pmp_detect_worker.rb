@@ -26,7 +26,7 @@ class StoppedPmpDetectWorker < BaseWorker
     end
 
     mails.each do |recipient, pmp_items|
-      UserMailer.stopped_pmp_email([recipient], pmp_items).deliver_later(queue: 'default')
+      UserMailer.stopped_pmp_email([recipient], pmp_items).deliver_now
     end
   end
 end

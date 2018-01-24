@@ -13,6 +13,8 @@
 							%span.mr8 Go to
 							%a{href: '', 'ng-click': 'scrollTo("#revenue-section")'} Revenue
 							|
+							%a{href: '', 'ng-click': 'scrollTo("#pmp-section")'} PMP
+							|
 							%a{href: '', 'ng-click': 'scrollTo("#deals-section")'} Deals
 
 				.header-cell
@@ -191,7 +193,7 @@
 									%tr{ ng: { if: 'revenues.length == 0' }}
 										%td.center.auto-colspan
 											No Data for the Filters Selected
-			#revenue-section.row
+			#pmp-section.row
 				.col-xs-12
 					.block
 						.switch-row.pull-right

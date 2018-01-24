@@ -19,15 +19,6 @@
             %input.form-control{ ng: { model: 'filter.name', 'model-options': '{debounce: 400}', change: 'applyFilter()' }, placeholder: "Search by Name, Advertiser, Agency, etc." }
       .header-item.date-filter
         %span Start date period
-        -#%ul
-          %li{ dropdown: true }
-            %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": selectedYear === "All"}' }
-              {{selectedYear || 'All'}}
-              %span.caret
-            %ul.dropdown-menu
-              %li{ ng: { repeat: 'year in years', class: '{active: year === selectedYear}' } }
-                %a{ href: '', ng: { click: 'filterByYear(year)' } }
-                  {{year}}
         .date-picker-wrap
           .date-picker-wrap
             %div.date-picker{'date-range-picker': true,
@@ -43,7 +34,6 @@
 
     .row
       .block
-        -#.table-wrapper
         .table-wrapper{infinite: {scroll: 'loadMoreRevenues()', 'scroll-disabled': 'isLoading || allItemsLoaded', 'scroll-distance': '0.5'}}
           %table.table.table-hover{ng: {if: "filter.revenue == ''"}}
             %thead
@@ -108,9 +98,6 @@
                 %th.right
                   %span.z-sortable{by: 'budget_loc'} Budget
                 %th.right
-                  / %a.add-button{href: '', 'ng-click': 'addPmp()'}
-                  /   = inline_svg "icons/button-plus-icon.svg" 
-                  /   Add PMP
 
             %tbody{ 'ng-include': "'partials/revenue_pmp_rows.html'" }
 

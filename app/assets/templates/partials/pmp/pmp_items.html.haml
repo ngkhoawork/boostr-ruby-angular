@@ -42,5 +42,5 @@
             %i.fa.fa-pencil.z-icon{ ng: { click: 'showPmpItemEditModal(pmpItem)' } }
             %i.fa.fa-trash.z-icon{ ng: { click: 'deletePmpItem(pmpItem)' } }
         %tr{ ng: { if: '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' } }
-          %td.center{ 'colspan': '9' }
+          %td.auto-colspan.center
             No data available

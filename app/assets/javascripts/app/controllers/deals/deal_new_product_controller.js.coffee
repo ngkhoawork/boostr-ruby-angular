@@ -157,14 +157,12 @@
                 dealProduct = cutSymbolsAddProductBudget($scope.deal_product)
                 product = _.find $scope.products, (product) ->
                     return product.id == dealProduct.product_id
-                console.log(currentDeal.products)
-                console.log(product)
                 if product
                     if isPmpDeal && product.revenue_type != 'PMP'
-                        message = 'This deal has only PMP products. You can can\'t add non PMP product.'
+                        message = 'This deal has only PMP products. You can\'t add non PMP product.'
                         showWarningModal(message)
                     else if !isPmpDeal && currentDeal.deal_products.length > 0 && product.revenue_type == 'PMP'
-                        message = 'This deal has only non PMP products. You can can\'t add PMP product.'
+                        message = 'This deal has only non PMP products. You can\'t add PMP product.'
                         showWarningModal(message)
                     else
                         DealProduct.create(deal_id: $scope.currentDeal.id, deal_product: dealProduct).then(
@@ -175,10 +173,6 @@
                                 for key, error of resp.data.errors
                                     $scope.errors[key] = error && error[0]
                         )
-
-            checkPmpProduct = (dealProduct) ->
-
-
 
             $scope.resetDealProduct = ->
                 $scope.deal_product = {

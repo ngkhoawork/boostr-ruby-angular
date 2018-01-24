@@ -76,7 +76,7 @@ class NewForecastTeam
   end
 
   def user_ids
-    @_user_ids ||= users.map{|user| user.id}.uniq
+    @_user_ids ||= users.map(&:id).uniq
   end
 
   def quarters

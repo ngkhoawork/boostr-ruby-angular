@@ -147,19 +147,21 @@
                 $scope.quarters = data.quarters
                 query.team_id = query.id
                 delete query.id
-                Revenue.forecast_detail(query).$promise.then (data) ->
-                    parseRevenueBudgets data
-                    addDetailAmounts data, 'revenues'
-                    $scope.revenues = data
-                    Forecast.pmp_data(query).$promise.then (pmp_data) ->
-                        parseRevenueBudgets pmp_data
-                        addDetailAmounts pmp_data, 'pmp_revenues'
-                        $scope.pmp_revenues = pmp_data
-                        console.log($scope);
-                        Deal.forecast_detail(query).then (deal_data) ->
-                            parseDealBudgets deal_data
-                            addDetailAmounts deal_data, 'deals'
-                            $scope.deals = deal_data
+                return Revenue.forecast_detail(query).$promise
+            .then (data) ->
+                parseRevenueBudgets data
+                addDetailAmounts data, 'revenues'
+                $scope.revenues = data
+                return Forecast.pmp_data(query).$promise
+            .then (pmp_data) ->
+                parseRevenueBudgets pmp_data
+                addDetailAmounts pmp_data, 'pmp_revenues'
+                $scope.pmp_revenues = pmp_data
+                return Deal.forecast_detail(query)
+            .then (deal_data) ->
+                parseDealBudgets deal_data
+                addDetailAmounts deal_data, 'deals'
+                $scope.deals = deal_data
 
         tableToCSV = (el) ->
             table = angular.element(el)
