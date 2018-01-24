@@ -4,10 +4,23 @@ class Api::Dataexport::BaseController < ApiController
   respond_to :json
 
   def index
-    render json: by_pages(resouces), each_serializer: serializer_class
+    render json: { meta: pagination_data, data: serialized_collection}
   end
 
   private
+
+  def serialized_collection
+    @_serialized_collection ||=
+      ActiveModel::ArraySerializer.new(by_pages(resouces), each_serializer: serializer_class)
+  end
+
+  def pagination_data
+    {
+      current_page: page,
+      total_pages: (resouces.count / limit.to_f).ceil,
+      total_count: resouces.count
+    }
+  end
 
   def collection
     NotImplementedError
