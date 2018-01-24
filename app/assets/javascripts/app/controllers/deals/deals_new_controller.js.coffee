@@ -113,7 +113,7 @@
     Deal.create(deal: $scope.deal).then(
       (deal) ->
         $modalInstance.close(deal)
-        if options.type != 'gmail'
+        if options.type != 'gmail' && !options.lead
           $location.path('/deals' + '/' + deal.id)
       (resp) ->
         for key, error of resp.data.errors
