@@ -18,7 +18,13 @@ class Api::LeadsController < ApplicationController
   end
 
   def reassign
-    lead.update(user_id: determine_assignee, reassigned_at: Time.now, status: nil)
+    lead.update(
+      user_id: determine_assignee,
+      reassigned_at: Time.now,
+      status: nil,
+      accepted_at: nil,
+      rejected_at: nil
+    )
 
     render nothing: true
   end

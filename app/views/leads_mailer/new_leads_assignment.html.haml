@@ -1,67 +1,21 @@
--#%p
--#  Title: #{@lead.title}
--#
--#%p
--#  Email: #{@lead.email}
--#
--#%p
--#  City: #{@lead.state}
--#
--#%p
--#  Country: #{@lead.country}
--#
--#%p
--#  Company: #{@lead.company.name}
--#
--#%p
--#  Budget: #{@lead.budget}
--#
--#%p
--#  Reply to lead creator - 
--#  = mail_to @lead.email, @lead.name
+%p
+  Title: #{@lead.title}
 
+%p
+  Email: #{@lead.email}
 
-<div style="background: white; border-radius: 5px; box-shadow: 0 5px 25px #bfbfbf; font: 14px Arial, Helvetica, sans-serif; overflow: hidden">
-  <div style="background: #FF7200; color: white">
-    <div style="font-size: 40px; text-align: center; padding: 30px 0">
-      <b>boostr</b>
-    </div>
-  </div>
-  <div style="padding: 25px 15px; border-bottom: 2px solid #eeeeee; line-height: 24px;">
-    <div style="font-size: 22px; margin-bottom: 10px">
-      <b>Libby Lead</b>
-    </div>
-    <div>
-      <div>
-        <b>Title:</b>&nbsp; Fild Editor
-      </div>
-      <div>
-        <b>Email:</b>&nbsp; libbylead@gmail.com
-      </div>
-      <div>
-        <b>City/Country:</b>&nbsp; <a style="color: #59abe1">Los Angeles, California, USA</a>
-      </div>
-      <div>
-        <b>Company:</b>&nbsp; Ghost Hunter
-      </div>
-    </div>
-  </div>
-  <div style="padding: 25px 15px; border-bottom: 2px solid #eeeeee;">
-    <div style="font-size: 15px; color: #959b9e;">
-      <b>Details</b>
-    </div>
-    <div>
-      <div style="line-height: 45px">
-        <b>Budget:</b>&nbsp; $650
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto autem culpa cumque cupiditate facere illo incidunt, laborum nemo praesentium rerum.
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto autem culpa cumque cupiditate facere illo incidunt, laborum nemo praesentium rerum.
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto autem culpa cumque cupiditate facere illo incidunt, laborum nemo praesentium rerum.
-      </div>
-    </div>
-  </div>
-  <div>
-    <button>BUTTON</button>
-  </div>
-</div>
+%p
+  City: #{@lead.state}
+
+%p
+  Country: #{@lead.country}
+
+%p
+  Company: #{@lead.company.name}
+
+%p
+  Budget: #{@lead.budget}
+
+%p
+  Reply to lead creator - 
+  = mail_to @lead.email, @lead.name

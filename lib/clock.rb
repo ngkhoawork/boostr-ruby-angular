@@ -64,6 +64,6 @@ module Clockwork
   end
 
   every(1.hour, 'Leads reassignment after 48 hours', at: '**:10') do
-    
+    Leads::ReassignmentNotificationsWorker.perform_async
   end
 end
