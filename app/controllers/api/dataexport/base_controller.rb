@@ -4,7 +4,7 @@ class Api::Dataexport::BaseController < ApiController
   respond_to :json
 
   def index
-    render json: { meta: pagination_data, data: serialized_collection}
+    render json: { meta: pagination_data, data: serialized_collection }
   end
 
   private
@@ -17,6 +17,7 @@ class Api::Dataexport::BaseController < ApiController
   def pagination_data
     {
       current_page: page,
+      per_page: limit,
       total_pages: (resouces.count / limit.to_f).ceil,
       total_count: resouces.count
     }

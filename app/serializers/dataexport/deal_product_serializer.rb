@@ -1,10 +1,6 @@
 class Dataexport::DealProductSerializer < ActiveModel::Serializer
   attributes :id, :product_id, :budget_usd, :budget, :created, :last_updated, :open, :custom_fields
 
-  def product_id
-    object.id
-  end
-
   def budget_usd
     object.budget
   end

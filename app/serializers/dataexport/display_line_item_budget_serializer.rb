@@ -9,4 +9,12 @@ class Dataexport::DisplayLineItemBudgetSerializer < ActiveModel::Serializer
   def budget
     object.budget_loc
   end
+
+  def created
+    object.created_at
+  end
+
+  def last_updated
+    object.updated_at
+  end
 end
