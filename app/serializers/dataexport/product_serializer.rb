@@ -1,9 +1,5 @@
 class Dataexport::ProductSerializer < ActiveModel::Serializer
-  attributes :id, :name, :product_family, :revenue_type, :active, :created, :last_updated
-
-  def product_family
-    object.product_family&.name
-  end
+  attributes :id, :name, :product_family_id, :revenue_type, :active, :created, :last_updated
 
   def created
     object.created_at

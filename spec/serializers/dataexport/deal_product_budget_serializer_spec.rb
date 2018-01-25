@@ -7,6 +7,8 @@ describe Dataexport::DealProductBudgetSerializer do
     expect(serializer.end_date).to eq(deal_product_budget.end_date)
     expect(serializer.budget_usd).to eq(deal_product_budget.budget)
     expect(serializer.budget).to eq(deal_product_budget.budget_loc)
+    expect(serializer.created).to eq(deal_product_budget.created_at)
+    expect(serializer.last_updated).to eq(deal_product_budget.updated_at)
   end
 
   private

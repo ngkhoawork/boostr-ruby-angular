@@ -13,15 +13,16 @@ describe Dataexport::DisplayLineItemSerializer do
     expect(serializer.product_id).to eq(display_line_item.product_id)
     expect(serializer.budget_delivered_usd).to eq(display_line_item.budget_delivered)
     expect(serializer.budget_remaining_usd).to eq(display_line_item.budget_remaining)
-    expect(serializer.quantity_delivered_usd).to eq(display_line_item.quantity_delivered)
+    expect(serializer.quantity_delivered).to eq(display_line_item.quantity_delivered)
     expect(serializer.budget_delivered).to eq(display_line_item.budget_delivered_loc)
     expect(serializer.budget_remaining).to eq(display_line_item.budget_remaining_loc)
-    expect(serializer.quantity_delivered).to eq(display_line_item.quantity_delivered)
     expect(serializer.start_date).to eq(display_line_item.start_date)
     expect(serializer.end_date).to eq(display_line_item.end_date)
     expect(serializer.price).to eq(display_line_item.price)
     expect(serializer.ad_server_product).to eq(display_line_item.ad_server_product)
     expect(serializer.ad_unit).to eq(display_line_item.ad_unit)
+    expect(serializer.created).to eq(display_line_item.created_at)
+    expect(serializer.last_updated).to eq(display_line_item.updated_at)
   end
 
   private

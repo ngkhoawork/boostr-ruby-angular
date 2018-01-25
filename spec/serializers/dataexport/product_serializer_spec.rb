@@ -4,7 +4,7 @@ describe Dataexport::ProductSerializer do
   it 'serializes product data' do
     expect(serializer.id).to eq(product.id)
     expect(serializer.name).to eq(product.name)
-    expect(serializer.product_family).to eq(product.product_family.name)
+    expect(serializer.product_family_id).to eq(product.product_family.id)
     expect(serializer.revenue_type).to eq(product.revenue_type)
     expect(serializer.active).to eq(product.active)
     expect(serializer.created).to eq(product.created_at)

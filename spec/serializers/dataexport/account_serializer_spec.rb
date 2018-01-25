@@ -13,6 +13,8 @@ describe Dataexport::AccountSerializer do
     expect(serializer.region).to eq(account.client_region.name)
     expect(serializer.segment).to eq(account.client_segment.name)
     expect(serializer.holding_company).to eq(account.holding_company.name)
+    expect(serializer.created).to eq(account.created_at)
+    expect(serializer.last_updated).to eq(account.updated_at)
     expect(serializer.custom_fields).to eq(serialized_custom_fields)
   end
 

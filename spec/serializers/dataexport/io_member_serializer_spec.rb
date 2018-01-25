@@ -8,6 +8,8 @@ describe Dataexport::IoMemberSerializer do
     expect(serializer.share).to eq(io_member.share)
     expect(serializer.from_date).to eq(io_member.from_date)
     expect(serializer.to_date).to eq(io_member.to_date)
+    expect(serializer.created).to eq(io_member.created_at)
+    expect(serializer.last_updated).to eq(io_member.updated_at)
   end
 
   private
