@@ -8,9 +8,9 @@ describe Api::ActivitiesController, type: :controller do
   let(:client) { create :client, company: company }
   let(:deal) { create :deal, advertiser: client, company: company }
   let(:contacts) { create_list :contact, 10, clients: [client], company: company }
-  let(:activity_params) {
-    attributes_for(:activity)
-  }
+  let(:activity_with_custom_field_params) do
+    activity_params.merge(custom_field_attributes: { company_id: new_company.id, text1: FFaker::HipsterIpsum.word })
+  end
   let(:existing_activity) { create :activity, company: company }
   let(:user_contact) { create :contact, address_attributes: { email: user.email }, company: company }
 
@@ -22,13 +22,14 @@ describe Api::ActivitiesController, type: :controller do
     it 'creates a new activity and returns success' do
       expect {
         post :create, {
-          activity: activity_params,
+          activity: activity_with_custom_field_params,
           contacts: contacts.map(&:id)
         }, format: :json
         expect(response).to be_success
         response_json = JSON.parse(response.body)
         expect(response_json['contacts'].length).to eq 10
-      }.to change(Activity, :count).by(1)
+      }.to change(Activity, :count).by(1).and \
+           change(CustomField, :count).by(1)
     end
 
     it 'filters out current user from contacts' do

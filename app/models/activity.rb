@@ -1,4 +1,5 @@
 class Activity < ActiveRecord::Base
+  include HasCustomField
 
   belongs_to :company
   belongs_to :user
@@ -224,6 +225,7 @@ class Activity < ActiveRecord::Base
           },
           :creator => {},
           :publisher => { only: [:id, :name] },
+          custom_field: {},
           activity_type: { only: [:id, :name, :css_class, :action] }
         },
         methods: [:team_creator]

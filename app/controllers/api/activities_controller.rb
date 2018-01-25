@@ -4,7 +4,7 @@ class Api::ActivitiesController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        render json: activities.preload(:activity_type, :assets, :agency, :client, :creator, :publisher, deal: [:stage, :advertiser], contacts: [:address])
+        render json: preload_assocs(activities)
       }
       format.csv {
         send_data activity_csv_report, filename: "activity-detail-reports-#{Date.today}.csv"
@@ -99,7 +99,8 @@ class Api::ActivitiesController < ApplicationController
       :activity_type,
       :timed,
       :google_event_id,
-      :uuid
+      :uuid,
+      custom_field_attributes: CustomField.attribute_names
     )
   end
 
@@ -138,6 +139,20 @@ class Api::ActivitiesController < ApplicationController
 
   def company
     @company ||= current_user.company
+  end
+
+  def preload_assocs(activity)
+    activity.preload(
+      :activity_type,
+      :assets,
+      :agency,
+      :client,
+      :creator,
+      :publisher,
+      :custom_field,
+      deal: [:stage, :advertiser],
+      contacts: [:address]
+    )
   end
 
   def filtered_activities

@@ -236,6 +236,7 @@ class Client < ActiveRecord::Base
               creator: {},
               publisher: { only: [:id, :name] },
               contacts: {},
+              custom_field: {},
               assets: {
                 methods: [
                   :presigned_url
