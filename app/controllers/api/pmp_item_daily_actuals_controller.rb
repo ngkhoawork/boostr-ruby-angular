@@ -88,6 +88,10 @@ class Api::PmpItemDailyActualsController < ApplicationController
     )
   end
 
+  def pmp
+    @_pmp ||= company.pmps.find(params[:pmp_id])
+  end
+
   def pmp_item_daily_actual
     @_pmp_item_daily_actual ||= pmp.pmp_item_daily_actuals.find(params[:id])
   end

@@ -1,4 +1,3 @@
-
 class PmpAggregatedActualsQuery
   def initialize(options)
     @options = options
