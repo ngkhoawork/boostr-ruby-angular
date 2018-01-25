@@ -322,7 +322,7 @@ class NewForecastTeam
         @forecasts_data[:members][user.id][:wow_revenue] ||= 0.0
         @forecasts_data[:members][user.id][:wow_revenue] += wow_revenue
 
-        quota = user.quotas.for_time_period(start_date, end_date).sum(:value)
+        quota = user.total_gross_quotas(start_date, end_date)
 
         if user.leader?
           @forecasts_data[:members][user.id][:quota] = 0
@@ -387,7 +387,7 @@ class NewForecastTeam
         wow_revenue: 0,
         quota: 0
       }
-      quota = (team.leader ? team.leader.quotas.for_time_period(start_date, end_date).sum(:value) : 0)
+      quota = (team.leader ? team.leader.total_gross_quotas(start_date, end_date) : 0)
 
       @forecasts_data[:teams][team.id][:quota] = quota
       @forecasts_data[:teams][team.id][:amount] = (@forecasts_data[:teams][team.id][:weighted_pipeline] || 0) + (@forecasts_data[:teams][team.id][:revenue] || 0)
@@ -496,7 +496,7 @@ class NewForecastTeam
   end
 
   def quota
-    return leader.quotas.for_time_period(start_date, end_date).sum(:value) if leader
+    return leader.total_gross_quotas(start_date, end_date) if leader
     0
   end
 

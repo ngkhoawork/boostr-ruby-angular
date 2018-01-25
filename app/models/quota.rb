@@ -6,7 +6,8 @@ class Quota < ActiveRecord::Base
 
   enum value_type: ::QUOTA_TYPES
 
-  scope :for_time_period, -> (start_date, end_date) { joins(:time_period).where('time_periods.start_date=? and time_periods.end_date=?', start_date, end_date)}
+  scope :for_time_period, -> (start_date, end_date) { joins(:time_period).where('time_periods.start_date=? and time_periods.end_date=?', start_date, end_date) unless start_date.nil? || end_date.nil?}
+  scope :by_type, -> (value_type) { where(value_type: value_type) unless value_type.nil? }
 
   before_save :set_dates
 

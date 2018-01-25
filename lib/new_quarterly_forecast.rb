@@ -129,7 +129,7 @@ class NewQuarterlyForecast
     
     if user.present?
       quarters.each do |quarter_row|
-        @quarterly_quota['q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s] = user.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+        @quarterly_quota['q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s] = user.total_gross_quotas(quarter_row[:start_date], quarter_row[:end_date])
       end
     elsif team.present?
       leader = team.leader
@@ -137,7 +137,7 @@ class NewQuarterlyForecast
         quarter = 'q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s
         @quarterly_quota[quarter] ||= 0
         if leader.present?
-          @quarterly_quota[quarter] += leader.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+          @quarterly_quota[quarter] += leader.total_gross_quotas(quarter_row[:start_date], quarter_row[:end_date])
         end
       end
     else
@@ -147,7 +147,7 @@ class NewQuarterlyForecast
           quarter = 'q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s
           @quarterly_quota[quarter] ||= 0
           if leader.present?
-            @quarterly_quota[quarter] += leader.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+            @quarterly_quota[quarter] += leader.total_gross_quotas(quarter_row[:start_date], quarter_row[:end_date])
           end
         end
       end

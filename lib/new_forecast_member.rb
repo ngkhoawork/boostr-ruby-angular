@@ -145,7 +145,7 @@ class NewForecastMember
   end
 
   def quota
-    @quota ||= member.quotas.for_time_period(start_date, end_date).sum(:value)
+    @quota ||= member.total_gross_quotas(start_date, end_date)
   end
 
   def win_rate
