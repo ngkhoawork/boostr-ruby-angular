@@ -18,8 +18,16 @@ class Lead < ActiveRecord::Base
   scope :rejected, -> { where(status: REJECTED) }
   scope :by_company_id, -> (company_id) { where(company_id: company_id) }
   scope :reassigned, -> { where.not(reassigned_at: nil) }
+  scope :notification_reminders_by_dates, -> (reminder_type, start_date, end_date) do
+    joins(:notification_reminders)
+      .where('notification_reminders.notification_type = ? AND
+              notification_reminders.sending_time BETWEEN ? AND ?', reminder_type, start_date, end_date)
+  end
 
-  after_create :match_contact, :assign_reviewer#, :add_notifications_reminder, :add_notifications_reassignment
+  after_create :match_contact, :assign_reviewer, :add_notifications_reminder, :add_notifications_reassignment,
+               on: :create
+  after_save :add_notifications_reminder, :add_notifications_reassignment, if: :reassigned_at_changed?
+  after_save :remove_notifications_reminders, if: :accepted_or_rejected?
 
   def name
     "#{first_name} #{last_name}" rescue first_name || last_name
@@ -37,14 +45,27 @@ class Lead < ActiveRecord::Base
   end
 
   def assign_reviewer
-    update_columns(user_id: company.users.sample(1).first.id)
+    update_columns(user_id: company.users.sample(1).first.id) if self.user_id.nil?
   end
 
   def add_notifications_reminder
-    self.notification_reminders.create(type: REMINDER, sending_time: self.created_at + 24.hours)
+    remove_notifications_reminders
+    self.notification_reminders.create(notification_type: REMINDER, sending_time: 1.day.from_now)
   end
 
   def add_notifications_reassignment
-    self.notification_reminders.create(type: REASSIGNMENT, sending_time: self.created_at + 48.hours)
+    self.notification_reminders.create(notification_type: REASSIGNMENT, sending_time: 2.days.from_now)
+  end
+
+  def remove_notifications_reminders
+    self.notification_reminders.destroy_all
+  end
+
+  def accepted_or_rejected?
+    (accepted_at_changed? && !accepted_at.nil?) || (rejected_at_changed? && !rejected_at.nil?)
+  end
+
+  def reassigned_at_present?
+    reassigned_at_changed?
   end
 end
