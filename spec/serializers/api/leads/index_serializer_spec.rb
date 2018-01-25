@@ -14,11 +14,10 @@ describe Api::Leads::IndexSerializer do
     expect(index_serializer.notes).to eq lead.notes
     expect(index_serializer.created_at).to eq lead.created_at
     expect(index_serializer.rejected_at).to eq lead.rejected_at
-    expect(index_serializer.reopened_at).to eq lead.reopened_at
     expect(index_serializer.user).to eq user.serializable_hash(only: [:id], methods: [:name])
     expect(index_serializer.contact).to eq contact.serializable_hash(only: [:id, :name])
     expect(index_serializer.clients).to include client.serializable_hash(only: [:id, :name])
-    expect(index_serializer.untouched_days).to eq 2
+    expect(index_serializer.untouched_days).to eq 0
   end
 
   private

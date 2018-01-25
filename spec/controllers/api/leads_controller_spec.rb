@@ -206,8 +206,6 @@ describe Api::LeadsController do
   
   describe 'GET #reassign' do
     it 'reassign lead successfully' do
-      expect(lead.user_id).to be_nil
-
       get :reassign, id: lead.id, user_id: user.id
 
       expect(lead.reload.user_id).to eq user.id
@@ -217,7 +215,7 @@ describe Api::LeadsController do
   private
 
   def company
-    @_company ||= create :company
+    @_company ||= create :company, users: [create(:user)]
   end
 
   def second_company
@@ -233,6 +231,6 @@ describe Api::LeadsController do
   end
 
   def lead
-    @_lead ||= create :lead, company: company
+    @_lead ||= create :lead, company: company, user: user
   end
 end

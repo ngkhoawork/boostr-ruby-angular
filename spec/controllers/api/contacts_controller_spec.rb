@@ -126,7 +126,6 @@ RSpec.describe Api::ContactsController, type: :controller do
 
   describe "POST #create" do
     it 'creates a new contact and returns success' do
-
       expect{
         post :create, contact: contact_params, format: :json
 
@@ -145,6 +144,7 @@ RSpec.describe Api::ContactsController, type: :controller do
     end
 
     it 'map lead to contact' do
+      create :user, company: company
       valid_contact_params = contact_params.merge(lead_id: lead.id)
 
       post :create, contact: valid_contact_params

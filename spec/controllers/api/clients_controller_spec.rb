@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::ClientsController, type: :controller do
 
   let(:company) { Company.first }
-  let(:team) { create :parent_team }
+  let(:team) { create :parent_team, company: company }
   let(:user) { create :user, team: team }
   let(:address_params) { attributes_for :address }
   let(:client_params) { attributes_for(:client, address_attributes: address_params, client_type_id: client_type_id(company), company: company) }
@@ -113,6 +113,7 @@ RSpec.describe Api::ClientsController, type: :controller do
     end
 
     it 'map lead to contact' do
+      # create :user, company: company
       valid_client_params = client_params.merge(lead_id: lead.id)
 
       post :create, client: valid_client_params
@@ -201,6 +202,6 @@ RSpec.describe Api::ClientsController, type: :controller do
   end
 
   def lead
-    @_lead ||= create :lead
+    @_lead ||= create :lead, company: company
   end
 end
