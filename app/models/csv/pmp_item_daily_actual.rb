@@ -85,7 +85,7 @@ class Csv::PmpItemDailyActual
     import_log = CsvImportLog.new(company_id: company.id, object_name: 'pmp_item_daily_actual', source: 'ui')
     import_log.set_file_source(file_path)
 
-    CSV.parse(file, { headers: true, header_converters: :symbol }) do |row|
+    SmarterCSV.process(file, { force_simple_split: true, strip_chars_from_headers: /[\-"]/ }).each do |row|
       import_log.count_processed
 
       csv_pmp_item_daily_actual = self.build(row, company)

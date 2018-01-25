@@ -48,13 +48,13 @@ describe Csv::PmpItemDailyActual, 'model' do
 
     it 'creates pmp_item_daily_actuals' do
       expect {
-        described_class.import(file, user.id, 'pmp_item_daily_actual.csv')
+        described_class.import(file.path, user.id, 'pmp_item_daily_actual.csv')
       }.to change(PmpItemDailyActual, :count).by(2)
     end
 
     it 'creates csv import log' do
       expect {
-        described_class.import(file_with_error, user.id, 'pmp_item_daily_actual.csv')
+        described_class.import(file_with_error.path, user.id, 'pmp_item_daily_actual.csv')
       }.to change(CsvImportLog, :count).by(1)
       import_log = CsvImportLog.find_by(company_id: user.company.id, object_name: 'pmp_item_daily_actual', source: 'ui', file_source: 'pmp_item_daily_actual.csv')
       expect(import_log.error_messages.as_json).to include({"row" => 2, "message" => ['Bids is not a number']})
@@ -65,7 +65,7 @@ describe Csv::PmpItemDailyActual, 'model' do
 
     it 'generate pmp item monthly actual' do
       expect {
-        described_class.import(file, user.id, 'pmp_item_daily_actual.csv')
+        described_class.import(file.path, user.id, 'pmp_item_daily_actual.csv')
       }.to change(PmpItemMonthlyActual, :count).by(1)
       pmp_item_monthly_actual = pmp_item.pmp_item_monthly_actuals.first
       expect(pmp_item_monthly_actual.amount_loc).to eq(1500)
@@ -74,7 +74,7 @@ describe Csv::PmpItemDailyActual, 'model' do
     end
 
     it 'calculate pmp item budgets, run_rates' do
-      described_class.import(file, user.id, 'pmp_item_daily_actual.csv')
+      described_class.import(file.path, user.id, 'pmp_item_daily_actual.csv')
       pmp_item.reload
       expect(pmp_item.budget_delivered_loc).to eq(1500)
       expect(pmp_item.budget_remaining_loc).to eq(500)
@@ -84,7 +84,7 @@ describe Csv::PmpItemDailyActual, 'model' do
 
     it 'calculate pmp end date' do
       pmp_item.pmp.update(end_date: Date.strptime('11/5/2017', "%m/%d/%Y"))
-      described_class.import(file, user.id, 'pmp_item_daily_actual.csv')
+      described_class.import(file.path, user.id, 'pmp_item_daily_actual.csv')
       expect(pmp_item.pmp.reload.end_date).to eq(Date.strptime('11/21/2017', "%m/%d/%Y"))
     end
   end
@@ -104,18 +104,28 @@ describe Csv::PmpItemDailyActual, 'model' do
   end
 
   def file
-    @_file = CSV.generate do |csv|
-      csv << ['Deal-ID', 'Date', 'Ad Unit', 'Bids', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Render Rate', 'Currency']
-      csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, nil, 99, 1000, 9.9, 'USD']
-      csv << ['ssp001', '11/21/2017', 'Unit 4', 9, 99, 61.05, 99, 500, 9.9, 'USD']
+    @_file ||= Tempfile.open([Dir.tmpdir, ".csv"]) do |f|
+      begin
+        csv = CSV.new(f)
+        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Bids', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Render Rate', 'Currency']
+        csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, nil, 99, 1000, 9.9, 'USD']
+        csv << ['ssp001', '11/21/2017', 'Unit 4', 9, 99, 61.05, 99, 500, 9.9, 'USD']
+      ensure
+        f.close(unlink_now=false)
+      end
     end
   end
 
   def file_with_error
-    @_file_with_error = CSV.generate do |csv|
-      csv << ['Deal-ID', 'Date', 'Ad Unit', 'Bids', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Render Rate', 'Currency']
-      csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, 60, 99, 999, 9.9, 'USD']
-      csv << ['ssp001', '11/21/2017', 'Unit 4', 'String', 99, 60, 99, 999, 19.9, 'USD']
+    @_file_with_error ||= Tempfile.open([Dir.tmpdir, ".csv"]) do |f|
+      begin
+        csv = CSV.new(f)
+        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Bids', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Render Rate', 'Currency']
+        csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, 60, 99, 999, 9.9, 'USD']
+        csv << ['ssp001', '11/21/2017', 'Unit 4', 'String', 99, 60, 99, 999, 19.9, 'USD']
+      ensure
+        f.close(unlink_now=false)
+      end
     end
   end
 end
