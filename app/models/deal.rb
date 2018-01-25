@@ -219,7 +219,7 @@ class Deal < ActiveRecord::Base
   end
 
   def company_allowed_use_operative?
-    %w(22 29 34).include? self.company_id.to_s
+    %w(22 29 44).include? self.company_id.to_s
   end
 
   def operative_switched_on?
