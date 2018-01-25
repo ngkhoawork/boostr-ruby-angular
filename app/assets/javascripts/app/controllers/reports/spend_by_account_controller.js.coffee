@@ -74,7 +74,7 @@
       _.each data, (item) ->
         _.each item.month_revenues, (revenue, month) ->
           _.each $scope.months, (itemMonth) ->
-            if moment(itemMonth.date).format('YYYY-MM') == moment(month).format('YYYY-MM')
+            if moment(new Date(itemMonth.date)).format('YYYY-MM') == moment(new Date(month)).format('YYYY-MM')
               itemMonth.totalRevenue += revenue
 
     $scope.export = ->
