@@ -238,7 +238,7 @@ class DealProductBudget < ActiveRecord::Base
         import_log.count_imported
 
         deal_product.update_budget if deal_product_is_new
-        DealTotalBudgetUpdaterService.call(deal_product.deal) if deal_product_is_new
+        DealTotalBudgetUpdaterService.perform(deal_product.deal) if deal_product_is_new
       else
         import_log.count_failed
         import_log.log_error(deal_product.errors.full_messages)

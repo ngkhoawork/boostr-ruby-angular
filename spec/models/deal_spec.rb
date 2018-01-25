@@ -1166,24 +1166,18 @@ describe Deal do
   end
 
   describe '#updated?' do
-    let(:deal) do
-      build(
-        :deal,
-        creator: user,
-        company: company
-      )
-    end
-
-    before { deal.save }
+    let(:deal) { create :deal, creator: user, company: company }
 
     context 'if deal is new' do
       it { expect(deal.updated?).to be false }
     end
 
     context 'if deal was updated' do
-      before { deal.update_attribute(:name, "new name") }
-
-      it { expect(deal.updated?).to be true }
+      it do
+        deal.assign_attributes(name: "new name")
+        deal.save
+        expect(deal.updated?).to be true
+      end
     end
   end
 
