@@ -1,15 +1,7 @@
 class Dataexport::DealSerializer < ActiveModel::Serializer
-  attributes :id, :name, :advertiser, :agency, :start_date, :end_date, :budget_usd, :budget, :created,
-             :last_updated, :stage_id, :stage_name, :type, :source, :next_steps, :closed_date, :open,
-             :currency, :initiative_id, :closed_text, :custom_fields
-
-  def advertiser
-    object.advertiser&.name
-  end
-
-  def agency
-    object.agency&.name
-  end
+  attributes :id, :name, :advertiser_id, :agency_id, :start_date, :end_date, :budget_usd, :budget,
+             :created, :last_updated, :stage_id, :stage_name, :type, :source, :next_steps, :closed_date,
+             :open, :currency, :initiative_id, :closed_text, :custom_fields
 
   def budget_usd
     object.budget

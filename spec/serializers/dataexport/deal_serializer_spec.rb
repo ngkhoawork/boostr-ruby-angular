@@ -6,8 +6,8 @@ describe Dataexport::DealSerializer do
   it 'serializes deal data' do
     expect(serializer.id).to eq(deal.id)
     expect(serializer.name).to eq(deal.name)
-    expect(serializer.advertiser).to eq(deal.advertiser.name)
-    expect(serializer.agency).to eq(deal.agency.name)
+    expect(serializer.advertiser_id).to eq(deal.advertiser_id)
+    expect(serializer.agency_id).to eq(deal.agency_id)
     expect(serializer.start_date).to eq(deal.start_date)
     expect(serializer.end_date).to eq(deal.end_date)
     expect(serializer.budget_usd).to eq(deal.budget)

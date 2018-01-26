@@ -4,8 +4,8 @@ describe Dataexport::IoSerializer do
   it 'serializes io data' do
     expect(serializer.id).to eq(io.id)
     expect(serializer.io_number).to eq(io.io_number)
-    expect(serializer.advertiser).to eq(io.advertiser.name)
-    expect(serializer.agency).to eq(io.agency.name)
+    expect(serializer.advertiser_id).to eq(io.advertiser_id)
+    expect(serializer.agency_id).to eq(io.agency_id)
     expect(serializer.budget_usd).to eq(io.budget)
     expect(serializer.budget).to eq(io.budget_loc)
     expect(serializer.start_date).to eq(io.start_date)
