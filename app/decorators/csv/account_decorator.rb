@@ -8,7 +8,7 @@ class Csv::AccountDecorator
     REQUIRED_OPTIONS.each { |opt_name| raise "#{opt_name} option must be present" unless @opts[opt_name] }
   end
 
-  delegate :id, :name, to: :@record
+  delegate :id, :name, :website, to: :@record
 
   def type
     type_id
@@ -44,10 +44,6 @@ class Csv::AccountDecorator
 
   def phone
     @record.address&.phone
-  end
-
-  def website
-    @record.website
   end
 
   def team_members
@@ -86,7 +82,7 @@ class Csv::AccountDecorator
     cf_name = @opts[:cf_names].detect { |cf_name| cf_name.field_label.parameterize('_') == method_name.to_s }
 
     if cf_name
-      @record.account_cf&.send(cf_name.field_name)
+      @record.account_cf&.public_send(cf_name.field_name)
     else
       super
     end

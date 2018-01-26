@@ -1,27 +1,5 @@
 class Csv::AccountsService < Csv::BaseService
-  def initialize(records, company)
-    @records = preload_assocs(records).order(:id)
-    @company = company
-  end
-
-  private
-
-  def decorated_records
-    records.map do |record|
-      Csv::AccountDecorator.new(
-        record,
-        agency_type_id: company_agency_type_id,
-        advertiser_type_id: company_advertiser_type_id,
-        cf_names: cf_names
-      )
-    end
-  end
-
-  def headers
-    default_headers + cf_headers
-  end
-
-  def default_headers
+  def self.default_headers
     %w(
       Id
       Name
@@ -40,6 +18,30 @@ class Csv::AccountsService < Csv::BaseService
       Segment
       Holding\ Company
     )
+  end
+
+  def initialize(records, company)
+    @records = preload_assocs(records).order(:id)
+    @company = company
+  end
+
+  delegate :default_headers, to: :class
+
+  private
+
+  def decorated_records
+    records.map do |record|
+      Csv::AccountDecorator.new(
+        record,
+        agency_type_id: company_agency_type_id,
+        advertiser_type_id: company_advertiser_type_id,
+        cf_names: cf_names
+      )
+    end
+  end
+
+  def headers
+    default_headers + cf_headers
   end
 
   def cf_headers
