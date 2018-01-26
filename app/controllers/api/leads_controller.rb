@@ -33,6 +33,12 @@ class Api::LeadsController < ApplicationController
     render json: current_user.company.users.as_json(override: true, only: [:id], methods: [:name])
   end
 
+  def map_with_client
+    lead.update(client: client)
+
+    render nothing: true
+  end
+
   private
 
   def lead
@@ -45,5 +51,9 @@ class Api::LeadsController < ApplicationController
 
   def determine_assignee
     params[:user_id] rescue next_assignee
+  end
+
+  def client
+    Client.find(params[:client_id])
   end
 end

@@ -481,6 +481,7 @@ Rails.application.routes.draw do
         get :accept
         get :reject
         get :reassign
+        get :map_with_client
       end
 
       get :users, on: :collection
