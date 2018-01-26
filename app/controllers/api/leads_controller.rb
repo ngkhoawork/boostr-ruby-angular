@@ -26,6 +26,8 @@ class Api::LeadsController < ApplicationController
       rejected_at: nil
     )
 
+    LeadsMailer.new_leads_assignment(lead).deliver_now
+
     render nothing: true
   end
 
