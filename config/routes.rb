@@ -193,6 +193,7 @@ Rails.application.routes.draw do
     resources :api_configurations do
       collection do
         get :metadata
+        get :service_account_email
       end
     end
     resources :integration_types, only: [:index]
@@ -234,7 +235,7 @@ Rails.application.routes.draw do
     resources :account_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :contact_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_reports, only: [:index]
-    
+
     resources :bps, only: [:index, :create, :update, :show, :destroy] do
       get :seller_total_estimates
       get :account_total_estimates
@@ -243,7 +244,7 @@ Rails.application.routes.draw do
       post :assign_client
       post :add_all_clients
       post :assign_all_clients
-      resources :bp_estimates, only: [:index, :create, :update, :show, :destroy] do 
+      resources :bp_estimates, only: [:index, :create, :update, :show, :destroy] do
         get :status, on: :collection
       end
     end

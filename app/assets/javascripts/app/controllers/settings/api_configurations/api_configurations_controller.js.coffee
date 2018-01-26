@@ -26,6 +26,12 @@
               create: { templateUrl: 'modals/asana_connect_configuration_form.html', controller: 'AsanaConnectConfigurationsCreateController' },
               update: { templateUrl: 'modals/asana_connect_configuration_form.html', controller: 'AsanaConnectConfigurationsEditController' }
             }
+          },
+          google_sheets: {
+            actions: {
+              create: { templateUrl: 'modals/google_sheets_configuration_form.html', controller: 'GoogleSheetsConfigurationsCreateController' },
+              update: { templateUrl: 'modals/google_sheets_configuration_form.html', controller: 'GoogleSheetsConfigurationsEditController' }
+            }
           }
         }
       }
@@ -48,6 +54,8 @@
             mappings.providers.operative_datafeed
           when 'Asana Connect'
             mappings.providers.asana_connect
+          when 'Google Sheets'
+            mappings.providers.google_sheets
 
       init = () ->
         $scope.api_configurations = {}

@@ -1,8 +1,9 @@
 class Integration < ActiveRecord::Base
-  OPERATIVE = 'operative'
-  OPERATIVE_DATAFEED = 'Operative Datafeed'
-  DFP = 'DFP'
-  ASANA_CONNECT = 'Asana Connect'
+  OPERATIVE = 'operative'.freeze
+  OPERATIVE_DATAFEED = 'Operative Datafeed'.freeze
+  DFP = 'DFP'.freeze
+  ASANA_CONNECT = 'Asana Connect'.freeze
+  GOOGLE_SHEETS = 'Google Sheets'.freeze
 
   validates :external_id, :external_type, presence: true
 

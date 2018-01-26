@@ -16,6 +16,7 @@ class API::ApiConfigurations::Single < API::Single
   property :json_api_key, exec_context: :decorator
   property :asana_connect_details, exec_context: :decorator
   property :datafeed_configuration_details, exec_context: :decorator
+  property :google_sheets_details, exec_context: :decorator
 
   private
 
@@ -41,5 +42,9 @@ class API::ApiConfigurations::Single < API::Single
 
   def datafeed_configuration_details
     represented.datafeed_configuration_details if represented.integration_type == 'OperativeDatafeedConfiguration'
+  end
+
+  def google_sheets_details
+    represented.google_sheets_details if represented.integration_type == 'GoogleSheetsConfiguration'
   end
 end
