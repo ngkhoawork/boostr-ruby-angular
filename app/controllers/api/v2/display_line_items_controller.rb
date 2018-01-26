@@ -13,7 +13,7 @@ class Api::V2::DisplayLineItemsController < ApiController
   private
 
   def line_item
-    line_item = build_line_item(line_item_params)
+    @_line_item ||= build_line_item(line_item_params)
   end
 
   def build_line_item(params)
