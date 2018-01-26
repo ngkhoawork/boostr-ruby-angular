@@ -2,7 +2,7 @@
 	restrict: 'CA'
 	link: (scope, el) ->
 		el.bind 'mouseover', (e) ->
-			dropdown = angular.element(e.target).parent()
+			dropdown = el.parent()
 			dropdownMenu = dropdown.find('.dropdown-menu')
 			ddmStyles = dropdownMenu.attr 'style'
 			dropdownMenu.css

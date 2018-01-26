@@ -10,7 +10,8 @@ class Api::V2::ActivityListSerializer < ActiveModel::Serializer
     :creator,
     :client,
     :agency,
-    :deal
+    :deal,
+    :publisher
   )
 
   def contacts
@@ -31,6 +32,10 @@ class Api::V2::ActivityListSerializer < ActiveModel::Serializer
 
   def deal
     object.deal.serializable_hash(only: [:id, :name]) rescue nil
+  end
+
+  def publisher
+    object.publisher&.serializable_hash(only: [:id, :name])
   end
 
   def comment

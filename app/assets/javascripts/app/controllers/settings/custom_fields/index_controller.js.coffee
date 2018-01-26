@@ -1,12 +1,13 @@
 @app.controller "SettingsDealCustomFieldNamesController",
-['$scope', '$routeParams', '$location', '$modal', 'DealCustomFieldName', 'DealProductCfName', 'AccountCfName', 'ContactCfName',
-($scope, $routeParams, $location, $modal, DealCustomFieldName, DealProductCfName, AccountCfName, ContactCfName) ->
+['$scope', '$routeParams', '$location', '$modal', 'DealCustomFieldName', 'DealProductCfName', 'AccountCfName', 'ContactCfName', 'PublisherCustomFieldName',
+($scope, $routeParams, $location, $modal, DealCustomFieldName, DealProductCfName, AccountCfName, ContactCfName, PublisherCustomFieldName) ->
   $scope.tables = ['Deal', 'Client', 'DealProduct']
   $scope.init = () ->
     getDealCustomFieldNames()
     getDealProductCfNames()
     getAccountCfNames()
     getContactCfNames()
+    getPublisherCustomFieldName()
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -15,6 +16,7 @@
   getDealProductCfNames = () ->
     DealProductCfName.all().then (dealProductCustomFieldNames) ->
       $scope.dealProductCustomFieldNames = dealProductCustomFieldNames
+
   getAccountCfNames = () ->
     AccountCfName.all().then (accountCustomFieldNames) ->
       $scope.accountCustomFieldNames = accountCustomFieldNames
@@ -22,6 +24,10 @@
   getContactCfNames = () ->
     ContactCfName.all().then (results) ->
       $scope.contact_cf_names = results
+
+  getPublisherCustomFieldName = () ->
+    PublisherCustomFieldName.all().then (results) ->
+      $scope.publisher_custom_field_names = results
 
   $scope.updateTimePeriod = (time_period_id) ->
     $location.path("/settings/deal_custom_field_names/#{time_period_id}")
@@ -69,6 +75,8 @@
         ContactCfName.delete(id: customFieldName.id)
       else if objectType == 'account'
         AccountCfName.delete(id: customFieldName.id)
+      else if objectType == 'publisher'
+        PublisherCustomFieldName.delete(id: customFieldName.id)
 
   $scope.$on 'updated_deal_custom_field_names', ->
     $scope.init()
@@ -77,6 +85,8 @@
   $scope.$on 'updated_account_cf_names', ->
     $scope.init()
   $scope.$on 'updated_contact_cf_names', ->
+    $scope.init()
+  $scope.$on 'updated_publisher_custom_field_names', ->
     $scope.init()
 
   $scope.init()

@@ -4,6 +4,10 @@ class DFP::CpmBudgetAdjustmentService < BaseService
     cpm_budget_adjustment_factor * field.to_i
   end
 
+  def cpm_budget_adjustment_factor_reversed
+    (100 + dfp_api_config.cpm_budget_adjustment_percentage) / 100
+  end
+
   private
 
   def cpm_budget_adjustment_factor

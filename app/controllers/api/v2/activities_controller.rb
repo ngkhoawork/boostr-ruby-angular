@@ -1,6 +1,7 @@
 class Api::V2::ActivitiesController < ApiController
   def index
-    render json: activities.includes(:creator, :client, :deal, :contacts_info), each_serializer: Api::V2::ActivityListSerializer
+    render json: activities.includes(:creator, :client, :deal, :publisher, :contacts_info),
+           each_serializer: Api::V2::ActivityListSerializer
   end
 
   def show

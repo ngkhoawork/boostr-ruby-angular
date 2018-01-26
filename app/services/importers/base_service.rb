@@ -13,7 +13,7 @@ class Importers::BaseService < BaseService
     parsed_csv.each do |row|
       import_row(row)
     end
-    csv_import_log.set_file_source(file)
+    csv_import_log.set_file_source(file_name)
     csv_import_log.save
   end
 
@@ -31,7 +31,7 @@ class Importers::BaseService < BaseService
         csv_import_log.count_imported
       rescue Exception => e
         csv_import_log.count_failed
-        csv_import_log.log_error ['Internal Server Error', row.compact.to_s]
+        csv_import_log.log_error ['Internal Server Error', row.compact.to_s, e.message]
       end
     else
       csv_import_log.count_failed
@@ -57,12 +57,16 @@ class Importers::BaseService < BaseService
 
   def open_file
     begin
-      File.open(file, 'r:ISO-8859-1')
+      File.open(file, 'r:bom|utf-8')
     rescue Exception => e
       csv_import_log = CsvImportLog.new(company_id: company_id, object_name: import_subject, source: import_source)
-      csv_import_log.set_file_source(file)
+      csv_import_log.set_file_source(file_name)
       csv_import_log.log_error [e.class.to_s, e.message]
       csv_import_log.save
     end
+  end
+
+  def file_name
+    @original_filename || file
   end
 end

@@ -1,0 +1,238 @@
+#publishers.z-styles
+  .z-sliding-filter{'ng-class': '{open: filter.isOpen}'}
+    .header
+      Filter
+      %span.pull-right{'ng-click': 'filter.close($event)'} Close
+    .body
+      .filter-row
+        .filter-name
+          %div
+            Comscore
+        .filter-dropdown
+          %i.fa.fa-close{'ng-show': 'filter.selected.comscore', 'ng-click': 'filter.reset("comscore")'}
+          %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.comscore}'}
+              {{filter.selected.comscore.name || 'Select a comscore'}}
+              %span.caret
+            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+              .dropdown-option{'ng-repeat': 'comscore in filter.comscores | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select("comscore", comscore)'} {{comscore.name}}
+      .filter-row
+        .filter-name
+          %div
+            Stage
+        .filter-dropdown
+          %i.fa.fa-close{'ng-show': 'filter.selected.stage', 'ng-click': 'filter.reset("stage")'}
+          %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.stage}'}
+              {{filter.selected.stage ? filter.selected.stage.probability + '% - ' + filter.selected.stage.name : 'Select a stage'}}
+              %span.caret
+            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+              .dropdown-option{'ng-repeat': 'stage in filter.stages | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select("stage", stage)'} {{stage.name}} {{stage.probability}}%
+      .filter-row
+        .filter-name
+          %div
+            Type
+        .filter-dropdown
+          %i.fa.fa-close{'ng-show': 'filter.selected.type', 'ng-click': 'filter.reset("type")'}
+          %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.type}'}
+              {{filter.selected.type.name || 'Select a type'}}
+              %span.caret
+            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+              .dropdown-option{'ng-repeat': 'type in filter.types', role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select("type", type)'} {{type.name}}
+
+      .filter-row{'ng-repeat': 'customField in filter.customFields', 'ng-switch': 'customField.type'}
+        .filter-name
+          %div {{customField.field_label}}
+
+        .filter-dropdown.filter-date{'ng-switch-when': 'datetime'}
+          %i.fa.fa-close{'ng-show': 'filter.selected.customFields[customField.id]', 'ng-click': 'filter.reset(customField.id, true)'}
+          .dropdown-button{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{selected: filter.selected.customFields[customField.id]}', model: 'filter.selected.customFields[customField.id]', click: 'filter.dateOpened[customField.id] = !filter.dateOpened[customField.id]' }, 'is-open': 'filter.dateOpened[customField.id]' }
+            {{(filter.selected.customFields[customField.id] | date) || 'Select ' + customField.field_label}}
+            %span.caret
+
+        .filter-dropdown{'ng-switch-when': 'boolean'}
+          %i.fa.fa-close{'ng-show': 'filter.selected.customFields[customField.id] !== undefined', 'ng-click': 'filter.reset(customField.id, true)'}
+          %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.customFields[customField.id] !== undefined}'}
+              {{filter.selected.customFields[customField.id] !== undefined ? filter.selected.customFields[customField.id] : 'Select ' + customField.field_label}}
+              %span.caret
+            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+              .dropdown-option{role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select(customField.id, true, true)'} true
+              .dropdown-option{role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select(customField.id, false, true)'} false
+
+        .filter-dropdown{'ng-switch-when': 'dropdown'}
+          %i.fa.fa-close{'ng-show': 'filter.selected.customFields[customField.id]', 'ng-click': 'filter.reset(customField.id, true)'}
+          %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.customFields[customField.id]}'}
+              {{filter.selected.customFields[customField.id] || 'Select ' + customField.field_label}}
+              %span.caret
+            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+              .dropdown-option{'ng-repeat': 'option in customField.field_options', role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select(customField.id, option, true)'} {{option}}
+
+        .filter-input{'ng-switch-default': '', 'ng-class': '{selected: filter.selected.customFields[customField.id]}'}
+          %input.form-control.dropdown-button{'placeholder': 'Enter {{customField.field_label}}', 'ng-model': 'filter.selected.customFields[customField.id]'}
+
+
+    .footer
+      %span.reset{'ng-click': 'filter.resetAll()'} Reset
+      %button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters
+
+  .container-fluid.publisher-inner
+    .row.publisher-header.mb30
+      .header-item
+        .main-title Publishers
+      .header-item
+        %add-button{'ng-click': 'showNewPublisherModal()'}
+          Add Publisher
+      .header-item.switch-row
+        %span{'ng-repeat': 'type in publisherTypes', 'ng-class': '{active: type.name == teamFilter().name}', 'ng-click': 'filterPublishers(type)'}
+          {{type.name}}
+      .header-item.publisher-search
+        %i.fa.fa-search
+        %input.form-control{ ng: { model: 'searchText', change: 'getPublishers()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Name" }
+      .header-item.view-toggle
+        %div.view-toggle-inner
+          %div{'ng-click': 'changeView("list")', 'ng-class': '{active: view == "list"}'}
+            %i.fa.fa-list
+            List
+          %div{'ng-click': 'changeView("columns")', 'ng-class': '{active: view == "columns"}'}
+            %i.fa.fa-columns
+            Columns
+
+      .header-item
+        %button.btn-main{'ng-click': 'filter.open($event)'}
+          %i.fa.fa-filter
+          Add filter
+
+    .row{'ng-if': 'view == "list"'}
+      .block
+        .table-wrapper
+          %table.table.table-hover
+            %thead
+              %tr.z-sortable-prime
+                %th
+                  .z-sortable{by: 'name', default: true}
+                    Name
+                %th.right
+                  .z-sortable{by: 'revenue_ytd'}
+                    Revenue YTD
+                %th.right
+                  .z-sortable{by: 'estimated_monthly_impressions'}
+                    Est. Monthly Impressions
+                %th
+                  .z-sortable{by: 'publisher_stage.name'}
+                    Stage
+                %th
+                  .z-sortable{by: 'type.name'}
+                    Publisher Type
+                %th
+                  .z-sortable{by: 'renewal_term.name'}
+                    Renewal Term
+                %th{width: '200px'}
+                  .z-sortable{by: 'revenue_share'}
+                    Revenue Share
+                %th
+                  .z-sortable{by: 'term_start_date'}
+                    Term Start Date
+                %th
+                  .z-sortable{by: 'term_end_date'}
+                    Term End Date
+                %th
+                  .z-sortable{by: 'comscore'}
+                    Comscore 250
+
+            %tbody{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
+              %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
+                %td
+                  %a{'ng-href': '/publishers/{{publisher.id}}'} {{publisher.name}}
+                %td.right
+                  {{publisher.revenue_ytd | currency: currency_symbol : 0}}
+                %td.right
+                  {{publisher.estimated_monthly_impressions | formatMoney: "" : 0}}
+                %td
+                  .dropdown
+                    %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                      %span.editable{'ng-class': '{"not-selected": !publisher.publisher_stage}'}
+                        {{publisher.publisher_stage ? publisher.publisher_stage.probability + '% - ' + publisher.publisher_stage.name : 'Select Stage'}}
+                      %span.caret
+                    %ul.dropdown-menu
+                      %li{'ng-repeat': 'stage in publisher_stages', 'ng-class': '{active: publisher.publisher_stage.id == stage.id}'}
+                        %a{'href': '', 'ng-click': ' publisher.publisher_stage = stage; updatePublisher(publisher)'}
+                          %span.text {{stage.name}} {{stage.probability}}%
+                %td
+                  .dropdown
+                    %button.btn.dropdown-toggle.z-dd-ar{'data-toggle': 'dropdown', type: 'button'}
+                      %span.editable{'ng-class': '{"not-selected": !publisher.type.name}'} {{publisher.type.name || 'Select Type'}}
+                      %span.caret
+                    %ul.dropdown-menu
+                      %li{'ng-repeat': 'type in publisher_types', 'ng-class': '{active: publisher.type.id == type.id}'}
+                        %a{'href': '', 'ng-click': ' publisher.type = type; updatePublisher(publisher)'}
+                          %span.text {{type.name}}
+                %td
+                  .dropdown
+                    %button.btn.dropdown-toggle.z-dd-ar{'data-toggle': 'dropdown', type: 'button'}
+                      %span.editable{'ng-class': '{"not-selected": !publisher.renewal_term.name}'} {{publisher.renewal_term.name || 'Select Type'}}
+                      %span.caret
+                    %ul.dropdown-menu
+                      %li{'ng-repeat': 'term in renewal_term_fields', 'ng-class': '{active: publisher.renewal_term.id == term.id}'}
+                        %a{'href': '', 'ng-click': ' publisher.renewal_term = term; updatePublisher(publisher)'}
+                          %span.text {{term.name}}
+                %td.hide-input-arrows
+                  %span{id: 'revenue-share-{{publisher.id}}', 'editable-number': 'publisher.revenue_share', blur: 'submit', onbeforesave: 'checkRevenueShare(publisher, $data)', onaftersave: 'updatePublisher(publisher)'}
+                    {{(publisher.revenue_share || 0) | number : 0}}%
+                %td
+                  %span.datetime-field.bs-datepicker
+                    %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !publisher.term_start_date}', model: 'publisher.term_start_date', click: 'startedAtOpened = !startedAtOpened', change: 'updatePublisher(publisher)' }, 'is-open': 'startedAtOpened' }
+                      {{(publisher.term_start_date | date) || 'Select date'}}
+                %td
+                  %span.datetime-field.bs-datepicker
+                    %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !publisher.term_end_date}', model: 'publisher.term_end_date', click: 'endDateOpened = !endDateOpened', change: 'updatePublisher(publisher)' }, 'is-open': 'endDateOpened' }
+                      {{(publisher.term_end_date | date) || 'Select date'}}
+                %td.center
+                  %z-toggle{'ng-model': 'publisher.comscore', 'ng-change': 'updatePublisher(publisher)', 'ng-click': '$event.stopPropagation()'}
+
+    .row.publishers-container{'ng-if': 'view == "columns"'}
+      .publishers-table{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
+        .publisher-column{'ng-repeat': 'stage in publishersPipeline', 'ng-init': 'columnIndex = $index'}
+          .column-header{'z-coloring-stage': '{color: baseColor, stage: stage}'}
+            %span
+              {{stage.probability}}%
+              %br
+              {{stage.name}}
+              %i ({{stage.publishers_count || 0}})
+            %span
+              Est. Imp. {{stage.estimated_monthly_impressions_sum | formatMoney : ''}}
+            %svg{width: '17', height: '72'}
+              %polygon{points: '-2,-7 15, 36, -2, 79'}
+          .column-body{'dnd-list': 'stage.publishers',
+                                   'dnd-drop': 'onDrop(item, stage)',
+                                   'dnd-inserted': 'onInserted(item, index, columnIndex)'}
+            .publisher-block{'ng-repeat': 'publisher in stage.publishers',
+                                      id: 'publisher-{{publisher.id}}',
+                                      'dnd-draggable': 'publisher',
+                                      'dnd-moved': 'onMoved(publisher, $index, columnIndex)',
+                                      'dnd-effect-allowed': 'move',
+                                      'dnd-dragstart': 'onDragStart()',
+                                      'dnd-dragend': 'onDragEnd()'}
+              .date.pull-right{'ng-class': '{expired: publisher.isExpired && publisher.stage.open}'} {{publisher.created_at | date: 'mediumDate'}}
+              %span
+                %a{'ng-href': '{{"/publishers/" + publisher.id}}'} {{publisher.name}}
+              %span Estimated Impressions {{publisher.estimated_monthly_impressions | formatMoney : ''}}
+
+              %div {{usersToString(publisher.users)}}
+
+              %div.block-menu
+                %div{'dropdown': '', 'keyboard-nav': ''}
+                  %i.fa.fa-ellipsis-h{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}
+                  .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                    .dropdown-option
+                      %a{href: '', 'ng-click': 'showEditModal(publisher)'} Edit
+                    .dropdown-option
+                      %a{href: '', 'ng-click': 'deletePublisher(publisher)'} Delete

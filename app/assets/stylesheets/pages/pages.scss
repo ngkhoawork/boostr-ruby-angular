@@ -6,7 +6,7 @@
 @import "contacts";
 @import "contact";
 @import "revenue";
-@import "deals";
+@import "deals+publishers";
 @import "bp";
 @import "deal";
 @import "forecasts";
@@ -31,6 +31,7 @@
 @import "settings/ealerts";
 @import "settings/api_configurations";
 @import "settings/activity_types";
+@import "settings/stages";
 @import "where_to_pitch";
 @import "deal_reports";
 @import "inactives";
@@ -48,5 +49,7 @@
 @import "requests";
 @import "product_monthly_summary_report";
 @import "spend_by_category";
+@import "publishers";
+@import "publisher";
 
 html,body { height:100%; }

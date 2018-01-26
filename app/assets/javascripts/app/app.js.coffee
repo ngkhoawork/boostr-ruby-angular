@@ -185,6 +185,10 @@
       templateUrl: 'spend_by_account.html'
       controller: 'SpendByAccountController'
 
+    .when '/reports/publishers',
+      templateUrl: 'publishers_report.html'
+      controller: 'PublishersReportController'
+
     .when '/reports/activity_detail_reports',
       templateUrl: 'activity_detail_reports.html'
       controller: 'ActivityDetailReportsController'
@@ -286,8 +290,8 @@
       controller: 'SettingsQuotasController'
 
     .when '/settings/stages',
-      templateUrl: 'settings/stages.html'
-      controller: 'SettingsStagesController'
+      templateUrl: 'settings/stages/main_stages.html'
+      controller: 'MainStageController'
 
     .when '/settings/bps',
       templateUrl: 'settings/bps.html'
@@ -332,6 +336,10 @@
     .when '/users/sign_out',
       templateUrl: 'sign_out.html'
       controller: 'signOutController'
+      
+    .when '/publishers',
+      templateUrl: 'publishers/publishers.html'
+      controller: 'PablishersController'
 
     .when '/api/gmail_extension/',
       templateUrl: 'blank.html'
@@ -340,6 +348,10 @@
     .when '/api/calendar_extension/',
       templateUrl: 'blank.html'
       controller: 'CalendarExtensionController'
+
+    .when '/publishers/:id',
+      templateUrl: 'publishers/publisher.html'
+      controller: 'PablisherController'
 
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true

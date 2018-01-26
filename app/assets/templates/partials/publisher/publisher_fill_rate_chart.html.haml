@@ -1,0 +1,17 @@
+.block
+  %div.md20
+    %span.title Fill Rate By Month
+  .table-wrapper
+    %div#fill-rate-chart-container{'ng-controller': 'PublisherFillRateChartController'}
+      %div#fill-rate-chart-tooltip
+      %svg#fill-rate-chart.publisher-chart
+        %text{x: '0', y: '10', fill: 'black'} No data available
+    .legend-container
+      .legend
+        .line.filled
+        %span.legend-text
+          Filled Impressions
+      .legend
+        .line.available
+        %span.legend-text
+          Available Impressions

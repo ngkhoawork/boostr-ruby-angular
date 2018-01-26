@@ -46,8 +46,9 @@
                         updateBillingStats()
 
             #set last month
-            $scope.selectMonth moment().subtract(1, 'month').format('MMMM')
-            $scope.selectYear moment().format('YYYY')
+            lastMonth = moment().subtract(1, 'month')
+            $scope.selectMonth lastMonth.format('MMMM')
+            $scope.selectYear lastMonth.format('YYYY')
             getData()
 
             updateBillingStats = () ->

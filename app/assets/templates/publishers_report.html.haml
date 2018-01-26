@@ -1,0 +1,73 @@
+#publisher-report.z-styles
+  .container-fluid.inner-publisher
+    .row.mb20
+      .reports-header
+        .header-cell.main-title
+          Publishers
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply'}
+            %z-filter-field{data: 'teams', type: 'team', 'save-as': '{team_id: "id"}'} Team
+            %z-filter-field{data: 'stages', type: 'team', 'save-as': '{publisher_stage_id: "id"}'} Stage
+            %z-filter-field{type: 'daterange', 'save-as': '{created_at_start: "startDate", created_at_end: "endDate"}'} Created Date
+        .header-cell
+          .pull-right
+            %download-button{'ng-click': 'export()'}
+              Export
+
+  .container-fluid.inner-publisher{'ng-show': 'showDashboard'}
+    .row
+      .block
+        .table-wrapper
+          %table.table.table-hover
+            %thead
+              %tr.z-sortable-prime{watch: '"publishers"'}
+                %th
+                  .z-sortable{by: 'name', default: true}
+                    Name
+                %th
+                  .z-sortable{by: 'comscore'}
+                    Comscore 250
+                %th
+                  .z-sortable{by: 'publisher_stage'}
+                    Stage
+                %th
+                  .z-sortable{by: 'type.name'}
+                    Type
+                %th
+                  .z-sortable{by: 'estimated_monthly_impressions'}
+                    Estimated Monthly Impressions
+                %th
+                  .z-sortable{by: 'actual_monthly_impressions'}
+                    Monthly Impressions (90-Day Avg)
+                %th
+                  .z-sortable{by: 'fill_rate'}
+                    Fill Rate (90-Day Avg)
+                %th
+                  .z-sortable{by: 'revenue_lifetime'}
+                    Revenue Lifetime
+                %th
+                  .z-sortable{by: 'revenue_ytd'}
+                    Revenue YTD
+                %th.left
+                  .z-sortable{by: 'created_at'}
+                    Created Date
+                %th{'ng-repeat': 'cfName in publisherCustomFields'}
+                  {{ cfName }}
+            %tbody
+              %tr{'ng-repeat': 'publisher in publishers | orderBy : zSort.by : zSort.rev'}
+                %td {{publisher.name}}
+                %td {{publisher.comscore ? 'True' : 'False'}}
+                %td {{publisher.publisher_stage}}
+                %td {{publisher.type.name}}
+                %td.center {{publisher.estimated_monthly_impressions | formatMoney: "" : 0}}
+                %td.center {{publisher.actual_monthly_impressions | formatMoney: "" : 0}}
+                %td {{publisher.fill_rate + "%"}}
+                %td.center {{publisher.revenue_lifetime | currency: currency_symbol : 0}}
+                %td.center {{publisher.revenue_ytd | currency: currency_symbol : 0}}
+                %td.left {{publisher.created_at | date : 'shortDate'}}
+                %td{'ng-repeat': 'cf in publisher.publisher_custom_field | orderBy : zSort.by : zSort.rev'}
+                  %p{'ng-if': 'cf.field_type == "datetime"'}
+                    {{cf.field_value  | date : 'shortDate'}}
+                  %p{'ng-if': 'cf.field_type != "datetime"'}
+                    {{cf.field_value}}
+
