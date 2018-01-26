@@ -1,13 +1,6 @@
 class Api::V2::DisplayLineItemsController < ApiController
   respond_to :json
 
-  # TEMP, DELETE
-  def show
-    dli = current_user.company.display_line_items.first
-    render json: dli
-  end
-  # TEMP, DELETE
-
   def create
     if line_item.valid?
       line_item.perform
