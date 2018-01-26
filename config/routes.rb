@@ -160,6 +160,23 @@ Rails.application.routes.draw do
       resources :contact_cf_names, only: [:index]
     end # API V2 END
 
+    namespace :dataexport, defaults: { format: :json }, constraints: ApiConstraints.new(dataexport: true) do
+      resources :user_token, only: [:create]
+
+      resources :users, only: [:index]
+      resources :products, only: [:index]
+      resources :ios, only: [:index]
+      resources :accounts, only: [:index]
+      resources :deals, only: [:index]
+      resources :display_line_items, only: [:index]
+      resources :stages, only: [:index]
+      resources :deal_members, only: [:index]
+      resources :deal_products, only: [:index]
+      resources :deal_product_budgets, only: [:index]
+      resources :io_members, only: [:index]
+      resources :display_line_item_budgets, only: [:index]
+    end
+
     resources :dfp_imports do
       collection do
         post 'import'
