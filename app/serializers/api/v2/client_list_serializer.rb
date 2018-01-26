@@ -5,7 +5,9 @@ class Api::V2::ClientListSerializer < ActiveModel::Serializer
     :formatted_name,
     :contacts_count,
     :deals_count,
-    :type_name
+    :type_name,
+    :city,
+    :state
   )
 
   def type_name
@@ -20,5 +22,13 @@ class Api::V2::ClientListSerializer < ActiveModel::Serializer
 
   def formatted_name
     name + object.address&.formatted_name
+  end
+
+  def city
+    object.address.city
+  end
+
+  def state
+    object.address.state
   end
 end

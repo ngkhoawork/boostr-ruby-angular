@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   get 'switch_user', to: 'switch_user#set_current_user'
   get 'switch_user/remember_user', to: 'switch_user#remember_user'
 
+  get 'extension_localstorage', to: 'extension_localstorage#index'
+
   namespace :api, defaults: { format: :json } do
     scope module: :v1, constraints: ApiConstraints.new(version: 1) do
       post 'forgot_password' => 'forgot_password#create'
@@ -87,6 +89,7 @@ Rails.application.routes.draw do
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
         get :won_deals, on: :collection
+        get :find_by_id, on: :member
         resources :deal_products, only: [:create, :update, :destroy]
         resources :deal_assets, only: [:index, :update, :create, :destroy]
         resources :deal_contacts, only: [:index, :create, :update, :destroy]
@@ -143,6 +146,7 @@ Rails.application.routes.draw do
       end
 
       resources :gmail_extension, only: [:index]
+      resources :calendar_extension, only: [:index]
 
       resources :validations, only: [] do
         collection do

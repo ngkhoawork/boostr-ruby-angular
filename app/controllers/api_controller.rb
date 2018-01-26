@@ -1,4 +1,5 @@
 class ApiController < ActionController::Base
+  include PagesHelper
   include Knock::Authenticable
 
   before_filter :authenticate_token_user
