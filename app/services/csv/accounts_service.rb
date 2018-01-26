@@ -61,7 +61,7 @@ class Csv::AccountsService < Csv::BaseService
   end
 
   def cf_names
-    @cf_names ||= @company.account_cf_names.where(disabled: [false, nil]).order(position: :asc)
+    @cf_names ||= @company.account_cf_names.where('disabled = FALSE OR disabled IS NULL').order(position: :asc)
   end
 
   def company_agency_type_id
