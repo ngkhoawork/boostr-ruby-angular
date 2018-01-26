@@ -39,7 +39,7 @@
             }
             &:last-child {
                 width: 200px;
-                .leads-td-inner {
+                .leads-td-inner.lead-buttons {
                     //display: flex;
                     justify-content: center;
                     //flex-direction: column;
@@ -102,6 +102,16 @@
                 font-weight: bold;
                 color: $main-color;
                 cursor: pointer;
+            }
+            .deal-row {
+                &:not(:last-child) {
+                    border-bottom: 1px solid #eee;
+                }
+                padding: 5px 0;
+
+                a {
+                    margin-right: 12px;
+                }
             }
         }
         .ngTruncateToggleText {

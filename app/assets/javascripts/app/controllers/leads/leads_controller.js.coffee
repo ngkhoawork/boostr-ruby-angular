@@ -2,6 +2,7 @@
     '$scope', '$modal', 'Leads'
     ($scope,   $modal,   Leads) ->
 
+        $scope.isLoading = false
         $scope.leads = []
         $scope.teamFilters = [
             {id: 'my', name: 'My Leads'}
@@ -26,6 +27,7 @@
 
         getLeads = ->
             if !$scope.teamFilter || !$scope.statusFilter then return
+            $scope.isLoading = true
             params =
                 relation: $scope.teamFilter.id
                 status: $scope.statusFilter.id
@@ -34,6 +36,10 @@
                 data.reverse() # --------------------------------------------------------------------------------------
                 console.log data[0]
                 $scope.leads = data
+                $scope.isLoading = false
+            , (err) ->
+                $scope.isLoading = false
+
 
         $scope.showReassignModal = (lead) ->
             $modal.open

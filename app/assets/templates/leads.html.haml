@@ -10,7 +10,10 @@
             %z-toggle-list{list: 'statusFilters', 'on-change': 'onFilterChange("statusFilter", $selected)', localstorage: 'leadsStatusFilter'}
 
         .row
-            .leads-table
+            .leads-table{'ng-if': '!leads.length && !isLoading'}
+                .leads-header-tr
+                    .leads-th NO LEADS
+            .leads-table{'ng-if': 'leads.length'}
                 .leads-header-tr
                     .leads-th ID
                     .leads-th STATUS
@@ -27,8 +30,8 @@
                         .leads-td-inner
                             .td-title {{lead.user.name}}
                             .td-info{'ng-switch-when': 'new_leads'}
-                                {{lead.created_at && 'Created ' + (lead.created_at | date : 'shortDate')}}
-                                {{lead.reassigned_at && 'Reassigned ' + (lead.reassigned_at | date : 'shortDate')}}
+                                %div {{lead.created_at && 'Created ' + (lead.created_at | date : 'shortDate')}}
+                                %div {{lead.reassigned_at && 'Reassigned ' + (lead.reassigned_at | date : 'shortDate')}}
                             .td-info{'ng-switch-when': 'accepted'}
                                 %div {{lead.created_at && 'Created ' + (lead.created_at | date : 'shortDate')}}
                                 %div {{lead.accepted_at && 'Accepted ' + (lead.accepted_at | date : 'shortDate')}}
@@ -77,10 +80,14 @@
                             %div{ng: {'text-truncate': 'lead.notes', 'tt-chars-threshold': '100'}}
                             .td-action{'ng-if': 'statusFilter.id !== "new_leads"', 'ng-click': 'showDealModal(lead)'} Create Deal
                     .leads-td
-                        .leads-td-inner{'ng-switch-when': 'new_leads'}
+                        .leads-td-inner.lead-buttons{'ng-switch-when': 'new_leads'}
                             .leads-btn.hollow{'ng-click': 'reject(lead)'} Reject
                             .leads-btn{'ng-click': 'accept(lead)'} Start Qualification
-                        .leads-td-inner{'ng-switch-when': 'accepted'}
+                        .leads-td-inner{'ng-switch-when': 'accepted', 'ng-if': 'lead.deals.length'}
+                            .deal-row{'ng-repeat': 'deal in lead.deals'}
+                                %a{target: '_blank', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
+                                {{deal.budget | currency : '$' : 0}}
+                        .leads-td-inner.lead-buttons{'ng-switch-when': 'accepted', 'ng-if': '!lead.deals.length'}
                             .leads-btn.hollow{'ng-click': 'reject(lead)'} Reject
-                        .leads-td-inner{'ng-switch-when': 'rejected'}
+                        .leads-td-inner.lead-buttons{'ng-switch-when': 'rejected'}
                             .leads-btn{'ng-click': 'reassign(lead)'} Take Ownership
