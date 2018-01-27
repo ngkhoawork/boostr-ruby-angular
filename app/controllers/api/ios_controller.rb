@@ -63,6 +63,18 @@ class Api::IosController < ApplicationController
     end
   end
 
+  def import_content_fee
+    if params[:file].present?
+      S3FileImportWorker.perform_async('Importers::IoContentFeesService',
+                                      company.id,
+                                      params[:file][:s3_file_path],
+                                      params[:file][:original_filename])
+      render json: {
+          message: 'Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)'
+      }, status: :ok
+    end
+  end
+
   private
 
   def io_params

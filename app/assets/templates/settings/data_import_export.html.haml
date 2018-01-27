@@ -65,6 +65,15 @@
             .col-sm-4
               .panel
                 .panel-body
+                  %h4 IO Content Fee Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadIOContentFeeModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import IO Content Fees
+
+            .col-sm-4
+              .panel
+                .panel-body
                   %h4 Activities Import
                   %li.import
                     %a.upload{ href: '', ng: { click: 'showUploadActivityModal()' } }

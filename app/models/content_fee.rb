@@ -106,7 +106,7 @@ class ContentFee < ActiveRecord::Base
     last_index = io.months.count - 1
     total = 0
     total_loc = 0
-
+    
     io_start_date = io.start_date
     io_end_date = io.end_date
     io.months.each_with_index do |month, index|
