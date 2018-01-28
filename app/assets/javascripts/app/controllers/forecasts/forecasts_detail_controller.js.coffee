@@ -101,6 +101,15 @@
             suffix = if type == 'revenues' then 's' else if type == 'deals' then '_amounts'
             quarters = {}
             months = {}
+            monthObj = ms.reduce(((acc, cur, i) ->
+              acc[i] = {month: cur, total: 0}
+              acc
+            ), {})
+            quarterObj = qs.reduce(((acc, cur, i) ->
+              acc[i] = {quarter: cur, total: 0}
+              acc
+            ), {})
+
             for q, i in qs
                 for item in data
                     if item['quarter' + suffix][i] != null
@@ -111,9 +120,32 @@
                     if item['month' + suffix][i] != null
                         months[i] = m
                         break
+
             data.detail_amounts =
                 quarters: quarters
                 months: months
+
+            calculateTotalByMonthsAndQuarter(monthObj, quarterObj, data, suffix)
+
+
+        calculateTotalByMonthsAndQuarter = (monthObj, quarterObj, data, suffix) ->
+          _.each data, (revenue) ->
+            _.each monthObj, (month, index) ->
+              monthObj[index].total += revenue['month' + suffix][index]
+
+          _.each data.detail_amounts.months, (month, index) ->
+            _.each monthObj, (monthsObj) ->
+              if month == monthsObj.month
+                data.detail_amounts.months[index] = monthsObj
+
+          _.each data, (revenue) ->
+            _.each quarterObj, (q, index) ->
+              quarterObj[index].total += revenue['quarter' + suffix][index]
+
+          _.each data.detail_amounts.quarters, (quarter, index) ->
+            _.each quarterObj, (quartersObj) ->
+              if quarter == quartersObj.quarter
+                data.detail_amounts.quarters[index] = quartersObj
 
         parseRevenueBudgets = (data) ->
             data = _.map data, (item) ->
