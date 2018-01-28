@@ -170,6 +170,10 @@ GEM
       devise (>= 3.2.0)
     diff-lcs (1.3)
     docile (1.1.5)
+    dotenv (2.2.0)
+    dotenv-rails (2.2.0)
+      dotenv (= 2.2.0)
+      railties (>= 3.2, < 5.1)
     encryptor (3.0.0)
     equalizer (0.0.11)
     erubis (2.7.0)
@@ -213,8 +217,25 @@ GEM
       nokogiri (~> 1.6)
       nori (~> 2.6)
       wasabi (~> 3.4)
+    google-api-client (0.9.28)
+      addressable (~> 2.3)
+      googleauth (~> 0.5)
+      httpclient (~> 2.7)
+      hurley (~> 0.1)
+      memoist (~> 0.11)
+      mime-types (>= 1.6)
+      representable (~> 2.3.0)
+      retriable (~> 2.0)
     google-dfp-api (0.20.0)
       google-ads-common (~> 0.12.6)
+    googleauth (0.5.1)
+      faraday (~> 0.9)
+      jwt (~> 1.4)
+      logging (~> 2.0)
+      memoist (~> 0.12)
+      multi_json (~> 1.11)
+      os (~> 0.9)
+      signet (~> 0.7)
     griddler (1.4.0)
       htmlentities
       rails (>= 3.2.0)
@@ -260,6 +281,7 @@ GEM
     httpi (2.4.2)
       rack
       socksify
+    hurley (0.2)
     i18n (0.7.0)
     i18n_data (0.7.0)
     ice_nine (0.11.2)
@@ -311,6 +333,10 @@ GEM
     listen (3.1.1)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9.7)
+    little-plugger (1.1.4)
+    logging (2.2.2)
+      little-plugger (~> 1.1)
+      multi_json (~> 1.10)
     lol_dba (2.1.3)
       actionpack (>= 3.0)
       activerecord (>= 3.0)
@@ -320,6 +346,7 @@ GEM
     lumberjack (1.0.12)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
+    memoist (0.16.0)
     meta_request (0.4.3)
       callsite (~> 0.0, >= 0.0.11)
       rack-contrib (>= 1.1, < 3)
@@ -353,6 +380,7 @@ GEM
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
     orm_adapter (0.5.0)
+    os (0.9.6)
     paranoia (2.1.3)
       activerecord (~> 4.0)
     parser (2.4.0.0)
@@ -470,6 +498,7 @@ GEM
       uber (~> 0.0.7)
     responders (2.1.0)
       railties (>= 4.2.0, < 5)
+    retriable (2.1.0)
     roar (1.0.4)
       representable (>= 2.0.1, < 2.4.0)
     rollbar (2.14.1)
@@ -612,12 +641,14 @@ DEPENDENCIES
   database_cleaner
   devise
   devise_invitable (~> 1.3.4)
+  dotenv-rails
   factory_girl_rails
   faraday
   ffaker
   font-awesome-rails
   fuubar
   geocoder
+  google-api-client
   google-dfp-api
   griddler
   griddler-sendgrid

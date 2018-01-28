@@ -14,6 +14,8 @@ RSpec.describe Company, type: :model do
     it { should have_many(:deal_product_cfs).through(:deal_products) }
 
     it { should have_many(:requests) }
+
+    it { should have_many(:google_sheets_configurations) }
   end
 
   context 'before create' do

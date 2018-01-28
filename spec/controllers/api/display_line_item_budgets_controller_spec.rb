@@ -121,14 +121,13 @@ describe Api::DisplayLineItemBudgetsController, type: :controller do
   end
 
   def create_gbp_currency
-    @_gbp_currency ||= create :currency,
-                              curr_cd: 'GBP',
-                              curr_symbol: '£',
-                              name: 'Great Britain Pound',
-                              exchange_rates: [exchange_rate]
-  end
-
-  def exchange_rate
-    @_exchange_rate ||= create(:exchange_rate, company: company, rate: 1.2)
+    @_gbp_currency ||=
+      Currency.find_or_create_by(
+        curr_cd: 'GBP',
+        curr_symbol: '£',
+        name: 'Great Britain Pound'
+      ).tap do |currency|
+        currency.exchange_rates << build(:exchange_rate, company: company, rate: 1.2, currency: currency)
+      end
   end
 end

@@ -13,6 +13,10 @@ class Csv::User
     attributes.each do |name, value|
       send("#{name}=", value)
     end
+
+    self.user_type = user_type&.downcase
+    self.status = status&.downcase
+    self.is_admin = is_admin.to_s.downcase == 'true' ? true : false
   end
 
   def perform

@@ -54,6 +54,7 @@ gem 'geocoder'
 gem 'rack-cors', :require => 'rack/cors'
 gem 'smarter_csv'
 gem 'daemons'
+gem 'google-api-client'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
@@ -121,4 +122,5 @@ group :development, :test do
     gem 'rails-assets-angular-mocks'
   end
   gem 'test_after_commit'
+  gem 'dotenv-rails'
 end

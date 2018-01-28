@@ -12,7 +12,7 @@ class Activity < ActiveRecord::Base
   belongs_to :publisher
 
   has_and_belongs_to_many :contacts
-  has_and_belongs_to_many :contacts_info, -> { select(:id, :name) }, class_name: 'Contact'#, foreign_key: 'stage_id'
+  has_and_belongs_to_many :contacts_info, -> { joins(:address).select('id', 'name', 'email') }, class_name: 'Contact'#, foreign_key: 'stage_id'
 
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :assets, as: :attachable

@@ -20,7 +20,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
 
   property :accounts, decorator: Operative::AccountsRepresenter, exec_context: :decorator
   property :custom_fields, decorator: Operative::CustomFieldsRepresenter, exec_context: :decorator,
-           if: -> (options) { options[:enable_operative_extra_fields].eql? true }
+           if: -> (options) { options[:enable_operative_extra_fields].eql?(true) || options[:buzzfeed].eql?(true) }
 
   property :sales_stage_name, as: 'v2:name', wrap: 'v2:salesStage', exec_context: :decorator,
            if: -> (options) { (options[:create].eql?(true) || options[:closed_lost].eql?(false)) }

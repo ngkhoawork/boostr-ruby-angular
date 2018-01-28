@@ -1,12 +1,15 @@
 class Api::V2::ActivityListSerializer < ActiveModel::Serializer
   attributes(
     :id,
+    :activity_type_id,
     :activity_type_name,
     :happened_at,
+    :timed,
     :comment,
     :contacts,
     :creator,
     :client,
+    :agency,
     :deal,
     :publisher
   )
@@ -21,6 +24,10 @@ class Api::V2::ActivityListSerializer < ActiveModel::Serializer
 
   def client
     object.client.serializable_hash(only: [:id, :name]) rescue nil
+  end
+
+  def agency
+    object.agency.serializable_hash(only: [:id, :name]) rescue nil
   end
 
   def deal
