@@ -9,7 +9,7 @@ describe Api::ActivitiesController, type: :controller do
   let(:deal) { create :deal, advertiser: client, company: company }
   let(:contacts) { create_list :contact, 10, clients: [client], company: company }
   let(:activity_with_custom_field_params) do
-    activity_params.merge(custom_field_attributes: { company_id: new_company.id, text1: FFaker::HipsterIpsum.word })
+    activity_params.merge(custom_field_attributes: { text1: FFaker::HipsterIpsum.word })
   end
   let(:existing_activity) { create :activity, company: company }
   let(:user_contact) { create :contact, address_attributes: { email: user.email }, company: company }
