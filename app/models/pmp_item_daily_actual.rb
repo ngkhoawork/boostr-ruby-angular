@@ -4,7 +4,7 @@ class PmpItemDailyActual < ActiveRecord::Base
   belongs_to :pmp_item, required: true
 
   validates :date, :ad_unit, presence: true
-  validates :bids, :impressions, :revenue_loc, :price, presence: true, numericality: true
+  validates :ad_requests, :impressions, :revenue_loc, :price, presence: true, numericality: true
   validates :render_rate, numericality: true, allow_nil: true
 
   scope :latest, -> { order('date DESC') }
@@ -29,7 +29,7 @@ class PmpItemDailyActual < ActiveRecord::Base
   private
 
   def set_default_values
-    self.win_rate ||= bids.to_f/impressions.to_f*100 rescue nil
+    self.win_rate ||= ad_requests.to_f/impressions.to_f*100 rescue nil
   end
 
   def convert_currency

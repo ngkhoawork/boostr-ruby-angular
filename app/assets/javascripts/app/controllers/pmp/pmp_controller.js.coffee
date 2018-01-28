@@ -92,7 +92,7 @@
       switch svgID
         when '#pmp-delivery-chart'
           [
-            {name: 'Bids', graphType: 1, hideTitle: true, active: true, unit: '', color: c(0), values: getGraphData(data, 'bids')}
+            {name: 'Requests', graphType: 1, hideTitle: true, active: true, unit: '', color: c(0), values: getGraphData(data, 'ad_requests')}
             {name: 'Impressions', graphType: 1, active: true, unit: '', color: c(1), values: getGraphData(data, 'impressions')}    
             {name: 'Win Rate', graphType: 2, active: true, unit: '%', color: c(2), values: getGraphData(data, 'win_rate')}      
             {name: 'Render Rate', graphType: 2, hideTitle: true, active: true, unit: '%', color: c(3), values: getGraphData(data, 'render_rate')}

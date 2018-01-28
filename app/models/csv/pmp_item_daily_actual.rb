@@ -6,7 +6,7 @@ class Csv::PmpItemDailyActual
   attr_accessor :ssp_deal_id,
                 :date,
                 :ad_unit,
-                :bids,
+                :ad_requests,
                 :impressions,
                 :price,
                 :revenue_loc,
@@ -15,7 +15,7 @@ class Csv::PmpItemDailyActual
                 :curr_cd
 
   validates :date, :ad_unit, presence: true
-  validates :bids, :impressions, presence: true, numericality: true
+  validates :ad_requests, :impressions, presence: true, numericality: true
   validates :win_rate, :render_rate, numericality: true, allow_nil: true
   validate :validate_pmp_item_presence
   validate :validate_deal_id
@@ -43,7 +43,7 @@ class Csv::PmpItemDailyActual
     pmp_item_daily_actual.date = parsed_date
     pmp_item_daily_actual.ad_unit = ad_unit
     pmp_item_daily_actual.pmp_item = pmp_item
-    pmp_item_daily_actual.bids = bids
+    pmp_item_daily_actual.ad_requests = ad_requests
     pmp_item_daily_actual.impressions = impressions
     pmp_item_daily_actual.win_rate = win_rate
     pmp_item_daily_actual.price = price
@@ -182,7 +182,7 @@ class Csv::PmpItemDailyActual
       ssp_deal_id: row[:dealid],
       date: row[:date].try(:strip),
       ad_unit: row[:ad_unit],
-      bids: row[:bids],
+      ad_requests: row[:ad_requests],
       impressions: row[:impressions],
       win_rate: row[:win_rate],
       price: row[:ecpm],

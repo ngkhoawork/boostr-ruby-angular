@@ -44,7 +44,7 @@ class Api::PmpItemDailyActualsController < ApplicationController
       :impressions,
       :win_rate,
       :render_rate,
-      :bids,
+      :ad_requests,
       :pmp_item_id
     )
   end

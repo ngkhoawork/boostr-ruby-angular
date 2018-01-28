@@ -22,13 +22,13 @@ describe Csv::PmpItemDailyActual, 'model' do
       it 'updates existing record' do
         csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual
         csv_pmp_item_daily_actual.save
-        duplicated = build :csv_pmp_item_daily_actual, date: csv_pmp_item_daily_actual.date, ad_unit: 'Unit 1', ssp_deal_id: csv_pmp_item_daily_actual.ssp_deal_id, price: 1000, revenue_loc: 1000, impressions: 100, bids: 100
+        duplicated = build :csv_pmp_item_daily_actual, date: csv_pmp_item_daily_actual.date, ad_unit: 'Unit 1', ssp_deal_id: csv_pmp_item_daily_actual.ssp_deal_id, price: 1000, revenue_loc: 1000, impressions: 100, ad_requests: 100
         duplicated.save
         csv_pmp_item_daily_actual.pmp_item_daily_actual.reload
         expect(csv_pmp_item_daily_actual.pmp_item_daily_actual.price).to eq(1000)
         expect(csv_pmp_item_daily_actual.pmp_item_daily_actual.revenue_loc).to eq(1000)
         expect(csv_pmp_item_daily_actual.pmp_item_daily_actual.impressions).to eq(100)
-        expect(csv_pmp_item_daily_actual.pmp_item_daily_actual.bids).to eq(100)
+        expect(csv_pmp_item_daily_actual.pmp_item_daily_actual.ad_requests).to eq(100)
       end
     end
 
@@ -57,7 +57,7 @@ describe Csv::PmpItemDailyActual, 'model' do
         described_class.import(file_with_error.path, user.id, 'pmp_item_daily_actual.csv')
       }.to change(CsvImportLog, :count).by(1)
       import_log = CsvImportLog.find_by(company_id: user.company.id, object_name: 'pmp_item_daily_actual', source: 'ui', file_source: 'pmp_item_daily_actual.csv')
-      expect(import_log.error_messages.as_json).to include({"row" => 2, "message" => ['Bids is not a number']})
+      expect(import_log.error_messages.as_json).to include({"row" => 2, "message" => ['Ad requests is not a number']})
       expect(import_log.rows_imported).to eq(1)
       expect(import_log.rows_failed).to eq(1)
       expect(import_log.rows_processed).to eq(2)
@@ -107,7 +107,7 @@ describe Csv::PmpItemDailyActual, 'model' do
     @_file ||= Tempfile.open([Dir.tmpdir, ".csv"]) do |f|
       begin
         csv = CSV.new(f)
-        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Bids', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Render Rate', 'Currency']
+        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Ad Requests', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Render Rate', 'Currency']
         csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, nil, 99, 1000, 9.9, 'USD']
         csv << ['ssp001', '11/21/2017', 'Unit 4', 9, 99, 61.05, 99, 500, 9.9, 'USD']
       ensure
@@ -120,7 +120,7 @@ describe Csv::PmpItemDailyActual, 'model' do
     @_file_with_error ||= Tempfile.open([Dir.tmpdir, ".csv"]) do |f|
       begin
         csv = CSV.new(f)
-        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Bids', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Render Rate', 'Currency']
+        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Ad Requests', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Render Rate', 'Currency']
         csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, 60, 99, 999, 9.9, 'USD']
         csv << ['ssp001', '11/21/2017', 'Unit 4', 'String', 99, 60, 99, 999, 19.9, 'USD']
       ensure
@@ -138,10 +138,10 @@ RSpec.describe Csv::PmpItemDailyActual, 'validations' do
 
   it { should validate_presence_of(:date) }
   it { should validate_presence_of(:ad_unit) }
-  it { should validate_presence_of(:bids) }
+  it { should validate_presence_of(:ad_requests) }
   it { should validate_presence_of(:impressions) }
   it { should validate_numericality_of(:impressions) }
-  it { should validate_numericality_of(:bids) }
+  it { should validate_numericality_of(:ad_requests) }
   it { should validate_numericality_of(:win_rate) }
   it { should validate_numericality_of(:render_rate) }
   it { should allow_value(nil).for(:win_rate) }

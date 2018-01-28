@@ -4,7 +4,7 @@ FactoryGirl.define do
     price 999.99
     revenue_loc 999.99
     impressions 99
-    bids 99
+    ad_requests 99
     ad_unit 'ad'
 
     after(:build) do |csv_pmp_item_daily_actual|

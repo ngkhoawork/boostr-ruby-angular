@@ -11,7 +11,7 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
     :impressions,
     :win_rate,
     :render_rate,
-    :bids,
+    :ad_requests,
     :product
   )
 
