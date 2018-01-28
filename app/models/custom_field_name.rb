@@ -27,7 +27,7 @@ class CustomFieldName < ActiveRecord::Base
 
   scope :position_asc, -> { order(position: :asc) }
   scope :active, -> { where('disabled IS NOT TRUE') }
-  scope :for_model, ->(model_name) { check_subject_type!(model_name) && where(subject_type: model_name) }
+  scope :for_model, ->(model_name) { where(subject_type: model_name) if model_name && check_subject_type!(model_name) }
 
   before_create :assign_index
   after_create :reset_custom_fields

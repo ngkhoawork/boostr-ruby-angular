@@ -2,16 +2,16 @@ class Api::CustomFieldNamesController < ApplicationController
   respond_to :json
 
   def index
-    render json: collection
+    render json: collection, each_serializer: CustomFieldNames::Serializer
   end
 
   def show
-    render json: resource
+    render json: CustomFieldNames::Serializer.new(resource)
   end
 
   def create
     if build_resource.save
-      render json: resource, status: :created
+      render json: CustomFieldNames::Serializer.new(resource), status: :created
     else
       render json: { errors: resource.errors.messages }, status: :unprocessable_entity
     end
@@ -19,7 +19,7 @@ class Api::CustomFieldNamesController < ApplicationController
 
   def update
     if resource.update(resource_params)
-      render json: resource, status: :ok
+      render json: CustomFieldNames::Serializer.new(resource), status: :ok
     else
       render json: { errors: resource.errors.messages }, status: :unprocessable_entity
     end
@@ -42,7 +42,7 @@ class Api::CustomFieldNamesController < ApplicationController
   end
 
   def collection
-    current_user.company.custom_field_names.for_model(params[:subject_type].classify)
+    CustomFieldNamesQuery.new(filter_params).perform
   end
 
   def resource_params
@@ -57,5 +57,9 @@ class Api::CustomFieldNamesController < ApplicationController
         :disabled,
         custom_field_options_attributes: [:id, :value]
       )
+  end
+
+  def filter_params
+    params.merge(company_id: current_user.company_id)
   end
 end

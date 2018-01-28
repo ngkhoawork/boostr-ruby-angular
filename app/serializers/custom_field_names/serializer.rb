@@ -11,4 +11,6 @@ class CustomFieldNames::Serializer < ActiveModel::Serializer
              :disabled,
              :created_at,
              :updated_at
+
+  has_many :custom_field_options, serializer: CustomFieldOptions::Serializer
 end
