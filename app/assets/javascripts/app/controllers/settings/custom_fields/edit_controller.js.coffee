@@ -24,7 +24,7 @@
       when 'account' then $scope.customFieldName.account_cf_options
       when 'contact' then $scope.customFieldName.contact_cf_options
       when 'publisher' then $scope.customFieldName.publisher_custom_field_options
-      when 'activity' then $scope.customFieldName.customFieldOptions
+      when 'activity' then $scope.customFieldName.custom_field_options
 
   $scope.addCustomFieldOption = () ->
     $scope.customFieldOptions.push({id: null, value: ""})
