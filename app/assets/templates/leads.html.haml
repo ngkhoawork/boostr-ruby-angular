@@ -53,26 +53,32 @@
                                         %a{target: '_blank', 'ng-href': '/contacts/{{lead.contact.id}}'} {{lead.contact.name}}
                             .td-list{'ng-if': '!lead.contact'}
                                 %div No Contact Exists
-                            .td-action{'ng-if': 'statusFilter.id !== "new_leads"', 'ng-click': 'showContactModal(lead)'} Create Contact
+                            .td-action{'ng-if': 'statusFilter.id !== "new_leads" && !lead.contact', 'ng-click': 'showContactModal(lead)'} Create Contact
                     .leads-td
                         .leads-td-inner
                             .td-title {{lead.company_name}}
                             .td-info {{lead.state}}{{lead.state && lead.country ? ', ' : ''}}{{lead.country}}
-                            .td-list{'ng-if': 'lead.clients.length'}
+                            .td-list{'ng-if': 'lead.client'}
+                                %div Account Exist:
+                                %div
+                                    %a{target: '_blank', 'ng-href': '/accounts/{{lead.client.id}}'} {{lead.client.name}}
+                            .td-list{'ng-if': '!lead.client && lead.clients.length'}
                                 %div
                                     Suggested Accounts:
-                                %div{'dropdown': '', 'keyboard-nav': ''}
+                                %div.mr8{'dropdown': '', 'keyboard-nav': ''}
                                     %div{'dropdown-toggle': ''}
-                                        {{lead.client.name || 'select'}}
+                                        {{lead._selectedClient.name || 'select'}}
                                         %i.fa.fa-caret-down
                                     .dropdown-menu{'dropdown-menu': '', role: 'menu'}
                                         .dropdown-option{'ng-repeat': 'client in lead.clients'}
-                                            %a{href: '', 'ng-click': 'lead.client = client'} {{client.name}}
+                                            %a{href: '', 'ng-click': 'lead.client = client', 'ng-click': 'lead._selectedClient = client'} {{client.name}}
+                                %div{'ng-if': 'lead._selectedClient'}
+                                    .td-action{'ng-click': 'mapAccount(lead)'} Match
                                 -#%div
                                     %a{target: '_blank', 'ng-repeat': 'client in lead.clients', 'ng-href': '/accounts/{{client.id}}'} {{client.name}}
-                            .td-list{'ng-if': '!lead.clients.length'}
+                            .td-list{'ng-if': '!lead.client && !lead.clients.length'}
                                 %div No Account Exists
-                            .td-action{'ng-if': 'leads.status !== "new_leads"', 'ng-click': 'showAccountModal(lead)'} Create Account
+                            .td-action{'ng-if': 'leads.status !== "new_leads" && !lead.client', 'ng-click': 'showAccountModal(lead)'} Create Account
                     .leads-td
                         .leads-td-inner
                             .td-title

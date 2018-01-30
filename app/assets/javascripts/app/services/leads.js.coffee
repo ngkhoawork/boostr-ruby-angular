@@ -15,6 +15,8 @@
                 url: '/api/leads/:id/reject'
             reassign:
                 url: '/api/leads/:id/reassign'
+            mapAccount:
+                url: '/api/leads/:id/map_with_client'
 
 
         this.get = (params) -> resource.get(params).$promise
@@ -43,6 +45,13 @@
             , (error) ->
                 deferred.reject(error)
             deferred.promise
-
+        this.mapAccount = (params) ->
+            deferred = $q.defer()
+            resource.mapAccount params, (lead) ->
+                deferred.resolve(lead)
+                $rootScope.$broadcast 'updated_lead', lead
+            , (error) ->
+                deferred.reject(error)
+            deferred.promise
         return
 ]

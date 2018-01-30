@@ -16,6 +16,19 @@
         contact.address.zip))
 
 
+  if options.lead
+    contact = $scope.contact
+    lead = options.lead 
+    contact.name = lead.name
+    if contact.address
+      contact.address.email = lead.email
+    else
+      contact.address = email: lead.email
+    if lead.client
+      contact.client_id = lead.client.id
+      contact.primary_client_json = lead.client
+    contact.position = lead.title
+
   CountriesList.get (data) ->
     $scope.countries = data.countries
   

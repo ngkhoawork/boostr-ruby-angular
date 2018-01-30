@@ -33,13 +33,13 @@
                 status: $scope.statusFilter.id
             Leads.get(params).then (data) ->
                 data.status = params.status
-                data.reverse() # --------------------------------------------------------------------------------------
-                console.log data[0]
                 $scope.leads = data
                 $scope.isLoading = false
             , (err) ->
                 $scope.isLoading = false
 
+        replaceLead = (lead) ->
+            _.extend(_.findWhere($scope.leads, {id: lead.id}), lead)
 
         $scope.showReassignModal = (lead) ->
             $modal.open
@@ -50,13 +50,17 @@
                     lead: -> lead
 
         $scope.showDealModal = (lead) ->
-            $modal.open
+            modalInstance = $modal.open
                 templateUrl: 'modals/deal_form.html'
                 controller: 'DealsNewController'
                 size: 'md'
                 resolve:
                     deal: -> {}
                     options: -> {lead}
+
+            modalInstance.result.then (deal) ->
+                lead.deals = lead.deals || []
+                lead.deals.push _.pick deal, ['id', 'name', 'budget']
 
         $scope.showAccountModal = (lead) ->
             $modal.open
@@ -81,6 +85,11 @@
             params.user_id = $scope.currentUser.id if $scope.currentUser
             Leads.reassign(params)
 
+        $scope.mapAccount = (lead) ->
+            clientId = lead._selectedClient.id if lead._selectedClient
+            Leads.mapAccount({id: lead.id, client_id: clientId}).then ->
+                lead.client = lead._selectedClient
+
         $scope.accept = (lead) ->
             Leads.accept(id: lead.id)
 
@@ -88,4 +97,6 @@
             Leads.reject(id: lead.id)
 
         $scope.$on 'updated_leads', getLeads
+#        $scope.$on 'updated_lead', getLeads
+
 ]

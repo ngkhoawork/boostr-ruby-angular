@@ -10,6 +10,14 @@
   $scope.query = ""
   $scope.countries = []
 
+  if options.lead
+    client = $scope.client
+    lead = options.lead
+    client.name = lead.company_name
+    if lead.country
+      $scope.showAddressFields = true
+      client.address.country = lead.country
+
   CountriesList.get (data) ->
     $scope.countries = data.countries
 
