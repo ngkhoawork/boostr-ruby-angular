@@ -39,8 +39,8 @@
 									%span.caret
 							.boolean-field.show-hide-remainder-form{ ng: { 'switch-when': 'boolean' } }
 								.switch-remainder-form
-									%input.cmn-toggle.cmn-toggle-round-flat{id: '{{fieldName}}', type: 'checkbox', 'ng-model': 'deal_product.deal_product_cf[fieldName]', 'ng-change': "updateDealProduct(deal_product)"}
-									%label{:for => "{{fieldName}}"}
+									%input.cmn-toggle.cmn-toggle-round-flat{id: '{{fieldName + deal_product.id}}', type: 'checkbox', 'ng-model': 'deal_product.deal_product_cf[fieldName]', 'ng-change': "updateDealProduct(deal_product)"}
+									%label{:for => "{{fieldName + deal_product.id}}"}
 										%span
 							.dropdown{ ng: { 'switch-when': 'dropdown' } }
 								%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
