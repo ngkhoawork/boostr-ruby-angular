@@ -17,6 +17,12 @@ class Api::LeadsController < ApplicationController
     render nothing: true
   end
 
+  def reject_from_email
+    lead.update(status: Lead::REJECTED, rejected_at: Time.now)
+
+    redirect_to "#{root_path}leads?relation=my&status=rejected"
+  end
+
   def reassign
     lead.update(
       user_id: determine_assignee,
