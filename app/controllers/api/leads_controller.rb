@@ -39,6 +39,10 @@ class Api::LeadsController < ApplicationController
     render nothing: true
   end
 
+  def show
+    render json: Api::Leads::IndexSerializer.new(lead).serializable_hash
+  end
+
   private
 
   def lead
