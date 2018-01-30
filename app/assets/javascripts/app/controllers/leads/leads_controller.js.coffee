@@ -59,8 +59,9 @@
                     options: -> {lead}
 
             modalInstance.result.then (deal) ->
-                lead.deals = lead.deals || []
-                lead.deals.push _.pick deal, ['id', 'name', 'budget']
+                if deal
+                    lead.deals = lead.deals || []
+                    lead.deals.push _.pick deal, ['id', 'name', 'budget']
 
         $scope.showAccountModal = (lead) ->
             $modal.open
