@@ -10,6 +10,9 @@ class Importers::ClientsService < Importers::BaseService
     params = ClientCsv::ATTRS.each_with_object({}) {|attr, obj| obj[attr] = row[attr]}
     params[:unmatched_fields] = row.except(*params.keys)
     params[:company_fields] = company_fields
+    params[:company_id] = company_id
+    params[:user_id] = user_id
+
     ClientCsv.new(params)
   end
 
