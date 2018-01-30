@@ -322,7 +322,7 @@ class ClientCsv
   end
 
   def name_matches_one_record
-    if client_relation.count > 1
+    if !account_id.present? && client_relation.count > 1
       errors.add(:account_name, "#{name} matched more than one account record")
     end
   end
