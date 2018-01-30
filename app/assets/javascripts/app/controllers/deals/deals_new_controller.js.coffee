@@ -1,6 +1,6 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation'
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation) ->
+['$scope', '$modal', '$modalInstance', '$q', '$filter', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation'
+($scope, $modal, $modalInstance, $q, $filter, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation) ->
 
   $scope.init = ->
     $scope.formType = 'New'
@@ -16,6 +16,15 @@
 
     if deal.agency
       $scope.agencies = [deal.agency]
+
+    if options.lead
+      lead = options.lead
+      nextSteps = ''
+      if lead.budget?
+        nextSteps += "Budget: #{$filter('currency')(lead.budget, undefined, 0)}; "
+      if lead.notes
+        nextSteps += lead.notes
+      deal.next_steps = nextSteps
 
     $q.all({
       user: CurrentUser.get().$promise,
