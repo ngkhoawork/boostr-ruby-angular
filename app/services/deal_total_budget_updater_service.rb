@@ -1,4 +1,6 @@
 class DealTotalBudgetUpdaterService
+  include Concerns::GoogleSheetsDealExportable
+
   attr_reader :deal
 
   def self.perform(*args)
@@ -15,7 +17,7 @@ class DealTotalBudgetUpdaterService
     deal.assign_attributes(budget: new_budget, budget_loc: new_budget_loc)
 
     if deal.save(validate: false)
-      GoogleSheetsWorker.perform_async(google_sheet_id, deal.id) if google_sheet_id
+      schedule_google_sheets_export
     end
   end
 
@@ -31,9 +33,5 @@ class DealTotalBudgetUpdaterService
 
   def new_budget_loc
     deal.deal_product_budgets.sum(:budget_loc)
-  end
-
-  def google_sheet_id
-    @_google_sheet_id ||= deal.company.google_sheets_configurations.first&.sheet_id
   end
 end

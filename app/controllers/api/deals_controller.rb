@@ -1,4 +1,6 @@
 class Api::DealsController < ApplicationController
+  include Concerns::GoogleSheetsDealExportable
+
   respond_to :json, :zip
 
   before_filter :set_current_user, only: [:update, :create]
@@ -280,7 +282,7 @@ class Api::DealsController < ApplicationController
       deal.updated_by = current_user.id
       # deal.set_user_currency
       if deal.save(context: :manual_update)
-        GoogleSheetsWorker.perform_async(google_sheet_id, deal.id) if google_sheet_id
+        schedule_google_sheets_export
 
         render json: deal, status: :created
       else
@@ -294,7 +296,7 @@ class Api::DealsController < ApplicationController
     deal.assign_attributes(deal_params)
 
     if deal.save(context: :manual_update)
-      GoogleSheetsWorker.perform_async(google_sheet_id, deal.id) if google_sheet_id
+      schedule_google_sheets_export
 
       render deal
     else
@@ -338,10 +340,6 @@ class Api::DealsController < ApplicationController
   end
 
   private
-
-  def google_sheet_id
-    @_google_sheet_id ||= company.google_sheets_configurations.first&.sheet_id
-  end
 
   def forecast_deals
     response_deals = []

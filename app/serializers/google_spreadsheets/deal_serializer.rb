@@ -42,7 +42,9 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def region
-    seller_user&.team&.name
+    name = seller_user&.team&.name
+
+    name ? name : EMPTY
   end
 
   def budget
@@ -55,6 +57,6 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   private
 
   def seller_user
-    @_seller ||= object.deal_members.order(:share).first&.user
+    @_seller ||= object.deal_members.order(share: :desc).first&.user
   end
 end

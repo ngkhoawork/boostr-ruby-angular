@@ -1,4 +1,6 @@
 class Api::DealMembersController < ApplicationController
+  include Concerns::GoogleSheetsDealExportable
+
   respond_to :json
 
   before_filter :set_current_user, except: :index
@@ -10,6 +12,8 @@ class Api::DealMembersController < ApplicationController
   def create
     deal_member = deal.deal_members.new(deal_member_params)
     if deal_member.save
+      schedule_google_sheets_export
+
       render deal
     else
       render json: { errors: deal_member.errors.messages }, status: :unprocessable_entity
@@ -18,6 +22,8 @@ class Api::DealMembersController < ApplicationController
 
   def update
     if deal_member.update_attributes(deal_member_params)
+      schedule_google_sheets_export
+
       render deal
     else
       render json: { errors: deal_member.errors.messages }, status: :unprocessable_entity
@@ -26,6 +32,8 @@ class Api::DealMembersController < ApplicationController
 
   def destroy
     deal_member.destroy
+    schedule_google_sheets_export
+
     render deal
   end
 
