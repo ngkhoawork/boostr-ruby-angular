@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180117225726) do
+ActiveRecord::Schema.define(version: 20180130231323) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -585,6 +585,8 @@ ActiveRecord::Schema.define(version: 20180117225726) do
     t.boolean  "influencer_enabled",                default: false
     t.boolean  "forecast_gap_to_quota_positive",    default: true
     t.boolean  "publishers_enabled",                default: false
+    t.boolean  "gmail_enabled",                     default: false
+    t.boolean  "gcalendar_enabled",                 default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -1712,8 +1714,8 @@ ActiveRecord::Schema.define(version: 20180117225726) do
     t.decimal "revenue_loc",           precision: 15, scale: 2
     t.integer "impressions", limit: 8
     t.decimal "win_rate"
-    t.integer "bids",        limit: 8
     t.decimal "render_rate"
+    t.integer "ad_requests"
   end
 
   add_index "pmp_item_daily_actuals", ["pmp_item_id"], name: "index_pmp_item_daily_actuals_on_pmp_item_id", using: :btree
@@ -2006,11 +2008,16 @@ ActiveRecord::Schema.define(version: 20180117225726) do
     t.datetime "end_date"
     t.string   "curr_cd"
     t.decimal  "budget_loc",     precision: 15, scale: 2, default: 0.0
+    t.integer  "product_id"
+    t.string   "product_type"
+    t.integer  "value_type"
   end
 
   add_index "quota", ["company_id"], name: "index_quota_on_company_id", using: :btree
   add_index "quota", ["end_date"], name: "index_quota_on_end_date", using: :btree
+  add_index "quota", ["product_type", "product_id"], name: "index_quota_on_product_type_and_product_id", using: :btree
   add_index "quota", ["start_date"], name: "index_quota_on_start_date", using: :btree
+  add_index "quota", ["time_period_id", "user_id", "value_type", "product_id", "product_type"], name: "index_composite_quota", unique: true, using: :btree
   add_index "quota", ["time_period_id"], name: "index_quota_on_time_period_id", using: :btree
   add_index "quota", ["user_id"], name: "index_quota_on_user_id", using: :btree
 
@@ -2109,6 +2116,17 @@ ActiveRecord::Schema.define(version: 20180117225726) do
   add_index "sales_stages", ["company_id"], name: "index_sales_stages_on_company_id", using: :btree
   add_index "sales_stages", ["sales_stageable_id"], name: "index_sales_stages_on_sales_stageable_id", using: :btree
   add_index "sales_stages", ["sales_stageable_type"], name: "index_sales_stages_on_sales_stageable_type", using: :btree
+
+  create_table "settings", force: :cascade do |t|
+    t.string   "var",                   null: false
+    t.text     "value"
+    t.integer  "thing_id"
+    t.string   "thing_type", limit: 30
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
 
   create_table "snapshots", force: :cascade do |t|
     t.integer  "company_id"

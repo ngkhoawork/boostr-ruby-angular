@@ -54,6 +54,8 @@ gem 'rack-cors', :require => 'rack/cors'
 gem 'smarter_csv'
 gem 'daemons'
 gem 'google-api-client'
+gem 'rails-settings-cached'
+gem 'activeadmin_settings_cached'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
