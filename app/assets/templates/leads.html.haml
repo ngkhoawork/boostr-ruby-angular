@@ -4,10 +4,10 @@
             .header-item
                 .main-title Leads
             .header-item
-                %z-toggle-list{list: 'teamFilters', 'on-change': 'onFilterChange("teamFilter", $selected)', localstorage: 'leadsTeamFilter'}
+                %z-toggle-list{list: 'teamFilters', selected: 'teamFilter', 'on-change': 'onFilterChange("teamFilter", $selected)', localstorage: 'leadsTeamFilter'}
             .header-item
         .row.mb30
-            %z-toggle-list{list: 'statusFilters', 'on-change': 'onFilterChange("statusFilter", $selected)', localstorage: 'leadsStatusFilter'}
+            %z-toggle-list{list: 'statusFilters', selected: 'statusFilter', 'on-change': 'onFilterChange("statusFilter", $selected)', localstorage: 'leadsStatusFilter'}
 
         .row
             .leads-table{'ng-if': '!leads.length && !isLoading'}

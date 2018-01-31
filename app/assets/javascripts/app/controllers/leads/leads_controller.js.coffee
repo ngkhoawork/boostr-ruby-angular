@@ -1,6 +1,6 @@
 @app.controller 'LeadsController', [
-    '$scope', '$modal', 'Leads'
-    ($scope,   $modal,   Leads) ->
+    '$scope', '$modal', 'Leads', '$routeParams'
+    ($scope,   $modal,   Leads,   $routeParams) ->
 
         $scope.isLoading = false
         $scope.leads = []
@@ -14,9 +14,8 @@
             {id: 'accepted', name: 'Accepted'}
             {id: 'rejected', name: 'Rejected'}
         ]
-
-        $scope.teamFilter = null
-        $scope.statusFilter = null
+        $scope.teamFilter = _.findWhere($scope.teamFilters, id: $routeParams.relation) || null
+        $scope.statusFilter = _.findWhere($scope.statusFilters, id: $routeParams.status) || null
 
         $scope.setTeamFilter = (item) -> $scope.teamFilter = item
         $scope.setTypeFilter = (item) -> $scope.statusFilter = item
