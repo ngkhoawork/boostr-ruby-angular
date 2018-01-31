@@ -37,6 +37,11 @@
           %ui-select-choices{ repeat: 'revenue_type in revenue_types' }
             %div{ ng: { bind: { html: 'revenue_type' } } }
 
+      .form-group{ ng: { class:'{error: errors.margin}'} }
+        %span.error-text {{errors.margin}}
+        %label{ for: 'margin' } Margin
+        %input.form-control{ placeholder: 'Margin', ng: { model: 'product.margin' }, name: 'margin', 'numbers-only': '' }
+
       .form-group
         %label{ for: 'active' } Active
         .show-hide-remainder-form
