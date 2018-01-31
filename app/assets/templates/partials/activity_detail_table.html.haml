@@ -32,6 +32,8 @@
         %th.left{width: "150"}
           .z-sortable{by: 'team_creator'}
             Team
+        %th{ng: {repeat: 'cf in customFieldNames'}}
+          {{ cf.field_label }}
     %tbody
       %tr{ ng: { if: 'activities.length > 0', repeat: 'activity in activities | orderBy : zSort.by : zSort.rev' } }
         %td.left.nowrap
@@ -57,6 +59,13 @@
           %a{'ng-href': '/publishers/{{activity.publisher.id}}'} {{ activity.publisher.name }}
         %td.left {{ activity.creator.first_name + " " + activity.creator.last_name }}
         %td.left {{ activity.team_creator }}
+        %td{ng: {repeat: 'cf in customFieldNames', init: "fieldName = cf.field_type + cf.field_index"}}
+          %div.custom-field-item-field{"ng-if": "cf.field_type == 'boolean'"}
+            {{activity.custom_field[fieldName] ? 'Active' : 'Inactive' }}
+          %div.custom-field-item-field{'ng-if': 'cf.field_type == "datetime"'}
+            {{activity.custom_field[fieldName]  | date : 'shortDate'}}
+          %div.custom-field-item-field{'ng-if': 'cf.field_type != "datetime" && cf.field_type != "boolean"'}
+            {{activity.custom_field[fieldName]}}
       %tr{ ng: { if: 'activities.length == 0' }}
         %td.center.auto-colspan
           No Data for the Filters Selected

@@ -1,6 +1,6 @@
 @app.controller 'ActivityDetailReportsController',
-	['$scope', '$modal', '$modalInstance', '$httpParamSerializer', '$window', '$sce', 'Team', 'Seller', 'Activity', 'ActivityType', 'activitySummaryParams'
-	( $scope,   $modal,   $modalInstance,   $httpParamSerializer,   $window,   $sce,   Team,   Seller,   Activity,   ActivityType,   activitySummaryParams ) ->
+	['$scope', '$modal', '$modalInstance', '$httpParamSerializer', '$window', '$sce', 'Team', 'Seller', 'Activity', 'ActivityType', 'activitySummaryParams', 'CustomFieldNames'
+	( $scope,   $modal,   $modalInstance,   $httpParamSerializer,   $window,   $sce,   Team,   Seller,   Activity,   ActivityType,   activitySummaryParams, CustomFieldNames ) ->
 
 		$scope.teams = []
 		$scope.sellers = []
@@ -37,6 +37,8 @@
 		Team.all(all_teams: true).then (teams) ->
 			$scope.teams = teams
 
+  CustomFieldNames.all({subject_type: 'activity', show_on_modal: true}).then (customFieldNames) ->
+      $scope.customFieldNames = customFieldNames
 
 		ActivityType.all().then (activityTypes) ->
 			$scope.activityTypes = angular.copy(activityTypes)
