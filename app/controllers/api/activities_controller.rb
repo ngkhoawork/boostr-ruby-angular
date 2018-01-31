@@ -109,7 +109,7 @@ class Api::ActivitiesController < ApplicationController
   end
 
   def activity_csv_report
-    Csv::ActivityDetailService.new(activities).perform
+    Csv::ActivityDetailService.new(activities, company).perform
   end
 
   def activities

@@ -236,7 +236,7 @@ class Client < ActiveRecord::Base
               creator: {},
               publisher: { only: [:id, :name] },
               contacts: {},
-              custom_field: {},
+              custom_field: { only: CustomField.allowed_attr_names(company, 'Activity') },
               assets: {
                 methods: [
                   :presigned_url

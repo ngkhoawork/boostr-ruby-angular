@@ -225,7 +225,7 @@ class Activity < ActiveRecord::Base
           },
           :creator => {},
           :publisher => { only: [:id, :name] },
-          custom_field: {},
+          custom_field: { only: CustomField.allowed_attr_names(company, 'Activity') },
           activity_type: { only: [:id, :name, :css_class, :action] }
         },
         methods: [:team_creator]

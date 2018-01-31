@@ -1,7 +1,11 @@
 class CustomFields::Serializer < ActiveModel::Serializer
-  attributes *CustomField.attribute_names.map(&:to_sym)
+  def attributes
+    object.attributes.select { |key, _value| allowed_attr_names.include?(key) }
+  end
 
-  def attributes(*params)
-    super(*params).select { |key, value| value.present? }
+  private
+
+  def allowed_attr_names
+    @allowed_attr_names ||= object.allowed_attr_names
   end
 end

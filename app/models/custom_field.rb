@@ -4,6 +4,14 @@ class CustomField < ActiveRecord::Base
 
   before_validation :set_company_id_by_subject
 
+  def self.allowed_attr_names(company, subject_type)
+    company.custom_field_names.for_model(subject_type).map(&:field_name)
+  end
+
+  def allowed_attr_names
+    self.class.allowed_attr_names(company, subject_type)
+  end
+
   private
 
   def set_company_id_by_subject
