@@ -1,6 +1,6 @@
 @app.controller 'DashboardController',
-    ['$scope', '$rootScope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage', 'CurrentUser', 'PacingAlerts', 'Validation'
-    ( $scope,   $rootScope,   $document,   $http,   $modal,   $sce,   Dashboard,   Deal,   Client,   Field,   Contact,   Activity,   ActivityType,   Reminder,   Stage,   CurrentUser,   PacingAlerts,   Validation ) ->
+    ['$scope', '$rootScope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage', 'CurrentUser', 'PacingAlerts', 'CustomFieldNames'
+    ( $scope,   $rootScope,   $document,   $http,   $modal,   $sce,   Dashboard,   Deal,   Client,   Field,   Contact,   Activity,   ActivityType,   Reminder,   Stage,   CurrentUser,   PacingAlerts, CustomFieldNames ) ->
 
             $scope.progressPercentage = 10
             $scope.showMeridian = true
@@ -85,6 +85,9 @@
 
                 Contact.query().$promise.then (contacts) ->
                     $scope.contacts = contacts
+
+                CustomFieldNames.all({subject_type: 'activity', show_on_modal: true}).then (customFieldNames) ->
+                  $scope.customFieldNames = customFieldNames
 
                 getDashboardData()
                 getPacingAlerts()

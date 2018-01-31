@@ -1,6 +1,6 @@
 @app.controller 'ContactController',
-    ['$scope', '$modal', '$location', '$routeParams', '$http', '$sce', 'Contact', 'Reminder', 'ContactCfName', 'ClientContact'
-    ( $scope,   $modal,   $location,   $routeParams,   $http,   $sce,   Contact,   Reminder,   ContactCfName,   ClientContact ) ->
+    ['$scope', '$modal', '$location', '$routeParams', '$http', '$sce', 'Contact', 'Reminder', 'ContactCfName', 'ClientContact', 'CustomFieldNames'
+    ( $scope,   $modal,   $location,   $routeParams,   $http,   $sce,   Contact,   Reminder,   ContactCfName,   ClientContact, CustomFieldNames ) ->
 
         $scope.currentContact = null
         $scope.types = []
@@ -20,6 +20,9 @@
 
         ContactCfName.all().then (contactCfNames) ->
             $scope.contactCfNames = contactCfNames
+
+        CustomFieldNames.all({subject_type: 'activity', show_on_modal: true}).then (customFieldNames) ->
+          $scope.customFieldNames = customFieldNames
 
         $scope.concatAddress = (address) ->
             row = []

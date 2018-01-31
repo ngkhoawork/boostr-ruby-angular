@@ -1,13 +1,13 @@
-app.directive 'activityFeed', [
-    '$modal', '$sce', '$routeParams', 'Activity', 'ActivityType'
-    ($modal,   $sce,   $routeParams,   Activity,   ActivityType) ->
-        restrict: 'E'
-        replace: true
-        scope:
-            object: '='
-            type: '@'
-        templateUrl: 'directives/activity_feed.html'
-        link: ($scope, element) ->
+app.directive 'activityFeed',
+['$modal', '$sce', '$routeParams', 'Activity', 'ActivityType', 'CustomFieldNames'
+( $modal,   $sce, $routeParams,  Activity,   ActivityType, CustomFieldNames ) ->
+    restrict: 'E'
+    replace: true
+    scope:
+        object: '='
+        type: '@'
+    templateUrl: 'directives/activity_feed.html'
+    link: ($scope, element) ->
 
             activityTypes = ['deal', 'account', 'contact', 'publisher'] #AVAILABLE TYPES
             if !_.contains activityTypes, $scope.type
@@ -38,7 +38,12 @@ app.directive 'activityFeed', [
                     type: $scope.type
                     data: $scope.object
                 ActivityType.all().then (activityTypes) -> $scope.types = activityTypes
-                loadActivities()
+                loadActivityCustomFields()
+
+        loadActivityCustomFields = ->
+          CustomFieldNames.all({subject_type: 'activity', show_on_modal: true}).then (customFieldNames) ->
+            $scope.customFieldNames = customFieldNames
+            loadActivities()
 
             loadActivities = ->
                 resource().then (activities) ->

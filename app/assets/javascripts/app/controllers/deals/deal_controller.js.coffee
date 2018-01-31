@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Contact', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company', 'Egnyte'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,  Contact,    Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment,   localStorageService,   Company, Egnyte) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Contact', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company', 'Egnyte', 'CustomFieldNames'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,  Contact,    Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment,   localStorageService,   Company, Egnyte, CustomFieldNames) ->
 
   $scope.agencyRequired = false
   $scope.showMeridian = true
@@ -125,8 +125,8 @@
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
-    Company.get().$promise.then (company) ->
-      $scope.company = company
+    getActivityCustomFields()
+    Company.get().$promise.then (company) -> $scope.company = company
     getSsps()
     getDealFiles()
 
@@ -145,6 +145,10 @@
   getSsps = () ->
     SSP.all().then (ssps) ->
       $scope.ssps = ssps
+
+  getActivityCustomFields = () ->
+    CustomFieldNames.all({subject_type: 'activity', show_on_modal: true}).then (customFieldNames) ->
+      $scope.customFieldNames = customFieldNames
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -965,7 +969,7 @@
 
   $scope.getWarningSettings = () ->
     dealsWithoutWarning = localStorageService.get('dealsWithoutWarning') || []
-    dealsWithoutWarning.forEach((deal) -> 
+    dealsWithoutWarning.forEach((deal) ->
       if deal.dealId == $scope.currentDeal.id
         $scope.showWarnings = false
     )

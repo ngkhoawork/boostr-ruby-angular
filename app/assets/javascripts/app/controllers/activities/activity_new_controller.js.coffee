@@ -60,6 +60,8 @@
 
             #edit mode
             if activity
+                if activity.custom_field
+                  $scope.form.activity_custom_field_obj = activity.custom_field
                 $scope.popupTitle = 'Edit Activity'
                 $scope.submitButtonText = 'Save'
                 if activity.deal
@@ -97,8 +99,6 @@
 
             CustomFieldNames.all({subject_type: 'activity', show_on_modal: true}).then (customFieldNames) ->
               $scope.customFieldNames = customFieldNames
-              console.log($scope.customFieldNames)
-              console.log("66666666666666666")
 
             $scope.selectType = (type) ->
                 $scope.selectedType = type
