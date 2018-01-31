@@ -25,10 +25,10 @@
 
 
 :javascript
-  _gmail_extension_url = ("#{Setting.gmail_extension_url}");
-  _gcalendar_extension_url = ("#{Setting.gcalendar_extension_url}");
   _isRequestsVisible = (#{current_user.company.requests_enabled && current_user.has_requests_access?});
   _isCompanyInfluencerEnabled = (#{current_user.company_influencer_enabled});
   _isPublisherEnabled = (#{current_user.company_publisher_enabled});
   _isGmailExtensionEnabled = (#{current_user.company.gmail_enabled});
   _isGcalendarExtensionEnabled = (#{current_user.company.gcalendar_enabled});
+  _gmail_extension_url = ("#{Setting.gmail_extension_url}");
+  _gcalendar_extension_url = ("#{Setting.gcalendar_extension_url}");
