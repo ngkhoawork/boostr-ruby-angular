@@ -54,6 +54,8 @@ gem 'geocoder'
 gem 'rack-cors', :require => 'rack/cors'
 gem 'smarter_csv'
 gem 'daemons'
+gem 'rails-settings-cached'
+gem 'activeadmin_settings_cached'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
