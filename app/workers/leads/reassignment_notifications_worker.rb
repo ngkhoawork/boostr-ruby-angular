@@ -6,7 +6,7 @@ class Leads::ReassignmentNotificationsWorker < BaseWorker
   private
 
   def send_notifications
-    ecords.each do |record|
+    records.each do |record|
       LeadsMailer.reassignment_notification(record).deliver_now
 
       record.assign_reviewer

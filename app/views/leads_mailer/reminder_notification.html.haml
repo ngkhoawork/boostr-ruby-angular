@@ -1,45 +1,8 @@
-%div{:style => "max-width: 600px; background: white; border-radius: 5px; box-shadow: 0 5px 35px #bfbfbf; font: 14px Arial, Helvetica, sans-serif; overflow: hidden; padding-bottom: 20px;"}
-  %div{:style => "background: #FF7200; color: white"}
-    %div{:style => "font-size: 40px; text-align: center; padding: 30px 0"}
-      %b boostr
-  %div{:style => "padding: 20px 16px; border-bottom: 2px solid #eeeeee; line-height: 24px;"}
-    %div{:style => "font-size: 22px; margin-bottom: 10px"}
-      %b Libby Lead
-    %div
-      %div
-        %b> Title:
-        \  Fild Editor
-      %div
-        %b> Email:
-        \  libbylead@gmail.com
-      %div
-        %b> City/Country:
-        \ 
-        %a{:href => "#", :style => "color: #59abe1; text-decoration: none;"} Los Angeles, California, USA
-      %div
-        %b> Company:
-        \  Ghost Hunter
-  %div{:style => "padding: 20px 16px; border-bottom: 2px solid #eeeeee;"}
-    %div{:style => "font-size: 15px; color: #959b9e;"}
-      %b Details
-    %div
-      %div{:style => "line-height: 45px"}
-        %b> Budget:
-        \  $650
-      %div{:style => "margin-bottom: 5px;"}
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto autem culpa cumque cupiditate facere illo incidunt, laborum nemo praesentium rerum.
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto autem culpa cumque cupiditate facere illo incidunt, laborum nemo praesentium rerum.
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto autem culpa cumque cupiditate facere illo incidunt, laborum nemo praesentium rerum.
+%div{style: 'max-width: 600px; background: white; border-radius: 5px; box-shadow: 0 5px 35px #bfbfbf; font: 14px Arial, Helvetica, sans-serif; overflow: hidden; padding-bottom: 20px;'}
+
+  = render 'details'
+
   %div{:style => "padding: 8px 16px; background: #f4f4f4; font-size: 16px; font-weight: bold; color: #d03c2b;"}
     Please Accept or Reject within 24 hours or this lead will be reassigned
-  %div
-    %div{:style => "text-align: center; padding: 30px 0 30px"}
-      %svg{:fill => "#ff7200", :height => "20", :viewbox => "0 0 1792 1792", :width => "20", :xmlns => "http://www.w3.org/2000/svg"}
-        %path{:d => "M1792 1120q0 166-127 451-3 7-10.5 24t-13.5 30-13 22q-12 17-28 17-15 0-23.5-10t-8.5-25q0-9 2.5-26.5t2.5-23.5q5-68 5-123 0-101-17.5-181t-48.5-138.5-80-101-105.5-69.5-133-42.5-154-21.5-175.5-6h-224v256q0 26-19 45t-45 19-45-19l-512-512q-19-19-19-45t19-45l512-512q19-19 45-19t45 19 19 45v256h224q713 0 875 403 53 134 53 333z"}
-      %span{:style => "font-size: 16px; margin-left: 8px; line-height: 22px; vertical-align: top"}
-        To reply to this Lead, just Reply to this email
-    %div{:style => "text-align: center; margin-bottom: 10px;"}
-      %a{:href => "#", :style => "padding: 10px 0; width: 140px; background: #F4F5F6; color: #9faab3; text-decoration: none; margin-right: 8px; display: inline-block; border-radius: 5px; font-weight: bold;"}
-        Reject
-      %a{:href => "#", :style => "padding: 10px 0; width: 140px; background: #ff7200; color: white; text-decoration: none; margin-left: 8px; display: inline-block; border-radius: 5px; font-weight: bold;"}
-        View Lead
+
+  = render 'actions'
