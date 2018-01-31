@@ -1,4 +1,6 @@
 class Company < ActiveRecord::Base
+  include Concerns::CompanyMappings
+
   has_many :users
   has_many :clients
   has_many :contacts, inverse_of: :company
