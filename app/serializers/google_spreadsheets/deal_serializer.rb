@@ -30,7 +30,7 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def launch
-    "#{object.start_date.strftime('%d/%m/%y')} - #{object.end_date.strftime('%d/%m/%y')}"
+    "#{object.start_date.strftime('%Y-%m-%d')} - #{object.end_date.strftime('%Y-%m-%d')}"
   end
 
   def seller
