@@ -6,7 +6,14 @@ class Product < ActiveRecord::Base
   has_many :ad_units
 
   validates :name, presence: true
-  validates :margin, numericality: {only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 100}, allow_nil: true
+  validates
+    :margin,
+    numericality: {
+      only_integer: true,
+      greater_than_or_equal_to: 1,
+      less_than_or_equal_to: 100
+    },
+    allow_nil: true
 
   REVENUE_TYPES = %w('Display', 'Content-Fee', 'None')
 
