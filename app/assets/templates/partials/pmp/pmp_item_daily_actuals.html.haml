@@ -13,7 +13,6 @@
           %th.right Requests
           %th.right Impressions
           %th.right Win Rate
-          %th.right Render Rate
           %th.right eCPM
           %th.right Revenue
           %th
@@ -36,8 +35,6 @@
           %td.right
             {{ pmpItemDailyActual.win_rate | percentage:0 }}
           %td.right
-            {{ pmpItemDailyActual.render_rate ? (pmpItemDailyActual.render_rate | percentage:0) : 'N/A' }}
-          %td.right
             {{ pmpItemDailyActual.price | currency:currency_symbol:2 }}
           %td.right
             {{ pmpItemDailyActual.revenue_loc | currency:currency_symbol:2 }}
@@ -45,5 +42,5 @@
             %i.fa.fa-pencil.z-icon{ ng: { click: 'showDailyActualEditModal(pmpItemDailyActual)' } }
             %i.fa.fa-trash.z-icon{ ng: { click: 'deleteDailyActual(pmpItemDailyActual)' } }
         %tr{ ng: { if: '!pmpItemDailyActuals || pmpItemDailyActuals.length == 0' } }
-          %td.center{ 'colspan': '11' }
+          %td.center{ 'colspan': '10' }
             No data available
