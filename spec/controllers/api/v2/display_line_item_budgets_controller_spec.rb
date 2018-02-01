@@ -55,6 +55,7 @@ RSpec.describe Api::V2::DisplayLineItemBudgetsController, type: :controller do
     defaults = {
       budget: 5_000,
       line_number: display_line_item.line_number,
+      revenue_calculation_pattern: 1,
       start_date: display_line_item.start_date,
       end_date: display_line_item.start_date.end_of_month
     }
@@ -63,7 +64,7 @@ RSpec.describe Api::V2::DisplayLineItemBudgetsController, type: :controller do
   end
 
   def display_line_item
-    @_display_line_item ||= create :display_line_item, price: 20, io_id: io.id
+    @_display_line_item ||= create :display_line_item, price: 20, io_id: io.id, budget: 5_000
   end
 
   def company
