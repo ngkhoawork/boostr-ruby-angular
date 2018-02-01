@@ -54,13 +54,17 @@ class Lead < ActiveRecord::Base
   def add_notifications_reminder
     remove_notifications_reminders
 
-    self.notification_reminders.create(notification_type: REMINDER,
-                                       sending_time: determine_notifications_reminder_time)
+    self.notification_reminders.create(
+      notification_type: REMINDER,
+      sending_time: Leads::ReminderTimeCalculationService.new.determine_notifications_reminder_time
+    )
   end
 
   def add_notifications_reassignment
-    self.notification_reminders.create(notification_type: REASSIGNMENT,
-                                       sending_time: determine_notifications_reassignment_time)
+    self.notification_reminders.create(
+      notification_type: REASSIGNMENT,
+      sending_time: Leads::ReminderTimeCalculationService.new.determine_notifications_reassignment_time
+    )
   end
 
   def remove_notifications_reminders
@@ -73,25 +77,5 @@ class Lead < ActiveRecord::Base
 
   def reassigned_at_present?
     reassigned_at_changed?
-  end
-
-  # When Time now is friday then notifications REMINDER time should be on monday
-  # When Time now is saturday or sunday then notifications REMINDER time should be on tuesday
-  def determine_notifications_reminder_time
-    return 3.day.from_now if Date.today.friday?
-
-    return 4.day.from_now if Date.today.saturday? || Date.today.sunday?
-
-    1.day.from_now
-  end
-
-  # When Time now is friday then notifications REASSIGNMENT time should be on tuesday
-  # When Time now is saturday or sunday then notifications REASSIGNMENT time should be on wednesday
-  def determine_notifications_reassignment_time
-    return 4.day.from_now if Date.today.friday?
-
-    return 5.day.from_now if Date.today.saturday? || Date.today.sunday?
-
-    2.day.from_now
   end
 end
