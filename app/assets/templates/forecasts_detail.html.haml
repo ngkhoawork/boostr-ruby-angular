@@ -175,7 +175,7 @@
 								%tbody
 									%tr{'ng-repeat': 'revenue in revenues | orderBy : zSort.revenues.by : zSort.revenues.rev'}
 										%td
-											%a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}'} {{revenue.name}}
+											%a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}', 'target': '_blank'} {{revenue.name}}
 										%td {{revenue.advertiser.name}}
 										%td {{revenue.agency.name}}
 										%td

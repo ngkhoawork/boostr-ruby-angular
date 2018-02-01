@@ -24,10 +24,10 @@
                     %a{'ng-href': '/contacts/{{client_contact.contact.id}}', 'target': '_blank'} {{ client_contact.contact.name }}
                     %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnectionContact(client_contact)'}
                 %td{ng: {if: 'isAdvertiser'}}
-                    %a{'ng-href': '/accounts/{{client_contact.contact.primary_client.id}}'}
+                    %a{'ng-href': '/accounts/{{client_contact.contact.primary_client.id}}', 'target': '_blank'}
                         {{ client_contact.contact.primary_client.name }}
                 %td{ng: {if: 'isAgency'}}
-                    %a{'ng-href': '/accounts/{{client_contact.client.id}}'}
+                    %a{'ng-href': '/accounts/{{client_contact.client.id}}', 'target': '_blank'}
                         {{ client_contact.client.name }}
                 %td
                     {{ client_contact.contact.position }}

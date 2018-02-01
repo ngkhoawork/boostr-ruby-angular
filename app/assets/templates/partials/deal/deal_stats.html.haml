@@ -16,9 +16,9 @@
 				%i.fa.fa-envelope.ealert.pull-right{ng: {click: 'showDealEalertModal(currentDeal)', class: '{danger: (ealertReminder && currentDeal.company_ealert_reminder)}'}}
 				
 			.detail-info
-				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.advertiser.id}}'} {{currentDeal.advertiser.name || ''}}
+				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.advertiser.id}}', 'target': '_blank'} {{currentDeal.advertiser.name || ''}}
 				{{currentDeal.advertiser.name && currentDeal.agency.name && '|'}}
-				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.agency.id}}'} {{currentDeal.agency.name || ''}}
+				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.agency.id}}', 'target': '_blank'} {{currentDeal.agency.name || ''}}
 
 		.clearfix
 		%div.stats-numbers.mb30
