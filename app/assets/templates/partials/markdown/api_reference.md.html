@@ -1,0 +1,102 @@
+# Boostr Api Reference
+
+## Logging In
+Request type: `POST`
+
+Login URL: `/api/user_token`
+
+Params: `{"auth": "email": "example@domain.tld", password:  "password"}`
+
+#### curl example
+
+```shell
+curl 'http://boostr-testing.herokuapp.com/api/user_token' -X POST 
+-H 'Content-Type: application/json;charset=UTF-8' 
+-H 'Accept: application/vnd.boostr.v2' 
+--data-binary '{"auth":{"email":"EMAIL_ADDRESS","password":"PASSWORD"}}'
+```
+
+#### Example response
+
+```
+    {"jwt":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eUmIioaG8UGGjLOHhSg-fM"}
+```
+
+#### Errors
+
+We return 404 error when user is not found or password is invalid.
+
+```
+{"error":"User Not Found"}
+```
+
+#### Using the token to make requests
+Pass the token in the Authorization header "Authorization: Bearer _token_".
+Pass API version in the Accept header: "Accept: application/vnd.boostr.v2"
+Both authorization and API version are required to route the request correctly.
+
+```shell
+curl 'http://boostr-testing.herokuapp.com/api/states' 
+-H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eUmIioaG8UGGjLOHhSg-fM" 
+-H 'Accept: application/vnd.boostr.v2'
+```
+
+## Display Line Items import API
+
+This API allows you to post details about a line item to create it.
+
+Request type: `POST`
+
+URL: `/api/display_line_items`
+
+#### Params
+
+```javascript
+{
+    display_line_item: {
+        external_io_number: 111, // Used to lookup an IO via io.external_io_number
+        io_name: 'Summer Vacation Promo_3222', // Used to lookup an IO via io.io_number 3222
+        line_number: 222, // Line Item Number
+        ad_server: 'O1', // Line Item Ad Server
+        start_date: '2017-06-19', // Line Item Start Date
+        end_date: '2017-08-23', // Line Item End Date
+        product_name: '', // Used to map Boostr product to the ad_server_product. If no mapping – Display Product is used
+        quantity: 1000, // Line Item Quantity
+        price: 0.02, // Line Item Price
+        pricing_type: '', // Line Item Pricing Type
+        budget: 5000, // Line Item Budget in the IO currency
+        budget_delivered: 3000, // Line Item Budget Delivered in the IO currency
+        quantity_delivered: 500, // Line Item Quantity Delivered
+        quantity_delivered_3p: 100 // Third Party Line Item Quantity Delivered
+    }
+}
+```
+
+#### IO Matching
+
+You can use either `external_io_number` or `io_name` param to match line item to an IO. `external_io_number` takes precedence. If this param is missing or IO is not found, `io_name` is used instead.
+
+#### Currency conversions
+
+Local currency should be used if it's not in US Dollars. We do the calculation back to US Dollars based on your exchange rate at IO creation date.
+
+## Display Line Item Budgets import API
+
+This API allows you to post details about a line item to create it.
+
+Request type: `POST`
+
+URL: `/api/display_line_item_budgets`
+
+#### Params
+
+```javascript
+{
+    display_line_item_budget: {
+        line_number: 111, // Used to lookup a Line Number
+        budget: 5000, // Budget in the IO currency
+        month_and_year: '09-2017', // Line Item Budget period
+        impressions: 500 // Line Item Budget Quantity and Ad Server Quantity
+    }
+}
+```

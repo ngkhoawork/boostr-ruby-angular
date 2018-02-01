@@ -73,6 +73,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-ngInflection'
   gem 'rails-assets-ngInfiniteScroll'
   gem 'rails-assets-angular-paginate-anything'
+  gem 'rails-assets-angular-markdown-it'
 end
 
 group :production, :staging do
