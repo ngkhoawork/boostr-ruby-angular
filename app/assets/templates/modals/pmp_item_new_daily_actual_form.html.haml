@@ -47,18 +47,12 @@
             Win Rate
           %input.form-control{ 'numbers-only': '', placeholder: 'Win Rate', ng: { model: 'dailyActual.win_rate', required: true }, name: 'win_rate' }
       .row
-        .col-md-6.form-group{'ng-class':'{error: errors.render_rate}'}
-          %span.error-text {{errors.render_rate}}
-          %label{ for: 'render_rate' }
-            Render Rate
-          %input.form-control{ 'numbers-only': '', placeholder: 'Render Rate', ng: { model: 'dailyActual.render_rate', required: false }, name: 'render_rate' }
         .col-md-6.form-group{'ng-class':'{error: errors.price}'}
           %span.error-text {{errors.price}}
           %label{ for: 'price' }
             eCPM
             %span.star *
           %input.form-control{ 'numbers-only': '', placeholder: 'eCPM', ng: { model: 'dailyActual.price', required: true }, name: 'price' }
-      .row
         .col-md-6.form-group{'ng-class':'{error: errors.revenue_loc}'}
           %span.error-text {{errors.revenue_loc}}
           %label{ for: 'revenue_loc' }

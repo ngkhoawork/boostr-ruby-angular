@@ -10,13 +10,12 @@ class Csv::PmpItemDailyActual
                 :impressions,
                 :price,
                 :revenue_loc,
-                :render_rate,
                 :win_rate,
                 :curr_cd
 
   validates :date, :ad_unit, presence: true
   validates :ad_requests, :impressions, presence: true, numericality: true
-  validates :win_rate, :render_rate, numericality: true, allow_nil: true
+  validates :win_rate, numericality: true, allow_nil: true
   validate :validate_pmp_item_presence
   validate :validate_deal_id
   validate :validate_date_format
@@ -48,7 +47,6 @@ class Csv::PmpItemDailyActual
     pmp_item_daily_actual.win_rate = win_rate
     pmp_item_daily_actual.price = price
     pmp_item_daily_actual.revenue_loc = revenue_loc
-    pmp_item_daily_actual.render_rate = render_rate
     pmp_item_daily_actual.imported = true
     pmp_item_daily_actual.save!
   end
@@ -187,8 +185,7 @@ class Csv::PmpItemDailyActual
       win_rate: row[:win_rate],
       price: row[:ecpm],
       revenue_loc: row[:revenue],
-      curr_cd: row[:currency],
-      render_rate: row[:render_rate]
+      curr_cd: row[:currency]
     )
   end
 end

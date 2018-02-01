@@ -10,7 +10,6 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
     :revenue_loc,
     :impressions,
     :win_rate,
-    :render_rate,
     :ad_requests,
     :product
   )

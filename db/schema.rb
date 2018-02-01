@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180128004001) do
+ActiveRecord::Schema.define(version: 20180201230334) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
   enable_extension "fuzzystrmatch"
 
@@ -390,11 +391,11 @@ ActiveRecord::Schema.define(version: 20180128004001) do
     t.string   "api_email"
     t.string   "encrypted_password"
     t.string   "encrypted_password_iv"
+    t.boolean  "recurring",                  default: false
     t.text     "encrypted_json_api_key"
     t.text     "encrypted_json_api_key_iv"
     t.string   "network_code"
     t.string   "integration_provider"
-    t.boolean  "recurring",                  default: false
   end
 
   add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
@@ -441,7 +442,7 @@ ActiveRecord::Schema.define(version: 20180128004001) do
     t.integer  "user_id"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
-    t.decimal  "changed_amount", precision: 15, scale: 2
+    t.decimal  "changed_amount", precision: 12, scale: 2
   end
 
   add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree
@@ -581,12 +582,15 @@ ActiveRecord::Schema.define(version: 20180128004001) do
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
-    t.boolean  "requests_enabled",                  default: false
     t.boolean  "enable_operative_extra_fields",     default: false
-    t.boolean  "influencer_enabled",                default: false
+    t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "influencer_enabled",                default: false
     t.boolean  "forecast_gap_to_quota_positive",    default: true
     t.boolean  "publishers_enabled",                default: false
+    t.boolean  "gmail_enabled",                     default: false
+    t.boolean  "gcalendar_enabled",                 default: false
+    t.boolean  "enable_net_forecasting",            default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -1701,11 +1705,20 @@ ActiveRecord::Schema.define(version: 20180128004001) do
     t.datetime "accepted_at"
     t.datetime "rejected_at"
     t.datetime "reassigned_at"
-    t.datetime "reopened_at"
   end
 
   add_index "leads", ["company_id"], name: "index_leads_on_company_id", using: :btree
   add_index "leads", ["user_id"], name: "index_leads_on_user_id", using: :btree
+
+  create_table "notification_reminders", force: :cascade do |t|
+    t.string   "type"
+    t.integer  "lead_id"
+    t.datetime "sending_time"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "notification_reminders", ["lead_id"], name: "index_notification_reminders_on_lead_id", using: :btree
 
   create_table "notifications", force: :cascade do |t|
     t.integer  "company_id"
@@ -1744,7 +1757,6 @@ ActiveRecord::Schema.define(version: 20180128004001) do
     t.decimal "revenue_loc",           precision: 15, scale: 2
     t.integer "impressions", limit: 8
     t.decimal "win_rate"
-    t.decimal "render_rate"
     t.integer "ad_requests"
   end
 
@@ -2147,6 +2159,17 @@ ActiveRecord::Schema.define(version: 20180128004001) do
   add_index "sales_stages", ["sales_stageable_id"], name: "index_sales_stages_on_sales_stageable_id", using: :btree
   add_index "sales_stages", ["sales_stageable_type"], name: "index_sales_stages_on_sales_stageable_type", using: :btree
 
+  create_table "settings", force: :cascade do |t|
+    t.string   "var",                   null: false
+    t.text     "value"
+    t.integer  "thing_id"
+    t.string   "thing_type", limit: 30
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
+
   create_table "snapshots", force: :cascade do |t|
     t.integer  "company_id"
     t.integer  "user_id"
@@ -2184,18 +2207,18 @@ ActiveRecord::Schema.define(version: 20180128004001) do
   add_index "stage_dimensions", ["company_id"], name: "index_stage_dimensions_on_company_id", using: :btree
 
   create_table "stages", force: :cascade do |t|
-    t.string   "name"
     t.integer  "company_id"
-    t.integer  "probability"
-    t.boolean  "open"
-    t.boolean  "active"
     t.integer  "deals_count"
-    t.integer  "position"
     t.string   "color"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
     t.integer  "yellow_threshold"
     t.integer  "red_threshold"
+    t.string   "name"
+    t.integer  "probability"
+    t.boolean  "open"
+    t.boolean  "active"
+    t.integer  "position"
     t.integer  "sales_process_id"
   end
 
@@ -2365,9 +2388,9 @@ ActiveRecord::Schema.define(version: 20180128004001) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
-    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
+    t.boolean  "revenue_requests_access",             default: false
   end
 
   add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree
@@ -2413,6 +2436,68 @@ ActiveRecord::Schema.define(version: 20180128004001) do
   add_index "values", ["option_id"], name: "index_values_on_option_id", using: :btree
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
+
+  create_table "workflow_actions", force: :cascade do |t|
+    t.integer  "workflow_id"
+    t.integer  "api_configuration_id"
+    t.string   "workflow_type"
+    t.string   "workflow_method"
+    t.string   "template"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "workflow_actions", ["api_configuration_id"], name: "index_workflow_actions_on_api_configuration_id", using: :btree
+  add_index "workflow_actions", ["workflow_id"], name: "index_workflow_actions_on_workflow_id", using: :btree
+
+  create_table "workflow_criterions", force: :cascade do |t|
+    t.integer  "workflow_id"
+    t.integer  "workflow_criterion_id"
+    t.integer  "parent_criterion_id"
+    t.string   "base_object"
+    t.string   "field"
+    t.string   "math_operator"
+    t.string   "value"
+    t.string   "relation"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "workflow_criterions", ["workflow_criterion_id"], name: "index_workflow_criterions_on_workflow_criterion_id", using: :btree
+  add_index "workflow_criterions", ["workflow_id"], name: "index_workflow_criterions_on_workflow_id", using: :btree
+
+  create_table "workflow_logs", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "workflow_id"
+    t.string   "workflowable_type"
+    t.boolean  "criteria_passed"
+    t.boolean  "workflow_successful"
+    t.text     "workflow_result"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  add_index "workflow_logs", ["company_id"], name: "index_workflow_logs_on_company_id", using: :btree
+  add_index "workflow_logs", ["workflow_id"], name: "index_workflow_logs_on_workflow_id", using: :btree
+
+  create_table "workflows", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "user_id"
+    t.string   "name"
+    t.string   "description"
+    t.string   "workflowable_type"
+    t.boolean  "switched_on",       default: false
+    t.boolean  "fire_on_update",    default: false
+    t.boolean  "fire_on_create",    default: false
+    t.boolean  "fire_on_destroy",   default: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+  end
+
+  add_index "workflows", ["company_id"], name: "index_workflows_on_company_id", using: :btree
+  add_index "workflows", ["user_id"], name: "index_workflows_on_user_id", using: :btree
 
   add_foreign_key "account_cf_names", "companies"
   add_foreign_key "account_cf_options", "account_cf_names"
@@ -2518,4 +2603,12 @@ ActiveRecord::Schema.define(version: 20180128004001) do
   add_foreign_key "user_dimensions", "companies"
   add_foreign_key "user_dimensions", "teams"
   add_foreign_key "users", "teams"
+  add_foreign_key "workflow_actions", "api_configurations"
+  add_foreign_key "workflow_actions", "workflows"
+  add_foreign_key "workflow_criterions", "workflow_criterions"
+  add_foreign_key "workflow_criterions", "workflows"
+  add_foreign_key "workflow_logs", "companies"
+  add_foreign_key "workflow_logs", "workflows"
+  add_foreign_key "workflows", "companies"
+  add_foreign_key "workflows", "users"
 end

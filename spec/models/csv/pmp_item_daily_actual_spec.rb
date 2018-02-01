@@ -107,9 +107,9 @@ describe Csv::PmpItemDailyActual, 'model' do
     @_file ||= Tempfile.open([Dir.tmpdir, ".csv"]) do |f|
       begin
         csv = CSV.new(f)
-        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Ad Requests', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Render Rate', 'Currency']
-        csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, nil, 99, 1000, 9.9, 'USD']
-        csv << ['ssp001', '11/21/2017', 'Unit 4', 9, 99, 61.05, 99, 500, 9.9, 'USD']
+        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Ad Requests', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Currency']
+        csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, nil, 99, 1000, 'USD']
+        csv << ['ssp001', '11/21/2017', 'Unit 4', 9, 99, 61.05, 99, 500, 'USD']
       ensure
         f.close(unlink_now=false)
       end
@@ -120,9 +120,9 @@ describe Csv::PmpItemDailyActual, 'model' do
     @_file_with_error ||= Tempfile.open([Dir.tmpdir, ".csv"]) do |f|
       begin
         csv = CSV.new(f)
-        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Ad Requests', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Render Rate', 'Currency']
-        csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, 60, 99, 999, 9.9, 'USD']
-        csv << ['ssp001', '11/21/2017', 'Unit 4', 'String', 99, 60, 99, 999, 19.9, 'USD']
+        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Ad Requests', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Currency']
+        csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, 60, 99, 999, 'USD']
+        csv << ['ssp001', '11/21/2017', 'Unit 4', 'String', 99, 60, 99, 999, 'USD']
       ensure
         f.close(unlink_now=false)
       end
@@ -143,9 +143,7 @@ RSpec.describe Csv::PmpItemDailyActual, 'validations' do
   it { should validate_numericality_of(:impressions) }
   it { should validate_numericality_of(:ad_requests) }
   it { should validate_numericality_of(:win_rate) }
-  it { should validate_numericality_of(:render_rate) }
   it { should allow_value(nil).for(:win_rate) }
-  it { should allow_value(nil).for(:render_rate) }
 
   it 'is invalid without ssp_deal_id' do
     csv_pmp_item_daily_actual = build :csv_pmp_item_daily_actual
