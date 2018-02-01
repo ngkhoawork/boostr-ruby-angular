@@ -356,6 +356,7 @@
     .when '/leads',
       templateUrl: 'leads.html'
       controller: 'LeadsController'
+      reloadOnSearch: false
 
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
