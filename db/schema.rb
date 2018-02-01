@@ -591,6 +591,7 @@ ActiveRecord::Schema.define(version: 20180202233414) do
     t.boolean  "publishers_enabled",                default: false
     t.boolean  "gmail_enabled",                     default: false
     t.boolean  "gcalendar_enabled",                 default: false
+    t.boolean  "enable_net_forecasting",            default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -2052,11 +2053,16 @@ ActiveRecord::Schema.define(version: 20180202233414) do
     t.datetime "end_date"
     t.string   "curr_cd"
     t.decimal  "budget_loc",     precision: 15, scale: 2, default: 0.0
+    t.integer  "product_id"
+    t.string   "product_type"
+    t.integer  "value_type"
   end
 
   add_index "quota", ["company_id"], name: "index_quota_on_company_id", using: :btree
   add_index "quota", ["end_date"], name: "index_quota_on_end_date", using: :btree
+  add_index "quota", ["product_type", "product_id"], name: "index_quota_on_product_type_and_product_id", using: :btree
   add_index "quota", ["start_date"], name: "index_quota_on_start_date", using: :btree
+  add_index "quota", ["time_period_id", "user_id", "value_type", "product_id", "product_type"], name: "index_composite_quota", unique: true, using: :btree
   add_index "quota", ["time_period_id"], name: "index_quota_on_time_period_id", using: :btree
   add_index "quota", ["user_id"], name: "index_quota_on_user_id", using: :btree
 
