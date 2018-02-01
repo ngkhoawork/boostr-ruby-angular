@@ -36,7 +36,7 @@ class Api::V2::DisplayLineItemBudgetsController < ApiController
       budget_loc: params[:budget].to_f,
       month_and_year: params[:month_and_year],
       impressions: params[:impressions],
-      revenue_calculation_pattern: 0,
+      revenue_calculation_pattern: params[:revenue_calculation_pattern] || 0,
       company_id: company_id
     )
   end
