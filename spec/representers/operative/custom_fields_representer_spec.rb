@@ -6,7 +6,7 @@ describe Operative::CustomFieldsRepresenter, operative: true do
            company: company,
            field_index: 1,
            field_type: "dropdown",
-           field_label: "Territory Campaign Will Run In"
+           field_label: "Campaign Territory"
 
     create :deal_custom_field_name,
            company: company,
@@ -18,7 +18,7 @@ describe Operative::CustomFieldsRepresenter, operative: true do
            company: company,
            field_index: 5,
            field_type: "dropdown",
-           field_label: "BuzzFeed Signing Entity"
+           field_label: "Signing Entity"
   end
 
   describe 'for buzzfeed deal' do
