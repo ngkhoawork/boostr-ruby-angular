@@ -17,6 +17,12 @@ class Api::LeadsController < ApplicationController
     render nothing: true
   end
 
+  def reject_from_email
+    lead.update(status: Lead::REJECTED, rejected_at: Time.now)
+
+    redirect_to "#{root_path}leads?relation=my&status=rejected"
+  end
+
   def reassign
     lead.update(
       user_id: determine_assignee,
@@ -25,6 +31,8 @@ class Api::LeadsController < ApplicationController
       accepted_at: nil,
       rejected_at: nil
     )
+
+    LeadsMailer.new_leads_assignment(lead).deliver_now
 
     render nothing: true
   end
@@ -35,6 +43,7 @@ class Api::LeadsController < ApplicationController
 
   def map_with_client
     lead.update(client: client)
+    map_contact_with client
 
     render nothing: true
   end
@@ -59,5 +68,11 @@ class Api::LeadsController < ApplicationController
 
   def client
     Client.find(params[:client_id])
+  end
+
+  def map_contact_with_client
+    if lead.contact.present?
+      client.client_contacts.create(contact: lead.contact, client: client)
+    end
   end
 end

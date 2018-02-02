@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe Api::V2::LeadsController do
+  before { create :user, company: company }
+
   describe 'POST #create' do
     it 'creates lead successfully' do
       expect {
@@ -21,10 +23,6 @@ describe Api::V2::LeadsController do
 
   def company
     @_company ||= create :company
-  end
-
-  def user
-    @_user ||= create :user, company: company
   end
 
   def valid_lead_params

@@ -5,7 +5,6 @@ class Contact < ActiveRecord::Base
   belongs_to :client
   belongs_to :account_dimension
   belongs_to :publisher
-  belongs_to :lead
 
   has_one :primary_client, through: :primary_client_contact, source: :client
   has_one :primary_client_contact, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
@@ -25,6 +24,7 @@ class Contact < ActiveRecord::Base
   has_one :address, as: :addressable
   has_many :integrations, as: :integratable
   has_many :values, as: :subject
+  has_many :leads
 
   has_and_belongs_to_many :latest_happened_activity, -> {
     order('activities.happened_at DESC').limit(1)
