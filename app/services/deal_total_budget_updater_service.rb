@@ -11,12 +11,8 @@ class DealTotalBudgetUpdaterService
 
   def perform
     deal.log_budget_changes(current_budget, new_budget)
-
     deal.assign_attributes(budget: new_budget, budget_loc: new_budget_loc)
-
-    if deal.save(validate: false)
-      GoogleSheetsWorker.perform_async(google_sheet_id, deal.id) if google_sheet_id
-    end
+    deal.save(validate: false)
   end
 
   private
@@ -31,9 +27,5 @@ class DealTotalBudgetUpdaterService
 
   def new_budget_loc
     deal.deal_product_budgets.sum(:budget_loc)
-  end
-
-  def google_sheet_id
-    @_google_sheet_id ||= deal.company.google_sheets_configurations.first&.sheet_id
   end
 end

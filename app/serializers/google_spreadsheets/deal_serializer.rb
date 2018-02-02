@@ -4,6 +4,8 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
 
   attributes :id
 
+  delegate :company, :deal_custom_field, to: :object
+
   def to_spreadsheet
     { values: [FIEDLS_ORDER.map { |field_name| public_send(field_name) }] }
   end
@@ -21,11 +23,14 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def creative_ideas_needed
-    EMPTY
+    field_name = company.deal_custom_field_names
+                        .find_by(field_label: 'Creative Ideas Needed')&.field_name
+
+    field_name ? deal_custom_field&.public_send(field_name) : EMPTY
   end
 
   def launch
-    "#{object.start_date.strftime('%d/%m/%y')} - #{object.end_date.strftime('%d/%m/%y')}"
+    "#{object.start_date.strftime('%Y-%m-%d')} - #{object.end_date.strftime('%Y-%m-%d')}"
   end
 
   def seller
@@ -37,20 +42,21 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def region
-    seller_user&.team&.name
+    name = seller_user&.team&.name
+
+    name ? name : EMPTY
   end
 
   def budget
     object.budget.to_f
   end
 
-  alias_method :creative_ideas_needed, :empty
   alias_method :csm, :empty
   alias_method :parent, :empty
 
   private
 
   def seller_user
-    @_seller ||= object.deal_members.order(:share).first&.user
+    @_seller ||= object.deal_members.order(share: :desc).first&.user
   end
 end
