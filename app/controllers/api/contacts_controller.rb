@@ -60,6 +60,9 @@ class Api::ContactsController < ApplicationController
         contact.created_by = current_user.id
 
         if contact.save
+          map_lead_with contact
+          map_with_client_through_lead contact
+
           render json: contact, status: :created
         else
           render json: { errors: contact.errors.messages }, status: :unprocessable_entity
@@ -142,7 +145,6 @@ class Api::ContactsController < ApplicationController
       :position,
       :note,
       :client_id,
-      :lead_id,
       :web_lead,
       address_attributes: [
         :id,
@@ -302,5 +304,19 @@ class Api::ContactsController < ApplicationController
 
   def contacts_search_service
     @_contacts_search_service ||= ContactsSearchService.new(current_user: current_user, params: params)
+  end
+
+  def lead
+    @_lead ||= Lead.find(params[:lead_id]) if params[:lead_id].present?
+  end
+
+  def map_lead_with(contact)
+    contact.leads << lead if lead&.present?
+  end
+
+  def map_with_client_through_lead(contact)
+    if lead&.client.present?
+      contact.client_contacts.create(contact: contact, client: lead.client)
+    end
   end
 end

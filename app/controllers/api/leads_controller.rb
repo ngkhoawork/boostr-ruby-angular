@@ -43,6 +43,7 @@ class Api::LeadsController < ApplicationController
 
   def map_with_client
     lead.update(client: client)
+    map_contact_with client
 
     render nothing: true
   end
@@ -67,5 +68,11 @@ class Api::LeadsController < ApplicationController
 
   def client
     Client.find(params[:client_id])
+  end
+
+  def map_contact_with_client
+    if lead.contact.present?
+      client.client_contacts.create(contact: lead.contact, client: client)
+    end
   end
 end

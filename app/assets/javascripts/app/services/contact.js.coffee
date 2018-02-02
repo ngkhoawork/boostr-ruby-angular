@@ -31,7 +31,7 @@
       contact_cf_attributes: original.contact.contact_cf
     send.unassign = true if original.unassign
     if original.contact.lead
-      send.contact.lead_id = original.contact.lead.id
+      send.lead_id = original.contact.lead.id
       send.contact.web_lead = true
     angular.toJson(send)
 

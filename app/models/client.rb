@@ -42,6 +42,7 @@ class Client < ActiveRecord::Base
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
   has_many :integrations, as: :integratable
+  has_many :leads
 
   has_one :latest_advertiser_activity, -> { self.select_values = ["DISTINCT ON(activities.client_id) activities.*"]
     order('activities.client_id', 'activities.happened_at DESC')
@@ -61,7 +62,6 @@ class Client < ActiveRecord::Base
   belongs_to :client_region, class_name: 'Option', foreign_key: 'client_region_id'
   belongs_to :client_segment, class_name: 'Option', foreign_key: 'client_segment_id'
   belongs_to :holding_company
-  belongs_to :lead
 
   delegate :street1, :street2, :city, :state, :zip, :phone, :country, to: :address, allow_nil: true
   delegate :name, to: :client_category, prefix: :category, allow_nil: true

@@ -35,7 +35,7 @@ class Leads::ReminderTimeCalculationService
     return 4.day.from_now if Date.today.thursday?
 
     # When Time now is wednesday and sunday is holiday sending time is on monday
-    return 5.day.from_now if Date.today.wednesday && holiday?(2.day.from_now)
+    return 5.day.from_now if Date.today.wednesday? && holiday?(2.day.from_now)
 
     holiday?(2.day.from_now) ? 3.day.from_now : 2.day.from_now
   end

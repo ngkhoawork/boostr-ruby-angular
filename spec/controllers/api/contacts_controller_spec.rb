@@ -145,11 +145,10 @@ RSpec.describe Api::ContactsController, type: :controller do
 
     it 'map lead to contact' do
       create :user, company: company
-      valid_contact_params = contact_params.merge(lead_id: lead.id)
 
-      post :create, contact: valid_contact_params
+      post :create, contact: contact_params, lead_id: lead.id
 
-      expect(Contact.last.lead).to eq lead
+      expect(Contact.last.leads).to include lead
     end
   end
 
