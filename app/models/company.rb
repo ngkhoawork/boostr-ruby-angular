@@ -1,5 +1,5 @@
 class Company < ActiveRecord::Base
-  include Concerns::CompanyMappings
+  include CompanyMappings
 
   has_many :users
   has_many :clients

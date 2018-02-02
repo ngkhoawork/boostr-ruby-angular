@@ -1,6 +1,4 @@
 class DealTotalBudgetUpdaterService
-  include Concerns::GoogleSheetsDealExportable
-
   attr_reader :deal
 
   def self.perform(*args)
@@ -13,12 +11,8 @@ class DealTotalBudgetUpdaterService
 
   def perform
     deal.log_budget_changes(current_budget, new_budget)
-
     deal.assign_attributes(budget: new_budget, budget_loc: new_budget_loc)
-
-    if deal.save(validate: false)
-      schedule_google_sheets_export
-    end
+    deal.save(validate: false)
   end
 
   private

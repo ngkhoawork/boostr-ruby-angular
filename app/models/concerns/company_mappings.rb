@@ -1,9 +1,7 @@
-module Concerns
-  module CompanyMappings
-    extend ActiveSupport::Concern
+module CompanyMappings
+  extend ActiveSupport::Concern
 
-    def buzzfeed?
-      id.eql?(44)
-    end
+  def buzzfeed?
+    id.eql?(44)
   end
 end
