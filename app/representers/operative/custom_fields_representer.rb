@@ -9,7 +9,7 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
   property :location_id_2, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
   property :primary_sales_rep_id, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
   property :opportunity_created_date, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator, if: !:buzzfeed?
-  property :sfdc_type, decorator: Operative::DropdownCustomFieldRepresenter, exec_context: :decorator
+  property :sfdc_type, decorator: Operative::DropdownCustomFieldRepresenter, exec_context: :decorator, if: !:buzzfeed?
   property :final_billable_customer, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
   property :ultimate_customer_advertiser, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
   property :billing_notes, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator, if: :buzzfeed?
@@ -57,7 +57,7 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
   end
 
   def country_campaign
-    if (value = custom_field_value('Territory Campaign Will Run In'))
+    if (value = custom_field_value('Campaign Territory'))
       { name: 'Country_the_campaign_will_run_in__c', value: value }
     end
   end
@@ -69,7 +69,7 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
   end
 
   def buzzfeed_signin_entity
-    if (value = custom_field_value('BuzzFeed Signing Entity'))
+    if (value = custom_field_value('Signing Entity'))
       { name: 'Buzzfeed_signing_entity', value: value }
     end
   end
