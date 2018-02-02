@@ -204,6 +204,12 @@
                 cols.map(grabCol).get().join tmpColDelim
             grabCol = (j, col) ->
                 col = angular.element(col)
+                if col.hasClass('totalCol')
+                  total = col.find('span').text().trim()
+                  totalLabel = col.find('.z-sortable').text().trim()
+                  col.find('.z-sortable').text(totalLabel + " / " + total)
+                  col.find('span').text("")
+
                 text = col.text().trim()
                 text.replace '"', '""'
             csv += formatRows(headers.map(grabRow))

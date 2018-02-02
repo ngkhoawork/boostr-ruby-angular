@@ -165,10 +165,10 @@
                       .z-sortable{by: 'budget', default: true} Total Budget
                     %th
                       .z-sortable{by: 'in_period_split_amt'} Split In-Period Amt
-                    %th{'ng-repeat': '(index, key) in revenues.detail_amounts[switch.revenues]'}
+                    %th.totalCol{'ng-repeat': '(index, key) in revenues.detail_amounts[switch.revenues]'}
                       %span
-                        {{key.total | currency : '$' : 2}}
-                      .z-sortable{by: 'getSortableAmountKey("revenues", index)'}
+                        {{key.total | currency : '$' : 0}}
+                      .z-sortable.totalLabel{by: 'getSortableAmountKey("revenues", index)'}
                         {{key.month || key.quarter}}
                 %tbody
                   %tr{'ng-repeat': 'revenue in revenues | orderBy : zSort.revenues.by : zSort.revenues.rev'}
@@ -222,10 +222,10 @@
                       .z-sortable{by: 'split_period_budget'} Split In-Period Amt
                     %th
                       .z-sortable{by: 'stage.probability'} %
-                    %th{'ng-repeat': '(index, key) in deals.detail_amounts[switch.deals]'}
+                    %th.totalCol{'ng-repeat': '(index, key) in deals.detail_amounts[switch.deals]'}
                       %span
-                        {{key.total | currency : '$' : 2}}
-                      .z-sortable{by: 'getSortableAmountKey("deals", index)'}
+                        {{key.total | currency : '$' : 0}}
+                      .z-sortable.totalLabel{by: 'getSortableAmountKey("deals", index)'}
                         {{key.month || key.quarter}}
                 %tbody
                   %tr{'ng-repeat': 'deal in deals | orderBy : zSort.deals.by : zSort.deals.rev', popover: '{{deal.next_steps}}', 'popover-title': 'Next Steps', 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
