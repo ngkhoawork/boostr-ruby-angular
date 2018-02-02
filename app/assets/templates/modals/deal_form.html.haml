@@ -64,7 +64,7 @@
                     .col-xs-6{'ng-class':'{error: errors.deal_type_value}'}
                         %span.error-text {{errors.deal_type_value}}
                         %label{ for: 'deal-type' }
-                            Type
+                            Type {{deal.deal_type.option_id}}
                             %span.star{ 'ng-if': "baseFieldRequired('deal_type_value')" } *
                         %ui-select{ name: 'deal-type', ng: { model: 'deal.deal_type.option_id', disabled: true } }
                             %ui-select-match{ placeholder: 'Type' }
@@ -74,7 +74,7 @@
                     .col-xs-6{'ng-class':'{error: errors.deal_source_value}'}
                         %span.error-text {{errors.deal_source_value}}
                         %label{ for: 'source-type' }
-                            Source
+                            Source {{deal.source_type.option_id}}
                             %span.star{ 'ng-if': "baseFieldRequired('deal_source_value')" } *
                         %ui-select{ name: 'source-type', ng: { model: 'deal.source_type.option_id', disabled: true } }
                             %ui-select-match{ placeholder: 'Source' }

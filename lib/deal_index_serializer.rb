@@ -27,7 +27,11 @@ class DealIndexSerializer < ActiveModel::Serializer
     :stage,
     :curr_symbol
   )
+  
 
+  def attributes(*args)
+    super.select {|_key, value| value }
+  end
 
   def advertiser
     object.advertiser

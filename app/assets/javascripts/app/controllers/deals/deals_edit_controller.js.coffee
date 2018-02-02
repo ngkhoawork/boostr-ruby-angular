@@ -7,6 +7,10 @@
     $scope.advertisers = []
     $scope.agencies = []
     $scope.deal = deal
+    Deal.get(deal.id).then (promiseDeal) ->
+      Field.defaults(promiseDeal, 'Deal').then (fields) ->
+      $scope.deal.deal_type = Field.field(promiseDeal, 'Deal Type')
+      $scope.deal.source_type = Field.field(promiseDeal, 'Deal Source')
 
     getDealCustomFieldNames()
 
@@ -20,7 +24,7 @@
       $scope.base_fields_validations = data.base_fields_validations
 
       $scope.setDefaultCurrency()
-
+    
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
       $scope.setClientTypes(client_types)
