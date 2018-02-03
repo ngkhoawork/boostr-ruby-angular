@@ -30,5 +30,5 @@
   _isPublisherEnabled = (#{current_user.company_publisher_enabled});
   _isGmailExtensionEnabled = (#{current_user.company.gmail_enabled});
   _isGcalendarExtensionEnabled = (#{current_user.company.gcalendar_enabled});
-  _gmail_extension_url = ("#{Setting.gmail_extension_url}");
-  _gcalendar_extension_url = ("#{Setting.gcalendar_extension_url}");
+  _gmail_extension_url = ("#{Setting.get(:gmail_extension_url)}");
+  _gcalendar_extension_url = ("#{Setting.get(:gcalendar_extension_url)}");

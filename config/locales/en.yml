@@ -32,8 +32,3 @@ en:
             client_type_id:
               blank: "Account Type can't be blank"
               invalid: "Please Specify a valid Client Type"
-
-  settings:
-    attributes:
-      gmail_extension_url: 'Gmail extension url'
-      gcalendar_extension_url: 'GCalendar extension url'
