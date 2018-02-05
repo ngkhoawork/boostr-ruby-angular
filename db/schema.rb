@@ -1579,6 +1579,30 @@ ActiveRecord::Schema.define(version: 20180202233414) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "hoopla_integrations", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "hoopla_client_id"
+    t.string   "hoopla_client_secret"
+    t.boolean  "credentials_confirmed",   default: false
+    t.boolean  "active",                  default: false
+    t.string   "access_token"
+    t.datetime "access_token_expires_in"
+    t.string   "deal_won_newsflash_href"
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+  end
+
+  add_index "hoopla_integrations", ["company_id"], name: "index_hoopla_integrations_on_company_id", using: :btree
+
+  create_table "hoopla_users", force: :cascade do |t|
+    t.string   "href"
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "hoopla_users", ["user_id"], name: "index_hoopla_users_on_user_id", using: :btree
+
   create_table "influencer_content_fees", force: :cascade do |t|
     t.integer  "influencer_id"
     t.integer  "content_fee_id"
@@ -1872,6 +1896,7 @@ ActiveRecord::Schema.define(version: 20180202233414) do
     t.boolean  "active",                default: true
     t.boolean  "is_influencer_product", default: false
     t.integer  "product_family_id"
+    t.integer  "margin"
   end
 
   add_index "products", ["company_id"], name: "index_products_on_company_id", using: :btree
@@ -2137,6 +2162,14 @@ ActiveRecord::Schema.define(version: 20180202233414) do
   add_index "revenues", ["product_id"], name: "index_revenues_on_product_id", using: :btree
   add_index "revenues", ["user_id"], name: "index_revenues_on_user_id", using: :btree
 
+  create_table "sales_processes", force: :cascade do |t|
+    t.integer "company_id"
+    t.string  "name"
+    t.boolean "active",     default: true
+  end
+
+  add_index "sales_processes", ["company_id"], name: "index_sales_processes_on_company_id", using: :btree
+
   create_table "sales_stages", force: :cascade do |t|
     t.integer  "sales_stageable_id"
     t.string   "sales_stageable_type"
@@ -2198,37 +2231,41 @@ ActiveRecord::Schema.define(version: 20180202233414) do
   add_index "stage_dimensions", ["company_id"], name: "index_stage_dimensions_on_company_id", using: :btree
 
   create_table "stages", force: :cascade do |t|
-    t.string   "name"
     t.integer  "company_id"
-    t.integer  "probability"
-    t.boolean  "open"
-    t.boolean  "active"
     t.integer  "deals_count"
-    t.integer  "position"
     t.string   "color"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
     t.integer  "yellow_threshold"
     t.integer  "red_threshold"
+    t.string   "name"
+    t.integer  "probability"
+    t.boolean  "open"
+    t.boolean  "active"
+    t.integer  "position"
+    t.integer  "sales_process_id"
   end
 
   add_index "stages", ["company_id"], name: "index_stages_on_company_id", using: :btree
+  add_index "stages", ["sales_process_id"], name: "index_stages_on_sales_process_id", using: :btree
 
   create_table "teams", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
     t.integer  "parent_id"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
     t.integer  "leader_id"
-    t.integer  "members_count", default: 0, null: false
+    t.integer  "members_count",    default: 0, null: false
     t.datetime "deleted_at"
+    t.integer  "sales_process_id"
   end
 
   add_index "teams", ["company_id"], name: "index_teams_on_company_id", using: :btree
   add_index "teams", ["deleted_at"], name: "index_teams_on_deleted_at", using: :btree
   add_index "teams", ["leader_id"], name: "index_teams_on_leader_id", using: :btree
   add_index "teams", ["parent_id"], name: "index_teams_on_parent_id", using: :btree
+  add_index "teams", ["sales_process_id"], name: "index_teams_on_sales_process_id", using: :btree
 
   create_table "temp_cumulative_dfp_reports", force: :cascade do |t|
     t.string   "dimensionorder_name"
@@ -2585,6 +2622,7 @@ ActiveRecord::Schema.define(version: 20180202233414) do
   add_foreign_key "requests", "deals"
   add_foreign_key "requests", "users", column: "assignee_id"
   add_foreign_key "requests", "users", column: "requester_id"
+  add_foreign_key "sales_processes", "companies"
   add_foreign_key "stage_dimensions", "companies"
   add_foreign_key "temp_ios", "companies"
   add_foreign_key "temp_ios", "ios"
