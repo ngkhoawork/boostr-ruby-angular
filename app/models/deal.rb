@@ -1669,6 +1669,16 @@ class Deal < ActiveRecord::Base
     self.products.where(revenue_type: 'PMP').count > 0
   end
 
+  def log_budget_changes(current_budget, new_budget)
+    AuditLogService.new(
+      record: self,
+      type: AuditLog::BUDGET_CHANGE_TYPE,
+      old_value: current_budget,
+      new_value: new_budget,
+      changed_amount: (new_budget - current_budget)
+    ).perform
+  end
+
   private
 
   def self.import_deal_custom_field(deal, row)
@@ -1705,16 +1715,6 @@ class Deal < ActiveRecord::Base
       type: AuditLog::STAGE_CHANGE_TYPE,
       old_value: previous_stage_id,
       new_value: stage_id
-    ).perform
-  end
-
-  def log_budget_changes(current_budget, new_budget)
-    AuditLogService.new(
-      record: self,
-      type: AuditLog::BUDGET_CHANGE_TYPE,
-      old_value: current_budget,
-      new_value: new_budget,
-      changed_amount: (new_budget - current_budget)
     ).perform
   end
 

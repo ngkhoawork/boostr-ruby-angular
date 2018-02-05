@@ -55,7 +55,17 @@ class Api::CostsController < ApplicationController
         :type,
         :io_id,
         {
-          cost_monthly_amounts_attributes: [:id, :budget, :budget_loc]
+          values_attributes: [
+            :id,
+            :field_id,
+            :option_id,
+            :value
+          ],
+          cost_monthly_amounts_attributes: [
+            :id,
+            :budget,
+            :budget_loc
+          ]
         }
     )
   end

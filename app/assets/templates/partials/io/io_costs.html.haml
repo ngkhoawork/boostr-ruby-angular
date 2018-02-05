@@ -8,6 +8,7 @@
       %thead
         %tr
           %th.left Product
+          %th.left Type
           %th.left Start Date
           %th.left End Date
           %th.left Total Cost
@@ -26,6 +27,16 @@
                   %a{'href': '', 'ng-click': 'cost.product_id = product.id; updateCost(cost);'}
                     %span.text {{product.name}}
               %i.fa.fa-trash.z-icon{'ng-click': 'deleteCost(cost)'}
+          %td
+            .dropdown
+              %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                %span.editable
+                  {{ cost.type.option.name }}
+                  %span.caret
+              %ul.dropdown-menu
+                %li{'ng-repeat': 'type in cost.type.options', 'ng-class': '{active: cost.type.option_id == type.id}'}
+                  %a{'href': '', 'ng-click': 'cost.type.option_id = type.id; updateCost(cost);'}
+                    %span.text {{type.name}}
           %td
             {{ currentIO.start_date | date: 'M/d/yyyy' }}
           %td

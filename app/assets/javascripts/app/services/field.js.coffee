@@ -9,6 +9,8 @@
       url: 'api/fields/client_base_options'
     }
 
+  data = {}
+
   @all = (params) ->
     deferred = $q.defer()
     resource.query params, (fields) ->
@@ -43,9 +45,12 @@
 
     if subject && subject.fields
       finish(subject.fields)
+    else if (data[subject_type])
+      finish(data[subject_type])
     else
       @all({ subject: subject_type }).then (fields) ->
-        finish(fields)
+        data[subject_type] = fields
+        finish(data)
 
     deferred.promise
 
@@ -54,6 +59,9 @@
       subject_field = $filter('filter')(subject.fields, { name: field_name })[0]
       if subject_field
         $filter('filter')(subject.values, { field_id: subject_field.id })[0]
+
+  @set = (subject_type, fields) ->
+    data[subject_type] = fields
 
   @getOption = (subject, field_name, option_id) ->
     if subject.fields && subject.fields.length > 0

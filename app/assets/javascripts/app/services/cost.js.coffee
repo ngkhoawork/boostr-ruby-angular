@@ -4,6 +4,7 @@
   transformRequest = (original, headers) ->
     send = {}
     send.cost =
+      values_attributes: original.cost.values
       budget_loc: original.cost.budget_loc
       cost_monthly_amounts_attributes: original.cost.cost_monthly_amounts
       io_id: original.cost.io_id

@@ -54,11 +54,14 @@ class Deal::IoGenerateService
 
   def generate_costs(io)
     deal.deal_products.created_asc.each do |deal_product|
+      margin = deal_product.product&.margin || 100
+      budget = deal_product.budget * margin / 100.0
+      budget_loc = deal_product.budget_loc * margin / 100.0
       cost_param = {
         io_id: io.id,
         product_id: deal_product.product.id,
-        budget: deal_product.budget,
-        budget_loc: deal_product.budget_loc
+        budget: budget,
+        budget_loc: budget_loc
       }
       cost = Cost.create(cost_param)
     end

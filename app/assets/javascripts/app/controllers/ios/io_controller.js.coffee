@@ -1,6 +1,6 @@
 @app.controller 'IOController',
-    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'Product', 'DisplayLineItem', 'Company', 'InfluencerContentFee', 'Cost'
-    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   Product,   DisplayLineItem,   Company,   InfluencerContentFee,   Cost) ->
+    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'Product', 'DisplayLineItem', 'Company', 'InfluencerContentFee', 'Cost', 'Field'
+    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   Product,   DisplayLineItem,   Company,   InfluencerContentFee,   Cost,   Field) ->
             $scope.currentIO = {}
             $scope.activeTab = 'ios'
             $scope.currency_symbol = '$'
@@ -41,6 +41,13 @@
                     Product.all({active: true, revenue_type: 'Content-Fee'}).then (products) ->
                         $scope.products = products
                         resetProducts()
+                    
+                    Field.all(subject: 'Cost').then (fields) ->
+                        Field.set('Cost', fields)
+                        $scope.currentIO.costs = _.map $scope.currentIO.costs, (cost) ->
+                            Field.defaults(cost, 'Cost').then (fields) ->
+                                cost.type = Field.field(cost, 'Type')
+                            return cost
 
             resetProducts = ->
                 io_products = _.map $scope.currentIO.content_fees, (content_fee_item) ->

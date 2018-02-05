@@ -1,6 +1,6 @@
 @app.controller "IONewCostController",
-    ['$scope', '$rootScope', '$modalInstance', '$filter', 'Product', 'Cost', 'currentIO',
-        ($scope, $rootScope, $modalInstance, $filter, Product, Cost, currentIO) ->
+    ['$scope', '$rootScope', '$modalInstance', '$filter', 'Product', 'Cost', 'Field', 'currentIO',
+        ($scope, $rootScope, $modalInstance, $filter, Product, Cost, Field, currentIO) ->
             $scope.currency_symbol = (->
                 if currentIO && currentIO.currency
                     if currentIO.currency.curr_symbol
@@ -15,6 +15,9 @@
                 cost_monthly_amounts: []
                 months: []
             }
+
+            Field.defaults($scope.cost, 'Cost').then (fields) ->
+                $scope.cost.type = Field.field($scope.cost, 'Type')
 
             for month in $scope.currentIO.months
                 month = moment().year(month[0]).month(month[1] - 1).format('MMM YYYY')

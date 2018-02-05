@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180202233414) do
+ActiveRecord::Schema.define(version: 20180205024426) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -582,7 +582,6 @@ ActiveRecord::Schema.define(version: 20180202233414) do
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
-    t.boolean  "requests_enabled",                  default: false
     t.boolean  "enable_operative_extra_fields",     default: false
     t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
@@ -807,7 +806,6 @@ ActiveRecord::Schema.define(version: 20180202233414) do
   create_table "costs", force: :cascade do |t|
     t.integer  "io_id"
     t.integer  "product_id"
-    t.string   "type"
     t.decimal  "budget",       precision: 15, scale: 2
     t.decimal  "budget_loc",   precision: 15, scale: 2
     t.date     "start_date"
@@ -1229,11 +1227,14 @@ ActiveRecord::Schema.define(version: 20180202233414) do
   create_table "deal_products", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "product_id"
-    t.decimal  "budget",     precision: 15, scale: 2, default: 0.0
-    t.datetime "created_at",                                         null: false
-    t.datetime "updated_at",                                         null: false
-    t.boolean  "open",                                default: true
-    t.decimal  "budget_loc", precision: 15, scale: 2, default: 0.0
+    t.decimal  "budget",      precision: 15, scale: 2, default: 0.0
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+    t.boolean  "open",                                 default: true
+    t.decimal  "budget_loc",  precision: 15, scale: 2, default: 0.0
+    t.integer  "ssp_id"
+    t.string   "ssp_deal_id"
+    t.integer  "pmp_type"
   end
 
   add_index "deal_products", ["deal_id"], name: "index_deal_products_on_deal_id", using: :btree
@@ -1578,30 +1579,6 @@ ActiveRecord::Schema.define(version: 20180202233414) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
-
-  create_table "hoopla_integrations", force: :cascade do |t|
-    t.integer  "company_id"
-    t.string   "hoopla_client_id"
-    t.string   "hoopla_client_secret"
-    t.boolean  "credentials_confirmed",   default: false
-    t.boolean  "active",                  default: false
-    t.string   "access_token"
-    t.datetime "access_token_expires_in"
-    t.string   "deal_won_newsflash_href"
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
-  end
-
-  add_index "hoopla_integrations", ["company_id"], name: "index_hoopla_integrations_on_company_id", using: :btree
-
-  create_table "hoopla_users", force: :cascade do |t|
-    t.string   "href"
-    t.integer  "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "hoopla_users", ["user_id"], name: "index_hoopla_users_on_user_id", using: :btree
 
   create_table "influencer_content_fees", force: :cascade do |t|
     t.integer  "influencer_id"
@@ -2078,16 +2055,11 @@ ActiveRecord::Schema.define(version: 20180202233414) do
     t.datetime "end_date"
     t.string   "curr_cd"
     t.decimal  "budget_loc",     precision: 15, scale: 2, default: 0.0
-    t.integer  "product_id"
-    t.string   "product_type"
-    t.integer  "value_type"
   end
 
   add_index "quota", ["company_id"], name: "index_quota_on_company_id", using: :btree
   add_index "quota", ["end_date"], name: "index_quota_on_end_date", using: :btree
-  add_index "quota", ["product_type", "product_id"], name: "index_quota_on_product_type_and_product_id", using: :btree
   add_index "quota", ["start_date"], name: "index_quota_on_start_date", using: :btree
-  add_index "quota", ["time_period_id", "user_id", "value_type", "product_id", "product_type"], name: "index_composite_quota", unique: true, using: :btree
   add_index "quota", ["time_period_id"], name: "index_quota_on_time_period_id", using: :btree
   add_index "quota", ["user_id"], name: "index_quota_on_user_id", using: :btree
 
@@ -2162,14 +2134,6 @@ ActiveRecord::Schema.define(version: 20180202233414) do
   add_index "revenues", ["product_id"], name: "index_revenues_on_product_id", using: :btree
   add_index "revenues", ["user_id"], name: "index_revenues_on_user_id", using: :btree
 
-  create_table "sales_processes", force: :cascade do |t|
-    t.integer "company_id"
-    t.string  "name"
-    t.boolean "active",     default: true
-  end
-
-  add_index "sales_processes", ["company_id"], name: "index_sales_processes_on_company_id", using: :btree
-
   create_table "sales_stages", force: :cascade do |t|
     t.integer  "sales_stageable_id"
     t.string   "sales_stageable_type"
@@ -2231,41 +2195,37 @@ ActiveRecord::Schema.define(version: 20180202233414) do
   add_index "stage_dimensions", ["company_id"], name: "index_stage_dimensions_on_company_id", using: :btree
 
   create_table "stages", force: :cascade do |t|
+    t.string   "name"
     t.integer  "company_id"
+    t.integer  "probability"
+    t.boolean  "open"
+    t.boolean  "active"
     t.integer  "deals_count"
+    t.integer  "position"
     t.string   "color"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
     t.integer  "yellow_threshold"
     t.integer  "red_threshold"
-    t.string   "name"
-    t.integer  "probability"
-    t.boolean  "open"
-    t.boolean  "active"
-    t.integer  "position"
-    t.integer  "sales_process_id"
   end
 
   add_index "stages", ["company_id"], name: "index_stages_on_company_id", using: :btree
-  add_index "stages", ["sales_process_id"], name: "index_stages_on_sales_process_id", using: :btree
 
   create_table "teams", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
     t.integer  "parent_id"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
     t.integer  "leader_id"
-    t.integer  "members_count",    default: 0, null: false
+    t.integer  "members_count", default: 0, null: false
     t.datetime "deleted_at"
-    t.integer  "sales_process_id"
   end
 
   add_index "teams", ["company_id"], name: "index_teams_on_company_id", using: :btree
   add_index "teams", ["deleted_at"], name: "index_teams_on_deleted_at", using: :btree
   add_index "teams", ["leader_id"], name: "index_teams_on_leader_id", using: :btree
   add_index "teams", ["parent_id"], name: "index_teams_on_parent_id", using: :btree
-  add_index "teams", ["sales_process_id"], name: "index_teams_on_sales_process_id", using: :btree
 
   create_table "temp_cumulative_dfp_reports", force: :cascade do |t|
     t.string   "dimensionorder_name"
@@ -2576,6 +2536,7 @@ ActiveRecord::Schema.define(version: 20180202233414) do
   add_foreign_key "deal_product_cf_names", "companies"
   add_foreign_key "deal_product_cf_options", "deal_product_cf_names"
   add_foreign_key "deal_product_cfs", "companies"
+  add_foreign_key "deal_products", "ssps"
   add_foreign_key "dfp_report_queries", "api_configurations"
   add_foreign_key "display_line_item_budgets", "display_line_items"
   add_foreign_key "display_line_items", "ios"
@@ -2622,7 +2583,6 @@ ActiveRecord::Schema.define(version: 20180202233414) do
   add_foreign_key "requests", "deals"
   add_foreign_key "requests", "users", column: "assignee_id"
   add_foreign_key "requests", "users", column: "requester_id"
-  add_foreign_key "sales_processes", "companies"
   add_foreign_key "stage_dimensions", "companies"
   add_foreign_key "temp_ios", "companies"
   add_foreign_key "temp_ios", "ios"

@@ -21,6 +21,16 @@
                             %span.total-percent{'ng-class': "{'has-error': cost.isIncorrectTotalBudgetPercent}"}
                                 {{(cost.budget_percent || 0 )+ '%'}}
                             %span.reset-budget.glyphicon.glyphicon-remove-circle{'ng-class': "{'has-error': cost.isIncorrectTotalBudgetPercent}", 'ng-click': 'resetAddProduct()'}
+                .col-xs-6{'ng-class':'{error: errors.network}'}
+                    .form-group
+                        %span.error-text {{errors.network}}
+                        %label{ for: 'type' } Type
+                        %span.star *
+                        %ui-select{ network: 'type', ng: { model: 'cost.type.option_id', disabled: true } }
+                            %ui-select-match{ placeholder: 'Type' }
+                                {{ $select.selected.name }}
+                            %ui-select-choices{ repeat: 'type.id as type in cost.type.options | filter: { name: $select.search }' }
+                                %div{ ng: { bind: { html: 'type.name' } } }
                 .col-xs-12
                     .row.months.new-product-form
                         .col-xs-2{ ng: { repeat: 'month in cost.cost_monthly_amounts' } }

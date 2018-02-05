@@ -1,12 +1,16 @@
 class Cost < ActiveRecord::Base
+  belongs_to :company
   belongs_to :io
   belongs_to :product
+
+  has_many :values, as: :subject
 
   has_many :cost_monthly_amounts, dependent: :destroy
 
   validate :active_exchange_rate
 
   accepts_nested_attributes_for :cost_monthly_amounts
+  accepts_nested_attributes_for :values
 
   after_create do
     Cost::AmountsGenerateService.new(self).perform if self.cost_monthly_amounts.count == 0
@@ -20,6 +24,14 @@ class Cost < ActiveRecord::Base
         self.update_budget
       end
     end
+  end
+
+  def fields
+    company.fields.where(subject_type: self.class.name)
+  end
+
+  def company
+    io.company
   end
 
   def update_budget
