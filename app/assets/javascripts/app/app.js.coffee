@@ -359,6 +359,10 @@
       controller: 'LeadsController'
       reloadOnSearch: false
 
+    .when '/settings/leads',
+      templateUrl: 'settings/leads.html'
+      controller: 'LeadsSettingsController'
+
     .when '/api_reference',
       templateUrl: 'api_reference.html'
       controller: 'ApiReferenceController'

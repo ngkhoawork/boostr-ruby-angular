@@ -71,7 +71,7 @@
       (contact) ->
         Contact.set(contact.id)
         $rootScope.$broadcast 'newContact', contact
-        $modalInstance.close()
+        $modalInstance.close(contact)
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

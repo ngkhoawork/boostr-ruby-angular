@@ -50,7 +50,7 @@
                     lead: -> lead
 
         $scope.showDealModal = (lead) ->
-            modalInstance = $modal.open
+            modal = $modal.open
                 templateUrl: 'modals/deal_form.html'
                 controller: 'DealsNewController'
                 size: 'md'
@@ -58,13 +58,13 @@
                     deal: -> {}
                     options: -> {lead}
 
-            modalInstance.result.then (deal) ->
-                if deal
+            modal.result.then (deal) ->
+                if deal && deal.id
                     lead.deals = lead.deals || []
                     lead.deals.push _.pick deal, ['id', 'name', 'budget']
 
         $scope.showAccountModal = (lead) ->
-            $modal.open
+            modal = $modal.open
                 templateUrl: 'modals/client_form.html'
                 controller: 'AccountsNewController'
                 size: 'md'
@@ -72,14 +72,20 @@
                     client: -> {}
                     options: -> {lead}
 
+            modal.result.then (account) ->
+                if account && account.id then lead.client = account
+
         $scope.showContactModal = (lead) ->
-            $modal.open
+            modal = $modal.open
                 templateUrl: 'modals/contact_form.html'
                 controller: 'ContactsNewController'
                 size: 'md'
                 resolve:
                     contact: -> {}
                     options: -> {lead}
+
+            modal.result.then (contact) ->
+                if contact && contact.id then lead.contact = contact
 
         $scope.reassign = (lead) ->
             params = {id: lead.id}
