@@ -4,7 +4,8 @@ class CreateCustomFieldNames < ActiveRecord::Migration
       t.string     :subject_type
       t.belongs_to :company, foreign_key: true
 
-      t.integer  :field_index
+      t.integer  :column_index
+      t.string   :column_type
       t.string   :field_type
       t.string   :field_label
       t.boolean  :is_required
@@ -15,6 +16,7 @@ class CreateCustomFieldNames < ActiveRecord::Migration
       t.timestamps null: false
     end
 
-    add_index :custom_field_names, [:company_id, :subject_type]
+    add_index :custom_field_names, [:company_id, :subject_type, :field_type, :position],
+              unique: true, name: 'index_custom_field_names_on_company_subject_field_type_position'
   end
 end
