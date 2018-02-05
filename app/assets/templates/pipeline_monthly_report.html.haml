@@ -93,7 +93,7 @@
                       {{ user.first_name + " " + user.last_name + " (" + user.share + "%)"}}
                   %td {{ deal.advertiser.name }}
                   %td
-                    %a{ href: '', ng: {href: '/deals/{{deal.id}}'}, 'target': '_blank' }
+                    %a{ href: '', ng: {href: '/deals/{{deal.id}}'} }
                       {{ deal.name }}
                   %td {{ deal.agency.name }}
                   %td {{ deal.agency.parent_client.name }}

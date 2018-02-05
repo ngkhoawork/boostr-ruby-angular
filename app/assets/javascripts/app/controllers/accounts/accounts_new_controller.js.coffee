@@ -12,7 +12,6 @@
   $scope.countries = []
   $scope.isDuplicateShow = false
   $scope.isLoaderShow = false
-  $scope.duplicateItemsLimit = 5  # the maximum number of output duplicates
   $scope.minSearchStringLength = 3 # the minimum search string length
 
   CountriesList.get (data) ->

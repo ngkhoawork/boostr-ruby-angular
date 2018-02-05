@@ -36,14 +36,14 @@
                 Account name is 
                 %strong
                   unique
-              %li.list-group-item.duplicates{ ng: { repeat: 'duplicate in duplicates | limitTo: duplicateItemsLimit' } }
+              %li.list-group-item.duplicates{ ng: { repeat: 'duplicate in duplicates' } }
                 %span{ 'ng-bind-html': 'duplicate.name' }
                 %a.pull-right{'ng-href': '/accounts/{{ duplicate.id }}', target: '_blank'}
                   Go to Account
-              %li.list-group-item.create-account{ ng: { click: 'closeDuplicateList()', if: 'duplicates.length > 0' } }
-                Create new account
-                %strong.duplicate-string
-                  {{ client.name }}
+            %span.create-account{ ng: { click: 'closeDuplicateList()', if: 'duplicates.length > 0' } }
+              Create new account
+              %strong.duplicate-string
+                {{ client.name }}
 
 
       .form-group
