@@ -136,6 +136,15 @@
                       = inline_svg 'icons/import.svg'
                       Publishers Daily Actuals Import
 
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Leads Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadLeadsModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Leads
+
         %tab{heading: "Data Export", index: "1"}
           .row
             .col-sm-4
