@@ -12,6 +12,7 @@ class Io < ActiveRecord::Base
   has_many :users, dependent: :destroy, through: :io_members
   has_many :content_fees, dependent: :destroy
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
+  has_many :costs, dependent: :destroy
   has_many :display_line_items, dependent: :destroy
   has_many :display_line_item_budgets, dependent: :destroy, through: :display_line_items
   has_many :print_items, dependent: :destroy
@@ -301,6 +302,14 @@ class Io < ActiveRecord::Base
         content_fees: {
             include: {
                 content_fee_product_budgets: {}
+            },
+            methods: [
+                :product
+            ]
+        },
+        costs: {
+            include: {
+                cost_monthly_amounts: {}
             },
             methods: [
                 :product

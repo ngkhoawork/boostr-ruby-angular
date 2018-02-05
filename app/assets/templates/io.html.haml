@@ -99,6 +99,7 @@
 								%tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
 									%td.center{ 'colspan': '{{4+currentIO.readable_months.length}}' }
 										No data available
+				%div{'ng-include': '"partials/io/io_costs.html"'}
 				.block#line-display
 					%div.mb20
 						%span.title Line Items - display

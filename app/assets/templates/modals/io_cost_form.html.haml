@@ -1,0 +1,43 @@
+#activity-form-modal.popup-modal
+    %form#product-form{ ng: { submit: 'addCost()' } }
+        .popup-modal-header
+            New Cost
+            %span.close-btn{'ng-click': 'cancel()'}
+        .popup-modal-body
+            .row
+                .col-xs-6
+                    .form-group
+                        %label Product
+                        %ui-select{ name: 'product', ng: { model: 'cost.product_id', disabled: true, required: true } }
+                            %ui-select-match{ placeholder: 'Product' }
+                                {{ $select.selected.name }}
+                            %ui-select-choices{ repeat: 'product.id as product in products | filter: { name: $select.search }' }
+                                %div{ ng: { bind: { html: 'product.name' } } }
+                .col-xs-6
+                    .form-group.product-budget{'ng-class': "{'with-add-btn': cost.isIncorrectTotalBudgetPercent}"}
+                        %label Total Budget
+                        %div.total-budget-wrap
+                            %input.form-control.total-budget{'float-only': '', 'ng-model': 'cost.budget_loc', 'ng-change': 'changeTotalBudget()'}
+                            %span.total-percent{'ng-class': "{'has-error': cost.isIncorrectTotalBudgetPercent}"}
+                                {{(cost.budget_percent || 0 )+ '%'}}
+                            %span.reset-budget.glyphicon.glyphicon-remove-circle{'ng-class': "{'has-error': cost.isIncorrectTotalBudgetPercent}", 'ng-click': 'resetAddProduct()'}
+                .col-xs-12
+                    .row.months.new-product-form
+                        .col-xs-2{ ng: { repeat: 'month in cost.cost_monthly_amounts' } }
+                            .form-group
+                                %label {{cost.months[$index]}}
+                                %input.form-control.offset-bottom{style: 'margin-bottom: 5px', 'ng-model': 'month.budget_loc',
+                                    'ng-disabled': '!cost.budget_loc',
+                                    'ng-change': 'changeMonthValue(month.budget_loc, $index)',
+                                    'ng-focus': 'cutCurrencySymbol(month.budget_loc, $index)',
+                                    'ng-blur': 'setCurrencySymbol(month.budget_loc, $index)',
+                                    'float-only':''}
+                                %input.form-control{ 'ng-model': 'month.percent_value',
+                                    'ng-disabled': '!cost.budget_loc',
+                                    'ng-change': 'changeMonthPercent(month.percent_value, $index)',
+                                    'ng-focus': 'cutPercent(month.percent_value, $index)',
+                                    'ng-blur': 'setPercent(month.percent_value, $index)',
+                                    'float-only':''}
+        .popup-modal-footer
+            %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
+            %button.btn.btn-warning{'type': 'submit', 'ng-disabled': 'cost.isIncorrectTotalBudgetPercent || !cost.product_id'} Add Cost

@@ -17,7 +17,55 @@ class Deal::IoGenerateService
   private
 
   def generate_io
-    io_param = {
+    if io = Io.create!(io_param)
+      generate_io_members(io)
+      generate_content_fees(io)
+      generate_costs(io)
+    end
+  end
+
+  def generate_io_members(io)
+    deal.deal_members.each do |deal_member|
+      if deal_member.user.present?
+        io_member_param = {
+          io_id: io.id,
+          user_id: deal_member.user_id,
+          share: deal_member.share,
+          from_date: deal.start_date,
+          to_date: deal.end_date,
+        }
+        IoMember.create!(io_member_param)
+      end
+    end
+  end
+
+  def generate_content_fees(io)
+    deal.deal_products.product_type_of('Content-Fee').created_asc.each do |deal_product|
+      content_fee_param = {
+        io_id: io.id,
+        product_id: deal_product.product.id,
+        budget: deal_product.budget,
+        budget_loc: deal_product.budget_loc
+      }
+      content_fee = ContentFee.create(content_fee_param)
+      deal_product.update_columns(open: false)
+    end
+  end
+
+  def generate_costs(io)
+    deal.deal_products.created_asc.each do |deal_product|
+      cost_param = {
+        io_id: io.id,
+        product_id: deal_product.product.id,
+        budget: deal_product.budget,
+        budget_loc: deal_product.budget_loc
+      }
+      cost = Cost.create(cost_param)
+    end
+  end
+
+  def io_param
+    @_io_param ||= {
         advertiser_id: deal.advertiser_id,
         agency_id: deal.agency_id,
         budget: deal.budget.nil? ? 0 : deal.budget,
@@ -31,31 +79,6 @@ class Deal::IoGenerateService
         company_id: deal.company_id,
         deal_id: deal.id
     }
-    if io = Io.create!(io_param)
-      deal.deal_members.each do |deal_member|
-        if deal_member.user.present?
-          io_member_param = {
-            io_id: io.id,
-            user_id: deal_member.user_id,
-            share: deal_member.share,
-            from_date: deal.start_date,
-            to_date: deal.end_date,
-          }
-          IoMember.create!(io_member_param)
-        end
-      end
-
-      deal.deal_products.product_type_of('Content-Fee').created_asc.each do |deal_product|
-        content_fee_param = {
-          io_id: io.id,
-          product_id: deal_product.product.id,
-          budget: deal_product.budget,
-          budget_loc: deal_product.budget_loc
-        }
-        content_fee = ContentFee.create(content_fee_param)
-        deal_product.update_columns(open: false)
-      end
-    end
   end
 
   def destroy_io

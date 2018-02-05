@@ -1,0 +1,43 @@
+.block#costs
+  %div.mb20
+    %span.title Costs
+    %add-button{'ng-click': 'showNewCostModal()'} Add
+
+  .table-wrapper
+    %table.table.table-hover
+      %thead
+        %tr
+          %th.left Product
+          %th.left Start Date
+          %th.left End Date
+          %th.left Total Cost
+          %th.left{ ng: { repeat: "range in currentIO.readable_months" } }
+            {{ range.name }}
+      %tbody
+        %tr{ ng: { if: 'currentIO.costs && currentIO.costs.length > 0', repeat: "cost in currentIO.costs"} }
+          %td
+            .dropdown
+              %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                %span.editable
+                  {{cost.product.name}}
+                  %span.caret
+              %ul.dropdown-menu
+                %li{'ng-repeat': 'product in products', 'ng-class': '{active: cost.product.name == product.name}'}
+                  %a{'href': '', 'ng-click': 'cost.product_id = product.id; updateCost(cost);'}
+                    %span.text {{product.name}}
+              %i.fa.fa-trash.z-icon{'ng-click': 'deleteCost(cost)'}
+          %td
+            {{ currentIO.start_date | date: 'M/d/yyyy' }}
+          %td
+            {{ currentIO.end_date | date: 'M/d/yyyy' }}
+          %td
+            %span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "cost.budget_loc", 'on-after-save': 'updateCost(cost)', 'ng-if': "currentUser.is_admin || canEditIO" }
+            %span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
+              {{ cost.budget_loc | currency:currency_symbol:2 }}
+          %td.left{ ng: { repeat: "monthly_amount in cost.cost_monthly_amounts | orderBy: 'start_date'" } }
+            %span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "monthly_amount.budget_loc", 'on-after-save': 'updateCost(cost)', 'ng-if': "currentUser.is_admin || canEditIO" }
+            %span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
+              {{ monthly_amount.budget_loc | currency:currency_symbol:2 }}
+        %tr{ ng: { if: '!currentIO.costs || currentIO.costs.length == 0' } }
+          %td.center{ 'colspan': '{{4+currentIO.readable_months.length}}' }
+            No data available

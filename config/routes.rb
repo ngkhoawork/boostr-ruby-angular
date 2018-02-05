@@ -268,6 +268,7 @@ Rails.application.routes.draw do
     end
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
       put :update_influencer_budget
+      resources :costs, only: [:create, :update, :destroy]
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]
     end
