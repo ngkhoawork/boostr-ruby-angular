@@ -26,6 +26,7 @@ class DisplayLineItemCsv
     return self.errors.full_messages unless self.valid?
     update_external_io_number
     upsert_temp_io
+
     if io_or_tempio && display_line_item
       display_line_item.update(
         line_number: line_number,

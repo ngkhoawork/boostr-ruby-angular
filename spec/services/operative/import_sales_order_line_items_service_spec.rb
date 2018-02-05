@@ -376,6 +376,14 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     @_io = create :io, opts
   end
 
+  def start_date
+    @start_date ||= Date.current
+  end
+
+  def end_date
+    @end_date ||= start_date + 1.day
+  end
+
   def line_item_csv_file(opts = {})
     @_line_item_csv_file ||= generate_csv({
       sales_order_id: '1',
@@ -396,10 +404,10 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     io(start_date: Date.today, end_date: Date.today)
 
     list = (build_list :sales_order_line_item_csv_data, 4,
-      sales_order_id: io.external_io_number,
+      sales_order_id: io(start_date: start_date, end_date: end_date).external_io_number,
       sales_order_line_item_id: 2,
-      sales_order_line_item_start_date: io.start_date + 1.day,
-      sales_order_line_item_end_date: io.end_date - 1.day,
+      sales_order_line_item_start_date: start_date + 1.day,
+      sales_order_line_item_end_date: end_date - 1.day,
       product_name: 'Display',
       quantity: 1000,
       net_unit_cost: 100,
@@ -409,10 +417,10 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     )
 
     list.concat (build_list :sales_order_line_item_csv_data, 2,
-      sales_order_id: io.external_io_number,
+      sales_order_id: io(start_date: start_date, end_date: end_date).external_io_number,
       sales_order_line_item_id: 2,
-      sales_order_line_item_start_date: Date.today - 1.month,
-      sales_order_line_item_end_date: Date.today,
+      sales_order_line_item_start_date: start_date + 1.day,
+      sales_order_line_item_end_date: end_date + 1.day,
       product_name: nil,
       quantity: 1000,
       net_unit_cost: 100,

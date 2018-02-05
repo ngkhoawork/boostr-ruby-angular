@@ -30,6 +30,7 @@
   'LocalStorageModule'
   'zFilterModule'
   'ngTextTruncate'
+  'mdMarkdownIt'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -357,6 +358,10 @@
       templateUrl: 'leads.html'
       controller: 'LeadsController'
       reloadOnSearch: false
+
+    .when '/api_reference',
+      templateUrl: 'api_reference.html'
+      controller: 'ApiReferenceController'
 
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true

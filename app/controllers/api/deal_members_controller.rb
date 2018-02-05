@@ -26,6 +26,7 @@ class Api::DealMembersController < ApplicationController
 
   def destroy
     deal_member.destroy
+
     render deal
   end
 

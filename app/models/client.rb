@@ -103,76 +103,7 @@ class Client < ActiveRecord::Base
   AGENCY = 11
 
   def self.to_csv(company)
-    header = [
-      :Id,
-      :Name,
-      :Type,
-      :Parent,
-      :Category,
-      :Subcategory,
-      :Address,
-      :City,
-      :State,
-      :Zip,
-      :Phone,
-      :Website,
-      :Replace_Team,
-      :Teammembers,
-      :Region,
-      :Segment,
-      :Holding_Company
-    ]
-
-    agency_type_id = self.agency_type_id(company)
-    advertiser_type_id = self.advertiser_type_id(company)
-
-    CSV.generate(headers: true) do |csv|
-      csv << header
-
-      all
-      .includes(
-        :parent_client,
-        :address,
-        :client_category,
-        :client_subcategory,
-        :client_region,
-        :client_segment,
-        client_members: [:user]
-      )
-      .order(:id).each do |client|
-        type_id = nil
-        if advertiser_type_id == client.client_type_id
-          type_id = 'Advertiser'
-        elsif agency_type_id == client.client_type_id
-          type_id = 'Agency'
-        end
-
-        team_members = client.client_members.each_with_object([]) do |member, memo|
-          memo << member.user.email + '/' + member.share.to_s
-        end
-
-        line = []
-        line << client.id
-        line << client.name
-        line << type_id
-        line << (client.parent_client.try(:name))
-        line << (client.client_category.try(:name))
-        line << (client.client_subcategory.try(:name))
-        line << (client.address.nil? ? nil : client.address.street1)
-        line << (client.address.nil? ? nil : client.address.city)
-        line << (client.address.nil? ? nil : client.address.state)
-        line << (client.address.nil? ? nil : client.address.zip)
-        line << (client.address.nil? ? nil : client.address.phone)
-        line << client.website
-        line << nil
-        line << team_members.join(';')
-        line << (client.client_region.try(:name))
-        line << (client.client_segment.try(:name))
-        line << (client.holding_company.try(:name))
-
-        csv << line
-      end
-    end
+    Csv::AccountsService.new(self, company).perform
   end
 
   def connection_entry_ids

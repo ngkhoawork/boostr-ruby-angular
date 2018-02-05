@@ -1165,6 +1165,22 @@ describe Deal do
 
   end
 
+  describe '#updated?' do
+    let(:deal) { create :deal, creator: user, company: company }
+
+    context 'if deal is new' do
+      it { expect(deal.updated?).to be false }
+    end
+
+    context 'if deal was updated' do
+      it do
+        deal.assign_attributes(name: "new name", updated_at: 1.second.from_now)
+        deal.save
+        expect(deal.updated?).to be true
+      end
+    end
+  end
+
   private
 
   def closed_won_stage

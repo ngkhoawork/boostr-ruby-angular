@@ -9,7 +9,7 @@ describe Api::ForecastsController do
     context 'without filters' do
       it 'returns a list of root teams' do
         parent_team
-        create_list :parent_team, 2
+        create_list :parent_team, 2, company: company
 
         get :index, format: :json, new_version: 'true', time_period_id: time_period.id,
               team_id: 'all', product_id: 'all', user_id: 'all'
@@ -23,7 +23,7 @@ describe Api::ForecastsController do
     context 'with team filter' do
       it 'returns a team data' do
         parent_team
-        create_list :user, 2, team: parent_team
+        create_list :user, 2, team: parent_team, company: company
 
         get :index, format: :json, new_version: 'true', time_period_id: time_period.id,
               team_id: parent_team.id, product_id: 'all', user_id: 'all'
@@ -40,7 +40,7 @@ describe Api::ForecastsController do
     context 'with user filter' do
       it 'returns a member data' do
         parent_team
-        create_list :user, 2, team: parent_team
+        create_list :user, 2, team: parent_team, company: company
 
         get :index, format: :json, new_version: 'true', time_period_id: time_period.id,
               team_id: parent_team.id, product_id: 'all', user_id: user.id
@@ -55,7 +55,7 @@ describe Api::ForecastsController do
     context 'with all filter' do
       it 'returns a user data' do
         parent_team
-        create_list :user, 2, team: parent_team
+        create_list :user, 2, team: parent_team, company: company
 
         get :index, format: :json, new_version: 'true', time_period_id: time_period.id, 
               team_id: parent_team.id, product_id: product.id, user_id: user.id
@@ -107,15 +107,15 @@ describe Api::ForecastsController do
   end
 
   def company
-    @_company ||= Company.first
+    @_company ||= create :company
   end
 
   def user
-    @_user ||= create :user
+    @_user ||= create :user, company: company
   end
 
   def product
-    @_product ||= create :product
+    @_product ||= create :product, company: company
   end
 
   def child_team
@@ -123,11 +123,11 @@ describe Api::ForecastsController do
   end
 
   def parent_team
-    @_parent_team ||= create :parent_team, leader: user
+    @_parent_team ||= create :parent_team, leader: user, company: company
   end
 
   def time_period
-    @_time_period ||= create :time_period, period_type: 'quarter'
+    @_time_period ||= create :time_period, period_type: 'quarter', company: company
   end
 end
 

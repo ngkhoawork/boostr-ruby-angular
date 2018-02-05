@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180123091430) do
+ActiveRecord::Schema.define(version: 20180202233414) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -441,7 +441,7 @@ ActiveRecord::Schema.define(version: 20180123091430) do
     t.integer  "user_id"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
-    t.decimal  "changed_amount", precision: 12, scale: 2
+    t.decimal  "changed_amount", precision: 15, scale: 2
   end
 
   add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree
@@ -580,13 +580,15 @@ ActiveRecord::Schema.define(version: 20180123091430) do
     t.integer  "red_threshold"
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
-    t.boolean  "requests_enabled",                  default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "requests_enabled",                  default: false
     t.boolean  "enable_operative_extra_fields",     default: false
     t.boolean  "influencer_enabled",                default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "forecast_gap_to_quota_positive",    default: true
     t.boolean  "publishers_enabled",                default: false
+    t.boolean  "gmail_enabled",                     default: false
+    t.boolean  "gcalendar_enabled",                 default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -825,7 +827,7 @@ ActiveRecord::Schema.define(version: 20180123091430) do
     t.datetime "updated_at",                                  null: false
     t.integer  "revenue_calculation_pattern", default: 0,     null: false
     t.integer  "product_mapping",             default: 0,     null: false
-    t.boolean  "exclude_child_line_items"
+    t.boolean  "exclude_child_line_items",    default: false
   end
 
   add_index "datafeed_configuration_details", ["api_configuration_id"], name: "index_datafeed_configuration_details_on_api_configuration_id", using: :btree
@@ -1196,14 +1198,11 @@ ActiveRecord::Schema.define(version: 20180123091430) do
   create_table "deal_products", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "product_id"
-    t.decimal  "budget",      precision: 15, scale: 2, default: 0.0
-    t.datetime "created_at",                                          null: false
-    t.datetime "updated_at",                                          null: false
-    t.boolean  "open",                                 default: true
-    t.decimal  "budget_loc",  precision: 15, scale: 2, default: 0.0
-    t.integer  "ssp_id"
-    t.string   "ssp_deal_id"
-    t.integer  "pmp_type"
+    t.decimal  "budget",     precision: 15, scale: 2, default: 0.0
+    t.datetime "created_at",                                         null: false
+    t.datetime "updated_at",                                         null: false
+    t.boolean  "open",                                default: true
+    t.decimal  "budget_loc", precision: 15, scale: 2, default: 0.0
   end
 
   add_index "deal_products", ["deal_id"], name: "index_deal_products_on_deal_id", using: :btree
@@ -1262,7 +1261,6 @@ ActiveRecord::Schema.define(version: 20180123091430) do
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree
-  add_index "deals", ["agency_id", "company_id"], name: "idx_test", using: :btree
   add_index "deals", ["agency_id"], name: "index_deals_on_agency_id", using: :btree
   add_index "deals", ["company_id"], name: "index_deals_on_company_id", using: :btree
   add_index "deals", ["created_by"], name: "index_deals_on_created_by", using: :btree
@@ -1535,6 +1533,15 @@ ActiveRecord::Schema.define(version: 20180123091430) do
     t.datetime "updated_at",  null: false
   end
 
+  create_table "google_sheets_details", force: :cascade do |t|
+    t.string   "sheet_id"
+    t.integer  "api_configuration_id"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "google_sheets_details", ["api_configuration_id"], name: "index_google_sheets_details_on_api_configuration_id", using: :btree
+
   create_table "holding_companies", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
@@ -1792,11 +1799,11 @@ ActiveRecord::Schema.define(version: 20180123091430) do
   add_index "print_items", ["io_id"], name: "index_print_items_on_io_id", using: :btree
 
   create_table "product_dimensions", force: :cascade do |t|
-    t.string   "name"
-    t.string   "revenue_type"
     t.integer  "company_id"
+    t.string   "name"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
+    t.string   "revenue_type"
   end
 
   add_index "product_dimensions", ["company_id"], name: "index_product_dimensions_on_company_id", using: :btree
@@ -2098,6 +2105,13 @@ ActiveRecord::Schema.define(version: 20180123091430) do
   add_index "sales_stages", ["sales_stageable_id"], name: "index_sales_stages_on_sales_stageable_id", using: :btree
   add_index "sales_stages", ["sales_stageable_type"], name: "index_sales_stages_on_sales_stageable_type", using: :btree
 
+  create_table "settings", force: :cascade do |t|
+    t.string   "var",        null: false
+    t.text     "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "snapshots", force: :cascade do |t|
     t.integer  "company_id"
     t.integer  "user_id"
@@ -2358,7 +2372,6 @@ ActiveRecord::Schema.define(version: 20180123091430) do
 
   add_index "values", ["company_id", "field_id"], name: "index_values_on_company_id_and_field_id", using: :btree
   add_index "values", ["option_id"], name: "index_values_on_option_id", using: :btree
-  add_index "values", ["subject_type", "option_id"], name: "idx_test999", using: :btree
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
@@ -2398,8 +2411,8 @@ ActiveRecord::Schema.define(version: 20180123091430) do
   add_foreign_key "contact_cf_options", "contact_cf_names"
   add_foreign_key "contact_cfs", "companies"
   add_foreign_key "contact_cfs", "contacts"
-  add_foreign_key "content_fee_product_budgets", "content_fees", on_delete: :cascade
-  add_foreign_key "content_fees", "ios", on_delete: :cascade
+  add_foreign_key "content_fee_product_budgets", "content_fees"
+  add_foreign_key "content_fees", "ios"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
   add_foreign_key "datafeed_configuration_details", "api_configurations"
@@ -2412,10 +2425,9 @@ ActiveRecord::Schema.define(version: 20180123091430) do
   add_foreign_key "deal_product_cf_names", "companies"
   add_foreign_key "deal_product_cf_options", "deal_product_cf_names"
   add_foreign_key "deal_product_cfs", "companies"
-  add_foreign_key "deal_products", "ssps"
   add_foreign_key "dfp_report_queries", "api_configurations"
-  add_foreign_key "display_line_item_budgets", "display_line_items", on_delete: :cascade
-  add_foreign_key "display_line_items", "ios", on_delete: :cascade
+  add_foreign_key "display_line_item_budgets", "display_line_items"
+  add_foreign_key "display_line_items", "ios"
   add_foreign_key "display_line_items", "products"
   add_foreign_key "display_line_items", "temp_ios"
   add_foreign_key "ealert_custom_fields", "companies"
@@ -2435,6 +2447,7 @@ ActiveRecord::Schema.define(version: 20180123091430) do
   add_foreign_key "forecast_pmp_revenue_facts", "user_dimensions"
   add_foreign_key "forecast_revenue_facts", "product_dimensions"
   add_foreign_key "forecast_revenue_facts", "user_dimensions"
+  add_foreign_key "google_sheets_details", "api_configurations"
   add_foreign_key "influencer_content_fees", "content_fees"
   add_foreign_key "influencer_content_fees", "influencers"
   add_foreign_key "influencers", "companies"
