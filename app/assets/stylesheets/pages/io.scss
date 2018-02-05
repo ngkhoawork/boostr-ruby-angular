@@ -58,6 +58,11 @@
                         visibility: visible;
                     }
                 }
+                &.sum-budgets-row {
+                    td {
+                        padding: 15px 18px;
+                    }
+                }
             }
         }
     }

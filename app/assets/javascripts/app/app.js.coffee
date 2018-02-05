@@ -30,6 +30,7 @@
   'LocalStorageModule'
   'zFilterModule'
   'ngTextTruncate'
+  'mdMarkdownIt'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -340,18 +341,26 @@
     .when '/users/sign_out',
       templateUrl: 'sign_out.html'
       controller: 'signOutController'
-      
+
     .when '/publishers',
       templateUrl: 'publishers/publishers.html'
       controller: 'PablishersController'
 
     .when '/api/gmail_extension/',
-      templateUrl: 'gmail_extension.html'
+      templateUrl: 'blank.html'
       controller: 'GmailExtensionController'
+
+    .when '/api/calendar_extension/',
+      templateUrl: 'blank.html'
+      controller: 'CalendarExtensionController'
 
     .when '/publishers/:id',
       templateUrl: 'publishers/publisher.html'
       controller: 'PablisherController'
+
+    .when '/api_reference',
+      templateUrl: 'api_reference.html'
+      controller: 'ApiReferenceController'
 
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
@@ -407,7 +416,8 @@
   updateTalkus = (user) ->
     if location.hostname is 'localhost' or
         location.hostname is '127.0.0.1' or
-        location.pathname.indexOf('/api/gmail_extension/') is 0
+        location.pathname.indexOf('/api/gmail_extension/') is 0 or
+        location.pathname.indexOf('/api/calendar_extension/') is 0
       return
     talkus('init', 'qu346HQax2ut3MQr4',
       id: user.id

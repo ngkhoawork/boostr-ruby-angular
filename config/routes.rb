@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   get 'switch_user', to: 'switch_user#set_current_user'
   get 'switch_user/remember_user', to: 'switch_user#remember_user'
 
+  get 'extension_localstorage', to: 'extension_localstorage#index'
+
   namespace :api, defaults: { format: :json } do
     scope module: :v1, constraints: ApiConstraints.new(version: 1) do
       post 'forgot_password' => 'forgot_password#create'
@@ -87,6 +89,7 @@ Rails.application.routes.draw do
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
         get :won_deals, on: :collection
+        get :find_by_id, on: :member
         resources :deal_products, only: [:create, :update, :destroy]
         resources :deal_assets, only: [:index, :update, :create, :destroy]
         resources :deal_contacts, only: [:index, :create, :update, :destroy]
@@ -143,6 +146,7 @@ Rails.application.routes.draw do
       end
 
       resources :gmail_extension, only: [:index]
+      resources :calendar_extension, only: [:index]
 
       resources :validations, only: [] do
         collection do
@@ -154,7 +158,26 @@ Rails.application.routes.draw do
       resources :account_cf_names, only: [:index]
       resources :holding_companies, only: [:index]
       resources :contact_cf_names, only: [:index]
+      resources :display_line_items, only: [:create]
+      resources :display_line_item_budgets, only: [:create]
     end # API V2 END
+
+    namespace :dataexport, defaults: { format: :json }, constraints: ApiConstraints.new(dataexport: true) do
+      resources :user_token, only: [:create]
+
+      resources :users, only: [:index]
+      resources :products, only: [:index]
+      resources :ios, only: [:index]
+      resources :accounts, only: [:index]
+      resources :deals, only: [:index]
+      resources :display_line_items, only: [:index]
+      resources :stages, only: [:index]
+      resources :deal_members, only: [:index]
+      resources :deal_products, only: [:index]
+      resources :deal_product_budgets, only: [:index]
+      resources :io_members, only: [:index]
+      resources :display_line_item_budgets, only: [:index]
+    end
 
     resources :dfp_imports do
       collection do
@@ -189,6 +212,7 @@ Rails.application.routes.draw do
     resources :api_configurations do
       collection do
         get :metadata
+        get :service_account_email
       end
     end
     resources :integration_types, only: [:index]
@@ -197,7 +221,11 @@ Rails.application.routes.draw do
     end
 
     resources :integrations, only: [:create]
-    resources :csv_import_logs, only: [:index]
+    resources :csv_import_logs, only: [:index] do
+      collection  do
+        get :api_logs
+      end
+    end
 
     resources :users, only: [:index, :update] do
       collection do
@@ -230,7 +258,7 @@ Rails.application.routes.draw do
     resources :account_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :contact_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_reports, only: [:index]
-    
+
     resources :bps, only: [:index, :create, :update, :show, :destroy] do
       get :seller_total_estimates
       get :account_total_estimates
@@ -239,7 +267,7 @@ Rails.application.routes.draw do
       post :assign_client
       post :add_all_clients
       post :assign_all_clients
-      resources :bp_estimates, only: [:index, :create, :update, :show, :destroy] do 
+      resources :bp_estimates, only: [:index, :create, :update, :show, :destroy] do
         get :status, on: :collection
       end
     end

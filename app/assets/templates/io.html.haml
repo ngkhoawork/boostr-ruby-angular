@@ -96,6 +96,14 @@
 										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "product_budget.budget_loc", 'on-after-save': 'updateContentFeeAndBudget(content_fee)', 'ng-if': "currentUser.is_admin || canEditIO" }
 										%span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
 											{{ product_budget.budget_loc | currency:currency_symbol:2 }}
+								%tr.sum-budgets-row{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0'} }
+									%td{colspan: 2}
+									%td.right
+										%b TOTAL
+									%td.left
+										%b {{sumContentFeeBudget() | currency: currency_symbol : 2}}
+									%td.left{'ng-repeat': 'month in currentIO.months'}
+										%b {{sumContentFeeBudget($index) | currency: currency_symbol : 2}}
 								%tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
 									%td.center{ 'colspan': '{{4+currentIO.readable_months.length}}' }
 										No data available

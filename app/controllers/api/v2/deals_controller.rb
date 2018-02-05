@@ -1,18 +1,16 @@
 class Api::V2::DealsController < ApiController
   respond_to :json
 
-  before_filter :set_current_user, only: [:update, :create]
+  before_filter :set_current_user, only: [:update, :create, :find_by_id]
 
   def index
     if params[:name].present?
-      render json: suggest_deals
+      render json: by_pages(suggest_deals)
     elsif params[:activity].present?
-      render json: activity_deals
+      render json: by_pages(activity_deals)
     elsif params[:year].present?
-      response_deals = company.deals
-        .includes(:deal_members)
-        .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
-        .as_json
+      response_deals =
+        by_pages(company_deals).as_json
 
       #deal_sums = company.deals
       #  .select("advertiser_id, sum(budget) AS budget")
@@ -78,7 +76,13 @@ class Api::V2::DealsController < ApiController
       end
       render json: response_deals
     else
-      render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage, :deal_custom_field, :users, :currency).distinct , each_serializer: DealIndexSerializer).to_json
+      render json: ActiveModel::ArraySerializer.new(
+        by_pages(deals.for_client(params[:client_id]).includes(:advertiser,
+                                                               :stage,
+                                                               :previous_stage,
+                                                               :deal_custom_field,
+                                                               :users,
+                                                               :currency).distinct) , each_serializer: DealIndexSerializer).to_json
     end
   end
 
@@ -119,6 +123,10 @@ class Api::V2::DealsController < ApiController
   def won_deals
     won_deals = company.deals.includes(:users, :stage, :advertiser, :agency, :deal_members).at_percent(100)
     render json: won_deals, each_serializer: Api::V2::Deals::SingleSerializer
+  end
+
+  def find_by_id
+    render json: Api::V2::Deals::FindByIdSerializer.new(deal)
   end
 
   private
@@ -289,13 +297,23 @@ class Api::V2::DealsController < ApiController
   def suggest_deals
     return @search_deals if defined?(@search_deals)
 
-    @search_deals = company.deals.where('deals.name ilike ?', "%#{params[:name]}%").limit(10)
+    @search_deals = company.deals.by_name(params[:name])
   end
 
   def activity_deals
     return @activity_deals if defined?(@activity_deals)
 
-    @activity_deals = company.deals.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
+    @activity_deals = company.deals.where.not(activity_updated_at: nil).order(activity_updated_at: :desc)
+  end
+
+  def company_deals
+    return @company_deals if defined?(@company_deals)
+
+    @company_deals =
+      company
+        .deals
+        .includes(:deal_members)
+        .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
   end
 
   def quarters

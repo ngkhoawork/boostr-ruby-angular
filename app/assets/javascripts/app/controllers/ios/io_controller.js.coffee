@@ -306,6 +306,14 @@
                         for key, error of resp.data.errors
                             $scope.errors[key] = error && error[0]
                 )
+
+            $scope.sumContentFeeBudget = (index) ->
+                products = $scope.currentIO.content_fees
+                _.reduce products, (result, product) ->
+                    if !_.isUndefined index then product = product.content_fee_product_budgets[index]
+                    result += parseFloat product.budget_loc
+                , 0
+
             $scope.$on 'updated_influencer_content_fees', ->
                 $scope.init()
 

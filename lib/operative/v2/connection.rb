@@ -19,8 +19,8 @@ module Operative
           faraday.headers['apiProvider'] = 'operative'
           faraday.response :logger unless Rails.env.test?
           faraday.use Operative::IntegrationLoggingMiddleware
-          faraday.adapter  Faraday.default_adapter
           faraday.basic_auth(user_email, password)
+          faraday.adapter  Faraday.default_adapter
         end
       end
     end

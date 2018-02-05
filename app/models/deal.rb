@@ -2,6 +2,8 @@ require 'rubygems'
 require 'zip'
 
 class Deal < ActiveRecord::Base
+  include GoogleSheetsExportable
+
   acts_as_paranoid
 
   belongs_to :company
@@ -220,7 +222,7 @@ class Deal < ActiveRecord::Base
   end
 
   def company_allowed_use_operative?
-    %w(22 29 34).include? self.company_id.to_s
+    %w(22 29 44).include? self.company_id.to_s
   end
 
   def operative_switched_on?
@@ -528,17 +530,6 @@ class Deal < ActiveRecord::Base
       array << (end_date - (end_date.beginning_of_month - 1)).to_i
     end
     array
-  end
-
-  def update_total_budget
-    current_budget = self.budget.nil? ? 0 : self.budget
-    new_budget = deal_product_budgets.sum(:budget)
-    new_budget_loc = deal_product_budgets.sum(:budget_loc)
-
-    log_budget_changes(current_budget, new_budget)
-
-    self.assign_attributes(budget: new_budget, budget_loc: new_budget_loc)
-    self.save(validate: false)
   end
 
   def exchange_rate
@@ -1653,6 +1644,10 @@ class Deal < ActiveRecord::Base
         end
       end
     end
+  end
+
+  def updated?
+    created_at != updated_at
   end
 
   def update_pipeline_fact(deal)

@@ -4,18 +4,7 @@ class ApiConfigurationService < BaseService
   end
 
   def get_configuration_class_name
-    case params[:integration_provider]
-      when 'operative'
-        'OperativeApiConfiguration'
-      when 'Operative Datafeed'
-        'OperativeDatafeedConfiguration'
-      when 'DFP'
-        'DfpApiConfiguration'
-      when 'Asana Connect'
-        'AsanaConnectConfiguration'
-      else
-        'ApiConfiguration'
-    end
+    ApiConfiguration::INTEGRATION_PROVIDERS[params[:integration_provider].to_sym] || 'ApiConfiguration'
   end
 
   def get_association_sym
@@ -25,5 +14,4 @@ class ApiConfigurationService < BaseService
   def user_company
     current_user.company
   end
-
 end

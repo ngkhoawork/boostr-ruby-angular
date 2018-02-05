@@ -2,6 +2,7 @@ starting-page {
   display: block;
   color: #FF7E30;
   cursor: pointer;
+  margin-top: 3px;
 
   .glyphicon{
     float: right;
@@ -23,6 +24,15 @@ starting-page {
     }
     &.left {
       margin-left: 2px;
+    }
+  }
+
+  .extension-icon {
+    margin-right: 10px;
+
+    img {
+      width: 16px;
+      vertical-align: top;
     }
   }
 }
