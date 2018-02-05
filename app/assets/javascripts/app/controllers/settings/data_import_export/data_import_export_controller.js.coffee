@@ -254,8 +254,6 @@
         metadata: ->
           false
 
-  $scope.showUploadLeadsModal()
-
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')
     return true
