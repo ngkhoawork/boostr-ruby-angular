@@ -6,15 +6,11 @@
     $scope.submitText = 'Update'
     $scope.advertisers = []
     $scope.agencies = []
-    $scope.deal = deal
-    Deal.get(deal.id).then (promiseDeal) ->
-      Field.defaults(promiseDeal, 'Deal').then (fields) ->
-      $scope.deal.deal_type = Field.field(promiseDeal, 'Deal Type')
-      $scope.deal.source_type = Field.field(promiseDeal, 'Deal Source')
 
     getDealCustomFieldNames()
 
     $q.all({
+      deal: Deal.get(deal.id),
       user: CurrentUser.get().$promise,
       currencies: Currency.active_currencies(),
       base_fields_validations: Validation.deal_base_fields().$promise
@@ -22,8 +18,13 @@
       $scope.currentUser = data.user
       $scope.currencies = data.currencies
       $scope.base_fields_validations = data.base_fields_validations
+      $scope.deal = data.deal
 
       $scope.setDefaultCurrency()
+
+      Field.defaults($scope.deal, 'Deal').then ->
+        $scope.deal.deal_type = Field.field($scope.deal, 'Deal Type')
+        $scope.deal.source_type = Field.field($scope.deal, 'Deal Source')
     
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
