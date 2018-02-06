@@ -62,7 +62,7 @@ class Product < ActiveRecord::Base
     io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
     deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
     ForecastRevenueCalculatorWorker.perform_async(io_change)
-    ForecastPipelineCalculatorWorker.perform_async(deal_change)
+    ForecastPipelineCalculatorWorker.peto_csvrform_async(deal_change)
   end
 
   def as_json(options = {})
@@ -85,16 +85,32 @@ class Product < ActiveRecord::Base
     return option
   end
 
-  def self.to_csv
+  def self.to_csv(company)
     CSV.generate do |csv|
-      csv << ["Product ID", "Product Name", "Pricing Type", "Product Line", "Product Family", "Active"]
+      csv << [
+        "Product ID", 
+        "Product Name", 
+        "Product Family", 
+        company&.product_option1, 
+        company&.product_option2, 
+        "Pricing Type", 
+        "Revenue Type", 
+        "Margin", 
+        "Active",
+        "Is Influencer Product"
+      ]
       all.each do |product|
         csv << [
           product.id,
           product.name,
+          product.product_family&.name,
+          product.option1&.name,
+          product.option2&.name,
           get_option_value(product, "Pricing Type"),
-          product.product_family.name,
-          product.active ? "Yes" : "No"
+          product.revenue_type,
+          product.margin,
+          product.active ? "Yes" : "No",
+          product.is_influencer_product ? "Yes" : "No"
         ]
       end
     end

@@ -211,6 +211,14 @@ class Company < ActiveRecord::Base
     teams.pluck(:leader_id) + users.in_a_team.ids
   end
 
+  def product_option1
+    product_option1_field || 'Option1'
+  end
+
+  def product_option2
+    product_option2_field || 'Option2'
+  end
+
   protected
 
   def setup_default_options(field, names)
