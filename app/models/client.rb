@@ -74,6 +74,7 @@ class Client < ActiveRecord::Base
 
   before_create :ensure_client_member
   after_commit :update_account_dimension, on: [:create, :update]
+  after_commit :setup_egnyte_folders, on: [:create]
 
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
@@ -599,5 +600,9 @@ class Client < ActiveRecord::Base
     if params.compact.any?
       obj.upsert_custom_fields(params)
     end
+  end
+
+  def setup_egnyte_folders
+    SetupEgnyteClientFoldersWorker.perform_async(company.egnyte_integration.id, name) if company.egnyte_integration
   end
 end

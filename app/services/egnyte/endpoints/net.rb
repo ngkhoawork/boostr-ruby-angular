@@ -10,7 +10,9 @@ class Egnyte::Endpoints::Net
   delegate :code, to: :response, prefix: true, allow_nil: true
 
   def perform
-    @response = send_request.tap { |response| @parsed_response_body = JSON.parse(response.body, symbolize_names: true) }
+    @response = send_request.tap do |response|
+      @parsed_response_body = response.body.present? ? JSON.parse(response.body, symbolize_names: true) : {}
+    end
   end
 
   def success?

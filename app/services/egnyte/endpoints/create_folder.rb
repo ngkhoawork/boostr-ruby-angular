@@ -39,6 +39,7 @@ class Egnyte::Endpoints::CreateFolder < Egnyte::Endpoints::Net
 
   def request_headers
     {
+      'Content-Type' => 'application/json',
       'Authorization' => "Bearer #{@options[:access_token]}"
     }
   end

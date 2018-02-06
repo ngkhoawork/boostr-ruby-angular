@@ -116,6 +116,8 @@ class Deal < ActiveRecord::Base
     update_pipeline_fact(self)
   end
 
+  after_commit :setup_egnyte_folders, on: [:create]
+
   set_callback :save, :after, :update_pipeline_fact_callback
 
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
@@ -1780,5 +1782,19 @@ class Deal < ActiveRecord::Base
       old_value: previous_stage_id,
       new_value: stage_id
     ).perform
+  end
+
+  def log_budget_changes(current_budget, new_budget)
+    AuditLogService.new(
+      record: self,
+      type: AuditLog::BUDGET_CHANGE_TYPE,
+      old_value: current_budget,
+      new_value: new_budget,
+      changed_amount: (new_budget - current_budget)
+    ).perform
+  end
+
+  def setup_egnyte_folders
+    SetupEgnyteDealFoldersWorker.perform_async(company.egnyte_integration.id, name) if company.egnyte_integration
   end
 end

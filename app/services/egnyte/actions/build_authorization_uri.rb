@@ -31,12 +31,16 @@ class Egnyte::Actions::BuildAuthorizationUri
   end
 
   def perform
-    "https://#{@options[:domain]}/puboauth/token?#{URI.encode_www_form(request_params)}"
+    "https://#{@options[:domain]}/puboauth/token?#{url_embedded_request_params}"
   end
 
   private
 
   delegate :required_option_keys, :predefined_request_params, to: self
+
+  def url_embedded_request_params
+    request_params.map { |key, value| "#{key}=#{value}" }.join('&')
+  end
 
   def request_params
     {

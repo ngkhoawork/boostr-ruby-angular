@@ -1,15 +1,7 @@
 class Api::EgnyteIntegrationsController < ApplicationController
   respond_to :json
 
-  def website_egnyte_settings_uri
-    "https://#{host}/settings/egnyte"
-  end
-
-  def host
-    Rails.application.config.action_mailer.default_url_options.tap do |host_options|
-      break "#{host_options[:host]}:#{host_options[:port]}"
-    end
-  end
+  WEBSITE_EGNYTE_SETTINGS_URL = '/settings/egnyte'.freeze
 
   def show
     render json: resource
@@ -68,7 +60,7 @@ class Api::EgnyteIntegrationsController < ApplicationController
       resource.update(access_token: nil)
     end
 
-    redirect_to website_egnyte_settings_uri
+    redirect_to WEBSITE_EGNYTE_SETTINGS_URL
   end
 
   private
