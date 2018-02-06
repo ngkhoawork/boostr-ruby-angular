@@ -25,6 +25,12 @@
           Name
         %span.star *
         %input.form-control{ placeholder: 'Name', ng: { model: 'client.name' }, name: 'name' }
+        .duplicate-list-wrapper
+          .duplicate-list
+            %ul
+              %li{ 'ng-repeat': 'duplicate in duplicates' }
+                {{ duplicate.name }}
+
       .form-group
         .row
           .col-xs-6{ ng: {if: 'Advertiser && client.client_type.option_id === Advertiser'} }
