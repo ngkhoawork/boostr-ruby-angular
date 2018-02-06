@@ -44,7 +44,7 @@
   $scope.getCurrentCompany = () ->
     Egnyte.show().then (egnyteSettings) ->
       $scope.company = egnyteSettings
-      if(egnyteSettings.connected)
+      if(egnyteSettings.access_token && egnyteSettings.connected)
         $scope.egnyteConnected = true
         $scope.egnyte(egnyteSettings.access_token, egnyteSettings.app_domain)
 
