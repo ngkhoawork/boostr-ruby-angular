@@ -1,6 +1,6 @@
 @app.controller "AccountsNewController",
-['$scope', '$rootScope', '$modalInstance', 'Client', 'HoldingCompany', 'Field', 'AccountCfName', 'client', 'CountriesList', 'Validation'
-($scope, $rootScope, $modalInstance, Client, HoldingCompany, Field, AccountCfName, client, CountriesList, Validation) ->
+['$scope', '$rootScope', '$modalInstance', 'Client', 'HoldingCompany', 'Field', 'AccountCfName', 'client', 'CountriesList', 'Validation', 'AccountsDuplicate'
+($scope, $rootScope, $modalInstance, Client, HoldingCompany, Field, AccountCfName, client, CountriesList, Validation, AccountsDuplicate) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
@@ -9,6 +9,11 @@
   $scope.clients = []
   $scope.query = ""
   $scope.countries = []
+  $scope.duplicates = [];
+
+  $scope.init = ->
+    AccountsDuplicate.all().then (data) ->
+     console.log('data: ', data)
 
   CountriesList.get (data) ->
     $scope.countries = data.countries
@@ -125,4 +130,6 @@
 
   $scope.cancel = ->
     $modalInstance.dismiss()
+
+  $scope.init()  
 ]
