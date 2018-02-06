@@ -1,23 +1,32 @@
 @app.controller 'NewProductFamiliesController',
-['$scope', '$modalInstance', 'ProductFamily',
-($scope, $modalInstance, ProductFamily) ->
-
+['$scope', '$modalInstance', 'ProductFamily', 'productFamily',
+( $scope,   $modalInstance,   ProductFamily,   productFamily) ->
   $scope.formType = 'New'
   $scope.submitText = 'Create'
-  $scope.product_family = { active: true }
+  $scope.productFamily = productFamily || { active: true }
+
+  init = () ->
+    if productFamily
+      $scope.formType = 'Edit'
+      $scope.submitText = 'Save'
 
   $scope.submitForm = () ->
     $scope.errors = {}
 
-    if (!$scope.product_family.name)
+    if (!$scope.productFamily.name)
       $scope.errors['name'] = 'Name is required'
 
     if Object.keys($scope.errors).length > 0 then return
     
-    $scope.buttonDisabled = true
-    ProductFamily.create(product_family: $scope.product_family).then (product_family) ->
-      $modalInstance.close()
+    if $scope.formType == 'New'
+      ProductFamily.create(product_family: $scope.productFamily).then (productFamily) ->
+        $modalInstance.close()
+    else
+      ProductFamily.update(id: $scope.productFamily.id, product_family: $scope.productFamily).then (productFamily) ->
+        $modalInstance.close()
 
   $scope.cancel = ->
-    $modalInstance.close()
+    $modalInstance.dismiss()
+
+  init()
 ]

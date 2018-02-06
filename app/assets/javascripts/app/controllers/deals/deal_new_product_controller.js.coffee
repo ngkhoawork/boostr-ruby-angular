@@ -1,6 +1,6 @@
 @app.controller "DealNewProductController",
-    ['$scope', '$rootScope', '$modalInstance', '$filter', 'Product', 'DealProduct', 'currentDeal',
-        ($scope, $rootScope, $modalInstance, $filter, Product, DealProduct, currentDeal) ->
+    ['$scope', '$rootScope', '$modalInstance', '$filter', 'Product', 'DealProduct', 'currentDeal', 'Company',
+        ($scope, $rootScope, $modalInstance, $filter, Product, DealProduct, currentDeal, Company) ->
             $scope.currency_symbol = (->
                 if currentDeal && currentDeal.currency
                     if currentDeal.currency.curr_symbol
@@ -22,6 +22,43 @@
 
             Product.all({active: true}).then (products) ->
                 $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
+
+            Company.get().$promise.then (company) ->
+                $scope.productOptionsEnabled = company.product_options_enabled
+                $scope.option1Field = company.product_option1_field || 'Option1'
+                $scope.option2Field = company.product_option2_field || 'Option2'
+
+            $scope.productsByName = () ->
+                _.uniq _.pluck($scope.products, 'name')
+
+            $scope.rootOptions = () ->
+                if $scope.deal_product.product_name
+                    products = _.filter $scope.products, (p) -> p.name == $scope.deal_product.product_name && p.option1_id
+                    _.uniq _.pluck(products, 'option1'), (o) -> o.name
+
+            $scope.subOptions = () ->
+                if $scope.deal_product.product_option1_id
+                    products = _.filter $scope.products, (p) -> 
+                      p.name == $scope.deal_product.product_name && p.option1_id == $scope.deal_product.product_option1_id && p.option2_id
+                    _.uniq _.pluck(products, 'option2'), (o) -> o.name
+
+            $scope.onChangeProductName = () ->
+                $scope.deal_product.product_option1_id = null
+                $scope.deal_product.product_option2_id = null
+                findProductId()
+
+            $scope.onChangeOption1 = () ->
+                $scope.deal_product.product_option2_id = null
+                findProductId()
+
+            $scope.onChangeOption2 = () ->
+                findProductId()
+
+            findProductId = () ->
+                product = _.find $scope.products, (p) -> 
+                  p.name == $scope.deal_product.product_name && p.option1_id == $scope.deal_product.product_option1_id && p.option2_id == $scope.deal_product.product_option2_id
+                if product
+                  $scope.deal_product.product_id = product.id
 
             addProductBudgetCorrection = ->
                 budgetSum = 0

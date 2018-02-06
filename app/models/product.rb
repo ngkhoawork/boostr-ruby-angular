@@ -1,11 +1,12 @@
 class Product < ActiveRecord::Base
   belongs_to :company
   belongs_to :product_family
+  belongs_to :option1, class_name: 'ProductOption'
+  belongs_to :option2, class_name: 'ProductOption'
   has_many :deal_products
   has_many :values, as: :subject
   has_many :ad_units
 
-  validates :name, presence: true
   validates :margin,
     numericality: {
       only_integer: true,
@@ -13,12 +14,19 @@ class Product < ActiveRecord::Base
       less_than_or_equal_to: 100
     },
     allow_nil: true
+  validates :name, 
+    uniqueness: { 
+      scope: [:option1_id, :option2_id, :company_id], 
+      message: 'has already been taken with current options' 
+    },
+    presence: true
+  validates :revenue_type, presence: true
 
   REVENUE_TYPES = %w('Display', 'Content-Fee', 'None')
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
-  scope :active, -> { where('active IS true') }
+  scope :active, -> { joins('LEFT JOIN product_families ON products.product_family_id = product_families.id').where('products.active IS true AND (product_families.active IS true OR products.product_family_id IS NULL)') }
   scope :by_revenue_type, -> (revenue_type) { where('revenue_type = ?', revenue_type) if revenue_type }
   scope :by_product_family, -> (product_family_id) { where('product_family_id = ?', product_family_id) if product_family_id }
 

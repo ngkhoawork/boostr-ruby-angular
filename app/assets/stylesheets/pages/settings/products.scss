@@ -1,3 +1,84 @@
+#settings-products {
+  .settings-product-header {
+    display: flex;
+
+    .header-item {
+      white-space: nowrap;
+      margin-right: 30px;
+      margin-top: -2px;
+
+      &:last-child {
+        margin: 0 0 0 auto;
+
+        .form-group {
+          margin-top: 10px;
+
+          .z-toggle {
+            vertical-align: middle;
+          }
+        }
+      }
+
+      span.menu-item {
+        display: inline-block;
+        padding: 12px 5px;
+        margin: 0 10px;
+        font-weight: 600;
+        cursor: pointer;
+
+        &.active {
+          color: $main-color;
+          border-bottom: 2px solid $main-color;
+        }
+      }
+    }
+
+    .search {
+      width: 30%;
+    }
+  }
+
+  #options, #suboptions {
+    a[disabled] {
+      cursor: no-drop;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+
+      li {
+        margin-bottom: 10px;
+        position: relative;
+
+        a.delete {
+          display: none;
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          margin-top: -15px;
+        }
+
+
+        &:hover a.delete {
+          display:block;
+        }
+
+        &.active {
+          border-right: 3px solid #FF7E30;
+          border-radius: 2px;
+        }
+      }
+    }
+  }
+
+  #product-option-settings {
+    .panel {
+      padding: 20px;
+    }
+  }
+}
+
 #products {
     .table {
         th:first-child {

@@ -12,15 +12,31 @@
 
       .form-group
         %label{ for: 'family' } Family
-        %ui-select{ name: 'family', ng: { model: 'product.product_family_id', disabled: true } }
+        %ui-select{ name: 'family', ng: { model: 'product.product_family_id' } }
           %ui-select-match{ placeholder: 'Family' }
             {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'option.id as option in product_families | filter: { name: $select.search }' }
+          %ui-select-choices{ repeat: 'option.id as option in productFamilies | filter: { name: $select.search }' }
+            %div{ ng: { bind: { html: 'option.name' } } }
+
+      .form-group{ 'ng-if': 'product_options_enabled' }
+        %label{ for: 'option1' } {{option1_field}}
+        %ui-select{ name: 'option1', ng: { model: 'product.option1_id' } }
+          %ui-select-match{ placeholder: '{{option1_field}}' }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'option.id as option in rootOptions | filter: { name: $select.search }' }
+            %div{ ng: { bind: { html: 'option.name' } } }
+
+      .form-group{ 'ng-if': 'product_options_enabled' }
+        %label{ for: 'option2' } {{option2_field}}
+        %ui-select{ name: 'option2', ng: { model: 'product.option2_id', disabled: '!product.option1_id' } }
+          %ui-select-match{ placeholder: '{{option2_field}}' }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'option.id as option in getSubOptions() | filter: { name: $select.search }' }
             %div{ ng: { bind: { html: 'option.name' } } }
 
       .form-group
         %label{ for: 'pricing-type' } Pricing Type
-        %ui-select{ name: 'pricing-type', ng: { model: 'product.pricing_type.option_id', disabled: true } }
+        %ui-select{ name: 'pricing-type', ng: { model: 'product.pricing_type.option_id'} }
           %ui-select-match{ placeholder: 'Family' }
             {{ $select.selected.name }}
           %ui-select-choices{ repeat: 'option.id as option in product.pricing_type.options | filter: { name: $select.search }' }
@@ -31,11 +47,11 @@
         %label{ for: 'revenue-type' }
           Revenue Type
           %span.star *
-        %ui-select{ name: 'revenue-type', ng: { model: 'product.revenue_type', disabled: true } }
+        %ui-select{ name: 'revenue-type', ng: { model: 'product.revenue_type' } }
           %ui-select-match{ placeholder: 'Revenue Type' }
             {{ $select.selected }}
-          %ui-select-choices{ repeat: 'revenue_type in revenue_types' }
-            %div{ ng: { bind: { html: 'revenue_type' } } }
+          %ui-select-choices{ repeat: 'revenueType in revenueTypes' }
+            %div{ ng: { bind: { html: 'revenueType' } } }
 
       .form-group{ ng: { class:'{error: errors.margin}'} }
         %span.error-text {{errors.margin}}
@@ -60,4 +76,4 @@
 
     .popup-modal-footer.text-center
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
-      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
+      %button.btn.btn-primary{ type: 'submit' } {{ submitText }}
