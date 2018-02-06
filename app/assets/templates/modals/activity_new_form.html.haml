@@ -85,7 +85,7 @@
           %span.star *
         %textarea.form-control{'msd-elastic': '', 'placeholder': 'Type your update here', 'ng-model': 'form.comment'}
 
-      .form-group{ng: {repeat: 'activityCustomField in customFieldNames | orderBy: "position"', init: "fieldName = activityCustomField.field_type + activityCustomField.field_index", if: "!activityCustomField.disabled", class:'{error: errors[fieldName]}'}}
+      .form-group{ng: {repeat: 'activityCustomField in customFieldNames | orderBy: "position"', init: "fieldName = activityCustomField.field_name", if: "!activityCustomField.disabled", class:'{error: errors[fieldName]}'}}
         %span.error-text {{errors[fieldName]}}
         %label{ for: '{{fieldName}}', ng: { if: "activityCustomField.field_type != 'sum'" } }
           {{activityCustomField.field_label}}

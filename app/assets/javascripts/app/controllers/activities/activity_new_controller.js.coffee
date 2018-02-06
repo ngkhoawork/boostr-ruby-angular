@@ -227,8 +227,8 @@
                                 return $scope.errors[key] = 'Comment is required'
 
                 $scope.customFieldNames.forEach (item) ->
-                  if item.is_required && (!$scope.form.activity_custom_field_obj || !$scope.form.activity_custom_field_obj[item.field_type + item.field_index])
-                    $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
+                  if item.is_required && (!$scope.form.activity_custom_field_obj || !$scope.form.activity_custom_field_obj[item.field_name])
+                    $scope.errors[item.field_name] = item.field_label + ' is required'
 
                 if Object.keys($scope.errors).length > 0 then return
 
