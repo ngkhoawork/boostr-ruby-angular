@@ -127,6 +127,21 @@
         metadata: ->
           false
 
+  $scope.showUploadIOContentFeeModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/io_content_fee_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/ios/import_content_fee'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.showUploadIntegrationIdModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/integration_id_upload.html'
