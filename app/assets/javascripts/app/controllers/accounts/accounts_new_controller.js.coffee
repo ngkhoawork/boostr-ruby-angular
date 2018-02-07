@@ -6,14 +6,13 @@
   $scope.submitText = "Create"
   client.address = {}
   $scope.client = new Client(client) || {address: {}}
+  $scope.client.name = ""
   $scope.clients = []
   $scope.query = ""
   $scope.countries = []
-  $scope.duplicates = [];
-
-  $scope.init = ->
-    AccountsDuplicate.all().then (data) ->
-     console.log('data: ', data)
+  $scope.isDuplicateShow = false
+  $scope.isLoaderShow = false
+  $scope.duplicateItemsLimit = 5  # the maximum number of output duplicates
 
   CountriesList.get (data) ->
     $scope.countries = data.countries
@@ -131,5 +130,37 @@
   $scope.cancel = ->
     $modalInstance.dismiss()
 
-  $scope.init()  
+  $scope.closeDuplicateList = ->
+    $scope.isDuplicateShow = false
+
+  $scope.openDuplicateList = ->
+     $scope.isDuplicateShow = true
+
+  delayTimer = undefined
+  $scope.onNameChanged = ->
+    if $scope.client.name.length < 2
+      $scope.closeDuplicateList()
+    else
+      $scope.openDuplicateList()
+      $scope.isLoaderShow = true
+      clearTimeout(delayTimer)
+      delayTimer = setTimeout(
+        -> AccountsDuplicate.query({ name: $scope.client.name }).$promise.then(
+              (duplicates) ->
+                $scope.isLoaderShow = false
+                $scope.duplicates = duplicates
+            )
+        250
+      )
+
+  $scope.onFocus = ->
+    if $scope.client.name.length < 2
+      $scope.closeDuplicateList()
+    else
+      $scope.openDuplicateList()
+
+  $scope.onBlur = ->
+    if  $scope.duplicates.length = 0
+      $scope.closeDuplicateList()
+
 ]
