@@ -3,7 +3,7 @@ class PmpItem < ActiveRecord::Base
   belongs_to :ssp, required: true
   belongs_to :product
 
-  has_many :pmp_item_daily_actuals, -> { order(date: :asc) }, dependent: :destroy
+  has_many :pmp_item_daily_actuals, dependent: :destroy
   has_many :pmp_item_monthly_actuals, dependent: :destroy
 
   enum pmp_type: ::PMP_TYPES

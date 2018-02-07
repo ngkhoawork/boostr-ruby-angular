@@ -46,9 +46,9 @@ class Forecast::PmpRevenueCalcTriggerService
   def products
     @_products ||= case type
     when 'product'
-      options[:products]
+      options[:products] + [nil]
     else
-      pmp.products.distinct
+      pmp.products.distinct + [nil]
     end
   end
 

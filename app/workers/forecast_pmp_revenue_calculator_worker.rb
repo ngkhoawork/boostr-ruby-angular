@@ -18,6 +18,7 @@ class ForecastPmpRevenueCalculatorWorker < BaseWorker
         products.each do |product|
           Forecast::PmpRevenueCalcService.new(time_period, user, product).perform()
         end
+        Forecast::PmpRevenueCalcService.new(time_period, user, nil).perform()
       end
     end
   end

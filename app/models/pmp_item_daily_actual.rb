@@ -7,6 +7,7 @@ class PmpItemDailyActual < ActiveRecord::Base
   validates :ad_requests, :impressions, :revenue_loc, :price, presence: true, numericality: true
 
   scope :latest, -> { order('date DESC') }
+  scope :oldest, -> { order('date ASC') }
 
   delegate :pmp, to: :pmp_item, allow_nil: true
   delegate :product, to: :pmp_item, allow_nil: true
