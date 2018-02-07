@@ -136,6 +136,17 @@
   $scope.openDuplicateList = ->
      $scope.isDuplicateShow = true
 
+  $scope.markDuplicateString = ->
+    $scope.duplicates.forEach((duplicate) ->
+      duplicateName = duplicate.name
+      name = $scope.client.name
+      index = duplicateName.toLowerCase().indexOf( name.toLowerCase() )
+
+      if index >= 0
+        re = new RegExp("(" + name + ")", "gi");
+        duplicate.name =  duplicateName.replace(re, '<strong>$1</strong>');
+    )
+
   delayTimer = undefined
   $scope.onNameChanged = ->
     if $scope.client.name.length < 2
@@ -149,6 +160,7 @@
               (duplicates) ->
                 $scope.isLoaderShow = false
                 $scope.duplicates = duplicates
+                $scope.markDuplicateString()
             )
         250
       )
@@ -160,7 +172,7 @@
       $scope.openDuplicateList()
 
   $scope.onBlur = ->
-    if  $scope.duplicates.length = 0
+    if  $scope.duplicates.length == 0
       $scope.closeDuplicateList()
 
 ]
