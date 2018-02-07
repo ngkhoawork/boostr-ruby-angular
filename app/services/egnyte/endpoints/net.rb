@@ -1,22 +1,34 @@
 class Egnyte::Endpoints::Net
-  PAYLOAD_SUPPORTED_METHODS = %i(post put patch).freeze
-  SUCCESS_STATUS_CODES = %w(200 201 204)
   CONFIGS = {
     client_id: ENV['egnyte_client_id'],
     client_secret: ENV['egnyte_client_secret']
   }.freeze
+  PAYLOAD_SUPPORTED_METHODS = %i(post put patch).freeze
+  STATUS_CODES = {
+    success: %w(200 201 204),
+    queries_rate_exceeded: %w(403)
+  }.freeze
 
-  attr_reader :response, :parsed_response_body
+  attr_reader :response
   delegate :code, to: :response, prefix: true, allow_nil: true
 
   def perform
-    @response = send_request.tap do |response|
-      @parsed_response_body = response.body.present? ? JSON.parse(response.body, symbolize_names: true) : {}
+    @response = send_request
+
+    if STATUS_CODES[:queries_rate_exceeded].include?(@response.code) && @perform_twice == false
+      @perform_twice = true
+      send(__method__)
     end
+
+    @response
   end
 
   def success?
-    SUCCESS_STATUS_CODES.include?(response_code)
+    STATUS_CODES[:success].include?(response_code)
+  end
+
+  def parsed_response_body
+    @parsed_response_body ||= JSON.parse(@response.body, symbolize_names: true) if @response&.body.present?
   end
 
   private

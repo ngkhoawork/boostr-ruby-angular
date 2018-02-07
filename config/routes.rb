@@ -504,7 +504,7 @@ Rails.application.routes.draw do
       collection do
         get :oauth_settings
         get :oauth_callback
-        get :disconnect_egnyte
+        put :disconnect_egnyte
       end
     end
   end

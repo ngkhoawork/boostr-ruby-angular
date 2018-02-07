@@ -26,7 +26,7 @@ class Api::EgnyteIntegrationsController < ApplicationController
   end
 
   def disconnect_egnyte
-    if resource.update(access_token: nil)
+    if resource.update(connected: false, access_token: nil)
       render json: resource
     else
       render json: { errors: resource.errors.messages }, status: :unprocessable_entity
@@ -34,7 +34,9 @@ class Api::EgnyteIntegrationsController < ApplicationController
   end
 
   def oauth_settings
-    if resource.app_domain.present?
+    raise 'oauth settings can not be provided for a connected resource' if resource.connected?
+
+    if resource.enabled?
       state_token = Egnyte::Actions::BuildAuthorizationUri.generate_state_token(resource.app_domain)
 
       resource.update(access_token: state_token)
@@ -50,15 +52,11 @@ class Api::EgnyteIntegrationsController < ApplicationController
 
     raise ActiveRecord::RecordNotFound, 'egnyte state can not be fitted' unless @resource
 
-    if params[:code]
-      oauth_request = build_oauth_request.tap { |req| req.perform }
+    oauth_request = build_oauth_request.tap { |req| req.perform }
 
-      raise oauth_request.parsed_response_body.inspect unless oauth_request.success?
+    raise oauth_request.parsed_response_body.inspect unless oauth_request.success?
 
-      resource.update(access_token: oauth_request.parsed_response_body[:access_token])
-    else
-      resource.update(access_token: nil)
-    end
+    resource.update(connected: true, access_token: oauth_request.parsed_response_body[:access_token])
 
     redirect_to WEBSITE_EGNYTE_SETTINGS_URL
   end
@@ -84,7 +82,7 @@ class Api::EgnyteIntegrationsController < ApplicationController
   def build_user_authorization_uri(state_token)
     Egnyte::Actions::BuildAuthorizationUri.new(
       domain: resource.app_domain,
-      redirect_uri: oauth_callback_api_egnyte_integration_url,
+      redirect_uri: oauth_callback_api_egnyte_integration_url(protocol: 'https'),
       state: state_token
     ).perform
   end
@@ -93,7 +91,7 @@ class Api::EgnyteIntegrationsController < ApplicationController
     Egnyte::Endpoints::Oauth.new(
       domain: resource.app_domain,
       redirect_uri: oauth_callback_api_egnyte_integration_url,
-      code: params[:code]
+      code: params.require(:code)
     )
   end
 end

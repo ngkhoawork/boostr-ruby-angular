@@ -11,7 +11,7 @@
         method: 'PUT'
         url: '/api/egnyte_integration'
       disconnect_egnyte:
-        method: 'GET'
+        method: 'PUT'
         url: '/api/egnyte_integration/disconnect_egnyte'
 
     this.show = (params) -> resource.show(params).$promise

@@ -22,7 +22,7 @@ class Egnyte::Actions::CreateFolderTree::Base
   end
 
   def perform
-    return false unless enabled?
+    return false unless enabled_and_connected?
 
     traverse_folder_tree(folder_tree) do |node|
       create_folder_request(folder_path: node[:title], domain: app_domain, access_token: access_token)
@@ -32,7 +32,7 @@ class Egnyte::Actions::CreateFolderTree::Base
   private
 
   delegate :required_option_keys, :folder_tree_attribute_name, :root_folder_path_prefix, to: self
-  delegate :access_token, :app_domain, :enabled?, to: :egnyte_integration
+  delegate :access_token, :app_domain, :enabled_and_connected?, to: :egnyte_integration
 
   def traverse_folder_tree(node, &block)
     block.call(node)
