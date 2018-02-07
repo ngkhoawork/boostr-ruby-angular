@@ -509,7 +509,10 @@ Rails.application.routes.draw do
         get :reject_from_email
       end
 
-      get :users, on: :collection
+      collection do
+        get :users
+        post :import
+      end
     end
   end
 
