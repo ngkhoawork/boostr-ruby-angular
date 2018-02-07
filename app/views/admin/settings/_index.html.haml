@@ -1,0 +1,18 @@
+%div
+  = form_for :settings, :method => :post, url: {action: :update} do |f|
+    %table{id: "settings", class: "index_table index"}
+      %thead
+        %tr
+          %th{style: "width: 30%"} Name
+          %th Value
+      %tbody
+        - valid_settings.each do |setting|
+          %tr
+            %td
+              %strong
+                = setting.name
+            %td
+              %div{class: 'form'}
+                %ol
+                  = f.text_field setting.var.to_sym, value: setting.value
+    = f.submit
