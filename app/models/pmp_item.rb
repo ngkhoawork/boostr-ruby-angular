@@ -12,6 +12,9 @@ class PmpItem < ActiveRecord::Base
 
   scope :by_stopped, -> (is_stopped) { where(is_stopped: is_stopped) }
 
+  delegate :start_date, to: :pmp, prefix: false
+  delegate :end_date, to: :pmp, prefix: false
+
   before_validation :convert_currency
   before_save :set_budget_remaining_and_delivered
 
