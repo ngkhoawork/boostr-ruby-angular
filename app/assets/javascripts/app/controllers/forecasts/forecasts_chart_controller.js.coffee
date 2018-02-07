@@ -295,8 +295,8 @@
 					.append('div')
 					.attr('class', 'legend')
 				goalLegend.append('svg')
-					.style 'width', '28'
-					.style 'height', '13'
+					.style 'width', '28' + 'px'
+					.style 'height', '13' + 'px'
 					.style 'margin-right', '8px'
 					.append('line')
 					.attr 'stroke-dasharray', '6, 4'
@@ -317,8 +317,8 @@
 					.append('div')
 					.attr('class', 'legend')
 				legend.append('svg')
-					.style 'width', '13'
-					.style 'height', '13'
+					.style 'width', '13' + 'px'
+					.style 'height', '13' + 'px'
 					.style 'margin-right', '4px'
 					.append('rect')
 					.attr 'x', 0

@@ -33,11 +33,17 @@
     }
     .legend-container {
         margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+
         .legend {
             //display: inline-block;
             display: inline-flex;
+            flex-basis: 100px;
             align-items: center;
             margin-right: 20px;
+
             .legend-icon {
                 width: 14px;
                 height: 14px;
