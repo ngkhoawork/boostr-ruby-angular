@@ -8,6 +8,6 @@ class ApiConstraints
     return true if @dataexport && req.headers['Accept'].include?("application/vnd.boostr.dataexport")
 
     req.headers['Accept']
-    .include?("application/vnd.boostr.v#{@version}")
+      &.include?("application/vnd.boostr.v#{@version}")
   end
 end

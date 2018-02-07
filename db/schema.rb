@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180201230334) do
+ActiveRecord::Schema.define(version: 20180202233414) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -442,7 +442,7 @@ ActiveRecord::Schema.define(version: 20180201230334) do
     t.integer  "user_id"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
-    t.decimal  "changed_amount", precision: 12, scale: 2
+    t.decimal  "changed_amount", precision: 15, scale: 2
   end
 
   add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree
@@ -582,6 +582,7 @@ ActiveRecord::Schema.define(version: 20180201230334) do
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "requests_enabled",                  default: false
     t.boolean  "enable_operative_extra_fields",     default: false
     t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
@@ -1200,14 +1201,11 @@ ActiveRecord::Schema.define(version: 20180201230334) do
   create_table "deal_products", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "product_id"
-    t.decimal  "budget",      precision: 15, scale: 2, default: 0.0
-    t.datetime "created_at",                                          null: false
-    t.datetime "updated_at",                                          null: false
-    t.boolean  "open",                                 default: true
-    t.decimal  "budget_loc",  precision: 15, scale: 2, default: 0.0
-    t.integer  "ssp_id"
-    t.string   "ssp_deal_id"
-    t.integer  "pmp_type"
+    t.decimal  "budget",     precision: 15, scale: 2, default: 0.0
+    t.datetime "created_at",                                         null: false
+    t.datetime "updated_at",                                         null: false
+    t.boolean  "open",                                default: true
+    t.decimal  "budget_loc", precision: 15, scale: 2, default: 0.0
   end
 
   add_index "deal_products", ["deal_id"], name: "index_deal_products_on_deal_id", using: :btree
@@ -2160,10 +2158,8 @@ ActiveRecord::Schema.define(version: 20180201230334) do
   add_index "sales_stages", ["sales_stageable_type"], name: "index_sales_stages_on_sales_stageable_type", using: :btree
 
   create_table "settings", force: :cascade do |t|
-    t.string   "var",                   null: false
+    t.string   "var",        null: false
     t.text     "value"
-    t.integer  "thing_id"
-    t.string   "thing_type", limit: 30
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -2549,7 +2545,6 @@ ActiveRecord::Schema.define(version: 20180201230334) do
   add_foreign_key "deal_product_cf_names", "companies"
   add_foreign_key "deal_product_cf_options", "deal_product_cf_names"
   add_foreign_key "deal_product_cfs", "companies"
-  add_foreign_key "deal_products", "ssps"
   add_foreign_key "dfp_report_queries", "api_configurations"
   add_foreign_key "display_line_item_budgets", "display_line_items"
   add_foreign_key "display_line_items", "ios"

@@ -113,7 +113,7 @@ class Operative::ImportInvoiceLineItemsService
       end
     when 'Recognized Revenue'
       define_method(:recognized_revenue_calculator) do |line_item|
-        line_item[:recognized_revenue].to_f
+        line_item[:recognized_revenue].to_f + line_item[:recognized_revenue_adjustment].to_f
       end
     when 'Invoice Amount'
       define_method(:recognized_revenue_calculator) do |line_item|

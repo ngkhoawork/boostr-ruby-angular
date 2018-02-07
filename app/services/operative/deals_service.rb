@@ -85,6 +85,6 @@ class Operative::DealsService
   end
 
   def buzzfeed?
-    deal.company.id.eql?(44)
+    deal.company.buzzfeed?
   end
 end

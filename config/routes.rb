@@ -158,6 +158,8 @@ Rails.application.routes.draw do
       resources :account_cf_names, only: [:index]
       resources :holding_companies, only: [:index]
       resources :contact_cf_names, only: [:index]
+      resources :display_line_items, only: [:create]
+      resources :display_line_item_budgets, only: [:create]
     end # API V2 END
 
     namespace :dataexport, defaults: { format: :json }, constraints: ApiConstraints.new(dataexport: true) do
@@ -219,7 +221,11 @@ Rails.application.routes.draw do
     end
 
     resources :integrations, only: [:create]
-    resources :csv_import_logs, only: [:index]
+    resources :csv_import_logs, only: [:index] do
+      collection  do
+        get :api_logs
+      end
+    end
 
     resources :users, only: [:index, :update] do
       collection do

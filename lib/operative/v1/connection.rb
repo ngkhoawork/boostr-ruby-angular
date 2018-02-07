@@ -17,9 +17,9 @@ module Operative
           connection.headers['apiProvider'] = 'operative'
           connection.basic_auth(user_email, password)
           connection.request  :url_encoded
-          connection.adapter  Faraday.default_adapter
           connection.use Operative::IntegrationLoggingMiddleware
           connection.response :logger unless Rails.env.test?
+          connection.adapter  Faraday.default_adapter
         end
       end
     end

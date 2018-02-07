@@ -1172,7 +1172,7 @@ describe Deal do
 
     context 'if deal was updated' do
       it do
-        deal.assign_attributes(name: "new name")
+        deal.assign_attributes(name: "new name", updated_at: 1.second.from_now)
         deal.save
         expect(deal.updated?).to be true
       end

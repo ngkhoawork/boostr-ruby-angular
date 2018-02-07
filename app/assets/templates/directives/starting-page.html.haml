@@ -1,6 +1,8 @@
--#%button.set-starting{"ng-click" => "setStartPage()"}
-  %span.set-starting__description Set as starting page
-  %span.glyphicon.glyphicon-star-empty
-
-%span.glyphicon.glyphicon-star-empty{"ng-if" => "!userInfo.isUserStartingPage", "ng-click" => "setStartPage()", 'tooltip':'Set as starting page', 'tooltip-placement':'left'}
-%span.glyphicon.glyphicon-star{"ng-if" => "userInfo.isUserStartingPage", "ng-click" => "setStartPage()", 'tooltip':'Set as starting page', 'tooltip-placement':'left'}
+%span.glyphicon.glyphicon-star-empty{"ng-if" => "!userInfo.isUserStartingPage", "ng-click" => "setStartPage()"}
+%span.glyphicon.glyphicon-star{"ng-if" => "userInfo.isUserStartingPage", "ng-click" => "setStartPage()"}
+%span.glyphicon.extension-icon
+  %a{'ng-href': '{{extensionUrl("gmail")}}', 'ng-if': 'isExtensionEnabled("gmail")', target: '_blank'}
+    = image_tag('icons/icon-gmail.png', alt: 'Gmail extension')
+%span.glyphicon.extension-icon
+  %a{'ng-href': '{{extensionUrl("gcalendar")}}', 'ng-if': 'isExtensionEnabled("gcalendar")', target: '_blank'}
+    = image_tag('icons/icon-gcalendar.png', alt: 'GCalendar extension')

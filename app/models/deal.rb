@@ -2,6 +2,8 @@ require 'rubygems'
 require 'zip'
 
 class Deal < ActiveRecord::Base
+  include GoogleSheetsExportable
+
   acts_as_paranoid
 
   belongs_to :company
