@@ -143,7 +143,7 @@
       index = duplicateName.toLowerCase().indexOf( name.toLowerCase() )
 
       if index >= 0
-        re = new RegExp("(" + name + ")", "gi");
+        re = new RegExp("(" + name + ")", "i");
         duplicate.name =  duplicateName.replace(re, '<strong>$1</strong>');
     )
 
