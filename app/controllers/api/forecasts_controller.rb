@@ -133,6 +133,7 @@ class Api::ForecastsController < ApplicationController
 
       job = ForecastCalculationLog.create(company_id: current_user.company_id, start_date: DateTime.now, end_date: nil, finished: false)
       ForecastRevenueCalculatorWorker.perform_async(io_change)
+      ForecastPmpRevenueCalculatorWorker.perform_async(io_change)
       ForecastPipelineCalculatorWorker.perform_async(deal_change, current_user.company_id)
 
       render nothing: true
