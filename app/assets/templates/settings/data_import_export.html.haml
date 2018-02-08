@@ -13,15 +13,30 @@
                     %a.upload{ href: '', ng: { click: 'showUploadClientModal()' } }
                       = inline_svg 'icons/import.svg'
                       Import Accounts
-
             .col-sm-4
               .panel
                 .panel-body
-                  %h4 Deals Import
+                  %h4 Activities Import
                   %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadDealsModal()' } }
+                    %a.upload{ href: '', ng: { click: 'showUploadActivityModal()' } }
                       = inline_svg 'icons/import.svg'
-                      Import Deals
+                      Import Activities
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Asset Mapping Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadAssetMappingModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Asset Mapping or check unmapped
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Assets Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadAssetsModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Compressed Assets
             .col-sm-4
               .panel
                 .panel-body
@@ -33,6 +48,14 @@
             .col-sm-4
               .panel
                 .panel-body
+                  %h4 Deal Product Monthly Budget Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadDealProductBudgetModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Deal Product Monthly Budget
+            .col-sm-4
+              .panel
+                .panel-body
                   %h4 Deal Products Import
                   %li.import
                     %a.upload{ href: '', ng: { click: 'showUploadDealProductModal()' } }
@@ -41,11 +64,11 @@
             .col-sm-4
               .panel
                 .panel-body
-                  %h4 Deal Product Monthly Budget Import
+                  %h4 Deals Import
                   %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadDealProductBudgetModal()' } }
+                    %a.upload{ href: '', ng: { click: 'showUploadDealsModal()' } }
                       = inline_svg 'icons/import.svg'
-                      Import Deal Product Monthly Budget
+                      Import Deals
             .col-sm-4
               .panel
                 .panel-body
@@ -65,11 +88,19 @@
             .col-sm-4
               .panel
                 .panel-body
-                  %h4 Activities Import
+                  %h4 Influencer Content Fee Import
                   %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadActivityModal()' } }
+                    %a.upload{ href: '', ng: { click: 'showUploadInfluencerContentFeesModal()' } }
                       = inline_svg 'icons/import.svg'
-                      Import Activities
+                      Import Content Fee     
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Influencers Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadInfluencersModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Influencers     
             .col-sm-4
               .panel
                 .panel-body
@@ -81,19 +112,11 @@
             .col-sm-4
               .panel
                 .panel-body
-                  %h4 Assets Import
+                  %h4 Publishers Daily Actuals Import
                   %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadAssetsModal()' } }
+                    %a.upload{ href: '', ng: { click: 'showUploadPublisherModal()' } }
                       = inline_svg 'icons/import.svg'
-                      Import Compressed Assets
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Asset Mapping Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadAssetMappingModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Asset Mapping or check unmapped
+                      Publishers Daily Actuals Import
             .col-sm-4
               .panel
                 .panel-body
@@ -105,36 +128,11 @@
             .col-sm-4
               .panel
                 .panel-body
-                  %h4 Influencers Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadInfluencersModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Influencers
-            .col-sm-4
-              .panel
-                .panel-body
                   %h4 Users Import
                   %li.import
                     %a.upload{ href: '', ng: { click: 'showUploadUsersModal()' } }
                       = inline_svg 'icons/import.svg'
                       Import Users
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Influencer Content Fee Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadInfluencerContentFeesModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Content Fee
-
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Publishers Daily Actuals Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadPublisherModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Publishers Daily Actuals Import
 
         %tab{heading: "Data Export", index: "1"}
           .row
@@ -146,16 +144,6 @@
                     %a{ href: '', ng: { click: 'exportClients()' } }
                       = inline_svg 'icons/import.svg'
                       Export Accounts
-
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Deals Export
-                  %li.export
-                    %a{ href: '', ng: { click: 'exportDeals()' } }
-                      = inline_svg 'icons/import.svg'
-                      Export Deals
-
             .col-sm-4
               .panel
                 .panel-body
@@ -163,8 +151,15 @@
                   %li.export
                     %a.upload{ href: '', ng: { click: 'exportContacts()' } }
                       = inline_svg 'icons/import.svg'
-                      Export Contacts
-
+                      Export Contacts    
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Deal Product Monthly Budget Export
+                  %li.export
+                    %a{ href: '', ng: { click: 'exportDealProductMonhtlyBudget()' } }
+                      = inline_svg 'icons/import.svg'
+                      Export Deal Product Monthly Budget   
             .col-sm-4
               .panel
                 .panel-body
@@ -173,16 +168,14 @@
                     %a{ href: '', ng: { click: 'exportDealProducts()' } }
                       = inline_svg 'icons/import.svg'
                       Export Deal Products
-
             .col-sm-4
               .panel
                 .panel-body
-                  %h4 Deal Product Monthly Budget Export
+                  %h4 Deals Export
                   %li.export
-                    %a{ href: '', ng: { click: 'exportDealProductMonhtlyBudget()' } }
+                    %a{ href: '', ng: { click: 'exportDeals()' } }
                       = inline_svg 'icons/import.svg'
-                      Export Deal Product Monthly Budget
-
+                      Export Deals
             .col-sm-4
               .panel
                 .panel-body
@@ -191,7 +184,6 @@
                     %a{ href: '', ng: { click: 'exportDisplayIOMonthlyBudgets()' } }
                       = inline_svg 'icons/import.svg'
                       Export IO Monthly Product Budgets
-
             .col-sm-4
               .panel
                 .panel-body
