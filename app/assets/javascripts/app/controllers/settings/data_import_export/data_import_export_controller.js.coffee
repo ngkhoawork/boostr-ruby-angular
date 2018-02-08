@@ -277,4 +277,34 @@
       resolve:
         body: ->
           body
+
+  $scope.importOptions = [
+    { title: 'Accounts Import', click: $scope.showUploadClientModal, linkText: 'Import Accounts' },
+    { title: 'Activities Import', click: $scope.showUploadActivityModal, linkText: 'Import Activities' },
+    { title: 'Asset Mapping Import', click: $scope.showUploadAssetMappingModal, linkText: 'Import Asset Mapping or check unmapped' },
+    { title: 'Assets Import', click: $scope.showUploadAssetsModal, linkText: 'Import Compressed Assets' },
+    { title: 'Contacts Import', click: $scope.showUploadContactsModal, linkText: 'Import Contacts' },
+    { title: 'Deal Product Monthly Budget Import', click: $scope.showUploadDealProductBudgetModal, linkText: 'Import Deal Product Monthly Budget' },
+    { title: 'Deal Products Import', click: $scope.showUploadDealProductModal, linkText: 'Import Deal Products' },
+    { title: 'Deals Import', click: $scope.showUploadDealsModal, linkText: 'Import Deals' },
+    { title: 'IO Import', click: $scope.showUploadDisplayIOModal, linkText: 'Import IOs' },
+    { title: 'IO Monthly Product Budget Import', click: $scope.showUploadDisplayIOMonthlyBudgetModal, linkText: 'Import IO Monthly Budgets' },
+    { title: 'Influencer Content Fee Import', click: $scope.showUploadInfluencerContentFeesModal, linkText: 'Import Content Fee' },
+    { title: 'Influencers Import', click: $scope.showUploadInfluencersModal, linkText: 'Import Influencers' },
+    { title: 'Integration ID Import', click: $scope.showUploadIntegrationIdModal, linkText: 'Import Integration IDs' },
+    { title: 'Publishers Daily Actuals Import', click: $scope.showUploadPublisherModal, linkText: 'Publishers Daily Actuals Import' },
+    { title: 'Quotas Import', click: $scope.showUploadQuotasModal, linkText: 'Import Quotas' },
+    { title: 'Users Import', click: $scope.showUploadUsersModal, linkText: 'Import Users' }
+  ]
+
+  $scope.exportOptions = [
+    { title: 'Accounts Export', click: $scope.exportClients, linkText: 'Export Accounts' },
+    { title: 'Contacts Export', click: $scope.exportContacts, linkText: 'Export Contacts' },
+    { title: 'Deal Product Monthly Budget Export', click: $scope.exportDealProductMonhtlyBudget, linkText: 'Export Deal Product Monthly Budget' },
+    { title: 'Deal Products Export', click: $scope.exportDealProducts, linkText: 'Export Deal Products' },
+    { title: 'Deals Export', click: $scope.exportDeals, linkText: 'Export Deals' },
+    { title: 'Influencers Export', click: $scope.exportInfluencers, linkText: 'Export Influencers' },
+    { title: 'IO Monthly Product Budget Export', click: $scope.exportDisplayIOMonthlyBudgets, linkText: 'Export IO Monthly Product Budgets' },
+  ]
+
 ]
