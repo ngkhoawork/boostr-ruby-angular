@@ -43,7 +43,7 @@ class Api::EgnyteIntegrationsController < ApplicationController
 
       render json: { egnyte_login_uri: build_user_authorization_uri(state_token) }
     else
-      render json: { errors: ['app_domain must be setup'] }, status: :bad_request
+      render json: { errors: ['must be enabled'] }, status: :bad_request
     end
   end
 

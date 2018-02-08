@@ -80,7 +80,7 @@ RSpec.describe Api::EgnyteIntegrationsController, type: :controller do
       let!(:egnyte_integration) { company.create_egnyte_integration! }
 
       context 'and its app_domain is present' do
-        before(:each) { egnyte_integration.update(app_domain: 'example.com') }
+        before(:each) { egnyte_integration.update(app_domain: 'example.com', enabled: true) }
 
         it do
           subject
@@ -89,11 +89,11 @@ RSpec.describe Api::EgnyteIntegrationsController, type: :controller do
         end
       end
 
-      context 'but its app_domain is absent' do
+      context 'but it is not enabled' do
         it do
           subject
           expect(response).to have_http_status(400)
-          expect(response_body[:errors]).to include 'app_domain must be setup'
+          expect(response_body[:errors]).to include 'must be enabled'
         end
       end
     end
