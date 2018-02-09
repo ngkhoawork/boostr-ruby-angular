@@ -51,8 +51,8 @@ class Pmp::FilteredRevenueProductDataService
     share = pmp_member.share
     pmp_actuals = pmp_item.pmp_item_daily_actuals
 
-    actual_start_date = pmp_actuals.first.date
-    actual_end_date = pmp_actuals.last.date
+    actual_start_date = pmp_actuals.first&.date || pmp_item.start_date
+    actual_end_date = pmp_actuals.last&.date || pmp_item.start_date
 
     range_start_date = [
       start_date,
@@ -120,7 +120,7 @@ class Pmp::FilteredRevenueProductDataService
       when 'non_guaranteed'
         pmp_item.run_rate_30_days || pmp_item.run_rate_7_days || 0
       when 'guaranteed'
-        actual_end_date = pmp_item.pmp_item_daily_actuals.last.date
+        actual_end_date = pmp_item.pmp_item_daily_actuals.last&.date || pmp_item.start_date
         remaining_days = [pmp_item.end_date - actual_end_date, 0].max
         remaining_budget = pmp_item.budget - pmp_item.pmp_item_daily_actuals.sum(:revenue)
         if remaining_days == 0
