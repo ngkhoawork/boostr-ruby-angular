@@ -9,71 +9,10 @@ class Api::V2::DealsController < ApiController
     elsif params[:activity].present?
       render json: by_pages(activity_deals)
     elsif params[:year].present?
-      response_deals =
-        by_pages(company_deals).as_json
+      response_deals = build_deals_json_for_year_filter(
+        by_pages(company_deals)
+      )
 
-      #deal_sums = company.deals
-      #  .select("advertiser_id, sum(budget) AS budget")
-      #  .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
-      #  .group('deals.advertiser_id')
-      #  .as_json
-      response_deals = response_deals.map do |deal|
-        range = deal['start_date'] .. deal['end_date']
-
-        deal['month_amounts'] = []
-        monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue").where("deal_products.deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('month', start_date)").order("date_part('month', start_date) asc").collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
-
-        index = 0
-        monthly_revenues.each do |monthly_revenue|
-          for i in index..(monthly_revenue[:month]-2)
-            deal['month_amounts'].push 0
-          end
-          deal['month_amounts'].push monthly_revenue[:revenue]
-          index = monthly_revenue[:month]
-        end
-        for i in index..11
-          deal['month_amounts'].push 0
-        end
-
-        deal['months'] = []
-        month = Date.parse("#{year-1}1201")
-        while month = month.next_month and month.year == year do
-          month_range = month.at_beginning_of_month..month.at_end_of_month
-          if month_range.overlaps? range
-            overlap = [deal['start_date'], month_range.begin].max..[deal['end_date'], month_range.end].min
-            deal['months'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
-            deal
-          else
-            deal['months'].push 0
-          end
-        end
-
-        deal['quarter_amounts'] = []
-        quarterly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('quarter', start_date)").order("date_part('quarter', start_date) asc").collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
-        index = 0
-        quarterly_revenues.each do |quarterly_revenue|
-          for i in index..(quarterly_revenue[:quarter]-2)
-            deal['quarter_amounts'].push 0
-          end
-          deal['quarter_amounts'].push quarterly_revenue[:revenue]
-          index = quarterly_revenue[:quarter]
-        end
-        for i in index..3
-          deal['quarter_amounts'].push 0
-        end
-
-        deal['quarters'] = []
-        quarters.each do |quarter|
-          if quarter[:range].overlaps? range
-            overlap = [deal['start_date'], quarter[:start_date]].max..[deal['end_date'], quarter[:end_date]].min
-            deal['quarters'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
-            deal
-          else
-            deal['quarters'].push 0
-          end
-        end
-        deal
-      end
       render json: response_deals
     else
       render json: ActiveModel::ArraySerializer.new(
@@ -84,6 +23,32 @@ class Api::V2::DealsController < ApiController
                                                                :users,
                                                                :currency).distinct) , each_serializer: DealIndexSerializer).to_json
     end
+  end
+
+  # Copy of 'index' with grouping by stages
+  def pipeline_by_stages
+    response_deals =
+      if params[:name].present?
+        group_deals_by_stages(suggest_deals)
+      elsif params[:activity].present?
+        group_deals_by_stages(activity_deals)
+      elsif params[:year].present?
+        group_deals_by_stages(company_deals) do |stage_deals|
+          build_deals_json_for_year_filter(stage_deals)
+        end
+      else
+        client_deals =
+          deals
+            .for_client(params[:client_id])
+            .includes(:advertiser, :stage, :previous_stage, :deal_custom_field, :users, :currency)
+            .distinct
+
+        group_deals_by_stages(client_deals) do |stage_deals|
+          ActiveModel::ArraySerializer.new(stage_deals , each_serializer: DealIndexSerializer).as_json
+        end
+      end
+
+    render json: response_deals
   end
 
   def show
@@ -130,6 +95,80 @@ class Api::V2::DealsController < ApiController
   end
 
   private
+
+  def group_deals_by_stages(deals)
+    company.stages.map do |stage|
+      stage_deals = by_pages(deals.by_stage_id(stage.id))
+
+      stage_deals = yield(stage_deals) if block_given?
+
+      {
+        stage_id: stage.id,
+        deals: stage_deals
+      }
+    end
+  end
+
+  # TODO: should be refactored
+  def build_deals_json_for_year_filter(deals)
+    deals.as_json.map do |deal|
+      range = deal['start_date'] .. deal['end_date']
+
+      deal['month_amounts'] = []
+      monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue").where("deal_products.deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('month', start_date)").order("date_part('month', start_date) asc").collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
+
+      index = 0
+      monthly_revenues.each do |monthly_revenue|
+        for i in index..(monthly_revenue[:month]-2)
+          deal['month_amounts'].push 0
+        end
+        deal['month_amounts'].push monthly_revenue[:revenue]
+        index = monthly_revenue[:month]
+      end
+      for i in index..11
+        deal['month_amounts'].push 0
+      end
+
+      deal['months'] = []
+      month = Date.parse("#{year-1}1201")
+      while month = month.next_month and month.year == year do
+        month_range = month.at_beginning_of_month..month.at_end_of_month
+        if month_range.overlaps? range
+          overlap = [deal['start_date'], month_range.begin].max..[deal['end_date'], month_range.end].min
+          deal['months'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
+          deal
+        else
+          deal['months'].push 0
+        end
+      end
+
+      deal['quarter_amounts'] = []
+      quarterly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('quarter', start_date)").order("date_part('quarter', start_date) asc").collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
+      index = 0
+      quarterly_revenues.each do |quarterly_revenue|
+        for i in index..(quarterly_revenue[:quarter]-2)
+          deal['quarter_amounts'].push 0
+        end
+        deal['quarter_amounts'].push quarterly_revenue[:revenue]
+        index = quarterly_revenue[:quarter]
+      end
+      for i in index..3
+        deal['quarter_amounts'].push 0
+      end
+
+      deal['quarters'] = []
+      quarters.each do |quarter|
+        if quarter[:range].overlaps? range
+          overlap = [deal['start_date'], quarter[:start_date]].max..[deal['end_date'], quarter[:end_date]].min
+          deal['quarters'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
+          deal
+        else
+          deal['quarters'].push 0
+        end
+      end
+      deal
+    end
+  end
 
   def product_filter
     if params[:product_id].presence && params[:product_id] != 'all'
