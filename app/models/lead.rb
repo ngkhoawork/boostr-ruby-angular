@@ -16,9 +16,9 @@ class Lead < ActiveRecord::Base
   belongs_to :contact
   belongs_to :client
 
-  scope :new_records, -> { where(status: NEW) }
-  scope :accepted, -> { where(status: ACCEPTED) }
-  scope :rejected, -> { where(status: REJECTED) }
+  scope :new_records, -> { where('lower(status) = ?', NEW) }
+  scope :accepted, -> { where('lower(status) = ?', ACCEPTED) }
+  scope :rejected, -> { where('lower(status) = ?', REJECTED) }
   scope :by_company_id, -> (company_id) { where(company_id: company_id) }
   scope :notification_reminders_by_dates, -> (reminder_type, start_date, end_date) do
     joins(:notification_reminders)

@@ -88,10 +88,9 @@ class Api::LeadsController < ApplicationController
   end
 
   def csv_import_worker_perform
-    CsvImportWorker.perform_async(
-      params[:file][:s3_file_path],
-      'Csv::Lead',
+    LeadsImportWorker.perform_async(
       current_user.id,
+      params[:file][:s3_file_path],
       params[:file][:original_filename]
     )
   end

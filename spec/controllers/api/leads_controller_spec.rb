@@ -7,7 +7,7 @@ describe Api::LeadsController do
     context 'my' do
       context 'new leads' do
         it 'return leads related to current user' do
-          create_list :lead, 5, company: company, user: user
+          create_list :lead, 5, company: company, user: user, status: Lead::NEW
 
           get :index, relation: 'my', status: 'new_leads'
 
@@ -15,7 +15,7 @@ describe Api::LeadsController do
         end
 
         it 'do not return leads if current user do not have them' do
-          create_list :lead, 5, company: company, user: second_user
+          create_list :lead, 5, company: company, user: second_user, status: Lead::NEW
 
           get :index, relation: 'my', status: 'new_leads'
 
@@ -65,8 +65,8 @@ describe Api::LeadsController do
 
       context 'new leads' do
         it 'return leads related to team of current user' do
-          create_list :lead, 5, company: company, user: user
-          create_list :lead, 5, company: company, user: second_user
+          create_list :lead, 5, company: company, user: user, status: Lead::NEW
+          create_list :lead, 5, company: company, user: second_user, status: Lead::NEW
 
           get :index, relation: 'team', status: 'new_leads'
 
@@ -74,7 +74,7 @@ describe Api::LeadsController do
         end
 
         it 'do not return leads if team of current user do not have them' do
-          create_list :lead, 5, company: company, user: create(:user)
+          create_list :lead, 5, company: company, user: create(:user), status: Lead::NEW
 
           get :index, relation: 'team', status: 'new_leads'
 
@@ -124,7 +124,7 @@ describe Api::LeadsController do
     context 'all' do
       context 'new leads' do
         it 'return leads related to company of current user' do
-          create_list :lead, 5, company: company, user: user
+          create_list :lead, 5, company: company, user: user, status: Lead::NEW
 
           get :index, relation: 'all', status: 'new_leads'
 
@@ -132,7 +132,7 @@ describe Api::LeadsController do
         end
 
         it 'do not return leads if company of current user do not have them' do
-          create_list :lead, 5, company: second_company, user: create(:user, company: second_company)
+          create_list :lead, 5, company: second_company, user: create(:user, company: second_company), status: Lead::NEW
 
           get :index, relation: 'all', status: 'new_leads'
 
