@@ -1,8 +1,12 @@
 class Lead < ActiveRecord::Base
+  NEW = 'new'.freeze
   ACCEPTED = 'accepted'.freeze
   REJECTED = 'rejected'.freeze
+  STATUSES = [NEW, ACCEPTED, REJECTED]
   REMINDER = 'reminder'.freeze
   REASSIGNMENT = 'reassignment'.freeze
+
+  attr_accessor :skip_callback
 
   has_many :deals
   has_many :notification_reminders
@@ -12,9 +16,9 @@ class Lead < ActiveRecord::Base
   belongs_to :contact
   belongs_to :client
 
-  scope :new_records, -> { where(status: nil) }
-  scope :accepted, -> { where(status: ACCEPTED) }
-  scope :rejected, -> { where(status: REJECTED) }
+  scope :new_records, -> { where('lower(status) = ?', NEW) }
+  scope :accepted, -> { where('lower(status) = ?', ACCEPTED) }
+  scope :rejected, -> { where('lower(status) = ?', REJECTED) }
   scope :by_company_id, -> (company_id) { where(company_id: company_id) }
   scope :notification_reminders_by_dates, -> (reminder_type, start_date, end_date) do
     joins(:notification_reminders)
@@ -22,7 +26,9 @@ class Lead < ActiveRecord::Base
               notification_reminders.sending_time BETWEEN ? AND ?', reminder_type, start_date, end_date)
   end
 
-  after_create :match_contact, :assign_reviewer, :create_notification_reminders, on: :create
+  after_create :match_contact, :assign_reviewer, on: :create
+  after_create :create_notification_reminders, on: :create, unless: :skip_callback
+  after_create :send_new_assignment_email, unless: :skip_callback
   after_save :create_notification_reminders, if: :reassigned_at_changed?
   after_save :remove_notifications_reminders, if: :accepted_or_rejected?
 
@@ -76,5 +82,9 @@ class Lead < ActiveRecord::Base
 
   def reassigned_at_present?
     reassigned_at_changed?
+  end
+
+  def send_new_assignment_email
+    LeadsMailer.new_leads_assignment(self).deliver_now
   end
 end

@@ -3,7 +3,7 @@ require 'rails_helper'
 describe 'Lead' do
   describe 'scopes' do
     it '#new_records' do
-      create_list :lead, 5, company: company, user: user
+      create_list :lead, 5, company: company, user: user, status: Lead::NEW
 
       expect(Lead.new_records.count).to eq 5
     end

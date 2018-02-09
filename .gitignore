@@ -98,7 +98,6 @@ bower.json
 # sftp configuration file
 sftp-config.json
 .env
-db/schema.rb
 
 config/google_sheets_config.json
 

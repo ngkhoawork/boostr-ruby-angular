@@ -52,6 +52,12 @@ class Api::LeadsController < ApplicationController
     render json: Api::Leads::IndexSerializer.new(lead).serializable_hash
   end
 
+  def import
+    csv_import_worker_perform
+
+    render json: { message: import_message }, status: :ok
+  end
+
   private
 
   def lead
@@ -74,5 +80,18 @@ class Api::LeadsController < ApplicationController
     if lead.contact.present?
       client.client_contacts.create(contact: lead.contact, client: client)
     end
+  end
+
+  def import_message
+    'Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file '\
+     'size)'
+  end
+
+  def csv_import_worker_perform
+    LeadsImportWorker.perform_async(
+      current_user.id,
+      params[:file][:s3_file_path],
+      params[:file][:original_filename]
+    )
   end
 end
