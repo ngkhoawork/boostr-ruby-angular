@@ -1,30 +1,3 @@
--#.navbar#header.navbar-default{ ng: { controller: 'NavbarController' } }
-  .navbar-inner
-    .container-fluid
-      .row
-        .navbar-header
-          %a#logo.navbar-brand{:href => root_path}
-        %p.navbar-text.navbar-right
-          - if user_signed_in?
-            = link_to "Sign out", destroy_user_session_path, method: :delete, class: 'navbar-link'
-          - else
-            = link_to "Sign in", new_user_session_path, class: 'navbar-link'
-          %starting-page
-      .row.navbar-row
-        %ul.nav.navbar-nav
-          %li{ ng: { repeat: 'item in ::navbar | filter: ""', class: "{ active: isActive(item.url) }" }, dropdown: '{{::item.dropdown.length > 0}}' }
-            %a{href: '', 'ng-if': '::!item.dropdown.length', 'ng-href': '{{::item.url}}'}
-              {{::item.name}}
-            %a{href: '', 'ng-if': '::item.dropdown.length', 'dropdown-toggle': true }
-              {{::item.name}}
-              %span.caret
-            %ul.dropdown-menu{'ng-if': '::item.dropdown.length'}
-              %li{'ng-repeat': 'item in ::item.dropdown | filter: "" | orderBy: "::name"'}
-                %a{href: '', 'ng-href': '{{::item.url}}'}
-                  {{::item.name}}
-        %span.scroll-top-link{'ng-click': 'scrollTop()'}
-          %i.fa.fa-arrow-up
-
 #header{'ng-controller': 'NavbarController'}
   %div.logo-row
     %a#logo{:href => root_path}
