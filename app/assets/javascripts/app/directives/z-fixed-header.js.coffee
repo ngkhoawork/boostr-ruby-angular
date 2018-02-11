@@ -1,6 +1,6 @@
 app.directive 'zFixedHeader',
-	['$window', '$compile', '$timeout'
-	( $window,   $compile,   $timeout ) ->
+	['$window', '$document', '$compile', '$timeout'
+	( $window,   $document,   $compile,   $timeout ) ->
 		restrict: 'A'
 		link: ($scope, element, attrs) ->
 			mainClass = 'z-fixed-header'
@@ -20,8 +20,8 @@ app.directive 'zFixedHeader',
 				headerCopy.children().each -> angular.element(this).css('min-width', '')
 				previousCopy.replaceWith headerCopy
 
-			window.scroll ->
-				offsetTop = table.offset().top
+			scroll = ->
+				offsetTop = table.offset().top - _fixedHeaderHeight
 				if window.scrollTop() > offsetTop
 					header.addClass 'fixed'
 					top = window.scrollTop() - offsetTop
@@ -29,6 +29,9 @@ app.directive 'zFixedHeader',
 				else
 					header.removeClass 'fixed'
 					header.css 'top', 0
+
+			$document.bind 'scroll', scroll
+			$scope.$on '$destroy', -> $document.unbind 'scroll', scroll
 
 			watcher = ->
 				$timeout ->
