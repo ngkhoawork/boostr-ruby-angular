@@ -514,6 +514,8 @@ Rails.application.routes.draw do
         post :import
       end
     end
+
+    resources :assignment_rules, only: [:index]
   end
 
   mount Sidekiq::Web => '/sidekiq'
