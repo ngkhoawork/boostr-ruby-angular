@@ -89,6 +89,8 @@
   $scope.submitForm = () ->
     $scope.errors = {}
 
+    if moment(this.deal.start_date).isAfter(this.deal.end_date) then return $scope.errors['end_date'] = 'End Date can\'t be before Start Date';
+
     fields = ['name', 'stage_id', 'advertiser_id', 'agency_id', 'deal_type', 'source_type', 'start_date', 'end_date']
 
     fields.forEach (key) ->
