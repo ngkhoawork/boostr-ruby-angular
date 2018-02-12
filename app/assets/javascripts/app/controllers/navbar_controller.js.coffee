@@ -32,7 +32,7 @@
             {name: 'Spend by Account', url: '/reports/spend_by_account'}
             {name: 'Spend by Category', url: '/reports/spend_by_category'}
             {name: 'Quota Attainment', url: '/reports/quota_attainment'}
-            {name: 'Publishers', url: '/reports/publishers'}
+            {name: 'Publishers', url: '/reports/publishers'} if _isPublisherEnabled
         ]}
         {name: 'SMART INSIGHTS', url: '/smart_reports', dropdown: [
             {name: 'Sales Execution Dashboard', url: '/smart_reports/sales_execution_dashboard'}
