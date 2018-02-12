@@ -12,6 +12,8 @@ class Cost < ActiveRecord::Base
   accepts_nested_attributes_for :cost_monthly_amounts
   accepts_nested_attributes_for :values
 
+  scope :estimated, -> { where('is_estimated IS true') }
+
   after_create do
     Cost::AmountsGenerateService.new(self).perform if self.cost_monthly_amounts.count == 0
   end
@@ -20,6 +22,7 @@ class Cost < ActiveRecord::Base
     if cost_monthly_amounts.sum(:budget) != budget || cost_monthly_amounts.sum(:budget_loc) != budget_loc
       if budget_changed? || budget_loc_changed?
         Cost::AmountsUpdateService.new(self).perform
+        self.update(is_estimated: false)
       else
         self.update_budget
       end
@@ -37,7 +40,7 @@ class Cost < ActiveRecord::Base
   def update_budget
     new_budget = cost_monthly_amounts.sum(:budget)
     new_budget_loc = cost_monthly_amounts.sum(:budget_loc)
-    self.update(budget: new_budget, budget_loc: new_budget_loc)
+    self.update(budget: new_budget, budget_loc: new_budget_loc, is_estimated: false)
   end
 
   def daily_budget

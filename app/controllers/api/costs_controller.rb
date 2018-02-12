@@ -4,7 +4,7 @@ class Api::CostsController < ApplicationController
   def create
     exchange_rate = io.exchange_rate
     converted_params = ConvertCurrency.call(exchange_rate, cost_params)
-    converted_params[:is_estimated] = true
+    converted_params[:is_estimated] = false
     cost_obj = io.costs.new(converted_params)
     cost_obj.update_periods if params[:cost][:cost_monthly_amounts_attributes]
     if cost_obj.save
@@ -17,7 +17,6 @@ class Api::CostsController < ApplicationController
   def update
     exchange_rate = io.exchange_rate
     converted_params = ConvertCurrency.call(exchange_rate, cost_params)
-
     if cost.update_attributes(converted_params)
       cost.io.update_total_budget
 

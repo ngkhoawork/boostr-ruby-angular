@@ -5,6 +5,7 @@ class Product < ActiveRecord::Base
   has_many :values, as: :subject
   has_many :ad_units
   has_many :pmp_items
+  has_many :costs
 
   validates :name, presence: true
   validates :margin,
@@ -28,8 +29,16 @@ class Product < ActiveRecord::Base
     update_forecast_fact_callback
   end
 
+  after_update do
+    update_cost
+  end
+
   after_destroy do |product_record|
     delete_dimension(product_record)
+  end
+
+  def update_cost
+    ProductMarginUpdateWorker.perform_async(id, margin, margin_was) if margin_changed?
   end
 
   def create_dimension
