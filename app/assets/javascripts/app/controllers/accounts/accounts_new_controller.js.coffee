@@ -13,6 +13,7 @@
   $scope.isDuplicateShow = false
   $scope.isLoaderShow = false
   $scope.duplicateItemsLimit = 5  # the maximum number of output duplicates
+  $scope.minSearchStringLength = 3 # the minimum search string length
 
   CountriesList.get (data) ->
     $scope.countries = data.countries
@@ -149,7 +150,7 @@
 
   delayTimer = undefined
   $scope.onNameChanged = ->
-    if $scope.client.name.length < 2
+    if $scope.client.name.length < $scope.minSearchStringLength
       $scope.closeDuplicateList()
     else
       $scope.openDuplicateList()
@@ -166,7 +167,7 @@
       )
 
   $scope.onFocus = ->
-    if $scope.client.name.length < 2
+    if $scope.client.name.length < $scope.minSearchStringLength
       $scope.closeDuplicateList()
     else
       $scope.openDuplicateList()
