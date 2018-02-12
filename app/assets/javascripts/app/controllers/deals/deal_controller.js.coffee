@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation', 'DealAttachment'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation, DealAttachment) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation', 'DealAttachment', 'localStorageService'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation, DealAttachment, localStorageService) ->
 
   $scope.showMeridian = true
   $scope.isAdmin = false
@@ -37,6 +37,7 @@
   $scope.activeDealProductCfLength = 0
 
   $scope._scope = -> this
+  $scope.showWarnings = true
 
   $scope.isUrlValid = (url) ->
     regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
@@ -687,7 +688,7 @@
         currentDeal: ->
           currentDeal
 
-  $scope.showWarningModal = (message) ->
+  $scope.showWarningModal = (message, id) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_warning.html'
       size: 'md'
@@ -696,6 +697,7 @@
       keyboard: true
       resolve:
         message: -> message
+        id: -> id
 
   $scope.showNewProductModal = (currentDeal) ->
     $scope.modalInstance = $modal.open
@@ -967,12 +969,20 @@
         Deal.latest_log(id: dealId).then (log) ->
           $scope.operativeIntegration.dealLog = log if log && log.id
 
+  $scope.getWarningSettings = () ->
+    dealsWithoutWarning = localStorageService.get('dealsWithoutWarning') || []
+    dealsWithoutWarning.forEach((deal) -> 
+      if deal.dealId == $scope.currentDeal.id
+        $scope.showWarnings = false
+    )
+
 
   checkCurrentUserDealShare = (members) ->
     CurrentUser.get().$promise.then (currentUser) ->
+      $scope.getWarningSettings()
       _.forEach members, (member) ->
-        if member.user_id == currentUser.id && !(member.share > 0)
-          $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.'
+        if member.user_id == currentUser.id && !(member.share > 0) && $scope.showWarnings
+          $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.', $scope.currentDeal.id
 
   $scope.$watch 'currentUser', (currentUser) ->
     $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser
