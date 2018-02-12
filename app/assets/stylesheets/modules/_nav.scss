@@ -5,7 +5,7 @@
   z-index: 200;
   .logo-row {
     position: relative;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     #logo {
       display: inline-block;
       width: 123px;
@@ -91,7 +91,7 @@
   }
   &.fixed-header {
     #logo {
-      transform: scale(0.8) translate(-20px, 98px);
+      transform: scale(0.8) translate(-20px, 74px);
     }
     .navbar-row {
       transform: scale(0.9) translate(125px, 5px) rotate(0.01deg);

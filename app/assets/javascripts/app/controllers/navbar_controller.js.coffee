@@ -50,7 +50,7 @@
 
     windowEl = $($window)
     header = $('#header')
-    headerOffset = 90
+    headerOffset = 70
 
     updateFixedHeaderHeight = -> window._fixedHeaderHeight = header.outerHeight() - headerOffset
     $timeout -> updateFixedHeaderHeight()
