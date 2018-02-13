@@ -5,8 +5,6 @@ app.directive 'zFixedHeader',
 		link: ($scope, element, attrs) ->
 			mainClass = 'z-fixed-header'
 			window = angular.element($window)
-			modal = angular.element('div.modal[role="dialog"]')
-			tableInModal = angular.element('div.modal[role="dialog"] table.table')
 			header = angular.element(element)
 			table = header.closest('table')
 			container = table.parent()
@@ -15,7 +13,6 @@ app.directive 'zFixedHeader',
 			header.addClass mainClass
 			container.css 'position', 'relative'
 			maxTop = 0
-			offsetFromDoc = 0
 
 			updateHeaderCopy = ->
 				previousCopy = headerCopy
@@ -28,27 +25,6 @@ app.directive 'zFixedHeader',
 				if window.scrollTop() > offsetTop
 					header.addClass 'fixed'
 					top = window.scrollTop() - offsetTop
-					header.css 'top', if top > maxTop then maxTop else top
-				else
-					header.removeClass 'fixed'
-					header.css 'top', 0
-
-			getPosition = (element) ->
-				yPosition = 0
-
-				while element
-					yPosition += (element.offsetTop - element.scrollTop + element.clientTop)
-					element = element.offsetParent
-
-				yPosition
-
-			offsetFromDoc = getPosition(tableInModal[0])
-
-			modal.scroll ->
-				offsetTop = tableInModal.offset().top
-				if modal.scrollTop() > offsetTop
-					header.addClass 'fixed'
-					top = modal.scrollTop() - offsetFromDoc
 					header.css 'top', if top > maxTop then maxTop else top
 				else
 					header.removeClass 'fixed'
