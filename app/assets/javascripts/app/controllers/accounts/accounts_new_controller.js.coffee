@@ -173,7 +173,8 @@
       $scope.openDuplicateList()
 
   $scope.onBlur = ->
-    if  $scope.duplicates.length == 0
-      $scope.closeDuplicateList()
+    if  $scope.duplicates
+      if  $scope.duplicates.length == 0
+        $scope.closeDuplicateList()
 
 ]
