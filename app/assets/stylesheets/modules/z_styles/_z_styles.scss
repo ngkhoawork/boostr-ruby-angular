@@ -57,6 +57,15 @@
         }
         thead {
             background-color: white;
+
+            tr.z-sortable-prime {
+                &:nth-of-type(2) {
+                    th {
+                        color: #fff !important;
+                    }
+                }
+            }
+
             th {
                 color: $secondary-font-color !important;
                 border-left: none;
