@@ -71,6 +71,7 @@
                     keyboard: true
                     resolve:
                         message: -> message
+                        id: -> null
             $scope.showEditInfluencerContentFeeModal = (influencerContentFee)->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/influencer_content_fee_form.html'
