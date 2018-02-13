@@ -139,5 +139,6 @@
     }
     [z-fixed-header]:not(.z-fixed-header) {
         opacity: 0;
+        pointer-events: none;
     }
 }
