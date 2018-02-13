@@ -294,7 +294,12 @@
     { title: 'Integration ID Import', click: $scope.showUploadIntegrationIdModal, linkText: 'Import Integration IDs' },
     { title: 'Publishers Daily Actuals Import', click: $scope.showUploadPublisherModal, linkText: 'Publishers Daily Actuals Import' },
     { title: 'Quotas Import', click: $scope.showUploadQuotasModal, linkText: 'Import Quotas' },
-    { title: 'Users Import', click: $scope.showUploadUsersModal, linkText: 'Import Users' }
+    { title: 'Users Import', click: $scope.showUploadUsersModal, linkText: 'Import Users' },
+    { title: 'IO Content Fee Import', click: $scope.showUploadIOContentFeeModal, linkText: 'Import IO Content Fees' },
+    { title: 'IO Costs Import', click: $scope.showUploadIOCostsModal, linkText: 'Import IO Costs' },
+    { title: 'PMP Daily Actual Import', click: $scope.showUploadPmpItemDailyActualsModal, linkText: 'Import PMP Daily Actual' },
+    { title: 'Active PMP Import', click: $scope.showUploadActivePmpObject, linkText: 'Active PMP Impor' },
+    { title: 'Active PMP Item Import', click: $scope.showUploadActivePmpItem, linkText: 'Active PMP Item Import' }
   ]
 
   $scope.exportOptions = [
