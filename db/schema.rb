@@ -1706,6 +1706,7 @@ ActiveRecord::Schema.define(version: 20180202233414) do
     t.boolean  "active",                default: true
     t.boolean  "is_influencer_product", default: false
     t.integer  "product_family_id"
+    t.integer  "margin"
   end
 
   add_index "products", ["company_id"], name: "index_products_on_company_id", using: :btree

@@ -1,4 +1,6 @@
 class Dataexport::AccountSerializer < ActiveModel::Serializer
+  include Dataexport::CommonFields::TimestampFields
+
   attributes :id, :name, :type, :category, :sub_category, :parent_account, :region, :segment,
              :holding_company, :created, :last_updated, :custom_fields
 
@@ -28,14 +30,6 @@ class Dataexport::AccountSerializer < ActiveModel::Serializer
 
   def holding_company
     object.holding_company&.name
-  end
-
-  def created
-    object.created_at
-  end
-
-  def last_updated
-    object.updated_at
   end
 
   def custom_fields

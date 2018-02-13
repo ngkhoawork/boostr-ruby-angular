@@ -1,23 +1,10 @@
 class Dataexport::DealSerializer < ActiveModel::Serializer
+  include Dataexport::CommonFields::BudgetFields
+  include Dataexport::CommonFields::TimestampFields
+
   attributes :id, :name, :advertiser_id, :agency_id, :start_date, :end_date, :budget_usd, :budget,
              :created, :last_updated, :stage_id, :stage_name, :type, :source, :next_steps, :closed_date,
              :open, :currency, :initiative_id, :closed_text, :custom_fields
-
-  def budget_usd
-    object.budget
-  end
-
-  def budget
-    object.budget_loc
-  end
-
-  def created
-    object.created_at
-  end
-
-  def last_updated
-    object.updated_at
-  end
 
   def stage_name
     object.stage&.name
