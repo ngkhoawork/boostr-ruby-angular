@@ -66,12 +66,12 @@ class Operative::ImportSalesOrderLineItemsService
     import_log.set_file_source(sales_order_line_items)
 
     File.foreach(sales_order_csv_file).with_index do |line, line_num|
+      import_log.count_processed
+
       if line_num == 0
         @headers = CSV.parse_line(line)
         next
       end
-
-      import_log.count_processed
 
       begin
         row = csv_parse_line(line)

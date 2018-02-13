@@ -54,12 +54,12 @@ class Operative::ImportInvoiceLineItemsService
     import_log.set_file_source(invoice_line_items)
 
     File.foreach(invoice_lines_csv_file).with_index do |line, line_num|
+      import_log.count_processed
+
       if line_num == 0
         @headers = CSV.parse_line(line)
         next
       end
-
-      import_log.count_processed
 
       begin
         row = csv_parse_line(line)
@@ -82,12 +82,12 @@ class Operative::ImportInvoiceLineItemsService
           import_log.count_imported
         rescue Exception => e
           import_log.count_failed
-          import_log.log_error [e.message]
+          import_log.log_error ["invoice_line_item_id: #{row[:invoice_line_item_id]}", e.message]
           next
         end
       else
         import_log.count_failed
-        import_log.log_error line_item_budget_csv.errors.full_messages
+        import_log.log_error ["invoice_line_item_id: #{row[:invoice_line_item_id]}", line_item_budget_csv.errors.full_messages]
       end
     end
 
