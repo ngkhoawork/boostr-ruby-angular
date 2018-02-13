@@ -157,6 +157,20 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       }]
     end
 
+    it 'catches and processes amendable csv rows' do
+      content_for_files([
+        amendable_malformed_csv,
+        currency_csv
+      ])
+
+      subject.perform
+      import_log = CsvImportLog.last
+      expect(import_log.error_messages).not_to be_present
+
+      expect(import_log.rows_processed).to eq 2
+      expect(import_log.rows_imported).to  eq 2
+    end
+
     it 'catches and skips malformed csv rows' do
       content_for_files([
         malformed_csv,
@@ -169,7 +183,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
         "row"=>1,
         "message"=>
           ["Unclosed quoted field on line 1.",
-            ",\"To Be Malformed\"\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n"]
+            "\"(To Be Malformed\"\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n"]
       }]
       expect(import_log.rows_processed).to eq 2
       expect(import_log.rows_imported).to  eq 1
@@ -222,10 +236,20 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
 
   def malformed_csv
     list = []
-    list << (build :sales_order_csv_data, sales_order_name: 'To Be Malformed"')
+    list << (build :sales_order_csv_data, sales_order_id: '(To Be Malformed"')
     list << (build :sales_order_csv_data, valid_order_data)
     @_malformed_csv ||= generate_multiline_csv(list.first.keys, list.map(&:values)).gsub("\"\"", "\"")
     @_malformed_csv
+  end
+
+  def amendable_malformed_csv
+    list = []
+    malformed = valid_order_data
+    malformed[:sales_order_name] = "Very \"Illegal\" Quoting"
+    list << (build :sales_order_csv_data, malformed)
+    list << (build :sales_order_csv_data, valid_order_data)
+    @_amendable_malformed_csv ||= generate_multiline_csv(list.first.keys, list.map(&:values)).gsub("\"\"", "\"")
+    @_amendable_malformed_csv
   end
 
   def valid_order_data

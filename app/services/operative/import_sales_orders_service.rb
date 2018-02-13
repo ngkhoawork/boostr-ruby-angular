@@ -40,12 +40,12 @@ class Operative::ImportSalesOrdersService
 
     File.foreach(currency_file).with_index do |line, line_num|
       if line_num == 0
-        @currency_headers = CSV.parse_line(line)
+        @headers = CSV.parse_line(line)
         next
       end
 
       begin
-        row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @currency_headers, header_converters: :symbol)
+        row = csv_parse_line(line)
       rescue Exception => e
         import_log.count_failed
         import_log.log_error [e.message, line]
@@ -73,7 +73,7 @@ class Operative::ImportSalesOrdersService
       import_log.count_processed
 
       begin
-        row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
+        row = csv_parse_line(line)
       rescue Exception => e
         import_log.count_failed
         import_log.log_error [e.message, line]
@@ -126,5 +126,17 @@ class Operative::ImportSalesOrdersService
 
   def get_curr_cd(curr_id)
     @currencies_list[curr_id]
+  end
+
+  def amend_quotes(line)
+    line.gsub(/(?<!\,)(\")(?![,\r\n])/, "\"\"")
+  end
+
+  def csv_parse_line(line)
+    begin
+      CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
+    rescue CSV::MalformedCSVError => e
+      CSV.parse_line(amend_quotes(line).force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
+    end
   end
 end
