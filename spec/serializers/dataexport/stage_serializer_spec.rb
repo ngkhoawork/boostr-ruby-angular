@@ -7,6 +7,8 @@ describe Dataexport::StageSerializer do
     expect(serializer.probability).to eq(stage.probability)
     expect(serializer.open).to eq(stage.open)
     expect(serializer.active).to eq(stage.active)
+    expect(serializer.created).to eq(stage.created_at)
+    expect(serializer.last_updated).to eq(stage.updated_at)
   end
 
   private
