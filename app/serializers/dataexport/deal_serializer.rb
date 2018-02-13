@@ -19,7 +19,7 @@ class Dataexport::DealSerializer < ActiveModel::Serializer
   end
 
   def closed_date
-    object.closed_at
+    object.closed_at&.to_date
   end
 
   def currency
