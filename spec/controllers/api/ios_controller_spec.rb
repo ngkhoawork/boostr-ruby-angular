@@ -4,56 +4,139 @@ describe Api::IosController do
   before { sign_in account_manager }
 
   describe 'GET #index' do
-    before { create_list :io, 5, company: company }
+    let!(:io) { create :io, company: company, advertiser: advertiser, agency: agency, name: 'Deal 234' }
 
-    it 'has appropriate count of record in response' do
-      get :index, format: :json
+    let(:params) { {} }
+    subject { get :index, params }
 
-      response_json = response_json(response)
+    context 'when filter params are absent' do
+      let!(:bunch_ios) { create_list(:io, 5, company: company) }
 
-      expect(response_json.count).to eq(5)
+      it { subject; expect(response_json.count).to eq(6) }
     end
 
-    it 'has ios related to specific advertiser' do
-      create :io, company: company, advertiser: advertiser
+    context 'when params include advertiser id' do
+      context 'which is related to an existing io' do
+        let(:params) { { advertiser_id: advertiser.id } }
 
-      get :index, advertiser_id: advertiser.id, format: :json
+        it { subject; expect(response_ids).to include io.id }
+      end
 
-      response_json = response_json(response)
+      context 'which is not related to an existing io' do
+        let(:params) { { advertiser_id: -1 } }
 
-      expect(response_json.count).to eq(1)
-      expect(response_json.first['advertiser_id']).to eq(advertiser.id)
+        it { subject; expect(response_ids).not_to include io.id }
+      end
     end
 
-    it 'has ios related to specific agency' do
-      agency = company.ios.first.agency
+    context 'when params include agency id' do
+      context 'which is related to an existing io' do
+        let(:params) { { agency_id: agency.id } }
 
-      get :index, agency_id: agency.id, format: :json
+        it { subject; expect(response_ids).to include io.id }
+      end
 
-      response_json = response_json(response)
+      context 'which is not related to an existing io' do
+        let(:params) { { agency_id: -1 } }
 
-      expect(response_json.count).to eq(1)
-      expect(response_json.first['agency_id']).to eq(agency.id)
+        it { subject; expect(response_ids).not_to include io.id }
+      end
     end
 
-    it 'has appropriate ios if filter by name' do
-      create :io, company: company, name: 'Deal 234'
+    context 'when params include budget' do
+      context 'which is related to an existing io' do
+        let(:params) { { budget_start: io.budget - 5, budget_end: io.budget + 5 } }
 
-      get :index, name: '234', format: :json
+        it { subject; expect(response_ids).to include io.id }
+      end
 
-      response_json = response_json(response)
+      context 'which is not related to an existing io' do
+        let(:params) { { budget_start: io.budget - 5, budget_end: io.budget - 1 } }
 
-      expect(response_json.count).to eq(1)
+        it { subject; expect(response_ids).not_to include io.id }
+      end
     end
 
-    it 'has appropriate ios if filter by started date' do
-      create :io, company: company, start_date: '2015-06-15'
+    context 'when params include name' do
+      context 'which is related to an existing io' do
+        let(:params) { { name: io.name } }
 
-      get :index, end_date: '2015-06-20', start_date: '2015-06-10', format: :json
+        it { subject; expect(response_ids).to include io.id }
+      end
 
-      response_json = response_json(response)
+      context 'which is not related to an existing io' do
+        let(:params) { { name: 'SOME_STRING' } }
 
-      expect(response_json.count).to eq(1)
+        it { subject; expect(response_ids).not_to include io.id }
+      end
+
+      context 'which is related to an existing io advertiser' do
+        let(:params) { { name: io.advertiser.name } }
+
+        it { subject; expect(response_ids).to include io.id }
+      end
+
+      context 'which is related to an existing io agency' do
+        let(:params) { { name: io.agency.name } }
+
+        it { subject; expect(response_ids).to include io.id }
+      end
+    end
+
+    context 'when params include range start_date' do
+      context 'which is related to an existing io' do
+        let(:params) { { start_date_start: io.start_date - 1.day, start_date_end: io.start_date + 1.day } }
+
+        it { subject; expect(response_ids).to include io.id }
+      end
+
+      context 'which is not related to an existing io' do
+        let(:params) { { start_date_start: io.start_date - 1.day, start_date_end: io.start_date - 0.5.day } }
+
+        it { subject; expect(response_ids).not_to include io.id }
+      end
+    end
+
+    context 'when params include range end_date' do
+      context 'which is related to an existing io' do
+        let(:params) { { end_date_start: io.end_date - 1.day, end_date_end: io.end_date + 1.day } }
+
+        it { subject; expect(response_ids).to include io.id }
+      end
+
+      context 'which is not related to an existing io' do
+        let(:params) { { end_date_start: io.end_date - 1.day, end_date_end: io.end_date - 0.5.day } }
+
+        it { subject; expect(response_ids).not_to include io.id }
+      end
+    end
+
+    context 'when params include io_number' do
+      context 'which is related to an existing io' do
+        let(:params) { { io_number: io.io_number } }
+
+        it { subject; expect(response_ids).to include io.id }
+      end
+
+      context 'which is not related to an existing io' do
+        let(:params) { { io_number: -1 } }
+
+        it { subject; expect(response_ids).not_to include io.id }
+      end
+    end
+
+    context 'when params include external_io_number' do
+      context 'which is related to an existing io' do
+        let(:params) { { external_io_number: io.external_io_number } }
+
+        it { subject; expect(response_ids).to include io.id }
+      end
+
+      context 'which is not related to an existing io' do
+        let(:params) { { external_io_number: -1 } }
+
+        it { subject; expect(response_ids).not_to include io.id }
+      end
     end
   end
 
@@ -68,7 +151,7 @@ describe Api::IosController do
         io.io_members << io_member
 
         expect{
-          delete :destroy, id: io.id, format: :json
+          delete :destroy, id: io.id
         }.to change(Io, :count).by(-1)
         .and change(DisplayLineItem, :count).by(-1)
         .and change(IoMember, :count).by(-1)
@@ -84,13 +167,21 @@ describe Api::IosController do
         io = create :io, company: company
 
         expect{
-          delete :destroy, id: io.id, format: :json
+          delete :destroy, id: io.id
         }.to_not change(Io, :count)
       end
     end
   end
 
   private
+
+  def response_json
+    @_response_json ||= super(response)
+  end
+
+  def response_ids
+    @_response_ids ||= response_json.map { |resource| resource['id'] }
+  end
 
   def company
     @_company ||= create :company
@@ -113,5 +204,9 @@ describe Api::IosController do
 
   def advertiser
     @_advertiser ||= create :client, company: company
+  end
+
+  def agency
+    @_agency ||= create :client, :agency, company: company
   end
 end
