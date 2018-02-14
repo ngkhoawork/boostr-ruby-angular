@@ -20,7 +20,7 @@ describe Operative::GetFileService, datafeed: :true do
       subject.perform
     end
 
-    it 'handles nil value', focus: true do
+    it 'handles nil value' do
       api_config(base_link: nil)
 
       expect(Net::SFTP).to receive(:start).with(nil, 'email@test.com', password: 'password')
