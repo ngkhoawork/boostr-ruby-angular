@@ -35,12 +35,12 @@ class Operative::ImportInvoiceLineItemsService
 
     File.foreach(invoices_csv_file).with_index do |line, line_num|
       if line_num == 0
-        @invoice_headers = CSV.parse_line(line)
+        @headers = CSV.parse_line(line)
         next
       end
 
       begin
-        row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @invoice_headers, header_converters: :symbol)
+        row = csv_parse_line(line)
       rescue Exception => e
         next
       end
@@ -54,15 +54,15 @@ class Operative::ImportInvoiceLineItemsService
     import_log.set_file_source(invoice_line_items)
 
     File.foreach(invoice_lines_csv_file).with_index do |line, line_num|
+      import_log.count_processed
+
       if line_num == 0
-        @lines_headers = CSV.parse_line(line)
+        @headers = CSV.parse_line(line)
         next
       end
 
-      import_log.count_processed
-
       begin
-        row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @lines_headers, header_converters: :symbol)
+        row = csv_parse_line(line)
       rescue Exception => e
         import_log.count_failed
         import_log.log_error [e.message, line]
@@ -82,16 +82,28 @@ class Operative::ImportInvoiceLineItemsService
           import_log.count_imported
         rescue Exception => e
           import_log.count_failed
-          import_log.log_error [e.message]
+          import_log.log_error ["invoice_line_item_id: #{row[:invoice_line_item_id]}", e.message]
           next
         end
       else
         import_log.count_failed
-        import_log.log_error line_item_budget_csv.errors.full_messages
+        import_log.log_error ["invoice_line_item_id: #{row[:invoice_line_item_id]}", line_item_budget_csv.errors.full_messages]
       end
     end
 
     import_log.save
+  end
+
+  def amend_quotes(line)
+    line.gsub(/(?<!\,)(\")(?![,\r\n])/, "\"\"")
+  end
+
+  def csv_parse_line(line)
+    begin
+      CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
+    rescue CSV::MalformedCSVError => e
+      CSV.parse_line(amend_quotes(line).force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
+    end
   end
 
   def build_line_item_budget_csv(row)
