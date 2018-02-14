@@ -1,6 +1,6 @@
 @app.controller 'Agency360Controller',
-  ['$scope', '$window', '$q', '$filter', 'Agency360', 'HoldingCompany', 'Field', 'Client', 'zError',
-    ( $scope,   $window,   $q,   $filter,   Agency360,   HoldingCompany,   Field,   Client, zError ) ->
+  ['$scope', '$window', '$q', '$filter', 'Agency360', 'HoldingCompany', 'Field', 'Client', 'zError', 'TimeDimension',
+    ( $scope,   $window,   $q,   $filter,   Agency360,   HoldingCompany,   Field,   Client, zError, TimeDimension ) ->
 
       FIRST_CHART_ID = '#spend-product-chart'
       SECOND_CHART_ID = '#spend-advertiser-chart'
@@ -57,6 +57,13 @@
 
       HoldingCompany.all().then (holdingCompanies) ->
         $scope.holdingCompanies = holdingCompanies
+
+      TimeDimension.all().then (timeDimensions) ->
+        $scope.timeDimensions = _.map timeDimensions, (td) ->
+          td.type = switch
+            when td.days_length >= 28 && td.days_length <= 31 then 'month'
+          td
+        $scope.timeDimensions = _.where($scope.timeDimensions, {type: 'month'});
 
       transformData = (data) ->
         grouped = _.groupBy data, 'name'
