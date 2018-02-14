@@ -15,7 +15,7 @@
                                 %div{ ng: { bind: { html: 'product.name' } } }
                 .col-xs-6
                     .form-group.product-budget{'ng-class': "{'with-add-btn': cost.isIncorrectTotalBudgetPercent}"}
-                        %label Total Budget
+                        %label Total Amount
                         %div.total-budget-wrap
                             %input.form-control.total-budget{'float-only': '', 'ng-model': 'cost.budget_loc', 'ng-change': 'changeTotalBudget()'}
                             %span.total-percent{'ng-class': "{'has-error': cost.isIncorrectTotalBudgetPercent}"}
