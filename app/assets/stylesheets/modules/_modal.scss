@@ -353,6 +353,9 @@
       margin-left: 3px;
       transform: translateY(2px);
     }
+    label {
+      user-select: none;
+    }
   }
   .add-btn.plus-btn {
     height: 35px;

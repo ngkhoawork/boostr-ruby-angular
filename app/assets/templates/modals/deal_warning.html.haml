@@ -8,10 +8,12 @@
 
     .popup-modal-footer.clearfix
         .row
-            .col-sm-9
+            .col-sm-9{ ng: { if: 'id' } }
                 .form-group.text-left
-                    %label{ for: "show-warnings'" }
+                    %label{ for: 'show-warnings' }
                         Do not display this message again for this deal
                     %input.form-control{id: 'show-warnings', type: 'checkbox', ng: { model: 'dontShowWarnings',  change: 'onChange()' } }
-            .col-sm-3
-                %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Ok                        
+            .col-sm-3{ ng: { if: 'id' } }
+                %button.btn.btn-default{ 'type': 'button', ng: { click: 'cancel()' } } Ok
+            
+            %button.btn.btn-default{ 'type': 'button', ng: { click: 'cancel()', if: '!id' } } Ok
