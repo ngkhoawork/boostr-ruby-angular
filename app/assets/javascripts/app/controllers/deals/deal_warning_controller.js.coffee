@@ -3,14 +3,14 @@
         ($scope, $modalInstance, message, id, localStorageService) ->
 
             $scope.message = message
-            $scope.id = id
+            $scope.dealId = id
             $scope.dontShowWarnings = false
             $scope.getWarningSettings = () ->
                 localStorageService.get('dealsWithoutWarning')
 
             settings = $scope.getWarningSettings() || []
             settings.forEach((deal) -> 
-                if deal.dealId == $scope.id
+                if deal.dealId == $scope.dealId
                     $scope.dontShowWarnings = true
             )
             
@@ -33,7 +33,7 @@
                 isNewSetting = true
 
             $scope.onChange = ->
-                $scope.setWarningSettings dealId: $scope.id
+                $scope.setWarningSettings dealId: $scope.dealId
 
             $scope.cancel = ->
                 $modalInstance.close()

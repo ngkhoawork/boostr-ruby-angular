@@ -7,13 +7,8 @@
         %h5 {{message}}
 
     .popup-modal-footer.clearfix
-        .row
-            .col-sm-9{ ng: { if: 'id' } }
-                .form-group.text-left
-                    %label{ for: 'show-warnings' }
-                        Do not display this message again for this deal
-                    %input.form-control{id: 'show-warnings', type: 'checkbox', ng: { model: 'dontShowWarnings',  change: 'onChange()' } }
-            .col-sm-3{ ng: { if: 'id' } }
-                %button.btn.btn-default{ 'type': 'button', ng: { click: 'cancel()' } } Ok
-            
-            %button.btn.btn-default{ 'type': 'button', ng: { click: 'cancel()', if: '!id' } } Ok
+        .form-group.text-left.pull-left{ ng: { if: 'dealId' } }
+            %label{ for: 'show-warnings' }
+                Do not display this message again for this deal
+            %input.form-control{id: 'show-warnings', type: 'checkbox', ng: { model: 'dontShowWarnings',  change: 'onChange()' } }
+        %button.btn.btn-default.pull-right{ 'type': 'button', ng: { click: 'cancel()' } } Ok
