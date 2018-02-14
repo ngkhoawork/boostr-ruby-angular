@@ -129,11 +129,11 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       subject.perform
 
       import_log = CsvImportLog.last
-      expect(import_log.rows_processed).to eq 7
+      expect(import_log.rows_processed).to eq 8
       expect(import_log.rows_imported).to eq 4
       expect(import_log.rows_failed).to eq 2
       expect(import_log.rows_skipped).to eq 1
-      expect(import_log.error_messages).to eq [{"row"=>5, "message"=>["Io advertiser can't be blank"]}, {"row"=>6, "message"=>["Io name can't be blank"]}]
+      expect(import_log.error_messages).to eq [{"row"=>6, "message"=>["Io advertiser can't be blank"]}, {"row"=>7, "message"=>["Io name can't be blank"]}]
       expect(import_log.file_source).to eq 'sales_order_file.csv'
       expect(import_log.object_name).to eq 'io'
     end
@@ -151,7 +151,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       subject.perform
       import_log = CsvImportLog.last
       expect(import_log.error_messages).to eq [{
-        "row"=>1,
+        "row"=>2,
         "message"=>
           ["Internal Server Error", "{:order_currency_id=>\"100\", :order_start_date=>\"#{Date.today - 1.month}\", :sales_stage_percent=>\"100\"}"]
       }]
@@ -167,7 +167,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       import_log = CsvImportLog.last
       expect(import_log.error_messages).not_to be_present
 
-      expect(import_log.rows_processed).to eq 2
+      expect(import_log.rows_processed).to eq 3
       expect(import_log.rows_imported).to  eq 2
     end
 
@@ -180,12 +180,12 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       subject.perform
       import_log = CsvImportLog.last
       expect(import_log.error_messages).to eq [{
-        "row"=>1,
+        "row"=>2,
         "message"=>
           ["Unclosed quoted field on line 1.",
             "\"(To Be Malformed\"\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n"]
       }]
-      expect(import_log.rows_processed).to eq 2
+      expect(import_log.rows_processed).to eq 3
       expect(import_log.rows_imported).to  eq 1
     end
   end
