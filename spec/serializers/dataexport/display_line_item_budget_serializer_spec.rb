@@ -23,7 +23,9 @@ describe Dataexport::DisplayLineItemBudgetSerializer do
   end
 
   def display_line_item_budget
-    @display_line_item_budget ||= create :display_line_item_budget, display_line_item: display_line_item
+    @display_line_item_budget ||= create :display_line_item_budget,
+                                         display_line_item: display_line_item,
+                                         ad_server_budget: 100
   end
 
   def display_line_item
