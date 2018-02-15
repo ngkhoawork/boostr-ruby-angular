@@ -514,6 +514,15 @@ Rails.application.routes.draw do
         post :import
       end
     end
+
+    resources :assignment_rules, only: [:index, :create, :update, :destroy], controller: 'settings/assignment_rules' do
+      member do
+        get :add_user
+        get :remove_user
+      end
+
+      put :update_positions, on: :collection
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'
