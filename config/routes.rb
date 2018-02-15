@@ -515,7 +515,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :assignment_rules, only: [:index], controller: 'settings/assignment_rules'
+    resources :assignment_rules, only: [:index, :create, :update, :destroy], controller: 'settings/assignment_rules'
   end
 
   mount Sidekiq::Web => '/sidekiq'
