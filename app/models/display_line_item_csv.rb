@@ -27,33 +27,31 @@ class DisplayLineItemCsv
     upsert_temp_io
 
     if io_or_tempio && display_line_item
-      ActiveRecord::Base.transaction do
-        display_line_item.update(
-          line_number: line_number,
-          ad_server: ad_server,
-          start_date: parse_date(start_date),
-          end_date: parse_date(end_date),
-          product: product,
-          ad_server_product: product_name,
-          quantity: quantity,
-          price: price,
-          pricing_type: pricing_type,
-          budget: convert_currency(budget),
-          budget_loc: budget_loc,
-          budget_delivered: convert_currency(budget_delivered),
-          budget_delivered_loc: budget_delivered_loc,
-          budget_remaining: convert_currency(budget_remaining),
-          budget_remaining_loc: budget_remaining_loc,
-          quantity_delivered: quantity_delivered,
-          quantity_remaining: quantity_remaining,
-          quantity_delivered_3p: quantity_delivered_3p,
-          ctr: ctr,
-          clicks: clicks,
-          ad_unit: ad_unit_name
-        )
+      display_line_item.update(
+        line_number: line_number,
+        ad_server: ad_server,
+        start_date: parse_date(start_date),
+        end_date: parse_date(end_date),
+        product: product,
+        ad_server_product: product_name,
+        quantity: quantity,
+        price: price,
+        pricing_type: pricing_type,
+        budget: convert_currency(budget),
+        budget_loc: budget_loc,
+        budget_delivered: convert_currency(budget_delivered),
+        budget_delivered_loc: budget_delivered_loc,
+        budget_remaining: convert_currency(budget_remaining),
+        budget_remaining_loc: budget_remaining_loc,
+        quantity_delivered: quantity_delivered,
+        quantity_remaining: quantity_remaining,
+        quantity_delivered_3p: quantity_delivered_3p,
+        ctr: ctr,
+        clicks: clicks,
+        ad_unit: ad_unit_name
+      )
 
-        update_associations
-      end
+      update_associations
     end
   end
 
