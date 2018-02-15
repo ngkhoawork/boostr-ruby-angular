@@ -27,8 +27,8 @@ class Api::LeadsController < ApplicationController
     lead.update(
       user_id: determine_assignee,
       reassigned_at: Time.now,
-      status: nil,
-      accepted_at: nil,
+      status: Lead::ACCEPTED,
+      accepted_at: Time.now,
       rejected_at: nil
     )
 
