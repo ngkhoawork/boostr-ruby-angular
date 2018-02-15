@@ -26,6 +26,9 @@
 
 #revenue {
   font-family: "Avenir Next", Arial, serif;
+  overflow-x: hidden;
+  position: relative;
+
   .container-fluid {
     margin: 0 25px;
   }
@@ -107,6 +110,37 @@
       &.active {
         color: $main-color;
         border-bottom: 2px solid $main-color;
+      }
+    }
+  }
+  .z-sliding-filter {
+    top: 0;
+    .filter-row {
+      margin-top: 0;
+
+      span {
+        display: inline;
+        padding: 0;
+        margin: 0;
+        font-weight: inherit;
+        cursor: auto;
+      }
+
+      .dropdown-title {
+        color: #818689;
+        padding: 6px 20px;
+        display: inline-block;
+        font-size: 13px;
+        opacity: 0.8;
+      }
+      
+      .dropdown-option {
+        a {
+          color: #000 !important;
+        }
+      }
+      .dropdown-button.selected {
+        color: #000 !important;
       }
     }
   }
