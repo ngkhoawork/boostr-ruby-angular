@@ -27,6 +27,29 @@ class Api::Settings::AssignmentRulesController < ApplicationController
     render nothing: true
   end
 
+  def add_user
+    assignment_rule.users.push user
+
+    render nothing: true
+  end
+
+  def remove_user
+    assignment_rule.users.delete user
+
+    render nothing: true
+  end
+
+  def update_positions
+    positions = params[:positions]
+    rules = assignment_rules.where(id: positions.keys)
+
+    rules.each do |assignment_rule|
+      assignment_rule.update(position: positions[assignment_rule.id.to_s])
+    end
+
+    render json: rules
+  end
+
   private
 
   def company
@@ -34,7 +57,7 @@ class Api::Settings::AssignmentRulesController < ApplicationController
   end
 
   def assignment_rules
-    AssignmentRule.by_company_id(company.id)
+    AssignmentRule.by_company_id(company.id).order_by_position
   end
 
   def assignment_rule
@@ -46,5 +69,9 @@ class Api::Settings::AssignmentRulesController < ApplicationController
       .require(:assignment_rule)
       .permit(:name, countries: [], states: [])
       .merge(company_id: company.id)
+  end
+
+  def user
+    company.users.find(params[:user_id])
   end
 end
