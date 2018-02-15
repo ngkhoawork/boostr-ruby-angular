@@ -33,7 +33,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
   set_callback :save, :after, :update_revenue_fact_callback
 
-  validate :sum_of_budgets_less_than_line_item_budget, unless: -> { has_dfp_budget_correction }
+  validate :sum_of_budgets_within_line_item, unless: -> { has_dfp_budget_correction }
 
   def update_revenue_fact_callback
     if budget_changed?
@@ -300,7 +300,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
     params
   end
 
-  def sum_of_budgets_less_than_line_item_budget
+  def sum_of_budgets_within_line_item
     return unless budget_loc.present?
 
     if max_monthly_budget_exceeded?

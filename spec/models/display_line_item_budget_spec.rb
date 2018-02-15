@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe DisplayLineItemBudget, type: :model do
   context 'custom validations' do
-    context 'sum_of_budgets_less_than_line_item_budget' do
+    context 'sum_of_budgets_within_line_item' do
       before do
         display_line_item(budget_loc: 100_000)
         display_line_item_budget(
