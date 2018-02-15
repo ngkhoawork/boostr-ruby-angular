@@ -342,12 +342,8 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       expect(import_log.rows_skipped).to eq 1
 
       expect(import_log.error_messages.length).to eq 2
-      expect(import_log.error_messages[0]['message']).to include(
-        "Product name can't be blank", "End date end date can't be after the IO end date"
-      )
-      expect(import_log.error_messages[1]['message']).to include(
-        "Product name can't be blank", "End date end date can't be after the IO end date"
-      )
+      expect(import_log.error_messages[0]['message']).to include("Product name can't be blank")
+      expect(import_log.error_messages[1]['message']).to include("Product name can't be blank")
 
       expect(import_log.file_source).to eq 'sales_order_line_item_file.csv'
 

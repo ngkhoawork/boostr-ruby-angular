@@ -26,12 +26,15 @@ class DisplayLineItemCsv
     update_external_io_number
     upsert_temp_io
 
+    @parsed_start_date = parse_date(start_date)
+    @parsed_end_date = parse_date(end_date)
+
     if io_or_tempio && display_line_item
       display_line_item.update(
         line_number: line_number,
         ad_server: ad_server,
-        start_date: parse_date(start_date),
-        end_date: parse_date(end_date),
+        start_date: parsed_start_date,
+        end_date: parsed_end_date,
         product: product,
         ad_server_product: product_name,
         quantity: quantity,
@@ -51,7 +54,7 @@ class DisplayLineItemCsv
         ad_unit: ad_unit_name
       )
 
-      update_associations
+      update_io if io_can_be_updated?
     end
   end
 
@@ -210,29 +213,13 @@ class DisplayLineItemCsv
     false
   end
 
-  def update_associations
-    @parsed_start_date = parse_date(start_date)
-    @parsed_end_date = parse_date(end_date)
-
-    return unless parsed_start_date && parsed_end_date
-
-    update_io
-    update_io_members
-  end
-
   def update_io
     io.start_date = parsed_start_date if parsed_start_date < io.start_date
     io.end_date = parsed_end_date if parsed_end_date > io.end_date
     io.save
   end
 
-  def update_io_members
-    io.io_members
-      .where('from_date > ?', parsed_start_date)
-      .update_all(from_date: parsed_start_date)
-
-    io.io_members
-      .where('to_date < ?', parsed_end_date)
-      .update_all(to_date: parsed_end_date)
+  def io_can_be_updated?
+    io && io.content_fees.count.zero? && parsed_start_date && parsed_end_date
   end
 end
