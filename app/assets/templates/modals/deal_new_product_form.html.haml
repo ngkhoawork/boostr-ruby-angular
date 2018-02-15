@@ -16,27 +16,27 @@
                 .col-xs-4{ 'ng-if': 'productOptionsEnabled' }
                     .form-group
                         %label Product
-                        %ui-select{ name: 'product_name', ng: { model: 'deal_product.product_name', required: true }, 'on-select': 'onChangeProductName($item, $model)' }
+                        %ui-select{ name: 'product_level_0', ng: { model: 'deal_product.product0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
                             %ui-select-match{ placeholder: 'Product' }
-                                {{ $select.selected }}
-                            %ui-select-choices{ repeat: 'product in productsByName() | orderBy | filter: $select.search' }
-                                %div{ ng: { bind: { html: 'product' } } }
+                                {{ $select.selected.name }}
+                            %ui-select-choices{ repeat: 'product.id as product in productsByLevel(0) | orderBy: "name" | filter: { name: $select.search }' }
+                                %div{ ng: { bind: { html: 'product.name' } } }
                 .col-xs-4{ 'ng-if': 'productOptionsEnabled' }
                     .form-group
                         %label {{ option1Field }}
-                        %ui-select{ name: 'product_option1', ng: { model: 'deal_product.product_option1_id', disabled: '!deal_product.product_name || rootOptions().length == 0', required: true }, 'on-select': 'onChangeOption1($item, $model)' }
-                            %ui-select-match{ placeholder: '{{ option1Field }}' }
+                        %ui-select{ name: 'product_level_1', ng: { model: 'deal_product.product1', disabled: '!deal_product.product0 || productsByLevel(1).length == 0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
+                            %ui-select-match{ placeholder: '{{ option1Field }}', 'allow-clear': 'true' }
                                 {{ $select.selected.name }}
-                            %ui-select-choices{ repeat: 'option.id as option in rootOptions() | orderBy: "name" | filter: { name: $select.search }' }
-                                %div{ ng: { bind: { html: 'option.name' } } }
+                            %ui-select-choices{ repeat: 'product.id as product in productsByLevel(1) | orderBy: "name" | filter: { name: $select.search }' }
+                                %div{ ng: { bind: { html: 'product.name' } } }
                 .col-xs-4{ 'ng-if': 'productOptionsEnabled' }
                     .form-group
                         %label {{ option2Field }}
-                        %ui-select{ name: 'product_option2', ng: { model: 'deal_product.product_option2_id', disabled: '!deal_product.product_option1_id || subOptions().length == 0', required: true }, 'on-select': 'onChangeOption2($item, $model)' }
-                            %ui-select-match{ placeholder: '{{ option1Field }}' }
+                        %ui-select{ name: 'product_level_2', ng: { model: 'deal_product.product2', disabled: '!deal_product.product1 || productsByLevel(2).length == 0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
+                            %ui-select-match{ placeholder: '{{ option1Field }}', 'allow-clear': 'true' }
                                 {{ $select.selected.name }}
-                            %ui-select-choices{ repeat: 'option.id as option in subOptions() | orderBy: "name" | filter: { name: $select.search }' }
-                                %div{ ng: { bind: { html: 'option.name' } } }
+                            %ui-select-choices{ repeat: 'product.id as product in productsByLevel(2) | orderBy: "name" | filter: { name: $select.search }' }
+                                %div{ ng: { bind: { html: 'product.name' } } }
                 .col-xs-6
                     .form-group.product-budget{'ng-class': "{'with-add-btn': deal_product.isIncorrectTotalBudgetPercent}"}
                         %label Total Budget
@@ -66,4 +66,4 @@
                                     'numbers-only':''}
         .popup-modal-footer
             %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
-            %button.btn.btn-warning{'type': 'submit', 'ng-disabled': 'deal_product.isIncorrectTotalBudgetPercent || !deal_product.product_id'} Add Product
+            %button.btn.btn-warning{'type': 'submit', 'ng-disabled': 'disableForm()'} Add Product

@@ -10,8 +10,8 @@
         %tr
           %th Name
           %th Family
-          %th{ 'ng-if': 'company.product_options_enabled' } {{ company.product_option1_field }}
-          %th{ 'ng-if': 'company.product_options_enabled' } {{ company.product_option2_field }}
+          %th{ 'ng-show': 'company.product_options_enabled' } Parent Product
+          %th{ 'ng-show': 'company.product_options_enabled' } Level
           %th Type
           %th Revenue Type
           %th Active
@@ -23,8 +23,8 @@
             %span.mr8 {{ product.name }}
             %i.fa.fa-pencil.z-icon.edit-product{'ng-click': 'showNewProductModal(product); $event.stopPropagation()'}
           %td {{ product.product_family.name }}
-          %td{ 'ng-if': 'company.product_options_enabled' } {{ product.option1.name }}
-          %td{ 'ng-if': 'company.product_options_enabled' } {{ product.option2.name }}
+          %td{ 'ng-show': 'company.product_options_enabled' } {{ product.parent.name }}
+          %td{ 'ng-show': 'company.product_options_enabled' } {{ product.level }}
           %td {{ product.pricing_type.option.name }}
           %td {{ product.revenue_type }}
           %td {{ product.active ? 'Yes' : 'No' }}

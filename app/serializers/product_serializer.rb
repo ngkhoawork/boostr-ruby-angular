@@ -9,21 +9,22 @@ class ProductSerializer < ActiveModel::Serializer
     :values,
     :is_influencer_product,
     :margin,
-    :option1_id,
-    :option1,
-    :option2_id,
-    :option2
+    :level,
+    :parent_id,
+    :parent,
+    :top_parent_id,
+    :top_parent
   )
 
   def product_family
     object.product_family.serializable_hash(only: [:id, :name]) rescue nil
   end
 
-  def option1
-    object.option1.serializable_hash(only: [:id, :name]) rescue nil
+  def parent
+    object.parent.serializable_hash(only: [:id, :name]) rescue nil
   end
 
-  def option2
-    object.option2.serializable_hash(only: [:id, :name]) rescue nil
+  def top_parent
+    object.top_parent.serializable_hash(only: [:id, :name]) rescue nil
   end
 end

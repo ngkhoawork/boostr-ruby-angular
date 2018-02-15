@@ -19,20 +19,12 @@
             %div{ ng: { bind: { html: 'option.name' } } }
 
       .form-group{ 'ng-if': 'product_options_enabled' }
-        %label{ for: 'option1' } {{option1_field}}
-        %ui-select{ name: 'option1', ng: { model: 'product.option1_id' } }
-          %ui-select-match{ placeholder: '{{option1_field}}' }
+        %label{ for: 'parent_id' } Parent Product
+        %ui-select{ name: 'parent_id', ng: { model: 'product.parent_id' } }
+          %ui-select-match{ placeholder: 'Parent Product', 'allow-clear': 'true' }
             {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'option.id as option in rootOptions | filter: { name: $select.search }' }
-            %div{ ng: { bind: { html: 'option.name' } } }
-
-      .form-group{ 'ng-if': 'product_options_enabled' }
-        %label{ for: 'option2' } {{option2_field}}
-        %ui-select{ name: 'option2', ng: { model: 'product.option2_id', disabled: '!product.option1_id' } }
-          %ui-select-match{ placeholder: '{{option2_field}}' }
-            {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'option.id as option in getSubOptions() | filter: { name: $select.search }' }
-            %div{ ng: { bind: { html: 'option.name' } } }
+          %ui-select-choices{ repeat: 'product.id as product in products | filter: { name: $select.search } | orderBy: "name"' }
+            %div{ ng: { bind: { html: 'product.name' } } }
 
       .form-group
         %label{ for: 'pricing-type' } Pricing Type

@@ -73,8 +73,10 @@
   }
 
   #product-option-settings {
-    .panel {
-      padding: 20px;
+    padding-left: 0px;
+
+    .panel-item {
+      margin-top: 20px;
     }
   }
 }

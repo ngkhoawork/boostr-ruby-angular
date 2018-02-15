@@ -1,15 +1,13 @@
 @app.controller 'NewProductsController',
-['$scope', '$modalInstance', 'Product', 'ProductFamily', 'Field', 'product', 'productFamilies', 'productOptions', 'company',
-( $scope,   $modalInstance,   Product,   ProductFamily,   Field,   product,   productFamilies,   productOptions,   company) ->
+['$scope', '$modalInstance', 'Product', 'ProductFamily', 'Field', 'product', 'products', 'productFamilies', 'company',
+( $scope,   $modalInstance,   Product,   ProductFamily,   Field,   product,   products,   productFamilies,   company) ->
   $scope.formType = 'New'
   $scope.submitText = 'Create'
   $scope.product = product || { active: true }
   $scope.revenueTypes = ['Display', 'Content-Fee']
   $scope.productFamilies =  productFamilies
-  $scope.rootOptions = _.filter productOptions, (o) -> !o.product_option_id
-  $scope.option1_field = company.product_option1_field
-  $scope.option2_field = company.product_option2_field
   $scope.product_options_enabled = company.product_options_enabled
+  $scope.products = _.filter products, (p) -> p.id != $scope.product.id
 
   init = () ->
     if product
@@ -18,10 +16,14 @@
     else
       Field.defaults($scope.product, 'Product').then (fields) ->
         $scope.product.pricing_type = Field.field($scope.product, 'Pricing Type')
-
-  $scope.getSubOptions = () ->
-    if $scope.product.option1_id
-      _.filter productOptions, (o) -> o.product_option_id == $scope.product.option1_id
+    $scope.products = _.map $scope.products, (p) ->
+      if p.level > 0
+        parent = p.parent
+        while parent
+          p.name = parent.name + ' > ' + p.name
+          parent = _.find products, (o) -> o.id == parent.id
+          parent = parent.parent
+      p
 
   $scope.submitForm = () ->
     $scope.errors = {}
@@ -35,7 +37,7 @@
       $scope.errors['margin'] = 'Enter a valid margin between 1 and 100'
 
     if Object.keys($scope.errors).length > 0 then return
-    
+
     if $scope.formType == 'New'
       Product.create(product: $scope.product).then (product) ->
         $modalInstance.close()

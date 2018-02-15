@@ -36,6 +36,20 @@ end
 json.deal_products deal.deal_products.order(:created_at) do |deal_product|
   json.id deal_product.id
   json.name deal_product.product.name
+  json.parent_id deal_product.product.parent_id
+  if deal_product.product.parent.present?
+    json.parent do 
+      json.id deal_product.product.parent.id
+      json.name deal_product.product.parent.name
+    end
+  end
+  json.top_parent_id deal_product.product.top_parent_id
+  if deal_product.product.top_parent.present?
+    json.top_parent do 
+      json.id deal_product.product.top_parent.id
+      json.name deal_product.product.top_parent.name
+    end
+  end
   json.deal_product_budgets deal_product.deal_product_budgets.order(:start_date) do |deal_product_budget|
     json.id deal_product_budget.id
     json.budget (deal_product_budget.budget || 0).to_i

@@ -1,11 +1,12 @@
 class Product < ActiveRecord::Base
   belongs_to :company
   belongs_to :product_family
-  belongs_to :option1, class_name: 'ProductOption'
-  belongs_to :option2, class_name: 'ProductOption'
+  belongs_to :parent, class_name: 'Product', inverse_of: :children
+  belongs_to :top_parent, class_name: 'Product'
   has_many :deal_products
   has_many :values, as: :subject
   has_many :ad_units
+  has_many :children, class_name: 'Product', foreign_key: 'parent_id', inverse_of: :parent 
 
   validates :margin,
     numericality: {
@@ -16,11 +17,13 @@ class Product < ActiveRecord::Base
     allow_nil: true
   validates :name, 
     uniqueness: { 
-      scope: [:option1_id, :option2_id, :company_id], 
-      message: 'has already been taken with current options' 
+      scope: [:parent_id, :company_id], 
+      message: 'Name has already been taken' 
     },
     presence: true
   validates :revenue_type, presence: true
+  validate :check_recursive_parent_id
+  validate :check_self_as_parent
 
   REVENUE_TYPES = %w('Display', 'Content-Fee', 'None')
 
@@ -29,6 +32,13 @@ class Product < ActiveRecord::Base
   scope :active, -> { joins('LEFT JOIN product_families ON products.product_family_id = product_families.id').where('products.active IS true AND (product_families.active IS true OR products.product_family_id IS NULL)') }
   scope :by_revenue_type, -> (revenue_type) { where('revenue_type = ?', revenue_type) if revenue_type }
   scope :by_product_family, -> (product_family_id) { where('product_family_id = ?', product_family_id) if product_family_id }
+
+  before_update do
+    set_top_parent
+    set_level
+  end
+
+  after_update :update_top_parent_on_children
 
   after_create do
     create_dimension
@@ -62,7 +72,7 @@ class Product < ActiveRecord::Base
     io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
     deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
     ForecastRevenueCalculatorWorker.perform_async(io_change)
-    ForecastPipelineCalculatorWorker.peto_csvrform_async(deal_change)
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
   end
 
   def as_json(options = {})
@@ -91,8 +101,8 @@ class Product < ActiveRecord::Base
         "Product ID", 
         "Product Name", 
         "Product Family", 
-        company&.product_option1, 
-        company&.product_option2, 
+        "Parent Product",
+        "Level",
         "Pricing Type", 
         "Revenue Type", 
         "Margin", 
@@ -104,8 +114,8 @@ class Product < ActiveRecord::Base
           product.id,
           product.name,
           product.product_family&.name,
-          product.option1&.name,
-          product.option2&.name,
+          product&.parent&.name,
+          product.level,
           get_option_value(product, "Pricing Type"),
           product.revenue_type,
           product.margin,
@@ -116,4 +126,47 @@ class Product < ActiveRecord::Base
     end
   end
 
+  private
+
+  def set_top_parent
+    if parent.present?
+      self.top_parent_id = parent.top_parent_id || parent.id 
+    else
+      self.top_parent_id = nil
+    end
+  end
+
+  def set_level
+    if parent.nil?
+      self.level = 0
+    elsif parent_id == top_parent_id
+      self.level = 1
+    else
+      self.level = 2
+    end
+  end
+
+  def update_top_parent_on_children
+    if top_parent_id_changed?
+      children.each do |child|
+        child.update_attributes(top_parent_id: top_parent_id || id)
+      end
+    end
+  end
+
+  def check_recursive_parent_id
+    if parent_id.present?
+      ids = [id]
+      while ids.present? 
+        ids = company.products.where(parent_id: ids).pluck(:id)
+        errors.add(:parent_product, "You can't select child product as parent") and break if ids.include?(parent_id)
+      end
+    end
+  end
+
+  def check_self_as_parent
+    if parent_id.present? && parent_id == id
+      errors.add(:parent_product, "You can't select current product as parent")
+    end
+  end
 end

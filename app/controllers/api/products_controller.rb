@@ -46,8 +46,7 @@ class Api::ProductsController < ApplicationController
       :margin,
       :is_influencer_product,
       :product_family_id,
-      :option1_id,
-      :option2_id,
+      :parent_id,
       {
         values_attributes: [
           :id,

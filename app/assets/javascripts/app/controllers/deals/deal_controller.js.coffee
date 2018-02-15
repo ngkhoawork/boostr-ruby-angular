@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation', 'DealAttachment'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation, DealAttachment) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation', 'DealAttachment', 'Company',
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation, DealAttachment, Company) ->
 
   $scope.showMeridian = true
   $scope.isAdmin = false
@@ -35,6 +35,7 @@
   $scope.dealCustomFieldNames = []
   $scope.dealProductCfNames = []
   $scope.activeDealProductCfLength = 0
+  $scope.company = {}
 
   $scope._scope = -> this
 
@@ -82,6 +83,7 @@
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
+    Company.get().$promise.then (company) -> $scope.company = company
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -707,6 +709,8 @@
       resolve:
         currentDeal: ->
           currentDeal
+        company: ->
+          $scope.company
 
   $scope.addContact = ->
     $scope.modalInstance = $modal.open
@@ -976,5 +980,21 @@
 
   $scope.$watch 'currentUser', (currentUser) ->
     $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser
+
+  $scope.dealProductName = (dealProduct) ->
+    if $scope.company.product_options_enabled && dealProduct.top_parent
+      dealProduct.top_parent.name
+    else
+      dealProduct.name
+
+  $scope.dealProductOption1 = (dealProduct) ->
+    if dealProduct.parent && dealProduct.parent_id != dealProduct.top_parent_id
+      dealProduct.parent.name
+    else if dealProduct.parent && dealProduct.parent_id == dealProduct.top_parent_id
+      dealProduct.name
+
+  $scope.dealProductOption2 = (dealProduct) ->
+    if dealProduct.parent && dealProduct.parent_id != dealProduct.top_parent_id
+      dealProduct.name
 
 ]

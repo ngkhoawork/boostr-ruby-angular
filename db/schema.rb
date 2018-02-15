@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180205193453) do
+ActiveRecord::Schema.define(version: 20180215000728) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -551,7 +551,6 @@ ActiveRecord::Schema.define(version: 20180205193453) do
     t.integer  "client_segment_id"
     t.integer  "holding_company_id"
     t.text     "note"
-    t.integer  "lead_id"
     t.boolean  "web_lead",               default: false
   end
 
@@ -563,7 +562,6 @@ ActiveRecord::Schema.define(version: 20180205193453) do
   add_index "clients", ["company_id"], name: "index_clients_on_company_id", using: :btree
   add_index "clients", ["deleted_at"], name: "index_clients_on_deleted_at", using: :btree
   add_index "clients", ["holding_company_id"], name: "index_clients_on_holding_company_id", using: :btree
-  add_index "clients", ["lead_id"], name: "index_clients_on_lead_id", using: :btree
   add_index "clients", ["parent_client_id"], name: "index_clients_on_parent_client_id", using: :btree
 
   create_table "companies", force: :cascade do |t|
@@ -758,14 +756,12 @@ ActiveRecord::Schema.define(version: 20180205193453) do
     t.datetime "activity_updated_at"
     t.text     "note"
     t.integer  "publisher_id"
-    t.integer  "lead_id"
     t.boolean  "web_lead",            default: false
   end
 
   add_index "contacts", ["client_id"], name: "index_contacts_on_client_id", using: :btree
   add_index "contacts", ["company_id"], name: "index_contacts_on_company_id", using: :btree
   add_index "contacts", ["deleted_at"], name: "index_contacts_on_deleted_at", using: :btree
-  add_index "contacts", ["lead_id"], name: "index_contacts_on_lead_id", using: :btree
   add_index "contacts", ["publisher_id"], name: "index_contacts_on_publisher_id", using: :btree
 
   create_table "content_fee_product_budgets", force: :cascade do |t|
@@ -793,6 +789,33 @@ ActiveRecord::Schema.define(version: 20180205193453) do
 
   add_index "content_fees", ["io_id"], name: "index_content_fees_on_io_id", using: :btree
   add_index "content_fees", ["product_id"], name: "index_content_fees_on_product_id", using: :btree
+
+  create_table "cost_monthly_amounts", force: :cascade do |t|
+    t.integer  "cost_id"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.decimal  "budget",     precision: 15, scale: 2
+    t.decimal  "budget_loc", precision: 15, scale: 2
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
+
+  add_index "cost_monthly_amounts", ["cost_id"], name: "index_cost_monthly_amounts_on_cost_id", using: :btree
+
+  create_table "costs", force: :cascade do |t|
+    t.integer  "io_id"
+    t.integer  "product_id"
+    t.decimal  "budget",       precision: 15, scale: 2
+    t.decimal  "budget_loc",   precision: 15, scale: 2
+    t.date     "start_date"
+    t.date     "end_date"
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
+    t.boolean  "is_estimated",                          default: false
+  end
+
+  add_index "costs", ["io_id"], name: "index_costs_on_io_id", using: :btree
+  add_index "costs", ["product_id"], name: "index_costs_on_product_id", using: :btree
 
   create_table "cpm_budget_adjustments", force: :cascade do |t|
     t.float    "percentage"
@@ -1708,9 +1731,13 @@ ActiveRecord::Schema.define(version: 20180205193453) do
     t.datetime "accepted_at"
     t.datetime "rejected_at"
     t.datetime "reassigned_at"
+    t.integer  "client_id"
+    t.integer  "contact_id"
   end
 
+  add_index "leads", ["client_id"], name: "index_leads_on_client_id", using: :btree
   add_index "leads", ["company_id"], name: "index_leads_on_company_id", using: :btree
+  add_index "leads", ["contact_id"], name: "index_leads_on_contact_id", using: :btree
   add_index "leads", ["user_id"], name: "index_leads_on_user_id", using: :btree
 
   create_table "notification_reminders", force: :cascade do |t|
@@ -1791,6 +1818,9 @@ ActiveRecord::Schema.define(version: 20180205193453) do
     t.boolean "is_stopped",                                    default: false
     t.date    "stopped_at"
     t.integer "product_id"
+    t.date    "start_date"
+    t.date    "end_date"
+    t.decimal "delivered",            precision: 15, scale: 2
   end
 
   add_index "pmp_items", ["pmp_id"], name: "index_pmp_items_on_pmp_id", using: :btree
@@ -1861,18 +1891,6 @@ ActiveRecord::Schema.define(version: 20180205193453) do
 
   add_index "product_families", ["company_id"], name: "index_product_families_on_company_id", using: :btree
 
-  create_table "product_options", force: :cascade do |t|
-    t.string   "name"
-    t.datetime "deleted_at"
-    t.integer  "company_id"
-    t.integer  "product_option_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "product_options", ["company_id"], name: "index_product_options_on_company_id", using: :btree
-  add_index "product_options", ["product_option_id"], name: "index_product_options_on_product_option_id", using: :btree
-
   create_table "products", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -1884,13 +1902,15 @@ ActiveRecord::Schema.define(version: 20180205193453) do
     t.boolean  "is_influencer_product", default: false
     t.integer  "product_family_id"
     t.integer  "margin"
-    t.integer  "option1_id"
-    t.integer  "option2_id"
+    t.integer  "parent_id"
+    t.integer  "top_parent_id"
+    t.integer  "level",                 default: 0
   end
 
   add_index "products", ["company_id"], name: "index_products_on_company_id", using: :btree
-  add_index "products", ["name", "company_id", "option1_id", "option2_id"], name: "index_composite", unique: true, using: :btree
+  add_index "products", ["parent_id"], name: "index_products_on_parent_id", using: :btree
   add_index "products", ["product_family_id"], name: "index_products_on_product_family_id", using: :btree
+  add_index "products", ["top_parent_id"], name: "index_products_on_top_parent_id", using: :btree
 
   create_table "publisher_custom_field_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -2551,6 +2571,9 @@ ActiveRecord::Schema.define(version: 20180205193453) do
   add_foreign_key "contact_cfs", "contacts"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
+  add_foreign_key "cost_monthly_amounts", "costs"
+  add_foreign_key "costs", "ios"
+  add_foreign_key "costs", "products"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
   add_foreign_key "datafeed_configuration_details", "api_configurations"
@@ -2606,8 +2629,6 @@ ActiveRecord::Schema.define(version: 20180205193453) do
   add_foreign_key "print_items", "ios"
   add_foreign_key "product_dimensions", "companies"
   add_foreign_key "product_families", "companies"
-  add_foreign_key "product_options", "companies"
-  add_foreign_key "product_options", "product_options"
   add_foreign_key "requests", "companies"
   add_foreign_key "requests", "deals"
   add_foreign_key "requests", "users", column: "assignee_id"

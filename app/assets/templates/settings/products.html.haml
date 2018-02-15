@@ -5,13 +5,10 @@
         %span.menu-item{ ng: { repeat: 'menu in menus', class: '{active: selectedMenu == menu.value}', click: 'onSelectMenu(menu.value)'} }
           {{ menu.name }}
       .header-item
-        .form-group
-          %label.control-label{ for: 'product_options_enabled' } Enable Product Options
-          %z-toggle{'ng-model': 'company.product_options_enabled', 'ng-change': 'updateSettings()',  id: "product_options_enabled"}
 
   #product-families.container{ 'ng-if': 'selectedMenu == "product_families"', 'ng-include': "'settings/products/product_families.html'" }
 
   #products.container{ 'ng-if': 'selectedMenu == "products"', 'ng-include': "'settings/products/products.html'" }
 
-  #product-options.container-fluid{ 'ng-if': 'selectedMenu == "product_options" && company.product_options_enabled', 'ng-include': "'settings/products/product_options.html'" }
+  #product-options.container{ 'ng-if': 'selectedMenu == "settings"', 'ng-include': "'settings/products/product_settings.html'" }
 

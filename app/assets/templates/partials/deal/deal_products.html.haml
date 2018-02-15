@@ -7,6 +7,8 @@
 			%thead
 				%tr
 					%th Product
+					%th.text-left{ 'ng-show': 'company.product_options_enabled' } {{ company.product_option1_field || 'Option1' }}
+					%th.text-left{ 'ng-show': 'company.product_options_enabled' } {{ company.product_option2_field || 'Option2' }}
 					%th{ ng: { repeat: 'dealProductCfName in dealProductCfNames | orderBy: "position"', if: "!dealProductCfName.disabled" } }
 						{{ dealProductCfName.field_label }}
 					%th Total Budget
@@ -15,8 +17,12 @@
 			%tbody{'ng-if': 'currentDeal.stage.open'}
 				%tr{ ng: { repeat: 'deal_product in currentDeal.deal_products' } }
 					%td
-						{{ deal_product.name }}
+						{{ dealProductName(deal_product) }}
 						%i.fa.fa-trash.delete-product{'ng-click': 'deleteDealProduct(deal_product)'}
+					%td.text-left{ 'ng-if': 'company.product_options_enabled' }
+						{{ dealProductOption1(deal_product) }}
+					%td.text-left{ 'ng-if': 'company.product_options_enabled' }
+						{{ dealProductOption2(deal_product) }}
 					%td.custom-field-item{ ng: { repeat: 'dealProductCfName in dealProductCfNames | orderBy: "position"', if: "!dealProductCfName.disabled", init: "fieldName = dealProductCfName.field_type + dealProductCfName.field_index" } }
 						.custom-field-item-field{'ng-switch': 'dealProductCfName.field_type', 'ng-class': '{"has-error": !deal_product.deal_product_cf[fieldName]}'}
 							.text-field{ ng: { 'switch-when': 'text' } }
@@ -89,6 +95,7 @@
 												'numbers-only': '' }>
 								%span.symbol.percent %
 				%tr.sum-budgets-row
+					%td{ 'ng-show': 'company.product_options_enabled', colspan: 2 }
 					%td{colspan: '{{activeDealProductCfLength}}', 'ng-show': 'activeDealProductCfLength'}
 					%td.right
 						%b TOTAL

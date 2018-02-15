@@ -1,78 +1,31 @@
 @app.controller 'SettingsProductsController',
-  ['$scope', '$modal', '$window', 'Product', 'ProductFamily', 'Field', '$routeParams', '$location', 'Company', 'ProductOption',
-  ( $scope,   $modal,   $window,   Product,   ProductFamily,   Field,   $routeParams,   $location,   Company,   ProductOption) ->
+  ['$scope', '$modal', '$window', 'Product', 'ProductFamily', 'Field', '$routeParams', '$location', 'Company',
+  ( $scope,   $modal,   $window,   Product,   ProductFamily,   Field,   $routeParams,   $location,   Company) ->
     $scope.expendedRow = null
     $scope.productUnits = {}
     $scope.isUnitsLoading = {}
     $scope.menus = [
       { name: 'Products', value: 'products' }
       { name: 'Product Familes', value: 'product_families' }
+      { name: 'Settings', value: 'settings' }
     ]
     $scope.selectedMenu = $routeParams.tab || $scope.menus[0].value
     $scope.company = {}
     $scope.products = []
     $scope.productFamilies = []
-    $scope.productOptions = []
-    $scope.selectedOption = {}
 
     $scope.init = () ->
       Company.get().$promise.then (company) ->
         $scope.company = company
-        if company.product_options_enabled
-          $scope.menus.push { name: 'Product Options', value: 'product_options' }
       getProductFamilies()
       getProducts()
-      getProductOptions()
 
     $scope.onSelectMenu = (value) ->
       $scope.selectedMenu = value
       # $location.search({tab: value})
 
     $scope.updateSettings = () ->
-      $scope.company.$update().then (company) ->
-        if company.product_options_enabled && $scope.menus.length == 2
-          $scope.menus.push { name: 'Product Options', value: 'product_options' }
-        else if !company.product_options_enabled && $scope.menus.length == 3
-          $scope.menus.pop()
-
-    $scope.addOption = (isSub=false) ->
-      if isSub
-        $scope.productOptions.push { name: '', product_option_id: $scope.selectedOption.id }
-      else
-        $scope.productOptions.push { name: '' }
-
-    $scope.updateOption = (option, isSub=false) ->
-      if isSub
-        option.product_option_id = $scope.selectedOption.id
-      if !option.id && option.name
-        ProductOption.create(option).then (o) ->
-          index = $scope.productOptions.indexOf(option)
-          $scope.productOptions[index] = o
-          $scope.selectedOption = o if $scope.selectedOption == option
-      else if option.id
-        ProductOption.update(option)
-
-    $scope.deleteOption = (option) ->
-      if confirm('Are you sure you want to delete "' +  option.name + '"?')
-        ProductOption.delete(option).then () ->
-          index = $scope.productOptions.indexOf(option)
-          $scope.productOptions.splice(index, 1)
-          $scope.selectedOption = null if $scope.selectedOption == option
-
-    $scope.getSubOptions = (option) ->
-      if option && option.id
-        _.filter $scope.productOptions, (o) -> o.product_option_id == option.id
-
-    $scope.getOptions = () ->
-      _.filter $scope.productOptions, (o) -> !o.product_option_id
-
-    $scope.setOption = (option) ->
-      $scope.selectedOption = option
-
-    getProductOptions = () ->
-      ProductOption.all().then (productOptions) ->
-        $scope.productOptions = productOptions
-        $scope.selectedOption = _.find productOptions, (o) -> !o.product_option_id
+      $scope.company.$update()
 
     getProducts = () ->
       Product.all().then (products) ->
@@ -96,7 +49,6 @@
       if !$scope.productUnits[product.id] then getProductUnits(product.id)
 
     $scope.showNewProductModal = (product=null) ->
-      console.log(product)
       $scope.modalInstance = $modal.open
         templateUrl: 'modals/product_form.html'
         size: 'md'
@@ -106,10 +58,10 @@
         resolve:
           product: ->
             angular.copy product
+          products: ->
+            angular.copy $scope.products
           productFamilies: ->
             angular.copy $scope.productFamilies
-          productOptions: ->
-            angular.copy $scope.productOptions
           company: ->
             angular.copy $scope.company
 

@@ -4,6 +4,7 @@
 
   transformRequest = (original, headers) ->
     original.product.values_attributes = original.product.values
+    original.product.parent_id = null if original.product.parent_id == undefined
     angular.toJson(original)
 
   resource = $resource '/api/products/:id', { id: '@id', product_id: '@product_id' },
