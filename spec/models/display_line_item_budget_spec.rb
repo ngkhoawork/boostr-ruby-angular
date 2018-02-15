@@ -74,7 +74,7 @@ describe DisplayLineItemBudget, type: :model do
 
         expect(subject).not_to be_valid
         expect(subject.errors.full_messages).to include(
-          'Budget can\'t be more then line item budget'
+          "Budget sum of monthly budgets can't be more then line item budget"
         )
       end
 

@@ -33,7 +33,6 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
   set_callback :save, :after, :update_revenue_fact_callback
 
-  validate :budget_less_than_display_line_item_budget, unless: -> { has_dfp_budget_correction }
   validate :sum_of_budgets_less_than_line_item_budget, unless: -> { has_dfp_budget_correction }
 
   def update_revenue_fact_callback
@@ -301,14 +300,6 @@ class DisplayLineItemBudget < ActiveRecord::Base
     params
   end
 
-  def budget_less_than_display_line_item_budget
-    return unless budget_loc.present?
-
-    if max_budget_loc_exceeded?
-      errors.add(:budget, 'can\'t be more then line item budget')
-    end
-  end
-
   def sum_of_budgets_less_than_line_item_budget
     return unless budget_loc.present?
 
@@ -318,7 +309,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   def correct_budget
-    if max_monthly_budget_exceeded? || max_budget_loc_exceeded?
+    if max_monthly_budget_exceeded?
       self.budget_loc = corrected_budget
       self.budget = corrected_budget
       display_line_item.budget_delivered_loc = corrected_budget
@@ -337,11 +328,6 @@ class DisplayLineItemBudget < ActiveRecord::Base
   def max_monthly_budget_exceeded?
     return sum_of_monthly_budgets > display_line_item.budget_loc if has_dfp_budget_correction
     sum_of_monthly_budgets > (display_line_item.budget_loc + BUDGET_BUFFER)
-  end
-
-  def max_budget_loc_exceeded?
-    return budget_loc.truncate(2) > display_line_item.budget_loc if has_dfp_budget_correction
-    budget_loc.truncate(2) > (display_line_item.budget_loc + BUDGET_BUFFER)
   end
 
   def sum_of_monthly_budgets
