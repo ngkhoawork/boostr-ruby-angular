@@ -310,7 +310,7 @@ describe DisplayLineItemCsv do
   end
 
   def currency(opts={})
-    @_currency ||= create :currency, opts
+    @_currency ||= Currency.find_by(opts) || create(:currency, opts)
   end
 
   def line_item_csv(opts={})
