@@ -5,7 +5,10 @@ class Egnyte::Endpoints::Oauth < Egnyte::Endpoints::Net
     end
 
     def predefined_request_params
-      { grant_type: 'authorization_code' }
+      {
+        scope: 'Egnyte.filesystem Egnyte.launchwebsession',
+        grant_type: 'authorization_code'
+      }
     end
   end
 
@@ -41,6 +44,7 @@ class Egnyte::Endpoints::Oauth < Egnyte::Endpoints::Net
       redirect_uri: @options[:redirect_uri],
       client_id: CONFIGS[:client_id],
       client_secret: CONFIGS[:client_secret],
+      scope: predefined_request_params[:scope],
       grant_type: predefined_request_params[:grant_type]
     }
   end
