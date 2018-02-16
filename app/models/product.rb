@@ -6,6 +6,13 @@ class Product < ActiveRecord::Base
   has_many :ad_units
 
   validates :name, presence: true
+  validates :margin,
+    numericality: {
+      only_integer: true,
+      greater_than_or_equal_to: 1,
+      less_than_or_equal_to: 100
+    },
+    allow_nil: true
 
   REVENUE_TYPES = %w('Display', 'Content-Fee', 'None')
 
@@ -72,13 +79,13 @@ class Product < ActiveRecord::Base
 
   def self.to_csv
     CSV.generate do |csv|
-      csv << ["Product ID", "Product Name", "Pricing Type", "Product Line", "Product Family", "Active"]
+      csv << ["Product ID", "Product Name", "Pricing Type", "Product Family", "Active"]
       all.each do |product|
         csv << [
           product.id,
           product.name,
           get_option_value(product, "Pricing Type"),
-          product.product_family.name,
+          product.product_family&.name,
           product.active ? "Yes" : "No"
         ]
       end

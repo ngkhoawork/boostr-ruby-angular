@@ -1,0 +1,313 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://www.googleapis.com/oauth2/v3/token
+    body:
+      encoding: ASCII-8BIT
+      string: grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJib29zdHItc2VydmljZS1hY2NvdW50QGJvb3N0ci1pbnRlZ3JhdGlvbi5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsImF1ZCI6Imh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL29hdXRoMi92My90b2tlbiIsImV4cCI6MTUxNDIyNzIzNSwiaWF0IjoxNTE0MjI3MTE1LCJzY29wZSI6Imh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL2F1dGgvc3ByZWFkc2hlZXRzIn0.q6I6T4jmH4DzwKOn7sM4JVEVXCf-Q73st-REn7QizFZdBH9u9RX2Jex6z2N9J_6kuylEq1x6Mqmbmaro6usGVMaSbD8GkRTKS6fwB9ZVyIhVYKZ7lagqRIgwzdAaX0VTgFG48GMJKumDoWhncWx5Nd8rmuRZlDvRZUMMqHbsjBmdx3M4fEu_bN2nuWaS3e_lJciJNeckYJUuYWf-1P6RyXhBBb1-G_Jy_J52RrxjTTLCqKLx1RtcFLoI60O5ErdmXBKKL1EUJ7NieMVBBu-veCRZSKbATRskQloK3oqr3VCh-7Se-akEeFmI-edfz4RmAl5aNjNDs3PEUNR5ctOX4w
+    headers:
+      User-Agent:
+      - Faraday v0.11.0
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Pragma:
+      - no-cache
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Date:
+      - Mon, 25 Dec 2017 18:39:36 GMT
+      Vary:
+      - Origin
+      - X-Origin
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      Server:
+      - GSE
+      Alt-Svc:
+      - hq=":443"; ma=2592000; quic=51303431; quic=51303339; quic=51303338; quic=51303337;
+        quic=51303335,quic=":443"; ma=2592000; v="41,39,38,37,35"
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+         "access_token": "ya29.c.ElouBVGCFuHBr5XHchrEQY8UTL10HFSs_Gzl6NLiMmLFx_D3lJKuNBRTBqkYN-ExIaPfSnHayfPcAApxKmRzw-puH0wcq8DenW_COMl_DpQWdO0HywUKOav-IKY",
+         "token_type": "Bearer",
+         "expires_in": 3600
+        }
+    http_version: 
+  recorded_at: Mon, 25 Dec 2017 18:39:36 GMT
+- request:
+    method: get
+    uri: https://sheets.googleapis.com/v4/spreadsheets/1ADkamKx7LJB1SzXmCMy29Yw3ocA0VBeJ5mrV3ugz0Wg/values/A:A
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - |-
+        Boostrcrm/0.0.0 google-api-ruby-client/0.9.28 Mac OS X/10.13.2
+         (gzip)
+      Accept:
+      - "*/*"
+      Accept-Encoding:
+      - gzip,deflate
+      Date:
+      - Mon, 25 Dec 2017 18:39:36 GMT
+      Authorization:
+      - Bearer ya29.c.ElouBVGCFuHBr5XHchrEQY8UTL10HFSs_Gzl6NLiMmLFx_D3lJKuNBRTBqkYN-ExIaPfSnHayfPcAApxKmRzw-puH0wcq8DenW_COMl_DpQWdO0HywUKOav-IKY
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Mon, 25 Dec 2017 18:39:36 GMT
+      Server:
+      - ESF
+      Cache-Control:
+      - private
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - SAMEORIGIN
+      Alt-Svc:
+      - hq=":443"; ma=2592000; quic=51303431; quic=51303339; quic=51303338; quic=51303337;
+        quic=51303335,quic=":443"; ma=2592000; v="41,39,38,37,35"
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "range": "Sheet1!A1:A2164",
+          "majorDimension": "ROWS",
+          "values": [
+            [
+              "id"
+            ],
+            [
+              "1"
+            ],
+            [
+              "2"
+            ],
+            [
+              "3"
+            ],
+            [
+              "4"
+            ],
+            [
+              "5"
+            ],
+            [
+              "6"
+            ],
+            [
+              "7"
+            ],
+            [
+              "8"
+            ],
+            [
+              "9"
+            ],
+            [
+              "10"
+            ],
+            [
+              "11"
+            ],
+            [
+              "12"
+            ],
+            [
+              "13"
+            ],
+            [
+              "14"
+            ],
+            [
+              "15"
+            ],
+            [
+              "17"
+            ],
+            [
+              "18"
+            ],
+            [
+              "19"
+            ],
+            [
+              "20"
+            ],
+            [
+              "21"
+            ],
+            [
+              "19202"
+            ],
+            [
+              "19201"
+            ],
+            [
+              "23"
+            ],
+            [
+              "24"
+            ],
+            [
+              "25"
+            ],
+            [
+              "26"
+            ],
+            [
+              "27"
+            ],
+            [
+              "28"
+            ],
+            [
+              "29"
+            ],
+            [
+              "30"
+            ],
+            [
+              "31"
+            ],
+            [
+              "32"
+            ],
+            [
+              "33"
+            ],
+            [
+              "36"
+            ],
+            [
+              "37"
+            ],
+            [
+              "40"
+            ],
+            [
+              "41"
+            ],
+            [
+              "44"
+            ],
+            [
+              "45"
+            ],
+            [
+              "48"
+            ],
+            [
+              "49"
+            ],
+            [
+              "2000"
+            ]
+          ]
+        }
+    http_version: 
+  recorded_at: Mon, 25 Dec 2017 18:39:36 GMT
+- request:
+    method: post
+    uri: https://sheets.googleapis.com/v4/spreadsheets/1ADkamKx7LJB1SzXmCMy29Yw3ocA0VBeJ5mrV3ugz0Wg/values/A:AP:append?valueInputOption=raw
+    body:
+      encoding: UTF-8
+      string: '{"values":[[1000,"Deal 2","Jaskolski, Greenfelder and Cummings"]]}'
+    headers:
+      User-Agent:
+      - |-
+        Boostrcrm/0.0.0 google-api-ruby-client/0.9.28 Mac OS X/10.13.2
+         (gzip)
+      Accept:
+      - "*/*"
+      Accept-Encoding:
+      - gzip,deflate
+      Date:
+      - Mon, 25 Dec 2017 18:39:36 GMT
+      Authorization:
+      - Bearer ya29.c.ElouBVGCFuHBr5XHchrEQY8UTL10HFSs_Gzl6NLiMmLFx_D3lJKuNBRTBqkYN-ExIaPfSnHayfPcAApxKmRzw-puH0wcq8DenW_COMl_DpQWdO0HywUKOav-IKY
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '66'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Mon, 25 Dec 2017 18:39:37 GMT
+      Server:
+      - ESF
+      Cache-Control:
+      - private
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - SAMEORIGIN
+      Alt-Svc:
+      - hq=":443"; ma=2592000; quic=51303431; quic=51303339; quic=51303338; quic=51303337;
+        quic=51303335,quic=":443"; ma=2592000; v="41,39,38,37,35"
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "spreadsheetId": "1ADkamKx7LJB1SzXmCMy29Yw3ocA0VBeJ5mrV3ugz0Wg",
+          "tableRange": "Sheet1!A1:AU43",
+          "updates": {
+            "spreadsheetId": "1ADkamKx7LJB1SzXmCMy29Yw3ocA0VBeJ5mrV3ugz0Wg",
+            "updatedRange": "Sheet1!A44:C44",
+            "updatedRows": 1,
+            "updatedColumns": 3,
+            "updatedCells": 3
+          }
+        }
+    http_version: 
+  recorded_at: Mon, 25 Dec 2017 18:39:37 GMT
+recorded_with: VCR 3.0.3

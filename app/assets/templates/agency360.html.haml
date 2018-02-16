@@ -1,255 +1,143 @@
 #agency360.z-styles
-	.container-fluid.inner-agency360
-		.row.mb20
-			.reports-header
-				.header-cell.main-title
-					Agency 360
-				.header-cell.filters-block
-					%table
-						%tr.filter-title
-							%td Holding Company
-						%tr
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.holdingCompany.id}' }
-											{{filter.holdingCompany.id ? filter.holdingCompany.name : 'Select'}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{ ng: { repeat: 'holdingCompany in holdingCompanies | orderBy : "name"', class: '{active: holdingCompany.id === filter.holdingCompany.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("holdingCompany", holdingCompany)' } }
-													{{holdingCompany.name}}
-				.header-cell.filters-block
-					%table
-						%tr.filter-title
-							%td Agency
-						%tr
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.agency.id}' }
-											{{filter.agency.name}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{'ng-hide': 'filter.holdingCompany.id', 'ng-click': '$event.stopPropagation()'}
-												%input.search-field{placeholder: 'Search', ng: {model: 'agencySearch', 'model-options': '{debounce: 400}', change: 'getAgencies()'}}
-											%li{'ng-hide': 'agencySearch', ng: { class: '{active: !filter.agency.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("agency", defaultFilter.agency)' } }
-													{{defaultFilter.agency.name}}
-											%li{ ng: { repeat: 'agency in agencies | orderBy : "name"', class: '{active: agency.id === filter.agency.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("agency", agency)' } }
-													{{agency.name}}
+  .container-fluid.inner-agency360
+    .row.mb20
+      .reports-header
+        .header-cell.main-title
+          Agency 360
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply', 'on-reset': 'onResetFilter'}
+            %z-filter-field{data: 'holdingCompanies', 'save-as': '{holding_company_id: "id"}', 'on-change': 'updateAgency'} Holding Company
+            %z-filter-field{type: 'multiselect', data: 'agencies', 'save-as': '{"account_ids[]": "id"}'} Agency
+            %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{start_date: "start_date"}', 'order-by': '["-start_date"]', id: 'start-date-field'} Start Date
+            %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{end_date: "end_date"}', 'order-by': '["-end_date"]', id: 'end-date-field'} End Date
 
-				.header-cell.filters-block
-					%table
-						%tr.filter-title
-							%td
-								Date Range
-								%span.required *
-						%tr
-							%td
-								%a.clickable{'ng-click': 'toggleDateRange(); $event.stopPropagation()', 'ng-class': '{empty: !filter.startPeriod.id || !filter.endPeriod.id}'}
-									{{filter.startPeriod && filter.endPeriod ? filter.startPeriod.name + ' - ' + filter.endPeriod.name : 'Select'}}
-									%span.caret
-								%div.date-range-container{'ng-show': 'isDateRangeOpen', 'ng-click': ''}
-									%div.date-range-inner
-										.switch-row.mb20
-											%span{'ng-class': '{active: dateRange.switch == "month"}', 'ng-click': 'dateRange.setSwitch("month")'} Month
-											%span{'ng-class': '{active: dateRange.switch == "quarter"}', 'ng-click': 'dateRange.setSwitch("quarter")'} Quarter
-											%span{'ng-class': '{active: dateRange.switch == "year"}', 'ng-click': 'dateRange.setSwitch("year")'} Year
-										%div.dropdown-wrap
-											.filters-block
-												%table
-													%tr.filter-title
-														%td Start Period
-													%tr
-														%td
-															%ul.filter-item
-																%li{ dropdown: true }
-																	%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.startPeriod.id}' }
-																		{{filter.startPeriod.name || 'Select'}}
-																		%span.caret
-																	%ul.dropdown-menu
-																		%li{'ng-click': '$event.stopPropagation()'}
-																			%input.search-field{placeholder: 'Search', 'ng-model': 'dateRange.startSearch'}
-																		%li.menu-item{ ng: { repeat: 'startPeriod in timeDimensions | orderBy : "start_date" | filter : filterStartTimeDimensions', class: '{active: startPeriod.id === filter.startPeriod.id}' } }
-																			%a{ href: '', ng: { click: 'setFilter("startPeriod", startPeriod)' } }
-																				{{startPeriod.name}}
-											.filters-block
-												%table
-													%tr.filter-title
-														%td End Period
-													%tr
-														%td
-															%ul.filter-item
-																%li{ dropdown: true }
-																	%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.endPeriod.id}' }
-																		{{filter.endPeriod.name || 'Select'}}
-																		%span.caret
-																	%ul.dropdown-menu
-																		%li{'ng-click': '$event.stopPropagation()'}
-																			%input.search-field{placeholder: 'Search', 'ng-model': 'dateRange.endSearch'}
-																		%li{ ng: { repeat: 'endPeriod in timeDimensions | orderBy : "start_date" | filter : filterEndTimeDimensions', class: '{active: endPeriod.id === filter.endPeriod.id}' } }
-																			%a{ href: '', ng: { click: 'setFilter("endPeriod", endPeriod)' } }
-																				{{endPeriod.name}}
-				.header-cell.filters-block{style: 'vertical-align: top'}
-					%span.reset-filter.mr20{'ng-click': 'resetFilter()'}
-						Reset
+  .container-fluid.inner-agency360{'ng-show': 'showDashboard'}
+    .row
+      .block
+        %div.mb20
+          %span.title Spend by Product
+        %div#spend-product-chart-container.mb20
+          %svg#spend-product-chart.agency360-chart
+          %div.legend-container
+        .table-wrapper
+          %table.table.table-hover
+            %thead
+              %tr
+                %th
+                  %b Product
+                %th{'ng-repeat': 'month in months'}
+                  {{month.label}}
+                %th Total
+            %tbody
+              %tr{'ng-repeat': 'product in spendByProducts', 'ng-class': '{total: $last}'}
+                %td {{product.name}}
+                %td{'ng-repeat': 'val in product.values track by $index'}
+                  {{val ? (val | currency: '$' : '0') : '-'}}
+                %td.total
+                  {{product.total | currency: '$' : '0'}}
 
-				.header-cell
-					%button.add-btn.mr20{'ng-click': 'applyFilter()'}
-						Run Report
+    .row
+      .block
+        %div.mb20
+          %span.title Spend by Advertiser
+        %div#spend-advertiser-chart-container.mb20
+          %svg#spend-advertiser-chart.agency360-chart
+          %div.legend-container
+        .table-wrapper
+          %table.table.table-hover
+            %thead
+              %tr
+                %th
+                  %b Advertiser
+                %th{'ng-repeat': 'month in months'}
+                  {{month.label}}
+                %th Total
+            %tbody
+              %tr{'ng-repeat': 'advertiser in spendByAdvertisers', 'ng-class': '{total: $last}'}
+                %td{'ng-if': '$last'} {{advertiser.name}}
+                %td{'ng-if': '!$last'}
+                  %a{href: '', 'ng-href': '#'} {{advertiser.name}}
+                %td{'ng-repeat': 'val in advertiser.values track by $index'}
+                  {{val ? (val | currency: '$' : '0') : '-'}}
+                %td.total
+                  {{advertiser.total | currency: '$' : '0'}}
 
-	.container-fluid.inner-agency360{'ng-show': 'showDashboard'}
-		.row
-			.block
-				%div.mb20
-					%span.title Spend by Product
-				%div#spend-product-chart-container.mb20
-					%svg#spend-product-chart.agency360-chart
-					%div.legend-container
-				.table-wrapper
-					%table.table.table-hover
-						%thead
-							%tr
-								%th
-									%b Product
-								%th{'ng-repeat': 'month in months'}
-									{{month.label}}
-								%th Total
-						%tbody
-							%tr{'ng-repeat': 'product in spendByProducts', 'ng-class': '{total: $last}'}
-								%td {{product.name}}
-								%td{'ng-repeat': 'val in product.values track by $index'}
-									{{val ? (val | currency: '$' : '0') : '-'}}
-								%td.total
-									{{product.total | currency: '$' : '0'}}
+    .row
+      .col-xs-8.pl0
+        .block
+          %div.mb20
+            %span.title Advertisers Without Spend at {{(holdingCompany.id && holdingCompany.name) || (filter.agency.id && filter.agency.name) || '-'}}
+          .table-wrapper
+            %table.table.table-hover
+              %thead
+                %tr
+                  %th Advertiser
+                  %th Open Pipeline
+                  %th Seller
+              %tbody
+                %tr{'ng-repeat': 'advertiser in relatedAdvertisers'}
+                  %td
+                    %a{href: '', 'ng-href': '/accounts/{{advertiser.id}}'} {{advertiser.advertiser_name}}
+                  %td {{advertiser.sum | currency : '$' : 0}}
+                  %td {{advertiser.seller_name}}
+        .block
+          %div.mb20
+            %span.title Contacts & Related Advertisers
+          .table-wrapper
+            %table.table.table-hover
+              %thead
+                %tr
+                  %th Name
+                  %th Advertiser
+                  %th Email
+                  %th Phone
+                  %th Last Touch
+              %tbody
+                %tr{'ng-repeat': 'contact in relatedContacts'}
+                  %td
+                    %a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}
+                  %td
+                    %a{href: '', 'ng-href': '/accounts/{{contact.advertiser.id}}'} {{contact.advertiser.name}}
+                  %td {{contact.email}}
+                  %td {{contact.phone}}
+                  %td {{contact.last_touch | date}}
 
-		.row
-			.block
-				%div.mb20
-					%span.title Spend by Advertiser
-				%div#spend-advertiser-chart-container.mb20
-					%svg#spend-advertiser-chart.agency360-chart
-					%div.legend-container
-				.table-wrapper
-					%table.table.table-hover
-						%thead
-							%tr
-								%th
-									%b Advertiser
-								%th{'ng-repeat': 'month in months'}
-									{{month.label}}
-								%th Total
-						%tbody
-							%tr{'ng-repeat': 'advertiser in spendByAdvertisers', 'ng-class': '{total: $last}'}
-								%td{'ng-if': '$last'} {{advertiser.name}}
-								%td{'ng-if': '!$last'}
-									%a{href: '', 'ng-href': '#'} {{advertiser.name}}
-								%td{'ng-repeat': 'val in advertiser.values track by $index'}
-									{{val ? (val | currency: '$' : '0') : '-'}}
-								%td.total
-									{{advertiser.total | currency: '$' : '0'}}
+        .block
+          %div.mb20
+            %span.title Activity History
+          .table-wrapper
+            %table.table.table-hover
+              %thead
+                %tr
+                  %th Date
+                  %th Type
+                  %th Agency
+                  %th Comments
+                  %th Contacts
+              %tbody
+                %tr{'ng-repeat': 'activity in activities'}
+                  %td {{activity.date | date : 'MM/dd/yy'}}
+                  %td
+                    .activity-type
+                      %span{'class': 'mr8 icon-activity-{{getIconName(activity.type)}}'}
+                      %b {{activity.type}}
+                  %td
+                    %a{href: '', 'ng-href': '/accounts/{{activity.advertiser.id}}'} {{activity.advertiser.name}}
+                  %td
+                    %div{ng: {'text-truncate': 'activity.comments', 'tt-chars-threshold': '250'}}
+                  %td
+                    %div{'ng-repeat': 'contact in activity.contacts'}
+                      %a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}
+      .col-xs-4.pr0
+        .block
+          %div.mb20
+            %span.title Spend by Category
+          %div#spend-category-chart-container
+            %svg#spend-category-chart.agency360-chart>
+            %div.legend-container
 
-		.row
-			.col-xs-8.pl0
-				.block
-					%div.mb20
-						%span.title Advertisers Without Spend at {{(filter.holdingCompany.id && filter.holdingCompany.name) || (filter.agency.id && filter.agency.name) || '-'}}
-					.table-wrapper
-						%table.table.table-hover
-							%thead
-								%tr
-									%th Advertiser
-									%th Open Pipeline
-									%th Seller
-							%tbody
-								%tr{'ng-repeat': 'advertiser in relatedAdvertisers'}
-									%td
-										%a{href: '', 'ng-href': '/accounts/{{advertiser.id}}'} {{advertiser.advertiser_name}}
-									%td {{advertiser.sum | currency : '$' : 0}}
-									%td {{advertiser.seller_name}}
-				.block
-					%div.mb20
-						%span.title Contacts & Related Advertisers
-					.table-wrapper
-						%table.table.table-hover
-							%thead
-								%tr
-									%th Name
-									%th Advertiser
-									%th Email
-									%th Phone
-									%th Last Touch
-							%tbody
-								%tr{'ng-repeat': 'contact in relatedContacts'}
-									%td
-										%a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}
-									%td
-										%a{href: '', 'ng-href': '/accounts/{{contact.advertiser.id}}'} {{contact.advertiser.name}}
-									%td {{contact.email}}
-									%td {{contact.phone}}
-									%td {{contact.last_touch | date}}
-
-				.block
-					%div.mb20
-						%span.title Activity History
-					.table-wrapper
-						%table.table.table-hover
-							%thead
-								%tr
-									%th Date
-									%th Type
-									%th Agency
-									%th Comments
-									%th Contacts
-							%tbody
-								%tr{'ng-repeat': 'activity in activities'}
-									%td {{activity.date | date : 'MM/dd/yy'}}
-									%td
-										.activity-type
-											%span{'class': 'mr8 icon-activity-{{getIconName(activity.type)}}'}
-											%b {{activity.type}}
-									%td
-										%a{href: '', 'ng-href': '/accounts/{{activity.advertiser.id}}'} {{activity.advertiser.name}}
-									%td
-										%div{ng: {'text-truncate': 'activity.comments', 'tt-chars-threshold': '250'}}
-									%td
-										%div{'ng-repeat': 'contact in activity.contacts'}
-											%a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}
-			.col-xs-4.pr0
-				.block
-					%div.mb20
-						%span.title Spend by Category
-					%div#spend-category-chart-container
-						%svg#spend-category-chart.agency360-chart>
-						%div.legend-container
-
-				.block
-					%div.mb20
-						%span.title Win Rate by Category
-					%div#win-rate-category-chart-container
-						%svg#win-rate-category-chart.agency360-chart
-
-				-#.block
-					%div.mb20
-						%span.title Spend By Agency
-					.table-wrapper
-						%table.table.table-hover
-							%thead
-								%tr
-									%th Agency
-									%th Spend
-							%tbody
-								%tr
-									%td
-										%a{href: '', 'ng-href': '#'} Agency 1
-									%td {{500000 | currency : '$' : 0}}
-								%tr
-									%td
-										%a{href: '', 'ng-href': '#'} Agency 2
-									%td {{500000 | currency : '$' : 0}}
-								%tr
-									%td
-										%a{href: '', 'ng-href': '#'} Agency 3
-									%td {{500000 | currency : '$' : 0}}
+        .block
+          %div.mb20
+            %span.title Win Rate by Category
+          %div#win-rate-category-chart-container
+            %svg#win-rate-category-chart.agency360-chart

@@ -10,6 +10,7 @@ describe ProductSerializer do
                                                          name: product.product_family.name)
     expect(product_serializer.revenue_type).to eq(product.revenue_type)
     expect(product_serializer.values).to eq(product.values)
+    expect(product_serializer.margin).to eq(product.margin)
   end
 
   private
@@ -23,7 +24,7 @@ describe ProductSerializer do
   end
 
   def product
-    @_product ||= create :product, company: company, product_family: product_family
+    @_product ||= create :product, company: company, product_family: product_family, margin: 38
   end
 
   def company

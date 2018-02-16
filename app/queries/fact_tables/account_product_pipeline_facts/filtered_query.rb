@@ -8,7 +8,7 @@ class FactTables::AccountProductPipelineFacts::FilteredQuery
     return relation unless options.any?
     relation.by_time_dimension_date_range(options[:end_date])
             .by_holding_company_id(options[:holding_company_id])
-            .by_account_id(options[:account_id])
+            .by_account_id(options[:account_ids])
             .by_company_id(options[:company_id])
   end
 
@@ -34,9 +34,9 @@ class FactTables::AccountProductPipelineFacts::FilteredQuery
             max_days: MAX_DAYS_IN_MONTH)
     end
 
-    def by_account_id(account_id)
-      return self unless account_id
-      where('account_dimensions.id = :id', id: account_id)
+    def by_account_id(account_ids)
+      return self unless account_ids
+      where('account_dimensions.id IN (?)', account_ids)
     end
 
     def by_holding_company_id(holding_company_id)

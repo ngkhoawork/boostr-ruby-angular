@@ -1,4 +1,6 @@
 class Company < ActiveRecord::Base
+  include CompanyMappings
+
   has_many :users
   has_many :clients
   has_many :contacts, inverse_of: :company
@@ -42,6 +44,7 @@ class Company < ActiveRecord::Base
   has_many :operative_api_configurations, dependent: :destroy
   has_many :operative_datafeed_configurations, dependent: :destroy
   has_many :asana_connect_configurations, dependent: :destroy
+  has_many :google_sheets_configurations, dependent: :destroy
   has_many :initiatives, dependent: :destroy
   has_many :integration_logs, dependent: :destroy
   has_many :requests
