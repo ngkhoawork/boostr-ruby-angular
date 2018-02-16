@@ -10,7 +10,16 @@ class Egnyte::Endpoints::Net
   }.freeze
 
   attr_reader :response
+
+  delegate :net_options, to: :class
   delegate :code, to: :response, prefix: true, allow_nil: true
+
+  def self.net_options
+    {
+      use_ssl: true,
+      verify_mode: OpenSSL::SSL::VERIFY_NONE
+    }
+  end
 
   def perform
     @response = send_request
@@ -34,7 +43,7 @@ class Egnyte::Endpoints::Net
   private
 
   def send_request
-    Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+    Net::HTTP.start(uri.hostname, uri.port, net_options) do |http|
       http.request(build_request_object)
     end
   end
