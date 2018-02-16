@@ -56,7 +56,6 @@
       data: embedded: true, path: "/Shared/Deal1"
 
     $http(req).then ((response) ->
-      console.log(response)
       $scope.embeddedUrl = $sce.trustAsResourceUrl(response.data.redirect)
       return
     ), (error) ->
