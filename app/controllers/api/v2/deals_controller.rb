@@ -27,28 +27,7 @@ class Api::V2::DealsController < ApiController
 
   # Copy of 'index' with grouping by stages
   def pipeline_by_stages
-    response_deals =
-      if params[:name].present?
-        group_deals_by_stages(suggest_deals)
-      elsif params[:activity].present?
-        group_deals_by_stages(activity_deals)
-      elsif params[:year].present?
-        group_deals_by_stages(company_deals) do |stage_deals|
-          build_deals_json_for_year_filter(stage_deals)
-        end
-      else
-        client_deals =
-          deals
-            .for_client(params[:client_id])
-            .includes(:advertiser, :stage, :previous_stage, :deal_custom_field, :users, :currency)
-            .distinct
-
-        group_deals_by_stages(client_deals) do |stage_deals|
-          ActiveModel::ArraySerializer.new(stage_deals , each_serializer: DealIndexSerializer).as_json
-        end
-      end
-
-    render json: response_deals
+    render json: pipeline_by_stages_deals
   end
 
   def show
@@ -106,6 +85,28 @@ class Api::V2::DealsController < ApiController
         stage_id: stage.id,
         deals: stage_deals
       }
+    end
+  end
+
+  def pipeline_by_stages_deals
+    if params[:name].present?
+      group_deals_by_stages(suggest_deals)
+    elsif params[:activity].present?
+      group_deals_by_stages(activity_deals)
+    elsif params[:year].present?
+      group_deals_by_stages(company_deals) do |stage_deals|
+        build_deals_json_for_year_filter(stage_deals)
+      end
+    else
+      client_deals =
+        deals
+          .for_client(params[:client_id])
+          .includes(:advertiser, :stage, :previous_stage, :deal_custom_field, :users, :currency)
+          .distinct
+
+      group_deals_by_stages(client_deals) do |stage_deals|
+        ActiveModel::ArraySerializer.new(stage_deals , each_serializer: DealIndexSerializer).as_json
+      end
     end
   end
 
