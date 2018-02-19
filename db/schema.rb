@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180216125039) do
+ActiveRecord::Schema.define(version: 20180219132557) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -390,11 +390,11 @@ ActiveRecord::Schema.define(version: 20180216125039) do
     t.string   "api_email"
     t.string   "encrypted_password"
     t.string   "encrypted_password_iv"
+    t.boolean  "recurring",                  default: false
     t.text     "encrypted_json_api_key"
     t.text     "encrypted_json_api_key_iv"
     t.string   "network_code"
     t.string   "integration_provider"
-    t.boolean  "recurring",                  default: false
   end
 
   add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
@@ -605,8 +605,9 @@ ActiveRecord::Schema.define(version: 20180216125039) do
     t.boolean  "requests_enabled",                  default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "enable_operative_extra_fields",     default: false
-    t.boolean  "influencer_enabled",                default: false
+    t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "influencer_enabled",                default: false
     t.boolean  "forecast_gap_to_quota_positive",    default: true
     t.boolean  "publishers_enabled",                default: false
     t.boolean  "gmail_enabled",                     default: false
@@ -1686,7 +1687,6 @@ ActiveRecord::Schema.define(version: 20180216125039) do
     t.decimal  "ctr",                             precision: 5,  scale: 4
     t.decimal  "video_avg_view_rate",             precision: 5,  scale: 4
     t.decimal  "video_completion_rate",           precision: 5,  scale: 4
-    t.boolean  "is_estimated",                                             default: false
   end
 
   add_index "display_line_item_budgets", ["display_line_item_id"], name: "index_display_line_item_budgets_on_display_line_item_id", using: :btree
@@ -2258,6 +2258,18 @@ ActiveRecord::Schema.define(version: 20180216125039) do
 
   add_index "product_families", ["company_id"], name: "index_product_families_on_company_id", using: :btree
 
+  create_table "product_options", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "deleted_at"
+    t.integer  "company_id"
+    t.integer  "product_option_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "product_options", ["company_id"], name: "index_product_options_on_company_id", using: :btree
+  add_index "product_options", ["product_option_id"], name: "index_product_options_on_product_option_id", using: :btree
+
   create_table "products", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -2789,9 +2801,9 @@ ActiveRecord::Schema.define(version: 20180216125039) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
-    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
+    t.boolean  "revenue_requests_access",             default: false
   end
 
   add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree
@@ -3001,6 +3013,8 @@ ActiveRecord::Schema.define(version: 20180216125039) do
   add_foreign_key "print_items", "ios"
   add_foreign_key "product_dimensions", "companies"
   add_foreign_key "product_families", "companies"
+  add_foreign_key "product_options", "companies"
+  add_foreign_key "product_options", "product_options"
   add_foreign_key "requests", "companies"
   add_foreign_key "requests", "deals"
   add_foreign_key "requests", "users", column: "assignee_id"
