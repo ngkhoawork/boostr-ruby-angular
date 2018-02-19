@@ -15,7 +15,7 @@ class Api::Settings::AssignmentRulesController < ApplicationController
 
   def update
     if assignment_rule.update(assignment_rule_params)
-      render json: { status: 'Assignment Rule was successfully updated' }
+      render json: assignment_rule
     else
       render json: { errors: assignment_rule.errors.messages }, status: :unprocessable_entity
     end

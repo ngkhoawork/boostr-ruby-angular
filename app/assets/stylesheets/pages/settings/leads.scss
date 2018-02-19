@@ -2,4 +2,80 @@
     .container-fluid {
         padding: 0 30px;
     }
+    .rules-table {
+        display: flex;
+        .rules-column {
+            width: 25%;
+            &:not(:last-child) {
+                padding-right: 20px;
+            }
+            .rule-column-header {
+                display: flex;
+                align-items: center;
+                background: #2B3C49;
+                color: white;
+                padding: 10px 15px;
+                margin-bottom: 8px;
+                border-radius: 4px;
+                box-shadow: 0 1px 0 0 rgba(215,216,219,0.5);
+                .rule-add-btn {
+                    margin-left: auto;
+                    color: $main-color;
+                    font-weight: bold;
+                    cursor: pointer;
+                    &:hover {
+                        color: darken($main-color, 10%);
+                    }
+                }
+            }
+            .rule-row {
+                display: flex;
+                align-items: center;
+                background: white;
+                border: 1px solid #E5E8EB;
+                border-radius: 4px;
+                padding: 8px;
+                margin-bottom: 4px;
+                user-select: none;
+                &.rule-name {
+                    background: #fafafa;
+                    cursor: pointer;
+                    &:active {
+                        cursor: move;
+                    }
+                    &.active {
+                        background: white;
+                        border-color: $main-color;
+                        border-right-width: 4px;
+                        padding-right: 5px;
+                    }
+                }
+                .z-icon {
+                    margin-left: auto;
+                }
+                &.new-row {
+                    display: none;
+                    &.visible {
+                        display: flex;
+                    }
+                    form {
+                        flex: 1;
+                    }
+                    input {
+                        height: 36px;
+                        &:focus {
+                            box-shadow: 0 0 5px $main-font-color;
+                        }
+                    }
+                    .fa.fa-check {
+                        margin: 0 4px 0 12px;
+                        &:before {
+                            position: relative;
+                            right: 2px;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

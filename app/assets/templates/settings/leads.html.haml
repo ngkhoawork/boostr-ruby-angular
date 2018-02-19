@@ -4,4 +4,55 @@
             %span.main-title.mr8 Leads
 
         .block
-            .title Manage Coverage
+            .title.mb20 Manage Coverage
+            .rules-table
+                .rules-column
+                    .rule-column-header
+                        %div ASSIGNMENT RULE
+                        .rule-add-btn{'ng-click': 'showForm($event)'} Add
+                    .rule-row.rule-name.new-row
+                        %form{'ng-submit': 'submitForm($event, "rule")'}
+                            %input.form-control{placeholder: 'Name', 'ng-model': 'form', 'ng-blur': 'hideForm($event)'}
+                        %i.fa.fa-check.z-icon{'ng-click': 'submitForm($event, "rule")'}
+                        %i.fa.fa-close.z-icon{'ng-click': 'hideForm($event)'}
+                    .rule-row.rule-name{ng: {repeat: 'rule in rules', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'}}
+                        {{rule.name}}
+                        %i.fa.fa-trash.z-icon{'ng-click': 'deleteRule($event, rule)'}
+
+                .rules-column
+                    .rule-column-header
+                        %div COUNTRIES
+                        .rule-add-btn{'ng-click': 'showForm($event)'} Add
+                    .rule-row.rule-name.new-row
+                        %form{'ng-submit': 'submitForm($event, "country")'}
+                            %input.form-control{placeholder: 'Country', 'ng-model': 'form', 'ng-blur': 'hideForm($event)'}
+                        %i.fa.fa-check.z-icon{'ng-click': 'submitForm($event, "country")'}
+                        %i.fa.fa-close.z-icon{'ng-click': 'hideForm($event)'}
+                    .rule-row{'ng-repeat': 'country in selectedRule.countries track by $index'}
+                        {{country}}
+                        %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("countries", country)'}
+
+                .rules-column
+                    .rule-column-header
+                        %div STATES
+                        .rule-add-btn{'ng-click': 'showForm($event)'} Add
+                    .rule-row.rule-name.new-row
+                        %form{'ng-submit': 'submitForm($event, "state")'}
+                            %input.form-control{placeholder: 'State', 'ng-model': 'form', 'ng-blur': 'hideForm($event)'}
+                        %i.fa.fa-check.z-icon{'ng-click': 'submitForm($event, "state")'}
+                        %i.fa.fa-close.z-icon{'ng-click': 'hideForm($event)'}
+                    .rule-row{'ng-repeat': 'state in selectedRule.states track by $index'}
+                        {{state}}
+                        %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("states", state)'}
+
+                .rules-column
+                    .rule-column-header
+                        %div USERS
+                        .rule-add-btn.z-dropdown{dropdown: true}
+                            %div{'dropdown-toggle': true} Add
+                            %div.dropdown-menu.dropdown-menu-right
+                                %div.dropdown-item{ng: {repeat: 'seller in sellers', click: 'addUser(seller)'}}
+                                    {{seller.name}}
+                    .rule-row{'ng-repeat': 'user in selectedRule.users'}
+                        {{user.name}}
+                        %i.fa.fa-trash.z-icon{'ng-click': 'removeUser(user)'}

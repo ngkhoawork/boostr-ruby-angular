@@ -43,7 +43,7 @@ class Api::LeadsController < ApplicationController
 
   def map_with_client
     lead.update(client: client)
-    map_contact_with client
+    map_contact_with_client
 
     render nothing: true
   end
