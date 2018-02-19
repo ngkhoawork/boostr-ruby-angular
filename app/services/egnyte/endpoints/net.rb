@@ -8,6 +8,7 @@ class Egnyte::Endpoints::Net
     success: %w(200 201 204),
     queries_rate_exceeded: %w(403)
   }.freeze
+  MAX_REQUEST_RETRY_COUNTS = 3
 
   attr_reader :response
 
@@ -24,9 +25,12 @@ class Egnyte::Endpoints::Net
   def perform
     @response = send_request
 
-    if STATUS_CODES[:queries_rate_exceeded].include?(@response.code) && @perform_twice == false
-      @perform_twice = true
-      send(__method__)
+    @request_retry_count = 0
+    while retry_after_queries_rate_exceeded?
+      @request_retry_count += 1
+      sleep(0.5)
+
+      @response = send_request
     end
 
     @response
@@ -57,6 +61,10 @@ class Egnyte::Endpoints::Net
 
   def net_http_class
     "Net::HTTP::#{request_method.to_s.capitalize}".constantize
+  end
+
+  def retry_after_queries_rate_exceeded?
+    @request_retry_count < MAX_REQUEST_RETRY_COUNTS && STATUS_CODES[:queries_rate_exceeded].include?(@response.code)
   end
 
   def uri
