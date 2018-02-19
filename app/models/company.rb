@@ -107,6 +107,8 @@ class Company < ActiveRecord::Base
     ealerts.find_or_initialize_by(recipients: nil, automatic_send: false, same_all_stages: true)
 
     setup_default_validations
+
+    AssignmentRule.create(company_id: self.id, name: 'Default', default: true)
   end
 
   def settings
