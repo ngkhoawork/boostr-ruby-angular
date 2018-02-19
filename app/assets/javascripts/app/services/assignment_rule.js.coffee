@@ -10,6 +10,9 @@
             removeUser:
                 method: 'GET'
                 url: '/api/assignment_rules/:id/remove_user'
+            updatePositions:
+                method: 'PUT'
+                url: '/api/assignment_rules/update_positions'
 
         @get = (params) -> resource.query(params).$promise
         @save = (params) -> resource.save(params).$promise
@@ -17,6 +20,7 @@
         @delete = (params) -> resource.delete(params).$promise
         @addUser = (params) -> resource.addUser(params).$promise
         @removeUser = (params) -> resource.removeUser(params).$promise
+        @updatePositions = (params) -> resource.updatePositions(params).$promise
 
         return
 ]

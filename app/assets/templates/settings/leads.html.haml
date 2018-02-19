@@ -15,9 +15,10 @@
                             %input.form-control{placeholder: 'Name', 'ng-model': 'form', 'ng-blur': 'hideForm($event)'}
                         %i.fa.fa-check.z-icon{'ng-click': 'submitForm($event, "rule")'}
                         %i.fa.fa-close.z-icon{'ng-click': 'hideForm($event)'}
-                    .rule-row.rule-name{ng: {repeat: 'rule in rules', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'}}
-                        {{rule.name}}
-                        %i.fa.fa-trash.z-icon{'ng-click': 'deleteRule($event, rule)'}
+                    .rules-wrap{'dnd-list': 'rules'}
+                        .rule-row.rule-name{ng: {repeat: 'rule in rules', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'}, dnd: {draggable: 'rule', moved: 'onRuleMoved($index)'}}
+                            {{rule.name}}
+                            %i.fa.fa-trash.z-icon{'ng-click': 'deleteRule($event, rule)'}
 
                 .rules-column
                     .rule-column-header

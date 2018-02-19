@@ -4,6 +4,7 @@
         $scope.form = ''
         $scope.sellers = []
         $scope.rules = []
+        positions = {}
 #        $scope.rules = [1..5].map (i) ->
 #            {
 #                name: 'Rule ' + i
@@ -19,6 +20,7 @@
         do getRules = ->
             AssignmentRule.get().then (data) ->
                 console.log data
+                positions = getPositions()
                 $scope.rules = data
 
         $scope.selectRule = (rule) ->
@@ -83,5 +85,18 @@
             target = $(e.target)
             target.parent().siblings('.new-row').addClass('visible').find('input').focus()
             return
+
+        getPositions = ->
+            _positions = {}
+            _.each $scope.rules, (t, i) -> _positions[t.id] = i + 1
+            _positions
+
+        $scope.onRuleMoved = (ruleIndex) ->
+            $scope.rules.splice(ruleIndex, 1)
+            newPositions = getPositions()
+            if _.isEqual positions, newPositions then return
+            changes = _.omit newPositions, (val, key) -> positions[key] == val
+            AssignmentRule.updatePositions(positions: changes)
+            positions = newPositions
 
 ]
