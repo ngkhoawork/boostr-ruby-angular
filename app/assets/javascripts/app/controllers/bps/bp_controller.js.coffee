@@ -70,6 +70,18 @@
         bp: {id: 0}
       $scope.selectedTeam = $scope.filter.team
 
+      $scope.searchText = ''
+      searchTimeout = null
+      $scope.handleSearch = () ->
+        $scope.page = 1
+        if searchTimeout
+          clearTimeout(searchTimeout)
+          searchTimeout = null
+        searchTimeout = setTimeout(
+          -> loadBPData()
+          400
+        )
+
       setMcSort = ->
        $scope.sort = new McSort({
          column: "client_name",
@@ -267,9 +279,12 @@
             user_id: $scope.selectedUser.id
             page: $scope.page
             per: 10
+            search: $scope.searchText if $scope.searchText
           }
           $scope.isLoading = true
           BpEstimate.all(filters).then (data) ->
+            console.log('data: ', data)
+            console.log('filters: ', filters)
             $scope.revenues = data.current.revenues
             $scope.pipelines = data.current.pipelines
 

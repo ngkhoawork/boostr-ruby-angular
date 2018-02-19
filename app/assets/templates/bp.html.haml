@@ -42,10 +42,18 @@
         %li
           %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{"disabled": isLoading == true}'}
             Apply Filters
+      %ul.bp-filter.action.bp-search.pull-left
+        %li
+          .search
+            %form
+              .input-group
+                .input-group-addon
+                  %i.glyphicon.glyphicon-search
+                %input.form-control{ ng: { model: 'searchText', change: 'handleSearch()' }, placeholder: "Search by Account" }
       %ul.bp-filter.action.pull-right{ ng: { if: 'selectedBP.id > 0' } }
         %li
           %button.add-btn{'ng-click': 'export()'}
-            Export
+            Export      
       .bp-info.col-xs-12
         .info
           .info-body-wrap
