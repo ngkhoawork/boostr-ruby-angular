@@ -69,7 +69,7 @@ class Api::LeadsController < ApplicationController
   end
 
   def determine_assignee
-    params[:user_id] rescue next_assignee
+    params[:user_id] rescue lead.next_available_user
   end
 
   def client

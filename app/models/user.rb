@@ -26,7 +26,8 @@ class User < ActiveRecord::Base
   has_many :email_threads
   has_many :publisher_members, dependent: :destroy
   has_many :publishers, through: :publisher_members
-  has_and_belongs_to_many :assignment_rules
+  has_many :assignment_rules_users
+  has_many :assignment_rules, through: :assignment_rules_users
 
   ROLES = %w(user admin superadmin supportadmin)
 
