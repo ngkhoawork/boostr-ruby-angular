@@ -7,7 +7,7 @@
     $scope.advertisers = []
     $scope.agencies = []
     $scope.deal = deal
-    console.log deal
+
     getDealCustomFieldNames()
 
     $q.all({
