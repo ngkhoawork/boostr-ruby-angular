@@ -42,7 +42,6 @@
     $scope.currentUser = user
 
   $scope.egnyte = (token, domain, deal) ->
-    console.log(deal)
     req =
       method: 'POST'
       url: 'https://' + domain + '/pubapi/v2/navigate'
@@ -91,7 +90,6 @@
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal, true)
-
       $scope.getCurrentCompany(deal)
 
       if initialLoad
