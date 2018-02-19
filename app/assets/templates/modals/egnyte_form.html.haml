@@ -1,12 +1,8 @@
 #egnyte_modal.popup-modal
   %form{ ng: { submit: 'submitForm()' } }
-    .modal-header.text-center
-      %a.close{ ng: { click: 'cancel()' } }
-        %span{'aria-hidden' => 'true'}
-          = inline_svg 'icons/close.svg'
-      %h3.modal-title
-        %strong
-          New {{formType}}
+    .popup-modal-header
+      New Folder
+      %span.close-btn{'ng-click': 'cancel()'}
     .popup-modal-body
       .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
         .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }

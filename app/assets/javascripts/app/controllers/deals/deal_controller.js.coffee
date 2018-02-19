@@ -41,19 +41,13 @@
   CurrentUser.get().$promise.then (user) ->
     $scope.currentUser = user
 
-  $scope.getCurrentCompany = () ->
-    Egnyte.show().then (egnyteSettings) ->
-      $scope.company = egnyteSettings
-      if(egnyteSettings.access_token && egnyteSettings.connected)
-        $scope.egnyteConnected = true
-        $scope.egnyte(egnyteSettings.access_token, egnyteSettings.app_domain)
-
-  $scope.egnyte = (token, domain) ->
+  $scope.egnyte = (token, domain, deal) ->
+    console.log(deal)
     req =
       method: 'POST'
       url: 'https://' + domain + '/pubapi/v2/navigate'
       headers: 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token
-      data: embedded: true, path: "/Shared/Deal1"
+      data: embedded: true, path: "/Shared/Deals/" + deal.name
 
     $http(req).then ((response) ->
       $scope.embeddedUrl = $sce.trustAsResourceUrl(response.data.redirect)
@@ -62,7 +56,6 @@
       console.log error
       return
 
-  $scope.getCurrentCompany()
 
   $scope.isUrlValid = (url) ->
     regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
@@ -84,12 +77,23 @@
     Activity.all(deal_id: $routeParams.id).then (activities) ->
       $scope.activities = activities
 
+  $scope.getCurrentCompany = (deal) ->
+    Egnyte.show().then (egnyteSettings) ->
+      console.log(egnyteSettings)
+      $scope.company = egnyteSettings
+      if(egnyteSettings.access_token && egnyteSettings.connected)
+        $scope.egnyteConnected = true
+        $scope.egnyte(egnyteSettings.access_token, egnyteSettings.app_domain, deal)
+
   $scope.init = (initialLoad) ->
     $scope.actRemColl = false
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal, true)
+
+      $scope.getCurrentCompany(deal)
+
       if initialLoad
         checkCurrentUserDealShare(deal.members)
         getOperativeIntegration(deal.id)

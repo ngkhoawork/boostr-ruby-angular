@@ -8,6 +8,9 @@
         $modalInstance.close()
 
       $scope.submitForm = () ->
+        formValidation()
+        if Object.keys($scope.errors).length > 0 then return
+
         activeFolder = $scope.contentInfo.activated
         folders = deepNestedFolder(_.first($scope.contentInfo.folders.nodes))
         type = $scope.contentInfo.type
@@ -38,6 +41,15 @@
         Egnyte.updateConfiguration({egnyte_integration: {deal_folder_tree: folders}}).then (res) ->
           $rootScope.$broadcast 'updateFolderStructure'
           $scope.cancel()
+
+      formValidation = () ->
+        $scope.errors = {}
+        fields = ['title']
+        fields.forEach (key) ->
+          field = $scope.newFolder[key]
+          switch key
+            when 'title'
+              if !field then return $scope.errors[key] = 'Title is required'
 
 
 ]
