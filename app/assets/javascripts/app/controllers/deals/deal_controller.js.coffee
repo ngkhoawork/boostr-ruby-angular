@@ -38,7 +38,7 @@
 
   $scope._scope = -> this
   $scope.showWarnings = true
-  $scope.roleWarningDisplayToShow = 'Account Executive'
+  $scope.roleIdWarningDisplayToShow = 1 # Role type = seller
 
   $scope.isUrlValid = (url) ->
     regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
@@ -982,15 +982,8 @@
     CurrentUser.get().$promise.then (currentUser) ->
       $scope.getWarningSettings()
       _.forEach members, (member) ->
-        Field.defaults(member, 'Client').then (fields) ->
-          member.role = Field.field(member, 'Member Role')
-          if member.role.option
-            memberRole = member.role.option.name
-          else
-            memberRole = ''
-
-          if member.user_id == currentUser.id && !(member.share > 0) && $scope.showWarnings && memberRole == $scope.roleWarningDisplayToShow
-            $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.', $scope.currentDeal.id
+        if member.user_id == currentUser.id && !(member.share > 0) && $scope.showWarnings && currentUser.user_type == $scope.roleIdWarningDisplayToShow
+          $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.', $scope.currentDeal.id
 
   $scope.$watch 'currentUser', (currentUser) ->
     $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser
