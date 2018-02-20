@@ -9,7 +9,7 @@ class GoogleSheetsApiClient
   APPLICATION_NAME = 'Boostrcrm'.freeze
   SCOPE            = Google::Apis::SheetsV4::AUTH_SPREADSHEETS
   ID_COLUMN_RANGE  = 'A:A'.freeze
-  DEFAULT_RANGE    = 'A:AP'.freeze
+  DEFAULT_RANGE    = 'A:AT'.freeze
 
   delegate :append_spreadsheet_value, :update_spreadsheet_value, :get_spreadsheet_values, to: :service
   delegate :id, to: :record
@@ -54,7 +54,7 @@ class GoogleSheetsApiClient
   private
 
   def range
-    "A#{row_record_index}:AP#{row_record_index}"
+    "A#{row_record_index}:AT#{row_record_index}"
   end
 
   def row_record_index

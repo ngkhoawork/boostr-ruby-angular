@@ -1,7 +1,8 @@
 class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   EMPTY = ''.freeze
   FIEDLS_ORDER = %w(id opportunity_title brand creative_ideas_needed launch seller csm seller_email
-                    csm_email parent category sub_category agency region budget demo kpis).freeze
+                    csm_email parent category sub_category agency region budget demo kpis product
+                    bae_deal).freeze
 
   attributes :id
 
@@ -85,6 +86,15 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
     else
       EMPTY
     end
+  end
+
+  def bae_deal
+    bae_deal = find_custom_field_value('BAE Deal')
+    bae_deal ? bae_deal : EMPTY
+  end
+
+  def product
+    object.products.pluck(:name).join(', ')
   end
 
   alias_method :demo, :empty
