@@ -50,7 +50,7 @@
     else
       @all({ subject: subject_type }).then (fields) ->
         data[subject_type] = fields
-        finish(data)
+        finish(fields)
 
     deferred.promise
 
