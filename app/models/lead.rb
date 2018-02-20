@@ -106,15 +106,19 @@ class Lead < ActiveRecord::Base
   end
 
   def find_rule
-    @_rule ||= state.downcase.eql?(NON_USA_STATE) ? rule_by_countries : rule_by_states_and_countries
+    @_rule ||= rule.blank? ? default_rule : rule
+  end
+
+  def rule
+    state.downcase.eql?(NON_USA_STATE) ? rule_by_countries : rule_by_states_and_countries
   end
 
   def rule_by_countries
-    order_rules_by_position.by_countries(country)
+    order_rules_by_position.by_countries(country).first
   end
 
   def rule_by_states_and_countries
-    order_rules_by_position.by_states_and_countries(state, country)
+    order_rules_by_position.by_states(state).by_countries(country).first
   end
 
   def order_rules_by_position
@@ -132,5 +136,9 @@ class Lead < ActiveRecord::Base
 
   def first_assignment_rules_user
     find_rule.assignment_rules_users.find_by(position: 0)
+  end
+
+  def default_rule
+    order_rules_by_position.default
   end
 end
