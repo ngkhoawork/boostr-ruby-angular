@@ -83,4 +83,11 @@ app.directive 'activityFeed',
                 Activity.delete activity
 
         $scope.$on 'updated_activities', loadActivities
+        $scope.$on 'openContactModal', ->
+            $modal.open
+                templateUrl: 'modals/contact_form.html'
+                size: 'md'
+                controller: 'ContactsNewController'
+                resolve:
+                    contact: -> {}
 ]
