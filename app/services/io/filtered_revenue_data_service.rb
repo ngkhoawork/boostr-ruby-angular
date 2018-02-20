@@ -1,6 +1,7 @@
 class Io::FilteredRevenueDataService
   def initialize(io, start_date, end_date, member_ids, product_ids)
     @io           = io
+    @company      = io.company
     @member_ids   = member_ids
     @product_ids  = product_ids
     @start_date   = start_date
@@ -14,6 +15,7 @@ class Io::FilteredRevenueDataService
   private
 
   attr_reader :io,
+              :company,
               :member_ids,
               :product_ids,
               :start_date,
@@ -23,6 +25,15 @@ class Io::FilteredRevenueDataService
     @_content_fees ||= io.content_fees.inject([]) do |result, content_fee|
       if product_ids.nil? || product_ids.include?(content_fee.product_id)
         result << content_fee
+      end
+      result
+    end
+  end
+
+  def costs
+    @_costs ||= io.costs.inject([]) do |result, cost|
+      if product_ids.nil? || product_ids.include?(cost.product_id)
+        result << cost
       end
       result
     end
@@ -43,8 +54,10 @@ class Io::FilteredRevenueDataService
   end
 
   def partial_amounts
-    @_partial_amounts ||= [content_fee_partial_amounts, display_partial_amounts]
+    @_partial_amounts ||= [content_fee_partial_amounts, display_partial_amounts, cost_partial_amounts]
       .inject([0, 0]) do |total, item|
+        puts "========"
+        puts item.to_json
         total[0] += item[0]
         total[1] += item[1]
         total
@@ -65,6 +78,27 @@ class Io::FilteredRevenueDataService
       total[0] += item_data[0] if total[0] == 0
       total[1] += item_data[1]
       total
+    end
+  end
+
+  def cost_partial_amounts
+    @_cost_partial_amounts ||= if company.enable_net_forecasting
+      io_users.inject([0, 0]) do |total, member|
+        item_data = costs.inject([0, 0]) do |item_total, item|
+          item_data = item.cost_monthly_amounts.each do |budget|
+            share = member.share
+            if (start_date <= budget.end_date && end_date >= budget.start_date)
+              deduct_cost_budget_data(item_total, item, budget, member)
+            end
+          end
+          item_total
+        end
+        total[0] += item_data[0] if total[0] == 0
+        total[1] += item_data[1]
+        total
+      end
+    else
+      [0, 0]
     end
   end
 
@@ -99,6 +133,15 @@ class Io::FilteredRevenueDataService
 
     total[0] += budget.corrected_daily_budget(start_date, end_date) * in_period_days
     total[1] += budget.corrected_daily_budget(start_date, end_date) * in_period_effective_days * share / 100
+  end
+
+  def deduct_cost_budget_data(total, item, budget, member)
+    share = member.share
+    in_period_days = period_days(io, budget)
+    in_period_effective_days = period_effective_days(io, budget, member)
+
+    total[0] -= budget.corrected_daily_budget(start_date, end_date) * in_period_days
+    total[1] -= budget.corrected_daily_budget(start_date, end_date) * in_period_effective_days * share / 100
   end
 
   def sum_display_budget_data(total, item, budget, member)

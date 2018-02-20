@@ -61,6 +61,9 @@ class Forecast::RevenueDataService
         content_fees: {
           content_fee_product_budgets: {}
         },
+        costs: {
+          cost_monthly_amounts: {}
+        },
         display_line_items: {
           display_line_item_budgets: {}
         },

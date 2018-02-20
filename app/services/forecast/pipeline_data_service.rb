@@ -54,7 +54,8 @@ class Forecast::PipelineDataService
         stage: {},
         company: {},
         deal_products: {
-          deal_product_budgets: {}
+          deal_product_budgets: {},
+          product: {}
         }
       }).flatten.uniq
   end

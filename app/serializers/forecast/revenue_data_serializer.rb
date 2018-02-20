@@ -22,6 +22,10 @@ class Forecast::RevenueDataSerializer < ActiveModel::Serializer
 
   private
 
+  def company
+    @_company ||= object.company
+  end
+
   def product_ids
     @_product_ids ||= @options[:product_ids]
   end
