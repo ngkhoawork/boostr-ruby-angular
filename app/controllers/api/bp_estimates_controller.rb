@@ -189,7 +189,7 @@ class Api::BpEstimatesController < ApplicationController
        })
     else
       @bp_estimates = bp.bp_estimates
-        .find_by_client_name(params[:search])
+        .find_by_client_name(params[:client_name])
         .unassigned(unassigned)
         .incomplete(incomplete)
         .completed(completed)
@@ -211,7 +211,7 @@ class Api::BpEstimatesController < ApplicationController
     AccountPipelineFactQuery.new(
       company_id: company_id,
       time_dimension_id: time_dimension_id,
-      client_name: params[:search]
+      client_name: params[:client_name]
     ).perform
   end
 
@@ -219,7 +219,7 @@ class Api::BpEstimatesController < ApplicationController
     AccountRevenueFactQuery.new(
       company_id: company_id,
       time_dimension_id: time_dimension_id,
-      client_name: params[:search]
+      client_name: params[:client_name]
     ).perform
   end
 
