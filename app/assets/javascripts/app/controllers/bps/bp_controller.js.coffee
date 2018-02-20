@@ -283,8 +283,6 @@
           }
           $scope.isLoading = true
           BpEstimate.all(filters).then (data) ->
-            console.log('data: ', data)
-            console.log('filters: ', filters)
             $scope.revenues = data.current.revenues
             $scope.pipelines = data.current.pipelines
 
