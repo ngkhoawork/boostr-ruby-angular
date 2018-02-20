@@ -13,9 +13,15 @@ class Cost < ActiveRecord::Base
   accepts_nested_attributes_for :values
 
   scope :estimated, -> { where('is_estimated IS true') }
+  scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
+
 
   after_create do
     Cost::AmountsGenerateService.new(self).perform if self.cost_monthly_amounts.count == 0
+  end
+
+  after_destroy do
+    update_revenue_budget(self)
   end
 
   after_update do
@@ -25,6 +31,48 @@ class Cost < ActiveRecord::Base
         self.update(is_estimated: false)
       else
         self.update_budget
+      end
+    end
+  end
+
+  set_callback :save, :after, :update_revenue_fact_callback
+
+  def update_revenue_fact_callback
+    update_revenue_budget(self) if budget_changed? || budget_loc_changed?
+    if product_id_changed?
+      if product_id_was.present?
+        old_product = Product.find_by_id(product_id_was)
+        update_revenue_product(old_product) if old_product.present?
+      end
+      update_revenue_product(product)
+    end
+  end
+
+  def update_revenue_product(product)
+    io = self.io
+    if io.present? && product.present?
+      company = io.company
+      time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
+      time_periods.each do |time_period|
+        io.users.each do |user|
+          ForecastCostFactCalculator::Calculator.new(time_period, user, product)
+            .calculate()
+        end
+      end
+    end
+  end
+
+  def update_revenue_budget(cost)
+    io = cost.io
+    product = cost.product
+    if io.present? && product.present?
+      company = io.company
+      time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
+      time_periods.each do |time_period|
+        io.users.each do |user|
+          ForecastCostFactCalculator::Calculator.new(time_period, user, product)
+            .calculate()
+        end
       end
     end
   end
@@ -57,6 +105,10 @@ class Cost < ActiveRecord::Base
         errors.add(:curr_cd, "does not have an exchange rate for #{io.curr_cd} at #{io.created_at.strftime("%m/%d/%Y")}")
       end
     end
+  end
+
+  def generate_cost_monthly_amounts
+    Cost::AmountsGenerateService.new(self).perform
   end
 
   def update_periods

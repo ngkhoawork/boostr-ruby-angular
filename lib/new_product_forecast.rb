@@ -28,6 +28,13 @@ class NewProductForecast
       data[item.product_id]['revenue'] += item.revenue_amount.to_f
     end
 
+    if company.enable_net_forecasting
+      cost_revenue_data.each do |item|
+        data[item.product_id]['revenue'] ||= 0
+        data[item.product_id]['revenue'] -= item.revenue_amount.to_f
+      end
+    end
+
     pipeline_data.each do |item|
       data[item.product_id][:unweighted_pipeline] += item.pipeline_amount.to_f
       data[item.product_id][:unweighted_pipeline_by_stage][item.stage_id] ||= 0.0
@@ -98,6 +105,15 @@ class NewProductForecast
       .group("product_dimension_id")
   end
 
+  def cost_revenue_data
+    @_cost_revenue_data ||= ForecastCostFact
+      .by_time_dimension_id(forecast_time_dimension.id)
+      .by_user_dimension_ids(user_ids)
+      .by_product_dimension_ids(product_ids)
+      .select("product_dimension_id AS product_id, SUM(amount) AS revenue_amount")
+      .group("product_dimension_id")
+  end
+
   def pmp_revenue_data
     @_pmp_revenue_data ||= ForecastPmpRevenueFact
       .by_time_dimension_id(forecast_time_dimension.id)
@@ -108,11 +124,24 @@ class NewProductForecast
   end
 
   def pipeline_data
-    @_pipeline_data ||= ForecastPipelineFact
-      .by_time_dimension_id(forecast_time_dimension.id)
-      .by_user_dimension_ids(user_ids)
-      .by_product_dimension_ids(product_ids)
-      .select("product_dimension_id AS product_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
-      .group("product_dimension_id, stage_dimension_id")
+    @_pipeline_data ||= if company.enable_net_forecasting
+      ForecastPipelineFact
+        .joins("LEFT JOIN products ON forecast_pipeline_facts.product_dimension_id = products.id")
+        .by_time_dimension_id(forecast_time_dimension.id)
+        .by_user_dimension_ids(user_ids)
+        .by_product_dimension_ids(product_ids)
+        .select("forecast_pipeline_facts.product_dimension_id AS product_id,
+          forecast_pipeline_facts.stage_dimension_id AS stage_id,
+          SUM(forecast_pipeline_facts.amount * products.margin / 100) AS pipeline_amount")
+        .group("forecast_pipeline_facts.product_dimension_id,
+          forecast_pipeline_facts.stage_dimension_id")
+    else
+      ForecastPipelineFact
+        .by_time_dimension_id(forecast_time_dimension.id)
+        .by_user_dimension_ids(user_ids)
+        .by_product_dimension_ids(product_ids)
+        .select("product_dimension_id AS product_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
+        .group("product_dimension_id, stage_dimension_id")
+    end
   end
 end

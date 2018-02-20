@@ -51,6 +51,7 @@ class Io < ActiveRecord::Base
   after_update do
     if (start_date_changed? || end_date_changed?)
       reset_content_fees
+      reset_costs
       reset_member_effective_dates
     end
   end
@@ -84,6 +85,16 @@ class Io < ActiveRecord::Base
     end
   end
 
+  def reset_costs
+    # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
+    ActiveRecord::Base.no_touching do
+      costs.each do |cost|
+        cost.cost_monthly_amounts.destroy_all
+        cost.generate_cost_monthly_amounts
+      end
+    end
+  end
+
   def reset_member_effective_dates
     io_members.each do |io_member|
       date_changed = false
@@ -105,8 +116,12 @@ class Io < ActiveRecord::Base
     time_periods.each do |time_period|
       self.users.each do |user|
         self.products.each do |product|
-          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
-          forecast_revenue_fact_calculator.calculate()
+          ForecastRevenueFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
+          ForecastCostFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
         end
       end
     end
@@ -118,8 +133,12 @@ class Io < ActiveRecord::Base
     time_periods.each do |time_period|
       io.users.each do |user|
         io.products.each do |product|
-          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
-          forecast_revenue_fact_calculator.calculate()
+          ForecastRevenueFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
+          ForecastCostFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
         end
       end
     end

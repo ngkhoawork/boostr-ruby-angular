@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180205024426) do
+ActiveRecord::Schema.define(version: 20180219033957) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1507,6 +1507,20 @@ ActiveRecord::Schema.define(version: 20180205024426) do
 
   add_index "forecast_calculation_logs", ["company_id"], name: "index_forecast_calculation_logs_on_company_id", using: :btree
 
+  create_table "forecast_cost_facts", force: :cascade do |t|
+    t.integer  "forecast_time_dimension_id"
+    t.integer  "user_dimension_id"
+    t.integer  "product_dimension_id"
+    t.decimal  "amount",                     precision: 15, scale: 2
+    t.jsonb    "monthly_amount"
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+  end
+
+  add_index "forecast_cost_facts", ["forecast_time_dimension_id"], name: "index_forecast_cost_facts_on_forecast_time_dimension_id", using: :btree
+  add_index "forecast_cost_facts", ["product_dimension_id"], name: "index_forecast_cost_facts_on_product_dimension_id", using: :btree
+  add_index "forecast_cost_facts", ["user_dimension_id"], name: "index_forecast_cost_facts_on_user_dimension_id", using: :btree
+
   create_table "forecast_pipeline_facts", force: :cascade do |t|
     t.integer  "user_dimension_id"
     t.integer  "product_dimension_id"
@@ -1761,7 +1775,6 @@ ActiveRecord::Schema.define(version: 20180205024426) do
     t.decimal "revenue_loc",           precision: 15, scale: 2
     t.integer "impressions", limit: 8
     t.decimal "win_rate"
-    t.decimal "render_rate"
     t.integer "ad_requests"
   end
 
@@ -2551,6 +2564,9 @@ ActiveRecord::Schema.define(version: 20180205024426) do
   add_foreign_key "exchange_rates", "companies"
   add_foreign_key "exchange_rates", "currencies"
   add_foreign_key "forecast_calculation_logs", "companies"
+  add_foreign_key "forecast_cost_facts", "forecast_time_dimensions"
+  add_foreign_key "forecast_cost_facts", "product_dimensions"
+  add_foreign_key "forecast_cost_facts", "user_dimensions"
   add_foreign_key "forecast_pipeline_facts", "product_dimensions"
   add_foreign_key "forecast_pipeline_facts", "stage_dimensions"
   add_foreign_key "forecast_pipeline_facts", "user_dimensions"

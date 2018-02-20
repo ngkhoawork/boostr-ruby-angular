@@ -117,6 +117,8 @@ class NewForecastTeam
 
     add_pmp_revenue_data(@forecasts_data)
 
+    deduct_cost_revenue_data(@forecasts_data) if company.enable_net_forecasting
+
     add_pipeline_data(@forecasts_data)
 
     add_user_data(@forecasts_data)
@@ -144,13 +146,35 @@ class NewForecastTeam
       .group("user_dimension_id")
   end
 
-  def pipeline_data
-    @_pipeline_data ||= ForecastPipelineFact
+  def cost_revenue_data
+    @_cost_revenue_data ||= ForecastCostFact
       .by_time_dimension_id(forecast_time_dimension.id)
       .by_user_dimension_ids(user_ids)
       .by_product_dimension_ids(product_ids)
-      .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
-      .group("user_dimension_id, stage_dimension_id")
+      .select("user_dimension_id AS user_id, SUM(amount) AS revenue_amount")
+      .group("user_dimension_id")
+  end
+
+  def pipeline_data
+    @_pipeline_data ||= if company.enable_net_forecasting
+      ForecastPipelineFact
+        .joins("LEFT JOIN products ON forecast_pipeline_facts.product_dimension_id = products.id")
+        .by_time_dimension_id(forecast_time_dimension.id)
+        .by_user_dimension_ids(user_ids)
+        .by_product_dimension_ids(product_ids)
+        .select("forecast_pipeline_facts.user_dimension_id AS user_id, 
+          forecast_pipeline_facts.stage_dimension_id AS stage_id, 
+          SUM(forecast_pipeline_facts.amount * products.margin / 100) AS pipeline_amount")
+        .group("forecast_pipeline_facts.user_dimension_id, 
+          forecast_pipeline_facts.stage_dimension_id")
+    else
+      ForecastPipelineFact
+        .by_time_dimension_id(forecast_time_dimension.id)
+        .by_user_dimension_ids(user_ids)
+        .by_product_dimension_ids(product_ids)
+        .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
+        .group("user_dimension_id, stage_dimension_id")
+    end
   end
 
   def forecast_time_dimension
@@ -248,9 +272,31 @@ class NewForecastTeam
     end
   end
 
+  def deduct_cost_revenue_data(data)
+    cost_revenue_data.each do |item|
+      user = company.users.find(item.user_id)
+      if team_members[item.user_id] && team_members[item.user_id].count > 0
+        team_members[item.user_id].each do |team|
+          data[:teams][team.id] ||= build_team_data(team)
+          deduct_revenue_item(data[:teams][team.id], item)
+        end
+      else
+        data[:members][item.user_id] ||= build_member_data(user)
+        deduct_revenue_item(data[:members][item.user_id], item)
+      end
+
+      deduct_revenue_item(data, item)
+    end
+  end
+
   def add_revenue_item(data, item)
     data[:revenue] ||= 0.0
     data[:revenue] += item.revenue_amount.to_f
+  end
+
+  def deduct_revenue_item(data, item)
+    data[:revenue] ||= 0.0
+    data[:revenue] -= item.revenue_amount.to_f
   end
 
   def add_pipeline_data(data)

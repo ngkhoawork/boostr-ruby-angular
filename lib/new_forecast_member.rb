@@ -4,10 +4,19 @@ class NewForecastMember
   delegate :id, to: :member
   delegate :name, to: :member
 
-  attr_accessor :member, :time_period, :product_family, :product, :start_date, :end_date, :quarter, :year
+  attr_accessor :member,
+    :time_period,
+    :product_family,
+    :product,
+    :company,
+    :start_date,
+    :end_date,
+    :quarter,
+    :year
 
   def initialize(member, time_period, product_family = nil, product = nil, quarter = nil, year = nil)
     self.member = member
+    self.company = member.company
     self.time_period = time_period
     self.start_date = time_period.start_date
     self.end_date = time_period.end_date
@@ -28,7 +37,7 @@ class NewForecastMember
   def stages
     return @stages if defined?(@stages)
     ids = weighted_pipeline_by_stage.keys
-    @stages = member.company.stages.where(id: ids).order(:probability).all.to_a
+    @stages = company.stages.where(id: ids).order(:probability).all.to_a
   end
 
   def forecast_time_dimension
@@ -51,19 +60,36 @@ class NewForecastMember
       .select("SUM(amount) AS revenue_amount")
   end
 
-  def pipeline_data
-    @_pipeline_data ||= ForecastPipelineFact
+  def cost_revenue_data
+    @_cost_revenue_data ||= ForecastCostFact
       .by_time_dimension_id(forecast_time_dimension.id)
       .by_user_dimension_ids([member.id])
       .by_product_dimension_ids(product_ids)
-      .select("stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
-      .group("stage_dimension_id")
+      .select("SUM(amount) AS revenue_amount")
+  end
+
+  def pipeline_data
+    @_pipeline_data ||= if company.enable_net_forecasting
+      ForecastPipelineFact
+        .joins("LEFT JOIN products ON forecast_pipeline_facts.product_dimension_id = products.id")
+        .by_time_dimension_id(forecast_time_dimension.id)
+        .by_user_dimension_ids([member.id])
+        .by_product_dimension_ids(product_ids)
+        .select("forecast_pipeline_facts.stage_dimension_id AS stage_id, 
+          SUM(forecast_pipeline_facts.amount * products.margin / 100) AS pipeline_amount")
+        .group("forecast_pipeline_facts.stage_dimension_id")
+    else
+      ForecastPipelineFact
+        .by_time_dimension_id(forecast_time_dimension.id)
+        .by_user_dimension_ids([member.id])
+        .by_product_dimension_ids(product_ids)
+        .select("stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
+        .group("stage_dimension_id")
+    end
   end
 
   def forecasts_data
     return @forecasts_data if defined?(@forecasts_data)
-
-    company = member.company
 
     @forecasts_data = {
       stages: company.stages,
@@ -85,6 +111,12 @@ class NewForecastMember
 
     pmp_revenue_data.each do |item|
       @forecasts_data[:revenue] += item.revenue_amount.to_f
+    end
+
+    if company.enable_net_forecasting
+      cost_revenue_data.each do |item|
+        @forecasts_data[:revenue] -= item.revenue_amount.to_f
+      end
     end
 
     pipeline_data.each do |item|
@@ -155,7 +187,7 @@ class NewForecastMember
   end
 
   def gap_to_quota
-    if member.company.forecast_gap_to_quota_positive
+    if company.forecast_gap_to_quota_positive
       return (quota - amount).to_f
     else
       return (amount - quota).to_f
@@ -184,8 +216,8 @@ class NewForecastMember
 
   def new_deals_needed
     goal = gap_to_quota
-    return 0 if goal <= 0 && member.company.forecast_gap_to_quota_positive
-    return 0 if goal > 0 && !member.company.forecast_gap_to_quota_positive
+    return 0 if goal <= 0 && company.forecast_gap_to_quota_positive
+    return 0 if goal > 0 && !company.forecast_gap_to_quota_positive
     return 'N/A' if average_deal_size <= 0 or win_rate <= 0
     (gap_to_quota.abs / (win_rate * average_deal_size)).ceil
   end
@@ -197,7 +229,7 @@ class NewForecastMember
   end
 
   def revenues
-    @revenues ||= member.company.revenues.where(client_id: client_ids).for_time_period(start_date, end_date).to_a
+    @revenues ||= company.revenues.where(client_id: client_ids).for_time_period(start_date, end_date).to_a
   end
 
   def ios
@@ -221,11 +253,11 @@ class NewForecastMember
   end
 
   def complete_deals
-    @complete_deals ||= member.deals.active.at_percent(100).closed_in(member.company.deals_needed_calculation_duration)
+    @complete_deals ||= member.deals.active.at_percent(100).closed_in(company.deals_needed_calculation_duration)
   end
 
   def incomplete_deals
-    @incomplete_deals ||= member.deals.active.closed.at_percent(0).closed_in(member.company.deals_needed_calculation_duration)
+    @incomplete_deals ||= member.deals.active.closed.at_percent(0).closed_in(company.deals_needed_calculation_duration)
   end
 
   def snapshots

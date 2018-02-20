@@ -39,6 +39,17 @@ class NewQuarterlyForecast
         end
       end
     end
+    if company.enable_net_forecasting
+      cost_revenue_data.each do |revenue_row|
+        if revenue_row['monthly_amount']
+          JSON.parse(revenue_row['monthly_amount']).each do |month_index, amount|
+            quarter = month_to_quarter[month_index]
+            @data[:forecast][:quarterly_revenue][quarter] ||= 0
+            @data[:forecast][:quarterly_revenue][quarter] -= amount.to_f
+          end
+        end
+      end
+    end
     stage_ids = []
     pipeline_data.each do |pipeline_row|
       stage_id = pipeline_row['stage_id']
@@ -64,7 +75,34 @@ class NewQuarterlyForecast
   end
 
   def pipeline_sql
-    @_pipeline_sql ||= "SELECT
+    @_pipeline_sql ||= if company.enable_net_forecasting
+      "SELECT
+        stage_dimension_id AS stage_id,
+        avg(s.total) AS pipeline_amount,
+        json_object_agg(key, val) AS monthly_amount
+      FROM (
+          SELECT
+            stage_dimension_id,
+            SUM(amount * margin / 100) AS total,
+            key,
+            SUM(value::numeric * margin / 100) AS val
+          FROM
+            (SELECT 
+              forecast_pipeline_facts.*,
+              products.margin
+            FROM forecast_pipeline_facts 
+              LEFT JOIN products
+              ON forecast_pipeline_facts.product_dimension_id = products.id
+            ) as t,
+            jsonb_each_text(monthly_amount)
+          WHERE
+            t.forecast_time_dimension_id = #{forecast_time_dimension.id}
+            AND t.user_dimension_id IN (#{user_ids.count > 0 ? user_ids.join(', ') : 0})
+          GROUP BY t.stage_dimension_id, key
+          ) s
+      GROUP BY stage_dimension_id"
+    else
+      "SELECT
         stage_dimension_id AS stage_id,
         avg(s.total) AS pipeline_amount,
         json_object_agg(key, val) AS monthly_amount
@@ -83,6 +121,7 @@ class NewQuarterlyForecast
           GROUP BY stage_dimension_id, key
           ) s
       GROUP BY stage_dimension_id"
+    end
   end
 
   def revenue_sql
@@ -123,6 +162,25 @@ class NewQuarterlyForecast
           ) s "
   end
 
+  def cost_revenue_sql
+    @_cost_revenue_sql ||= "SELECT
+        avg(s.total) AS revenue_amount,
+        json_object_agg(key, val) AS monthly_amount
+      FROM (
+          SELECT
+            SUM(amount) AS total,
+            key,
+            SUM(value::numeric) AS val
+          FROM
+            forecast_cost_facts t,
+            jsonb_each_text(monthly_amount)
+          WHERE
+            forecast_time_dimension_id = #{forecast_time_dimension.id}
+            AND user_dimension_id IN (#{user_ids.join(', ')})
+          GROUP BY key
+          ) s "
+  end
+
   def pipeline_data
     @_pipeline_data ||= ActiveRecord::Base.connection.execute(pipeline_sql)
   end
@@ -133,6 +191,10 @@ class NewQuarterlyForecast
 
   def pmp_revenue_data
     @_pmp_revenue_data ||= ActiveRecord::Base.connection.execute(pmp_revenue_sql)
+  end
+
+  def cost_revenue_data
+    @_cost_revenue_data ||= ActiveRecord::Base.connection.execute(cost_revenue_sql)
   end
 
   def forecast
