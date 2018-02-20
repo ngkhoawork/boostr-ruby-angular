@@ -5,23 +5,16 @@
         $scope.sellers = []
         $scope.rules = []
         positions = {}
-#        $scope.rules = [1..5].map (i) ->
-#            {
-#                name: 'Rule ' + i
-#                countries: [1.._.random(2, 10)].map (i) -> 'Country ' + i
-#                states: [1.._.random(2, 10)].map (i) -> 'State ' + i
-#                users: [1.._.random(2, 10)].map (i) -> 'User ' + i
-#            }
-#        $scope.selectedRule = $scope.rules[0]
+        $scope.selectedRule = null
 
         Seller.query({id: 'all'}).$promise.then (data) ->
             $scope.sellers = data
 
         do getRules = ->
             AssignmentRule.get().then (data) ->
-                console.log data
                 positions = getPositions()
                 $scope.rules = data
+                $scope.selectedRule = $scope.selectedRule || data[0]
 
         $scope.selectRule = (rule) ->
             $scope.selectedRule = rule
@@ -49,14 +42,17 @@
         $scope.addUser = (user) ->
             rule = $scope.selectedRule
             if !rule then return
-            AssignmentRule.addUser(id: rule.id, user_id: user.id)
+            AssignmentRule.addUser(id: rule.id, user_id: user.id).then (updatedRule) ->
+                _.extend rule, updatedRule
 
         $scope.removeUser = (user) ->
             rule = $scope.selectedRule
             if !rule then return
-            AssignmentRule.removeUser(id: rule.id, user_id: user.id)
+            AssignmentRule.removeUser(id: rule.id, user_id: user.id).then (updatedRule) ->
+                _.extend rule, updatedRule
 
         $scope.submitForm = (e, type) ->
+            if !$scope.form.trim() then return $scope.hideForm(e)
             rule = $scope.selectedRule
             switch type
                 when 'rule'
@@ -67,14 +63,14 @@
                     console.log rule
                     AssignmentRule.update(
                         id: rule.id
-                        countries: [].concat $scope.form, rule.countries
+                        countries: _.union [$scope.form], rule.countries
                     ).then (updatedRule) ->
                         _.extend rule, updatedRule
                 when 'state'
                     if !rule then return
                     AssignmentRule.update(
                         id: rule.id
-                        states: [].concat $scope.form, rule.states
+                        states: _.union [$scope.form], rule.states
                     ).then (updatedRule) ->
                         _.extend rule, updatedRule
 

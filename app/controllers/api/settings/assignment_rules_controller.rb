@@ -33,7 +33,7 @@ class Api::Settings::AssignmentRulesController < ApplicationController
     assignment_rules_user = assignment_rule.assignment_rules_users.new(user: user)
 
     if assignment_rules_user.save
-      render json: assignment_rule
+      render json: assignment_rule, serializer: Api::AssignmentRules::IndexSerializer
     else
       render json: { errors: assignment_rules_user.errors.messages }, status: :unprocessable_entity
     end
@@ -42,7 +42,7 @@ class Api::Settings::AssignmentRulesController < ApplicationController
   def remove_user
     assignment_rule.users.delete user
 
-    render json: assignment_rule
+    render json: assignment_rule, serializer: Api::AssignmentRules::IndexSerializer
   end
 
   def update_positions

@@ -13,6 +13,7 @@
             updatePositions:
                 method: 'PUT'
                 url: '/api/assignment_rules/update_positions'
+                isArray: true
 
         @get = (params) -> resource.query(params).$promise
         @save = (params) -> resource.save(params).$promise
