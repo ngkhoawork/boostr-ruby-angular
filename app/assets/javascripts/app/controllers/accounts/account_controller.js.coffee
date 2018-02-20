@@ -1,7 +1,7 @@
 @app.controller 'AccountController',
 ['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes', 'CurrentUser', 'Egnyte', 'CustomFieldNames'
 ($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes, CurrentUser, Egnyte, CustomFieldNames) ->
-  
+
   $scope.showMeridian = true
   $scope.activitiesOrder = '-happened_at'
   $scope.types = []
@@ -33,7 +33,6 @@
     $scope.showContactList = false
     getAccountCfNames()
     getHoldingCompanies()
-    getActivityCustomFields()
     Contact.query().$promise.then (contacts) ->
       $scope.contacts = contacts
     Field.defaults({}, 'Client').then (fields) ->
@@ -57,10 +56,6 @@
         $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
       else
         $scope.egnyteHealthy = false
-
-  getActivityCustomFields = () ->
-    CustomFieldNames.all({subject_type: 'activity', show_on_modal: true}).then (customFieldNames) ->
-      $scope.customFieldNames = customFieldNames
 
   $scope.setClientTypes = (client_types) ->
     client_types.options.forEach (option) ->

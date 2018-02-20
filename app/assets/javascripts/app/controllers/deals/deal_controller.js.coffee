@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Contact', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company', 'Egnyte', 'CustomFieldNames'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,  Contact,    Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment,   localStorageService,   Company, Egnyte, CustomFieldNames) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Contact', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company', 'Egnyte'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,  Contact,    Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment,   localStorageService,   Company, Egnyte) ->
 
   $scope.agencyRequired = false
   $scope.showMeridian = true
@@ -125,7 +125,6 @@
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
-    getActivityCustomFields()
     Company.get().$promise.then (company) -> $scope.company = company
     getSsps()
     getDealFiles()
@@ -145,10 +144,6 @@
   getSsps = () ->
     SSP.all().then (ssps) ->
       $scope.ssps = ssps
-
-  getActivityCustomFields = () ->
-    CustomFieldNames.all({subject_type: 'activity', show_on_modal: true}).then (customFieldNames) ->
-      $scope.customFieldNames = customFieldNames
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -596,7 +591,7 @@
               $scope.errors['pmp_type' + deal_product.id] = "can't be blank"
         if !_.isEmpty($scope.errors)
           $scope.showWarningModal('SSP, SSP Deal-ID and PMP Type fields are required for PMP products.')
-          return          
+          return
         if !stage.open && stage.probability == 0
           $scope.showWonLossModal(currentDeal, false)
         else if !stage.open && stage.probability == 100 && $scope.won_reason_required && $scope.won_reason_required.criterion.value
