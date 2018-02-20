@@ -30,9 +30,13 @@ class Api::Settings::AssignmentRulesController < ApplicationController
   end
 
   def add_user
-    assignment_rule.users.push user
+    assignment_rules_user = assignment_rule.assignment_rules_users.new(user: user)
 
-    render json: assignment_rule
+    if assignment_rules_user.save
+      render json: assignment_rule
+    else
+      render json: { errors: assignment_rules_user.errors.messages }, status: :unprocessable_entity
+    end
   end
 
   def remove_user
