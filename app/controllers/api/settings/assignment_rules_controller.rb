@@ -1,4 +1,6 @@
 class Api::Settings::AssignmentRulesController < ApplicationController
+  before_filter :modify_assignment_rule_params, only: :update
+
   def index
     render json: assignment_rules, each_serializer: Api::AssignmentRules::IndexSerializer
   end
@@ -73,5 +75,18 @@ class Api::Settings::AssignmentRulesController < ApplicationController
 
   def user
     company.users.find(params[:user_id])
+  end
+
+  def modify_assignment_rule_params
+    params[:assignment_rule][:states] = [] if states_nil?
+    params[:assignment_rule][:countries] = [] if countries_nil?
+  end
+
+  def states_nil?
+    params[:assignment_rule].keys.include?('states') && params[:assignment_rule][:states].nil?
+  end
+
+  def countries_nil?
+    params[:assignment_rule].keys.include?('countries') && params[:assignment_rule][:countries].nil?
   end
 end
