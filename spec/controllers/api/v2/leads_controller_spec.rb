@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Api::V2::LeadsController do
-  before { create :user, company: company }
+  before { assignment_rule.users << user }
 
   describe 'POST #create' do
     it 'creates lead successfully' do
@@ -27,5 +27,13 @@ describe Api::V2::LeadsController do
 
   def valid_lead_params
     attributes_for(:lead).merge(company_id: company.id)
+  end
+
+  def user
+    @_user ||= create :user, company: company
+  end
+
+  def assignment_rule
+    @_assignment_rule ||= create :assignment_rule, company_id: company.id, countries: ['Usa'], states: ['Ny']
   end
 end

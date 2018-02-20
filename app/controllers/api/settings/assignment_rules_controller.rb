@@ -32,13 +32,13 @@ class Api::Settings::AssignmentRulesController < ApplicationController
   def add_user
     assignment_rule.users.push user
 
-    render nothing: true
+    render json: assignment_rule
   end
 
   def remove_user
     assignment_rule.users.delete user
 
-    render nothing: true
+    render json: assignment_rule
   end
 
   def update_positions

@@ -113,6 +113,9 @@ RSpec.describe Api::ClientsController, type: :controller do
     end
 
     it 'map lead to contact' do
+      assignment_rule = create :assignment_rule, company_id: company.id, countries: ['Usa'], states: ['Ny']
+      assignment_rule.users << user
+
       post :create, client: client_params, lead_id: lead.id
 
       expect(Client.last.leads).to include lead
