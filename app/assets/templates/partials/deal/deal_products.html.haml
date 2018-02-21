@@ -49,7 +49,7 @@
 									%span.caret
 								%ul.dropdown-menu
 									%li{'ng-repeat': 'customFieldOption in dealProductCfName.deal_product_cf_options', 'ng-class': '{active: deal_product.deal_product_cf[fieldName] == customFieldOption.value}'}
-										%a{'href': '', 'ng-click': 'deal_product.deal_product_cf[fieldName] = customFieldOption.value; updateDealProduct(deal_product)'}
+										%a{href: '', 'ng-click': 'deal_product.deal_product_cf[fieldName] = customFieldOption.value; updateDealProduct(deal_product)'}
 											%span.text {{customFieldOption.value}}
 							.currency-field{ ng: { 'switch-when': 'sum' } }
 								%div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "deal_product.deal_product_cf[fieldName]", 'on-after-save': 'updateDealProduct(deal_product)'}
@@ -133,7 +133,7 @@
 									%span.caret
 								%ul.dropdown-menu
 									%li{'ng-repeat': 'customFieldOption in dealProductCfName.deal_product_cf_options', 'ng-class': '{active: deal_product.deal_product_cf[fieldName] == customFieldOption.value}'}
-										%a{'href': '', 'ng-click': 'deal_product.deal_product_cf[fieldName] = customFieldOption.value; updateDealProduct(deal_product)'}
+										%a{href: '', 'ng-click': 'deal_product.deal_product_cf[fieldName] = customFieldOption.value; updateDealProduct(deal_product)'}
 											%span.text {{customFieldOption.value}}
 							.currency-field{ ng: { 'switch-when': 'sum' } }
 								%div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "deal_product.deal_product_cf[fieldName]", 'on-after-save': 'updateDealProduct(deal_product)'}

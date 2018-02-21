@@ -15,7 +15,7 @@
         %tbody
             %tr{ ng: { repeat: 'client_deal in deals'} }
                 %td
-                    %a{'ng-href': '/deals/{{client_deal.id}}', 'target': '_blank'} {{ client_deal.name }}
+                    %a{'ng-href': '/deals/{{client_deal.id}}', target: '_blank'} {{ client_deal.name }}
                 %td.right.budget-field
                     {{ client_deal.budget_loc | currency:client_deal.curr_symbol:0 }}
                 %td

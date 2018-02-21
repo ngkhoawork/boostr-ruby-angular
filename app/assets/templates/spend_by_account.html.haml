@@ -50,7 +50,8 @@
 
               %tbody{infinite: {scroll: "loadMoreClients()", 'scroll-disabled': 'isLoading || allClientsLoaded'}}
                 %tr{ ng: { repeat: 'account in spend_by_account  | orderBy : zSort.by : zSort.rev' } }
-                  %td {{account.name}}
+                  %td 
+                    %a{ href: '', ng: { href: '/accounts/{{ account.id }}' } } {{account.name}}
                   %td {{account.client_type}}
                   %td {{account.category_name}}
                   %td {{account.region_name}}

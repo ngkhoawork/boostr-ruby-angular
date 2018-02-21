@@ -50,7 +50,7 @@
 						%tbody
 							%tr{'ng-repeat': 'account in relatedAccounts'}
 								%td
-									%a.mr8{'href': '', 'ng-href': '/accounts/{{account.client.id}}'} {{account.client.name}}
+									%a.mr8{'href': '', 'ng-href': '/accounts/{{account.client.id}}', target: '_blank'} {{account.client.name}}
 									%i.fa.fa-trash.z-icon{'ng-click': 'unassignClient(account.client)'}
 								%td
 									.dropdown
@@ -86,7 +86,7 @@
 					%div.custom-field-item{'ng-if': 'currentContact.primary_client_json.name'}
 						%div.custom-field-item-label Works At
 						%div.custom-field-item-field
-							%a{'href': '', 'ng-href': '/accounts/{{currentContact.primary_client_json.id}}'} {{currentContact.primary_client_json.name}}
+							%a{'href': '', 'ng-href': '/accounts/{{currentContact.primary_client_json.id}}', target: '_blank'} {{currentContact.primary_client_json.name}}
 					%div.custom-field-item{'ng-if': 'currentContact.address.email'}
 						%div.custom-field-item-label Email
 						%div.custom-field-item-field {{currentContact.address.email}}
