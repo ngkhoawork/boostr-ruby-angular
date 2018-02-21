@@ -16,10 +16,12 @@
                         %i.fa.fa-check.z-icon{'ng-click': 'submitForm($event, "rule")'}
                         %i.fa.fa-close.z-icon{'ng-click': 'hideForm($event)'}
                     .rules-wrap{'dnd-list': 'rules'}
-                        .rule-row.rule-name{ng: {repeat: 'rule in rules', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'},
-                                                dnd: {draggable: 'rule', moved: 'onRuleMoved($index)', 'disable-if': 'rule.default'}}
+                        .rule-row.rule-name{ng: {repeat: 'rule in rules | filter: {default: false}', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'}, dnd: {draggable: 'rule', moved: 'onRuleMoved($index)'}}
                             {{rule.name}}
-                            %i.fa.fa-trash.z-icon{'ng-if': '!rule.default', 'ng-click': 'deleteRule($event, rule)'}
+                            %i.fa.fa-trash.z-icon{'ng-click': 'deleteRule($event, rule)'}
+                    %div
+                        .rule-row.rule-name{ng: {repeat: 'rule in rules | filter: {default: true}', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'}}
+                            {{rule.name}}
 
                 .rules-column
                     .rule-column-header
