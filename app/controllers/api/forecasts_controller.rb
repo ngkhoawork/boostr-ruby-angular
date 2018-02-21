@@ -103,6 +103,10 @@ class Api::ForecastsController < ApplicationController
     render json: forecast_pipeline_data_serializer
   end
 
+  def pipeline_product_data
+    render json: forecast_pipeline_product_data_serializer
+  end
+
   def revenue_data
     render json: forecast_revenue_data_serializer
   end
@@ -298,6 +302,10 @@ class Api::ForecastsController < ApplicationController
 
   def forecast_pipeline_data_serializer
     Forecast::PipelineDataService.new(company, params).perform
+  end
+
+  def forecast_pipeline_product_data_serializer
+    Forecast::PipelineProductDataService.new(company, params).perform
   end
 
 end

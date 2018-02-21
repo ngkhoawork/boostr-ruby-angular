@@ -56,8 +56,6 @@ class Io::FilteredRevenueDataService
   def partial_amounts
     @_partial_amounts ||= [content_fee_partial_amounts, display_partial_amounts, cost_partial_amounts]
       .inject([0, 0]) do |total, item|
-        puts "========"
-        puts item.to_json
         total[0] += item[0]
         total[1] += item[1]
         total
