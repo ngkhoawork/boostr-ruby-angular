@@ -60,7 +60,6 @@
                         getRules()
                 when 'country'
                     if !rule then return
-                    console.log rule
                     AssignmentRule.update(
                         id: rule.id
                         countries: _.union [$scope.form], rule.countries

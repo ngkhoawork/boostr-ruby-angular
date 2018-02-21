@@ -29,6 +29,6 @@ class AssignmentRule < ActiveRecord::Base
         .order_by_position
         .last
         .position
-        .next
+        .next rescue 1
   end
 end
