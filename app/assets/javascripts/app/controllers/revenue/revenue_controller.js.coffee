@@ -1,6 +1,6 @@
 @app.controller 'RevenueController',
-  ['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem', 'PMP'
-  ( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem,   PMP ) ->
+  ['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem', 'PMP', 'PMPItemDailyActual',
+  ( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem,   PMP,   PMPItemDailyActual) ->
     currentYear = moment().year()
     $scope.isLoading = false
     $scope.allItemsLoaded = false
@@ -9,6 +9,7 @@
     $scope.revenueFilters = [
       {name: 'IOs', value: ''}
       {name: 'No-Match IOs', value: 'no-match'}
+      {name: 'No-Match Advertisers', value: 'no-match-adv'}
       {name: 'PMPs', value: 'pmp'}
       {name: 'Upside Revenues', value: 'upside'}
       {name: 'At Risk Revenues', value: 'risk'}
@@ -77,6 +78,10 @@
           DisplayLineItem.query query, (ios) -> revenueRequest.resolve ios
         when 'pmp'
           PMP.query query, (pmps) -> revenueRequest.resolve pmps
+        when 'no-match-adv'
+          query.with_ssp_advertiser = false
+          PMPItemDailyActual.query query, (pmpItemDailyActuals) -> 
+            revenueRequest.resolve pmpItemDailyActuals
         else
           IO.query query, (ios) -> revenueRequest.resolve ios
       revenueRequest.promise.then (data) -> setRevenue data
@@ -118,6 +123,20 @@
         resolve:
           tempIO: ->
             tempIO
+
+    $scope.showAssignAdvertiserModal = (pmpItemDailyActual) ->
+      modalInstance = $modal.open
+        templateUrl: 'modals/advertiser_assign_form.html'
+        size: 'lg'
+        controller: 'AdvertiserAssignController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          pmpItemDailyActual: ->
+            pmpItemDailyActual
+      modalInstance.result.then () ->
+        index = $scope.revenue.indexOf(pmpItemDailyActual)
+        $scope.revenue.splice(index, 1)
 
     $scope.deleteIo = (io, $event) ->
       $event.stopPropagation();

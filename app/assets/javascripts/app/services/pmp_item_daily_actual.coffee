@@ -6,12 +6,18 @@
     original.pmp_item_daily_actual.values_attributes = original.pmp_item_daily_actual.values
     angular.toJson(original)
 
-  resource = $resource '/api/pmps/:pmp_id/pmp_item_daily_actuals/:id', { pmp_id: '@pmp_id', id: '@id' },
+  resource = $resource '/api/pmp_item_daily_actuals/:id', { id: '@id' },
     update: {
       method: 'PUT'
-      url: '/api/pmps/:pmp_id/pmp_item_daily_actuals/:id'
+      url: '/api/pmp_item_daily_actuals/:id'
       transformRequest: transformRequest
     }
+    assignAdvertiser: {
+      method: 'POST'
+      url: '/api/pmp_item_daily_actuals/:id/assign_advertiser'
+    }
+
+  @query = resource.query
 
   @all = (params) ->
     deferred = $q.defer()
@@ -25,9 +31,15 @@
       deferred.resolve(pmp_item_daily_actual)
     deferred.promise
 
+  @assignAdvertiser = (params) ->
+    deferred = $q.defer()
+    resource.assignAdvertiser params, (pmp_item_daily_actual) ->
+      deferred.resolve(pmp_item_daily_actual)
+    deferred.promise    
+
   @delete = (params) ->
     deferred = $q.defer()
-    resource.delete { pmp_id: params.pmp_id, id: params.id }, () ->
+    resource.delete { id: params.id }, () ->
       deferred.resolve()
     deferred.promise
 

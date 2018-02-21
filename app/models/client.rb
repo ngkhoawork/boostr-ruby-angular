@@ -1,5 +1,6 @@
 class Client < ActiveRecord::Base
   acts_as_paranoid
+  fuzzily_searchable :name
 
   belongs_to :company
   belongs_to :parent_client, class_name: 'Client'

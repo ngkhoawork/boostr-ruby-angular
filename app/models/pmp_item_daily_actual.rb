@@ -2,6 +2,7 @@ class PmpItemDailyActual < ActiveRecord::Base
   attr_accessor :imported
 
   belongs_to :pmp_item, required: true
+  belongs_to :ssp_advertiser
 
   validates :date, :ad_unit, presence: true
   validates :ad_requests, :impressions, :revenue_loc, :price, presence: true, numericality: true
@@ -24,6 +25,18 @@ class PmpItemDailyActual < ActiveRecord::Base
 
   after_destroy do
     pmp_item.calculate!
+  end
+
+  def assign_advertiser!(name, user)
+    ssp_advertiser = SspAdvertiser.create(
+      name: name,
+      company: pmp.company,
+      ssp: pmp_item.ssp,
+      created_by: user,
+      updated_by: user
+    )
+    self.ssp_advertiser = ssp_advertiser
+    self.save!
   end
 
   private

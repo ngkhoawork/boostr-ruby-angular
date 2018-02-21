@@ -11,9 +11,11 @@ class Csv::PmpItemDailyActual
                 :price,
                 :revenue_loc,
                 :win_rate,
-                :curr_cd
+                :curr_cd,
+                :ssp_advertiser_name,
+                :company
 
-  validates :date, :ad_unit, presence: true
+  validates :date, :ad_unit, :company, presence: true
   validates :ad_requests, :impressions, presence: true, numericality: true
   validates :win_rate, numericality: true, allow_nil: true
   validate :validate_pmp_item_presence
@@ -48,6 +50,8 @@ class Csv::PmpItemDailyActual
     pmp_item_daily_actual.price = price
     pmp_item_daily_actual.revenue_loc = revenue_loc
     pmp_item_daily_actual.imported = true
+    pmp_item_daily_actual.advertiser = ssp_advertiser_name
+    pmp_item_daily_actual.ssp_advertiser = ssp_advertiser
     pmp_item_daily_actual.save!
   end
 
@@ -126,6 +130,10 @@ class Csv::PmpItemDailyActual
 
   private
 
+  def ssp_advertiser
+    @_ssp_advertiser ||= company.ssp_advertisers.find_by(name: ssp_advertiser_name, ssp: pmp_item&.ssp)
+  end
+
   def validate_ecpm
     validate_numeric('eCPM', price)
   end
@@ -185,7 +193,9 @@ class Csv::PmpItemDailyActual
       win_rate: row[:win_rate],
       price: row[:ecpm],
       revenue_loc: row[:revenue],
-      curr_cd: row[:currency]
+      curr_cd: row[:currency],
+      ssp_advertiser_name: row[:ssp_advertiser],
+      company: company
     )
   end
 end

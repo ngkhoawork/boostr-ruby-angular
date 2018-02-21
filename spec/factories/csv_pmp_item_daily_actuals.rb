@@ -6,6 +6,7 @@ FactoryGirl.define do
     impressions 99
     ad_requests 99
     ad_unit 'ad'
+    company
 
     after(:build) do |csv_pmp_item_daily_actual|
       if csv_pmp_item_daily_actual.ssp_deal_id.blank?
