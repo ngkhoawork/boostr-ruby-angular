@@ -108,7 +108,7 @@ class Company < ActiveRecord::Base
 
     setup_default_validations
 
-    AssignmentRule.create(company_id: self.id, name: 'Default', default: true)
+    AssignmentRule.create(company_id: self.id, name: 'No Match', default: true, position: 100_000)
   end
 
   def settings

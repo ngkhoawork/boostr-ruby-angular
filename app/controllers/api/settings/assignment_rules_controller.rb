@@ -63,7 +63,7 @@ class Api::Settings::AssignmentRulesController < ApplicationController
   end
 
   def assignment_rules
-    AssignmentRule.by_company_id(company.id).order_by_position
+    AssignmentRule.by_company_id(company.id).order_by_position.includes(:users)
   end
 
   def assignment_rule
