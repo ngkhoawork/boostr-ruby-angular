@@ -167,6 +167,10 @@
 				moment().isBetween(period.start_date, period.end_date, 'days', '[]')
 					return $scope.setFilter('timePeriod', period)
 			for period in timePeriods
+				if period.period_type is 'month' and
+				moment().isBetween(period.start_date, period.end_date, 'days', '[]')
+					return $scope.setFilter('timePeriod', period)
+			for period in timePeriods
 				if period.period_type is 'year' and
 				moment().isBetween(period.start_date, period.end_date, 'days', '[]')
 					return $scope.setFilter('timePeriod', period)
