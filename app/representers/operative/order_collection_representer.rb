@@ -20,7 +20,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
 
   property :external_po_reference, as: :externalPoRef, exec_context: :decorator,
            if: -> (options) { options[:buzzfeed].eql?(true) }
-  property :currency, exec_context: :decorator, if: -> (options) { options[:buzzfeed].eql?(true) }
+  property :currency, exec_context: :decorator
 
   property :accounts, decorator: Operative::AccountsRepresenter, exec_context: :decorator
   property :custom_fields, decorator: Operative::CustomFieldsRepresenter, exec_context: :decorator,
