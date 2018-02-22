@@ -7,6 +7,7 @@
         $scope.types = []
         $scope.contactCfNames = []
         $scope.relatedAccounts = []
+        $scope.activitiesOrder = '-happened_at'
 
         (loadActivities = ->
             Activity.all(contact_id: $routeParams.id).then (activities) ->
