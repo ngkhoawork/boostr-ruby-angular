@@ -35,6 +35,7 @@
   $scope.dealProductCfNames = []
   $scope.activeDealProductCfLength = 0
   $scope.egnyteConnected = false
+  $scope.egnyteHealthy = true
 
   $scope._scope = -> this
 
@@ -52,7 +53,7 @@
       $scope.embeddedUrl = $sce.trustAsResourceUrl(response.data.redirect)
       return
     ), (error) ->
-      console.log error
+      $scope.egnyteHealthy = false
       return
 
 
@@ -78,7 +79,6 @@
 
   $scope.getCurrentCompany = (deal) ->
     Egnyte.show().then (egnyteSettings) ->
-      console.log(egnyteSettings)
       $scope.company = egnyteSettings
       if(egnyteSettings.access_token && egnyteSettings.connected)
         $scope.egnyteConnected = true

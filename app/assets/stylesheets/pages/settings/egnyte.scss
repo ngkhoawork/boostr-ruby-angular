@@ -47,6 +47,7 @@
       cursor: pointer;
       width: 135px;
       float: right;
+      padding-top: 4px;
     }
   }
 
@@ -81,6 +82,7 @@
 
     .folder-title {
       display: inline-flex;
+      width: 100%;
 
       .triangle-left {
         margin: 15px;
@@ -120,12 +122,41 @@
           font-size: 14px;
           color: #818689;
         }
+
+        .content-info {
+          position: absolute;
+        }
+      }
+
+      .folder-actions {
+        text-align: right;
+        width: 100%;
+        visibility: hidden;
+
+        .folder-delete-icon, .folder-edit-icon {
+          color: $secondary-font-color;
+          cursor: pointer;
+          width: 28px;
+          height: 28px;
+          padding: 4px 6px;
+          font-size: 20px;
+          border-radius: 5px;
+
+          &:hover {
+            background-color: $secondary-font-color;
+            color: white;
+          }
+        }
       }
     }
 
     .active {
       background-color: rgba(255, 115, 0, 0.15) !important;
       border: 1px solid #ff7200 !important;
+    }
+
+    .show {
+      visibility: visible !important;
     }
 
     .block {
