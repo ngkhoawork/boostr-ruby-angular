@@ -154,7 +154,11 @@
 			$scope.productFamilies= data.productFamilies
 			$scope.products = data.products
 			$scope.timePeriods = data.timePeriods.filter (period) ->
-				period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
+				period.visible and (
+					period.period_type is 'quarter' or
+					period.period_type is 'year' or
+					period.period_type is 'month'
+				)
 			searchAndSetTimePeriod($scope.timePeriods)
 
 		searchAndSetTimePeriod = (timePeriods) ->

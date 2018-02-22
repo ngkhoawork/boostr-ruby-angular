@@ -21,7 +21,7 @@ class TimePeriod < ActiveRecord::Base
   end
 
   after_update do
-    if start_date_changed? || end_date_changed?
+    if start_date_changed? || end_date_changed? || period_type_changed?
       update_forecast_fact_callback
     end
   end

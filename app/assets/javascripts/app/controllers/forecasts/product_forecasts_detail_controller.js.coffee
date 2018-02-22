@@ -26,7 +26,11 @@
         ).then (data) ->
             $scope.teams = data.teams
             data.timePeriods = data.timePeriods.filter (period) ->
-                period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
+                period.visible and (
+                    period.period_type is 'quarter' or
+                    period.period_type is 'year' or
+                    period.period_type is 'month'
+                )
             $scope.timePeriods = data.timePeriods
             $scope.sellers = data.sellers
             $scope.products = data.products

@@ -208,6 +208,8 @@ class Api::ForecastsController < ApplicationController
         return true
       elsif time_period.start_date == time_period.start_date.beginning_of_quarter && time_period.end_date == time_period.start_date.end_of_quarter
         return true
+      elsif time_period.start_date == time_period.start_date.beginning_of_month && time_period.end_date == time_period.start_date.end_of_month
+        return true
       else
         return false
       end
