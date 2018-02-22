@@ -6,6 +6,11 @@ class Lead < ActiveRecord::Base
   REMINDER = 'reminder'.freeze
   REASSIGNMENT = 'reassignment'.freeze
   NON_USA_STATE = 'non usa'.freeze
+  WEB_FORM = 'web form'.freeze
+  MARKETING = 'marketing'.freeze
+  TRADESHOW = 'tradeshow'.freeze
+  OTHER = 'other'.freeze
+  CREATED_FROM_LIST = [WEB_FORM, MARKETING, TRADESHOW, OTHER]
 
   attr_accessor :skip_callback
 

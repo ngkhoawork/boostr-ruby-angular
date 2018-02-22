@@ -19,6 +19,6 @@ class Api::V2::LeadsController < ApiController
     params
       .require(:lead)
       .permit(:first_name, :last_name, :title, :email, :company_name, :country, :state, :budget, :notes, :company_id)
-      .merge(status: Lead::NEW)
+      .merge(status: Lead::NEW, created_from: Lead::WEB_FORM)
   end
 end

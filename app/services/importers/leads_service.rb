@@ -19,7 +19,8 @@ class Importers::LeadsService < Importers::BaseService
       notes: row[:notes],
       status: row[:status],
       assigned_to: row[:assigned_to],
-      skip_assignment: row[:skip_assignment]
+      skip_assignment: row[:skip_assignment],
+      created_from: row[:created_from]
     )
   end
 

@@ -1,6 +1,11 @@
 class Contact < ActiveRecord::Base
   acts_as_paranoid
 
+  WEB_FORM_LEAD = 'web-form lead'.freeze
+  MARKETING_LEAD = 'marketing lead'.freeze
+  TRADESHOW_LEAD = 'tradeshow lead'.freeze
+  OTHER_LEAD = 'other lead'.freeze
+
   belongs_to :company
   belongs_to :client
   belongs_to :account_dimension
