@@ -49,7 +49,7 @@
               .input-group
                 .input-group-addon
                   %i.glyphicon.glyphicon-search
-                %input.form-control{ ng: { model: 'searchText', change: 'handleSearch()' }, placeholder: "Search by Account" }
+                %input.form-control{ ng: { model: 'searchText', change: 'handleSearch()', 'model-options': '{ debounce: 1000 }' }, placeholder: "Search by Account" }
       %ul.bp-filter.action.pull-right{ ng: { if: 'selectedBP.id > 0' } }
         %li
           %button.add-btn{'ng-click': 'export()'}

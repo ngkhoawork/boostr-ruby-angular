@@ -71,16 +71,9 @@
       $scope.selectedTeam = $scope.filter.team
 
       $scope.searchText = ''
-      searchTimeout = null
       $scope.handleSearch = () ->
         $scope.page = 1
-        if searchTimeout
-          clearTimeout(searchTimeout)
-          searchTimeout = null
-        searchTimeout = setTimeout(
-          -> loadBPData()
-          400
-        )
+        loadBPData()
 
       setMcSort = ->
        $scope.sort = new McSort({
