@@ -137,4 +137,8 @@
             border-bottom: 2px solid #ddd;
         }
     }
+    [z-fixed-header]:not(.z-fixed-header) {
+        opacity: 0;
+        pointer-events: none;
+    }
 }
