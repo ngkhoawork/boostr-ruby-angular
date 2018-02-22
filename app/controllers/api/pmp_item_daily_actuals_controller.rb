@@ -28,6 +28,11 @@ class Api::PmpItemDailyActualsController < ApplicationController
     end
   end
 
+  def assign_advertiser
+    pmp_item_daily_actual.assign_advertiser!(params[:name], current_user)
+    render json: pmp_item_daily_actual, serializer: Pmps::PmpItemDailyActualSerializer
+  end
+
   def destroy
     pmp_item_daily_actual.destroy
     render nothing: true
@@ -43,9 +48,10 @@ class Api::PmpItemDailyActualsController < ApplicationController
       :revenue_loc,
       :impressions,
       :win_rate,
-      :render_rate,
-      :bids,
-      :pmp_item_id
+      :ad_requests,
+      :pmp_item_id,
+      :advertiser,
+      :ssp_advertiser_id
     )
   end
 
@@ -76,7 +82,7 @@ class Api::PmpItemDailyActualsController < ApplicationController
   end
 
   def filtered_actuals
-    data = PmpItemDailyActualsQuery.new(params).perform
+    data = PmpItemDailyActualsQuery.new(params, company).perform
     data = by_pages(data) if !params[:pmp_item_id]
     data
   end
@@ -88,12 +94,8 @@ class Api::PmpItemDailyActualsController < ApplicationController
     )
   end
 
-  def pmp
-    @_pmp ||= company.pmps.find(params[:pmp_id])
-  end
-
   def pmp_item_daily_actual
-    @_pmp_item_daily_actual ||= pmp.pmp_item_daily_actuals.find(params[:id])
+    @_pmp_item_daily_actual ||= company.pmp_item_daily_actuals.find(params[:id])
   end
 
   def company

@@ -14,8 +14,8 @@
     $scope.submitForm = () ->
       # validates empty fields
       $scope.errors = {}
-      fields = ['date', 'pmp_item_id', 'ad_unit', 'bids', 'impressions', 'price', 'revenue_loc']
-      titles = ['Date', 'Deal-ID', 'Ad Unit/Product', 'Bids', 'Impressions', 'eCPM', 'Revenue']
+      fields = ['date', 'pmp_item_id', 'ad_unit', 'ad_requests', 'impressions', 'price', 'revenue_loc']
+      titles = ['Date', 'Deal-ID', 'Ad Unit/Product', 'Requests', 'Impressions', 'eCPM', 'Revenue']
       fields.forEach (key) ->
         field = $scope.dailyActual[key]
         title = titles[_.indexOf(fields, key)]

@@ -21,7 +21,8 @@
                 $scope.deal_product.months.push(month)
 
             Product.all({active: true}).then (products) ->
-                $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
+                $scope.products = _.filter products, (p) ->
+                    isPmpDeal || !_.find($scope.currentDeal.products, { id: p.id })
 
             addProductBudgetCorrection = ->
                 budgetSum = 0

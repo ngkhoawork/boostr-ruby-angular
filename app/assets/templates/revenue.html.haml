@@ -82,6 +82,23 @@
 
             %tbody{ 'ng-include': "'partials/revenue_no_match_display_rows.html'" }
 
+          %table.table.table-hover{ng: {if: "filter.revenue == 'no-match-adv'"}}
+            %thead
+              %tr.z-sortable-prime
+                %th.left
+                  %span.z-sortable{by: 'name'} Deal-ID
+                %th.left
+                  %span.z-sortable{by: 'deal_id'} Deal Name
+                %th.left
+                  %span.z-sortable{by: 'advertiser.name'} Advertiser
+                %th.right
+                  %span.z-sortable{by: 'agency.name'} Impressions
+                %th.right
+                  %span.z-sortable{by: 'budget_loc'} Revenue
+                %th.right
+
+            %tbody{ 'ng-include': "'partials/revenue_no_match_advertiser_rows.html'" }
+
           %table.table.table-hover{ng: {if: "filter.revenue == 'pmp'"}}
             %thead
               %tr.z-sortable-prime

@@ -6,7 +6,6 @@ class Pmps::PmpAggregatedActualSerializer < ActiveModel::Serializer
     :revenue_loc,
     :impressions,
     :win_rate,
-    :render_rate,
-    :bids
+    :ad_requests
   )
 end

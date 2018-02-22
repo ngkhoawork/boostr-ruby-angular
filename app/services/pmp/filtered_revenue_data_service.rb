@@ -54,10 +54,8 @@ class Pmp::FilteredRevenueDataService
     share = pmp_member.share
     pmp_actuals = pmp_item.pmp_item_daily_actuals
 
-    return total if pmp_actuals.count == 0
-
-    actual_start_date = pmp_actuals.first.date
-    actual_end_date = pmp_actuals.last.date
+    actual_start_date = pmp_actuals.first&.date || pmp_item.start_date
+    actual_end_date = pmp_actuals.last&.date || pmp_item.start_date
 
     (start_date.mon..end_date.mon).to_a.inject([0, 0]) do |monthly_total, index|
       month = index.to_s
@@ -156,10 +154,15 @@ class Pmp::FilteredRevenueDataService
 
   def pmp_item_run_rate(pmp_item)
     case pmp_item.pmp_type
-      when 'non_guaranteed'
-        pmp_item.run_rate_30_days || pmp_item.run_rate_7_days || 0
       when 'guaranteed'
-        pmp_item.pmp_item_daily_actuals.sum(:revenue) / pmp_item.pmp_item_daily_actuals.count
+        actual_end_date = pmp_item.pmp_item_daily_actuals.last&.date || pmp_item.start_date
+        remaining_days = [pmp_item.end_date - actual_end_date, 0].max
+        remaining_budget = pmp_item.budget - pmp_item.pmp_item_daily_actuals.sum(:revenue)
+        if remaining_days == 0
+          0
+        else 
+          remaining_budget / remaining_days
+        end
       else
         0
     end

@@ -17,7 +17,7 @@ class Forecast::PmpRevenueCalcService
     total = pmps.inject(0) do |pmp_total, pmp|
       pmp_member = pmp_user_member(pmp)
       pmp_total += pmp.pmp_items.inject(0) do |total, pmp_item|
-        if product&.id == pmp_item.product_id
+        if product.nil? || product&.id == pmp_item.product_id
           total += pmp_item_budgets(monthly_value, pmp_item, pmp_member, pmp)
         end
         total
@@ -50,13 +50,12 @@ class Forecast::PmpRevenueCalcService
     share = pmp_member.share
     pmp_actuals = pmp_item.pmp_item_daily_actuals
 
-    return 0 if pmp_actuals.count == 0
-
-    actual_start_date = pmp_actuals.first.date
-    actual_end_date = pmp_actuals.last.date
+    actual_start_date = pmp_actuals.first&.date || pmp_item.start_date
+    actual_end_date = pmp_actuals.last&.date || pmp_item.start_date
 
     months.inject(0) do |total, month_row|
       month_name = month_row[:start_date].strftime('%b-%y')
+
       range_start_date = [
         start_date,
         pmp.start_date,
@@ -70,7 +69,9 @@ class Forecast::PmpRevenueCalcService
         month_row[:end_date]
       ].min
 
-      if range_start_date <= actual_end_date && range_end_date >= actual_start_date
+      is_in_range = range_start_date <= actual_end_date && range_end_date >= actual_start_date
+
+      if product&.id == pmp_item.product_id && is_in_range
         total += pmp_item_actuals_amount(monthly_value, pmp_item, range_start_date, range_end_date, share, month_name)
       end
 
@@ -104,10 +105,15 @@ class Forecast::PmpRevenueCalcService
 
   def pmp_item_run_rate(pmp_item)
     case pmp_item.pmp_type 
-      when 'non_guaranteed'
-        pmp_item.run_rate_30_days || pmp_item.run_rate_7_days || 0
       when 'guaranteed'
-        pmp_item.pmp_item_daily_actuals.sum(:revenue) / pmp_item.pmp_item_daily_actuals.count
+        actual_end_date = pmp_item.pmp_item_daily_actuals.last&.date || pmp_item.start_date
+        remaining_days = [pmp_item.end_date - actual_end_date, 0].max
+        remaining_budget = pmp_item.budget - pmp_item.pmp_item_daily_actuals.sum(:revenue)
+        if remaining_days == 0
+          0
+        else
+          remaining_budget / remaining_days
+        end
       else
         0
     end

@@ -3,7 +3,7 @@ class PmpItem < ActiveRecord::Base
   belongs_to :ssp, required: true
   belongs_to :product
 
-  has_many :pmp_item_daily_actuals, -> { order(date: :asc) }, dependent: :destroy
+  has_many :pmp_item_daily_actuals, dependent: :destroy
   has_many :pmp_item_monthly_actuals, dependent: :destroy
 
   enum pmp_type: ::PMP_TYPES
@@ -11,6 +11,9 @@ class PmpItem < ActiveRecord::Base
   validates :ssp_deal_id, :budget, :budget_loc, presence: true
 
   scope :by_stopped, -> (is_stopped) { where(is_stopped: is_stopped) }
+
+  delegate :start_date, to: :pmp, prefix: false
+  delegate :end_date, to: :pmp, prefix: false
 
   before_validation :convert_currency
   before_save :set_budget_remaining_and_delivered
@@ -65,6 +68,7 @@ class PmpItem < ActiveRecord::Base
   end
 
   def update_stopped_status!
+    return if !daily_actual_end_date
     if pmp.opened? && is_stopped == true && daily_actual_end_date >= Time.now.in_time_zone('Pacific Time (US & Canada)').to_date
       self.is_stopped = false
       self.stopped_at = nil

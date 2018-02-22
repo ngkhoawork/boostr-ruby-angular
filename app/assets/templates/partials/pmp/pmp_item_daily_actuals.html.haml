@@ -8,12 +8,12 @@
         %tr
           %th.left Date
           %th.center Deal-ID
+          %th.center Advertiser
           %th.center Ad Unit
           %th.center Product
-          %th.right Bids
+          %th.right Requests
           %th.right Impressions
           %th.right Win Rate
-          %th.right Render Rate
           %th.right eCPM
           %th.right Revenue
           %th
@@ -24,19 +24,19 @@
           %td.center
             {{ pmpItemDailyActual.ssp_deal_id }}
           %td.center
+            {{ pmpItemDailyActual.ssp_advertiser.name }}
+          %td.center
             %strong
               {{ pmpItemDailyActual.ad_unit }}
           %td.center
             %strong
               {{ (pmpItemDailyActual.product && pmpItemDailyActual.product.name) || 'N/A' }}
           %td.right
-            {{ pmpItemDailyActual.bids | number:0 }}
+            {{ pmpItemDailyActual.ad_requests | number:0 }}
           %td.right
             {{ pmpItemDailyActual.impressions | number:0 }}
           %td.right
             {{ pmpItemDailyActual.win_rate | percentage:0 }}
-          %td.right
-            {{ pmpItemDailyActual.render_rate ? (pmpItemDailyActual.render_rate | percentage:0) : 'N/A' }}
           %td.right
             {{ pmpItemDailyActual.price | currency:currency_symbol:2 }}
           %td.right

@@ -2,12 +2,13 @@ class PmpItemDailyActual < ActiveRecord::Base
   attr_accessor :imported
 
   belongs_to :pmp_item, required: true
+  belongs_to :ssp_advertiser
 
   validates :date, :ad_unit, presence: true
-  validates :bids, :impressions, :revenue_loc, :price, presence: true, numericality: true
-  validates :render_rate, numericality: true, allow_nil: true
+  validates :ad_requests, :impressions, :revenue_loc, :price, presence: true, numericality: true
 
   scope :latest, -> { order('date DESC') }
+  scope :oldest, -> { order('date ASC') }
 
   delegate :pmp, to: :pmp_item, allow_nil: true
   delegate :product, to: :pmp_item, allow_nil: true
@@ -26,10 +27,22 @@ class PmpItemDailyActual < ActiveRecord::Base
     pmp_item.calculate!
   end
 
+  def assign_advertiser!(name, user)
+    ssp_advertiser = SspAdvertiser.create(
+      name: name,
+      company: pmp.company,
+      ssp: pmp_item.ssp,
+      created_by: user,
+      updated_by: user
+    )
+    self.ssp_advertiser = ssp_advertiser
+    self.save!
+  end
+
   private
 
   def set_default_values
-    self.win_rate ||= bids.to_f/impressions.to_f*100 rescue nil
+    self.win_rate ||= ad_requests.to_f/impressions.to_f*100 rescue nil
   end
 
   def convert_currency

@@ -1,0 +1,23 @@
+#contact_assign_modal.popup-modal
+  %form.form-horizontal
+    .popup-modal-header
+      Match Advertiser
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body.modal-body
+      .form-group
+        %input.form-control{ name: 'advertiser', placeholder: 'Select', ng: { model: 'searchText', change: 'searchObj()' } }
+      .form-group
+        .row
+          .col-xs-12
+            .client-list
+              .client-info{ 'ng-repeat': 'client in clients | orderBy: ["-matches", "score"]' }
+                .name{ ng: { bind: { html: 'client.name' } } }
+                .type
+                  ({{ client.score }})
+                .action
+                  %a{ href: "javascript:void(0)", 'ng-click': "assign(client)" }
+                    Assign
+
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+      %button.btn.btn-warning{ type: 'submit', ng: { click: "submit()" } } {{ submitText }}

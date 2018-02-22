@@ -1,5 +1,6 @@
 class Client < ActiveRecord::Base
   acts_as_paranoid
+  fuzzily_searchable :name
 
   belongs_to :company
   belongs_to :parent_client, class_name: 'Client'
@@ -95,7 +96,7 @@ class Client < ActiveRecord::Base
   scope :without_connections_for, ->(client) { where.not(id: client.connection_entry_ids) }
 
   scope :without_related_clients, -> contact_id do
-    joins(:client_contacts).where.not(client_contacts: { contact_id: contact_id }).distinct
+    where.not(id: ClientContact.where(contact_id: contact_id).pluck(:client_id))
   end
 
   ADVERTISER = 10

@@ -244,6 +244,7 @@ Rails.application.routes.draw do
         get :search_clients
         get :filter_options
         get :category_options
+        get :fuzzy_search
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index, :create, :update, :destroy] do
@@ -303,10 +304,10 @@ Rails.application.routes.draw do
     resources :pmps, only: [:index, :show, :create, :update, :destroy] do
       resources :pmp_members, only: [:create, :update, :destroy]
       resources :pmp_items, only: [:create, :update, :destroy]
-      resources :pmp_item_daily_actuals, only: [:index, :update, :destroy]
     end
-    resources :pmp_item_daily_actuals, only: [] do
+    resources :pmp_item_daily_actuals, only: [:index, :update, :destroy] do
       post :import, on: :collection
+      post :assign_advertiser, on: :member
     end
     resources :ssps, only: [:index]
     resources :deals, only: [:index, :create, :update, :show, :destroy] do

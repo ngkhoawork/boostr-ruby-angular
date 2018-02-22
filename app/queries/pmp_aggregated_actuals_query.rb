@@ -13,9 +13,8 @@ class PmpAggregatedActualsQuery
           sum(revenue_loc) as revenue_loc,
           sum(revenue) as revenue,
           sum(impressions) as impressions,
-          sum(bids) as bids,
-          avg(win_rate) as win_rate,
-          avg(render_rate) as render_rate
+          sum(ad_requests) as ad_requests,
+          avg(win_rate) as win_rate
         ')
         .group('date')
         .order(:date)

@@ -84,6 +84,17 @@
       _.reduce(data, (arr, row) ->
         if row[attr]?
           arr.push(parseFloat(row[attr]))
+        else
+          arr.push null
+        arr
+      , [])
+
+    getPriceGraphData = (data) ->
+      _.reduce(data, (arr, row) ->
+        if row['revenue_loc']? && row['impressions']? && parseFloat(row['impressions']) != 0
+          arr.push Math.floor(parseFloat(row['revenue_loc']) / parseFloat(row['impressions']) * 1000 * 100) / 100
+        else
+          arr.push null
         arr
       , [])
 
@@ -92,14 +103,13 @@
       switch svgID
         when '#pmp-delivery-chart'
           [
-            {name: 'Bids', graphType: 1, hideTitle: true, active: true, unit: '', color: c(0), values: getGraphData(data, 'bids')}
+            {name: 'Requests', graphType: 1, hideTitle: true, active: true, unit: '', color: c(0), values: getGraphData(data, 'ad_requests')}
             {name: 'Impressions', graphType: 1, active: true, unit: '', color: c(1), values: getGraphData(data, 'impressions')}    
             {name: 'Win Rate', graphType: 2, active: true, unit: '%', color: c(2), values: getGraphData(data, 'win_rate')}      
-            {name: 'Render Rate', graphType: 2, hideTitle: true, active: true, unit: '%', color: c(3), values: getGraphData(data, 'render_rate')}
           ]
         when '#pmp-price-revenue-chart'
           [
-            {name: 'Price', graphType: 1, active: true, unit: $scope.currency_symbol, color: c(0), values: getGraphData(data, 'price')}
+            {name: 'Price', graphType: 1, active: true, unit: $scope.currency_symbol, color: c(0), values: getPriceGraphData(data)}
             {name: 'Revenue', graphType: 2, active: true, unit: $scope.currency_symbol, color: c(1), values: getGraphData(data, 'revenue_loc')}          
           ]
         else []
@@ -272,6 +282,16 @@
           .text((d) -> d.name)
 
       # Tooltip
+      tooltipText = (selectedItem, unit, d, title) ->
+        value = 'N/A'
+        if d?
+          if unit == $scope.currency_symbol
+            value = unit + $filter('number')(d) 
+          else 
+            value = $filter('number')(d) + unit
+        '<p>' + (selectedItem.ssp_deal_id || $filter('firstUppercase')(selectedItem)) + '</p>' + 
+        '<p><span>' + value + '</span></p>' + 
+        '<p><span>' + title + '</span></p>'
       tooltip = d3.select("body").append("div") 
           .attr("class", "pmp-chart-tooltip")             
           .style("opacity", 0)
@@ -287,7 +307,7 @@
           tooltip.transition()        
               .duration(200)      
               .style("opacity", .9);      
-          tooltip.html('<p>' + (selectedItem.ssp_deal_id || $filter('firstUppercase')(selectedItem)) + '</p><p><span>' + (if unit == $scope.currency_symbol then unit + $filter('number')(d) else $filter('number')(d) + unit) + '</span></p><p><span>' + title + '</span></p>')  
+          tooltip.html(tooltipText(selectedItem, unit, d, title))  
               .style("left", (d3.event.pageX) - 50 + "px")     
               .style("top", (d3.event.pageY + 18) + "px")
       setTimeout ->

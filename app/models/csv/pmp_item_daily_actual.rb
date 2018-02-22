@@ -6,17 +6,18 @@ class Csv::PmpItemDailyActual
   attr_accessor :ssp_deal_id,
                 :date,
                 :ad_unit,
-                :bids,
+                :ad_requests,
                 :impressions,
                 :price,
                 :revenue_loc,
-                :render_rate,
                 :win_rate,
-                :curr_cd
+                :curr_cd,
+                :ssp_advertiser_name,
+                :company
 
-  validates :date, :ad_unit, presence: true
-  validates :bids, :impressions, presence: true, numericality: true
-  validates :win_rate, :render_rate, numericality: true, allow_nil: true
+  validates :date, :ad_unit, :company, presence: true
+  validates :ad_requests, :impressions, presence: true, numericality: true
+  validates :win_rate, numericality: true, allow_nil: true
   validate :validate_pmp_item_presence
   validate :validate_deal_id
   validate :validate_date_format
@@ -43,13 +44,14 @@ class Csv::PmpItemDailyActual
     pmp_item_daily_actual.date = parsed_date
     pmp_item_daily_actual.ad_unit = ad_unit
     pmp_item_daily_actual.pmp_item = pmp_item
-    pmp_item_daily_actual.bids = bids
+    pmp_item_daily_actual.ad_requests = ad_requests
     pmp_item_daily_actual.impressions = impressions
     pmp_item_daily_actual.win_rate = win_rate
     pmp_item_daily_actual.price = price
     pmp_item_daily_actual.revenue_loc = revenue_loc
-    pmp_item_daily_actual.render_rate = render_rate
     pmp_item_daily_actual.imported = true
+    pmp_item_daily_actual.advertiser = ssp_advertiser_name
+    pmp_item_daily_actual.ssp_advertiser = ssp_advertiser
     pmp_item_daily_actual.save!
   end
 
@@ -128,6 +130,10 @@ class Csv::PmpItemDailyActual
 
   private
 
+  def ssp_advertiser
+    @_ssp_advertiser ||= company.ssp_advertisers.find_by(name: ssp_advertiser_name, ssp: pmp_item&.ssp)
+  end
+
   def validate_ecpm
     validate_numeric('eCPM', price)
   end
@@ -182,13 +188,14 @@ class Csv::PmpItemDailyActual
       ssp_deal_id: row[:dealid],
       date: row[:date].try(:strip),
       ad_unit: row[:ad_unit],
-      bids: row[:bids],
+      ad_requests: row[:ad_requests],
       impressions: row[:impressions],
       win_rate: row[:win_rate],
       price: row[:ecpm],
       revenue_loc: row[:revenue],
       curr_cd: row[:currency],
-      render_rate: row[:render_rate]
+      ssp_advertiser_name: row[:ssp_advertiser],
+      company: company
     )
   end
 end
