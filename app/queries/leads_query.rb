@@ -8,6 +8,8 @@ class LeadsQuery
     relation
       .by_relation(options)
       .by_status(options[:status])
+      .by_search(options[:search])
+      .by_id(options[:search])
       .includes(:contact, :user, :company, :client, :deals)
   end
 
@@ -56,6 +58,23 @@ class LeadsQuery
 
     def by_leader(user)
       by_user(Team.find_by(leader_id: user.id).member_ids << user.id)
+    end
+
+    def by_search(search)
+      return self if search.nil? || !search.to_i.zero?
+
+      where(
+        'first_name ilike :search OR
+         last_name ilike :search OR
+         company_name ilike :search',
+        search: "%#{search}%"
+      )
+    end
+
+    def by_id(search)
+      return self if search.nil? || search.to_i.zero?
+
+      where(id: search.to_i)
     end
   end
 end
