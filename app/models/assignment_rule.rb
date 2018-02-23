@@ -22,7 +22,7 @@ class AssignmentRule < ActiveRecord::Base
   private
 
   def set_position
-    self.position ||=
+    self.position =
       AssignmentRule
         .by_company_id(self.company.id)
         .not_default
