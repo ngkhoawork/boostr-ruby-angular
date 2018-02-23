@@ -5,6 +5,7 @@ class Contact < ActiveRecord::Base
   MARKETING_LEAD = 'marketing lead'.freeze
   TRADESHOW_LEAD = 'tradeshow lead'.freeze
   OTHER_LEAD = 'other lead'.freeze
+  OTHER = 'other'.freeze
 
   belongs_to :company
   belongs_to :client

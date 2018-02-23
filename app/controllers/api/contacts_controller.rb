@@ -145,7 +145,7 @@ class Api::ContactsController < ApplicationController
       :position,
       :note,
       :client_id,
-      :web_lead,
+      :created_from,
       address_attributes: [
         :id,
         :country,

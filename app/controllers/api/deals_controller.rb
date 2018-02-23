@@ -583,7 +583,7 @@ class Api::DealsController < ApplicationController
         :closed_reason_text,
         :created_at,
         :lead_id,
-        :web_lead,
+        :created_from,
         {
             values_attributes: [
                 :id,

@@ -223,7 +223,7 @@ class Api::ClientsController < ApplicationController
   def client_params
     params.require(:client).permit(
       :name, :website, :note, :client_type_id, :client_category_id, :client_subcategory_id, :parent_client_id,
-      :client_region_id, :client_segment_id, :holding_company_id, :web_lead,
+      :client_region_id, :client_segment_id, :holding_company_id, :created_from,
       { 
         address_attributes: [:country, :street1, :street2, :city, :state, :zip, :phone, :email],
         values_attributes: [:id, :field_id, :option_id, :value],
