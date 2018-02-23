@@ -1784,16 +1784,6 @@ class Deal < ActiveRecord::Base
     ).perform
   end
 
-  def log_budget_changes(current_budget, new_budget)
-    AuditLogService.new(
-      record: self,
-      type: AuditLog::BUDGET_CHANGE_TYPE,
-      old_value: current_budget,
-      new_value: new_budget,
-      changed_amount: (new_budget - current_budget)
-    ).perform
-  end
-
   def setup_egnyte_folders
     SetupEgnyteDealFoldersWorker.perform_async(company.egnyte_integration.id, name) if company.egnyte_integration
   end
