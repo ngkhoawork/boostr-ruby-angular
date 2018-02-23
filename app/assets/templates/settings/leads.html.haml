@@ -31,7 +31,7 @@
                     .rule-row.rule-name.new-row
                         %form{'ng-submit': 'submitForm($event, "country")'}
                             %input.form-control{placeholder: 'Country', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "country")'}
-                        %i.fa.fa-close.z-icon{'ng-click': 'hideForm($event)'}
+                        %i.fa.fa-close.z-icon{'ng-mousedown': 'hideForm($event)'}
                     .rule-row{'ng-repeat': 'country in selectedRule.countries track by $index'}
                         {{country}}
                         %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("countries", country)'}
@@ -43,7 +43,7 @@
                     .rule-row.rule-name.new-row
                         %form{'ng-submit': 'submitForm($event, "state")'}
                             %input.form-control{placeholder: 'State', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "state")'}
-                        %i.fa.fa-close.z-icon{'ng-click': 'hideForm($event)'}
+                        %i.fa.fa-close.z-icon{'ng-mousedown': 'hideForm($event)'}
                     .rule-row{'ng-repeat': 'state in selectedRule.states track by $index'}
                         {{state}}
                         %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("states", state)'}
