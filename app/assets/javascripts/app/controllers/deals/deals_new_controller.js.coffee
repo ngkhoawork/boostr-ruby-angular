@@ -123,7 +123,7 @@
 
     if options.lead
       $scope.deal.lead_id = options.lead.id
-      $scope.deal.web_lead = true
+      $scope.deal.created_from = 'Web-Form Lead'
 
     Deal.create(deal: $scope.deal).then(
       (deal) ->

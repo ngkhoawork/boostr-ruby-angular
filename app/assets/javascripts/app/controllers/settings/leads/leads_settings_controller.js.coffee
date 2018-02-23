@@ -6,30 +6,46 @@
         $scope.rules = []
         positions = {}
         $scope.selectedRule = null
+        $scope.defaultRule = null
 
         Seller.query({id: 'all'}).$promise.then (data) ->
             $scope.sellers = data
 
-        do getRules = ->
+        (getRules = (selectedName) ->
             AssignmentRule.get().then (data) ->
+                $scope.rules = _.reject data, (rule) -> rule.default
+                $scope.defaultRule = _.findWhere data, {default: true}
                 positions = getPositions()
-                $scope.rules = data
-                $scope.selectedRule = $scope.selectedRule || data[0]
+                $scope.selectedRule = _.findWhere($scope.rules, {name: selectedName}) ||
+                    $scope.selectedRule ||
+                    $scope.rules[0] ||
+                    $scope.defaultRule
+        )()
 
         $scope.selectRule = (rule) ->
             $scope.selectedRule = rule
 
         $scope.hideForm = (e) ->
             target = $(e.target)
-            $timeout ->
-                target.closest('.new-row').removeClass('visible')
-            , 100
+            $scope.form = ''
+            target.closest('.new-row').removeClass('visible')
+            return
+
+        $scope.editRule = (e, rule) ->
+            e.stopPropagation()
+            $scope.showForm(e, rule.name)
+
 
         $scope.deleteRule = (e, rule) ->
             e.stopPropagation()
             if confirm('Are you sure you want to delete this rule?')
                 AssignmentRule.delete(id: rule.id).then ->
                     $scope.rules = _.reject $scope.rules, (item) -> item.id == rule.id
+                    if rule == $scope.selectedRule
+                        $scope.selectedRule = $scope.rules[0] || $scope.defaultRule
+
+        $scope.updateField = (type) ->
+            console.log type
 
         $scope.deleteField = (field, value) ->
             rule = $scope.selectedRule
@@ -54,31 +70,32 @@
         $scope.submitForm = (e, type) ->
             if !$scope.form.trim() then return $scope.hideForm(e)
             rule = $scope.selectedRule
+            form = $scope.form
             switch type
                 when 'rule'
-                    AssignmentRule.save(name: $scope.form).then ->
-                        getRules()
+                    AssignmentRule.save(name: form).then ->
+                        getRules(form)
                 when 'country'
                     if !rule then return
                     AssignmentRule.update(
                         id: rule.id
-                        countries: _.union [$scope.form], rule.countries
+                        countries: _.union [form], rule.countries
                     ).then (updatedRule) ->
                         _.extend rule, updatedRule
                 when 'state'
                     if !rule then return
                     AssignmentRule.update(
                         id: rule.id
-                        states: _.union [$scope.form], rule.states
+                        states: _.union [form], rule.states
                     ).then (updatedRule) ->
                         _.extend rule, updatedRule
 
             $scope.hideForm(e)
 
-        $scope.showForm = (e) ->
-            $scope.form = ''
+        $scope.showForm = (e, form) ->
+            $scope.form = form || ''
             target = $(e.target)
-            target.parent().siblings('.new-row').addClass('visible').find('input').focus()
+            target.closest('.rules-column').find('.new-row').addClass('visible').find('input').focus()
             return
 
         getPositions = ->
@@ -92,6 +109,7 @@
             if _.isEqual positions, newPositions then return
             changes = _.omit newPositions, (val, key) -> positions[key] == val
             AssignmentRule.updatePositions(positions: changes)
+            $scope.selectedRule = _.findWhere $scope.rules, id: $scope.selectedRule.id
             positions = newPositions
 
 ]

@@ -31,7 +31,7 @@
       account_cf_attributes: original.account_cf
     if original.lead
       send.lead_id = original.lead.id
-      send.client.web_lead = true
+      send.client.created_from = 'Web-Form Lead'
     angular.toJson(send)
 
   resource = $resource '/api/clients/:id', { id: '@id' },

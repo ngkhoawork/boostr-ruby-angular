@@ -67,13 +67,16 @@
                             box-shadow: 0 0 5px $main-font-color;
                         }
                     }
-                    .fa.fa-check {
-                        margin: 0 4px 0 12px;
-                        &:before {
-                            position: relative;
-                            right: 2px;
-                        }
+                    .z-icon {
+                        margin-left: 8px;
                     }
+                }
+                .editable-rule-field {
+                    border: none;
+                    border-bottom: 1px dashed $secondary-font-color;
+                    background: transparent;
+                    padding: 2px 5px;
+                    outline: none;
                 }
             }
             .rules-wrap {

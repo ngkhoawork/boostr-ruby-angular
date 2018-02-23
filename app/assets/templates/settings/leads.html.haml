@@ -12,25 +12,25 @@
                         .rule-add-btn{'ng-click': 'showForm($event)'} Add
                     .rule-row.rule-name.new-row
                         %form{'ng-submit': 'submitForm($event, "rule")'}
-                            %input.form-control{placeholder: 'Name', 'ng-model': 'form', 'ng-blur': 'hideForm($event)'}
-                        %i.fa.fa-check.z-icon{'ng-click': 'submitForm($event, "rule")'}
-                        %i.fa.fa-close.z-icon{'ng-click': 'hideForm($event)'}
+                            %input.form-control{placeholder: 'Name', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "rule")'}
+                        %i.fa.fa-close.z-icon{'ng-mousedown': 'hideForm($event)'}
                     .rules-wrap{'dnd-list': 'rules'}
-                        .rule-row.rule-name{ng: {repeat: 'rule in rules | filter: {default: false}', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'}, dnd: {draggable: 'rule', moved: 'onRuleMoved($index)'}}
+                        .rule-row.rule-name{ng: {repeat: 'rule in rules', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'}, dnd: {draggable: 'rule', moved: 'onRuleMoved($index)'}}
+                            -#%span{'editable-text': 'rule.name', onaftersave: 'updateField("rule")'}
                             {{rule.name}}
                             %i.fa.fa-trash.z-icon{'ng-click': 'deleteRule($event, rule)'}
-                    %div
-                        .rule-row.rule-name{ng: {repeat: 'rule in rules | filter: {default: true}', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'}}
-                            {{rule.name}}
+                    %div{'ng-if': 'defaultRule'}
+                        .rule-row.rule-name{ng: {click: 'selectRule(defaultRule)', class: '{active: defaultRule === selectedRule}'}}
+                            {{defaultRule.name}}
+                            %i.fa.fa-star.z-icon{style: 'visibility: hidden'}
 
                 .rules-column
                     .rule-column-header
-                        %div COUNTRIES
+                        %div CRITERIA 1
                         .rule-add-btn{'ng-click': 'showForm($event)'} Add
                     .rule-row.rule-name.new-row
                         %form{'ng-submit': 'submitForm($event, "country")'}
-                            %input.form-control{placeholder: 'Country', 'ng-model': 'form', 'ng-blur': 'hideForm($event)'}
-                        %i.fa.fa-check.z-icon{'ng-click': 'submitForm($event, "country")'}
+                            %input.form-control{placeholder: 'Country', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "country")'}
                         %i.fa.fa-close.z-icon{'ng-click': 'hideForm($event)'}
                     .rule-row{'ng-repeat': 'country in selectedRule.countries track by $index'}
                         {{country}}
@@ -38,12 +38,11 @@
 
                 .rules-column
                     .rule-column-header
-                        %div STATES
+                        %div CRITERIA 2
                         .rule-add-btn{'ng-click': 'showForm($event)'} Add
                     .rule-row.rule-name.new-row
                         %form{'ng-submit': 'submitForm($event, "state")'}
-                            %input.form-control{placeholder: 'State', 'ng-model': 'form', 'ng-blur': 'hideForm($event)'}
-                        %i.fa.fa-check.z-icon{'ng-click': 'submitForm($event, "state")'}
+                            %input.form-control{placeholder: 'State', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "state")'}
                         %i.fa.fa-close.z-icon{'ng-click': 'hideForm($event)'}
                     .rule-row{'ng-repeat': 'state in selectedRule.states track by $index'}
                         {{state}}
