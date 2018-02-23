@@ -15,10 +15,7 @@
 
       $scope.onFilterApply = (query) ->
         if !query.start_date || !query.end_date
-          if !query.start_date
-            zError '#date-range', 'Please Select Time Period'
-          if !query.end_date
-            zError '#date-range', 'Please Select Time Period'
+          zError '#start-date-field', 'Please select a Date Range to run this report'
         updateDashboard query
 
       $scope.onResetFilter = ->

@@ -118,7 +118,7 @@
           $scope.users = users
           $scope.users.unshift(defaultUser)
 
-      $document.bind 'scroll', (evt) ->
+      onScroll = (evt) ->
         scrollTop = evt.target.scrollingElement.scrollTop
         scrollLeft = evt.target.scrollingElement.scrollLeft
         targetTop = $('.bp-table-wrapper')[0].offsetTop
@@ -127,10 +127,10 @@
           $('.fixed')[0].style.display = "table";
         else
           $('.fixed')[0].style.display = "none"
-      
 
+      $document.on 'scroll', onScroll
       $scope.$on '$destroy', () ->
-        $document.unbind('scroll')
+        $document.off('scroll', onScroll)
 
       #init query
       init = () ->

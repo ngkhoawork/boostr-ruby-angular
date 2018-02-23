@@ -98,6 +98,9 @@ class Api::DealProductsController < ApplicationController
     params.require(:deal_product).permit(
       :budget_loc,
       :product_id,
+      :ssp_id,
+      :pmp_type,
+      :ssp_deal_id,
       {
         deal_product_budgets_attributes: [:id, :budget_loc],
         deal_product_cf_attributes: [
