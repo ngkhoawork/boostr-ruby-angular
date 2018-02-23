@@ -132,6 +132,8 @@
                     activity: ->
                         activity
 
+        $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
+
         $scope.showAssignModal = (contact) ->
             $scope.modalInstance = $modal.open
                 templateUrl: 'modals/contact_assign_form.html'

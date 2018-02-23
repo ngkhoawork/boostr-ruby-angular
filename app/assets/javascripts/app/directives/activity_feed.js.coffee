@@ -76,6 +76,8 @@ app.directive 'activityFeed',
                 resolve:
                     activity: -> activity
 
+        $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
+
         $scope.deleteActivity = (activity) ->
             if confirm('Are you sure you want to delete the activity?')
                 Activity.delete activity

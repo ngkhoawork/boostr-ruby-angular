@@ -805,6 +805,8 @@
         activity: ->
           activity
 
+  $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
+
   $scope.showDealEditModal = (deal) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_form.html'
