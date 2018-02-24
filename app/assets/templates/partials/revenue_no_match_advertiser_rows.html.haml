@@ -1,7 +1,7 @@
 %tr{'ng-repeat': 'row in revenue | orderBy : zSort.by : zSort.rev | filter:searchText', 'ng-click': 'showAssignAdvertiserModal(row)'}
   %td.left {{ row.ssp_deal_id }}
   %td.left 
-    %a{ href: '', ng: { if: "row.pmp", href: '/revenue/pmps/{{row.pmp.id}}' } }
+    %a{ href: '', ng: { if: 'row.pmp', href: '/revenue/pmps/{{row.pmp.id}}', click: '$event.stopPropagation();' } }
       {{ row.pmp.name }}
   %td.left {{ row.ssp.name }}
   %td.left {{ row.ssp_advertiser }}
