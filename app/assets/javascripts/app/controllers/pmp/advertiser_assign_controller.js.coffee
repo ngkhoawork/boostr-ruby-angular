@@ -1,7 +1,7 @@
 @app.controller 'AdvertiserAssignController',
   ['$scope', '$modalInstance', 'pmpItemDailyActual', 'Client', 'PMPItemDailyActual', '$modal',
   ( $scope,   $modalInstance,   pmpItemDailyActual,   Client,   PMPItemDailyActual,   $modal) ->
-    $scope.searchText = pmpItemDailyActual.advertiser
+    $scope.searchText = pmpItemDailyActual.ssp_advertiser
     $scope.clients = []
 
     init = () ->
