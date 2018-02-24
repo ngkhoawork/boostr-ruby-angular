@@ -191,7 +191,7 @@
     }
 }
 
-#pmp-delivery, #pmp-price-revenue {
+#pmp-delivery, #pmp-price-revenue, #pmp-revenue-by-advertiser {
     .custom-field-item {
         margin: 10px 10px 0px 95px;
         position: absolute;
@@ -201,10 +201,14 @@
     .custom-field-item-field,
     .custom-field-item-label {
         display: inline-block;
+
+        &.ml20 {
+          margin-left: 20px;
+        }
     }
 }
 
-#pmp-delivery-chart-container, #pmp-price-revenue-chart-container {
+#pmp-delivery-chart-container, #pmp-price-revenue-chart-container, #pmp-revenue-advertiser-chart-container {
     display: inline-block;
     position: relative;
     width: 100%;
@@ -214,7 +218,7 @@
     margin: 0;
 }
 
-#pmp-delivery-chart, #pmp-price-revenue-chart {
+#pmp-delivery-chart, #pmp-price-revenue-chart, #pmp-revenue-advertiser-chart {
     height: auto;
     display: inline-block;
     position: absolute;

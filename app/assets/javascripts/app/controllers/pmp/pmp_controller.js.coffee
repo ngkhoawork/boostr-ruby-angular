@@ -10,13 +10,30 @@
     $scope.allDataLoaded = false
     $scope.page = 1
     $scope.PMPType = PMPType
+    $scope.timePeriods = [
+      { id: 7, value: 'Last 7 Days' }
+      { id: 14, value: 'Last 14 Days' }
+      { id: 30, value: 'Last 30 Days' }
+      { id: 'last_month', value: 'Last Month' }
+      { id: 'last_quarter', value: 'Last Quarter' }
+      { id: 'last_year', value: 'Last Year' }
+    ]
+    $scope.revenueFilter = {
+      item: null
+      timePeriod: $scope.timePeriods[0]
+      id: () ->
+        id = if $scope.revenueFilter.item == 'all' then 'all' else $scope.revenueFilter.item.id
+        id + $scope.revenueFilter.timePeriod.id
+    }
     graphData = {}
+    graphRevenueData = {}
     
     init = () ->
       PMP.get($routeParams.id).then (pmp) ->
         $scope.currentPMP = pmp
         $scope.updateDeliveryChart('all')
         $scope.updatePriceChart('all')
+        $scope.updateRevenueChart('all', 'item')
         $scope.currency_symbol = pmp.currency && (pmp.currency.curr_symbol || pmp.currency.curr_cd)
 
     reloadDailyActuals = () ->
@@ -65,7 +82,7 @@
         if graphData[id]
           drawChart(graphData[id], '#pmp-delivery-chart-container', '#pmp-delivery-chart')
         else
-          PMPItemDailyActual.all(pmp_id: $routeParams.id, pmp_item_id: id).then (data) ->
+          PMPItemDailyActual.aggregate(pmp_id: $routeParams.id, pmp_item_id: id, group_by: 'date').then (data) ->
             graphData[id] = data
             drawChart(data, '#pmp-delivery-chart-container', '#pmp-delivery-chart')
 
@@ -76,9 +93,146 @@
         if graphData[id]
           drawChart(graphData[id], '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
         else
-          PMPItemDailyActual.all(pmp_id: $routeParams.id, pmp_item_id: id).then (data) ->
+          PMPItemDailyActual.aggregate(pmp_id: $routeParams.id, pmp_item_id: id, group_by: 'date').then (data) ->
             graphData[id] = data
             drawChart(data, '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
+
+    $scope.updateRevenueChart = (val, id) ->
+      if val && id
+        $scope.revenueFilter[id] = val
+        id = $scope.revenueFilter.id()
+        if graphRevenueData[id]
+          drawRevenueChart(graphRevenueData[id], '#pmp-revenue-advertiser-chart-container', '#pmp-revenue-advertiser-chart')
+        else
+          PMPItemDailyActual.aggregate(pmp_id: $routeParams.id, pmp_item_id: $scope.revenueFilter.item.id || 'all', group_by: 'advertiser', time_period: $scope.revenueFilter.timePeriod.id).then (data) ->
+            if data && data.length > 0
+              graphRevenueData[id] = data
+            drawRevenueChart(data, '#pmp-revenue-advertiser-chart-container', '#pmp-revenue-advertiser-chart')
+
+    drawRevenueChart = (data, containerID, svgID) ->
+      chartContainer = angular.element(containerID)
+      margin =
+          top: 35
+          left: 85
+          right: 85
+          bottom: 115
+      duration = 1000
+      ratio = 0.35
+      ticks = 11
+      width = chartContainer.width() - margin.left - margin.right || 800
+      height = chartContainer.width()*ratio
+      data = _.sortBy data, (d) -> -parseFloat(d.revenue_loc)
+      advertisers = data.map (item) -> item.advertiser.name
+      dataset = getGraphDataSet(data, svgID)
+      return if dataset.length == 0 
+
+      svg = d3.select(svgID)
+              .attr("preserveAspectRatio", "xMinYMin meet")
+              .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + height)
+              .html('')
+              .append('g')
+              .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      height = height - margin.top - margin.bottom - 10
+
+      # Axes
+      maxValue = d3.max(dataset, (item) -> d3.max item.values) || 50
+      yMax = Math.max(100, Math.ceil(maxValue*1.2 / (ticks - 1)) * (ticks - 1))
+      yTickValues = []
+      for i in [0..ticks-1]
+        yTickValues.push i*Math.ceil(yMax / (ticks - 1))
+      x = d3.scale.ordinal().domain(advertisers).rangePoints([20, width-20])
+          .rangeRoundBands([0, width], 0.5)
+      y = d3.scale.linear().domain([yMax, 0]).rangeRound([0, height])
+      xAxis = d3.svg.axis().scale(x).orient('bottom')
+              .outerTickSize(0)
+              .innerTickSize(0)
+              .tickPadding(10)
+      yAxis = d3.svg.axis().scale(y).orient('left')
+              .innerTickSize(-width)
+              .outerTickSize(0)
+              .tickValues(yTickValues)
+              .tickFormat (v) -> 
+                d = dataset[0] || {}
+                if d.unit == $scope.currency_symbol then $scope.currency_symbol + $filter('number')(v) else $filter('number')(v) + d.unit
+      svg.append('g').attr('class', 'axisX')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(xAxis)
+        .selectAll("text")  
+          .style("text-anchor", "end")
+          .attr("dx", "-.8em")
+          .attr("dy", "-.3em")
+          .attr("transform", "rotate(-90)" )
+      svg.append('g').attr('class', 'axisY').call yAxis
+      svg.append('line')
+          .style('stroke', '#d9dde0')
+          .attr('x1', 0)
+          .attr('y1', 0)
+          .attr('x2', 0)
+          .attr('y2', height + 80)
+      svg.append('line')
+          .style('stroke', '#d9dde0')
+          .attr('x1', 0)
+          .attr('y1', height)
+          .attr('x2', width)
+          .attr('y2', height)
+
+      # Graphs
+      c = d3.scale.category10()
+      graphLine = d3.svg.line()
+              .x((value, i) -> x(advertisers[i]))
+              .y((value, i) -> y(value))
+              .defined((value, i) -> _.isNumber value)
+      graphsContainer = svg.append('g')
+              .attr('class', 'graphs-container')
+      graphs = graphsContainer.selectAll('.bar')
+              .data(data)
+              .enter()
+              .append('g')
+              .attr('class', 'bar')
+              .append('rect')
+              .style('fill', (d) -> c(Math.random()*10))
+              .attr('x', (d) -> x(d.advertiser.name))
+              .attr('width', x.rangeBand())
+              .attr('y', (d) -> height)
+              .attr('height', (d) -> 0)              
+              .transition()
+              .duration(duration)
+              .attr('y', (d) -> y(d.revenue_loc))
+              .attr('height', (d) -> height-y(d.revenue_loc))
+              .style('cursor', 'pointer') 
+
+      # Tooltip
+      tooltipText = (selectedItem, unit, d, title) ->
+        value = 'N/A'
+        if d?
+          if unit == $scope.currency_symbol
+            value = unit + $filter('number')(d) 
+          else 
+            value = $filter('number')(d) + unit
+        '<p>' + (selectedItem.ssp_deal_id || $filter('firstUppercase')(selectedItem)) + '</p>' + 
+        '<p><span>' + value + '</span></p>' + 
+        '<p><span>' + title + '</span></p>'
+      tooltip = d3.select("body").append("div") 
+          .attr("class", "pmp-chart-tooltip")             
+          .style("opacity", 0)
+      mouseOut = (d) ->
+        d3.select(this).transition().duration(500).attr("r", 4)   
+        tooltip.transition()        
+            .duration(500)      
+            .style("opacity", 0);
+      mouseOver = (unit) ->
+        selectedItem = $scope.revenueFilter.item
+        return (d) ->
+          d3.select(this).transition().duration(500).attr("r", 6)     
+          tooltip.transition()        
+              .duration(200)      
+              .style("opacity", .9);      
+          tooltip.html(tooltipText(selectedItem, unit, d.revenue_loc, d.advertiser.name))  
+              .style("left", (d3.event.pageX) - 50 + "px")     
+              .style("top", (d3.event.pageY + 18) + "px")
+      svg.selectAll('.bar')   
+              .on('mouseover', mouseOver(dataset[0].unit))
+              .on('mouseout', mouseOut)  
 
     getGraphData = (data, attr) ->
       _.reduce(data, (arr, row) ->
@@ -111,6 +265,10 @@
           [
             {name: 'Price', graphType: 1, active: true, unit: $scope.currency_symbol, color: c(0), values: getPriceGraphData(data)}
             {name: 'Revenue', graphType: 2, active: true, unit: $scope.currency_symbol, color: c(1), values: getGraphData(data, 'revenue_loc')}          
+          ]
+        when '#pmp-revenue-advertiser-chart'
+          [
+            {name: 'Revenue', active: true, unit: $scope.currency_symbol, color: c(0), values: getGraphData(data, 'revenue_loc')}
           ]
         else []
 

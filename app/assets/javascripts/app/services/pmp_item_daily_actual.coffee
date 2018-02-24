@@ -16,6 +16,11 @@
       method: 'POST'
       url: '/api/pmp_item_daily_actuals/:id/assign_advertiser'
     }
+    aggregate: {
+      method: 'GET'
+      url: '/api/pmp_item_daily_actuals/aggregate'
+      isArray: true
+    }
 
   @query = resource.query
 
@@ -41,6 +46,12 @@
     deferred = $q.defer()
     resource.delete { id: params.id }, () ->
       deferred.resolve()
+    deferred.promise
+
+  @aggregate = (params) ->
+    deferred = $q.defer()
+    resource.aggregate params, (pmp_item_daily_actuals) ->
+      deferred.resolve(pmp_item_daily_actuals)
     deferred.promise
 
   return

@@ -2,7 +2,11 @@ class Api::PmpItemDailyActualsController < ApplicationController
   respond_to :json
 
   def index
-    render json: pmp_actuals_serializer
+    render json: filtered_actuals_serializer
+  end
+
+  def aggregate
+    render json: aggregated_actuals_serializer
   end
 
   def import
@@ -60,14 +64,6 @@ class Api::PmpItemDailyActualsController < ApplicationController
       :pmp_item_id,
       :pmp_id
     )
-  end
-
-  def pmp_actuals_serializer
-    if params[:pmp_item_id] == 'all'
-      aggregated_actuals_serializer
-    else
-      filtered_actuals_serializer
-    end
   end
 
   def aggregated_actuals

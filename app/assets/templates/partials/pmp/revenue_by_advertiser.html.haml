@@ -1,0 +1,33 @@
+.block#pmp-revenue-by-advertiser
+  %div.mb20
+    %span.title Revenue by Advertiser
+  %div.custom-field-item{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0' }
+    %div.custom-field-item-label
+      %label{ for: 'type' } Deal-ID
+    %div.custom-field-item-field
+      .dropdown
+        %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+          %span.editable
+            {{ revenueFilter.item.ssp_deal_id || revenueFilter.item.id || (revenueFilter.item | firstUppercase) || 'Select' }}
+          %span.caret
+        %ul.dropdown-menu
+          %li{'ng-class': '{active: revenueFilter.item == "all"}'}
+            %a{'href': '', 'ng-click': 'updateRevenueChart("all", "item")'}
+              %span.text All
+          %li{'ng-repeat': 'pmpItem in currentPMP.pmp_items', 'ng-class': '{active: revenueFilter.item.id == pmpItem.id}'}
+            %a{'href': '', 'ng-click': 'updateRevenueChart(pmpItem, "item")'}
+              %span.text {{ pmpItem.ssp_deal_id || pmpItem.id }}
+    %div.custom-field-item-field.ml20
+      .dropdown
+        %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+          %span.editable
+            {{ revenueFilter.timePeriod.value }}
+          %span.caret
+        %ul.dropdown-menu
+          %li{'ng-repeat': 'timePeriod in timePeriods', 'ng-class': '{active: revenueFilter.timePeriod.id == timePeriod.id}'}
+            %a{'href': '', 'ng-click': 'updateRevenueChart(timePeriod, "timePeriod")'}
+              %span.text {{ timePeriod.value }}
+  %div#pmp-revenue-advertiser-chart-container.mb20{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0' }
+    %svg#pmp-revenue-advertiser-chart
+  %div.center{ 'ng-if': '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' }
+    %span No data available
