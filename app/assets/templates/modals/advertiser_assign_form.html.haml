@@ -15,9 +15,9 @@
                 .type
                   ({{ client.score }})
                 .action
-                  %a{ href: "javascript:void(0)", 'ng-click': "assign(client)" }
+                  %a{ href: 'javascript:void(0)', 'ng-click': 'assign(client)' }
                     Assign
 
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
-      %button.btn.btn-warning{ type: 'submit', ng: { click: "submit()" } } {{ submitText }}
+      %button.btn.btn-warning{ type: 'submit', ng: { click: 'create()' } } Create New & Assign

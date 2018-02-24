@@ -1,9 +1,10 @@
 %tr{'ng-repeat': 'row in revenue | orderBy : zSort.by : zSort.rev | filter:searchText', 'ng-click': 'showAssignAdvertiserModal(row)'}
   %td.left {{ row.ssp_deal_id }}
   %td.left 
-    %a{ href: '', ng: { if: "row.deal", href: '/deals/{{row.deal.id}}' } }
-      {{ row.deal.name }}
-  %td.left {{ row.advertiser }}
+    %a{ href: '', ng: { if: "row.pmp", href: '/revenue/pmps/{{row.pmp.id}}' } }
+      {{ row.pmp.name }}
+  %td.left {{ row.ssp.name }}
+  %td.left {{ row.ssp_advertiser }}
   %td.right {{ row.impressions | number:0 }} 
   %td.right {{ row.revenue_loc | currency:row.currency.curr_symbol:2 }}
   %td.right

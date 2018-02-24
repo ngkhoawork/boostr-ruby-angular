@@ -50,8 +50,8 @@ class Csv::PmpItemDailyActual
     pmp_item_daily_actual.price = price
     pmp_item_daily_actual.revenue_loc = revenue_loc
     pmp_item_daily_actual.imported = true
-    pmp_item_daily_actual.advertiser = ssp_advertiser_name
-    pmp_item_daily_actual.ssp_advertiser = ssp_advertiser
+    pmp_item_daily_actual.ssp_advertiser = ssp_advertiser_name
+    pmp_item_daily_actual.advertiser = advertiser
     pmp_item_daily_actual.save!
   end
 
@@ -130,8 +130,9 @@ class Csv::PmpItemDailyActual
 
   private
 
-  def ssp_advertiser
-    @_ssp_advertiser ||= company.ssp_advertisers.find_by(name: ssp_advertiser_name, ssp: pmp_item&.ssp)
+  def advertiser
+    @_advertiser ||= company.clients.find_by(name: ssp_advertiser_name) || 
+      company.ssp_advertisers.find_by(name: ssp_advertiser_name, ssp: pmp_item&.ssp)&.client
   end
 
   def validate_ecpm

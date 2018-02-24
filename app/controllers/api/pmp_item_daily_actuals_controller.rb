@@ -29,7 +29,7 @@ class Api::PmpItemDailyActualsController < ApplicationController
   end
 
   def assign_advertiser
-    pmp_item_daily_actual.assign_advertiser!(params[:name], current_user)
+    pmp_item_daily_actual.assign_advertiser!(client, current_user)
     render json: pmp_item_daily_actual, serializer: Pmps::PmpItemDailyActualSerializer
   end
 
@@ -50,8 +50,8 @@ class Api::PmpItemDailyActualsController < ApplicationController
       :win_rate,
       :ad_requests,
       :pmp_item_id,
-      :advertiser,
-      :ssp_advertiser_id
+      :ssp_advertiser,
+      :advertiser_id
     )
   end
 
@@ -100,5 +100,9 @@ class Api::PmpItemDailyActualsController < ApplicationController
 
   def company
     @_company ||= current_user.company
+  end
+
+  def client
+    @_client ||= company.clients.find(params[:client_id])
   end
 end

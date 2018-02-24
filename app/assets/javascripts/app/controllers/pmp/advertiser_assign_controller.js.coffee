@@ -1,28 +1,33 @@
 @app.controller 'AdvertiserAssignController',
-  ['$scope', '$modalInstance', 'pmpItemDailyActual', 'Client', 'PMPItemDailyActual', 
-  ( $scope,   $modalInstance,   pmpItemDailyActual,   Client,   PMPItemDailyActual) ->
-    $scope.submitText = 'Create New'
+  ['$scope', '$modalInstance', 'pmpItemDailyActual', 'Client', 'PMPItemDailyActual', '$modal',
+  ( $scope,   $modalInstance,   pmpItemDailyActual,   Client,   PMPItemDailyActual,   $modal) ->
     $scope.searchText = pmpItemDailyActual.advertiser
     $scope.clients = []
-    selectedClient = null
 
     init = () ->
       $scope.searchObj()
 
     $scope.searchObj = () ->
-      selectedClient = null
-      $scope.submitText = 'Create New'
       Client.fuzzy_search(search: $scope.searchText).$promise.then (clients) ->
         $scope.clients = clients
 
     $scope.assign = (client) ->
-      selectedClient = client
-      $scope.submitText = 'Save'
-      $scope.searchText = client.name
-
-    $scope.submit = () ->
-      PMPItemDailyActual.assignAdvertiser(id: pmpItemDailyActual.id, name: $scope.searchText).then () ->
+      PMPItemDailyActual.assignAdvertiser(id: pmpItemDailyActual.id, client_id: client.id).then () ->
         $modalInstance.close()
+
+    $scope.create = () ->
+      $scope.modalInstance = $modal.open
+        templateUrl: 'modals/client_form.html'
+        size: 'md'
+        controller: 'AccountsNewController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          client: ->
+            {}
+      .result.then (client) ->
+        if client
+          $scope.assign(client)
 
     $scope.cancel = ->
       $modalInstance.dismiss()

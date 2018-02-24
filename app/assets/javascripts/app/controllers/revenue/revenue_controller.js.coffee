@@ -9,8 +9,8 @@
     $scope.revenueFilters = [
       {name: 'IOs', value: ''}
       {name: 'No-Match IOs', value: 'no-match'}
-      {name: 'No-Match Advertisers', value: 'no-match-adv'}
       {name: 'PMPs', value: 'pmp'}
+      {name: 'No-Match Advertisers', value: 'no-match-adv'}
       {name: 'Upside Revenues', value: 'upside'}
       {name: 'At Risk Revenues', value: 'risk'}
     ]
@@ -79,7 +79,7 @@
         when 'pmp'
           PMP.query query, (pmps) -> revenueRequest.resolve pmps
         when 'no-match-adv'
-          query.with_ssp_advertiser = false
+          query.with_advertiser = false
           PMPItemDailyActual.query query, (pmpItemDailyActuals) -> 
             revenueRequest.resolve pmpItemDailyActuals
         else

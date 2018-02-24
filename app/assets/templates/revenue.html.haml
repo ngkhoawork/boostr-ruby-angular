@@ -86,15 +86,17 @@
             %thead
               %tr.z-sortable-prime
                 %th.left
-                  %span.z-sortable{by: 'name'} Deal-ID
+                  %span.z-sortable{by: 'ssp_deal_id'} Deal-ID
                 %th.left
-                  %span.z-sortable{by: 'deal_id'} Deal Name
+                  %span.z-sortable{by: 'pmp.name'} PMP Name
                 %th.left
-                  %span.z-sortable{by: 'advertiser.name'} Advertiser
+                  %span.z-sortable{by: 'ssp.name'} SSP Name
+                %th.left
+                  %span.z-sortable{by: 'ssp_advertiser'} Advertiser
                 %th.right
-                  %span.z-sortable{by: 'agency.name'} Impressions
+                  %span.z-sortable{by: 'impressions'} Impressions
                 %th.right
-                  %span.z-sortable{by: 'budget_loc'} Revenue
+                  %span.z-sortable{by: 'revenue_loc'} Revenue
                 %th.right
 
             %tbody{ 'ng-include': "'partials/revenue_no_match_advertiser_rows.html'" }

@@ -54,7 +54,6 @@ gem 'rack-cors', :require => 'rack/cors'
 gem 'smarter_csv'
 gem 'daemons'
 gem 'google-api-client'
-gem 'fuzzily'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
