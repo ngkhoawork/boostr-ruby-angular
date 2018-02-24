@@ -133,22 +133,26 @@ class Csv::PmpItemDailyActual
   private
 
   def advertiser
-    @_advertiser ||= client || company.ssp_advertisers.find_by(name: ssp_advertiser_name, ssp: pmp_item&.ssp)&.client
-  end
-
-  def client
-    client = company.clients.find_by(name: ssp_advertiser_name)
-    if client.present?
+    advertiser = client || ssp_advertiser
+    if advertiser.present?
       ssp_advertiser = company.ssp_advertisers.find_or_initialize_by(
         name: ssp_advertiser_name,
         ssp: pmp_item&.ssp
       )
-      ssp_advertiser.client = client
+      ssp_advertiser.client = advertiser
       ssp_advertiser.created_by ||= user
       ssp_advertiser.updated_by = user
       ssp_advertiser.save!
     end
-    client
+    advertiser
+  end
+
+  def client
+    @_client ||= company.clients.find_by(name: ssp_advertiser_name)
+  end
+
+  def ssp_advertiser
+    @_ssp_advertiser ||= company.ssp_advertisers.find_by(name: ssp_advertiser_name)&.client
   end
 
   def validate_ecpm
