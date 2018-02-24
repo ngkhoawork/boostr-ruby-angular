@@ -10,20 +10,28 @@
     $scope.allDataLoaded = false
     $scope.page = 1
     $scope.PMPType = PMPType
-    $scope.timePeriods = [
-      { id: 7, value: 'Last 7 Days' }
-      { id: 14, value: 'Last 14 Days' }
-      { id: 30, value: 'Last 30 Days' }
-      { id: 'last_month', value: 'Last Month' }
-      { id: 'last_quarter', value: 'Last Quarter' }
-      { id: 'last_year', value: 'Last Year' }
-    ]
     $scope.revenueFilter = {
       item: null
-      timePeriod: $scope.timePeriods[0]
+      timePeriod: {
+        startDate: null
+        endDate: null
+      }
       id: () ->
         id = if $scope.revenueFilter.item == 'all' then 'all' else $scope.revenueFilter.item.id
-        id + $scope.revenueFilter.timePeriod.id
+        id + $scope.revenueFilter.timePeriodString
+      applyTimePeriod: () ->
+        d = $scope.revenueFilter.timePeriod
+        if d.startDate && d.endDate
+          $scope.revenueFilter.savedTimePeriod = angular.copy d
+        else if $scope.revenueFilter.savedTimePeriod
+          d.startDate = $scope.revenueFilter.savedTimePeriod.startDate
+          d.endDate = $scope.revenueFilter.savedTimePeriod.endDate
+        if d.startDate && d.endDate
+          $scope.updateRevenueChart(d.startDate.format('MMM D, YY') + ' - ' + d.endDate.format('MMM D, YY'), 'timePeriodString')
+      removeTimePeriod: (e) ->
+        e.stopPropagation()
+        $scope.revenueFilter.timePeriod = {startDate: null, endDate: null}
+        $scope.updateRevenueChart('', 'timePeriodString')
     }
     graphData = {}
     graphRevenueData = {}
@@ -98,16 +106,18 @@
             drawChart(data, '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
 
     $scope.updateRevenueChart = (val, id) ->
-      if val && id
+      if id
         $scope.revenueFilter[id] = val
         id = $scope.revenueFilter.id()
         if graphRevenueData[id]
           drawRevenueChart(graphRevenueData[id], '#pmp-revenue-advertiser-chart-container', '#pmp-revenue-advertiser-chart')
-        else
-          PMPItemDailyActual.aggregate(pmp_id: $routeParams.id, pmp_item_id: $scope.revenueFilter.item.id || 'all', group_by: 'advertiser', time_period: $scope.revenueFilter.timePeriod.id).then (data) ->
+        else if $scope.revenueFilter.timePeriodString
+          PMPItemDailyActual.aggregate(pmp_id: $routeParams.id, pmp_item_id: $scope.revenueFilter.item.id || 'all', group_by: 'advertiser', start_date: $scope.revenueFilter.timePeriod.startDate, end_date: $scope.revenueFilter.timePeriod.endDate).then (data) ->
             if data && data.length > 0
               graphRevenueData[id] = data
             drawRevenueChart(data, '#pmp-revenue-advertiser-chart-container', '#pmp-revenue-advertiser-chart')
+        else
+          drawRevenueChart([], '#pmp-revenue-advertiser-chart-container', '#pmp-revenue-advertiser-chart')
 
     drawRevenueChart = (data, containerID, svgID) ->
       chartContainer = angular.element(containerID)

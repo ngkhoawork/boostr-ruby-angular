@@ -9,7 +9,7 @@ class PmpAggregatedActualsQuery
   def perform
     return relation if options.blank?
     relation.group_by(options[:group_by])
-            .by_time_period(options[:time_period])
+            .by_time_period(options[:start_date], options[:end_date])
             .by_pmp_item_id(options[:pmp_item_id])
   end
 
@@ -49,17 +49,11 @@ class PmpAggregatedActualsQuery
       end
     end
 
-    def by_time_period(time_period)
-      return self if time_period.nil?
-      if time_period == 'last_year'
-        where(date: 1.year.ago.beginning_of_year..1.year.ago.end_of_year)
-      elsif time_period == 'last_quarter'
-        where(date: 3.months.ago.beginning_of_quarter..3.months.ago.end_of_quarter)
-      elsif time_period == 'last_month'
-        where(date: 1.month.ago.beginning_of_month..1.month.ago.end_of_month)
-      elsif time_period.to_i > 0
-        where(date: time_period.to_i.days.ago..Date.current)
-      end
+    def by_time_period(start_date, end_date)
+      return self if start_date.nil? || end_date.nil?
+      start_date = Date.parse(start_date)
+      end_date = Date.parse(end_date)
+      where(date: start_date..end_date)
     end
 
     def by_pmp_item_id(pmp_item_id)
