@@ -29,15 +29,6 @@ class PmpItemDailyActual < ActiveRecord::Base
 
   def assign_advertiser!(client, user)
     if self.ssp_advertiser.present?
-      ssp_advertiser = SspAdvertiser.find_or_initialize_by(
-        name: self.ssp_advertiser,
-        company: pmp.company,
-        ssp: pmp_item.ssp
-      )
-      ssp_advertiser.client = client
-      ssp_advertiser.created_by ||= user
-      ssp_advertiser.updated_by = user
-      ssp_advertiser.save!
     end
 
     self.advertiser_id = client.id

@@ -44,6 +44,8 @@ class Client < ActiveRecord::Base
   has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
   has_many :integrations, as: :integratable
 
+  has_many :ssp_advertisers
+
   has_one :latest_advertiser_activity, -> { self.select_values = ["DISTINCT ON(activities.client_id) activities.*"]
     order('activities.client_id', 'activities.happened_at DESC')
   }, class_name: 'Activity'
@@ -228,7 +230,13 @@ class Client < ActiveRecord::Base
               },
               activity_type: { only: [:id, :name, :css_class, :action] }
             }
-          }},
+          },
+          ssp_advertisers: {
+            include: {
+              ssp: {}
+            }
+          }
+        },
         methods: [:deals_count, :fields, :formatted_name]
       ).except(:override))
     end
