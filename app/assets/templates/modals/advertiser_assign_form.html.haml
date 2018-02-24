@@ -12,8 +12,6 @@
             .client-list
               .client-info{ 'ng-repeat': 'client in clients | orderBy: ["-matches", "score"]' }
                 .name{ ng: { bind: { html: 'client.name' } } }
-                .type
-                  ({{ client.score }})
                 .action
                   %a{ href: 'javascript:void(0)', 'ng-click': 'assign(client)' }
                     Assign
