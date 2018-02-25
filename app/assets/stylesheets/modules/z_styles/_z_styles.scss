@@ -133,6 +133,9 @@
         position: absolute;
         background-color: white;
         border-bottom: 1px solid #ddd;
+        height: auto !important;
+        min-height: 43px;
+        max-height: none !important;
         &.fixed {
             border-bottom: 2px solid #ddd;
         }
