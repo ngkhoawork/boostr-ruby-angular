@@ -234,6 +234,8 @@
         stroke-width: 3px;
     }
 
+    .axisY line,
+    .axisY path,
     .axisY1 line,
     .axisY1 path,
     .axisY2 line,
@@ -242,6 +244,7 @@
         stroke: #d9dde0;
     }
 
+    .axisY text,
     .axisY1 text,
     .axisY2 text {
         font-size: 11px;

@@ -240,9 +240,14 @@
           tooltip.html(tooltipText(selectedItem, unit, d.revenue_loc, d.advertiser.name))  
               .style("left", (d3.event.pageX) - 50 + "px")     
               .style("top", (d3.event.pageY + 18) + "px")
+      mouseMove = (d) ->
+        tooltip.style("left", (d3.event.pageX) - 50 + "px")     
+              .style("top", (d3.event.pageY + 18) + "px")
+
       svg.selectAll('.bar')   
               .on('mouseover', mouseOver(dataset[0].unit))
-              .on('mouseout', mouseOut)  
+              .on('mouseout', mouseOut) 
+              .on('mousemove', mouseMove) 
 
     getGraphData = (data, attr) ->
       _.reduce(data, (arr, row) ->
