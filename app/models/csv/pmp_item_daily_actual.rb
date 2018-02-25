@@ -134,15 +134,8 @@ class Csv::PmpItemDailyActual
 
   def advertiser
     advertiser = client || ssp_advertiser
-    if advertiser.present?
-      ssp_advertiser = company.ssp_advertisers.find_or_initialize_by(
-        name: ssp_advertiser_name,
-        ssp: pmp_item&.ssp
-      )
-      ssp_advertiser.client = advertiser
-      ssp_advertiser.created_by ||= user
-      ssp_advertiser.updated_by = user
-      ssp_advertiser.save!
+    if advertiser.present? && ssp_advertiser_name.present?
+      SspAdvertiser.create_or_update(ssp_advertiser_name, advertiser.id, pmp_item&.ssp&.id, user) 
     end
     advertiser
   end

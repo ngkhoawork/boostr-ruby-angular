@@ -134,9 +134,8 @@
         resolve:
           pmpItemDailyActual: ->
             pmpItemDailyActual
-      modalInstance.result.then () ->
-        index = $scope.revenue.indexOf(pmpItemDailyActual)
-        $scope.revenue.splice(index, 1)
+      modalInstance.result.then (ids) ->
+        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id) 
 
     $scope.deleteIo = (io, $event) ->
       $event.stopPropagation();

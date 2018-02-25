@@ -37,6 +37,11 @@ class Api::PmpItemDailyActualsController < ApplicationController
     render json: pmp_item_daily_actual, serializer: Pmps::PmpItemDailyActualSerializer
   end
 
+  def bulk_assign_advertiser
+    ids = PmpItemDailyActual.bulk_assign_advertiser(params[:ssp_advertiser], client, current_user)
+    render json: ids
+  end
+
   def destroy
     pmp_item_daily_actual.destroy
     render nothing: true

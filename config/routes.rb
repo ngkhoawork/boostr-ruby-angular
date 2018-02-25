@@ -307,6 +307,7 @@ Rails.application.routes.draw do
     resources :pmp_item_daily_actuals, only: [:index, :update, :destroy] do
       post :import, on: :collection
       post :assign_advertiser, on: :member
+      post :bulk_assign_advertiser, on: :collection
       get :aggregate, on: :collection
     end
     resources :ssps, only: [:index]

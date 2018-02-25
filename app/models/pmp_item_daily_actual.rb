@@ -27,17 +27,23 @@ class PmpItemDailyActual < ActiveRecord::Base
     pmp_item.calculate!
   end
 
+  def self.bulk_assign_advertiser(ssp_advertiser, client, user)
+    if ssp_advertiser.present? && client.present? && user.present?
+      pmp_item_daily_actuals = user.company.pmp_item_daily_actuals
+                    .where(ssp_advertiser: ssp_advertiser, advertiser_id: nil).to_a
+      pmp_item_daily_actuals.map(&:pmp_item).compact.map(&:ssp_id).compact.uniq.each do |ssp_id|
+        SspAdvertiser.create_or_update(ssp_advertiser, client.id, ssp_id, user) 
+      end
+      user.company.pmp_item_daily_actuals
+          .where(ssp_advertiser: ssp_advertiser, advertiser_id: nil)
+          .update_all(advertiser_id: client.id)
+      pmp_item_daily_actuals.map(&:id)
+    end
+  end
+
   def assign_advertiser!(client, user)
-    if self.ssp_advertiser.present?
-      ssp_advertiser = SspAdvertiser.find_or_initialize_by(
-        name: self.ssp_advertiser,
-        ssp: pmp_item&.ssp,
-        company: pmp&.company
-      )
-      ssp_advertiser.client = client
-      ssp_advertiser.created_by ||= user
-      ssp_advertiser.updated_by = user
-      ssp_advertiser.save!      
+    if self.ssp_advertiser.present? 
+      SspAdvertiser.create_or_update(self.ssp_advertiser, client.id, pmp_item&.ssp&.id, user) 
     end
     self.advertiser_id = client.id
     self.save!

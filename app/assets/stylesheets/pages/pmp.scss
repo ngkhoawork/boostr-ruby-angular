@@ -300,3 +300,26 @@
       font-size: 12px;
     }   
 }
+
+.no-matching-advertiser-modal {
+  .toggle {
+    margin-top: 10px;
+    text-align: right;
+
+    .z-toggle {
+      vertical-align: middle;
+    }
+
+    label > span {
+      font-size: 12px;
+      font-weight: normal;
+    }
+  }
+}
+
+#advertiser-assign-warning {
+  h5 {
+    margin-top: 20px;
+    margin-bottom: 40px;
+  }
+}
