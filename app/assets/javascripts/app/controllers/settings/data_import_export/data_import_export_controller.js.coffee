@@ -263,6 +263,21 @@
     $window.open('/api/deal_product_budgets.csv')
     return true
 
+  $scope.showUploadPmpItemDailyActualsModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/pmp_item_daily_actual_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/pmp_item_daily_actuals/import'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.exportInfluencers = ->
     $window.open('/api/influencers.csv')
     return true
@@ -292,6 +307,7 @@
     { title: 'Influencer Content Fee Import', click: $scope.showUploadInfluencerContentFeesModal, linkText: 'Import Content Fee' },
     { title: 'Influencers Import', click: $scope.showUploadInfluencersModal, linkText: 'Import Influencers' },
     { title: 'Integration ID Import', click: $scope.showUploadIntegrationIdModal, linkText: 'Import Integration IDs' },
+    { title: 'PMP Daily Actual Import', click: $scope.showUploadPmpItemDailyActualsModal, linkText: 'Import PMP Daily Actual' },
     { title: 'Publishers Daily Actuals Import', click: $scope.showUploadPublisherModal, linkText: 'Publishers Daily Actuals Import' },
     { title: 'Quotas Import', click: $scope.showUploadQuotasModal, linkText: 'Import Quotas' },
     { title: 'Users Import', click: $scope.showUploadUsersModal, linkText: 'Import Users' }
