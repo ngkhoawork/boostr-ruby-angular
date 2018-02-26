@@ -46,6 +46,20 @@
                 item.budget = parseFloat item.budget if item.budget
                 item.budget_loc = parseFloat item.budget_loc if item.budget_loc
                 item
+        parsePmpData = (data) ->
+            new_data = []
+            _.each data, (pmp) ->
+                _.each pmp.products, (product_item) ->
+                    new_pmp = angular.copy(pmp)
+                    new_pmp.$$hashKey = new_pmp.$$hashKey + product_item.product_id
+                    new_pmp.product_id = product_item.product_id
+                    new_pmp.product = product_item.product
+                    new_pmp.budget = parseFloat new_pmp.budget if new_pmp.budget
+                    new_pmp.budget_loc = parseFloat new_pmp.budget_loc if new_pmp.budget_loc
+                    new_pmp.in_period_amt = product_item.in_period_amt
+                    new_pmp.in_period_split_amt = product_item.in_period_split_amt
+                    new_data.push(new_pmp)
+            return new_data
 
         $scope.onFilterApply = (query) ->
             query.id = query.id || 'all'
@@ -89,14 +103,19 @@
                         $scope.totalForecastData.weighted_pipeline_by_stage[index] += parseFloat(val)
                 query.team_id = query.id
                 delete query.id
-                Revenue.forecast_detail(query).$promise.then (data) ->
-                    parseBudget data
-                    $scope.revenues = data
+                return Revenue.forecast_detail(query).$promise
+            .then (data) ->
+                parseBudget data
+                $scope.revenues = data
 
-                    Deal.forecast_detail(query).then (data) ->
-                        parseBudget data
-                        $scope.deals = data
-                        $scope.isLoading = false
+                return Forecast.pmp_product_data(query).$promise
+            .then (data) ->
+                $scope.pmp_revenues = parsePmpData data
+                return Deal.forecast_detail(query)
+            .then (data) ->
+                parseBudget data
+                $scope.deals = data
+                $scope.isLoading = false
 
         tableToCSV = (el) ->
             table = angular.element(el)

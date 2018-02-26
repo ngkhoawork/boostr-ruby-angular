@@ -1,0 +1,57 @@
+#new_pmp_item_modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header
+      {{formType}} PMP Item
+      %span.close-btn{'ng-click': 'closeModal()'}
+    .popup-modal-body
+      .row
+        .col-md-6.form-group{'ng-class':'{error: errors.ssp_id}'}
+          %span.error-text {{errors.ssp_id}}
+          %label{ for: 'ssp' }
+            SSP
+            %span.star *
+          %ui-select{ name: 'ssp', ng: { model: 'item.ssp_id', required: true }}
+            %ui-select-match{ placeholder: 'SSP' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'ssp.id as ssp in ssps' }
+              %div{ ng: { bind: { html: 'ssp.name' } } }
+        .col-md-6.form-group{'ng-class':'{error: errors.ssp_deal_id}'}
+          %span.error-text {{errors.ssp_deal_id}}
+          %label{ for: 'deal_id' }
+            Deal-ID
+            %span.star *
+          %input.form-control{ placeholder: 'Deal-ID', ng: { model: 'item.ssp_deal_id', required: true }, name: 'deal_id' }
+
+      .row
+        .col-md-6.form-group{'ng-class':'{error: errors.budget_loc}'}
+          %span.error-text {{errors.budget_loc}}
+          %label{ for: 'budget' }
+            Budget
+            %span.star *
+          %input.form-control{ 'numbers-only': '', placeholder: 'Budget', ng: { model: 'item.budget_loc', required: true }, name: 'budget' }
+        .col-md-6.form-group{'ng-class':'{error: errors.pmp_type}'}
+          %span.error-text {{errors.pmp_type}}
+          %label{ for: 'pmp_type' }
+            PMP Type
+            %span.star *
+          %ui-select{ name: 'pmp_type', ng: { model: 'item.pmp_type', required: true }}
+            %ui-select-match{ placeholder: 'PMP Type' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'pmpType.id as pmpType in pmpTypes' }
+              %div{ ng: { bind: { html: 'pmpType.name' } } }
+              
+      .row
+        .col-md-6.form-group{'ng-class':'{error: errors.product_id}'}
+          %span.error-text {{errors.product_id}}
+          %label{ for: 'product_id' }
+            Product
+            %span.star *
+          %ui-select{ name: 'product_id', ng: { model: 'item.product_id', required: false }}
+            %ui-select-match{ placeholder: 'Product' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'product.id as product in products' }
+              %div{ ng: { bind: { html: 'product.name' } } }
+
+    .popup-modal-footer.text-center
+      %button.btn.btn-default{ 'type': 'button', 'ng-click': 'closeModal()' } Cancel
+      %button.btn.btn-warning{ type: 'submit' } {{ submitText }}

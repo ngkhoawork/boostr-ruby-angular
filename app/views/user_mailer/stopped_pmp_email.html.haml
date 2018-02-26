@@ -1,0 +1,7 @@
+%p
+  The following PMP's did not have revenue today and may have stopped:
+
+- @pmp_items.each do |pmp_item|
+  %p
+    =link_to pmp_item.pmp.name, "#{root_url}/revenue/pmps/#{pmp_item.pmp.id}"
+    \- #{pmp_item.pmp.agency.try(:name) || 'N/A'} - #{pmp_item.pmp.advertiser.try(:name) || 'N/A'} - Deal-ID: #{pmp_item.ssp_deal_id || 'N/A'}

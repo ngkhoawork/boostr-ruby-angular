@@ -4,6 +4,7 @@ class Product < ActiveRecord::Base
   has_many :deal_products
   has_many :values, as: :subject
   has_many :ad_units
+  has_many :pmp_items
 
   validates :name, presence: true
   validates :margin,
@@ -14,7 +15,7 @@ class Product < ActiveRecord::Base
     },
     allow_nil: true
 
-  REVENUE_TYPES = %w('Display', 'Content-Fee', 'None')
+  REVENUE_TYPES = %w('Display', 'Content-Fee', 'PMP', 'None')
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 

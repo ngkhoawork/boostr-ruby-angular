@@ -55,7 +55,6 @@
                     {{(forecast.quarterly_weighted_forecast[quarter] || 0) | currency : '$' : 0}}
                   %td{'ng-if': 'isYear()'}
                     {{getAnnualSum(forecast.quarterly_weighted_forecast) | currency : '$' : 0}}
-
                 %tr
                   %td
                     %b Quota

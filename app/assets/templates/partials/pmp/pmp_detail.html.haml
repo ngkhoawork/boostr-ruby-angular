@@ -1,0 +1,52 @@
+.block.detail-stats
+  %div.stats-body
+    %div.mb30
+      %span.title 
+        {{currentPMP.name}}
+      %i.fa.fa-pencil.edit-pmp{'ng-click': 'showPmpEditModal()'}
+      %i.fa.fa-trash.delete-pmp{'ng-click': 'deletePmp()'}
+
+    .clearfix
+    %div.stats-numbers.mb30
+      %div.stats-col
+        .col-body-wrap
+          .col-body
+            .description Budget
+            .title {{ (currentPMP.budget_loc | currency:currency_symbol:2) || 'N/A' }}
+            .subtitle{'ng-if': 'currentPMP.currency.curr_cd != "USD"'} {{currentPMP.budget | currency: '$' : 2}}
+
+      %div.stats-col
+        .col-body-wrap
+          .col-body
+            .description Delivered
+            .title 
+              {{ (currentPMP.budget_delivered_loc | currency:currency_symbol:2) || 'N/A' }} {{ currentPMP.budget_loc && currentPMP.budget_loc != 0 ? '(' + (currentPMP.budget_delivered_loc/currentPMP.budget_loc*100 | percentage:2) + ')' : '' }}
+            .subtitle{'ng-if': 'currentPMP.currency.curr_cd != "USD"'} {{currentPMP.budget_delivered | currency: '$' : 2}}
+      %div.stats-col
+        .col-body-wrap
+          .col-body
+            .description Remaining
+            .title {{ (currentPMP.budget_remaining_loc | currency:currency_symbol:2) || 'N/A' }}
+            .subtitle{'ng-if': 'currentPMP.currency.curr_cd != "USD"'} {{currentPMP.budget_remaining | currency: '$' : 2}}
+      %div.stats-col
+        .col-body-wrap
+          .col-body
+            .description Advertiser
+            .title {{currentPMP.advertiser && currentPMP.advertiser.name}}
+      %div.stats-col
+        .col-body-wrap
+          .col-body
+            .description Agency
+            .title {{currentPMP.agency && currentPMP.agency.name}}
+      %div.stats-col
+        .col-body-wrap
+          .col-body
+            .description Start
+            .title {{currentPMP.start_date | date: 'M/d/yyyy' : 'UTC'}}
+      %div.stats-col
+        .col-body-wrap
+          .col-body
+            .description End
+            .title {{currentPMP.end_date | date: 'M/d/yyyy' : 'UTC'}}
+  
+    .clearfix
