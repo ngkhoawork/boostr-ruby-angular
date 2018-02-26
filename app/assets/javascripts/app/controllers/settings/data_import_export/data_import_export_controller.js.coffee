@@ -7,9 +7,6 @@
     source: 'ui'
   }
 
-  $scope.getLogs = ->
-    $scope.$broadcast('pagination:reload')
-
   $scope.showUploadClientModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_upload.html'
@@ -19,7 +16,7 @@
       keyboard: false
       resolve:
         api_url: ->
-          '/api/clients/csv_import'
+          '/api/clients'
         custom_fields_api: ->
           'AccountCfName'
         metadata: ->
@@ -130,36 +127,6 @@
         metadata: ->
           false
 
-  $scope.showUploadIOContentFeeModal = () ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/io_content_fee_upload.html'
-      size: 'lg'
-      controller: 'CsvUploadController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        api_url: ->
-          '/api/ios/import_content_fee'
-        custom_fields_api: ->
-          undefined
-        metadata: ->
-          false
-
-  $scope.showUploadIOCostsModal = () ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/io_costs_upload.html'
-      size: 'lg'
-      controller: 'CsvUploadController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        api_url: ->
-          '/api/ios/import_costs'
-        custom_fields_api: ->
-          undefined
-        metadata: ->
-          false
-
   $scope.showUploadIntegrationIdModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/integration_id_upload.html'
@@ -242,7 +209,6 @@
           undefined
         metadata: ->
           false
-
   $scope.showUploadInfluencerContentFeesModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/influencer_content_fee_upload.html'
@@ -268,66 +234,6 @@
       resolve:
         api_url: ->
           '/api/publisher_daily_actuals/import'
-        custom_fields_api: ->
-          undefined
-        metadata: ->
-          false
-
-  $scope.showUploadLeadsModal = () ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/leads_upload.html'
-      size: 'lg'
-      controller: 'CsvUploadController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        api_url: ->
-          '/api/leads/import'
-        custom_fields_api: ->
-          undefined
-        metadata: ->
-          false
-
-  $scope.showUploadPmpItemDailyActualsModal = () ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/pmp_item_daily_actual_upload.html'
-      size: 'lg'
-      controller: 'CsvUploadController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        api_url: ->
-          '/api/pmp_item_daily_actuals/import'
-        custom_fields_api: ->
-          undefined
-        metadata: ->
-          false
-
-  $scope.showUploadActivePmpItem = () ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/active_pmp_item.html'
-      size: 'lg'
-      controller: 'CsvUploadController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        api_url: ->
-          '/api/active_pmps/import_item'
-        custom_fields_api: ->
-          undefined
-        metadata: ->
-          false
-
-  $scope.showUploadActivePmpObject = () ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/active_pmp_object.html'
-      size: 'lg'
-      controller: 'CsvUploadController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        api_url: ->
-          '/api/active_pmps/import_object'
         custom_fields_api: ->
           undefined
         metadata: ->
@@ -388,13 +294,7 @@
     { title: 'Integration ID Import', click: $scope.showUploadIntegrationIdModal, linkText: 'Import Integration IDs' },
     { title: 'Publishers Daily Actuals Import', click: $scope.showUploadPublisherModal, linkText: 'Publishers Daily Actuals Import' },
     { title: 'Quotas Import', click: $scope.showUploadQuotasModal, linkText: 'Import Quotas' },
-    { title: 'Users Import', click: $scope.showUploadUsersModal, linkText: 'Import Users' },
-    { title: 'IO Content Fee Import', click: $scope.showUploadIOContentFeeModal, linkText: 'Import IO Content Fees' },
-    { title: 'IO Costs Import', click: $scope.showUploadIOCostsModal, linkText: 'Import IO Costs' },
-    { title: 'PMP Daily Actual Import', click: $scope.showUploadPmpItemDailyActualsModal, linkText: 'Import PMP Daily Actual' },
-    { title: 'Active PMP Import', click: $scope.showUploadActivePmpObject, linkText: 'Active PMP Impor' },
-    { title: 'Leads Import', click: $scope.showUploadLeadsModal, linkText: 'Import Leads' },
-    { title: 'Active PMP Item Import', click: $scope.showUploadActivePmpItem, linkText: 'Active PMP Item Import' }
+    { title: 'Users Import', click: $scope.showUploadUsersModal, linkText: 'Import Users' }
   ]
 
   $scope.exportOptions = [
