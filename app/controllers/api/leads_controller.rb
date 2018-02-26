@@ -38,7 +38,7 @@ class Api::LeadsController < ApplicationController
   end
 
   def users
-    render json: current_user.company.users.as_json(override: true, only: [:id], methods: [:name])
+    render json: company.users.as_json(override: true, only: [:id], methods: [:name])
   end
 
   def map_with_client
@@ -93,5 +93,9 @@ class Api::LeadsController < ApplicationController
       params[:file][:s3_file_path],
       params[:file][:original_filename]
     )
+  end
+
+  def company
+    current_user.company
   end
 end
