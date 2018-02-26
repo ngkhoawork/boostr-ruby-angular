@@ -81,54 +81,7 @@
                     %a{href: '', 'ng-href': '/accounts/{{advertiser.id}}'} {{advertiser.advertiser_name}}
                   %td {{advertiser.sum | currency : '$' : 0}}
                   %td {{advertiser.seller_name}}
-        .block
-          %div.mb20
-            %span.title Contacts & Related Advertisers
-          .table-wrapper
-            %table.table.table-hover
-              %thead
-                %tr
-                  %th Name
-                  %th Advertiser
-                  %th Email
-                  %th Phone
-                  %th Last Touch
-              %tbody
-                %tr{'ng-repeat': 'contact in relatedContacts'}
-                  %td
-                    %a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}
-                  %td
-                    %a{href: '', 'ng-href': '/accounts/{{contact.advertiser.id}}'} {{contact.advertiser.name}}
-                  %td {{contact.email}}
-                  %td {{contact.phone}}
-                  %td {{contact.last_touch | date}}
 
-        .block
-          %div.mb20
-            %span.title Activity History
-          .table-wrapper
-            %table.table.table-hover
-              %thead
-                %tr
-                  %th Date
-                  %th Type
-                  %th Agency
-                  %th Comments
-                  %th Contacts
-              %tbody
-                %tr{'ng-repeat': 'activity in activities'}
-                  %td {{activity.date | date : 'MM/dd/yy'}}
-                  %td
-                    .activity-type
-                      %span{'class': 'mr8 icon-activity-{{getIconName(activity.type)}}'}
-                      %b {{activity.type}}
-                  %td
-                    %a{href: '', 'ng-href': '/accounts/{{activity.advertiser.id}}'} {{activity.advertiser.name}}
-                  %td
-                    %div{ng: {'text-truncate': 'activity.comments', 'tt-chars-threshold': '250'}}
-                  %td
-                    %div{'ng-repeat': 'contact in activity.contacts'}
-                      %a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}
       .col-xs-4.pr0
         .block
           %div.mb20

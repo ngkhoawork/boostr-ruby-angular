@@ -9,9 +9,7 @@
 
       $scope.holdingCompanies = []
       $scope.timeDimensions = []
-      $scope.relatedContacts = []
       $scope.relatedAdvertisers = []
-      $scope.activities = []
 
       $scope.onFilterApply = (query) ->
         if !query.start_date || !query.end_date
@@ -88,10 +86,6 @@
         Agency360.winRateByCategory(query).then (data) ->
           data = _.map data, (c) -> {name: c.name, value: Math.round c.win_rate}
           drawWinRateChart(data, FOURTH_CHART_ID)
-        Agency360.relatedContacts(query).then (data) ->
-          $scope.relatedContacts = data
-        Agency360.activityHistory(query).then (data) ->
-          $scope.activities = data
         Agency360.advertisersWithoutSpend(query).then (data) ->
           $scope.relatedAdvertisers = data
 
