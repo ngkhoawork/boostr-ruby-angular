@@ -26,10 +26,15 @@
         nextSteps += lead.notes
       deal.next_steps = nextSteps
       if lead.client
-        console.log lead.client
-        deal.advertiser = lead.client
-        deal.advertiser_id = lead.client.id
-        $scope.advertisers = [lead.client]
+        switch lead.client.type
+          when 'Advertiser'
+            deal.advertiser = lead.client
+            deal.advertiser_id = lead.client.id
+            $scope.advertisers = [lead.client]
+          when 'Agency'
+            deal.agency = lead.client
+            deal.agency_id = lead.client.id
+            $scope.agencies = [lead.client]
 
     $q.all({
       user: CurrentUser.get().$promise,
