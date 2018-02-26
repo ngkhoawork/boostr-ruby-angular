@@ -1,0 +1,92 @@
+#pmp-details{ ng: { if: 'currentDeal.pmp && currentDeal.stage.probability == 100', init: 'currentPMP = currentDeal.pmp' }}
+  .block.detail-stats
+    %div.stats-body
+      %div.mb30
+        %span.title PMP Details
+        %a{ 'href': '', 'ng-href': '/revenue/pmps/{{currentDeal.pmp.id}}' } {{ currentDeal.pmp.name }}
+
+      .clearfix
+      %div.stats-numbers.mb30
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Budget
+              .title {{ (currentPMP.budget_loc | currency:currentPMP.currency_symbol:2) || 'N/A' }}
+              .subtitle{'ng-if': 'currentPMP.curr_cd != "USD"'} {{currentPMP.budget | currency: '$' : 2}}
+
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Delivered
+              .title {{ (currentPMP.budget_delivered_loc | currency:currentPMP.currency_symbol:2) || 'N/A' }} {{ currentPMP.budget_loc && currentPMP.budget_loc != 0 ? '(' + (currentPMP.budget_delivered_loc/currentPMP.budget_loc*100 | percentage:2) + ')' : '' }}
+              .subtitle{'ng-if': 'currentPMP.curr_cd != "USD"'} {{currentPMP.budget_delivered | currency: '$' : 2}}
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Remaining
+              .title {{ (currentPMP.budget_remaining_loc | currency:currentPMP.currency_symbol:2) || 'N/A' }}
+              .subtitle{'ng-if': 'currentPMP.curr_cd != "USD"'} {{currentPMP.budget_remaining | currency: '$' : 2}}
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Advertiser
+              .title {{currentPMP.advertiser && currentPMP.advertiser.name}}
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Agency
+              .title {{currentPMP.agency && currentPMP.agency.name}}
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description Start
+              .title {{currentPMP.start_date | date: 'M/d/yyyy' : 'UTC'}}
+        %div.stats-col
+          .col-body-wrap
+            .col-body
+              .description End
+              .title {{currentPMP.end_date | date: 'M/d/yyyy' : 'UTC'}}
+    
+      .clearfix
+
+  .block
+    %div.mb20
+      %span.title PMP Items
+      
+    .table-wrapper
+      %table.table.table-hover
+        %thead
+          %tr
+            %th.left Deal ID
+            %th.left SSP
+            %th.left Product
+            %th.left PMP Type
+            %th.right Budget
+            %th.right Delivered
+            %th.right Remaining
+            %th.right 7 Day Run Rate
+            %th.right 30 Day Run Rate
+        %tbody
+          %tr{ ng: { repeat: "pmpItem in currentPMP.pmp_items | orderBy: 'deal_id'"} }
+            %td.left
+              {{ pmpItem.ssp_deal_id }}
+            %td.left
+              %strong
+                {{ pmpItem.ssp && pmpItem.ssp.name }}
+            %td.left
+              {{ pmpItem.product && pmpItem.product.name }}
+            %td.left
+              {{ PMPType.getName(pmpItem.pmp_type) }}
+            %td.right
+              {{ pmpItem.budget_loc | currency:currentPMP.currency_symbol:2 }}
+            %td.right
+              {{ pmpItem.budget_delivered_loc | currency:currentPMP.currency_symbol:2 }}
+            %td.right
+              {{ pmpItem.budget_remaining_loc | currency:currentPMP.currency_symbol:2 }}
+            %td.right
+              {{ (pmpItem.run_rate_7_days | currency:currentPMP.currency_symbol:2) || 'N/A' }}
+            %td.right
+              {{ (pmpItem.run_rate_30_days | currency:currentPMP.currency_symbol:2) || 'N/A' }}
+          %tr{ ng: { if: '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' } }
+            %td.auto-colspan.center
+              No data available

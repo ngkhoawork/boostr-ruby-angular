@@ -1,6 +1,8 @@
 FactoryGirl.define do
   factory :deal_product do
-    budget 3_100_000
+    budget 999
+    budget_loc 999
+    
     deal
     product
   end

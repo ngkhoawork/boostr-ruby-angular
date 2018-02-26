@@ -1,0 +1,23 @@
+.block#pmp-price-revenue
+  %div.mb20
+    %span.title Price & Revenue
+  %div.custom-field-item{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0' }
+    %div.custom-field-item-label
+      %label{ for: 'type' } Deal-ID
+    %div.custom-field-item-field
+      .dropdown
+        %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+          %span.editable{'ng-class': '{"not-selected": !currentDeal.deal_type.option_id}'}
+            {{selectedPriceItem.ssp_deal_id || selectedPriceItem.id || (selectedPriceItem | firstUppercase) || 'Select'}}
+          %span.caret
+        %ul.dropdown-menu
+          %li{'ng-class': '{active: selectedPriceItem == "all"}'}
+            %a{'href': '', 'ng-click': 'updatePriceChart("all")'}
+              %span.text All
+          %li{'ng-repeat': 'pmpItem in currentPMP.pmp_items', 'ng-class': '{active: selectedPriceItem.id == pmpItem.id}'}
+            %a{'href': '', 'ng-click': 'updatePriceChart(pmpItem)'}
+              %span.text {{pmpItem.ssp_deal_id || pmpItem.id}}
+  %div#pmp-price-revenue-chart-container.mb20{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0' }
+    %svg#pmp-price-revenue-chart
+  %div.center{ 'ng-if': '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' }
+    %span No data available

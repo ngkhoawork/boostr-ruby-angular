@@ -247,6 +247,7 @@ Rails.application.routes.draw do
         get :search_clients
         get :filter_options
         get :category_options
+        get :fuzzy_search
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index, :create, :update, :destroy] do
@@ -302,6 +303,17 @@ Rails.application.routes.draw do
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]
     end
+    resources :pmps, only: [:index, :show, :create, :update, :destroy] do
+      resources :pmp_members, only: [:create, :update, :destroy]
+      resources :pmp_items, only: [:create, :update, :destroy]
+    end
+    resources :pmp_item_daily_actuals, only: [:index, :update, :destroy] do
+      post :import, on: :collection
+      post :assign_advertiser, on: :member
+      post :bulk_assign_advertiser, on: :collection
+      get :aggregate, on: :collection
+    end
+    resources :ssps, only: [:index]
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
       resources :deal_products, only: [:create, :update, :destroy]
       collection do
@@ -364,6 +376,8 @@ Rails.application.routes.draw do
     resources :forecasts, only: [:index, :show] do
       collection do
         get :revenue_data
+        get :pmp_data
+        get :pmp_product_data
         get :pipeline_data
         get :old_detail
         get :detail

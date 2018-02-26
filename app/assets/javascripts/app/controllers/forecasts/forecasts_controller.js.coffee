@@ -112,6 +112,22 @@
 							$timeout onSubtableLoad
 						, ->
 							link.removeClass('loading-subtable')
+
+						Forecast.pmp_data(params).$promise.then (pmp_revenues) ->
+							$scope.pmp_revenues = pmp_revenues
+							$scope.sort.pmp_revenues = new McSort(
+								column: "name",
+								compareFn: (column, a, b) ->
+									switch (column)
+										when "name", "agency", "advertiser"
+											a[column] && a[column].localeCompare(b[column])
+										else
+											a[column] - b[column]
+								dataset: $scope.pmp_revenues
+							)
+							$timeout onSubtableLoad
+						, ->
+							link.removeClass('loading-subtable')
 			return
 
 		$scope.hideSubtable = ->
