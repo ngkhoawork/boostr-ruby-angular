@@ -16,8 +16,9 @@ class  Api::V2::EmailThreadsController < ApiController
       email_thread = EmailThread.create(decorated_email_threads)
 
       if email_thread.save
-        render json: email_thread, status: :created
+        render json: email_thread
       else
+
         render json: { errors: email_thread.errors.messages }, status: :unprocessable_entity
       end
     else
