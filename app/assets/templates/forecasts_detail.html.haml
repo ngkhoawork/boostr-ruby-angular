@@ -189,6 +189,59 @@
                     %td.center.auto-colspan
                       No Data for the Filters Selected
 
+      #pmp-section.row
+        .col-xs-12
+          .block  
+            .switch-row.pull-right
+              %span{'ng-class': '{active: switch.pmp_revenues == "quarters"}', 'ng-click': 'switch.set("pmp_revenues", "quarters")'} Quarterly
+              %span{'ng-class': '{active: switch.pmp_revenues == "months"}', 'ng-click': 'switch.set("pmp_revenues", "months")'} Monthly
+            %div.mb20
+              %span.title PMP Details
+            %div.table-wrapper
+              %table.table.table-hover.exportable-table
+                %thead
+                  %tr.hide
+                    -#title for export
+                    %th Revenue Details
+                  %tr.z-sortable-prime{'sort-name': 'pmp_revenues', 'z-fixed-header': true, watch: '["pmp_revenues", "pmp_revenues.detail_amounts[switch.pmp_revenues]"]'}
+                    %th
+                      .z-sortable{by: 'name'} IO Name
+                    %th
+                      .z-sortable{by: 'advertiser.name'}Advertiser
+                    %th
+                      .z-sortable{by: 'agency.name'} Agency
+                    %th
+                      .z-sortable{by: 'members'} Team
+                    %th  
+                      .z-sortable{by: 'start_date'} Start Date
+                    %th
+                      .z-sortable{by: 'end_date'} End Date
+                    %th
+                      .z-sortable{by: 'budget', default: true} Total Budget
+                    %th
+                      .z-sortable{by: 'in_period_split_amt'} Split In-Period Amt
+                    %th{'ng-repeat': '(index, key) in pmp_revenues.detail_amounts[switch.pmp_revenues]'}
+                      .z-sortable{by: 'getSortableAmountKey("pmp_revenues", index)'} {{key}}
+                %tbody
+                  %tr{'ng-repeat': 'pmp_revenue in pmp_revenues | orderBy : zSort.pmp_revenues.by : zSort.pmp_revenues.rev'}
+                    %td
+                      %a{href: '', 'ng-href': '/revenue/pmps/{{pmp_revenue.id}}'} {{pmp_revenue.name}}
+                    %td {{pmp_revenue.advertiser}}
+                    %td {{pmp_revenue.agency}}
+                    %td
+                      %div{'ng-repeat': 'member in pmp_revenue.pmp_members'} {{member.name}} {{member.share}}%  
+                    %td {{pmp_revenue.start_date | date : 'MM/dd/yyyy'}}
+                    %td {{pmp_revenue.end_date | date : 'MM/dd/yyyy'}}
+                    %td {{pmp_revenue.budget | currency : '$' : 2}}
+                    %td {{pmp_revenue.split_period_budget | currency : '$' : 2}}
+                    %td{'ng-repeat': 'amount in pmp_revenue.quarters track by $index', 'ng-if': 'switch.pmp_revenues == "quarters" && amount != null'}
+                      {{amount | currency : '$' : 2}}
+                    %td{'ng-repeat': 'amount in pmp_revenue.months track by $index', 'ng-if': 'switch.pmp_revenues == "months" && amount != null'}
+                      {{amount | currency : '$' : 2}}
+                  %tr{ ng: { if: 'pmp_revenues.length == 0' }}
+                    %td.center.auto-colspan
+                      No Data for the Filters Selected
+
       #deals-section.row
         .col-xs-12
           .block
