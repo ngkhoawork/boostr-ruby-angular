@@ -16,7 +16,7 @@
         $scope.submitText = 'Update'
       SSP.all().then (ssps) ->
         $scope.ssps = ssps
-      Product.all(revenue_type: 'PMP', active: true).then (data) ->
+      Product.all(active: true).then (data) ->
         $scope.products = data
 
     $scope.submitForm = () ->
