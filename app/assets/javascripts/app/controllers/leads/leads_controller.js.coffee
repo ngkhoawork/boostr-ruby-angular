@@ -4,6 +4,7 @@
 
         $scope.isLoading = false
         $scope.leads = []
+        $scope.search = ''
         $scope.teamFilters = [
             {id: 'my', name: 'My Leads'}
             {id: 'team', name: 'My Team\'s Leads'}
@@ -23,14 +24,15 @@
 
         $scope.onFilterChange = (key, item) ->
             $scope[key] = item
-            getLeads()
+            $scope.getLeads()
 
-        getLeads = ->
-            if !$scope.teamFilter || !$scope.statusFilter then return
+        $scope.getLeads = ->
+            if !$scope.teamFilter || !$scope.statusFilter || $scope.isLoading then return
             $scope.isLoading = true
             params =
                 relation: $scope.teamFilter.id
                 status: $scope.statusFilter.id
+                search: $scope.search if $scope.search
             Leads.get(params).then (data) ->
                 data.status = params.status
                 $scope.leads = data
@@ -103,7 +105,7 @@
         $scope.reject = (lead) ->
             Leads.reject(id: lead.id)
 
-        $scope.$on 'updated_leads', getLeads
+        $scope.$on 'updated_leads', $scope.getLeads
 #        $scope.$on 'updated_lead', getLeads
 
 ]

@@ -26,6 +26,7 @@
         nextSteps += lead.notes
       deal.next_steps = nextSteps
       if lead.client
+        console.log lead.client
         deal.advertiser = lead.client
         deal.advertiser_id = lead.client.id
         $scope.advertisers = [lead.client]

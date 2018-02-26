@@ -31,11 +31,6 @@
             target.closest('.new-row').removeClass('visible')
             return
 
-        $scope.editRule = (e, rule) ->
-            e.stopPropagation()
-            $scope.showForm(e, rule.name)
-
-
         $scope.deleteRule = (e, rule) ->
             e.stopPropagation()
             if confirm('Are you sure you want to delete this rule?')
@@ -43,9 +38,6 @@
                     $scope.rules = _.reject $scope.rules, (item) -> item.id == rule.id
                     if rule == $scope.selectedRule
                         $scope.selectedRule = $scope.rules[0] || $scope.defaultRule
-
-        $scope.updateField = (type) ->
-            console.log type
 
         $scope.deleteField = (field, value) ->
             rule = $scope.selectedRule
@@ -91,6 +83,19 @@
                         _.extend rule, updatedRule
 
             $scope.hideForm(e)
+
+        $scope.updateField = (type, rule) ->
+            if !rule then return
+            params = {id: rule.id}
+            switch type
+                when 'rule'
+                    params.name = rule.name
+                when 'country'
+                    params.countries = _.reject rule.countries, (item) -> !item.trim()
+                when 'state'
+                    params.states = _.reject rule.states, (item) -> !item.trim()
+            AssignmentRule.update(params).then (updatedRule) ->
+                _.extend rule, updatedRule
 
         $scope.showForm = (e, form) ->
             $scope.form = form || ''

@@ -16,11 +16,11 @@
                         %i.fa.fa-close.z-icon{'ng-mousedown': 'hideForm($event)'}
                     .rules-wrap{'dnd-list': 'rules'}
                         .rule-row.rule-name{ng: {repeat: 'rule in rules', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'}, dnd: {draggable: 'rule', moved: 'onRuleMoved($index)'}}
-                            -#%span{'editable-text': 'rule.name', onaftersave: 'updateField("rule")'}
-                            {{rule.name}}
+                            %span{'editable-text': 'rule.name', blur: 'submit', onaftersave: 'updateField("rule", rule)'}
+                                {{rule.name}}
                             %i.fa.fa-trash.z-icon{'ng-click': 'deleteRule($event, rule)'}
                     %div{'ng-if': 'defaultRule'}
-                        .rule-row.rule-name{ng: {click: 'selectRule(defaultRule)', class: '{active: defaultRule === selectedRule}'}}
+                        .rule-row.rule-name.default-rule{ng: {click: 'selectRule(defaultRule)', class: '{active: defaultRule === selectedRule}'}}
                             {{defaultRule.name}}
                             %i.fa.fa-star.z-icon{style: 'visibility: hidden'}
 
@@ -33,7 +33,8 @@
                             %input.form-control{placeholder: 'Country', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "country")'}
                         %i.fa.fa-close.z-icon{'ng-mousedown': 'hideForm($event)'}
                     .rule-row{'ng-repeat': 'country in selectedRule.countries track by $index'}
-                        {{country}}
+                        %span{'editable-text': 'selectedRule.countries[$index]', blur: 'submit', onaftersave: 'updateField("country", selectedRule)'}
+                            {{selectedRule.countries[$index]}}
                         %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("countries", country)'}
 
                 .rules-column
@@ -45,7 +46,8 @@
                             %input.form-control{placeholder: 'State', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "state")'}
                         %i.fa.fa-close.z-icon{'ng-mousedown': 'hideForm($event)'}
                     .rule-row{'ng-repeat': 'state in selectedRule.states track by $index'}
-                        {{state}}
+                        %span{'editable-text': 'selectedRule.states[$index]', blur: 'submit', onaftersave: 'updateField("state", selectedRule)'}
+                            {{selectedRule.states[$index]}}
                         %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("states", state)'}
 
                 .rules-column

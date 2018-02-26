@@ -10,6 +10,23 @@
             margin-right: 30px;
             white-space: nowrap;
         }
+        .leads-search {
+            width: 30%;
+            position: relative;
+            margin-left: 30px;
+            i.fa {
+                position: absolute;
+                font-size: 20px;
+                color: lighten($secondary-font-color, 15%);
+                top: 13px;
+                left: 10px;
+            }
+            input {
+                width: 100%;
+                padding-left: 38px;
+                background-color: white;
+            }
+        }
     }
     .leads-table {
         display: table;
