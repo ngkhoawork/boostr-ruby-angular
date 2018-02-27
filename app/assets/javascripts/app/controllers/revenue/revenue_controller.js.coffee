@@ -9,8 +9,8 @@
     $scope.revenueFilters = [
       {name: 'IOs', value: ''}
       {name: 'No-Match IOs', value: 'no-match'}
-      {name: 'No-Match Advertisers', value: 'no-match-adv'}
       {name: 'PMPs', value: 'pmp'}
+      {name: 'No-Match Advertisers', value: 'no-match-adv'}
       {name: 'Upside Revenues', value: 'upside'}
       {name: 'At Risk Revenues', value: 'risk'}
     ]
@@ -79,7 +79,7 @@
         when 'pmp'
           PMP.query query, (pmps) -> revenueRequest.resolve pmps
         when 'no-match-adv'
-          query.with_ssp_advertiser = false
+          query.with_advertiser = false
           PMPItemDailyActual.query query, (pmpItemDailyActuals) -> 
             revenueRequest.resolve pmpItemDailyActuals
         else
@@ -134,9 +134,8 @@
         resolve:
           pmpItemDailyActual: ->
             pmpItemDailyActual
-      modalInstance.result.then () ->
-        index = $scope.revenue.indexOf(pmpItemDailyActual)
-        $scope.revenue.splice(index, 1)
+      modalInstance.result.then (ids) ->
+        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id) 
 
     $scope.deleteIo = (io, $event) ->
       $event.stopPropagation();

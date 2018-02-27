@@ -3,7 +3,6 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
     :id,
     :pmp_item_id,
     :ssp_deal_id,
-    :deal,
     :date,
     :ad_unit,
     :price,
@@ -13,29 +12,34 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
     :win_rate,
     :ad_requests,
     :product,
-    :advertiser,
-    :ssp_advertiser_id,
     :ssp_advertiser,
-    :currency
+    :advertiser,
+    :currency,
+    :ssp,
+    :pmp
   )
 
   def ssp_deal_id
     object.pmp_item.ssp_deal_id rescue nil
   end
 
-  def deal
-    object.pmp.deal.serializable_hash(only: [:id, :name]) rescue nil
-  end
-
   def product
     object.pmp_item.product.serializable_hash(only: [:id, :name]) rescue nil
   end
 
-  def ssp_advertiser
-    object.ssp_advertiser.serializable_hash(only: [:id, :name]) rescue nil
+  def advertiser
+    object.advertiser.serializable_hash(only: [:id, :name]) rescue nil
   end
 
   def currency
     object.pmp.currency.serializable_hash(only: [:curr_cd, :curr_symbol]) rescue nil
+  end
+
+  def ssp
+    object.pmp_item.ssp.serializable_hash(only: [:id, :name]) rescue nil
+  end
+
+  def pmp
+    object.pmp.serializable_hash(only: [:id, :name]) rescue nil
   end
 end

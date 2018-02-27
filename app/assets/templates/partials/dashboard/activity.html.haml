@@ -28,8 +28,8 @@
 				Deal
 				%a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}
 					{{activity.deal.name}}
-			%div{ng: {if: 'activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250'}}
-			%div{'ng-if': 'activity.activity_type.name == "Email"'}
+			%div{ng: {if: '!isTextHasTags(activity.comment) && activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250'}}
+			%div{'ng-if': 'isTextHasTags(activity.comment) || activity.activity_type.name == "Email"'}
 				%p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
 				%button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity)'}
 					Show email

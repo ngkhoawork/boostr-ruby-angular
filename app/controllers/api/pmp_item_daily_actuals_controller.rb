@@ -2,7 +2,11 @@ class Api::PmpItemDailyActualsController < ApplicationController
   respond_to :json
 
   def index
-    render json: pmp_actuals_serializer
+    render json: filtered_actuals_serializer
+  end
+
+  def aggregate
+    render json: aggregated_actuals_serializer
   end
 
   def import
@@ -29,8 +33,13 @@ class Api::PmpItemDailyActualsController < ApplicationController
   end
 
   def assign_advertiser
-    pmp_item_daily_actual.assign_advertiser!(params[:name], current_user)
+    pmp_item_daily_actual.assign_advertiser!(client, current_user)
     render json: pmp_item_daily_actual, serializer: Pmps::PmpItemDailyActualSerializer
+  end
+
+  def bulk_assign_advertiser
+    ids = PmpItemDailyActual.bulk_assign_advertiser(params[:ssp_advertiser], client, current_user)
+    render json: ids
   end
 
   def destroy
@@ -50,8 +59,8 @@ class Api::PmpItemDailyActualsController < ApplicationController
       :win_rate,
       :ad_requests,
       :pmp_item_id,
-      :advertiser,
-      :ssp_advertiser_id
+      :ssp_advertiser,
+      :advertiser_id
     )
   end
 
@@ -60,14 +69,6 @@ class Api::PmpItemDailyActualsController < ApplicationController
       :pmp_item_id,
       :pmp_id
     )
-  end
-
-  def pmp_actuals_serializer
-    if params[:pmp_item_id] == 'all'
-      aggregated_actuals_serializer
-    else
-      filtered_actuals_serializer
-    end
   end
 
   def aggregated_actuals
@@ -100,5 +101,9 @@ class Api::PmpItemDailyActualsController < ApplicationController
 
   def company
     @_company ||= current_user.company
+  end
+
+  def client
+    @_client ||= company.clients.find(params[:client_id])
   end
 end

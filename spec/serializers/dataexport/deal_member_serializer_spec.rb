@@ -7,6 +7,8 @@ describe Dataexport::DealMemberSerializer do
     expect(serializer.user_id).to eq(deal_member.user_id)
     expect(serializer.share).to eq(deal_member.share)
     expect(serializer.role).to eq(role)
+    expect(serializer.created).to eq(deal_member.created_at)
+    expect(serializer.last_updated).to eq(deal_member.updated_at)
   end
 
   private

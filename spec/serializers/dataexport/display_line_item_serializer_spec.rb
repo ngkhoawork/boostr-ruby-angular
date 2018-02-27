@@ -32,7 +32,12 @@ describe Dataexport::DisplayLineItemSerializer do
   end
 
   def display_line_item
-    @_display_line_item ||= create :display_line_item, io: io
+    @_display_line_item ||= create :display_line_item,
+                                   io: io,
+                                   budget: 100.0,
+                                   budget_delivered: 50.0,
+                                   budget_remaining: 50.0
+
   end
 
   def io

@@ -6,7 +6,7 @@ class Operative::GetFileService
 
   def initialize(auth_details, timestamp)
     @company_name = auth_details.company.name
-    @host = auth_details.base_link
+    @ftp_url = auth_details.base_link
     @login = auth_details.api_email
     @password = auth_details.password
     @timestamp = timestamp
@@ -22,7 +22,7 @@ class Operative::GetFileService
   end
 
   private
-  attr_reader :company_name, :host, :login, :password, :timestamp
+  attr_reader :company_name, :ftp_url, :login, :password, :timestamp
 
   def get_files
     begin
@@ -37,5 +37,11 @@ class Operative::GetFileService
 
   def data_filename_remote
     "./#{FOLDER}/#{company_name.upcase}_DataFeed_#{timestamp}_v3.tar.gz"
+  end
+
+  def host
+    return unless ftp_url.present?
+    uri = URI.parse(ftp_url)
+    uri.class == URI::Generic ? uri.to_s : uri&.host
   end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180221025243) do
+ActiveRecord::Schema.define(version: 20180223233554) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -429,6 +429,31 @@ ActiveRecord::Schema.define(version: 20180221025243) do
 
   add_index "assets", ["attachable_id", "attachable_type"], name: "index_assets_on_attachable_id_and_attachable_type", using: :btree
   add_index "assets", ["created_by"], name: "index_assets_on_created_by", using: :btree
+
+  create_table "assignment_rules", force: :cascade do |t|
+    t.integer  "company_id"
+    t.text     "name"
+    t.string   "countries",  default: [],                 array: true
+    t.string   "states",     default: [],                 array: true
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.integer  "position"
+    t.boolean  "default",    default: false
+  end
+
+  add_index "assignment_rules", ["company_id"], name: "index_assignment_rules_on_company_id", using: :btree
+
+  create_table "assignment_rules_users", force: :cascade do |t|
+    t.integer  "assignment_rule_id"
+    t.integer  "user_id"
+    t.integer  "position"
+    t.boolean  "next",               default: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
+  add_index "assignment_rules_users", ["assignment_rule_id"], name: "index_assignment_rules_users_on_assignment_rule_id", using: :btree
+  add_index "assignment_rules_users", ["user_id"], name: "index_assignment_rules_users_on_user_id", using: :btree
 
   create_table "audit_logs", force: :cascade do |t|
     t.string   "auditable_type"
@@ -2100,11 +2125,11 @@ ActiveRecord::Schema.define(version: 20180221025243) do
   add_index "leads", ["user_id"], name: "index_leads_on_user_id", using: :btree
 
   create_table "notification_reminders", force: :cascade do |t|
-    t.string   "type"
+    t.string   "notification_type"
     t.integer  "lead_id"
     t.datetime "sending_time"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
   end
 
   add_index "notification_reminders", ["lead_id"], name: "index_notification_reminders_on_lead_id", using: :btree
@@ -2141,18 +2166,18 @@ ActiveRecord::Schema.define(version: 20180221025243) do
     t.integer "pmp_item_id"
     t.date    "date"
     t.string  "ad_unit"
-    t.decimal "price",                       precision: 15, scale: 2
-    t.decimal "revenue",                     precision: 15, scale: 2
-    t.decimal "revenue_loc",                 precision: 15, scale: 2
-    t.integer "impressions",       limit: 8
+    t.decimal "price",                    precision: 15, scale: 2
+    t.decimal "revenue",                  precision: 15, scale: 2
+    t.decimal "revenue_loc",              precision: 15, scale: 2
+    t.integer "impressions",    limit: 8
     t.decimal "win_rate"
     t.integer "ad_requests"
-    t.integer "ssp_advertiser_id"
-    t.string  "advertiser"
+    t.string  "ssp_advertiser"
+    t.integer "advertiser_id"
   end
 
+  add_index "pmp_item_daily_actuals", ["advertiser_id"], name: "index_pmp_item_daily_actuals_on_advertiser_id", using: :btree
   add_index "pmp_item_daily_actuals", ["pmp_item_id"], name: "index_pmp_item_daily_actuals_on_pmp_item_id", using: :btree
-  add_index "pmp_item_daily_actuals", ["ssp_advertiser_id"], name: "index_pmp_item_daily_actuals_on_ssp_advertiser_id", using: :btree
 
   create_table "pmp_item_monthly_actuals", force: :cascade do |t|
     t.integer "pmp_item_id"
@@ -2263,7 +2288,7 @@ ActiveRecord::Schema.define(version: 20180221025243) do
     t.boolean  "active",                default: true
     t.boolean  "is_influencer_product", default: false
     t.integer  "product_family_id"
-    t.integer  "margin"
+    t.integer  "margin",                default: 100
     t.integer  "parent_id"
     t.integer  "top_parent_id"
     t.integer  "level",                 default: 0
@@ -2595,8 +2620,10 @@ ActiveRecord::Schema.define(version: 20180221025243) do
     t.integer  "updated_by"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "client_id"
   end
 
+  add_index "ssp_advertisers", ["client_id"], name: "index_ssp_advertisers_on_client_id", using: :btree
   add_index "ssp_advertisers", ["company_id"], name: "index_ssp_advertisers_on_company_id", using: :btree
   add_index "ssp_advertisers", ["created_by"], name: "index_ssp_advertisers_on_created_by", using: :btree
   add_index "ssp_advertisers", ["ssp_id"], name: "index_ssp_advertisers_on_ssp_id", using: :btree
@@ -2737,17 +2764,6 @@ ActiveRecord::Schema.define(version: 20180221025243) do
 
   add_index "time_periods", ["company_id"], name: "index_time_periods_on_company_id", using: :btree
   add_index "time_periods", ["deleted_at"], name: "index_time_periods_on_deleted_at", using: :btree
-
-  create_table "trigrams", force: :cascade do |t|
-    t.string  "trigram",     limit: 3
-    t.integer "score",       limit: 2
-    t.integer "owner_id"
-    t.string  "owner_type"
-    t.string  "fuzzy_field"
-  end
-
-  add_index "trigrams", ["owner_id", "owner_type", "fuzzy_field", "trigram", "score"], name: "index_for_match", using: :btree
-  add_index "trigrams", ["owner_id", "owner_type"], name: "index_by_owner", using: :btree
 
   create_table "user_dimensions", force: :cascade do |t|
     t.integer  "team_id"
@@ -3014,7 +3030,6 @@ ActiveRecord::Schema.define(version: 20180221025243) do
   add_foreign_key "ios", "companies"
   add_foreign_key "ios", "deals"
   add_foreign_key "pmp_item_daily_actuals", "pmp_items"
-  add_foreign_key "pmp_item_daily_actuals", "ssp_advertisers"
   add_foreign_key "pmp_item_monthly_actuals", "pmp_items"
   add_foreign_key "pmp_items", "pmps"
   add_foreign_key "pmp_items", "ssps"
@@ -3030,6 +3045,7 @@ ActiveRecord::Schema.define(version: 20180221025243) do
   add_foreign_key "requests", "users", column: "assignee_id"
   add_foreign_key "requests", "users", column: "requester_id"
   add_foreign_key "sales_processes", "companies"
+  add_foreign_key "ssp_advertisers", "clients"
   add_foreign_key "stage_dimensions", "companies"
   add_foreign_key "temp_ios", "companies"
   add_foreign_key "temp_ios", "ios"

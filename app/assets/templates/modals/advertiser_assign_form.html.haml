@@ -1,23 +1,28 @@
-#contact_assign_modal.popup-modal
+#contact_assign_modal.popup-modal.no-matching-advertiser-modal
   %form.form-horizontal
     .popup-modal-header
       Match Advertiser
       %span.close-btn{'ng-click': 'cancel()'}
     .popup-modal-body.modal-body
-      .form-group
-        %input.form-control{ name: 'advertiser', placeholder: 'Select', ng: { model: 'searchText', change: 'searchObj()' } }
+      .row
+        .col-md-8
+          .form-group
+            %input.form-control{ name: 'advertiser', placeholder: 'Search for Advertiser', ng: { model: 'searchText', change: 'searchObj()' } }
+        .col-md-4
+          .form-group.toggle
+            %label
+              %span.mr8 Assign All
+              %z-toggle{'ng-model': 'bulkUpdate'}
       .form-group
         .row
           .col-xs-12
             .client-list
               .client-info{ 'ng-repeat': 'client in clients | orderBy: ["-matches", "score"]' }
                 .name{ ng: { bind: { html: 'client.name' } } }
-                .type
-                  ({{ client.score }})
                 .action
-                  %a{ href: "javascript:void(0)", 'ng-click': "assign(client)" }
+                  %a{ href: 'javascript:void(0)', 'ng-click': 'assign(client)' }
                     Assign
 
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
-      %button.btn.btn-warning{ type: 'submit', ng: { click: "submit()" } } {{ submitText }}
+      %button.btn.btn-warning{ type: 'submit', ng: { click: 'create()' } } Create New & Assign

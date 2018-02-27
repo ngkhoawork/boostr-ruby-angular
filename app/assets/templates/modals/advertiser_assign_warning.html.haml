@@ -1,0 +1,11 @@
+#advertiser-assign-warning.popup-modal
+  .popup-modal-header.info-text
+    %i.fa.fa-exclamation-triangle
+    Warning
+    %span.close-btn{'ng-click': 'cancel()'}
+  .popup-modal-body
+    %h5 {{message}}
+
+  .popup-modal-footer
+    %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} No
+    %button.btn.btn-warning{ type: 'submit', ng: { click: 'submit()' } } Yes

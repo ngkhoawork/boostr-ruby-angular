@@ -336,18 +336,14 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       subject.perform
 
       import_log = CsvImportLog.last
-      expect(import_log.rows_processed).to eq 7
+      expect(import_log.rows_processed).to eq 8
       expect(import_log.rows_imported).to eq 4
       expect(import_log.rows_failed).to eq 2
       expect(import_log.rows_skipped).to eq 1
 
       expect(import_log.error_messages.length).to eq 2
-      expect(import_log.error_messages[0]['message']).to include(
-        "Product name can't be blank", "End date end date can't be after the IO end date"
-      )
-      expect(import_log.error_messages[1]['message']).to include(
-        "Product name can't be blank", "End date end date can't be after the IO end date"
-      )
+      expect(import_log.error_messages[0]['message']).to include("Product name can't be blank")
+      expect(import_log.error_messages[1]['message']).to include("Product name can't be blank")
 
       expect(import_log.file_source).to eq 'sales_order_line_item_file.csv'
 
@@ -367,7 +363,7 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       subject.perform
 
       import_log = CsvImportLog.last
-      expect(import_log.error_messages).to eq [{"row"=>1, "message"=>["Internal Server Error", "{:sales_order_id=>\"1\", :sales_order_line_item_id=>\"2\", :sales_order_line_item_start_date=>\"2017-01-01\", :sales_order_line_item_end_date=>\"2017-02-01\", :product_name=>\"Display\", :forecast_category=>\"From Forecast Category Column\", :quantity=>\"1000\", :net_unit_cost=>\"100\", :cost_type=>\"PPC\", :net_cost=>\"100000\", :line_item_status=>\"Sent_to_production\"}"]}]
+      expect(import_log.error_messages).to eq [{"row"=>2, "message"=>["Internal Server Error", "{:sales_order_id=>\"1\", :sales_order_line_item_id=>\"2\", :sales_order_line_item_start_date=>\"2017-01-01\", :sales_order_line_item_end_date=>\"2017-02-01\", :product_name=>\"Display\", :forecast_category=>\"From Forecast Category Column\", :quantity=>\"1000\", :net_unit_cost=>\"100\", :cost_type=>\"PPC\", :net_cost=>\"100000\", :line_item_status=>\"Sent_to_production\"}"]}]
     end
   end
 

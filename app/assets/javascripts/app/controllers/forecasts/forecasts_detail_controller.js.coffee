@@ -121,6 +121,15 @@
             suffix = if type == 'revenues' || type == 'pmp_revenues' then 's' else if type == 'deals' then '_amounts'
             quarters = {}
             months = {}
+            monthObj = ms.reduce(((acc, cur, i) ->
+              acc[i] = {month: cur, total: 0}
+              acc
+            ), {})
+            quarterObj = qs.reduce(((acc, cur, i) ->
+              acc[i] = {quarter: cur, total: 0}
+              acc
+            ), {})
+
             for q, i in qs
                 for item in data
                     amount = item['quarter' + suffix][i]
@@ -133,9 +142,32 @@
                     if amount != null && amount != undefined
                         months[i] = m
                         break
+
             data.detail_amounts =
                 quarters: quarters
                 months: months
+
+            calculateTotalByMonthsAndQuarter(monthObj, quarterObj, data, suffix)
+
+
+        calculateTotalByMonthsAndQuarter = (monthObj, quarterObj, data, suffix) ->
+          _.each data, (revenue) ->
+            _.each monthObj, (month, index) ->
+              monthObj[index].total += revenue['month' + suffix][index]
+
+          _.each data.detail_amounts.months, (month, index) ->
+            _.each monthObj, (monthsObj) ->
+              if month == monthsObj.month
+                data.detail_amounts.months[index] = monthsObj
+
+          _.each data, (revenue) ->
+            _.each quarterObj, (q, index) ->
+              quarterObj[index].total += revenue['quarter' + suffix][index]
+
+          _.each data.detail_amounts.quarters, (quarter, index) ->
+            _.each quarterObj, (quartersObj) ->
+              if quarter == quartersObj.quarter
+                data.detail_amounts.quarters[index] = quartersObj
 
         parseRevenueBudgets = (data) ->
             data = _.map data, (item) ->
@@ -201,6 +233,12 @@
                 cols.map(grabCol).get().join tmpColDelim
             grabCol = (j, col) ->
                 col = angular.element(col)
+                if col.hasClass('totalCol')
+                  total = col.find('span').text().trim()
+                  totalLabel = col.find('.z-sortable').text().trim()
+                  col.find('.z-sortable').text(totalLabel + " / " + total)
+                  col.find('span').text("")
+
                 text = col.text().trim()
                 text.replace '"', '""'
             csv += formatRows(headers.map(grabRow))

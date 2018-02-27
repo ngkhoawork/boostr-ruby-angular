@@ -55,20 +55,7 @@ class Api::ClientsController < ApplicationController
   end
 
   def fuzzy_search
-    clients = current_user.clients.pluck(:id)
-    trigrams = Trigram.where(owner_id: clients).limit(10).
-          for_model('Client').
-          for_field('name').
-          matches_for(params[:search]).as_json
-    clients = Client.where(id: trigrams.map{|t| t['owner_id']}).to_a.map do |client|
-      trigram = trigrams.find{|t| t['owner_id']==client.id}
-      {
-        id: client.id,
-        name: client.name,
-        score: trigram['score'],
-        matches: trigram['matches']
-      }
-    end
+    clients = company.clients.fuzzy_search(params[:search]).pluck_to_struct(:id, :name)
     render json: clients
   end
 

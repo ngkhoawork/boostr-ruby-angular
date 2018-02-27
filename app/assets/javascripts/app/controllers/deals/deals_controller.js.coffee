@@ -184,7 +184,7 @@
 
             alignColumnsHeight = ->
                 columns = angular.element('.column-body')
-                minHeight = angular.element(window).height() - columns.offset().top
+                minHeight = angular.element(window).height() - ((columns.offset() && columns.offset().top) || 0)
                 maxHeight =  _.chain(columns).map((el) -> angular.element(el).outerHeight()).max().value()
                 columns.css('min-height', Math.max(minHeight, maxHeight))
 
@@ -444,19 +444,23 @@
                 else if x >= rightBorder && dragDirection == 'right'
                     dealsContainer.scrollLeft += (x - rightBorder) / 10
 
+            onScroll = -> #
+
             addScrollEvent = ->
                 table = angular.element('.deals-table')
                 headers = angular.element('.column-header')
                 headers.each (i) -> angular.element(this).css 'zIndex', headers.length - i
-                offsetTop = table.offset().top
-                $document.unbind 'scroll'
-                $document.bind 'scroll', ->
+                offsetTop = ((table.offset() && table.offset().top) || 0) - _fixedHeaderHeight
+                $document.off 'scroll', onScroll
+                onScroll = ->
                     if $document.scrollTop() > offsetTop
                         table.addClass 'fixed'
                         headers.css 'top', $document.scrollTop() - offsetTop + 'px'
                     else
                         table.removeClass 'fixed'
                         headers.css 'top', 0
+
+                $document.on 'scroll', onScroll
                 $scope.$on '$destroy', ->
-                    $document.unbind 'scroll'
+                    $document.off 'scroll', onScroll
     ]

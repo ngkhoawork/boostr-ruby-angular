@@ -425,6 +425,7 @@
       email: user.email
     )
 ]
+window._fixedHeaderHeight = 0 #updating in NavbarController
 
 @service = angular.module 'services', ['ngResource']
 @directives = angular.module 'directives', []

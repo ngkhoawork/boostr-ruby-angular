@@ -11,7 +11,7 @@ class PmpItemDailyActualsQuery
         .by_name(options[:name])
         .by_start_date(options[:start_date], options[:end_date])
         .by_pmp_item_id(options[:pmp_item_id])
-        .with_ssp_advertiser(options[:with_ssp_advertiser])
+        .with_advertiser(options[:with_advertiser])
         .order(:pmp_item_id, :date)
   end
 
@@ -38,19 +38,19 @@ class PmpItemDailyActualsQuery
     end
 
     def by_name(name)
-      name.nil? ? self : where('advertiser ilike ?', "%#{name}%")
+      name.nil? ? self : where('ssp_advertiser ilike ?', "%#{name}%")
     end
 
     def by_start_date(start_date, end_date)
       start_date.nil? || end_date.nil? ? self : where(date: start_date..end_date)
     end
 
-    def with_ssp_advertiser(bool)
+    def with_advertiser(bool)
       return self if bool.nil?
       if bool.to_s == 'true'
-        where('ssp_advertiser_id IS NOT NULL')
+        where('pmp_item_daily_actuals.advertiser_id IS NOT NULL')
       else
-        where('ssp_advertiser_id IS NULL')
+        where('pmp_item_daily_actuals.advertiser_id IS NULL')
       end
     end
   end

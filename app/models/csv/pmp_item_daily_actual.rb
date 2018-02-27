@@ -13,7 +13,8 @@ class Csv::PmpItemDailyActual
                 :win_rate,
                 :curr_cd,
                 :ssp_advertiser_name,
-                :company
+                :company,
+                :user
 
   validates :date, :ad_unit, :company, presence: true
   validates :ad_requests, :impressions, presence: true, numericality: true
@@ -50,8 +51,8 @@ class Csv::PmpItemDailyActual
     pmp_item_daily_actual.price = price
     pmp_item_daily_actual.revenue_loc = revenue_loc
     pmp_item_daily_actual.imported = true
-    pmp_item_daily_actual.advertiser = ssp_advertiser_name
-    pmp_item_daily_actual.ssp_advertiser = ssp_advertiser
+    pmp_item_daily_actual.ssp_advertiser = ssp_advertiser_name
+    pmp_item_daily_actual.advertiser = advertiser
     pmp_item_daily_actual.save!
   end
 
@@ -78,7 +79,8 @@ class Csv::PmpItemDailyActual
   end
 
   def self.import(file, current_user_id, file_path)
-    company = User.find(current_user_id).try(:company)
+    user = User.find(current_user_id)
+    company = user&.company
     return unless company.present?
 
     pmp_item_ids = []
@@ -90,7 +92,7 @@ class Csv::PmpItemDailyActual
     SmarterCSV.process(file, { force_simple_split: true, strip_chars_from_headers: /[\-"]/ }).each do |row|
       import_log.count_processed
 
-      csv_pmp_item_daily_actual = self.build(row, company)
+      csv_pmp_item_daily_actual = self.build(row, user)
       if csv_pmp_item_daily_actual.valid?
         begin
           csv_pmp_item_daily_actual.save
@@ -130,8 +132,20 @@ class Csv::PmpItemDailyActual
 
   private
 
+  def advertiser
+    advertiser = client || ssp_advertiser
+    if advertiser.present? && ssp_advertiser_name.present?
+      SspAdvertiser.create_or_update(ssp_advertiser_name, advertiser.id, pmp_item&.ssp&.id, user) 
+    end
+    advertiser
+  end
+
+  def client
+    @_client ||= company.clients.find_by(name: ssp_advertiser_name)
+  end
+
   def ssp_advertiser
-    @_ssp_advertiser ||= company.ssp_advertisers.find_by(name: ssp_advertiser_name, ssp: pmp_item&.ssp)
+    @_ssp_advertiser ||= company.ssp_advertisers.find_by(name: ssp_advertiser_name)&.client
   end
 
   def validate_ecpm
@@ -183,7 +197,7 @@ class Csv::PmpItemDailyActual
     return true
   end
 
-  def self.build(row, company)
+  def self.build(row, user)
     Csv::PmpItemDailyActual.new(
       ssp_deal_id: row[:dealid],
       date: row[:date].try(:strip),
@@ -195,7 +209,8 @@ class Csv::PmpItemDailyActual
       revenue_loc: row[:revenue],
       curr_cd: row[:currency],
       ssp_advertiser_name: row[:ssp_advertiser],
-      company: company
+      company: user&.company,
+      user: user
     )
   end
 end

@@ -191,7 +191,7 @@
     }
 }
 
-#pmp-delivery, #pmp-price-revenue {
+#pmp-delivery, #pmp-price-revenue, #pmp-revenue-by-advertiser {
     .custom-field-item {
         margin: 10px 10px 0px 95px;
         position: absolute;
@@ -201,10 +201,18 @@
     .custom-field-item-field,
     .custom-field-item-label {
         display: inline-block;
+
+        &.ml20 {
+          margin-left: 20px;
+        }
+
+        .field-value {
+          cursor: pointer;
+        }
     }
 }
 
-#pmp-delivery-chart-container, #pmp-price-revenue-chart-container {
+#pmp-delivery-chart-container, #pmp-price-revenue-chart-container, #pmp-revenue-advertiser-chart-container {
     display: inline-block;
     position: relative;
     width: 100%;
@@ -214,7 +222,7 @@
     margin: 0;
 }
 
-#pmp-delivery-chart, #pmp-price-revenue-chart {
+#pmp-delivery-chart, #pmp-price-revenue-chart, #pmp-revenue-advertiser-chart {
     height: auto;
     display: inline-block;
     position: absolute;
@@ -226,6 +234,8 @@
         stroke-width: 3px;
     }
 
+    .axisY line,
+    .axisY path,
     .axisY1 line,
     .axisY1 path,
     .axisY2 line,
@@ -234,6 +244,7 @@
         stroke: #d9dde0;
     }
 
+    .axisY text,
     .axisY1 text,
     .axisY2 text {
         font-size: 11px;
@@ -291,4 +302,27 @@
       color: #A3ACB4;
       font-size: 12px;
     }   
+}
+
+.no-matching-advertiser-modal {
+  .toggle {
+    margin-top: 10px;
+    text-align: right;
+
+    .z-toggle {
+      vertical-align: middle;
+    }
+
+    label > span {
+      font-size: 12px;
+      font-weight: normal;
+    }
+  }
+}
+
+#advertiser-assign-warning {
+  h5 {
+    margin-top: 20px;
+    margin-bottom: 40px;
+  }
 }

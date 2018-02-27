@@ -78,7 +78,9 @@ Rails.application.routes.draw do
       post 'forgot_password' => 'forgot_password#create'
       post 'resend_confirmation' => 'forgot_password#create'
 
-      resources :user_token, only: [:create]
+      resources :user_token, only: [:create] do
+        post :extension, on: :collection
+      end
       resources :token_check, only: [:index]
 
       resource :dashboard, only: [:show]
@@ -88,6 +90,7 @@ Rails.application.routes.draw do
       resources :activities, only: [:index, :create, :show, :update, :destroy]
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
+        get :pipeline_by_stages, on: :collection
         get :won_deals, on: :collection
         get :find_by_id, on: :member
         resources :deal_products, only: [:create, :update, :destroy]
@@ -308,6 +311,8 @@ Rails.application.routes.draw do
     resources :pmp_item_daily_actuals, only: [:index, :update, :destroy] do
       post :import, on: :collection
       post :assign_advertiser, on: :member
+      post :bulk_assign_advertiser, on: :collection
+      get :aggregate, on: :collection
     end
     resources :ssps, only: [:index]
     resources :deals, only: [:index, :create, :update, :show, :destroy] do

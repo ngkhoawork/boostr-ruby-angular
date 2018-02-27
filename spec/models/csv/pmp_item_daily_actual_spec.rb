@@ -87,6 +87,23 @@ describe Csv::PmpItemDailyActual, 'model' do
       described_class.import(file.path, user.id, 'pmp_item_daily_actual.csv')
       expect(pmp_item.pmp.reload.end_date).to eq(Date.strptime('11/21/2017', "%m/%d/%Y"))
     end
+
+    context 'using ssp advertiser' do
+      before do
+        client
+        ssp_advertiser
+      end
+
+      it 'finds advertiser among company clients and set' do
+        described_class.import(file.path, user.id, 'pmp_item_daily_actual.csv')
+        expect(pmp_item.pmp_item_daily_actuals&.first&.advertiser_id).to eq(client.id)
+      end
+
+      it 'finds advertiser from ssp_advertisers and set' do
+        described_class.import(file.path, user.id, 'pmp_item_daily_actual.csv')
+        expect(pmp_item.pmp_item_daily_actuals&.last&.advertiser_id).to eq(client.id)
+      end
+    end
   end
 
   private
@@ -103,13 +120,21 @@ describe Csv::PmpItemDailyActual, 'model' do
     @_pmp_item ||= create :pmp_item, ssp_deal_id: 'ssp001', budget_loc: 2000, run_rate_7_days: 900, run_rate_30_days: 500
   end
 
+  def client
+    @_client ||= create :client, name: 'googlex', company: company
+  end
+
+  def ssp_advertiser
+    @_ssp_advertiser ||= create :ssp_advertiser, name: 'yahoo', client: client, company: company, ssp: pmp_item.ssp
+  end
+
   def file
     @_file ||= Tempfile.open([Dir.tmpdir, ".csv"]) do |f|
       begin
         csv = CSV.new(f)
-        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Ad Requests', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Currency']
-        csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, nil, 99, 1000, 'USD']
-        csv << ['ssp001', '11/21/2017', 'Unit 4', 9, 99, 61.05, 99, 500, 'USD']
+        csv << ['Deal-ID', 'Date', 'Ad Unit', 'Ad Requests', 'Impressions', 'Win Rate', 'eCPM', 'Revenue', 'Currency', 'SSP Advertiser']
+        csv << ['ssp001', '11/20/17', 'Unit 4', 9, 99, nil, 99, 1000, 'USD', 'googlex']
+        csv << ['ssp001', '11/21/2017', 'Unit 4', 9, 99, 61.05, 99, 500, 'USD', 'yahoo']
       ensure
         f.close(unlink_now=false)
       end
