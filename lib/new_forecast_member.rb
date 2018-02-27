@@ -124,7 +124,7 @@ class NewForecastMember
 
     pmp_revenue_data.each do |item|
       @forecasts_data[:revenue] += item.revenue_amount.to_f
-      @forecasts_data[:revenue_net] = item.revenue_amount.to_f
+      @forecasts_data[:revenue_net] += item.revenue_amount.to_f
     end
 
     if company.enable_net_forecasting
