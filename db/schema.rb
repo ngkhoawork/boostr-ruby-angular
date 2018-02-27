@@ -3041,10 +3041,7 @@ ActiveRecord::Schema.define(version: 20180223233554) do
   add_foreign_key "requests", "users", column: "assignee_id"
   add_foreign_key "requests", "users", column: "requester_id"
   add_foreign_key "sales_processes", "companies"
-<<<<<<< 567c5207c85526d0ae905909c4d1fdef3fa2876b
   add_foreign_key "ssp_advertisers", "clients"
-=======
->>>>>>> Buzzfeed-validation to require closed-won reason
   add_foreign_key "stage_dimensions", "companies"
   add_foreign_key "temp_ios", "companies"
   add_foreign_key "temp_ios", "ios"
