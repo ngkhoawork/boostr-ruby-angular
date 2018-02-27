@@ -49,7 +49,7 @@
                             %div {{lead.email}}
                             .td-info {{lead.title}}
                             .td-list{'ng-if': 'lead.contact'}
-                                %div Contact Exist:
+                                %div Contact Linked:
                                 %div
                                     %div
                                         %a{target: '_blank', 'ng-href': '/contacts/{{lead.contact.id}}'} {{lead.contact.name}}
@@ -58,10 +58,10 @@
                             .td-action{'ng-if': 'statusFilter.id !== "new_leads" && !lead.contact', 'ng-click': 'showContactModal(lead)'} Create Contact
                     .leads-td
                         .leads-td-inner
-                            .td-title {{lead.company_name}}-
+                            .td-title {{lead.company_name || '-'}}
                             .td-info {{lead.state}}{{lead.state && lead.country ? ', ' : ''}}{{lead.country}}
                             .td-list{'ng-if': 'lead.client'}
-                                %div Account Exist:
+                                %div Account Linked:
                                 %div
                                     %a{target: '_blank', 'ng-href': '/accounts/{{lead.client.id}}'} {{lead.client.name}}
                             .td-list{'ng-if': '!lead.client && lead.clients.length'}
