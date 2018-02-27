@@ -4,5 +4,9 @@ FactoryGirl.define do
     
     user
     deal
+
+    factory :deal_account_manager do
+      association :user, factory: :account_manager
+    end
   end
 end

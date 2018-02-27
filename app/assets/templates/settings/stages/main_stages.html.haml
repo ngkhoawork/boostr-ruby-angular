@@ -3,8 +3,8 @@
     .block{'ng-controller': 'SettingsSalesProcessesController'}
       .title-row.mb10
         %span.title Sales Processes
-        %add-button{'ng-click': 'createSalesProcessModal()'} Add
-      .table-wrapper
+        %add-button.add-sales-process{'ng-click': 'createSalesProcessModal()'} Add
+      .table-wrapper.table-sales-processes
         %table.table.table-hover.table-striped
           %thead
             %tr
@@ -20,11 +20,11 @@
     .block
       .title-row.mb10
         %span.title Stages
-        %add-button{'ng-click': 'createStageModal()'} Add
+        %add-button.add-stage{'ng-click': 'createStageModal()'} Add
         .switch-row
           %span{'ng-repeat': 'stage in stageTypes', 'ng-class': '{active: stage.name == selectedStage.name}', 'ng-click': 'selectStage(stage)'}
             {{stage.name}}
-      .table-wrapper{'ng-if': 'selectedStage.name == "Deals"', 'ng-controller': 'SettingsStagesController'}
+      .table-wrapper.table-stages{'ng-if': 'selectedStage.name == "Deals"', 'ng-controller': 'SettingsStagesController'}
         %table.table.table-hover.table-striped
           %thead
             %tr

@@ -7,13 +7,12 @@ class Api::StagesController < ApplicationController
     elsif params[:sales_process_id] && sales_process
       sales_process.stages
     elsif params[:current_team]
-      current_user.current_team&.sales_process&.stages || default_stages
+      current_user.current_team&.sales_process&.stages || default_stages    
     else
       company.stages
     end
-    stages = stages.is_active(params[:active])
-                .is_open(params[:open])
-    render json: stages, each_serializer: StageSerializer
+    stages = stages.is_active(params[:active]).is_open(params[:open]) if stages.present?
+    render json: stages || [], each_serializer: StageSerializer
   end
 
   def show
