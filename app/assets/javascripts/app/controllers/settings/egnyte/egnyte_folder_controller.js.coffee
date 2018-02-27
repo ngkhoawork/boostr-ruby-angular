@@ -1,5 +1,5 @@
 @app.controller 'EgnyteFolderController',
-  ['$scope', '$modal', 'Egnyte', ($scope, $modal, Egnyte) ->
+  ['$scope', '$modal', 'Egnyte', '$rootScope', ($scope, $modal, Egnyte, $rootScope) ->
     $scope.showParentButton = false
     $scope.showSubButton = false
 
@@ -13,6 +13,7 @@
 
     $scope.$on 'updateFolderStructure', ->
       $scope.showFolderStructure()
+      $rootScope.$broadcast 'handleActionButtons'
 
     $scope.$on 'editFolder', (event, folder) ->
       $scope.createFolder "edit", folder
@@ -45,6 +46,9 @@
       else
         $scope.showSubButton = false
         $scope.showParentButton = false
+        # remove activated style
+        _.each $('.block'), (item) ->
+          $(item).removeClass 'active'
 
     findFolder = (nodes, folder) ->
       _.each nodes, (nestedNodes) ->
