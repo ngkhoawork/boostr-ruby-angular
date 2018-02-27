@@ -1449,8 +1449,7 @@ class Deal < ActiveRecord::Base
         end
       end
     end
-    self.open = should_open
-    self.save(validate: false)
+    update_attribute(:open, should_open)
   end
 
   def recalculate_currency
