@@ -96,7 +96,7 @@
       keyboard: false
       resolve:
         client: -> {}
-        options: -> {}
+        options: -> options
 
   # Prevent multiple extraneous calls to the server as user inputs search term
   searchTimeout = null;
