@@ -5,7 +5,7 @@ class Lead < ActiveRecord::Base
   STATUSES = [NEW, ACCEPTED, REJECTED]
   REMINDER = 'reminder'.freeze
   REASSIGNMENT = 'reassignment'.freeze
-  NON_USA_STATE = 'non usa'.freeze
+  NON_USA_STATE = /\bnot|non\b/
   WEB_FORM = 'web form'.freeze
   MARKETING = 'marketing'.freeze
   TRADESHOW = 'tradeshow'.freeze
@@ -115,7 +115,7 @@ class Lead < ActiveRecord::Base
   end
 
   def rule
-    state.downcase.eql?(NON_USA_STATE) ? rule_by_countries : rule_by_states_and_countries
+    state.downcase.match(NON_USA_STATE).to_s.empty? ? rule_by_states_and_countries : rule_by_countries
   end
 
   def rule_by_countries

@@ -2,6 +2,7 @@ class LeadsQuery
   def initialize(options)
     @options = options
     @relation = default_relation.extending(Scopes)
+    @team = options[:user].team
   end
 
   def perform
@@ -15,7 +16,7 @@ class LeadsQuery
 
   private
 
-  attr_reader :options, :relation
+  attr_reader :options, :relation, :team
 
   def default_relation
     Lead.by_company_id options[:user].company.id
@@ -42,7 +43,7 @@ class LeadsQuery
       when 'my'
         by_user options[:user].id
       when 'team'
-        by_team options[:user]
+        team.present? ? by_team(options[:user]) : by_user(options[:user].id)
       when 'all'
         self
       end
@@ -53,7 +54,7 @@ class LeadsQuery
     end
 
     def by_team(user)
-      user.leader? ? by_leader(user) : by_user(user.team.user_ids)
+      user.leader? ? by_leader(user) : by_user(team.user_ids)
     end
 
     def by_leader(user)
