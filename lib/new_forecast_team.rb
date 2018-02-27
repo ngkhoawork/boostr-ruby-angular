@@ -317,6 +317,7 @@ class NewForecastTeam
 
   def add_pipeline_data(data, isNetForecast = false)
     source_data = isNetForecast ? pipeline_data_net : pipeline_data
+    return if !source_data
     source_data.each do |item|
       user = company.users.find(item.user_id)
       weighted_amount = item.pipeline_amount.to_f * company.stages.find(item.stage_id).probability.to_f / 100
@@ -535,7 +536,7 @@ class NewForecastTeam
   def weighted_pipeline_net
     return @weighted_pipeline_net if defined?(@weighted_pipeline_net)
 
-    @weighted_pipeline_net = forecasts_data[:weighted_pipeline_net]
+    @weighted_pipeline_net = forecasts_data[:weighted_pipeline_net] || 0
     @weighted_pipeline_net
   end
 
