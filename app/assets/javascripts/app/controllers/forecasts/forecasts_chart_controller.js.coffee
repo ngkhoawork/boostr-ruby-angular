@@ -58,6 +58,7 @@
 			sets.unshift {type: 'revenue'}
 			sets.unshift {type: 'quota'}
 			sets.push {type: 'quotaLine'}
+			console.log('isNetForecast', $scope.isNetForecast);
 			items = switch data.type
 				when 'team'
 					[].concat data.teams, data.members
@@ -73,9 +74,10 @@
 				_.each sets, (set, j) ->
 					switch set.type
 						when 'revenue'
-							weighted = item.revenue || 0
-							unweighted = item.revenue || 0
-							tt.revenue = item.revenue
+							revenue_amt = if $scope.isNetForecast then item.revenue_net else item.revenue
+							weighted = revenue_amt || 0
+							unweighted = revenue_amt || 0
+							tt.revenue = revenue_amt
 							color = getColor(set.probability)
 						when 'quota'
 							weighted = item.quota || 0
@@ -86,8 +88,12 @@
 							unweighted = 0
 							color = 'transparent'
 						else
-							weighted = Number(item.weighted_pipeline_by_stage[set.id]) || 0
-							unweighted = Number(item.unweighted_pipeline_by_stage[set.id]) || 0
+							if $scope.isNetForecast
+								weighted = Number(item.weighted_pipeline_by_stage_net[set.id]) || 0
+								unweighted = Number(item.unweighted_pipeline_by_stage_net[set.id]) || 0
+							else
+								weighted = Number(item.weighted_pipeline_by_stage[set.id]) || 0
+								unweighted = Number(item.unweighted_pipeline_by_stage[set.id]) || 0
 							color = getColor(set.probability)
 					if !_.isArray dataset[j] then dataset[j] = []
 					if _.isNumber(set.probability)

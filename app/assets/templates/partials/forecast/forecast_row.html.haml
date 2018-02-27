@@ -8,20 +8,20 @@
 		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : (row.quota | currency: '$': 0) }}
 	%td.subtable-arrow-wrap
 		%div
-			%a{href: '', 'ng-click': 'showSubtable(row, "revenue", $event)'} {{ row.revenue | currency: '$': 0 }}
+			%a{href: '', 'ng-click': 'showSubtable(row, "revenue", $event)'} {{ (isNetForecast ? row.revenue_net : row.revenue) | currency: '$': 0 }}
 			%i.fa.fa-caret-up.subtable-arrow
 	%td.subtable-arrow-wrap
 		%div
-			%a{href: '', 'ng-click': 'showSubtable(row, "pipeline", $event)'} {{ row.weighted_pipeline | currency: '$': 0 }}
+			%a{href: '', 'ng-click': 'showSubtable(row, "pipeline", $event)'} {{ (isNetForecast ? row.weighted_pipeline_net : row.weighted_pipeline) | currency: '$': 0 }}
 			%i.fa.fa-caret-up.subtable-arrow
 	%td
-		{{ row.amount | currency: '$': 0 }}
+		{{ (isNetForecast ? row.amount_net : row.amount) | currency: '$': 0 }}
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : (row.gap_to_quota | currency: '$': 0) }}
+		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : ((isNetForecast ? row.gap_to_quota_net : row.gap_to_quota) | currency: '$': 0) }}
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : isFinite(row.percent_to_quota) ? (row.percent_to_quota | number: 0) + '%' : '--' }}
+		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : isFinite((isNetForecast ? row.percent_to_quota_net : row.percent_to_quota)) ? ((isNetForecast ? row.percent_to_quota_net : row.percent_to_quota) | number: 0) + '%' : '--' }}
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : isFinite(row.percent_booked) ? (row.percent_booked | number: 0) + '%' : '--' }}
+		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : isFinite((isNetForecast ? row.percent_booked_net : row.percent_booked)) ? ((isNetForecast ? row.percent_booked_net : row.percent_booked) | number: 0) + '%' : '--' }}
 	%td
 		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : row.new_deals_needed }}
 	%td

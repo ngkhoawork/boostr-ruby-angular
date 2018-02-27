@@ -121,6 +121,8 @@ class NewForecastTeam
 
     add_pipeline_data(@forecasts_data)
 
+    add_pipeline_data(@forecasts_data, true)
+
     add_user_data(@forecasts_data)
 
     add_team_data(@forecasts_data)
@@ -156,7 +158,16 @@ class NewForecastTeam
   end
 
   def pipeline_data
-    @_pipeline_data ||= if company.enable_net_forecasting
+    @_pipeline_data ||= ForecastPipelineFact
+      .by_time_dimension_id(forecast_time_dimension.id)
+      .by_user_dimension_ids(user_ids)
+      .by_product_dimension_ids(product_ids)
+      .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
+      .group("user_dimension_id, stage_dimension_id")
+  end
+
+  def pipeline_data_net
+    @_pipeline_data_net ||= if company.enable_net_forecasting
       ForecastPipelineFact
         .joins("LEFT JOIN products ON forecast_pipeline_facts.product_dimension_id = products.id")
         .by_time_dimension_id(forecast_time_dimension.id)
@@ -167,13 +178,6 @@ class NewForecastTeam
           SUM(forecast_pipeline_facts.amount * products.margin / 100) AS pipeline_amount")
         .group("forecast_pipeline_facts.user_dimension_id, 
           forecast_pipeline_facts.stage_dimension_id")
-    else
-      ForecastPipelineFact
-        .by_time_dimension_id(forecast_time_dimension.id)
-        .by_user_dimension_ids(user_ids)
-        .by_product_dimension_ids(product_ids)
-        .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
-        .group("user_dimension_id, stage_dimension_id")
     end
   end
 
@@ -212,8 +216,13 @@ class NewForecastTeam
       weighted_pipeline: 0,
       unweighted_pipeline_by_stage: {},
       weighted_pipeline_by_stage: {},
+      unweighted_pipeline_net: 0,
+      weighted_pipeline_net: 0,
+      unweighted_pipeline_by_stage_net: {},
+      weighted_pipeline_by_stage_net: {},
       wow_weighted_pipeline: 0,
       revenue: 0,
+      revenue_net: 0,
       wow_revenue: 0,
       quota: 0
     }
@@ -231,8 +240,13 @@ class NewForecastTeam
       weighted_pipeline: 0,
       unweighted_pipeline_by_stage: {},
       weighted_pipeline_by_stage: {},
+      unweighted_pipeline_net: 0,
+      weighted_pipeline_net: 0,
+      unweighted_pipeline_by_stage_net: {},
+      weighted_pipeline_by_stage_net: {},
       wow_weighted_pipeline: 0,
       revenue: 0,
+      revenue_net: 0,
       wow_revenue: 0,
       quota: 0
     }
@@ -292,28 +306,44 @@ class NewForecastTeam
   def add_revenue_item(data, item)
     data[:revenue] ||= 0.0
     data[:revenue] += item.revenue_amount.to_f
+    data[:revenue_net] ||= 0.0
+    data[:revenue_net] += item.revenue_amount.to_f
   end
 
   def deduct_revenue_item(data, item)
-    data[:revenue] ||= 0.0
-    data[:revenue] -= item.revenue_amount.to_f
+    data[:revenue_net] ||= 0.0
+    data[:revenue_net] -= item.revenue_amount.to_f
   end
 
-  def add_pipeline_data(data)
-    pipeline_data.each do |item|
+  def add_pipeline_data(data, isNetForecast = false)
+    source_data = isNetForecast ? pipeline_data_net : pipeline_data
+    source_data.each do |item|
       user = company.users.find(item.user_id)
       weighted_amount = item.pipeline_amount.to_f * company.stages.find(item.stage_id).probability.to_f / 100
       if team_members[item.user_id] && team_members[item.user_id].count > 0
         team_members[item.user_id].each do |team|
           data[:teams][team.id] ||= build_team_data(team)
-          add_pipeline_item(data[:teams][team.id], item, weighted_amount)
+          if isNetForecast
+            add_pipeline_net_item(data[:teams][team.id], item, weighted_amount)
+          else
+            add_pipeline_item(data[:teams][team.id], item, weighted_amount)
+          end
         end
       else
         data[:members][item.user_id] ||= build_member_data(user)
-        add_pipeline_item(data[:members][item.user_id], item, weighted_amount)
+        if isNetForecast
+          add_pipeline_net_item(data[:members][item.user_id], item, weighted_amount)
+        else
+          add_pipeline_item(data[:members][item.user_id], item, weighted_amount)
+        end
+        
       end
-
-      add_pipeline_item(data, item, weighted_amount)
+      if isNetForecast
+        add_pipeline_net_item(data, item, weighted_amount)
+      else
+        add_pipeline_item(data, item, weighted_amount)
+      end
+      
     end
   end
 
@@ -331,6 +361,22 @@ class NewForecastTeam
     data[:weighted_pipeline_by_stage] ||= {}
     data[:weighted_pipeline_by_stage][item.stage_id] ||= 0.0
     data[:weighted_pipeline_by_stage][item.stage_id] += weighted_amount
+  end
+
+  def add_pipeline_net_item(data, item, weighted_amount)
+    data[:unweighted_pipeline_net] ||= 0.0
+    data[:unweighted_pipeline_net] += item.pipeline_amount.to_f
+
+    data[:unweighted_pipeline_by_stage_net] ||= {}
+    data[:unweighted_pipeline_by_stage_net][item.stage_id] ||= 0.0
+    data[:unweighted_pipeline_by_stage_net][item.stage_id] += item.pipeline_amount
+
+    data[:weighted_pipeline_net] ||= 0.0
+    data[:weighted_pipeline_net] += weighted_amount
+
+    data[:weighted_pipeline_by_stage_net] ||= {}
+    data[:weighted_pipeline_by_stage_net][item.stage_id] ||= 0.0
+    data[:weighted_pipeline_by_stage_net][item.stage_id] += weighted_amount
   end
 
   def add_user_data(data)
@@ -370,13 +416,21 @@ class NewForecastTeam
       data[:quota] = quota
     end
     data[:amount] = (data[:weighted_pipeline] || 0) + (data[:revenue] || 0)
+    data[:amount_net] = (data[:weighted_pipeline_net] || 0) + (data[:revenue_net] || 0)
 
     gap_to_quota = (quota - data[:amount]).to_f
     gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
 
+    gap_to_quota_net = (quota - data[:amount_net]).to_f
+    gap_to_quota_net = -gap_to_quota_net if !forecast_gap_to_quota_positive
+
     data[:percent_to_quota] = (quota > 0 ? data[:amount] / quota * 100 : 100)
     data[:percent_booked] = (quota > 0 ? data[:revenue] / quota * 100 : 100)
     data[:gap_to_quota] = gap_to_quota
+
+    data[:percent_to_quota_net] = (quota > 0 ? data[:amount_net] / quota * 100 : 100)
+    data[:percent_booked_net] = (quota > 0 ? data[:revenue_net] / quota * 100 : 100)
+    data[:gap_to_quota_net] = gap_to_quota_net
 
     incomplete_deals = user.deals.active.closed.at_percent(0).closed_in(user.company.deals_needed_calculation_duration)
     complete_deals = user.deals.active.at_percent(100).closed_in(user.company.deals_needed_calculation_duration)
@@ -409,13 +463,19 @@ class NewForecastTeam
 
     data[:quota] = quota
     data[:amount] = (data[:weighted_pipeline] || 0) + (data[:revenue] || 0)
+    data[:amount_net] = (data[:weighted_pipeline_net] || 0) + (data[:revenue_net] || 0)
 
     gap_to_quota = (quota - data[:amount]).to_f
     gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
+    gap_to_quota_net = (quota - data[:amount_net]).to_f
+    gap_to_quota_net = -gap_to_quota_net if !forecast_gap_to_quota_positive
 
     data[:percent_to_quota] = (quota > 0 ? data[:amount] / quota * 100 : 100)
     data[:percent_booked] = (quota > 0 ? data[:revenue] / quota * 100 : 100)
     data[:gap_to_quota] = gap_to_quota
+    data[:percent_to_quota_net] = (quota > 0 ? data[:amount_net] / quota * 100 : 100)
+    data[:percent_booked_net] = (quota > 0 ? data[:revenue_net] / quota * 100 : 100)
+    data[:gap_to_quota_net] = gap_to_quota_net
 
     all_team_members = (team.all_members.nil? ? []:team.all_members)
     complete_deals = Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_team_members.map{|member| member.id}).active.at_percent(100).closed_in(team.company.deals_needed_calculation_duration)
@@ -458,11 +518,25 @@ class NewForecastTeam
     @weighted_pipeline_by_stage
   end
 
+  def weighted_pipeline_by_stage_net
+    return @weighted_pipeline_by_stage_net if defined?(@weighted_pipeline_by_stage_net)
+
+    @weighted_pipeline_by_stage_net = forecasts_data[:weighted_pipeline_by_stage_net]
+    @weighted_pipeline_by_stage_net
+  end
+
   def weighted_pipeline
     return @weighted_pipeline if defined?(@weighted_pipeline)
 
     @weighted_pipeline = forecasts_data[:weighted_pipeline]
     @weighted_pipeline
+  end
+
+  def weighted_pipeline_net
+    return @weighted_pipeline_net if defined?(@weighted_pipeline_net)
+
+    @weighted_pipeline_net = forecasts_data[:weighted_pipeline_net]
+    @weighted_pipeline_net
   end
 
   def unweighted_pipeline_by_stage
@@ -472,11 +546,25 @@ class NewForecastTeam
     @unweighted_pipeline_by_stage
   end
 
+  def unweighted_pipeline_by_stage_net
+    return @unweighted_pipeline_by_stage_net if defined?(@unweighted_pipeline_by_stage_net)
+
+    @unweighted_pipeline_by_stage_net = forecasts_data[:unweighted_pipeline_by_stage_net]
+    @unweighted_pipeline_by_stage_net
+  end
+
   def revenue
     return @revenue if defined?(@revenue)
 
     @revenue = forecasts_data[:revenue]
     @revenue
+  end
+
+  def revenue_net
+    return @revenue_net if defined?(@revenue_net)
+
+    @revenue_net = forecasts_data[:revenue_net]
+    @revenue_net
   end
 
   def wow_weighted_pipeline
@@ -497,9 +585,18 @@ class NewForecastTeam
     @_amount ||= weighted_pipeline + revenue
   end
 
+  def amount_net
+    @_amount_net ||= weighted_pipeline_net + revenue_net
+  end
+
   def percent_to_quota
     return 100 unless quota > 0
     amount / quota * 100
+  end
+
+  def percent_to_quota_net
+    return 100 unless quota > 0
+    amount_net / quota * 100
   end
 
   def percent_booked
@@ -507,11 +604,24 @@ class NewForecastTeam
     revenue / quota * 100
   end
 
+  def percent_booked_net
+    return 100 unless quota > 0
+    revenue_net / quota * 100
+  end
+
   def gap_to_quota
     if team.company.forecast_gap_to_quota_positive
       return (quota - amount).to_f
     else
       return (amount - quota).to_f
+    end
+  end
+
+  def gap_to_quota_net
+    if team.company.forecast_gap_to_quota_positive
+      return (quota - amount_net).to_f
+    else
+      return (amount_net - quota).to_f
     end
   end
 

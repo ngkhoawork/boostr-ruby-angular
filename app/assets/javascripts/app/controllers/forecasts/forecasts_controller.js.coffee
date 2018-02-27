@@ -9,6 +9,7 @@
 		$scope.products = []
 		$scope.timePeriods = []
 		$scope.isUnweighted = false
+		$scope.isNetForecast = false
 		$scope.years = [2016..moment().year()]
 		$scope.totals = {}
 
@@ -160,6 +161,7 @@
 			timePeriods: TimePeriod.all()
 		).then (data) ->
 			$scope.hasForecastPermission = data.user.has_forecast_permission
+			$scope.hasNetPermission = data.user.company_net_forecast_enabled
 			shouldChooseTeamFilter = $scope.currentUserIsLeader || data.user.team_id != null || !$scope.hasForecastPermission
 			shouldChooseMemberFilter = !$scope.currentUserIsLeader && data.user.team_id != null || !$scope.hasForecastPermission
 			$scope.filterTeams = data.teams
@@ -269,7 +271,11 @@
 				revenue: 0
 				weighted_pipeline: 0
 				amount: 0
+				revenue_net: 0
+				weighted_pipeline_net: 0
+				amount_net: 0
 				gap_to_quota: 0
+				gap_to_quota_net: 0
 				percent_booked: 0
 				percent_to_quota: 0
 				new_deals_needed: 0
@@ -281,7 +287,11 @@
 				totals.revenue += Number(row.revenue) || 0
 				totals.weighted_pipeline += Number(row.weighted_pipeline) || 0
 				totals.amount += Number(row.amount) || 0
+				totals.revenue_net += Number(row.revenue_net) || 0
+				totals.weighted_pipeline_net += Number(row.weighted_pipeline_net) || 0
+				totals.amount_net += Number(row.amount_net) || 0
 				totals.gap_to_quota += if row.is_leader then 0 else Number(row.gap_to_quota) || 0
+				totals.gap_to_quota_net += if row.is_leader then 0 else Number(row.gap_to_quota_net) || 0
 				totals.new_deals_needed += if row.is_leader then 0 else Number(row.new_deals_needed) || 0
 				totals.wow_weighted_pipeline += Number(row.wow_weighted_pipeline) || 0
 				totals.wow_revenue += Number(row.wow_revenue) || 0
@@ -298,6 +308,13 @@
 				return
 			$scope.isUnweighted = !$scope.isUnweighted
 			$scope.$broadcast 'updateForecastChart'
+
+		$scope.toggleNetForecast = (e) ->
+			if !$scope.isChartDrawn
+				e.preventDefault()
+				return
+			$scope.isNetForecast = !$scope.isNetForecast
+			$scope.$broadcast 'drawForecastChart', $scope.forecast
 
 		class McSort
 			constructor: (opts) ->

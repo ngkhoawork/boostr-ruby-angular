@@ -111,6 +111,10 @@ class User < ActiveRecord::Base
     self.company.forecast_gap_to_quota_positive
   end
 
+  def company_net_forecast_enabled
+    self.company.enable_net_forecasting
+  end
+
   def is_admin
     is?(:admin)
   end
@@ -181,6 +185,7 @@ class User < ActiveRecord::Base
           :roles,
           :company_influencer_enabled,
           :company_forecast_gap_to_quota_positive,
+          :company_net_forecast_enabled,
           :has_forecast_permission
         ]
       ).except(:override))
