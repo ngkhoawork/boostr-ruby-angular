@@ -27,6 +27,8 @@ class NewQuarterlyForecast
           quarter = month_to_quarter[month_index]
           @data[:forecast][:quarterly_revenue][quarter] ||= 0
           @data[:forecast][:quarterly_revenue][quarter] += amount.to_f
+          @data[:forecast][:quarterly_revenue_net][quarter] ||= 0
+          @data[:forecast][:quarterly_revenue_net][quarter] += amount.to_f
         end
       end
     end
@@ -36,6 +38,8 @@ class NewQuarterlyForecast
           quarter = month_to_quarter[month_index]
           @data[:forecast][:quarterly_revenue][quarter] ||= 0
           @data[:forecast][:quarterly_revenue][quarter] += amount.to_f
+          @data[:forecast][:quarterly_revenue_net][quarter] ||= 0
+          @data[:forecast][:quarterly_revenue_net][quarter] += amount.to_f
         end
       end
     end
@@ -44,27 +48,20 @@ class NewQuarterlyForecast
         if revenue_row['monthly_amount']
           JSON.parse(revenue_row['monthly_amount']).each do |month_index, amount|
             quarter = month_to_quarter[month_index]
-            @data[:forecast][:quarterly_revenue][quarter] ||= 0
-            @data[:forecast][:quarterly_revenue][quarter] -= amount.to_f
+            @data[:forecast][:quarterly_revenue_net][quarter] ||= 0
+            @data[:forecast][:quarterly_revenue_net][quarter] -= amount.to_f
           end
         end
       end
     end
     stage_ids = []
     pipeline_data.each do |pipeline_row|
-      stage_id = pipeline_row['stage_id']
-      stage_item = company.stages.find_by(id: stage_id)
-      next if stage_item.nil?
-      probability = stage_item.probability.to_f
-      @data[:forecast][:quarterly_unweighted_pipeline_by_stage][stage_id] ||= {}
-      @data[:forecast][:quarterly_weighted_pipeline_by_stage][stage_id] ||= {}
-      stage_ids << stage_item.id
-      JSON.parse(pipeline_row['monthly_amount']).each do |month_index, amount|
-        quarter = month_to_quarter[month_index]
-        @data[:forecast][:quarterly_unweighted_pipeline_by_stage][stage_id][quarter] ||= 0
-        @data[:forecast][:quarterly_weighted_pipeline_by_stage][stage_id][quarter] ||= 0
-        @data[:forecast][:quarterly_unweighted_pipeline_by_stage][stage_id][quarter] += amount.to_f
-        @data[:forecast][:quarterly_weighted_pipeline_by_stage][stage_id][quarter] += amount.to_f * probability / 100.0
+      add_pipeline_data(pipeline_row, stage_ids)
+    end
+
+    if pipeline_data_net
+      pipeline_data_net.each do |pipeline_row|
+        add_pipeline_net_data(pipeline_row, stage_ids)
       end
     end
 
@@ -74,9 +71,65 @@ class NewQuarterlyForecast
     @data
   end
 
+  def add_pipeline_data(pipeline_row, stage_ids)
+    stage_id = pipeline_row['stage_id']
+    stage_item = company.stages.find_by(id: stage_id)
+    return if stage_item.nil?
+    probability = stage_item.probability.to_f
+    @data[:forecast][:quarterly_unweighted_pipeline_by_stage][stage_id] ||= {}
+    @data[:forecast][:quarterly_weighted_pipeline_by_stage][stage_id] ||= {}
+    stage_ids << stage_item.id
+    JSON.parse(pipeline_row['monthly_amount']).each do |month_index, amount|
+      quarter = month_to_quarter[month_index]
+      @data[:forecast][:quarterly_unweighted_pipeline_by_stage][stage_id][quarter] ||= 0
+      @data[:forecast][:quarterly_weighted_pipeline_by_stage][stage_id][quarter] ||= 0
+      @data[:forecast][:quarterly_unweighted_pipeline_by_stage][stage_id][quarter] += amount.to_f
+      @data[:forecast][:quarterly_weighted_pipeline_by_stage][stage_id][quarter] += amount.to_f * probability / 100.0
+    end
+  end
+
+  def add_pipeline_net_data(pipeline_row, stage_ids)
+    stage_id = pipeline_row['stage_id']
+    stage_item = company.stages.find_by(id: stage_id)
+    return if stage_item.nil?
+    probability = stage_item.probability.to_f
+    @data[:forecast][:quarterly_unweighted_pipeline_by_stage_net][stage_id] ||= {}
+    @data[:forecast][:quarterly_weighted_pipeline_by_stage_net][stage_id] ||= {}
+    stage_ids << stage_item.id
+    JSON.parse(pipeline_row['monthly_amount']).each do |month_index, amount|
+      quarter = month_to_quarter[month_index]
+      @data[:forecast][:quarterly_unweighted_pipeline_by_stage_net][stage_id][quarter] ||= 0
+      @data[:forecast][:quarterly_weighted_pipeline_by_stage_net][stage_id][quarter] ||= 0
+      @data[:forecast][:quarterly_unweighted_pipeline_by_stage_net][stage_id][quarter] += amount.to_f
+      @data[:forecast][:quarterly_weighted_pipeline_by_stage_net][stage_id][quarter] += amount.to_f * probability / 100.0
+    end
+  end
+
   def pipeline_sql
-    @_pipeline_sql ||= if company.enable_net_forecasting
-      "SELECT
+    @_pipeline_sql ||= "SELECT
+        stage_dimension_id AS stage_id,
+        avg(s.total) AS pipeline_amount,
+        json_object_agg(key, val) AS monthly_amount
+      FROM (
+          SELECT
+            stage_dimension_id,
+            SUM(amount) AS total,
+            key,
+            SUM(value::numeric) AS val
+          FROM
+            forecast_pipeline_facts t,
+            jsonb_each_text(monthly_amount)
+          WHERE
+            forecast_time_dimension_id = #{forecast_time_dimension.id}
+            AND user_dimension_id IN (#{user_ids.count > 0 ? user_ids.join(', ') : 0})
+          GROUP BY stage_dimension_id, key
+          ) s
+      GROUP BY stage_dimension_id"
+  end
+
+  def pipeline_sql_net
+    @_pipeline_sql_net ||= "
+      SELECT
         stage_dimension_id AS stage_id,
         avg(s.total) AS pipeline_amount,
         json_object_agg(key, val) AS monthly_amount
@@ -101,27 +154,6 @@ class NewQuarterlyForecast
           GROUP BY t.stage_dimension_id, key
           ) s
       GROUP BY stage_dimension_id"
-    else
-      "SELECT
-        stage_dimension_id AS stage_id,
-        avg(s.total) AS pipeline_amount,
-        json_object_agg(key, val) AS monthly_amount
-      FROM (
-          SELECT
-            stage_dimension_id,
-            SUM(amount) AS total,
-            key,
-            SUM(value::numeric) AS val
-          FROM
-            forecast_pipeline_facts t,
-            jsonb_each_text(monthly_amount)
-          WHERE
-            forecast_time_dimension_id = #{forecast_time_dimension.id}
-            AND user_dimension_id IN (#{user_ids.count > 0 ? user_ids.join(', ') : 0})
-          GROUP BY stage_dimension_id, key
-          ) s
-      GROUP BY stage_dimension_id"
-    end
   end
 
   def revenue_sql
@@ -183,6 +215,10 @@ class NewQuarterlyForecast
 
   def pipeline_data
     @_pipeline_data ||= ActiveRecord::Base.connection.execute(pipeline_sql)
+  end
+
+  def pipeline_data_net
+    @_pipeline_data_net ||= ActiveRecord::Base.connection.execute(pipeline_sql_net)
   end
 
   def revenue_data
@@ -276,7 +312,10 @@ class NewQuarterlyForecast
         quarterly_revenue: {},
         quarterly_unweighted_pipeline_by_stage: {},
         quarterly_weighted_pipeline_by_stage: {},
-        quarterly_quota: quarterly_quota
+        quarterly_quota: quarterly_quota,
+        quarterly_revenue_net: {},
+        quarterly_unweighted_pipeline_by_stage_net: {},
+        quarterly_weighted_pipeline_by_stage_net: {}
       },
       quarters: month_to_quarter.values.uniq
     }
