@@ -27,14 +27,6 @@ class Api::SalesProcessesController < ApplicationController
     end
   end
 
-  def destroy
-    if sales_process.destroy
-      render nothing: true
-    else
-      render json: { errors: 'You can\'t delete default sales process' }, status: :unprocessable_entity
-    end
-  end
-
   private
 
   def sales_process

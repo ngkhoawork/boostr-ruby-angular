@@ -15,7 +15,6 @@
               %td
                 %span.mr8 {{ row.name }}
                 %i.fa.fa-pencil.z-icon{'ng-click': 'edit(row)'}
-                %i.fa.fa-trash.z-icon{'ng-click': 'delete(row)', 'ng-if': 'row.name != "DEFAULT"' }
               %td.left {{ row.active ? 'Active' : 'Archived' }}
   .container
     .block

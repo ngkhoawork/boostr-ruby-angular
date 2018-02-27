@@ -7,7 +7,7 @@ class Api::StagesController < ApplicationController
     elsif params[:sales_process_id] && sales_process
       sales_process.stages
     elsif params[:current_team]
-      current_user.current_team.try(:sales_process).try(:stages) || default_stages
+      current_user.current_team&.sales_process&.stages || default_stages
     else
       company.stages
     end
@@ -46,13 +46,13 @@ class Api::StagesController < ApplicationController
 
   def team_stages
     if team.present?
-      @_stages ||= team.sales_process.try(:stages) 
+      @_stages ||= team.sales_process&.stages
       @_stages ||= default_stages
     end
   end
 
   def default_stages
-    @_default_stages ||= company.default_sales_process.try(:stages)
+    @_default_stages ||= company.default_sales_process&.stages
   end
 
   def team

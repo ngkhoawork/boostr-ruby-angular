@@ -197,7 +197,7 @@ class Company < ActiveRecord::Base
         .where(currency: Currency.find_by(curr_cd: currency))
         .where('start_date <= ? AND end_date >= ?', at_date, at_date)
         .first
-        .try(:rate)
+        &.rate
   end
 
   def operative_api_config
@@ -217,7 +217,7 @@ class Company < ActiveRecord::Base
   end
 
   def default_sales_process
-    sales_processes.where(name: 'DEFAULT').try(:first)
+    sales_processes.where(name: 'DEFAULT').first || sales_processes.first
   end
   
   protected

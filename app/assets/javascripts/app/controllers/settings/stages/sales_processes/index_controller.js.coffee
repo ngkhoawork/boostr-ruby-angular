@@ -33,11 +33,5 @@
       index = $scope.salesProcesses.indexOf(salesProcess)
       $scope.salesProcesses[index] = result
 
-  $scope.delete = (salesProcess) ->
-    if confirm('Are you sure you want to delete "' +  salesProcess.name + '"?')
-      SalesProcess.delete(id: salesProcess.id).then (result) ->
-        index = $scope.salesProcesses.indexOf(salesProcess)
-        $scope.salesProcesses.splice index, 1
-
   init()
 ]

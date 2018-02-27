@@ -174,7 +174,7 @@ class Api::DealsController < ApplicationController
         .select("distinct(start_date)")
         .where("deal_products.deal_id in (?)", deal_ids)
         .order("start_date asc")
-        .collect{|deal_product_budget| deal_product_budget.start_date.try(:beginning_of_month)}
+        .collect{|deal_product_budget| deal_product_budget.start_date&.beginning_of_month}
         .compact
         .uniq
 
@@ -210,7 +210,7 @@ class Api::DealsController < ApplicationController
   def pipeline_report_relation
     result = deals
       .by_stage_ids(params[:stage_ids])
-      .for_time_period(time_period.try(:start_date), time_period.try(:end_date))
+      .for_time_period(time_period&.start_date, time_period&.end_date)
       .with_all_options(deal_type_source_params)
       .limit(limit)
       .offset(offset)
@@ -926,7 +926,7 @@ class Api::DealsController < ApplicationController
       .by_budget_range(params[:budget_from], params[:budget_to])
       .by_curr_cd(params[:curr_cd])
       .by_start_date(params[:start_start_date], params[:start_end_date])
-      .for_time_period(time_period.try(:start_date), time_period.try(:end_date))
+      .for_time_period(time_period&.start_date, time_period&.end_date)
       .by_created_date(params[:created_start_date], params[:created_end_date])
       .distinct
 
@@ -940,6 +940,6 @@ class Api::DealsController < ApplicationController
   end
 
   def team_stages
-    @team_stages ||= team.try(:sales_process).try(:stages).try(:active) || company.default_sales_process.try(:stages).try(:active)
+    @_team_stages ||= team&.sales_process&.stages&.active || company.default_sales_process&.stages&.active || []
   end
 end

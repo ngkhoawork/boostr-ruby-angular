@@ -524,7 +524,7 @@ Rails.application.routes.draw do
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
 
-    resources :sales_processes, only: [:index, :create, :show, :update, :destroy]
+    resources :sales_processes, only: [:index, :create, :show, :update]
   end
 
   mount Sidekiq::Web => '/sidekiq'
