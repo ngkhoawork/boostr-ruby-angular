@@ -6,6 +6,7 @@ class Forecast::PipelineDataService
     @product_id          = params[:product_id]
     @member_id           = params[:member_id]
     @time_period_id      = params[:time_period_id]
+    @is_net_forecast     = (params[:is_net_forecast] && params[:is_net_forecast] == 'true')
   end
 
   def perform
@@ -15,6 +16,8 @@ class Forecast::PipelineDataService
       filter_start_date: start_date,
       filter_end_date: end_date,
       products: products,
+      members: members,
+      is_net_forecast: is_net_forecast,
     )
   end
 
@@ -25,6 +28,7 @@ class Forecast::PipelineDataService
               :product_family_id,
               :product_id,
               :member_id,
+              :is_net_forecast,
               :time_period_id
 
   def data_for_serializer
@@ -53,6 +57,7 @@ class Forecast::PipelineDataService
         advertiser: {},
         stage: {},
         company: {},
+        deal_members: {},
         deal_products: {
           deal_product_budgets: {},
           product: {}
@@ -84,6 +89,16 @@ class Forecast::PipelineDataService
 
   def member
     @_member ||= company.users.find(member_id)
+  end
+
+  def members
+    @_members ||= if member_id
+      [member]
+    elsif team_id
+      team.all_members + team.all_leaders
+    else
+      raise ActiveRecord::RecordNotFound
+    end
   end
 
   def team

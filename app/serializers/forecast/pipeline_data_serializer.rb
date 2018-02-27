@@ -1,6 +1,6 @@
 class Forecast::PipelineDataSerializer < ActiveModel::Serializer
   attributes  :id, :name, :start_date, :end_date, :stage_id, :client_name,
-              :agency_name, :probability, :budget, :in_period_amt, :wday_in_stage,
+              :agency_name, :probability, :budget, :in_period_amt, :in_period_split_amt, :wday_in_stage,
               :wday_since_opened, :wday_in_stage_color, :wday_since_opened_color
 
   def client_name
@@ -34,12 +34,32 @@ class Forecast::PipelineDataSerializer < ActiveModel::Serializer
         from = [filter_start_date, deal_product_budget.start_date].max
         to = [filter_end_date, deal_product_budget.end_date].min
         num_days = [(to.to_date - from.to_date) + 1, 0].max
-        if company.enable_net_forecasting
+        if is_net_forecast
           sum += deal_product_budget.daily_budget.to_f * product.margin / 100 * num_days
         else
           sum += deal_product_budget.daily_budget.to_f * num_days
         end
         sum
+      end
+    end
+  end
+
+  def in_period_split_amt
+    deal_users.inject(0) do |split_sum, member|
+      share = member.share || 0
+      deal_products.inject(0) do |sum, deal_product|
+        product = deal_product.product
+        sum + deal_product.deal_product_budgets.inject(0) do |sum, deal_product_budget|
+          from = [filter_start_date, deal_product_budget.start_date].max
+          to = [filter_end_date, deal_product_budget.end_date].min
+          num_days = [(to.to_date - from.to_date) + 1, 0].max
+          if is_net_forecast
+            sum += deal_product_budget.daily_budget.to_f * product.margin / 100 * num_days * share / 100
+          else
+            sum += deal_product_budget.daily_budget.to_f * num_days * share / 100
+          end
+          sum
+        end
       end
     end
   end
@@ -107,6 +127,23 @@ class Forecast::PipelineDataSerializer < ActiveModel::Serializer
 
   def products
     @_products ||= @options[:products]
+  end
+
+  def members
+    @_members ||= @options[:members]
+  end
+
+  def member_ids
+    @_member_ids ||= members.collect(&:id)
+  end
+
+  def deal_users
+    @_deal_users ||= object.deal_members
+      .select{ |deal_member| member_ids.nil? || member_ids.include?(deal_member.user_id) }
+  end
+
+  def is_net_forecast
+    @_is_net_forecast ||= @options[:is_net_forecast]
   end
 
   def stage

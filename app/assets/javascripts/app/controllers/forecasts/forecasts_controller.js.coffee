@@ -65,6 +65,7 @@
 					quarter: row.quarter,
 					product_id: $scope.filter.product.id,
 					product_family_id: $scope.filter.productFamily.id,
+					is_net_forecast: $scope.isNetForecast,
 					year: row.year
 				}
 				if row.type == 'member'

@@ -6,6 +6,7 @@ class Forecast::RevenueDataService
     @product_id          = params[:product_id]
     @member_id           = params[:member_id]
     @time_period_id      = params[:time_period_id]
+    @is_net_forecast     = (params[:is_net_forecast] && params[:is_net_forecast] == 'true')
   end
 
   def perform
@@ -16,6 +17,7 @@ class Forecast::RevenueDataService
       filter_end_date: end_date,
       product_ids: product_ids,
       member_ids: member_ids,
+      is_net_forecast: is_net_forecast,
     )
   end
 
@@ -26,6 +28,7 @@ class Forecast::RevenueDataService
               :product_family_id,
               :product_id,
               :member_id,
+              :is_net_forecast,
               :time_period_id
 
   def data_for_serializer

@@ -150,6 +150,10 @@
 									In-period Amt
 									%i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'in_period_amt', 'fa-sort-asc': sort.weighted_pipeline.column == 'in_period_amt' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'in_period_amt' && sort.weighted_pipeline.direction == 'desc' }" } }
 							%th
+								%span.clickable{ ng: { click: 'sort.weighted_pipeline.toggle("in_period_split_amt")' } }
+									Split In-Period Amt
+									%i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'in_period_split_amt', 'fa-sort-asc': sort.weighted_pipeline.column == 'in_period_split_amt' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'in_period_split_amt' && sort.weighted_pipeline.direction == 'desc' }" } }
+							%th
 								%span.clickable{ ng: { click: 'sort.weighted_pipeline.toggle("start_date")' } }
 									Start Date
 									%i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'start_date', 'fa-sort-asc': sort.weighted_pipeline.column == 'start_date' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'start_date' && sort.weighted_pipeline.direction == 'desc' }" } }
@@ -175,6 +179,7 @@
 							%td {{ subrow.probability }}%
 							%td {{ (subrow.budget || 0) | currency: '$': 0 }}
 							%td {{ subrow.in_period_amt | currency: '$': 0 }}
+							%td {{ subrow.in_period_split_amt | currency: '$': 0 }}
 							%td {{ subrow.start_date | date: 'MM/dd/yyyy' }}
 							%td {{ subrow.end_date | date: 'MM/dd/yyyy' }}
 							%td{ 'ng-class': '{ "success": subrow.wday_in_stage_color == "green", "warning": subrow.wday_in_stage_color == "yellow", "danger": subrow.wday_in_stage_color == "red" }' } {{ subrow.wday_in_stage }}

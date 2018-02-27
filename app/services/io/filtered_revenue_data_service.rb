@@ -1,11 +1,12 @@
 class Io::FilteredRevenueDataService
-  def initialize(io, start_date, end_date, member_ids, product_ids)
-    @io           = io
-    @company      = io.company
-    @member_ids   = member_ids
-    @product_ids  = product_ids
-    @start_date   = start_date
-    @end_date     = end_date
+  def initialize(io, start_date, end_date, member_ids, product_ids, is_net_forecast = false)
+    @io               = io
+    @company          = io.company
+    @member_ids       = member_ids
+    @product_ids      = product_ids
+    @start_date       = start_date
+    @end_date         = end_date
+    @is_net_forecast  = is_net_forecast
   end
 
   def perform
@@ -19,7 +20,8 @@ class Io::FilteredRevenueDataService
               :member_ids,
               :product_ids,
               :start_date,
-              :end_date
+              :end_date,
+              :is_net_forecast
 
   def content_fees
     @_content_fees ||= io.content_fees.inject([]) do |result, content_fee|
@@ -80,7 +82,7 @@ class Io::FilteredRevenueDataService
   end
 
   def cost_partial_amounts
-    @_cost_partial_amounts ||= if company.enable_net_forecasting
+    @_cost_partial_amounts ||= if is_net_forecast
       io_users.inject([0, 0]) do |total, member|
         item_data = costs.inject([0, 0]) do |item_total, item|
           item_data = item.cost_monthly_amounts.each do |budget|
