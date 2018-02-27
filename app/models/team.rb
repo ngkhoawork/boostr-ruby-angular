@@ -54,7 +54,7 @@ class Team < ActiveRecord::Base
   end
 
   def leader_and_member_ids
-    [leader_id] | members.pluck(:id)
+    ([leader_id] | member_ids).compact
   end
 
   def all_children
@@ -296,11 +296,9 @@ class Team < ActiveRecord::Base
     ls
   end
 
-  def all_members_and_leaders
-    user_ids = [leader_id, members.ids].flatten.compact
-
-    children.reduce(user_ids) do |memo, child|
-      memo + child.all_members_and_leaders
+  def all_members_and_leaders_ids
+    children.reduce(leader_and_member_ids) do |memo, child|
+      memo + child.all_members_and_leaders_ids
     end
   end
 
