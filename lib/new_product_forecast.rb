@@ -21,32 +21,56 @@ class NewProductForecast
     data = init_data
     revenue_data.each do |item|
       data[item.product_id]['revenue'] = item.revenue_amount.to_f
+      data[item.product_id]['revenue_net'] = item.revenue_amount.to_f
     end
 
     pmp_revenue_data.each do |item|
       data[item.product_id]['revenue'] ||= 0
       data[item.product_id]['revenue'] += item.revenue_amount.to_f
+      data[item.product_id]['revenue_net'] ||= 0
+      data[item.product_id]['revenue_net'] += item.revenue_amount.to_f
     end
 
     if company.enable_net_forecasting
       cost_revenue_data.each do |item|
-        data[item.product_id]['revenue'] ||= 0
-        data[item.product_id]['revenue'] -= item.revenue_amount.to_f
+        data[item.product_id]['revenue_net'] ||= 0
+        data[item.product_id]['revenue_net'] -= item.revenue_amount.to_f
       end
     end
 
     pipeline_data.each do |item|
-      data[item.product_id][:unweighted_pipeline] += item.pipeline_amount.to_f
-      data[item.product_id][:unweighted_pipeline_by_stage][item.stage_id] ||= 0.0
-      data[item.product_id][:unweighted_pipeline_by_stage][item.stage_id] += item.pipeline_amount
+      add_pipeline_data(data, item)
+    end
 
-      weighted_amount = item.pipeline_amount.to_f * company.stages.find(item.stage_id).probability.to_f / 100
-      data[item.product_id][:weighted_pipeline] += weighted_amount
-      data[item.product_id][:weighted_pipeline_by_stage][item.stage_id] ||= 0.0
-      data[item.product_id][:weighted_pipeline_by_stage][item.stage_id] += weighted_amount
+    if pipeline_data_net
+      pipeline_data_net.each do |item|
+        add_pipeline_net_data(data, item)
+      end
     end
 
     @forecasts_data = data.values
+  end
+
+  def add_pipeline_data(data, item)
+    data[item.product_id][:unweighted_pipeline] += item.pipeline_amount.to_f
+    data[item.product_id][:unweighted_pipeline_by_stage][item.stage_id] ||= 0.0
+    data[item.product_id][:unweighted_pipeline_by_stage][item.stage_id] += item.pipeline_amount
+
+    weighted_amount = item.pipeline_amount.to_f * item.probability.to_f / 100
+    data[item.product_id][:weighted_pipeline] += weighted_amount
+    data[item.product_id][:weighted_pipeline_by_stage][item.stage_id] ||= 0.0
+    data[item.product_id][:weighted_pipeline_by_stage][item.stage_id] += weighted_amount
+  end
+
+  def add_pipeline_net_data(data, item)
+    data[item.product_id][:unweighted_pipeline_net] += item.pipeline_amount.to_f
+    data[item.product_id][:unweighted_pipeline_by_stage_net][item.stage_id] ||= 0.0
+    data[item.product_id][:unweighted_pipeline_by_stage_net][item.stage_id] += item.pipeline_amount
+
+    weighted_amount = item.pipeline_amount.to_f * item.probability.to_f / 100
+    data[item.product_id][:weighted_pipeline_net] += weighted_amount
+    data[item.product_id][:weighted_pipeline_by_stage_net][item.stage_id] ||= 0.0
+    data[item.product_id][:weighted_pipeline_by_stage_net][item.stage_id] += weighted_amount
   end
 
   def init_data
@@ -58,7 +82,12 @@ class NewProductForecast
         unweighted_pipeline_by_stage: {},
         weighted_pipeline_by_stage: {},
         unweighted_pipeline: 0.0,
-        weighted_pipeline: 0.0
+        weighted_pipeline: 0.0,
+        revenue_net: 0.0,
+        unweighted_pipeline_by_stage_net: {},
+        weighted_pipeline_by_stage_net: {},
+        unweighted_pipeline_net: 0.0,
+        weighted_pipeline_net: 0.0
       }
       result
     end
@@ -124,24 +153,33 @@ class NewProductForecast
   end
 
   def pipeline_data
-    @_pipeline_data ||= if company.enable_net_forecasting
+    @_pipeline_data ||= ForecastPipelineFact
+      .joins("LEFT JOIN stages ON forecast_pipeline_facts.stage_dimension_id = stages.id")
+      .by_time_dimension_id(forecast_time_dimension.id)
+      .by_user_dimension_ids(user_ids)
+      .by_product_dimension_ids(product_ids)
+      .select("forecast_pipeline_facts.product_dimension_id AS product_id,
+        stages.id AS stage_id,
+        SUM(forecast_pipeline_facts.amount) AS pipeline_amount,
+        stages.probability as probability")
+      .group("forecast_pipeline_facts.product_dimension_id,
+        stages.id")
+  end
+
+  def pipeline_data_net
+    @_pipeline_data_net ||= if company.enable_net_forecasting
       ForecastPipelineFact
+        .joins("LEFT JOIN stages ON forecast_pipeline_facts.stage_dimension_id = stages.id")
         .joins("LEFT JOIN products ON forecast_pipeline_facts.product_dimension_id = products.id")
         .by_time_dimension_id(forecast_time_dimension.id)
         .by_user_dimension_ids(user_ids)
         .by_product_dimension_ids(product_ids)
         .select("forecast_pipeline_facts.product_dimension_id AS product_id,
-          forecast_pipeline_facts.stage_dimension_id AS stage_id,
-          SUM(forecast_pipeline_facts.amount * products.margin / 100) AS pipeline_amount")
+          stages.id AS stage_id,
+          SUM(forecast_pipeline_facts.amount * products.margin / 100) AS pipeline_amount,
+          stages.probability as probability")
         .group("forecast_pipeline_facts.product_dimension_id,
-          forecast_pipeline_facts.stage_dimension_id")
-    else
-      ForecastPipelineFact
-        .by_time_dimension_id(forecast_time_dimension.id)
-        .by_user_dimension_ids(user_ids)
-        .by_product_dimension_ids(product_ids)
-        .select("product_dimension_id AS product_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
-        .group("product_dimension_id, stage_dimension_id")
+          stages.id")
     end
   end
 end
