@@ -2,14 +2,14 @@
     '$scope', '$timeout', 'AssignmentRule', 'User'
     ($scope,   $timeout,   AssignmentRule,   User) ->
         $scope.form = ''
-        $scope.sellers = []
+        $scope.users = []
         $scope.rules = []
         positions = {}
         $scope.selectedRule = null
         $scope.defaultRule = null
 
         User.query().$promise.then (data) ->
-            $scope.sellers = data
+            $scope.users = data
 
         (getRules = (selectedName) ->
             AssignmentRule.get().then (data) ->

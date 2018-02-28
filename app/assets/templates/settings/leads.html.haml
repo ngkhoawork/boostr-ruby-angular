@@ -54,10 +54,14 @@
                     .rule-column-header
                         %div USERS
                         .rule-add-btn.z-dropdown{dropdown: true}
-                            %div{'dropdown-toggle': true} Add
-                            %div.dropdown-menu.dropdown-menu-right
-                                %div.dropdown-item{ng: {repeat: 'seller in sellers', click: 'addUser(seller)'}}
-                                    {{seller.name}}
+                            %div{'dropdown-toggle': true, 'ng-click': 'userSearch = ""'} Add
+                            %div.dropdown-menu.dropdown-menu-right.users-dropdown
+                                %div.users-search-wrap
+                                    %i.fa.fa-search.users-search-icon
+                                    %input.form-control{'placeholder': 'Search', 'ng-model': 'userSearch', 'ng-click': '$event.stopPropagation()'}
+                                %div.users-list-wrap
+                                    %div.dropdown-item{ng: {repeat: 'user in users | filter : userSearch', click: 'addUser(user)'}}
+                                        {{user.name}}
                     .rule-row{'ng-repeat': 'user in selectedRule.users'}
                         {{user.name}}
                         %i.fa.fa-trash.z-icon{'ng-click': 'removeUser(user)'}
