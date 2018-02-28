@@ -56,11 +56,7 @@ class Csv::ActivePmpItem
   end
 
   def check_budget
-    if budget.present?
-      budget.to_d if budget.present?
-    else
-      check_delivered
-    end
+    budget.present? ? budget.to_d : check_delivered
   rescue
     raise_invalid_field("budget")
   end
@@ -79,20 +75,20 @@ class Csv::ActivePmpItem
 
   def active_pmp_item_params
     {
-        ssp_deal_id: deal_id,
-        pmp_id: check_pmp_id,
-        ssp_id: check_ssp,
-        pmp_type: check_pmp_type,
-        product_id: check_product,
-        start_date: check_and_format_date(start_date),
-        end_date: check_and_format_date(end_date),
-        budget: check_budget,
-        budget_delivered: check_delivered,
-        budget_remaining: 0,
-        budget_loc: check_budget,
-        budget_delivered_loc: check_delivered,
-        budget_remaining_loc: 0,
-        skip_callback: true
+      ssp_deal_id: deal_id,
+      pmp_id: check_pmp_id,
+      ssp_id: check_ssp,
+      pmp_type: check_pmp_type,
+      product_id: check_product,
+      start_date: check_and_format_date(start_date),
+      end_date: check_and_format_date(end_date),
+      budget: check_budget,
+      budget_delivered: check_delivered,
+      budget_remaining: 0,
+      budget_loc: check_budget,
+      budget_delivered_loc: check_delivered,
+      budget_remaining_loc: 0,
+      skip_callback: true
     }
   end
 
