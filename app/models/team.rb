@@ -150,14 +150,6 @@ class Team < ActiveRecord::Base
         io[:quarters][(month - 1) / 3] += content_fee_product_budget.budget
       end
 
-      if self.company.enable_net_forecasting
-        io_obj.cost_monthly_amounts.for_time_period(start_date, end_date).each do |cost_monthly_amount|
-          month = cost_monthly_amount.start_date.mon
-          io[:months][month - 1] -= cost_monthly_amount.budget
-          io[:quarters][(month - 1) / 3] -= cost_monthly_amount.budget
-        end
-      end
-
       io_obj.display_line_items.for_time_period(start_date, end_date).each do |display_line_item|
         display_line_item_budgets = display_line_item.display_line_item_budgets.to_a
 
@@ -221,19 +213,6 @@ class Team < ActiveRecord::Base
             product_ios[item_product_id] = JSON.parse(JSON.generate(io))
             product_ios[item_product_id][:product_id] = item_product_id
             product_ios[item_product_id][:product] = content_fee.product
-          end
-        end
-      end
-
-      if self.company.enable_net_forecasting
-        cost_rows.each do |cost|
-          cost.cost_monthly_amounts.for_time_period(start_date, end_date).each do |cost_monthly_amount|
-            item_product_id = cost.product_id
-            if product_ios[item_product_id].nil?
-              product_ios[item_product_id] = JSON.parse(JSON.generate(io))
-              product_ios[item_product_id][:product_id] = item_product_id
-              product_ios[item_product_id][:product] = cost.product
-            end
           end
         end
       end

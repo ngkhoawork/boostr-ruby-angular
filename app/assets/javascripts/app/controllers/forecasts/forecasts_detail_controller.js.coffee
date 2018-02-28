@@ -208,7 +208,8 @@
                 parseRevenueBudgets pmp_data
                 addDetailAmounts pmp_data, 'pmp_revenues'
                 $scope.pmp_revenues = pmp_data
-                return Deal.forecast_detail(query)
+                query.type='quarterly'
+                return Forecast.pipeline_data(query).$promise
             .then (deal_data) ->
                 parseDealBudgets deal_data
                 addDetailAmounts deal_data, 'deals'

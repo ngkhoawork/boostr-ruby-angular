@@ -401,19 +401,6 @@ class Io < ActiveRecord::Base
       end
     end
 
-    if self.company.enable_net_forecasting
-      costs.each do |cost|
-        cost.cost_monthly_amounts.each do |cost_monthly_amount|
-          if (start_date <= cost_monthly_amount.end_date && end_date >= cost_monthly_amount.start_date)
-            in_period_days = [[self.end_date, end_date, cost_monthly_amount.end_date].min - [self.start_date, start_date, cost_monthly_amount.start_date].max + 1, 0].max
-            in_period_effective_days = [[self.end_date, end_date, cost_monthly_amount.end_date, io_member.to_date].min - [self.start_date, start_date, cost_monthly_amount.start_date, io_member.from_date].max + 1, 0].max
-            sum_period_budget -= cost_monthly_amount.corrected_daily_budget(self.start_date, self.end_date) * in_period_days
-            split_period_budget -= cost_monthly_amount.corrected_daily_budget(self.start_date, self.end_date) * in_period_effective_days * share / 100
-          end
-        end
-      end
-    end
-
     display_line_items.each do |display_line_item|
       display_line_item_budget_overlapped_days = 0
       display_line_item_budget_with_io_member_overlapped_days = 0
@@ -458,18 +445,6 @@ class Io < ActiveRecord::Base
           in_period_effective_days = [[self.end_date, end_date, content_fee_product_budget.end_date, io_member.to_date].min - [self.start_date, start_date, content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
           sum_period_budget += content_fee_product_budget.corrected_daily_budget(self.start_date, self.end_date) * in_period_days
           split_period_budget += content_fee_product_budget.corrected_daily_budget(self.start_date, self.end_date) * in_period_effective_days * share / 100
-        end
-      end
-    end
-    if company.enable_net_forecasting
-      costs.for_product_ids([product.id]).each do |cost|
-        cost.cost_monthly_amounts.each do |cost_monthly_amount|
-          if (start_date <= cost_monthly_amount.end_date && end_date >= cost_monthly_amount.start_date)
-            in_period_days = [[self.end_date, end_date, cost_monthly_amount.end_date].min - [self.start_date, start_date, cost_monthly_amount.start_date].max + 1, 0].max
-            in_period_effective_days = [[self.end_date, end_date, cost_monthly_amount.end_date, io_member.to_date].min - [self.start_date, start_date, cost_monthly_amount.start_date, io_member.from_date].max + 1, 0].max
-            sum_period_budget -= cost_monthly_amount.corrected_daily_budget(self.start_date, self.end_date) * in_period_days
-            split_period_budget -= cost_monthly_amount.corrected_daily_budget(self.start_date, self.end_date) * in_period_effective_days * share / 100
-          end
         end
       end
     end

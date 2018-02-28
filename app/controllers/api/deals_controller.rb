@@ -404,22 +404,12 @@ class Api::DealsController < ApplicationController
       deal['period_budget'] = sum_period_budget
       deal['split_period_budget'] = split_period_budget
       deal['month_amounts'] = []
-      monthly_revenues = if company.enable_net_forecasting
-        DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
-          .joins("LEFT JOIN products ON deal_products.product_id=products.id")
-          .select("date_part('month', start_date) as month, sum(deal_product_budgets.budget * products.margin / 100) as revenue")
-          .for_time_period(time_period.start_date, time_period.end_date)
-          .where("deal_products.deal_id = ? AND deal_products.open IS TRUE", deal['id'])
-          .group("date_part('month', start_date)").order("date_part('month', start_date) asc")
-          .collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
-      else
-        DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
-          .select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue")
-          .for_time_period(time_period.start_date, time_period.end_date)
-          .where("deal_products.deal_id = ? AND deal_products.open IS TRUE", deal['id'])
-          .group("date_part('month', start_date)").order("date_part('month', start_date) asc")
-          .collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
-      end
+      monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
+        .select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue")
+        .for_time_period(time_period.start_date, time_period.end_date)
+        .where("deal_products.deal_id = ? AND deal_products.open IS TRUE", deal['id'])
+        .group("date_part('month', start_date)").order("date_part('month', start_date) asc")
+        .collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
 
       index = 0
       monthly_revenues.each do |monthly_revenue|
@@ -444,24 +434,13 @@ class Api::DealsController < ApplicationController
       end
 
       deal['quarter_amounts'] = []
-      quarterly_revenues = if company.enable_net_forecasting
-        DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
-          .joins("LEFT JOIN products ON deal_products.product_id=products.id")
-          .select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget * products.margin / 100) as revenue")
-          .for_time_period(time_period.start_date, time_period.end_date)
-          .where("deal_id = ? AND deal_products.open IS TRUE", deal['id'])
-          .group("date_part('quarter', start_date)")
-          .order("date_part('quarter', start_date) asc")
-          .collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
-      else
-        DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
-          .select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue")
-          .for_time_period(time_period.start_date, time_period.end_date)
-          .where("deal_id = ? AND deal_products.open IS TRUE", deal['id'])
-          .group("date_part('quarter', start_date)")
-          .order("date_part('quarter', start_date) asc")
-          .collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
-      end
+      quarterly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
+        .select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue")
+        .for_time_period(time_period.start_date, time_period.end_date)
+        .where("deal_id = ? AND deal_products.open IS TRUE", deal['id'])
+        .group("date_part('quarter', start_date)")
+        .order("date_part('quarter', start_date) asc")
+        .collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
       index = 0
       quarterly_revenues.each do |quarterly_revenue|
         for i in index..(quarterly_revenue[:quarter]-2)
@@ -545,11 +524,6 @@ class Api::DealsController < ApplicationController
 
       product_deals = {}
       deal_object.deal_products.for_product_ids(product_ids).each do |deal_product|
-        margin = if company.enable_net_forecasting
-          deal_product&.product&.margin || 100
-        else
-          100
-        end
         item_product_id = deal_product.product_id
         deal_product.deal_product_budgets.for_time_period(time_period.start_date, time_period.end_date).each do |deal_product_budget|
           if product_deals[item_product_id].nil?
@@ -562,7 +536,7 @@ class Api::DealsController < ApplicationController
             from = [time_period.start_date, deal_product_budget.start_date].max
             to = [time_period.end_date, deal_product_budget.end_date].min
             num_days = (to.to_date - from.to_date) + 1
-            product_deals[item_product_id][:in_period_amt] += deal_product_budget.daily_budget.to_f * num_days * margin / 100
+            product_deals[item_product_id][:in_period_amt] += deal_product_budget.daily_budget.to_f * num_days
           end
         end
       end
