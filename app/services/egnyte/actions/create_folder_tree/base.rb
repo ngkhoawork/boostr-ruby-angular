@@ -3,14 +3,10 @@ class Egnyte::Actions::CreateFolderTree::Base
 
   class << self
     def required_option_keys
-      @required_option_keys ||= %i(egnyte_integration_id root_name)
-    end
-
-    def folder_tree_attribute_name
       raise NotImplementedError, __method__
     end
 
-    def root_folder_path_prefix
+    def folder_tree_attribute_name
       raise NotImplementedError, __method__
     end
   end
@@ -24,38 +20,42 @@ class Egnyte::Actions::CreateFolderTree::Base
   def perform
     return false unless enabled_and_connected?
 
-    traverse_folder_tree(folder_tree) do |node|
-      create_folder_request(folder_path: node[:title], domain: app_domain, access_token: access_token)
+    traverse_folder_tree(root_folder) do |node|
+      create_folder_request(folder_path: node[:path], domain: app_domain, access_token: access_token)
     end
   end
 
   private
 
-  delegate :required_option_keys, :folder_tree_attribute_name, :root_folder_path_prefix, to: self
+  delegate :required_option_keys, :folder_tree_attribute_name, to: :class
   delegate :access_token, :app_domain, :enabled_and_connected?, to: :egnyte_integration
 
   def traverse_folder_tree(node, &block)
     block.call(node)
 
-    return if node[:nodes].blank?
-
     node[:nodes].each do |child|
-      # Prefix child folder name with parent folder name
-      child[:title] = urlified_folder_path(node[:title], child[:title])
+      child[:path] = build_folder_path(node[:path], child[:title])
 
       traverse_folder_tree(child, &block)
     end
   end
 
-  def folder_tree
+  def root_folder
+    folder_tree_pattern.tap { |folder_tree| folder_tree[:path] = root_folder_path }
+  end
+
+  def folder_tree_pattern
     egnyte_integration
       .send(folder_tree_attribute_name)
       .deep_dup
       .deep_symbolize_keys!
-      .tap do |folder_tree|
-        # Override top folder name with a provided 'root_name' option
-        folder_tree[:title] = urlified_folder_path(root_folder_path_prefix, @options[:root_name])
-      end
+  end
+
+  def build_folder_path(parent_folder_path, child_folder_title)
+    File.join(
+      parent_folder_path,
+      encode_space_sign(child_folder_title)
+    )
   end
 
   def create_folder_request(options)
@@ -66,7 +66,11 @@ class Egnyte::Actions::CreateFolderTree::Base
     @egnyte_integration ||= EgnyteIntegration.find(@options[:egnyte_integration_id])
   end
 
-  def urlified_folder_path(*folders)
-    folders.join('/').gsub(/ /, ENCODED_SPACE_SIGN)
+  def encode_space_sign(str)
+    str.gsub(/ /, ENCODED_SPACE_SIGN)
+  end
+
+  def root_folder_path
+    raise NotImplementedError, __method__
   end
 end

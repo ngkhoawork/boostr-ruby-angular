@@ -1785,6 +1785,8 @@ class Deal < ActiveRecord::Base
   end
 
   def setup_egnyte_folders
-    SetupEgnyteDealFoldersWorker.perform_async(company.egnyte_integration.id, name) if company.egnyte_integration
+    return unless company.egnyte_integration
+
+    SetupEgnyteDealFoldersWorker.perform_async(company.egnyte_integration.id, name, advertiser.name)
   end
 end
