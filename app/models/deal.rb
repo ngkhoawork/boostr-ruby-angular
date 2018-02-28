@@ -480,16 +480,11 @@ class Deal < ActiveRecord::Base
   def in_period_open_amt(start_date, end_date)
     total = 0
     deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
-      margin = if company.enable_net_forecasting
-        deal_product_budget.deal_product&.product&.margin || 100
-      else
-        100
-      end
       if deal_product_budget.deal_product.open == true
         from = [start_date, deal_product_budget.start_date].max
         to = [end_date, deal_product_budget.end_date].min
         num_days = (to.to_date - from.to_date) + 1
-        total += deal_product_budget.daily_budget.to_f * num_days * margin / 100
+        total += deal_product_budget.daily_budget.to_f * num_days
       end
     end
     total
