@@ -54,6 +54,11 @@ class Api::ClientsController < ApplicationController
                   .pluck_to_struct(:id, :name, :client_type_id)
   end
 
+  def fuzzy_search
+    clients = company.clients.fuzzy_search(params[:search]).pluck_to_struct(:id, :name)
+    render json: clients
+  end
+
   def filter_options
     client_ids = clients.pluck(:id)
 

@@ -28,12 +28,12 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
         io_name: 'ioname',
         io_advertiser: 'Advertiser name',
         io_agency: 'Agency name',
-        io_start_date: '2016-10-31'.to_date,
-        io_end_date: '2016-11-27'.to_date,
+        io_start_date: start_date,
+        io_end_date: end_date,
         line_number: 1170022354,
         ad_server: 'DFP',
-        start_date: '2016-10-31'.to_date,
-        end_date: '2016-11-27'.to_date,
+        start_date: start_date,
+        end_date: end_date,
         external_io_number: 605084194,
         product_name: 'Hershey test - In-Feed - :30 - iOS',
         pricing_type: 'CPM',
@@ -65,14 +65,14 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       io_name: 'ioname',
       io_advertiser: 'Advertiser name',
       io_agency: 'Agency name',
-      io_start_date: '2016-10-31'.to_date,
-      io_end_date: '2016-11-27'.to_date,
+      io_start_date: start_date,
+      io_end_date: end_date,
       external_io_number: 605084194,
       product_name: 'Hershey test - In-Feed - :30 - iOS',
       line_number: 1170022354,
       ad_server: 'DFP',
-      start_date: '2016-10-31'.to_date,
-      end_date: '2016-11-27'.to_date,
+      start_date: start_date,
+      end_date: end_date,
       pricing_type: 'CPD',
       price: 20000000 / 1_000_000,
       quantity: 85000,
@@ -104,8 +104,8 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
 
       import_log = CsvImportLog.last
       expect(import_log.rows_processed).to eq 3
-      expect(import_log.rows_imported).to eq 1
-      expect(import_log.rows_failed).to eq 2
+      expect(import_log.rows_imported).to eq 3
+      expect(import_log.rows_failed).to eq 0
       expect(import_log.rows_skipped).to eq 0
       expect(import_log.file_source).to eq 'report_file.csv'
       expect(import_log.object_name).to eq 'dfp_cumulative'
@@ -158,13 +158,13 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
         dimensionorder_name: 'ioname',
         dimensionadvertiser_name: 'Advertiser name',
         dimensionattributeorder_agency: 'Agency name',
-        dimensionattributeorder_start_date_time: '2016-10-31T00:00:00-07:00',
-        dimensionattributeorder_end_date_time: '2016-11-27T23:59:00-08:00',
+        dimensionattributeorder_start_date_time: start_date,
+        dimensionattributeorder_end_date_time: end_date,
         dimensionorder_id: 605084194,
         dimensionline_item_name: 'Hershey test - In-Feed - :30 - iOS',
         dimensionline_item_id: 1170022354,
-        dimensionattributeline_item_start_date_time: '2016-10-31T00:00:00-07:00',
-        dimensionattributeline_item_end_date_time: '2016-11-27T23:59:00-08:00',
+        dimensionattributeline_item_start_date_time: start_date,
+        dimensionattributeline_item_end_date_time: end_date,
         dimensionattributeline_item_cost_type: 'CPM',
         dimensionattributeline_item_cost_per_unit: 20000000,
         dimensionattributeline_item_goal_quantity: 85000,
@@ -183,13 +183,13 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
         dimensionorder_name: 'ioname',
         dimensionadvertiser_name: 'Advertiser name',
         dimensionattributeorder_agency: 'Agency name',
-        dimensionattributeorder_start_date_time: '2016-10-31T00:00:00-07:00',
-        dimensionattributeorder_end_date_time: '2016-11-27T23:59:00-08:00',
+        dimensionattributeorder_start_date_time: start_date,
+        dimensionattributeorder_end_date_time: end_date,
         dimensionorder_id: 605084194,
         dimensionline_item_name: 'Hershey test - In-Feed - :30 - iOS',
         dimensionline_item_id: 1170022354,
-        dimensionattributeline_item_start_date_time: '2016-10-31T00:00:00-07:00',
-        dimensionattributeline_item_end_date_time: '2016-11-27T23:59:00-08:00',
+        dimensionattributeline_item_start_date_time: start_date,
+        dimensionattributeline_item_end_date_time: end_date,
         dimensionattributeline_item_cost_type: 'CPD',
         dimensionattributeline_item_cost_per_unit: 20000000,
         dimensionattributeline_item_goal_quantity: 85000,
@@ -205,11 +205,11 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
   def multiline_report_csv
     list = []
     list << (build :dfp_report_cummulative_csv_data,
-                   dimensionorder_id: io(start_date: '2016-10-31', end_date: '2016-11-27').external_io_number,
+                   dimensionorder_id: io(start_date: start_date, end_date: end_date).external_io_number,
                    dimensionline_item_name: 'Hershey test - In-Feed - :30 - iOS',
                    dimensionline_item_id: 1170022353,
-                   dimensionattributeline_item_start_date_time: '2016-11-01T00:00:00-07:00',
-                   dimensionattributeline_item_end_date_time: '2016-11-25T23:59:00-08:00',
+                   dimensionattributeline_item_start_date_time: start_date + 1.day,
+                   dimensionattributeline_item_end_date_time: end_date - 1.day,
                    dimensionattributeline_item_cost_type: 'CPM',
                    dimensionattributeline_item_cost_per_unit: 20000000,
                    dimensionattributeline_item_goal_quantity: 85000,
@@ -220,11 +220,11 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
                    columntotal_line_item_level_all_revenue: 1700020000)
 
     list << (build :dfp_report_cummulative_csv_data,
-                   dimensionorder_id: io(start_date: '2016-10-31', end_date: '2016-11-27').external_io_number,
+                   dimensionorder_id: io(start_date: start_date, end_date: end_date).external_io_number,
                    dimensionline_item_name: 'Hershey test - In-Feed - :30 - iOS',
                    dimensionline_item_id: 1170022354,
-                   dimensionattributeline_item_start_date_time: '2016-11-02T00:00:00-07:00',
-                   dimensionattributeline_item_end_date_time: '2016-11-28T23:59:00-08:00',
+                   dimensionattributeline_item_start_date_time: start_date + 1.day,
+                   dimensionattributeline_item_end_date_time: end_date + 1.day,
                    dimensionattributeline_item_cost_type: 'CPM',
                    dimensionattributeline_item_cost_per_unit: 20000000,
                    dimensionattributeline_item_goal_quantity: 85000,
@@ -235,11 +235,11 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
                    columntotal_line_item_level_all_revenue: 1700020000)
 
     list << (build :dfp_report_cummulative_csv_data,
-                   dimensionorder_id: io(start_date: '2016-10-31', end_date: '2016-11-27').external_io_number,
+                   dimensionorder_id: io(start_date: start_date, end_date: end_date).external_io_number,
                    dimensionline_item_name: 'Hershey test - In-Feed - :30 - iOS',
                    dimensionline_item_id: 1170022356,
-                   dimensionattributeline_item_start_date_time: '2016-10-01T00:00:00-07:00',
-                   dimensionattributeline_item_end_date_time: '2016-11-26T23:59:00-08:00',
+                   dimensionattributeline_item_start_date_time: start_date - 1.day,
+                   dimensionattributeline_item_end_date_time: end_date,
                    dimensionattributeline_item_cost_type: 'CPM',
                    dimensionattributeline_item_cost_per_unit: 20000000,
                    dimensionattributeline_item_goal_quantity: 85000,
@@ -259,5 +259,13 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
   def io(opts= {})
     opts[:company_id] = company.id
     @_io = create :io, opts
+  end
+
+  def start_date
+    @start_date ||= 6.months.ago.to_date
+  end
+
+  def end_date
+    @end_date ||= 5.months.ago.to_date
   end
 end

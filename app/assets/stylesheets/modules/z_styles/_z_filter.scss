@@ -48,15 +48,15 @@
                 max-height: 50vh;
                 padding: 10px 0;
                 .active {
-                    background-color: #dfe1e3;
+                    background-color: $main-color;
+                    color: white;
                 }
                 span.item {
                     display: block;
                     padding: 5px 20px;
-                    &:hover {
-                        background-color: $main-color;
-                        color: white;
-                        cursor: pointer;
+                    cursor: pointer;
+                    &:not(.active):hover {
+                        background-color: #dfe1e3;
                     }
                 }
             }

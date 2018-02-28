@@ -8,6 +8,7 @@
         $scope.appliedFilter = {}
         $scope.switch =
             revenues: 'quarters'
+            pmp_revenues: 'quarters'
             deals: 'quarters'
             set: (key, val) ->
                 this[key] = val
@@ -98,22 +99,56 @@
         addDetailAmounts = (data, type) ->
             qs = ['Q1', 'Q2', 'Q3', 'Q4']
             ms = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-            suffix = if type == 'revenues' then 's' else if type == 'deals' then '_amounts'
+            suffix = if type == 'revenues' || type == 'pmp_revenues' then 's' else if type == 'deals' then '_amounts'
             quarters = {}
             months = {}
+            monthObj = ms.reduce(((acc, cur, i) ->
+              acc[i] = {month: cur, total: 0}
+              acc
+            ), {})
+            quarterObj = qs.reduce(((acc, cur, i) ->
+              acc[i] = {quarter: cur, total: 0}
+              acc
+            ), {})
+
             for q, i in qs
                 for item in data
-                    if item['quarter' + suffix][i] != null
+                    amount = item['quarter' + suffix][i]
+                    if amount != null && amount != undefined
                         quarters[i] = q
                         break
             for m, i in ms
                 for item in data
-                    if item['month' + suffix][i] != null
+                    amount = item['month' + suffix][i]
+                    if amount != null && amount != undefined
                         months[i] = m
                         break
+
             data.detail_amounts =
                 quarters: quarters
                 months: months
+
+            calculateTotalByMonthsAndQuarter(monthObj, quarterObj, data, suffix)
+
+
+        calculateTotalByMonthsAndQuarter = (monthObj, quarterObj, data, suffix) ->
+          _.each data, (revenue) ->
+            _.each monthObj, (month, index) ->
+              monthObj[index].total += revenue['month' + suffix][index]
+
+          _.each data.detail_amounts.months, (month, index) ->
+            _.each monthObj, (monthsObj) ->
+              if month == monthsObj.month
+                data.detail_amounts.months[index] = monthsObj
+
+          _.each data, (revenue) ->
+            _.each quarterObj, (q, index) ->
+              quarterObj[index].total += revenue['quarter' + suffix][index]
+
+          _.each data.detail_amounts.quarters, (quarter, index) ->
+            _.each quarterObj, (quartersObj) ->
+              if quarter == quartersObj.quarter
+                data.detail_amounts.quarters[index] = quartersObj
 
         parseRevenueBudgets = (data) ->
             data = _.map data, (item) ->
@@ -144,14 +179,21 @@
                 $scope.quarters = data.quarters
                 query.team_id = query.id
                 delete query.id
-                Revenue.forecast_detail(query).$promise.then (data) ->
-                    parseRevenueBudgets data
-                    addDetailAmounts data, 'revenues'
-                    $scope.revenues = data
-                    Deal.forecast_detail(query).then (data) ->
-                        parseDealBudgets data
-                        addDetailAmounts data, 'deals'
-                        $scope.deals = data
+                return Revenue.forecast_detail(query).$promise
+            .then (data) ->
+                parseRevenueBudgets data
+                addDetailAmounts data, 'revenues'
+                $scope.revenues = data
+                return Forecast.pmp_data(query).$promise
+            .then (pmp_data) ->
+                parseRevenueBudgets pmp_data
+                addDetailAmounts pmp_data, 'pmp_revenues'
+                $scope.pmp_revenues = pmp_data
+                return Deal.forecast_detail(query)
+            .then (deal_data) ->
+                parseDealBudgets deal_data
+                addDetailAmounts deal_data, 'deals'
+                $scope.deals = deal_data
 
         tableToCSV = (el) ->
             table = angular.element(el)
@@ -172,6 +214,12 @@
                 cols.map(grabCol).get().join tmpColDelim
             grabCol = (j, col) ->
                 col = angular.element(col)
+                if col.hasClass('totalCol')
+                  total = col.find('span').text().trim()
+                  totalLabel = col.find('.z-sortable').text().trim()
+                  col.find('.z-sortable').text(totalLabel + " / " + total)
+                  col.find('span').text("")
+
                 text = col.text().trim()
                 text.replace '"', '""'
             csv += formatRows(headers.map(grabRow))

@@ -16,8 +16,6 @@ describe Deal do
 
       it 'restricts deleting deal with IO' do
         deal.update(stage: closed_won_stage)
-        deal.update_stage
-        deal.update_close
 
         expect{deal.destroy}.to raise_error(ActiveRecord::DeleteRestrictionError)
       end
@@ -1174,7 +1172,7 @@ describe Deal do
 
     context 'if deal was updated' do
       it do
-        deal.assign_attributes(name: "new name")
+        deal.assign_attributes(name: "new name", updated_at: 1.second.from_now)
         deal.save
         expect(deal.updated?).to be true
       end

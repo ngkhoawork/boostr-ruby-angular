@@ -336,18 +336,14 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       subject.perform
 
       import_log = CsvImportLog.last
-      expect(import_log.rows_processed).to eq 7
+      expect(import_log.rows_processed).to eq 8
       expect(import_log.rows_imported).to eq 4
       expect(import_log.rows_failed).to eq 2
       expect(import_log.rows_skipped).to eq 1
 
       expect(import_log.error_messages.length).to eq 2
-      expect(import_log.error_messages[0]['message']).to include(
-        "Product name can't be blank", "End date end date can't be after the IO end date"
-      )
-      expect(import_log.error_messages[1]['message']).to include(
-        "Product name can't be blank", "End date end date can't be after the IO end date"
-      )
+      expect(import_log.error_messages[0]['message']).to include("Product name can't be blank")
+      expect(import_log.error_messages[1]['message']).to include("Product name can't be blank")
 
       expect(import_log.file_source).to eq 'sales_order_line_item_file.csv'
 
@@ -367,13 +363,21 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       subject.perform
 
       import_log = CsvImportLog.last
-      expect(import_log.error_messages).to eq [{"row"=>1, "message"=>["Internal Server Error", "{:sales_order_id=>\"1\", :sales_order_line_item_id=>\"2\", :sales_order_line_item_start_date=>\"2017-01-01\", :sales_order_line_item_end_date=>\"2017-02-01\", :product_name=>\"Display\", :forecast_category=>\"From Forecast Category Column\", :quantity=>\"1000\", :net_unit_cost=>\"100\", :cost_type=>\"PPC\", :net_cost=>\"100000\", :line_item_status=>\"Sent_to_production\"}"]}]
+      expect(import_log.error_messages).to eq [{"row"=>2, "message"=>["Internal Server Error", "{:sales_order_id=>\"1\", :sales_order_line_item_id=>\"2\", :sales_order_line_item_start_date=>\"2017-01-01\", :sales_order_line_item_end_date=>\"2017-02-01\", :product_name=>\"Display\", :forecast_category=>\"From Forecast Category Column\", :quantity=>\"1000\", :net_unit_cost=>\"100\", :cost_type=>\"PPC\", :net_cost=>\"100000\", :line_item_status=>\"Sent_to_production\"}"]}]
     end
   end
 
   def io(opts= {})
     opts[:company_id] = company.id
     @_io = create :io, opts
+  end
+
+  def start_date
+    @start_date ||= Date.current
+  end
+
+  def end_date
+    @end_date ||= start_date + 1.day
   end
 
   def line_item_csv_file(opts = {})
@@ -396,10 +400,10 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     io(start_date: Date.today, end_date: Date.today)
 
     list = (build_list :sales_order_line_item_csv_data, 4,
-      sales_order_id: io.external_io_number,
+      sales_order_id: io(start_date: start_date, end_date: end_date).external_io_number,
       sales_order_line_item_id: 2,
-      sales_order_line_item_start_date: io.start_date + 1.day,
-      sales_order_line_item_end_date: io.end_date - 1.day,
+      sales_order_line_item_start_date: start_date + 1.day,
+      sales_order_line_item_end_date: end_date - 1.day,
       product_name: 'Display',
       quantity: 1000,
       net_unit_cost: 100,
@@ -409,10 +413,10 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     )
 
     list.concat (build_list :sales_order_line_item_csv_data, 2,
-      sales_order_id: io.external_io_number,
+      sales_order_id: io(start_date: start_date, end_date: end_date).external_io_number,
       sales_order_line_item_id: 2,
-      sales_order_line_item_start_date: Date.today - 1.month,
-      sales_order_line_item_end_date: Date.today,
+      sales_order_line_item_start_date: start_date + 1.day,
+      sales_order_line_item_end_date: end_date + 1.day,
       product_name: nil,
       quantity: 1000,
       net_unit_cost: 100,

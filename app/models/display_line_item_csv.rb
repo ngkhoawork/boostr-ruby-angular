@@ -8,7 +8,6 @@ class DisplayLineItemCsv
 
   validate :io_exchange_rate_presence, if: :company_id
   validate :dates_can_be_parsed
-  validate :is_dli_date_over_io_bounds
 
   attr_accessor :external_io_number, :line_number, :ad_server, :start_date, :end_date,
                 :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
@@ -26,12 +25,16 @@ class DisplayLineItemCsv
     return self.errors.full_messages unless self.valid?
     update_external_io_number
     upsert_temp_io
+
+    @parsed_start_date = parse_date(start_date)
+    @parsed_end_date = parse_date(end_date)
+
     if io_or_tempio && display_line_item
       display_line_item.update(
         line_number: line_number,
         ad_server: ad_server,
-        start_date: parse_date(start_date),
-        end_date: parse_date(end_date),
+        start_date: parsed_start_date,
+        end_date: parsed_end_date,
         product: product,
         ad_server_product: product_name,
         quantity: quantity,
@@ -50,10 +53,14 @@ class DisplayLineItemCsv
         clicks: clicks,
         ad_unit: ad_unit_name
       )
+
+      update_io if io_can_be_updated?
     end
   end
 
   private
+
+  attr_reader :parsed_start_date, :parsed_end_date
 
   def display_line_item
     @_display_line_item ||= io_or_tempio.display_line_items.find_by_line_number(line_number)
@@ -198,26 +205,21 @@ class DisplayLineItemCsv
     d
   end
 
-  def is_dli_date_over_io_bounds
-    return unless io.present? && display_line_item.new_record?
-    return unless start_end_date_present?
-    errors.add(:start_date, 'start date can\'t be prior the IO start date') if dli_start_date_less_than_io_start_date
-    errors.add(:end_date, 'end date can\'t be after the IO end date') if dli_end_date_greater_then_io_end_date
-  end
-
-  def dli_start_date_less_than_io_start_date
-    parse_date(self.start_date) < io.start_date
-  end
-
-  def dli_end_date_greater_then_io_end_date
-    parse_date(self.end_date) > io.end_date
-  end
-
   def start_end_date_present?
     parse_date(self.start_date).present? && parse_date(self.end_date).present?
   end
 
   def persisted?
     false
+  end
+
+  def update_io
+    io.start_date = parsed_start_date if parsed_start_date < io.start_date
+    io.end_date = parsed_end_date if parsed_end_date > io.end_date
+    io.save
+  end
+
+  def io_can_be_updated?
+    io && io.content_fees.count.zero? && parsed_start_date && parsed_end_date
   end
 end

@@ -8,6 +8,9 @@
       deal_product_budgets_attributes: original.deal_product.deal_product_budgets
       deal_product_cf_attributes: original.deal_product.deal_product_cf
       product_id: original.deal_product.product_id
+      ssp_id: original.deal_product.ssp_id
+      pmp_type: original.deal_product.pmp_type
+      ssp_deal_id: original.deal_product.ssp_deal_id
     angular.toJson(send)
 
   resource = $resource '/api/deals/:deal_id/deal_products/:id', { deal_id: '@deal_id', id: '@id' },

@@ -1,4 +1,5 @@
 class Client < ActiveRecord::Base
+  include PgSearch
   acts_as_paranoid
 
   belongs_to :company
@@ -42,6 +43,8 @@ class Client < ActiveRecord::Base
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
   has_many :integrations, as: :integratable
+
+  has_many :ssp_advertisers
 
   has_one :latest_advertiser_activity, -> { self.select_values = ["DISTINCT ON(activities.client_id) activities.*"]
     order('activities.client_id', 'activities.happened_at DESC')
@@ -93,10 +96,22 @@ class Client < ActiveRecord::Base
   end
   scope :without_child_clients_for, ->(client) { where.not(id: client.child_client_ids) }
   scope :without_connections_for, ->(client) { where.not(id: client.connection_entry_ids) }
-
   scope :without_related_clients, -> contact_id do
-    joins(:client_contacts).where.not(client_contacts: { contact_id: contact_id }).distinct
+    where.not(id: ClientContact.where(contact_id: contact_id).pluck(:client_id))
   end
+  
+  pg_search_scope :fuzzy_search,
+                  against: :name,
+                  using: {
+                    tsearch: {
+                      prefix: true,
+                      any_word: true
+                    },
+                    dmetaphone: {
+                      any_word: true
+                    }
+                  },
+                  ranked_by: ':trigram'
 
   ADVERTISER = 10
   AGENCY = 11
@@ -215,7 +230,13 @@ class Client < ActiveRecord::Base
               },
               activity_type: { only: [:id, :name, :css_class, :action] }
             }
-          }},
+          },
+          ssp_advertisers: {
+            include: {
+              ssp: {}
+            }
+          }
+        },
         methods: [:deals_count, :fields, :formatted_name]
       ).except(:override))
     end

@@ -6,7 +6,7 @@ describe Operative::CustomFieldsRepresenter, operative: true do
            company: company,
            field_index: 1,
            field_type: "dropdown",
-           field_label: "Territory Campaign Will Run In"
+           field_label: "Campaign Territory"
 
     create :deal_custom_field_name,
            company: company,
@@ -18,7 +18,12 @@ describe Operative::CustomFieldsRepresenter, operative: true do
            company: company,
            field_index: 5,
            field_type: "dropdown",
-           field_label: "BuzzFeed Signing Entity"
+           field_label: "Signing Entity"
+    create :deal_custom_field_name,
+           company: company,
+           field_index: 4,
+           field_type: "text",
+           field_label: "External PO Reference"
   end
 
   describe 'for buzzfeed deal' do
@@ -27,6 +32,7 @@ describe Operative::CustomFieldsRepresenter, operative: true do
       expect(deal_mapper).to include buzzfeed_billing_note
       expect(deal_mapper).to include buzzfeed_campaign_territory
       expect(deal_mapper).to include buzzfeed_signin_entity
+      expect(deal_mapper).to include buzzfeed_external_po_reference
     end
   end
 
@@ -59,6 +65,7 @@ describe Operative::CustomFieldsRepresenter, operative: true do
     @_deal_custom_field ||= create :deal_custom_field,
                                    deal: deal,
                                    text3: "new note",
+                                   text4: "External PO Ref",
                                    dropdown1: "Brazil",
                                    dropdown5: "BuzzFeed US"
   end
@@ -73,5 +80,9 @@ describe Operative::CustomFieldsRepresenter, operative: true do
 
   def buzzfeed_signin_entity
     "<customField>\n        <apiName>Buzzfeed_signing_entity</apiName>\n        <options>\n          <option>\n            <name>#{deal_custom_field.dropdown5}</name>\n          </option>\n        </options>\n      </customField>"
+  end
+
+  def buzzfeed_external_po_reference
+    "<externalPoRef>#{deal_custom_field.text4}</externalPoRef>"
   end
 end

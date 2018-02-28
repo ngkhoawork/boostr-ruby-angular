@@ -1,4 +1,6 @@
 class Company < ActiveRecord::Base
+  include CompanyMappings
+
   has_many :users
   has_many :clients
   has_many :contacts, inverse_of: :company
@@ -20,6 +22,9 @@ class Company < ActiveRecord::Base
   has_many :ios
   has_many :content_fees, through: :ios
   has_many :content_fee_product_budgets, through: :content_fees
+  has_many :pmps
+  has_many :pmp_items, through: :pmps
+  has_many :pmp_item_daily_actuals, through: :pmp_items
   has_many :display_line_items, through: :ios
   has_many :display_line_item_budgets, through: :display_line_items
   has_many :temp_ios
@@ -55,6 +60,7 @@ class Company < ActiveRecord::Base
   has_many :publishers, dependent: :destroy
   has_many :publisher_custom_field_names, dependent: :destroy
   has_many :publisher_custom_fields, through: :publishers
+  has_many :ssp_advertisers
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -99,6 +105,7 @@ class Company < ActiveRecord::Base
     notifications.find_or_initialize_by(name: 'New Deal', active: true)
     notifications.find_or_initialize_by(name: 'Lost Deal', active: true)
     notifications.find_or_initialize_by(name: 'Pipeline Changes Reports', active: true)
+    notifications.find_or_initialize_by(name: Notification::PMP_STOPPED_RUNNING, active: true)
 
     setup_default_activity_types
 

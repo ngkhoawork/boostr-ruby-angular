@@ -23,6 +23,14 @@
       method: 'GET'
       url: '/api/forecasts/revenue_data'
       isArray: true
+    pmp_data:
+      method: 'GET'
+      url: '/api/forecasts/pmp_data'
+      isArray: true
+    pmp_product_data:
+      method: 'GET'
+      url: '/api/forecasts/pmp_product_data'
+      isArray: true
     pipeline_data:
       method: 'GET'
       url: '/api/forecasts/pipeline_data'

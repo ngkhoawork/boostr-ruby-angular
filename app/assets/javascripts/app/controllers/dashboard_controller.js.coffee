@@ -352,6 +352,8 @@
                         activity: ->
                             activity
 
+            $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
+
             $scope.$on 'updated_deal', ->
                 $scope.init()
             $scope.$on 'newContact', (event, contact) ->

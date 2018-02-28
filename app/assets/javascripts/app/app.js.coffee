@@ -30,6 +30,7 @@
   'LocalStorageModule'
   'zFilterModule'
   'ngTextTruncate'
+  'mdMarkdownIt'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -82,6 +83,10 @@
     .when '/revenue/ios/:id',
       templateUrl: 'io.html'
       controller: 'IOController'
+
+    .when '/revenue/pmps/:id',
+      templateUrl: 'pmp.html'
+      controller: 'PMPController'
 
     .when '/activities',
       templateUrl: 'activities.html'
@@ -353,6 +358,10 @@
       templateUrl: 'publishers/publisher.html'
       controller: 'PablisherController'
 
+    .when '/api_reference',
+      templateUrl: 'api_reference.html'
+      controller: 'ApiReferenceController'
+
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
@@ -416,6 +425,7 @@
       email: user.email
     )
 ]
+window._fixedHeaderHeight = 0 #updating in NavbarController
 
 @service = angular.module 'services', ['ngResource']
 @directives = angular.module 'directives', []

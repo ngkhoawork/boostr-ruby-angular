@@ -280,8 +280,6 @@ class Api::DealsController < ApplicationController
       deal.updated_by = current_user.id
       # deal.set_user_currency
       if deal.save(context: :manual_update)
-        GoogleSheetsWorker.perform_async(google_sheet_id, deal.id) if google_sheet_id
-
         render json: deal, status: :created
       else
         render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -294,8 +292,6 @@ class Api::DealsController < ApplicationController
     deal.assign_attributes(deal_params)
 
     if deal.save(context: :manual_update)
-      GoogleSheetsWorker.perform_async(google_sheet_id, deal.id) if google_sheet_id
-
       render deal
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -308,7 +304,7 @@ class Api::DealsController < ApplicationController
     render nothing: true
 
   rescue ActiveRecord::DeleteRestrictionError => e
-    render json: { errors: { delete: ['Please delete IO for this deal before deleting'] } }, status: :unprocessable_entity
+    render json: { errors: { delete: ["Please delete #{deal.include_pmp_product? ? 'PMP' : 'IO'} for this deal before deleting"] } }, status: :unprocessable_entity
   end
 
   def send_to_operative
@@ -338,10 +334,6 @@ class Api::DealsController < ApplicationController
   end
 
   private
-
-  def google_sheet_id
-    @_google_sheet_id ||= company.google_sheets_configurations.first&.sheet_id
-  end
 
   def forecast_deals
     response_deals = []
