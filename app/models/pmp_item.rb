@@ -3,6 +3,8 @@ class PmpItem < ActiveRecord::Base
   belongs_to :ssp, required: true
   belongs_to :product
 
+  attr_accessor :skip_callback
+
   has_many :pmp_item_daily_actuals, dependent: :destroy
   has_many :pmp_item_monthly_actuals, dependent: :destroy
 
@@ -20,10 +22,12 @@ class PmpItem < ActiveRecord::Base
 
   after_save do
     update_pmp_budgets if budgets_changed?
-    if product_id_changed?
-      update_revenue_fact([product, product_was])
-    elsif pmp_type_changed? || budgets_changed?
-      update_revenue_fact 
+    unless skip_callback
+      if product_id_changed?
+        update_revenue_fact([product, product_was])
+      elsif pmp_type_changed? || budgets_changed?
+        update_revenue_fact
+      end
     end
   end
 

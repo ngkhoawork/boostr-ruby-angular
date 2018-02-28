@@ -4,6 +4,8 @@ class Pmp < ActiveRecord::Base
   belongs_to :company
   belongs_to :deal
 
+  attr_accessor :skip_callback
+
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
 
   has_many :pmp_members, dependent: :destroy
@@ -26,7 +28,7 @@ class Pmp < ActiveRecord::Base
 
   after_save do
     update_pmp_members_date
-    update_revenue_fact_callback
+    update_revenue_fact_callback unless skip_callback
   end
 
   after_destroy :update_revenue_fact
