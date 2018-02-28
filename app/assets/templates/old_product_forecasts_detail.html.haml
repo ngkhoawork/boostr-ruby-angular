@@ -158,7 +158,7 @@
                 %tbody
                   %tr{'ng-repeat': 'revenue in revenues | orderBy : sortRevenues.field : sortRevenues.reverse'}
                     %td
-                      %a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}'} {{revenue.name}}
+                      %a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}', 'target': '_blank'} {{revenue.name}}
                     %td {{revenue.advertiser.name}}
                     %td.right {{revenue.budget | currency : '$' : 0}}
                     %td {{revenue.product.name}}
@@ -214,7 +214,7 @@
                 %tbody
                   %tr{'ng-repeat': 'deal in deals | orderBy : sortDeals.field : sortDeals.reverse', popover: '{{deal.next_steps}}', 'popover-title': 'Next Steps', 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
                     %td
-                      %a{href: '', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
+                      %a{href: '', 'ng-href': '/deals/{{deal.id}}', 'target': '_blank'} {{deal.name}}
                     %td {{deal.advertiser.name}}
                     %td {{deal.stage.probability}}%
                     %td.right {{deal.budget | currency : '$' : 0}}

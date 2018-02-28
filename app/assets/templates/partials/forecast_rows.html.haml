@@ -3,7 +3,7 @@
     %div{ ng: { if: 'row.type == "member"' } }
       {{ row.name }}
     %div{ ng: { if: 'row.type == "team"' } }
-      %a{ ng: { href: '/fore_cast_old/{{row.id}}?time_period_id={{currentTimePeriod.id}}&year={{year}}' } }
+      %a{ ng: { href: '/fore_cast_old/{{row.id}}?time_period_id={{currentTimePeriod.id}}&year={{year}}' }, 'target': '_blank' }
         {{ row.name }}
     %div{ ng: { if: 'row.is_leader && year' } }
       \--
@@ -46,7 +46,7 @@
     %span
       |
     %h4
-      %a{ href: '/deals' }
+      %a{ href: '/deals', 'target': '_blank' }
         Manage Pipeline
     %a.close{ ng: { click: 'toggleWeightedPipelineDetail(row)' } }
       %span{'aria-hidden' => 'true'}
@@ -97,7 +97,7 @@
       %tbody
         %tr{ ng: { repeat: 'subrow in weighted_pipeline' } }
           %td
-            %a{ href: '', ng: { href: '/deals/{{subrow.id}}' } }
+            %a{ href: '', ng: { href: '/deals/{{subrow.id}}' }, 'target': '_blank' }
               {{ subrow.name }}
           %td {{ subrow.client_name }}
           %td {{ subrow.agency_name }}
@@ -150,7 +150,7 @@
       %tbody
         %tr{ ng: { repeat: 'subrow in revenues' } }
           %td.left
-            %a{ href: '', ng: { href: '/revenue/ios/{{subrow.id}}' } }
+            %a{ href: '', ng: { href: '/revenue/ios/{{subrow.id}}' }, 'target': '_blank' }
               {{ subrow.name }}
           %td.right {{ subrow.advertiser }}
           %td.right {{ subrow.agency }}

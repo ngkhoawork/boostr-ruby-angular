@@ -19,14 +19,14 @@
 				%strong {{activity.creator.first_name}} {{activity.creator.last_name}}
 				{{activity.activity_type.action}}
 				%span{'ng-repeat': 'contact in activity.contacts'}
-					%a{href: '', 'ng-href': '/contacts/{{contact.id}}'}> {{contact.name}}
+					%a{ href: '', 'ng-href': '/contacts/{{contact.id}}', target: '_blank' }> {{contact.name}}
 					{{$last ? '' : ', '}}
 			%p{'ng-if': 'activity.client'}
 				Account
-				%a{href: '', 'ng-href': '/accounts/{{activity.client.id}}'} {{activity.client.name}}
+				%a{ href: '', 'ng-href': '/accounts/{{activity.client.id}}', target: '_blank' } {{activity.client.name}}
 			%p{'ng-if': 'activity.deal'}
 				Deal
-				%a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}
+				%a{href: '', 'ng-href': '/deals/{{activity.deal.id}}', target: '_blank'}
 					{{activity.deal.name}}
 			%div{ng: {if: '!isTextHasTags(activity.comment) && activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250'}}
 			%div{'ng-if': 'isTextHasTags(activity.comment) || activity.activity_type.name == "Email"'}

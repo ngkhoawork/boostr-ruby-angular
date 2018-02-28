@@ -2,17 +2,17 @@
   %td.left {{row.io_number}}
   %td.left {{row.external_io_number}}
   %td.left
-    %a{ href: '', 'ng-href': '/revenue/ios/{{row.id}}' }
+    %a{ href: '', 'ng-href': '/revenue/ios/{{row.id}}', target: '_blank' }
       {{ row.name }}
   %td.left
-    %a{'href': '', 'ng-href': '/accounts/{{row.advertiser.id}}'} {{row.advertiser.name}}
+    %a{'href': '', 'ng-href': '/accounts/{{row.advertiser.id}}', target: '_blank' } {{row.advertiser.name}}
   %td.left
-    %a{'href': '', 'ng-href': '/accounts/{{row.agency.id}}'} {{row.agency.name}}
+    %a{'href': '', 'ng-href': '/accounts/{{row.agency.id}}', target: '_blank' } {{row.agency.name}}
   %td.right {{row.budget_loc | currency:row.currency.curr_symbol:0 }}
   %td.left {{row.start_date | date: 'M/d/yyyy'}}
   %td.left {{row.end_date | date: 'M/d/yyyy'}}
   %td.left
-    %a{ href: '', ng: { if: "row.deal", href: '/deals/{{row.deal.id}}' } }
+    %a{ href: '', ng: { if: "row.deal", href: '/deals/{{row.deal.id}}', target: '_blank' } }
       {{ row.deal.name }}
   %td.action-td
     %i.fa.fa-pencil.z-icon{ ng: { click: 'showIOEditModal(row, $event)' } }

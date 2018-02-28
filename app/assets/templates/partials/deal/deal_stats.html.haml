@@ -16,9 +16,9 @@
 				%i.fa.fa-envelope.ealert.pull-right{ng: {click: 'showDealEalertModal(currentDeal)', class: '{danger: (ealertReminder && currentDeal.company_ealert_reminder)}'}}
 				
 			.detail-info
-				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.advertiser.id}}'} {{currentDeal.advertiser.name || ''}}
+				%a{href: '', 'ng-href': '/accounts/{{currentDeal.advertiser.id}}', target: '_blank'} {{currentDeal.advertiser.name || ''}}
 				{{currentDeal.advertiser.name && currentDeal.agency.name && '|'}}
-				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.agency.id}}'} {{currentDeal.agency.name || ''}}
+				%a{href: '', 'ng-href': '/accounts/{{currentDeal.agency.id}}', target: '_blank'} {{currentDeal.agency.name || ''}}
 
 		.clearfix
 		%div.stats-numbers.mb30
@@ -69,7 +69,7 @@
 										%span.caret
 							%ul.dropdown-menu
 								%li{'ng-repeat': 'stage in stages', 'ng-class': '{active: currentDeal.stage.name == stage.name}'}
-									%a{'href': '', 'ng-click': 'updateDealStage(currentDeal, stage.id)'}
+									%a{href: '', 'ng-click': 'updateDealStage(currentDeal, stage.id)'}
 										%span.text {{stage.name}} {{stage.probability}}%
 			%div.stats-col
 				.col-body-wrap
@@ -82,5 +82,5 @@
 								%span.caret
 							%ul.dropdown-menu
 								%li{'ng-repeat': 'currency in currencies', 'ng-class': '{active: currentDeal.curr_cd == currency.curr_cd}'}
-									%a{'href': '', 'ng-click': 'updateDealCurrency(currentDeal, currency.curr_cd)'}
+									%a{href: '', 'ng-click': 'updateDealCurrency(currentDeal, currency.curr_cd)'}
 										%span.text {{currency.name}}

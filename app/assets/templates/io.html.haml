@@ -10,9 +10,9 @@
 								%i.fa.fa-pencil.z-icon{'ng-if': 'canEditIO', 'ng-click': 'showIOEditModal(currentIO)'}
 								%i.fa.fa-trash.z-icon{'ng-if': 'canEditIO', 'ng-click': 'deleteIo(currentIO)'}
 							.detail-info
-								%a{'href': '', 'ng-href': '/accounts/{{currentIO.advertiser.id}}'} {{currentIO.advertiser.name || ''}}
+								%a{ href: '', 'ng-href': '/accounts/{{currentIO.advertiser.id}}', target: '_blank' } {{currentIO.advertiser.name || ''}}
 								{{currentIO.advertiser.name && currentIO.agency.name && '|'}}
-								%a{'href': '', 'ng-href': '/accounts/{{currentIO.agency.id}}'} {{currentIO.agency.name || ''}}
+								%a{ href: '', 'ng-href': '/accounts/{{currentIO.agency.id}}', target: '_blank' } {{currentIO.agency.name || ''}}
 							.detail-info
 								%span.mr8 IO # {{currentIO.io_number}}
 								-#{{currentIO.io_number && currentIO.external_io_number && '|'}}
@@ -81,7 +81,7 @@
 													%span.caret
 											%ul.dropdown-menu
 												%li{'ng-repeat': 'product in products', 'ng-class': '{active: content_fee.product.name == product.name}'}
-													%a{'href': '', 'ng-click': 'content_fee.product_id = product.id; updateContentFee(content_fee);'}
+													%a{href: '', 'ng-click': 'content_fee.product_id = product.id; updateContentFee(content_fee);'}
 														%span.text {{product.name}}
 											%i.fa.fa-trash.z-icon{'ng-click': 'deleteContentFee(content_fee)'}
 									%td

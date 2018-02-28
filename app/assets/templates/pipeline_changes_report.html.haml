@@ -46,7 +46,7 @@
 								%tr{ ng: { repeat: 'deal in report_data_items | orderBy : zSort.by : zSort.rev' } }
 									%td {{deal.date | date: 'MM-dd-yyyy'}}
 									%td
-										%a{href: '', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
+										%a{href: '', 'ng-href': '/deals/{{deal.id}}', 'target': '_blank'} {{deal.name}}
 									%td {{deal.advertiser_name}}
 									%td {{deal.deal_type}}
 									%td {{deal.old_value}}

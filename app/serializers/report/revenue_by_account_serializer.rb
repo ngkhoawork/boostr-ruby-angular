@@ -1,6 +1,7 @@
 class Report::RevenueByAccountSerializer < ActiveModel::Serializer
 
-  attributes :name,
+  attributes :id,
+             :name,
              :client_type,
              :category_name,
              :region_name,
@@ -9,6 +10,10 @@ class Report::RevenueByAccountSerializer < ActiveModel::Serializer
              :seller_names,
              :revenues,
              :total_revenue
+
+  def id
+    object.account_dimension_id
+  end
 
   def name
     object.name

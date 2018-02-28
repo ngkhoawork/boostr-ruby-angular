@@ -1,6 +1,6 @@
 #io-details{ng: {if: 'currentDeal.io && currentDeal.stage.probability == 100'}}
   %span.title IO Details
-  %a.io-link{'href': '', 'ng-href': '/revenue/ios/{{currentDeal.io.id}}'} {{currentDeal.io.name || ''}}
+  %a.io-link{href: '', 'ng-href': '/revenue/ios/{{currentDeal.io.id}}', target: '_blank'} {{currentDeal.io.name || ''}}
   %span.details Total Budget = {{ currentDeal.io.budget_loc | currency: currency_symbol : 0 }}
   %a.io-revenue-request{href: '', ng: { click: "showNewRequestModal(currentDeal.io, 'Io')", if: 'currentDeal.requests_enabled' } }
     Revenue Request
