@@ -9,6 +9,7 @@ class Csv::IoContentFee
   validate :validate_io_existence
   validate :validate_start_date_format
   validate :validate_end_date_format
+  validate :validate_end_date
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -47,21 +48,21 @@ class Csv::IoContentFee
   end
 
   def formatted_date(date)
-    Date.strptime(date.gsub(/[-:]/, '/'), '%d/%m/%Y')
+    Date.strptime(date.gsub(/[-:]/, '/'), '%m/%d/%Y')
   rescue
-    raise 'Date format does not match dd/mm/yyyy pattern'
+    raise 'Date format does not match mm/dd/yyyy pattern'
   end
 
   def validate_start_date_format
     formatted_date(start_date)
   rescue
-    errors.add(:base, "Start date does not match dd/mm/yyyy format")
+    errors.add(:base, "Start date does not match mm/dd/yyyy format")
   end
 
   def validate_end_date_format
     formatted_date(end_date)
   rescue
-    errors.add(:base, "End date does not match dd/mm/yyyy format")
+    errors.add(:base, "End date does not match mm/dd/yyyy format")
   end
 
   def validate_product_existence
@@ -73,6 +74,13 @@ class Csv::IoContentFee
   def validate_io_existence
     if io.nil?
       errors.add(:base, "IO with --#{io_number}-- number doesn't exist")
+    end
+  end
+
+  def validate_end_date
+    date = formatted_date(end_date) rescue nil
+    if io.present? && date.present? && date > io.end_date
+      errors.add(:base, "Monthly budget end date --#{end_date}-- is greater than IO end date")
     end
   end
 end

@@ -4,14 +4,14 @@ RSpec.describe Csv::IoContentFee do
   describe '#perform' do 
     context 'without duplicated data' do
       it 'creates new content fee product budget' do
-        expect{csv_io_content_fee.perform}.to change{ContentFeeProductBudget.count}.by(1)
+        expect{csv_io_content_fee.perform}.to change{ContentFeeProductBudget.count}.by(3)
       end
     end
 
     context 'with existing data' do
       it 'updates only budget' do
         content_fee_product_budget
-        expect{csv_io_content_fee.perform}.to change{content_fee_product_budget.reload.budget}.from(10).to(100)
+        expect{csv_io_content_fee.perform}.to change{content_fee_product_budget.reload.budget}.from(0).to(100)
         expect{csv_io_content_fee.perform}.not_to change(ContentFeeProductBudget, :count)
       end
     end
@@ -24,7 +24,7 @@ RSpec.describe Csv::IoContentFee do
   end
 
   def io
-    @_io ||= create :io, company: company, start_date: '01/01/2018', end_date: '31/01/2018'
+    @_io ||= create :io, company: company, start_date: '01/01/2018', end_date: '31/03/2018'
   end
 
   def product
@@ -32,7 +32,7 @@ RSpec.describe Csv::IoContentFee do
   end
 
   def content_fee
-    @_content_fee ||= create :content_fee, io: io, product: product, budget: 10
+    @_content_fee ||= create :content_fee, io: io, product: product, budget: 0
   end
 
   def content_fee_product_budget
@@ -40,7 +40,7 @@ RSpec.describe Csv::IoContentFee do
   end
 
   def csv_io_content_fee
-    @_csv_io_content_fee ||= build :csv_io_content_fee, company: company, io: io, product: product, start_date: '01/01/2018', end_date: '31/01/2018', budget: 100
+    @_csv_io_content_fee ||= build :csv_io_content_fee, company: company, io: io, product: product, start_date: '01/01/2018', end_date: '01/31/2018', budget: 100
   end
 end
 
@@ -65,16 +65,22 @@ RSpec.describe Csv::IoContentFee, 'validations' do
     expect(csv_io_content_fee.errors.full_messages).to include('IO with --123-- number doesn\'t exist')
   end
 
-  it 'validates start date format dd/mm/yyyy' do
-    csv_io_content_fee = build :csv_io_content_fee, start_date: '1/31/2019', io: io, product: product, company: company
+  it 'validates start date format mm/dd/yyyy' do
+    csv_io_content_fee = build :csv_io_content_fee, start_date: '31/01/2019', io: io, product: product, company: company
     expect(csv_io_content_fee).not_to be_valid
-    expect(csv_io_content_fee.errors.full_messages).to include('Start date does not match dd/mm/yyyy format')
+    expect(csv_io_content_fee.errors.full_messages).to include('Start date does not match mm/dd/yyyy format')
   end
 
-  it 'validates end date format dd/mm/yyyy' do
-    csv_io_content_fee = build :csv_io_content_fee, end_date: '1/31/2019', io: io, product: product, company: company
+  it 'validates end date format mm/dd/yyyy' do
+    csv_io_content_fee = build :csv_io_content_fee, end_date: '31/01/2019', io: io, product: product, company: company
     expect(csv_io_content_fee).not_to be_valid
-    expect(csv_io_content_fee.errors.full_messages).to include('End date does not match dd/mm/yyyy format')
+    expect(csv_io_content_fee.errors.full_messages).to include('End date does not match mm/dd/yyyy format')
+  end
+
+  it 'validates end date before io end date' do
+    csv_io_content_fee = build :csv_io_content_fee, end_date: '04/02/2018', io: io, product: product, company: company
+    expect(csv_io_content_fee).not_to be_valid
+    expect(csv_io_content_fee.errors.full_messages).to include('Monthly budget end date --04/02/2018-- is greater than IO end date')
   end
 
   private
@@ -84,7 +90,7 @@ RSpec.describe Csv::IoContentFee, 'validations' do
   end
 
   def io
-    @_io ||= create :io, company: company
+    @_io ||= create :io, company: company, end_date: '2018-04-01'
   end
 
   def product

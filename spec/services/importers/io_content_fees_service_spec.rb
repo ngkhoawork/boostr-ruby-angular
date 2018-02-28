@@ -45,8 +45,8 @@ describe Importers::IoContentFeesService do
       begin
         csv = CSV.new(fh)
         csv << ['IO Number', 'Product', 'Budget', 'Start Date' ,'End Date']
-        csv << [io.io_number, product.name, '100', '01/01/2018', '31/01/2018']
-        csv << [101, 'invalid row', '100', '01/01/2018', '31/01/2018']
+        csv << [io.io_number, product.name, '100', '01/01/2018', '01/31/2018']
+        csv << [101, 'invalid row', '100', '01/01/2018', '01/31/2018']
       ensure
         fh.close()
       end
