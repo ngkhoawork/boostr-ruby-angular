@@ -50,16 +50,16 @@ RSpec.describe Pmp, 'model' do
   end
 
   it 'returns exchange rate' do
-    expect(pmp.exchange_rate).to eq(1.2)
+    expect(pmp.exchange_rate).to eq(0.8)
   end
 
   it 'aggregates budgets from pmp_items' do
     create_list :pmp_item, 2, pmp: pmp, budget_loc: 500
     pmp.update(budget: 0, budget_loc: 0, budget_delivered: 0, budget_delivered_loc: 0, budget_remaining: 0, budget_remaining_loc: 0)
     pmp.calculate_budgets!
-    expect(pmp.budget).to eq(1200)
+    expect(pmp.budget).to eq(1250)
     expect(pmp.budget_loc).to eq(1000)
-    expect(pmp.budget_remaining).to eq(1200)
+    expect(pmp.budget_remaining).to eq(1250)
     expect(pmp.budget_remaining_loc).to eq(1000)
     expect(pmp.budget_delivered).to eq(0)
     expect(pmp.budget_delivered_loc).to eq(0)
@@ -119,7 +119,7 @@ RSpec.describe Pmp, 'model' do
   end
 
   def exchange_rate
-    @_exchange_rate ||= create :exchange_rate, company: company, rate: 1.2, currency: currency
+    @_exchange_rate ||= create :exchange_rate, company: company, rate: 0.8, currency: currency
   end
 end
 
