@@ -148,23 +148,17 @@
         duplicate.name =  duplicateName.replace(re, '<strong>$1</strong>');
     )
 
-  delayTimer = undefined
+
   $scope.onNameChanged = ->
     if $scope.client.name.length < $scope.minSearchStringLength
       $scope.closeDuplicateList()
     else
       $scope.openDuplicateList()
       $scope.isLoaderShow = true
-      clearTimeout(delayTimer)
-      delayTimer = setTimeout(
-        -> AccountsDuplicate.query({ name: $scope.client.name }).$promise.then(
-              (duplicates) ->
-                $scope.isLoaderShow = false
-                $scope.duplicates = duplicates
-                $scope.markDuplicateString()
-            )
-        250
-      )
+      AccountsDuplicate.query({ name: $scope.client.name }).$promise.then (duplicates) ->
+        $scope.isLoaderShow = false
+        $scope.duplicates = duplicates
+        $scope.markDuplicateString()
 
   $scope.onFocus = ->
     if $scope.client.name.length < $scope.minSearchStringLength

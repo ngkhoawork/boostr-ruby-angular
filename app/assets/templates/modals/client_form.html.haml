@@ -24,7 +24,7 @@
         %label{ for: 'name' }
           Name
         %span.star *
-        %input.form-control{ autocomplete: 'off', placeholder: 'Name', ng: { model: 'client.name', change: 'onNameChanged()', click: 'onFocus()', blur: 'onBlur()' }, name: 'name' }
+        %input.form-control{ autocomplete: 'off', placeholder: 'Name', ng: { model: 'client.name', 'model-options': '{ debounce: 250 }', change: 'onNameChanged()', click: 'onFocus()', blur: 'onBlur()' }, name: 'name' }
         .duplicate-list-wrapper{ 'ng-if': 'isDuplicateShow' }
           .duplicate-list
             .loader-wrapper{ 'ng-if': 'isLoaderShow' }
