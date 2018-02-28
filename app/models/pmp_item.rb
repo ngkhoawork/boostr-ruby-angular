@@ -94,7 +94,7 @@ class PmpItem < ActiveRecord::Base
 
   def convert_currency
     if budget_loc.present? && budget_loc_changed?
-      self.budget = budget_loc * pmp.exchange_rate
+      self.budget = budget_loc / pmp.exchange_rate
     end
   end
 
