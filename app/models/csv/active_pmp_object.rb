@@ -43,35 +43,30 @@ class Csv::ActivePmpObject
 
   def create_pmp_members
     members = []
-    if team.present?
-      emails = team.split(';')
-      emails.each do |email|
-        user_email = email.split('/')[0]
-        user_share = email.split('/')[1]
-        if user_share.present?
-          if user_share.to_i == 0 || user_share.to_i == 100
-            user = search_user(user_email)
-            if user.present?
-              opts = {
-                  user_id: user.id,
-                  share: user_share.to_i,
-                  from_date: check_and_format_date(start_date),
-                  to_date: check_and_format_date(end_date),
-                  skip_callback: true
-              }
-              members << PmpMember.new(opts)
-            end
-          else
-            raise "Team Split must add up to either 0 or 100"
-          end
-        else
-          raise "Team member #{user_email} share field"
-        end
-      end if emails.present?
-      members
-    else
-      raise_error("Team members")
+
+    raise_error("Team members") unless team.present?
+
+    emails = team.split(';')
+
+    return members unless emails.present?
+
+    emails.each do |email|
+      user_email, user_share = email.split('/')
+
+      raise "Team member #{user_email} share field" unless user_share.present?
+      raise "Team Split must add up to either 0 or 100" unless user_share.to_i == 0 || user_share.to_i == 100
+
+      if (user = search_user(user_email))
+        members << PmpMember.new(
+          user_id: user.id,
+          share: user_share.to_i,
+          from_date: check_and_format_date(start_date),
+          to_date: check_and_format_date(end_date),
+          skip_callback: true
+        )
+      end
     end
+    members
   end
 
   def search_user(email)
@@ -80,14 +75,14 @@ class Csv::ActivePmpObject
 
   def active_pmp_object_params
     {
-        name: name,
-        advertiser_id: check_advertiser,
-        agency_id: check_agency,
-        start_date: check_and_format_date(start_date),
-        end_date: check_and_format_date(end_date),
-        company_id: company_id,
-        pmp_members: create_pmp_members,
-        skip_callback: true
+      name: name,
+      advertiser_id: check_advertiser,
+      agency_id: check_agency,
+      start_date: check_and_format_date(start_date),
+      end_date: check_and_format_date(end_date),
+      company_id: company_id,
+      pmp_members: create_pmp_members,
+      skip_callback: true
     }
   end
 
