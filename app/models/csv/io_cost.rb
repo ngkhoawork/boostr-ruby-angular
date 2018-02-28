@@ -24,9 +24,6 @@ class Csv::IoCost
 
     value.option = option
     value.save!
-  rescue Exception => e
-    p e
-    p e.backtrace
   end
 
   private
