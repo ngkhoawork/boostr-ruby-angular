@@ -6,7 +6,6 @@ class NewForecastTeamSerializer < ActiveModel::Serializer
   attributes(
     :id,
     :name,
-    :parents,
     :weighted_pipeline_by_stage,
     :unweighted_pipeline_by_stage,
     :weighted_pipeline,

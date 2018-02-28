@@ -59,4 +59,7 @@ module Clockwork
     AdvertiserAgencyRevenueCalculationWorker.perform_async
   end
 
+  every(1.day, 'Stopped PMPs Alert', at: '8:00') do
+    StoppedPmpDetectWorker.perform_async
+  end
 end

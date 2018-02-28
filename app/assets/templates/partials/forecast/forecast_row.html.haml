@@ -34,10 +34,10 @@
 	%td.auto-colspan
 		%div.subtable-wrap.revenue-subtable
 			%div.subtable-container
-				%div.mb10
+				%div
 					%span.title Revenue Summary
 					%span.close-btn{'ng-click': 'hideSubtable()'}
-				%table.table.subtable{'ng-if': 'openedSubtable == row && revenues'}
+				%table.table.subtable.mb10{'ng-if': 'openedSubtable == row && revenues'}
 					%thead
 						%tr
 							%th
@@ -68,6 +68,45 @@
 						%tr{ ng: { repeat: 'subrow in revenues' } }
 							%td
 								%a{ href: '', ng: { href: '/revenue/ios/{{subrow.id}}' } }
+									{{ subrow.name }}
+							%td {{ subrow.advertiser }}
+							%td {{ subrow.agency }}
+							%td {{ subrow.budget | currency: '$': 0 }}
+							%td {{ subrow.sum_period_budget | currency: '$': 0 }}
+							%td {{ subrow.split_period_budget | currency: '$': 0 }}
+				%div.mt10
+					%span.title PMP Summary
+				%table.table.subtable{'ng-if': 'openedSubtable == row && pmp_revenues'}
+					%thead
+						%tr
+							%th
+								%span.clickable{ ng: { click: 'sort.pmp_revenues.toggle("name")' } }
+									PMP name
+									%i{ ng: { class: "{ 'fa': sort.pmp_revenues.column == 'name', 'fa-sort-asc': sort.pmp_revenues.column == 'name' && sort.pmp_revenues.direction == 'asc', 'fa-sort-desc': sort.pmp_revenues.column == 'name' && sort.pmp_revenues.direction == 'desc' }" } }
+							%th
+								%span.clickable{ ng: { click: 'sort.pmp_revenues.toggle("advertiser")' } }
+									Advertiser
+									%i{ ng: { class: "{ 'fa': sort.pmp_revenues.column == 'advertiser', 'fa-sort-asc': sort.pmp_revenues.column == 'advertiser' && sort.pmp_revenues.direction == 'asc', 'fa-sort-desc': sort.pmp_revenues.column == 'advertiser' && sort.pmp_revenues.direction == 'desc' }" } }
+							%th
+								%span.clickable{ ng: { click: 'sort.pmp_revenues.toggle("agency")' } }
+									Agency
+									%i{ ng: { class: "{ 'fa': sort.pmp_revenues.column == 'agency', 'fa-sort-asc': sort.pmp_revenues.column == 'agency' && sort.pmp_revenues.direction == 'asc', 'fa-sort-desc': sort.pmp_revenues.column == 'agency' && sort.pmp_revenues.direction == 'desc' }" } }
+							%th
+								%span.clickable{ ng: { click: 'sort.pmp_revenues.toggle("budget")' } }
+									Total Budget
+									%i{ ng: { class: "{ 'fa': sort.pmp_revenues.column == 'budget', 'fa-sort-asc': sort.pmp_revenues.column == 'budget' && sort.pmp_revenues.direction == 'asc', 'fa-sort-desc': sort.pmp_revenues.column == 'budget' && sort.pmp_revenues.direction == 'desc' }" } }
+							%th
+								%span.clickable{ ng: { click: 'sort.pmp_revenues.toggle("sum_period_budget")' } }
+									In-Period Amt
+									%i{ ng: { class: "{ 'fa': sort.pmp_revenues.column == 'sum_period_budget', 'fa-sort-asc': sort.pmp_revenues.column == 'sum_period_budget' && sort.pmp_revenues.direction == 'asc', 'fa-sort-desc': sort.pmp_revenues.column == 'sum_period_budget' && sort.pmp_revenues.direction == 'desc' }" } }
+							%th
+								%span.clickable{ ng: { click: 'sort.pmp_revenues.toggle("split_period_budget")' } }
+									Split In-Period Amt
+									%i{ ng: { class: "{ 'fa': sort.pmp_revenues.column == 'split_period_budget', 'fa-sort-asc': sort.pmp_revenues.column == 'split_period_budget' && sort.pmp_revenues.direction == 'asc', 'fa-sort-desc': sort.pmp_revenues.column == 'split_period_budget' && sort.pmp_revenues.direction == 'desc' }" } }
+					%tbody
+						%tr{ ng: { repeat: 'subrow in pmp_revenues' } }
+							%td
+								%a{ href: '', ng: { href: '/revenue/pmps/{{subrow.id}}' } }
 									{{ subrow.name }}
 							%td {{ subrow.advertiser }}
 							%td {{ subrow.agency }}

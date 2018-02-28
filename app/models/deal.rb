@@ -20,6 +20,7 @@ class Deal < ActiveRecord::Base
   # Restrict with exception is used to rollback any
   # other potential dependent: :destroy relations
   has_one :io, class_name: "Io", foreign_key: 'deal_id', dependent: :restrict_with_exception
+  has_one :pmp, class_name: "Pmp", foreign_key: 'deal_id', dependent: :restrict_with_exception
 
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
   has_many :contacts, -> { uniq }, through: :deal_contacts
@@ -79,16 +80,16 @@ class Deal < ActiveRecord::Base
   end
 
   after_update do
-    generate_io() if stage_id_changed?
-    reset_products if (start_date_changed? || end_date_changed?)
     if stage_id_changed?
+      generate_io_or_pmp
       send_ealert
+      log_stage_changes
     end
+    reset_products if (start_date_changed? || end_date_changed?)
     integrate_with_operative
     send_lost_deal_notification
     connect_deal_clients
     log_start_date_changes if start_date_changed?
-    log_stage_changes if stage_id_changed?
   end
 
   before_create do
@@ -380,18 +381,18 @@ class Deal < ActiveRecord::Base
             deal_members: {
               methods: [:name]
             },
-              activities: {
-                include: {
-                  creator: {},
-                  publisher: { only: [:id, :name] },
-                  contacts: {},
-                  assets: {
-                    methods: [
-                      :presigned_url
-                    ]
-                  }
+            activities: {
+              include: {
+                creator: {},
+                publisher: { only: [:id, :name] },
+                contacts: {},
+                assets: {
+                  methods: [
+                    :presigned_url
+                  ]
                 }
               }
+            }
           ],
           methods: [
             :formatted_name
@@ -575,7 +576,6 @@ class Deal < ActiveRecord::Base
         if creator && should_create == true
           deal_members.create(user_id: creator.id, share: [100 - total_share, 0].max)
         end
-
       end
     end
   end
@@ -1449,8 +1449,7 @@ class Deal < ActiveRecord::Base
         end
       end
     end
-    self.open = should_open
-    self.save
+    update_attribute(:open, should_open)
   end
 
   def recalculate_currency
@@ -1468,32 +1467,16 @@ class Deal < ActiveRecord::Base
       self.closed_at = updated_at
     end
 
+    self.open = self.should_open?
+    Deal::DealCloseService.new(self).perform
+  end
+
+  def should_open?
     should_open = stage.open?
-    if stage.closed? && stage.probability == 100
-      self.deal_products.each do |deal_product|
-        if deal_product.product.revenue_type != 'Content-Fee'
-          should_open = true
-          deal_product.update_columns(open: true)
-        else
-          deal_product.update_columns(open: false)
-        end
-      end
-
-      send_closed_won_deal_notification
-    else
-      self.deal_products.update_all(open: stage.open)
-
-      if !self.closed_at.nil? && stage.open?
-        if !self.fields.nil? && !self.values.nil?
-          field = self.fields.find_by_name('Close Reason')
-          close_reason = self.values.find_by_field_id(field.id) if !field.nil?
-          close_reason.destroy if !close_reason.nil?
-        end
-      end
-
-      send_stage_changed_deal_notification if stage.open?
+    if !stage.open? && stage.probability == 100
+      should_open = self.deal_products.product_type_of('Display').count > 0
     end
-    self.open = should_open.to_s
+    should_open
   end
 
   def send_new_deal_notification
@@ -1557,58 +1540,6 @@ class Deal < ActiveRecord::Base
     end
     self.open = should_open
     self.save
-  end
-
-  def generate_io
-    if !stage.open? && stage.probability == 100
-      io_param = {
-          advertiser_id: self.advertiser_id,
-          agency_id: self.agency_id,
-          budget: self.budget.nil? ? 0 : self.budget,
-          budget_loc: self.budget_loc.nil? ? 0 : self.budget_loc,
-          curr_cd: self.curr_cd,
-          start_date: self.start_date,
-          end_date: self.end_date,
-          name: self.name,
-          io_number: self.id,
-          external_io_number: nil,
-          company_id: self.company_id,
-          deal_id: self.id
-      }
-      if io = Io.create!(io_param)
-        self.deal_members.each do |deal_member|
-          if deal_member.user.present?
-            io_member_param = {
-                io_id: io.id,
-                user_id: deal_member.user_id,
-                share: deal_member.share,
-                from_date: self.start_date,
-                to_date: self.end_date,
-            }
-            IoMember.create!(io_member_param)
-          end
-        end
-
-        self.deal_products.order(:created_at).each do |deal_product|
-          if deal_product.product.revenue_type == "Content-Fee"
-            content_fee_param = {
-                io_id: io.id,
-                product_id: deal_product.product.id,
-                budget: deal_product.budget,
-                budget_loc: deal_product.budget_loc
-            }
-            content_fee = ContentFee.create(content_fee_param)
-            deal_product.update_columns(open: false)
-          end
-        end
-      end
-    else
-      if self.io.present?
-        self.io.destroy
-        self.deal_products.product_type_of("Content-Fee").update_all(open: true)
-      end
-    end
-
   end
 
   def wday_in_stage
@@ -1733,6 +1664,10 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def include_pmp_product?
+    self.products.where(revenue_type: 'PMP').count > 0
+  end
+
   def log_budget_changes(current_budget, new_budget)
     AuditLogService.new(
       record: self,
@@ -1780,5 +1715,13 @@ class Deal < ActiveRecord::Base
       old_value: previous_stage_id,
       new_value: stage_id
     ).perform
+  end
+
+  def generate_io_or_pmp
+    if include_pmp_product?
+      Deal::PmpGenerateService.new(self).perform
+    else
+      Deal::IoGenerateService.new(self).perform
+    end
   end
 end

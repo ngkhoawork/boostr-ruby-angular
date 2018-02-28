@@ -11,7 +11,6 @@ class Api::RevenueController < ApplicationController
     else
       render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
     end
-
   end
 
   def create

@@ -31,10 +31,37 @@ class NewForecastMember
     @stages = member.company.stages.where(id: ids).order(:probability).all.to_a
   end
 
+  def forecast_time_dimension
+    @_forecast_time_dimension ||= ForecastTimeDimension.find_by(id: time_period.id)
+  end
+
+  def pmp_revenue_data
+    @_pmp_revenue_data ||= ForecastPmpRevenueFact
+      .by_time_dimension_id(forecast_time_dimension.id)
+      .by_user_dimension_ids([member.id])
+      .by_product_dimension_ids(product_ids)
+      .select("SUM(amount) AS revenue_amount")
+  end
+
+  def revenue_data
+    @_revenue_data ||= ForecastRevenueFact
+      .by_time_dimension_id(forecast_time_dimension.id)
+      .by_user_dimension_ids([member.id])
+      .by_product_dimension_ids(product_ids)
+      .select("SUM(amount) AS revenue_amount")
+  end
+
+  def pipeline_data
+    @_pipeline_data ||= ForecastPipelineFact
+      .by_time_dimension_id(forecast_time_dimension.id)
+      .by_user_dimension_ids([member.id])
+      .by_product_dimension_ids(product_ids)
+      .select("stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
+      .group("stage_dimension_id")
+  end
+
   def forecasts_data
     return @forecasts_data if defined?(@forecasts_data)
-
-    forecast_time_dimension = ForecastTimeDimension.find_by(id: time_period.id)
 
     company = member.company
 
@@ -52,23 +79,14 @@ class NewForecastMember
       quota: {}
     }
 
-    if product_ids.nil?
-      revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id = ?", forecast_time_dimension.id, member.id)
-        .select("SUM(amount) AS revenue_amount")
-      pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id = ?", forecast_time_dimension.id, member.id)
-        .select("stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
-        .group("stage_dimension_id")
-    elsif product_ids.count > 0
-      revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id = ? AND product_dimension_id IN (?)", forecast_time_dimension.id, member.id, product_ids)
-        .select("SUM(amount) AS revenue_amount")
-      pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id = ? AND product_dimension_id IN (?)", forecast_time_dimension.id, member.id, product_ids)
-        .select("stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
-        .group("stage_dimension_id")
-    end
-
     revenue_data.each do |item|
       @forecasts_data[:revenue] = item.revenue_amount.to_f
     end
+
+    pmp_revenue_data.each do |item|
+      @forecasts_data[:revenue] += item.revenue_amount.to_f
+    end
+
     pipeline_data.each do |item|
       @forecasts_data[:unweighted_pipeline] += item.pipeline_amount.to_f
       @forecasts_data[:unweighted_pipeline_by_stage][item.stage_id] ||= 0.0
