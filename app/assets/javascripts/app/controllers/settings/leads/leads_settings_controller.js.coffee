@@ -1,6 +1,6 @@
 @app.controller 'LeadsSettingsController', [
-    '$scope', '$timeout', 'AssignmentRule', 'Seller'
-    ($scope,   $timeout,   AssignmentRule,   Seller) ->
+    '$scope', '$timeout', 'AssignmentRule', 'User'
+    ($scope,   $timeout,   AssignmentRule,   User) ->
         $scope.form = ''
         $scope.sellers = []
         $scope.rules = []
@@ -8,7 +8,7 @@
         $scope.selectedRule = null
         $scope.defaultRule = null
 
-        Seller.query({id: 'all'}).$promise.then (data) ->
+        User.query().$promise.then (data) ->
             $scope.sellers = data
 
         (getRules = (selectedName) ->
