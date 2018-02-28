@@ -2,7 +2,7 @@ class Api::SalesProcessesController < ApplicationController
   respond_to :json
 
   def index
-    render json: current_user.company.sales_processes.is_active(params[:active])
+    render json: company.sales_processes.is_active(params[:active])
   end
 
   def show
@@ -10,10 +10,10 @@ class Api::SalesProcessesController < ApplicationController
   end
 
   def create
-    sales_process = current_user.company.sales_processes.new(sales_process_params)
+    sales_process = company.sales_processes.new(sales_process_params)
 
     if sales_process.save
-      render json: sales_process
+      render json: sales_process, status: :created
     else
       render json: { errors: sales_process.errors.messages }, status: :unprocessable_entity
     end
@@ -29,8 +29,12 @@ class Api::SalesProcessesController < ApplicationController
 
   private
 
+  def company
+    current_user.company
+  end
+
   def sales_process
-    @sales_process ||= current_user.company.sales_processes.find(params[:id])
+    @_sales_process ||= company.sales_processes.find(params[:id])
   end
 
   def sales_process_params

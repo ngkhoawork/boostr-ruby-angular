@@ -217,7 +217,7 @@ class Company < ActiveRecord::Base
   end
 
   def default_sales_process
-    sales_processes.where(name: 'DEFAULT').first || sales_processes.first
+    sales_processes.first
   end
   
   protected

@@ -465,7 +465,7 @@ class User < ActiveRecord::Base
 
   def current_team
     if leader?
-      company.teams.where(leader: self).first
+      company.teams.find_by(leader: self)
     else
       team
     end    

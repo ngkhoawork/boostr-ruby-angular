@@ -2,7 +2,7 @@ class Api::ValidationsController < ApplicationController
   respond_to :json
 
   def index
-    render json: current_user.company.validations
+    render json: company.validations
   end
 
   def update
@@ -14,7 +14,7 @@ class Api::ValidationsController < ApplicationController
   end
 
   def create
-    validation = current_user.company.validations.find_or_initialize_by(validation_params.except(:criterion_attributes))
+    validation = company.validations.find_or_initialize_by(validation_params.except(:criterion_attributes))
 
     if validation.save && validation.criterion.update_attributes(validation_params[:criterion_attributes])
       render json: validation, status: :created

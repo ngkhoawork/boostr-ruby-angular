@@ -2,17 +2,7 @@ class Api::StagesController < ApplicationController
   respond_to :json
 
   def index
-    stages = if params[:team_id] && team_stages
-      team_stages
-    elsif params[:sales_process_id] && sales_process
-      sales_process.stages
-    elsif params[:current_team]
-      current_user.current_team&.sales_process&.stages || default_stages    
-    else
-      company.stages
-    end
-    stages = stages.is_active(params[:active]).is_open(params[:open]) if stages.present?
-    render json: stages || [], each_serializer: StageSerializer
+    render json: filtered_stages, each_serializer: StageSerializer
   end
 
   def show
@@ -23,7 +13,7 @@ class Api::StagesController < ApplicationController
     stage = current_user.company.stages.create(stage_params)
 
     if stage.persisted?
-      render json: stage, serializer: StageSerializer
+      render json: stage, status: :created, serializer: StageSerializer
     else
       render json: { errors: stage.errors.messages }, status: :unprocessable_entity
     end
@@ -39,25 +29,6 @@ class Api::StagesController < ApplicationController
 
   private
 
-  def sales_process
-    @_sales_process ||= company.sales_processes.find(params[:sales_process_id])
-  end
-
-  def team_stages
-    if team.present?
-      @_stages ||= team.sales_process&.stages
-      @_stages ||= default_stages
-    end
-  end
-
-  def default_stages
-    @_default_stages ||= company.default_sales_process&.stages
-  end
-
-  def team
-    @_team ||= company.teams.find(params[:team_id])
-  end
-
   def company
     @_company ||= current_user.company
   end
@@ -66,7 +37,16 @@ class Api::StagesController < ApplicationController
     @_stage ||= current_user.company.stages.find(params[:id])
   end
 
+  def filtered_stages
+    StagesQuery.new(filter_params).perform
+  end
+
   def stage_params
     params.require(:stage).permit(:name, :probability, :position, :open, :active, :avg_day, :yellow_threshold, :red_threshold, :sales_process_id)
+  end
+
+  def filter_params
+    params.permit(:team_id, :sales_process_id, :current_team, :active, :open)
+          .merge(current_user: current_user, company_id: current_user.company_id)
   end
 end

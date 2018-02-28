@@ -270,7 +270,7 @@ class Deal < ActiveRecord::Base
   end
 
   def billing_contact_presence
-    validation = company.validations.where(object: 'Billing Contact', factor: stage.sales_process_id).first if stage.present?
+    validation = company.validations.find_by(object: 'Billing Contact', factor: stage.sales_process_id) if stage.present?
     stage_threshold = validation.criterion&.value&.probability if validation
 
     if validation && stage_threshold && stage && stage.probability >= stage_threshold
@@ -279,7 +279,7 @@ class Deal < ActiveRecord::Base
   end
 
   def account_manager_presence
-    validation = company.validations.where(object: 'Account Manager', factor: stage.sales_process_id).first if stage.present?
+    validation = company.validations.find_by(object: 'Account Manager', factor: stage.sales_process_id) if stage.present?
     stage_threshold = validation.criterion&.value&.probability if validation
 
     if validation && stage_threshold && stage && stage.probability >= stage_threshold
