@@ -468,7 +468,11 @@ class User < ActiveRecord::Base
     Thread.current[:user] = user
   end
 
-  def total_gross_quotas(start_date, end_date)
-    quotas.for_time_period(start_date, end_date).by_type('gross').sum(:value)
+  def total_gross_quotas(start_date, end_date, product_id = nil, product_type = 'Product', value_type = QUOTA_TYPES[:gross])
+    quotas.for_time_period(start_date, end_date)
+      .by_product_type(product_type)
+      .by_product_id(product_id)
+      .by_type(value_type)
+      .sum(:value)
   end
 end

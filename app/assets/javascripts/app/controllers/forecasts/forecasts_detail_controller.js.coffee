@@ -86,7 +86,9 @@
             fc.quarterly_unweighted_gap_to_quota = {}
             fc.quarterly_unweighted_gap_to_quota_net = {}
             fc.quarterly_percentage_of_annual_quota = {}
+            fc.quarterly_percentage_of_annual_quota_net = {}
             quotaSum = _.reduce fc.quarterly_quota, (result, val) -> result + Number val
+            quotaSumNet = _.reduce fc.quarterly_quota_net, (result, val) -> result + Number val
             _.each data.quarters, (quarter) ->
                 weighted = Number fc.quarterly_revenue[quarter]
                 weighted_net = Number fc.quarterly_revenue_net[quarter]
@@ -103,16 +105,17 @@
                 fc.quarterly_unweighted_forecast_net[quarter] = unweighted_net
                 if $scope.forecast_gap_to_quota_positive
                     fc.quarterly_weighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - weighted
-                    fc.quarterly_weighted_gap_to_quota_net[quarter] = fc.quarterly_quota[quarter] - weighted_net
+                    fc.quarterly_weighted_gap_to_quota_net[quarter] = fc.quarterly_quota_net[quarter] - weighted_net
                     fc.quarterly_unweighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - unweighted
-                    fc.quarterly_unweighted_gap_to_quota_net[quarter] = fc.quarterly_quota[quarter] - unweighted_net
+                    fc.quarterly_unweighted_gap_to_quota_net[quarter] = fc.quarterly_quota_net[quarter] - unweighted_net
                 else
                     fc.quarterly_weighted_gap_to_quota[quarter] = weighted - fc.quarterly_quota[quarter]
-                    fc.quarterly_weighted_gap_to_quota_net[quarter] = weighted_net - fc.quarterly_quota[quarter]
+                    fc.quarterly_weighted_gap_to_quota_net[quarter] = weighted_net - fc.quarterly_quota_net[quarter]
                     fc.quarterly_unweighted_gap_to_quota[quarter] = unweighted - fc.quarterly_quota[quarter]
-                    fc.quarterly_unweighted_gap_to_quota_net[quarter] = unweighted_net - fc.quarterly_quota[quarter]
+                    fc.quarterly_unweighted_gap_to_quota_net[quarter] = unweighted_net - fc.quarterly_quota_net[quarter]
 
                 fc.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota[quarter]) / quotaSum * 100) else null
+                fc.quarterly_percentage_of_annual_quota_net[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota_net[quarter]) / quotaSumNet * 100) else null
             fc.stages.sort (s1, s2) -> s2.probability - s1.probability
 
         addDetailAmounts = (data, type) ->

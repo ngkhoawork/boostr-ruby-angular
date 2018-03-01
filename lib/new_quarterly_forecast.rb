@@ -261,7 +261,7 @@ class NewQuarterlyForecast
     if user.present?
       quarters.each do |quarter_row|
         quarter = quarter_year_name(quarter_row[:start_date])
-        @quarterly_quota[quarter] = user.total_gross_quotas(quarter_row[:start_date], quarter_row[:end_date])
+        @quarterly_quota[quarter] = quota_by_type(user, quarter_row[:start_date], quarter_row[:end_date], QUOTA_TYPES[:gross])
 
       end
     elsif team.present?
@@ -270,7 +270,7 @@ class NewQuarterlyForecast
         quarter = quarter_year_name(quarter_row[:start_date])
         @quarterly_quota[quarter] ||= 0
         if leader.present?
-          @quarterly_quota[quarter] += leader.total_gross_quotas(quarter_row[:start_date], quarter_row[:end_date])
+          @quarterly_quota[quarter] += quota_by_type(leader, quarter_row[:start_date], quarter_row[:end_date], QUOTA_TYPES[:gross])
         end
       end
     else
@@ -280,12 +280,55 @@ class NewQuarterlyForecast
           quarter = quarter_year_name(quarter_row[:start_date])
           @quarterly_quota[quarter] ||= 0
           if leader.present?
-            @quarterly_quota[quarter] += leader.total_gross_quotas(quarter_row[:start_date], quarter_row[:end_date])
+            @quarterly_quota[quarter] += quota_by_type(leader, quarter_row[:start_date], quarter_row[:end_date], QUOTA_TYPES[:gross])
           end
         end
       end
     end
     @quarterly_quota
+  end
+
+  def quarterly_quota_net
+    return @quarterly_quota_net if defined?(@quarterly_quota_net)
+    start_date = time_period.start_date
+    end_date = time_period.end_date
+    quarters = (start_date.to_date..end_date.to_date)
+      .map { |d| { start_date: d.beginning_of_quarter, end_date: d.end_of_quarter } }
+      .uniq
+    @quarterly_quota_net = {}
+    
+    if user.present?
+      quarters.each do |quarter_row|
+        quarter = quarter_year_name(quarter_row[:start_date])
+        @quarterly_quota_net[quarter] = quota_by_type(user, quarter_row[:start_date], quarter_row[:end_date], QUOTA_TYPES[:net])
+
+      end
+    elsif team.present?
+      leader = team.leader
+      quarters.each do |quarter_row|
+        quarter = quarter_year_name(quarter_row[:start_date])
+        @quarterly_quota_net[quarter] ||= 0
+        if leader.present?
+          @quarterly_quota_net[quarter] += quota_by_type(leader, quarter_row[:start_date], quarter_row[:end_date], QUOTA_TYPES[:net])
+        end
+      end
+    else
+      teams.each do |team_item|
+        leader = team_item.leader
+        quarters.each do |quarter_row|
+          quarter = quarter_year_name(quarter_row[:start_date])
+          @quarterly_quota_net[quarter] ||= 0
+          if leader.present?
+            @quarterly_quota_net[quarter] += quota_by_type(leader, quarter_row[:start_date], quarter_row[:end_date], QUOTA_TYPES[:net])
+          end
+        end
+      end
+    end
+    @quarterly_quota_net
+  end
+
+  def quota_by_type(object, start_date, end_date, type)
+    object.total_gross_quotas(start_date, end_date, nil, nil, type)
   end
 
   def start_date
@@ -308,6 +351,7 @@ class NewQuarterlyForecast
         quarterly_unweighted_pipeline_by_stage: {},
         quarterly_weighted_pipeline_by_stage: {},
         quarterly_quota: quarterly_quota,
+        quarterly_quota_net: quarterly_quota_net,
         quarterly_revenue_net: {},
         quarterly_unweighted_pipeline_by_stage_net: {},
         quarterly_weighted_pipeline_by_stage_net: {}

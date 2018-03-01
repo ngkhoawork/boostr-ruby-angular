@@ -114,7 +114,8 @@ class NewForecastMember
       unweighted_pipeline_net: 0.0,
       weighted_pipeline_by_stage_net: {},
       weighted_pipeline_net: 0.0,
-      quota: {}
+      quota: 0,
+      quota_net: 0
     }
 
     revenue_data.each do |item|
@@ -248,8 +249,8 @@ class NewForecastMember
 
   def percent_to_quota_net
     # attainment
-    return 100 unless quota > 0
-    amount_net / quota * 100
+    return 100 unless quota_net > 0
+    amount_net / quota_net * 100
   end
 
   def percent_booked
@@ -260,8 +261,8 @@ class NewForecastMember
 
   def percent_booked_net
     # attainment
-    return 100 unless quota > 0
-    revenue_net / quota * 100
+    return 100 unless quota_net > 0
+    revenue_net / quota_net * 100
   end
 
   def gap_to_quota
@@ -274,14 +275,28 @@ class NewForecastMember
 
   def gap_to_quota_net
     if company.forecast_gap_to_quota_positive
-      return (quota - amount_net).to_f
+      return (quota_net - amount_net).to_f
     else
-      return (amount_net - quota).to_f
+      return (amount_net - quota_net).to_f
     end
   end
 
   def quota
-    @quota ||= member.total_gross_quotas(start_date, end_date)
+    @quota ||= quota_by_type(QUOTA_TYPES[:gross])
+  end
+
+  def quota_net
+    @quota_net ||= quota_by_type(QUOTA_TYPES[:net])
+  end
+
+  def quota_by_type(type)
+    if product.present?
+      member.total_gross_quotas(start_date, end_date, product.id, 'Product', type)
+    elsif product_family.present?
+      member.total_gross_quotas(start_date, end_date, product_family.id, 'ProductFamily', type)
+    else
+      member.total_gross_quotas(start_date, end_date, nil, nil, type)
+    end
   end
 
   def win_rate

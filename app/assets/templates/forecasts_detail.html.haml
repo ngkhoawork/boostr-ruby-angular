@@ -73,7 +73,7 @@
                   %td
                     %b Quota
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{(forecast.quarterly_quota[quarter] || 0) | currency : '$' : 0}}
+                    {{(isNetForecast ? forecast.quarterly_quota_net[quarter] : forecast.quarterly_quota[quarter] || 0) | currency : '$' : 0}}
                   %td{'ng-if': 'isYear()'}
                     {{(getAnnualSum(forecast.quarterly_quota) || 0) | currency : '$' : 0}}
 
@@ -88,7 +88,7 @@
                   %td
                     %b % of Annual Quota
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{isNumber(forecast.quarterly_percentage_of_annual_quota[quarter]) ? forecast.quarterly_percentage_of_annual_quota[quarter] + '%' : 'N/A'}}
+                    {{isNumber(isNetForecast ? forecast.quarterly_percentage_of_annual_quota_net[quarter] : forecast.quarterly_percentage_of_annual_quota[quarter]) ? (isNetForecast ? forecast.quarterly_percentage_of_annual_quota_net[quarter] : forecast.quarterly_percentage_of_annual_quota[quarter]) + '%' : 'N/A'}}
                   %td{'ng-if': 'isYear()'}
 
         .col-xs-6

@@ -202,6 +202,7 @@ class NewForecastTeam
       weighted_pipeline_by_stage: {},
       weighted_pipeline: 0.0,
       quota: 0.0,
+      quota_net: 0.0
     }
   end
 
@@ -224,7 +225,8 @@ class NewForecastTeam
       revenue: 0,
       revenue_net: 0,
       wow_revenue: 0,
-      quota: 0
+      quota: 0,
+      quota_net: 0
     }
   end
 
@@ -248,7 +250,8 @@ class NewForecastTeam
       revenue: 0,
       revenue_net: 0,
       wow_revenue: 0,
-      quota: 0
+      quota: 0,
+      quota_net: 0
     }
   end
 
@@ -409,12 +412,15 @@ class NewForecastTeam
   end
 
   def add_user_other_data(data, user)
-    quota = user.total_gross_quotas(start_date, end_date)
+    quota = quota_by_type(user, QUOTA_TYPES[:gross])
+    quota_net = quota_by_type(user, QUOTA_TYPES[:net])
 
     if user.leader?
       data[:quota] = 0
+      data[:quota_net] = 0
     else
       data[:quota] = quota
+      data[:quota_net] = quota_net
     end
     data[:amount] = (data[:weighted_pipeline] || 0) + (data[:revenue] || 0)
     data[:amount_net] = (data[:weighted_pipeline_net] || 0) + (data[:revenue_net] || 0)
@@ -422,15 +428,15 @@ class NewForecastTeam
     gap_to_quota = (quota - data[:amount]).to_f
     gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
 
-    gap_to_quota_net = (quota - data[:amount_net]).to_f
+    gap_to_quota_net = (quota_net - data[:amount_net]).to_f
     gap_to_quota_net = -gap_to_quota_net if !forecast_gap_to_quota_positive
 
     data[:percent_to_quota] = (quota > 0 ? data[:amount] / quota * 100 : 100)
     data[:percent_booked] = (quota > 0 ? data[:revenue] / quota * 100 : 100)
     data[:gap_to_quota] = gap_to_quota
 
-    data[:percent_to_quota_net] = (quota > 0 ? data[:amount_net] / quota * 100 : 100)
-    data[:percent_booked_net] = (quota > 0 ? data[:revenue_net] / quota * 100 : 100)
+    data[:percent_to_quota_net] = (quota_net > 0 ? data[:amount_net] / quota_net * 100 : 100)
+    data[:percent_booked_net] = (quota_net > 0 ? data[:revenue_net] / quota_net * 100 : 100)
     data[:gap_to_quota_net] = gap_to_quota_net
 
     incomplete_deals = user.deals.active.closed.at_percent(0).closed_in(user.company.deals_needed_calculation_duration)
@@ -460,22 +466,24 @@ class NewForecastTeam
   end
 
   def add_team_other_data(data, team)
-    quota = (team.leader ? team.leader.total_gross_quotas(start_date, end_date) : 0)
+    quota = (team.leader ? quota_by_type(team.leader, QUOTA_TYPES[:gross]) : 0)
+    quota_net = (team.leader ? quota_by_type(team.leader, QUOTA_TYPES[:gross]) : 0)
 
     data[:quota] = quota
+    data[:quota_net] = quota_net
     data[:amount] = (data[:weighted_pipeline] || 0) + (data[:revenue] || 0)
     data[:amount_net] = (data[:weighted_pipeline_net] || 0) + (data[:revenue_net] || 0)
 
     gap_to_quota = (quota - data[:amount]).to_f
     gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
-    gap_to_quota_net = (quota - data[:amount_net]).to_f
+    gap_to_quota_net = (quota_net - data[:amount_net]).to_f
     gap_to_quota_net = -gap_to_quota_net if !forecast_gap_to_quota_positive
 
     data[:percent_to_quota] = (quota > 0 ? data[:amount] / quota * 100 : 100)
     data[:percent_booked] = (quota > 0 ? data[:revenue] / quota * 100 : 100)
     data[:gap_to_quota] = gap_to_quota
-    data[:percent_to_quota_net] = (quota > 0 ? data[:amount_net] / quota * 100 : 100)
-    data[:percent_booked_net] = (quota > 0 ? data[:revenue_net] / quota * 100 : 100)
+    data[:percent_to_quota_net] = (quota_net > 0 ? data[:amount_net] / quota_net * 100 : 100)
+    data[:percent_booked_net] = (quota_net > 0 ? data[:revenue_net] / quota_net * 100 : 100)
     data[:gap_to_quota_net] = gap_to_quota_net
 
     all_team_members = (team.all_members.nil? ? []:team.all_members)
@@ -596,8 +604,8 @@ class NewForecastTeam
   end
 
   def percent_to_quota_net
-    return 100 unless quota > 0
-    amount_net / quota * 100
+    return 100 unless quota_net > 0
+    amount_net / quota_net * 100
   end
 
   def percent_booked
@@ -606,8 +614,8 @@ class NewForecastTeam
   end
 
   def percent_booked_net
-    return 100 unless quota > 0
-    revenue_net / quota * 100
+    return 100 unless quota_net > 0
+    revenue_net / quota_net * 100
   end
 
   def gap_to_quota
@@ -620,15 +628,36 @@ class NewForecastTeam
 
   def gap_to_quota_net
     if team.company.forecast_gap_to_quota_positive
-      return (quota - amount_net).to_f
+      return (quota_net - amount_net).to_f
     else
-      return (amount_net - quota).to_f
+      return (amount_net - quota_net).to_f
     end
   end
 
   def quota
-    return leader.total_gross_quotas(start_date, end_date) if leader
-    0
+    @quota ||=  if leader
+      quota_by_type(leader, QUOTA_TYPES[:gross])
+    else
+      0
+    end
+  end
+
+  def quota_net
+    @quota_net ||=  if leader
+      quota_by_type(leader, QUOTA_TYPES[:net])
+    else
+      0
+    end
+  end
+
+  def quota_by_type(user, type)
+    if product.present?
+      user.total_gross_quotas(start_date, end_date, product.id, 'Product', type)
+    elsif product_family.present?
+      user.total_gross_quotas(start_date, end_date, product_family.id, 'ProductFamily', type)
+    else
+      user.total_gross_quotas(start_date, end_date, nil, nil, type)
+    end
   end
 
   def win_rate

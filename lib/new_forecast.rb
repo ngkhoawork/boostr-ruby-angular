@@ -112,8 +112,8 @@ class NewForecast
   end
 
   def percent_booked_net
-    return 100 unless quota > 0
-    revenue_net / quota * 100
+    return 100 unless quota_net > 0
+    revenue_net / quota_net * 100
   end
 
   def percent_to_quota
@@ -122,8 +122,8 @@ class NewForecast
   end
 
   def percent_to_quota_net
-    return 100 unless quota > 0
-    amount_net / quota * 100
+    return 100 unless quota_net > 0
+    amount_net / quota_net * 100
   end
 
   def gap_to_quota
@@ -135,7 +135,11 @@ class NewForecast
   end
 
   def quota
-    teams.sum(&:quota)
+    @_quota ||= teams.sum(&:quota)
+  end
+
+  def quota_net
+    @_quota_net ||= teams.sum(&:quota_net)
   end
 
   def win_rate

@@ -5,7 +5,7 @@
 		%div{ ng: { if: 'row.is_leader && year' } }
 			\--
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : (row.quota | currency: '$': 0) }}
+		{{ row.is_leader ? '--' : (isNetForecast ? row.quota_net : row.quota | currency: '$': 0) }}
 	%td.subtable-arrow-wrap
 		%div
 			%a{href: '', 'ng-click': 'showSubtable(row, "revenue", $event)'} {{ (isNetForecast ? row.revenue_net : row.revenue) | currency: '$': 0 }}
@@ -17,13 +17,13 @@
 	%td
 		{{ (isNetForecast ? row.amount_net : row.amount) | currency: '$': 0 }}
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : ((isNetForecast ? row.gap_to_quota_net : row.gap_to_quota) | currency: '$': 0) }}
+		{{ row.is_leader ? '--' : ((isNetForecast ? row.gap_to_quota_net : row.gap_to_quota) | currency: '$': 0) }}
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : isFinite((isNetForecast ? row.percent_to_quota_net : row.percent_to_quota)) ? ((isNetForecast ? row.percent_to_quota_net : row.percent_to_quota) | number: 0) + '%' : '--' }}
+		{{ row.is_leader ? '--' : isFinite((isNetForecast ? row.percent_to_quota_net : row.percent_to_quota)) ? ((isNetForecast ? row.percent_to_quota_net : row.percent_to_quota) | number: 0) + '%' : '--' }}
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : isFinite((isNetForecast ? row.percent_booked_net : row.percent_booked)) ? ((isNetForecast ? row.percent_booked_net : row.percent_booked) | number: 0) + '%' : '--' }}
+		{{ row.is_leader ? '--' : isFinite((isNetForecast ? row.percent_booked_net : row.percent_booked)) ? ((isNetForecast ? row.percent_booked_net : row.percent_booked) | number: 0) + '%' : '--' }}
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : row.new_deals_needed }}
+		{{ row.is_leader ? '--' : row.new_deals_needed }}
 	%td
 		{{ filter.product.id || filter.productFamily.id ? '--' : (row.wow_weighted_pipeline | currency: '$': 0) }}
 	%td.center

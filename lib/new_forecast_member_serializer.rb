@@ -24,6 +24,7 @@ class NewForecastMemberSerializer < ActiveModel::Serializer
     :gap_to_quota,
     :gap_to_quota_net,
     :quota,
+    :quota_net,
     :quarter,
     :year,
     :wow_revenue,

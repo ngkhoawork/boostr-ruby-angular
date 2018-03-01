@@ -269,6 +269,7 @@
 				name: 'TOTAL'
 				type: 'totals'
 				quota: 0
+				quota_net: 0
 				revenue: 0
 				weighted_pipeline: 0
 				amount: 0
@@ -285,6 +286,7 @@
 			_.each arr, (row) ->
 				if !row then return
 				totals.quota += if row.is_leader then 0 else Number(row.quota) || 0
+				totals.quota_net += if row.is_leader then 0 else Number(row.quota_net) || 0
 				totals.revenue += Number(row.revenue) || 0
 				totals.weighted_pipeline += Number(row.weighted_pipeline) || 0
 				totals.amount += Number(row.amount) || 0

@@ -8,6 +8,8 @@ class Quota < ActiveRecord::Base
 
   scope :for_time_period, -> (start_date, end_date) { joins(:time_period).where('time_periods.start_date=? and time_periods.end_date=?', start_date, end_date) unless start_date.nil? || end_date.nil?}
   scope :by_type, -> (value_type) { where(value_type: value_type) unless value_type.nil? }
+  scope :by_product_type, -> (product_type) { where(product_type: product_type) }
+  scope :by_product_id, -> (product_id) { where(product_id: product_id) }
 
   before_save :set_dates
 
