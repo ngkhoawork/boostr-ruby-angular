@@ -649,4 +649,10 @@
             height: 0;
         }
     }
+
+    .egnyte-section{
+      iframe {
+        border: 0;
+      }
+    }
 }

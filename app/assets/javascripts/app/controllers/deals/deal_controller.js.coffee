@@ -47,7 +47,7 @@
       method: 'POST'
       url: 'https://' + domain + '/pubapi/v2/navigate'
       headers: 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token
-      data: embedded: true, path: "/Shared/Deals/" + deal.name
+      data: embedded: true, path: '/Shared/Accounts/' + deal.advertiser.name + '/Deals/' + deal.name
 
     $http(req).then ((response) ->
       $scope.embeddedUrl = $sce.trustAsResourceUrl(response.data.redirect)
