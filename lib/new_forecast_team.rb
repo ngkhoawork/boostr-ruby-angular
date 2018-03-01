@@ -409,7 +409,7 @@ class NewForecastTeam
   end
 
   def add_user_other_data(data, user)
-    quota = user.quotas.for_time_period(start_date, end_date).sum(:value)
+    quota = user.total_gross_quotas(start_date, end_date)
 
     if user.leader?
       data[:quota] = 0
@@ -460,7 +460,7 @@ class NewForecastTeam
   end
 
   def add_team_other_data(data, team)
-    quota = (team.leader ? team.leader.quotas.for_time_period(start_date, end_date).sum(:value) : 0)
+    quota = (team.leader ? team.leader.total_gross_quotas(start_date, end_date) : 0)
 
     data[:quota] = quota
     data[:amount] = (data[:weighted_pipeline] || 0) + (data[:revenue] || 0)
@@ -627,7 +627,7 @@ class NewForecastTeam
   end
 
   def quota
-    return leader.quotas.for_time_period(start_date, end_date).sum(:value) if leader
+    return leader.total_gross_quotas(start_date, end_date) if leader
     0
   end
 

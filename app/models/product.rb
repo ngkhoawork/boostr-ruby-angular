@@ -4,8 +4,7 @@ class Product < ActiveRecord::Base
   has_many :deal_products
   has_many :values, as: :subject
   has_many :ad_units
-  has_many :pmp_items
-  has_many :costs
+  has_many :quotas, as: :product
 
   validates :name, presence: true
   validates :margin,

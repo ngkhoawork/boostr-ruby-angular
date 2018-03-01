@@ -2174,6 +2174,8 @@ ActiveRecord::Schema.define(version: 20180223233554) do
     t.integer "ad_requests"
     t.string  "ssp_advertiser"
     t.integer "advertiser_id"
+    t.integer "bids",        limit: 8
+    t.decimal "render_rate"
   end
 
   add_index "pmp_item_daily_actuals", ["advertiser_id"], name: "index_pmp_item_daily_actuals_on_advertiser_id", using: :btree
