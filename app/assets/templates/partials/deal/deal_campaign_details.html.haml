@@ -19,7 +19,7 @@
                     %span.caret
                 %ul.dropdown-menu
                     %li{'ng-repeat': 'option in currentDeal.deal_type.options', 'ng-class': '{active: currentDeal.deal_type.option_id == option.id}'}
-                        %a{href: '', 'ng-click': 'currentDeal.deal_type.option_id = option.id; updateDeal()'}
+                        %a{'href': '', 'ng-click': 'currentDeal.deal_type.option_id = option.id; updateDeal()'}
                             %span.text {{option.name}}
     %div.custom-field-item{'ng-class':'{error: errors.deal_source_value}'}
         %span.error-text {{errors.deal_source_value}}
@@ -35,7 +35,7 @@
                     %span.caret
                 %ul.dropdown-menu
                     %li{'ng-repeat': 'option in currentDeal.source_type.options', 'ng-class': '{active: currentDeal.source_type.option_id == option.id}'}
-                        %a{href: '', 'ng-click': 'currentDeal.source_type.option_id = option.id; updateDeal()'}
+                        %a{'href': '', 'ng-click': 'currentDeal.source_type.option_id = option.id; updateDeal()'}
                             %span.text {{option.name}}
     %div.custom-field-item
         %div.custom-field-item-label
@@ -50,7 +50,7 @@
                     %span.caret
                 %ul.dropdown-menu
                     %li{'ng-repeat': 'option in currentDeal.initiatives', 'ng-class': '{active: currentDeal.initiative_id == option.id}'}
-                        %a{href: '', 'ng-click': 'currentDeal.initiative_id = option.id; updateDeal()'}
+                        %a{'href': '', 'ng-click': 'currentDeal.initiative_id = option.id; updateDeal()'}
                             %span.text {{option.name}}
     %div.custom-field-item{ng:{repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', if: "!dealCustomFieldName.disabled", class: '{"required-field": dealCustomFieldName.is_required}', init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index; fieldId = dealCustomFieldName.field_type + dealCustomFieldName.id"}}
         %div.custom-field-item-label
@@ -95,7 +95,7 @@
                     %span.caret
                 %ul.dropdown-menu
                     %li{'ng-repeat': 'customFieldOption in dealCustomFieldName.deal_custom_field_options', 'ng-class': '{active: currentDeal.deal_custom_field[fieldName] == customFieldOption.value}'}
-                        %a{href: '', 'ng-click': 'currentDeal.deal_custom_field[fieldName] = customFieldOption.value; updateDeal()'}
+                        %a{'href': '', 'ng-click': 'currentDeal.deal_custom_field[fieldName] = customFieldOption.value; updateDeal()'}
                             %span.text {{customFieldOption.value}}
             .currency-field{ ng: { 'switch-when': 'sum' } }
                 {{ (currentDeal.deal_custom_field[fieldName] || 0) | number : 0 }}
@@ -136,7 +136,7 @@
                     %span.caret
                 %ul.dropdown-menu
                     %li{'ng-repeat': 'option in currentDeal.close_reason.options', 'ng-class': '{active: currentDeal.close_reason.option.name == option.name}'}
-                        %a{href: '', 'ng-click': 'currentDeal.close_reason.option_id = option.id; updateDeal()'}
+                        %a{'href': '', 'ng-click': 'currentDeal.close_reason.option_id = option.id; updateDeal()'}
                             %span.text {{option.name}}
     %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
         %div.custom-field-item-label

@@ -203,7 +203,7 @@
 									'dnd-dragend': 'onDragEnd()'}
 							.date.pull-right{'ng-class': '{expired: deal.isExpired && deal.stage.open}'} {{deal.start_date | date: 'mediumDate'}}
 							%span
-								%a{'ng-href': '{{"/deals/" + deal.id}}', target: '_blank'} {{deal.name}}
+								%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
 							%span {{(deal.advertiser && deal.advertiser.name || '') + ((deal.advertiser && deal.agency) ? ' | ' : '') + (deal.agency && deal.agency.name || '')}}
 							%span
 								{{deal.budget_loc || deal.budget | formatMoney: deal.curr_symbol || deal.curr_cd}}

@@ -93,7 +93,7 @@
                       {{ user.first_name + " " + user.last_name + " (" + user.share + "%)"}}
                   %td {{ deal.advertiser.name }}
                   %td
-                    %a{ href: '', ng: {href: '/deals/{{deal.id}}'}, 'target': '_blank' }
+                    %a{ href: '', ng: { href: '/deals/{{deal.id}}'  } }
                       {{ deal.name }}
                   %td {{ deal.agency.name }}
                   %td {{ deal.agency.parent_client.name }}
@@ -138,7 +138,7 @@
                       {{deal.deal_custom_field[fieldName] || "N/A"}}
                     %span{'ng-if': 'dealCustomFieldName.field_type == "sum"'}
                       {{ (deal.deal_custom_field[fieldName] || 0) | number : 0 }}
-                    %a{href: '', ng: { 'if': 'dealCustomFieldName.field_type == "link"', href: '{{deal.deal_custom_field[fieldName]}}' }, 'target': '_blank' }
+                    %a{href: '', ng: { 'if': 'dealCustomFieldName.field_type == "link"', href: '{{deal.deal_custom_field[fieldName]}}' } }
                       {{deal.deal_custom_field[fieldName]}}
                 %tr{ ng: { if: 'deals.length == 0' }}
                   %td.center.auto-colspan

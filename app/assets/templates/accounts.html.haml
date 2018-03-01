@@ -155,7 +155,7 @@
                         %tbody{infinite: {scroll: "loadMoreClients()", 'scroll-disabled': 'isClientsLoading || allClientsLoaded'}}
                             %tr{ ng: { repeat: 'client in clients | orderBy : zSort.by : zSort.rev'} }
                                 %td
-                                    %a{ 'ng-href': '/accounts/{{client.id}}', target: '_blank' }
+                                    %a{'ng-href': '/accounts/{{client.id}}'}
                                         {{client.name}}
                                 %td {{client.type}}
                                 %td {{client.category}}
