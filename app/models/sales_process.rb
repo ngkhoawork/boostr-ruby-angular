@@ -7,5 +7,5 @@ class SalesProcess < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: { scope: :company }
 
-  scope :is_active, -> (status) { where(active: status) unless status.nil? }
+  scope :by_active, -> (status) { where(active: status) unless status.nil? }
 end

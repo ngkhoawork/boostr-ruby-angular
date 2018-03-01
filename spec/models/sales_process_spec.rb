@@ -10,12 +10,12 @@ RSpec.describe SalesProcess, 'model' do
 
       it 'returns active sales processes' do
         expect(SalesProcess.count).to eq(2)
-        expect(SalesProcess.is_active(true).count).to eq(1)
+        expect(SalesProcess.by_active(true).count).to eq(1)
       end
 
       it 'return inactive sales processes' do
         expect(SalesProcess.count).to eq(2)
-        expect(SalesProcess.is_active(false).count).to eq(1)
+        expect(SalesProcess.by_active(false).count).to eq(1)
       end
     end
   end

@@ -2,7 +2,7 @@ class Api::SalesProcessesController < ApplicationController
   respond_to :json
 
   def index
-    render json: company.sales_processes.is_active(params[:active])
+    render json: company.sales_processes.by_active(params[:active])
   end
 
   def show
