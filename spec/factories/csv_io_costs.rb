@@ -9,8 +9,7 @@ FactoryGirl.define do
     io_number { io&.io_number }
     product_name { product&.name }
     amount { rand(1000..9999) }
-    month '01/01/2018'
-    type 'test'
+    month '2018/01'
     company_id { company&.id }
 
     after(:create) do |item|

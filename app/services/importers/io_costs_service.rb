@@ -1,6 +1,14 @@
 class Importers::IoCostsService < Importers::BaseService
+  attr_accessor :costs
+
+  def initialize(options = {})
+    @costs = []
+    super(options)
+  end
+
   def perform
     import
+    costs.uniq.each { |cost| cost.update_budget }
   end
 
   private
@@ -14,6 +22,10 @@ class Importers::IoCostsService < Importers::BaseService
       amount: row[:amount],
       company_id: company_id
     )
+  end
+
+  def after_import_row(csv_io_cost)
+    costs << csv_io_cost.cost
   end
 
   def parser_options

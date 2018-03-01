@@ -9,6 +9,14 @@ describe Importers::IoCostsService do
       expect{subject}.to change{Cost.count}.by(1)
     end
 
+    it 'creates new io cost monthly amounts' do
+      expect{subject}.to change{CostMonthlyAmount.count}.by(3)
+    end
+
+    it 'updates cost budgets' do
+      expect{subject}.to change{io.costs.first&.budget}.to(150)
+    end
+
     it 'saves import logs' do
       expect{subject}.to change{CsvImportLog.count}.by(1)
     end
@@ -25,7 +33,7 @@ describe Importers::IoCostsService do
   end
 
   def io
-    @_io ||= create :io, company: company, io_number: 1000, start_date: '2018-01-01', end_date: '2018-01-31', budget: 0
+    @_io ||= create :io, company: company, io_number: 1000, start_date: '2018-01-10', end_date: '2018-03-31', budget: 0
   end
 
   def product
@@ -45,8 +53,9 @@ describe Importers::IoCostsService do
       begin
         csv = CSV.new(fh)
         csv << ['IO Number', 'Product', 'Type', 'Month' ,'Amount']
-        csv << [io.io_number, product.name, option.name, 'Jan', '100']
-        csv << [io.io_number, product.name, 'test1', 'Jan', '100']
+        csv << [io.io_number, product.name, option.name, '2018/01', '100']
+        csv << [io.io_number, product.name, option.name, '2018/03', '50']
+        csv << [io.io_number, product.name, 'test1', '2018/02', '100']
       ensure
         fh.close()
       end
