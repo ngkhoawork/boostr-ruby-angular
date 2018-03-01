@@ -4,6 +4,8 @@ class Pmp < ActiveRecord::Base
   belongs_to :company
   belongs_to :deal
 
+  attr_accessor :skip_callback
+
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
 
   has_many :pmp_members, dependent: :destroy
@@ -12,7 +14,8 @@ class Pmp < ActiveRecord::Base
   has_many :pmp_item_daily_actuals, through: :pmp_items, dependent: :destroy
   has_many :products, through: :pmp_items
 
-  validates :name, :start_date, :end_date, :curr_cd, presence: true
+  validates :name, presence: true, uniqueness: true
+  validates :start_date, :end_date, :curr_cd, presence: true
 
   scope :for_pmp_members, -> (user_ids) { joins(:pmp_members).where('pmp_members.user_id in (?)', user_ids) if user_ids}
   scope :by_name, -> (name) { where('pmps.name ilike ?', "%#{name}%") if name.present? }
@@ -26,7 +29,7 @@ class Pmp < ActiveRecord::Base
 
   after_save do
     update_pmp_members_date
-    update_revenue_fact_callback
+    update_revenue_fact_callback unless skip_callback
   end
 
   after_destroy :update_revenue_fact

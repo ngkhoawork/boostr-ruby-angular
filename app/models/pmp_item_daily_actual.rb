@@ -57,7 +57,7 @@ class PmpItemDailyActual < ActiveRecord::Base
 
   def convert_currency
     if revenue_loc.present? && revenue_loc_changed? && pmp.present?
-      self.revenue = revenue_loc * pmp.exchange_rate
+      self.revenue = revenue_loc / pmp.exchange_rate
     end
   end
 

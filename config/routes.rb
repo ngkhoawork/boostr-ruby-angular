@@ -510,6 +510,13 @@ Rails.application.routes.draw do
       post :import, on: :collection
     end
 
+    resources :active_pmps, only: [] do
+      collection do
+        post :import_item
+        post :import_object
+      end
+    end
+
     resources :sales_stages, only: [:index, :create, :update] do
       put :update_positions, on: :collection
     end
