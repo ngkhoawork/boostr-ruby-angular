@@ -31,7 +31,7 @@
 							%span.caret
 						%ul.dropdown-menu
 							%li{'ng-repeat': 'option in member.role.options', 'ng-class': '{active: member.role.option_id == option.id}'}
-								%a{href: '', 'ng-click': 'member.role.option_id = option.id; updateDealMember(member)'}
+								%a{'href': '', 'ng-click': 'member.role.option_id = option.id; updateDealMember(member)'}
 									%span.text {{option.name}}
 				%td
 					%div{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "member.share", 'on-after-save': 'updateDealMember(member)'}

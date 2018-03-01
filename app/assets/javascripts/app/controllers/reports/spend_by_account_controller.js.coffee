@@ -62,7 +62,6 @@
           $scope.spend_by_account = $scope.spend_by_account.concat(data)
         else
           $scope.spend_by_account = data
-          
         $scope.isLoading = false
 
 

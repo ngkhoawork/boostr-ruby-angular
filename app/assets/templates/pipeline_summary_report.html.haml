@@ -96,12 +96,12 @@
 								%tr{'ng-repeat': 'deal in deals | orderBy : sorting.key : sorting.reverse'}
 									%td {{deal.id}}
 									%td
-										%a{href: '', 'ng-href': '/deals/{{deal.id}}', 'target': '_blank'} {{deal.name}}
+										%a{href: '', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
 									%td
-										%a{href: '', 'ng-href': '/accounts/{{deal.advertiser.id}}', 'target': '_blank'} {{deal.advertiser.name}}
+										%a{href: '', 'ng-href': '/accounts/{{deal.advertiser.id}}'} {{deal.advertiser.name}}
 									%td {{deal.category}}
 									%td
-										%a{href: '', 'ng-href': '/accounts/{{deal.agency.id}}', 'target': '_blank'} {{deal.agency.name}}
+										%a{href: '', 'ng-href': '/accounts/{{deal.agency.id}}'} {{deal.agency.name}}
 									%td {{deal.holding_company}}
 									%td {{deal.budget | currency: '$': 0 }}
 									%td {{deal.budget_loc | currency : deal.currency.curr_symbol : 0 }}

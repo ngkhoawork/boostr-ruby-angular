@@ -16,11 +16,11 @@
         %tbody
             %tr{ ng: { repeat: 'client_connection in client_connections'} }
                 %td{ 'ng-if': 'currentClient.client_type.option.name == "Agency"' }
-                    %a{'ng-href': '/accounts/{{client_connection.advertiser.id}}', target: '_blank'} {{ client_connection.advertiser.name }}
+                    %a{'ng-href': '/accounts/{{client_connection.advertiser.id}}'} {{ client_connection.advertiser.name }}
                     %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditAccountConnectionModal(client_connection)'}
                     %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnection(client_connection)'}
                 %td{ 'ng-if': 'currentClient.client_type.option.name == "Advertiser"' }
-                    %a{'ng-href': '/accounts/{{client_connection.agency.id}}', target: '_blank'} {{ client_connection.agency.name }}
+                    %a{'ng-href': '/accounts/{{client_connection.agency.id}}'} {{ client_connection.agency.name }}
                     %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditAccountConnectionModal(client_connection)'}
                     %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnection(client_connection)'}
                 %td

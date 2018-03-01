@@ -127,7 +127,7 @@
 					%tbody{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading || allContactsLoaded'}}
 						%tr{'ng-repeat': 'contact in contacts | orderBy : zSort.by : zSort.rev'}
 							%td
-								%a{href: '', 'ng-href': '/contacts/{{contact.id}}', target: '_blank'} {{contact.name}}
+								%a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}
 							%td {{contact.position}}
 							%td {{contact.job_level}}
 							%td {{contact.primary_client_json.name}}
