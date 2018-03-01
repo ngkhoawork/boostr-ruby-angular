@@ -38,6 +38,15 @@
                 {{ $item.first_name }} {{ $item.last_name }}
               %ui-select-choices{ repeat: 'user.id as user in availableUsers | filter: { name: $select.search, "leader?": false }' }
                 %div{ ng: { bind: { html: 'user.name' } } }
+      .form-group
+        .row
+          .col-xs-12
+            %label.control-label{ for: 'sales_process' } Sales Process
+            %ui-select{ name: 'sales_process', ng: { model: 'team.sales_process_id', disabled: true } }
+              %ui-select-match{ placeholder: 'Select a sales process', "allow-clear": 'true' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'salesProcess.id as salesProcess in salesProcesses | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'salesProcess.name' } } }
     .modal-footer.text-center
       %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
       %a.btn.btn-default.btn-lg{ ng: { click: 'cancel()' } } Cancel

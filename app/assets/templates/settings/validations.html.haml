@@ -15,20 +15,20 @@
                   %z-toggle{ 'ng-model': 'billing_contact_full_address_validation.criterion.value', id: 'billing-contact-required', 'ng-change': 'updateValidation(billing_contact_full_address_validation)' }
 
               %label.control-label{ for: 'validations' } Select a Stage at which point Billing Contact is always required
-              %ui-select{ name: 'percentage', ng: { model: 'billing_contact_validation.criterion.value', disabled: true }, 'on-select': 'updateValidation(billing_contact_validation)' }
+              %ui-select{ multiple: true, name: 'billing_contact_validations', ng: { model: 'validation.billing_contacts', disabled: false }, 'on-select': 'updateBillingContactValidation($item, $model)', 'on-remove': 'removeBillingContactValidation($item, $model)' }
                 %ui-select-match{ placeholder: 'Select Stage' }
-                  {{ $select.selected.name }}
-                %ui-select-choices{ repeat: 'stage.probability as stage in stages | orderBy: "[-active, position]"' }
-                  %div{ ng: { bind: { html: 'stage.name' } } }
+                  {{ stageName($item) }}
+                %ui-select-choices{ repeat: 'stage as stage in stages | orderBy: "[sales_process.id, position]"' }
+                  %div{ 'ng-bind-html': 'stage.sales_process.name + " " + stage.name' }
 
             %h5 Require Account Manager
             .form-group
               %label.control-label{ for: 'validations' } Select a Stage at which point Account Manager is always required
-              %ui-select{ name: 'percentage', ng: { model: 'account_manager_validation.criterion.value', disabled: true }, 'on-select': 'updateValidation(account_manager_validation)' }
+              %ui-select{ multiple: true, name: 'account_manager_validation', ng: { model: 'validation.account_managers', disabled: true }, 'on-select': 'updateAccountManagerValidation($item, $model)', 'on-remove': 'removeAccountManagerValidation($item, $model)' }
                 %ui-select-match{ placeholder: 'Select Stage' }
-                  {{ $select.selected.name }}
-                %ui-select-choices{ repeat: 'stage.probability as stage in stages | orderBy: "[-active, position]"' }
-                  %div{ ng: { bind: { html: 'stage.name' } } }
+                  {{ stageName($item) }}
+                %ui-select-choices{ repeat: 'stage as stage in stages | orderBy: "[sales_process.id, position]"' }
+                  %div{ 'ng-bind-html': 'stage.sales_process.name + " " + stage.name' }
 
             %h5 Can't be closed manually
             .form-group

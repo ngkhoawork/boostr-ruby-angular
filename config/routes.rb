@@ -392,7 +392,7 @@ Rails.application.routes.draw do
       end
     end
     resources :options, only: [:create, :update, :destroy]
-    resources :validations, only: [:index, :update] do
+    resources :validations, only: [:index, :update, :create, :destroy] do
       collection do
         get :account_base_fields
         get :deal_base_fields
@@ -523,6 +523,8 @@ Rails.application.routes.draw do
 
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
+
+    resources :sales_processes, only: [:index, :create, :show, :update]
   end
 
   mount Sidekiq::Web => '/sidekiq'
