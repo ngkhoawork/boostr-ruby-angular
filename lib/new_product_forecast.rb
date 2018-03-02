@@ -176,7 +176,7 @@ class NewProductForecast
         .by_product_dimension_ids(product_ids)
         .select("forecast_pipeline_facts.product_dimension_id AS product_id,
           stages.id AS stage_id,
-          SUM(forecast_pipeline_facts.amount * products.margin / 100) AS pipeline_amount,
+          SUM(forecast_pipeline_facts.amount * COALESCE(products.margin, 100) / 100) AS pipeline_amount,
           stages.probability as probability")
         .group("forecast_pipeline_facts.product_dimension_id,
           stages.id")

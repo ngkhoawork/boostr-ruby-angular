@@ -89,7 +89,7 @@ class NewForecastMember
         .by_user_dimension_ids([member.id])
         .by_product_dimension_ids(product_ids)
         .select("stages.id AS stage_id, 
-          SUM(forecast_pipeline_facts.amount * products.margin / 100) AS pipeline_amount,
+          SUM(forecast_pipeline_facts.amount * COALESCE(products.margin, 100) / 100) AS pipeline_amount,
           stages.probability as probability")
         .group("stages.id")
     end

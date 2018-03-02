@@ -15,6 +15,10 @@ module ForecastCostFactCalculator
       
       total = calculate_forecast_amount
 
+      create_forecast_cost_fact(total)
+    end
+
+    def create_forecast_cost_fact(total)
       forecast_cost_fact = ForecastCostFact.find_or_initialize_by(
         forecast_time_dimension_id: @forecast_time_dimension.id,
         user_dimension_id: @user.id,

@@ -175,7 +175,7 @@ class NewForecastTeam
         .by_product_dimension_ids(product_ids)
         .select("forecast_pipeline_facts.user_dimension_id AS user_id, 
           forecast_pipeline_facts.stage_dimension_id AS stage_id, 
-          SUM(forecast_pipeline_facts.amount * products.margin / 100) AS pipeline_amount")
+          SUM(forecast_pipeline_facts.amount * COALESCE(products.margin, 100) / 100) AS pipeline_amount")
         .group("forecast_pipeline_facts.user_dimension_id, 
           forecast_pipeline_facts.stage_dimension_id")
     end

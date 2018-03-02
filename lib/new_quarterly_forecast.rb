@@ -136,9 +136,9 @@ class NewQuarterlyForecast
       FROM (
           SELECT
             stage_dimension_id,
-            SUM(amount * margin / 100) AS total,
+            SUM(amount * COALESCE(margin, 100) / 100) AS total,
             key,
-            SUM(value::numeric * margin / 100) AS val
+            SUM(value::numeric * COALESCE(margin, 100) / 100) AS val
           FROM
             (SELECT 
               forecast_pipeline_facts.*,

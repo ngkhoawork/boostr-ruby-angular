@@ -311,6 +311,7 @@
                 IO.update(id: $scope.currentIO.id, io: $scope.currentIO).then(
                     (io) ->
                         $scope.currentIO = io
+                        $scope.init()
                     (resp) ->
                         for key, error of resp.data.errors
                             $scope.errors[key] = error && error[0]
