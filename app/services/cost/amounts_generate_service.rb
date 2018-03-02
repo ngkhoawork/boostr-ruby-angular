@@ -29,7 +29,7 @@ class Cost::AmountsGenerateService
     end
   end
 
-  def create_from_deal_products
+  def generate_from_deal_products
     margin = deal_product.product&.margin || 100
     deal_product.deal_product_budgets.order("start_date asc").each_with_index do |monthly_budget, index|
       budget = monthly_budget.budget * margin / 100.0
