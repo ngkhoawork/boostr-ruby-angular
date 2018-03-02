@@ -70,7 +70,7 @@ class Api::IosController < ApplicationController
                                       params[:file][:s3_file_path],
                                       params[:file][:original_filename])
       render json: {
-          message: 'Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)'
+          message: import_success_message
       }, status: :ok
     end
   end
@@ -82,7 +82,7 @@ class Api::IosController < ApplicationController
                                       params[:file][:s3_file_path],
                                       params[:file][:original_filename])
       render json: {
-          message: 'Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)'
+          message: import_success_message
       }, status: :ok
     end
   end
@@ -103,6 +103,11 @@ class Api::IosController < ApplicationController
   end
 
   private
+
+  def import_success_message
+    @_import_success_message ||= 'Your file is being processed.
+      Please check status at Import Status tab in a few minutes (depending on the file size)'
+  end
 
   def io_params
     params.require(:io).permit(

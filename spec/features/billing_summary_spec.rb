@@ -19,7 +19,7 @@ feature 'BillingSummary' do
     select_year_and_month
   end
 
-  it 'has all data in page', js: true do
+  xit 'has all data in page', js: true do
     expect(ios_for_approval_table).to include io.io_number.to_s
     expect(ios_for_approval_table).to include io.name
     expect(ios_for_approval_table).to include display_line_item.line_number.to_s

@@ -17,7 +17,6 @@ class Importers::IoCostsService < Importers::BaseService
     Csv::IoCost.new(
       io_number: row[:io_number],
       cost_id: row[:cost_id],
-      product_id: row[:product_id],
       product_name: row[:product_name],
       type: row[:type],
       month: row[:month],

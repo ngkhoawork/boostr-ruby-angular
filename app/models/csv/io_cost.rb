@@ -1,7 +1,7 @@
 class Csv::IoCost
   include ActiveModel::Validations
 
-  attr_accessor :io_number, :cost_id, :product_id, :product_name, :type, :month, :amount, :company_id, :imported_costs
+  attr_accessor :io_number, :cost_id, :product_name, :type, :month, :amount, :company_id, :imported_costs
 
   validates_presence_of :io_number, :product_name, :month, :amount, :company_id
   validates_numericality_of :amount
@@ -57,11 +57,7 @@ class Csv::IoCost
   end
 
   def product
-    if product_id.present?
-      @_product ||= company&.products&.find_by(id: product_id, name: product_name, active: true)
-    else
-      @_product ||= company&.products&.find_by(name: product_name, active: true)
-    end
+    @_product ||= company&.products&.find_by(name: product_name, active: true)
   end
 
   def company
@@ -73,7 +69,7 @@ class Csv::IoCost
   end
 
   def start_date
-    [Date.strptime(month, '%m/%Y'), io.start_date].max
+    [Date.strptime(month, '%m/%d/%Y'), io.start_date].max
   end
 
   def end_date
@@ -81,9 +77,9 @@ class Csv::IoCost
   end
 
   def validate_month_format
-    Date.strptime(month, '%m/%Y')
+    Date.strptime(month.gsub(/[-:]/, '/'), '%m/%d/%Y')
   rescue
-    errors.add(:base, "Month --#{month}-- does not match mm/yyyy format")
+    errors.add(:base, "Month --#{month}-- does not match mm/dd/yyyy format")
   end
 
   def validate_type_existence
@@ -93,9 +89,7 @@ class Csv::IoCost
   end
 
   def validate_product_existence
-    if product.nil? && product_id.present?
-      errors.add(:base, "Product with --#{product_id}-- ID and --#{product_name}-- name doesn't exist")
-    elsif product.nil?
+    if product.nil?
       errors.add(:base, "Product with --#{product_name}-- name doesn't exist")
     end
   end
