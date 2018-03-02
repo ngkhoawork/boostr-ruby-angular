@@ -27,6 +27,6 @@ class Product::MarginUpdateService
   end
 
   def margin
-    @_margin ||= product.margin
+    @_margin ||= product.margin || 100
   end
 end

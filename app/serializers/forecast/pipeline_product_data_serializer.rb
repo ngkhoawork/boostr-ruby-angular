@@ -25,7 +25,7 @@ class Forecast::PipelineProductDataSerializer < ActiveModel::Serializer
 
   def margin_budget
     deal_products.inject(0) do |sum, deal_product|
-      sum + deal_product.budget * deal_product&.product&.margin / 100
+      sum + deal_product.budget * (deal_product&.product&.margin || 100) / 100
     end
   end
 
@@ -43,7 +43,7 @@ class Forecast::PipelineProductDataSerializer < ActiveModel::Serializer
         to = [filter_end_date, deal_product_budget.end_date].min
         num_days = [(to.to_date - from.to_date) + 1, 0].max
         if company.enable_net_forecasting
-          sum += deal_product_budget.daily_budget.to_f * product.margin / 100 * num_days
+          sum += deal_product_budget.daily_budget.to_f * (product.margin || 100) / 100 * num_days
         else
           sum += deal_product_budget.daily_budget.to_f * num_days
         end

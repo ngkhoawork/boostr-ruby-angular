@@ -74,7 +74,7 @@ class Deal::FilteredPipelineDataService
     num_days = [(to.to_date - from.to_date) + 1, 0].max
 
     in_period_amt = deal_product_budget.daily_budget.to_f * num_days
-    in_period_amt = in_period_amt * product.margin / 100 if is_net_forecast
+    in_period_amt = in_period_amt * (product.margin || 100) / 100 if is_net_forecast
     split_in_period_amt = in_period_amt * share / 100
 
     months[index - 1] += split_in_period_amt
