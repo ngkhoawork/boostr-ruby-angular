@@ -8,13 +8,13 @@ class Quota < ActiveRecord::Base
 
   scope :for_time_period, -> (start_date, end_date) { joins(:time_period).where('time_periods.start_date=? and time_periods.end_date=?', start_date, end_date) unless start_date.nil? || end_date.nil?}
   scope :by_type, -> (value_type) { where(value_type: value_type) unless value_type.nil? }
-  scope :by_product_type, -> (product_type) { where(product_type: product_type) }
-  scope :by_product_id, -> (product_id) { where(product_id: product_id) }
+  scope :by_product_type, -> (product_type) { where(product_type: product_type) unless product_type.nil? }
+  scope :by_product_id, -> (product_id) { where(product_id: product_id) unless product_id.nil? }
 
   before_save :set_dates
 
   validates :user_id, :time_period_id, :company_id, :value_type, presence: true
-  validates_uniqueness_of :product, :scope => [:product_type, :time_period_id, :value_type, :user_id], message: 'has already been taken along with user, time period and type'
+  validates_uniqueness_of :time_period, :scope => [:product_type, :product_id, :value_type, :user_id], message: 'has already been taken along with user, product and type'
 
   def as_json(options={})
     super(options.merge(

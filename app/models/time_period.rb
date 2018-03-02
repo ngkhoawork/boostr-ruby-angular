@@ -9,9 +9,6 @@ class TimePeriod < ActiveRecord::Base
   validate :unique_name
 
   after_create do
-    company.users.each do |user|
-      quotas.create(user_id: user.id, company_id: company.id)
-    end
     create_forecast_dimension
     update_forecast_fact_callback
   end

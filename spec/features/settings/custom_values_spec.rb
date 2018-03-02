@@ -14,7 +14,7 @@ feature 'Custom Values' do
       within '#custom-values' do
         expect(page).to have_css '#fields .well', count: 5
 
-        expect(page).to have_css '#objects .well', count: 8
+        expect(page).to have_css '#objects .well', count: 9
       end
     end
 

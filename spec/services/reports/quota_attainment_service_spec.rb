@@ -164,8 +164,11 @@ describe Report::QuotaAttainmentService do
   end
 
   def quota
-    create :quota, user: user, company: company, time_period: time_period, value: 1000
-    create :quota, user: user, company: company, time_period: time_period, value: 100
+    @_quota ||= create :quota, user: user, company: company, time_period: time_period, product: product, value: 1100
+  end
+
+  def product
+    @_product ||= create :product, company: company
   end
 
   def quota_attainment_service(params={})
