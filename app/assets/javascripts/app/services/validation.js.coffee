@@ -7,10 +7,6 @@
     angular.toJson(original)
 
   resource = $resource '/api/validations/:id', { id: '@id' },
-    create:
-      method: 'POST'
-      transformRequest: transformRequest
-      url: '/api/validations'
     update:
       method: 'PUT'
       transformRequest: transformRequest
@@ -21,9 +17,6 @@
       isArray: true
       method: 'GET'
       url: 'api/validations/deal_base_fields'
-    delete:
-      method: 'DELETE'
-      url: 'api/validations/:id'
 
   return resource
 ]

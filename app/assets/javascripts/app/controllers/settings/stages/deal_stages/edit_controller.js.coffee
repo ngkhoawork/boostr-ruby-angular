@@ -1,13 +1,10 @@
-@app.controller "SettingsStagesNewController",
-['$scope', '$rootScope', 'Stage', '$modalInstance'
-($scope, $rootScope, Stage, $modalInstance) ->
+@app.controller "SettingsStagesEditController",
+['$scope', '$rootScope', 'Stage', '$modalInstance', 'stage',
+($scope, $rootScope, Stage, $modalInstance, stage) ->
 
-  $scope.formType = "New"
-  $scope.submitText = "Create"
-  $scope.stage = new Stage(
-    active: true
-    open: true
-  )
+  $scope.formType = "Edit"
+  $scope.submitText = "Update"
+  $scope.stage = stage
 
   $scope.submitForm = (form) ->
     $scope.errors = {}
@@ -26,12 +23,13 @@
 
     if Object.keys($scope.errors).length > 0 then return
 
-    $scope.stage.$save(
+    $scope.stage.$update(
       ->
         $rootScope.$broadcast 'updated_stages'
         $modalInstance.close()
-      (response) ->
-        $scope.errors = response.data.errors
+      (error) ->
+        angular.forEach response.data.errors, (errors, key) ->
+          $scope.errors = response.data.errors
     )
 
   $scope.cancel = ->

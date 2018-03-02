@@ -12,7 +12,7 @@
 					%i.fa.fa-close{'ng-show': 'filter.selected.member', 'ng-click': 'filter.reset("member")'}
 					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
 						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.member}'}
-							{{filter.selected.member.name || 'Select a member'}}
+							{{filter.selected.member.name || 'Select an member'}}
 							%span.caret
 						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
 							.form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
@@ -30,7 +30,7 @@
 					%i.fa.fa-close{'ng-show': 'filter.selected.team', 'ng-click': 'filter.reset("team")'}
 					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
 						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.team}'}
-							{{filter.selected.team.name || 'Select a team'}}
+							{{filter.selected.team.name || 'Select an team'}}
 							%span.caret
 						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
 							.form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}

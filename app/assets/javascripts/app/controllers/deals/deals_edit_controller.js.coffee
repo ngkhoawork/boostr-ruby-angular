@@ -1,16 +1,16 @@
 @app.controller 'DealsEditController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation', 'SalesProcess'
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName, Currency, CurrentUser, Validation, SalesProcess) ->
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation'
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName, Currency, CurrentUser, Validation) ->
   $scope.init = ->
     $scope.formType = 'Edit'
     $scope.submitText = 'Update'
     $scope.advertisers = []
     $scope.agencies = []
+    $scope.deal = deal
 
     getDealCustomFieldNames()
 
     $q.all({
-      deal: Deal.get(deal.id),
       user: CurrentUser.get().$promise,
       currencies: Currency.active_currencies(),
       base_fields_validations: Validation.deal_base_fields().$promise
@@ -18,22 +18,8 @@
       $scope.currentUser = data.user
       $scope.currencies = data.currencies
       $scope.base_fields_validations = data.base_fields_validations
-      $scope.deal = data.deal
+
       $scope.setDefaultCurrency()
-
-      Field.defaults($scope.deal, 'Deal').then ->
-        $scope.deal.deal_type = Field.field($scope.deal, 'Deal Type')
-        $scope.deal.source_type = Field.field($scope.deal, 'Deal Source')
-        $scope.deal.sales_process_id = $scope.deal.stage.sales_process_id
-
-      # get user team and team stages
-      if data.user.teams && data.user.teams[0]
-        $scope.team = data.user.teams[0]
-      else if data.user.team
-        $scope.team = data.user.team
-      else
-        SalesProcess.all({active: true}).then (salesProcesses) ->
-          $scope.salesProcesses = salesProcesses
 
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
@@ -44,8 +30,9 @@
       if deal.agency_id
         $scope.loadClients(deal.agency.name, $scope.Agency)
 
-    Stage.query({active: true, open: true, sales_process_id: deal.stage.sales_process_id}).$promise.then (stages) ->
-      $scope.stages = stages
+    Stage.query().$promise.then (stages) ->
+      $scope.stages = stages.filter (stage) ->
+        !(stage.active is false or stage.open is false)
 
   $scope.setDefaultCurrency = ->
     if $scope.deal.curr_cd then return
@@ -89,7 +76,6 @@
     $scope.errors = {}
 
     fields = ['name', 'stage_id', 'advertiser_id', 'agency_id', 'deal_type', 'source_type']
-    fields.push('sales_process_id') unless $scope.team
 
     fields.forEach (key) ->
       field = $scope.deal[key]
@@ -100,9 +86,7 @@
           if !field then return $scope.errors[key] = 'Stage is required'
         when 'advertiser_id'
           if !field then return $scope.errors[key] = 'Advertiser is required'
-        when 'sales_process_id'
-          if !field then return $scope.errors[key] = 'Sales process is required'
-          
+
     $scope.dealCustomFieldNames.forEach (item) ->
       if item.show_on_modal == true && item.is_required == true && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
         $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
@@ -169,11 +153,6 @@
         $scope.deal[$scope.populateClientTarget] = client.id
         $scope.populateClient = false
         $scope.populateClientTarget = false
-
-  $scope.onChangeSalesProcess = (sales_process_id) ->
-    Stage.query({active: true, open: true, sales_process_id: sales_process_id}).$promise.then (stages) ->
-      $scope.stages = stages
-      $scope.deal.stage_id = null
 
   $scope.init()
 ]

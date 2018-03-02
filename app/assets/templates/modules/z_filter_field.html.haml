@@ -51,9 +51,9 @@
 				%div{'ng-if': 'isAll'}
 					%span.item{'ng-click': 'setFilter(null)', 'ng-class': '{active: !selected.length}'}
 						All
-				%div{ng: { repeat: 'stage in data | orderBy: ["sales_process_id", "position"] track by $index'}}
+				%div{ng: { repeat: 'stage in data | orderBy: ["-open", "probability"] track by $index'}}
 					%span.item{ng: { click: 'setFilter(stage)', class: '{active: isStageSelected(stage.id)}'}}
-						{{stage.sales_process.name}} {{stage.name}} {{isFinite(stage.probability) ? stage.probability + '%' : ''}}
+						{{stage.name}} {{isFinite(stage.probability) ? stage.probability + '%' : ''}}
 	-#TEAM FIELD
 	%div.field-value{'ng-switch-when': 'team'}
 		%div{dropdown: true}

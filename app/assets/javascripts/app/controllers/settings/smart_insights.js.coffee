@@ -30,7 +30,7 @@
     )
 
   $scope.stages = []
-  Stage.query({active: true}).$promise.then (stages) ->
+  Stage.query().$promise.then (stages) ->
     $scope.stages = stages
 
   $scope.users = []

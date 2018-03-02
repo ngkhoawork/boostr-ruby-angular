@@ -1,35 +1,17 @@
 #stages.z-styles
   .container
-    .block{'ng-controller': 'SettingsSalesProcessesController'}
-      .title-row.mb10
-        %span.title Sales Processes
-        %add-button.add-sales-process{'ng-click': 'createSalesProcessModal()'} Add
-      .table-wrapper.table-sales-processes
-        %table.table.table-hover.table-striped
-          %thead
-            %tr
-              %th.left Name
-              %th.left Active
-          %tbody
-            %tr{ ng: { repeat: 'row in salesProcesses' } }
-              %td
-                %span.mr8 {{ row.name }}
-                %i.fa.fa-pencil.z-icon{'ng-click': 'edit(row)'}
-              %td.left {{ row.active ? 'Active' : 'Archived' }}
-  .container
     .block
       .title-row.mb10
         %span.title Stages
-        %add-button.add-stage{'ng-click': 'createStageModal()'} Add
+        %add-button{'ng-click': 'createStageModal()'} Add
         .switch-row
           %span{'ng-repeat': 'stage in stageTypes', 'ng-class': '{active: stage.name == selectedStage.name}', 'ng-click': 'selectStage(stage)'}
             {{stage.name}}
-      .table-wrapper.table-stages{'ng-if': 'selectedStage.name == "Deals"', 'ng-controller': 'SettingsStagesController'}
+      .table-wrapper{'ng-if': 'selectedStage.name == "Deals"', 'ng-controller': 'SettingsStagesController'}
         %table.table.table-hover.table-striped
           %thead
             %tr
               %th.left Name
-              %th.left Sales Process
               %th.right Probability
               %th Open/Closed
               %th.left Active
@@ -38,7 +20,6 @@
               %td
                 %span.mr8 {{ row.name }}
                 %i.fa.fa-pencil.z-icon{'ng-click': 'edit(row)'}
-              %td {{ row.sales_process && row.sales_process.name }}
               %td.right {{ row.probability }}%
               %td {{ row.open ? 'Open' : 'Closed' }}
               %td.left {{ row.active ? 'Active' : 'Archived' }}

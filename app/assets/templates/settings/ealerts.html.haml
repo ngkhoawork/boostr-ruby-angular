@@ -52,16 +52,16 @@
                   .stage-item
                     %i.fa.checkbox-fa{ng: {class: '{"fa-check-square active": ealert.all_disabled, "fa-square-o": !ealert.all_disabled}', click: 'disableAllEalerts()'}}
                     Don’t send auto eAlerts
-                  .stage-item.wide{ng: {repeat: 'ealert_stage in ealert.ealert_stages track by $index'}}
+                  .stage-item{ng: {repeat: 'ealert_stage in ealert.ealert_stages track by $index'}}
                     %i.fa.checkbox-fa{ng: {class: '{"fa-check-square active": ealert_stage.enabled, "fa-square-o": !ealert_stage.enabled}', click: 'changeEalertEnabled($index)'}}
-                    {{ealert_stage.stage.sales_process && ealert_stage.stage.sales_process.name}} {{ealert_stage.stage.probability}}% ({{ealert_stage.stage.name}})
+                    {{ealert_stage.stage.probability}}%
               .mb20.pb20.bb-gray{'ng-if': '!ealert.same_all_stages'}
                 .specify-the-recipien
                   Recipients on each stages:
                 .stage-recipients{ng: {repeat: '(stage_index, ealert_stage) in ealert.ealert_stages'}}
                   .recipients-list
                     .auto-send-e-alerts-on
-                      {{ealert_stage.stage.sales_process && ealert_stage.stage.sales_process.name}} {{ealert_stage.stage.probability}}% ({{ealert_stage.stage.name}})
+                      {{ealert_stage.stage.probability}}%
                     .recipient-item{'ng-repeat': 'recipient in ealert_stage.recipient_list track by $index'}
                       {{recipient}}
                       %span.close-btn{'ng-click': 'removeRecipient(stage_index, $index)'}
@@ -77,8 +77,8 @@
                 .fields-section
                   .select-fields-and-or
                     Selected Fields
-                  .selected-fields{'dnd-list': 'selectedFields'}
-                    .field-item{'ng-repeat': 'field in selectedFields',
+                  .selected-fields{'dnd-list': 'selected_fields'}
+                    .field-item{'ng-repeat': 'field in selected_fields',
                         'dnd-draggable': 'field',
                         'dnd-moved': 'onMoved(field, $index)',
                         'dnd-effect-allowed': 'move'}
@@ -88,7 +88,7 @@
                   .select-fields-and-or
                     Available Fields
                   .available-fields
-                    .field-item{'ng-repeat': 'field in availableFields'}
+                    .field-item{'ng-repeat': 'field in available_fields'}
                       %i.fa.fa-plus{'ng-click': 'addField(field)'}
                       {{field.subject.field_label}} - {{field.subject.field_value}}
           .row
@@ -160,7 +160,7 @@
                         %strong
                           Billing Contact:
                         Jaron Rush - jaron.rush@test.com
-                      %div{'ng-repeat': 'field in selectedFields | filter: dealCustomFieldFilter'}
+                      %div{'ng-repeat': 'field in selected_fields | filter: dealCustomFieldFilter'}
                         %strong
                           {{field.subject.field_label}}:
                         {{field.subject.field_value}}
@@ -191,7 +191,7 @@
                             %td
                               25%
                         .product-fields
-                          %div{'ng-repeat': 'field in selectedFields | filter: dealProductCfFilter'}
+                          %div{'ng-repeat': 'field in selected_fields | filter: dealProductCfFilter'}
                             %strong
                               {{field.subject.field_label}}:
                             {{field.subject.field_value}}
@@ -219,7 +219,7 @@
                             %td
                               25%
                         .product-fields
-                          %div{'ng-repeat': 'field in selectedFields | filter: dealProductCfFilter'}
+                          %div{'ng-repeat': 'field in selected_fields | filter: dealProductCfFilter'}
                             %strong
                               {{field.subject.field_label}}:
                             {{field.subject.field_value}}

@@ -74,8 +74,7 @@ describe Deal do
     let!(:deal) { create :deal }
 
     context 'billing contact' do
-      let(:stage) { create :stage, sales_process: deal.stage.sales_process }
-      let(:validation) { create :validation, object: 'Billing Contact', factor: stage.sales_process.id, value_type: 'Object' }
+      let(:validation) { deal.company.validation_for(:billing_contact) }
 
       it 'passes validation if company does not have it' do
         expect(deal).to be_valid
@@ -83,26 +82,27 @@ describe Deal do
 
       context 'validation active' do
         before do
-          validation.criterion.update_attributes(value_object: stage)
+          validation.create_criterion
         end
 
         it 'passes validation if stage is less then criterion' do
-          stage.update(probability: 50)
+          validation.criterion.update(value: 50)
           expect(deal).to be_valid
         end
 
         it 'passes validation if deal has a valid billing contact' do
-          stage.update(probability: 10)
+          validation.criterion.update(value: 10)
           create :billing_deal_contact, deal: deal
           expect(deal).to be_valid
         end
 
         it 'fails validation when deal does not have a billing contact' do
-          stage.update(probability: 10)
+          validation.criterion.update(value: 10)
           expect(deal).not_to be_valid
         end
 
         it 'fails validation when deal has more than one billing contact' do
+          validation.criterion.update(value: 10)
           create :billing_deal_contact, deal: deal
 
           expect{
@@ -113,9 +113,8 @@ describe Deal do
     end
 
     context 'account manager' do
-      let(:stage) { create :stage, sales_process: deal.stage.sales_process }
-      let(:validation) { create :validation, object: 'Account Manager', factor: stage.sales_process.id, value_type: 'Object' }
-      let!(:deal_account_manager) { create :deal_account_manager, deal: deal }
+      let(:validation) { deal.company.validation_for(:account_manager) }
+      let!(:deal_member) { create :deal_member, deal: deal }
 
       it 'passes validation if company does not have it' do
         expect(deal).to be_valid
@@ -123,28 +122,28 @@ describe Deal do
 
       context 'validation active' do
         before do
-          validation.criterion.update_attributes(value_object: stage)
+          validation.create_criterion
         end
 
         it 'passes validation if stage is less then criterion' do
-          stage.update(probability: 50)
-          deal_account_manager.user.update(user_type: SELLER)
+          validation.criterion.update(value: 50)
           expect(deal).to be_valid
         end
 
         it 'fails validation when deal does not have deal members' do
           deal.deal_members.destroy_all
+          validation.criterion.update(value: 10)
           expect(deal).not_to be_valid
         end
 
         it 'fails validation when deal member is not an account manager' do
-          stage.update(probability: 10)
-          deal_account_manager.user.update(user_type: SELLER)
+          validation.criterion.update(value: 10)
           expect(deal).not_to be_valid
         end
 
         it 'passes validation if deal has an account manager' do
-          stage.update(probability: 50)
+          validation.criterion.update(value: 10)
+          deal_member.user.update(user_type: ACCOUNT_MANAGER)
           expect(deal).to be_valid
         end
       end

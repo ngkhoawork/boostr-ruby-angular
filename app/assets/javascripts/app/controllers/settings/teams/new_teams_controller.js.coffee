@@ -1,6 +1,6 @@
 @app.controller 'NewTeamsController',
-['$scope', '$modalInstance', '$filter', '$q', 'Team', 'team', 'User', 'SalesProcess'
-($scope, $modalInstance, $filter, $q, Team, team, User, SalesProcess) ->
+['$scope', '$modalInstance', '$filter', '$q', 'Team', 'team', 'User'
+($scope, $modalInstance, $filter, $q, Team, team, User) ->
 
   $scope.formType = 'New'
   $scope.submitText = 'Create'
@@ -8,14 +8,9 @@
   $scope.team.members = []
 
   $scope.init = ->
-    $q.all({ 
-      teams: Team.all() 
-      users: User.query().$promise
-      salesProcesses: SalesProcess.all({active: true})
-    }).then (data) ->
+    $q.all({ teams: Team.all(), users: User.query().$promise}).then (data) ->
       $scope.teams = data.teams
       $scope.users = data.users
-      $scope.salesProcesses = data.salesProcesses
       resetUsers()
 
   resetUsers = () ->

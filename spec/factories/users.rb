@@ -11,10 +11,6 @@ FactoryGirl.define do
       item.company = Company.first if item.company.blank?
       create(:currency) if Currency.find_by(curr_cd: 'USD').blank?
     end
-
-    factory :account_manager do
-      user_type ACCOUNT_MANAGER
-    end
   end
 
   factory :admin, parent: :user do

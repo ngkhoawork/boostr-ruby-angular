@@ -16,19 +16,6 @@
                     %span.star *
                 %input.form-control{ placeholder: 'Name', ng: { model: 'deal.name', required: true }, name: 'name' }
 
-            .form-group{'ng-class': '{error: errors.sales_process_id}', 'ng-if': '!team'}
-                .row
-                    .col-xs-12
-                        %span.error-text {{errors.sales_process_id}}
-                        %label{ for: 'sales_process' }
-                            Sales Process
-                            %span.star *
-                        %ui-select{ name: 'sales_process', ng: { model: 'deal.sales_process_id', required: true, change: 'onChangeSalesProcess(deal.sales_process_id)' } }
-                            %ui-select-match{ placeholder: 'Sales Process' }
-                                {{ $select.selected.name }}
-                            %ui-select-choices{ repeat: 'salesProcess.id as salesProcess in salesProcesses | filter: { name: $select.search }' }
-                                %div{ ng: { bind: { html: 'salesProcess.name' } } }                    
-
             .form-group{'ng-class':'{error: errors.stage_id}'}
                 .row
                     .col-xs-6

@@ -10,26 +10,16 @@
         %span.star *
         %input.form-control{ placeholder: 'Name', ng: { model: 'stage.name' }, name: 'name', required: true, server: true }
 
-      .form-group{'ng-class':'{error: errors.sales_process_id}'}
+
+      .form-group
         .row
-          .col-xs-9
-            %span.error-text {{errors.sales_process_id}}
-            %label{ for: 'sales-process' } Sales Process
-            %span.star *
-            %ui-select{ name: 'sales-process', ng: { model: 'stage.sales_process_id', disabled: true } }
-              %ui-select-match{ placeholder: 'Sales Process' }
-                {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'salesProcess.id as salesProcess in salesProcesses | filter: {name: $select.search}' }
-                %div{ ng: { bind: { html: 'salesProcess.name' } } } 
           .col-xs-3.hide-input-arrows{'ng-class':'{error: errors.probability}'}
             %label{ for: 'probability' } Probability
             %span.star *
             %input.form-control{ style: 'width: 60px', placeholder: '85', ng: { model: 'stage.probability' }, name: 'probability', required: true, type: 'number' }
-            %span.error-text {{errors.probability}}  
+            %span.error-text {{errors.probability}}
 
-      .form-group
-        .row
-          .col-xs-12
+          .col-xs-9
             .inline-block.mr20
               %label{ for: 'open' } Open/Closed
               %div

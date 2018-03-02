@@ -1,25 +1,19 @@
 @app.controller 'TeamsEditController',
-['$scope', '$modalInstance', '$q', '$filter', 'Team', 'team', 'User', 'SalesProcess'
-($scope, $modalInstance, $q, $filter, Team, team, User, SalesProcess) ->
+['$scope', '$modalInstance', '$q', '$filter', 'Team', 'team', 'User'
+($scope, $modalInstance, $q, $filter, Team, team, User) ->
 
   $scope.formType = 'Edit'
   $scope.submitText = 'Update'
   $scope.team = team
 
   $scope.init = ->
-    $q.all({ 
-      team: Team.get(team.id)
-      teams: Team.all()
-      users: User.query().$promise
-      salesProcesses: SalesProcess.all({active: true})
-    }).then (data) ->
+    $q.all({ team: Team.get(team.id), teams: Team.all(), users: User.query().$promise}).then (data) ->
       $scope.team = data.team
       $scope.team.members = _.map $scope.team.members, (item) ->
         return item.id
       $scope.teams = data.teams
       $scope.users = data.users
       $scope.leader = data.team.leader
-      $scope.salesProcesses = data.salesProcesses
       resetUsers()
 
   resetUsers = () ->

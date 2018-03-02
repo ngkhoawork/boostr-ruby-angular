@@ -285,8 +285,8 @@
                         })
 
             $scope.getStages = ->
-                Stage.query({active: true, current_team: true}).$promise.then (stages) ->
-                    $scope.stages = stages
+                Stage.query().$promise.then (stages) ->
+                    $scope.stages = stages.filter (stage) -> stage.active
 
             $scope.$on 'updated_dashboards', ->
                 $scope.init()
