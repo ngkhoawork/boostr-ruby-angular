@@ -20,6 +20,8 @@ class Company < ActiveRecord::Base
   has_many :activities
   has_many :activity_types
   has_many :ios
+  has_many :costs, through: :ios
+  has_many :cost_monthly_amounts, through: :costs
   has_many :content_fees, through: :ios
   has_many :content_fee_product_budgets, through: :content_fees
   has_many :pmps
@@ -99,6 +101,8 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Publisher Type', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Renewal Terms', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Member Role', value_type: 'Option', locked: true)
+    cost_type = fields.find_or_initialize_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
+    setup_default_options(cost_type, ['General'])
 
     notifications.find_or_initialize_by(name: 'Closed Won', active: true)
     notifications.find_or_initialize_by(name: 'Stage Changed', active: true)
@@ -117,12 +121,13 @@ class Company < ActiveRecord::Base
   def settings
     [
       { name: 'Deals', fields: fields.where(subject_type: 'Deal') },
-      { name: 'Clients', fields: fields.where(subject_type: 'Client') },
+      { name: 'Accounts', fields: fields.where(subject_type: 'Client') },
       { name: 'Products', fields: fields.where(subject_type: 'Product') },
       { name: 'Contacts', fields: fields.where(subject_type: 'Contact') },
       { name: 'Multiple', fields: fields.where(subject_type: 'Multiple') },
       { name: 'Influencers', fields: fields.where(subject_type: 'Influencer') },
-      { name: 'Publishers', fields: fields.where(subject_type: 'Publisher') }
+      { name: 'Publishers', fields: fields.where(subject_type: 'Publisher') },
+      { name: 'Costs', fields: fields.where(subject_type: 'Cost') }
     ]
   end
 

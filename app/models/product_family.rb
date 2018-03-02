@@ -1,6 +1,7 @@
 class ProductFamily < ActiveRecord::Base
   belongs_to :company
   has_many :products
+  has_many :quotas, as: :product
 
   validates :name, presence: true
 

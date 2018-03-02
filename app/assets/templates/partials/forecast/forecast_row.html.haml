@@ -5,29 +5,29 @@
 		%div{ ng: { if: 'row.is_leader && year' } }
 			\--
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : (row.quota | currency: '$': 0) }}
+		{{ row.is_leader ? '--' : (isNetForecast ? row.quota_net : row.quota | currency: '$': 0) }}
 	%td.subtable-arrow-wrap
 		%div
-			%a{href: '', 'ng-click': 'showSubtable(row, "revenue", $event)'} {{ row.revenue | currency: '$': 0 }}
+			%a{href: '', 'ng-click': 'showSubtable(row, "revenue", $event)'} {{ (isNetForecast ? row.revenue_net : row.revenue) | currency: '$': 0 }}
 			%i.fa.fa-caret-up.subtable-arrow
 	%td.subtable-arrow-wrap
 		%div
-			%a{href: '', 'ng-click': 'showSubtable(row, "pipeline", $event)'} {{ row.weighted_pipeline | currency: '$': 0 }}
+			%a{href: '', 'ng-click': 'showSubtable(row, "pipeline", $event)'} {{ (isNetForecast ? row.weighted_pipeline_net : row.weighted_pipeline) | currency: '$': 0 }}
 			%i.fa.fa-caret-up.subtable-arrow
 	%td
-		{{ row.amount | currency: '$': 0 }}
+		{{ (isNetForecast ? row.amount_net : row.amount) | currency: '$': 0 }}
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : (row.gap_to_quota | currency: '$': 0) }}
+		{{ row.is_leader ? '--' : ((isNetForecast ? row.gap_to_quota_net : row.gap_to_quota) | currency: '$': 0) }}
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : isFinite(row.percent_to_quota) ? (row.percent_to_quota | number: 0) + '%' : '--' }}
+		{{ row.is_leader ? '--' : isFinite((isNetForecast ? row.percent_to_quota_net : row.percent_to_quota)) ? ((isNetForecast ? row.percent_to_quota_net : row.percent_to_quota) | number: 0) + '%' : '--' }}
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : isFinite(row.percent_booked) ? (row.percent_booked | number: 0) + '%' : '--' }}
+		{{ row.is_leader ? '--' : isFinite((isNetForecast ? row.percent_booked_net : row.percent_booked)) ? ((isNetForecast ? row.percent_booked_net : row.percent_booked) | number: 0) + '%' : '--' }}
 	%td
-		{{ row.is_leader || filter.product.id || filter.productFamily.id ? '--' : row.new_deals_needed }}
+		{{ row.is_leader || appliedFilter.product.id || appliedFilter.productFamily.id || isNetForecast ? '--' : row.new_deals_needed }}
 	%td
-		{{ filter.product.id || filter.productFamily.id ? '--' : (row.wow_weighted_pipeline | currency: '$': 0) }}
+		{{ appliedFilter.product.id || appliedFilter.productFamily.id ? '--' : (row.wow_weighted_pipeline | currency: '$': 0) }}
 	%td.center
-		{{ filter.product.id || filter.productFamily.id ? '--' : (row.wow_revenue | currency: '$': 0) }}
+		{{ appliedFilter.product.id || appliedFilter.productFamily.id ? '--' : (row.wow_revenue | currency: '$': 0) }}
 	-#%td
 		--
 %tr.subtable-row
@@ -150,6 +150,10 @@
 									In-period Amt
 									%i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'in_period_amt', 'fa-sort-asc': sort.weighted_pipeline.column == 'in_period_amt' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'in_period_amt' && sort.weighted_pipeline.direction == 'desc' }" } }
 							%th
+								%span.clickable{ ng: { click: 'sort.weighted_pipeline.toggle("in_period_split_amt")' } }
+									Split In-Period Amt
+									%i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'in_period_split_amt', 'fa-sort-asc': sort.weighted_pipeline.column == 'in_period_split_amt' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'in_period_split_amt' && sort.weighted_pipeline.direction == 'desc' }" } }
+							%th
 								%span.clickable{ ng: { click: 'sort.weighted_pipeline.toggle("start_date")' } }
 									Start Date
 									%i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'start_date', 'fa-sort-asc': sort.weighted_pipeline.column == 'start_date' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'start_date' && sort.weighted_pipeline.direction == 'desc' }" } }
@@ -175,6 +179,7 @@
 							%td {{ subrow.probability }}%
 							%td {{ (subrow.budget || 0) | currency: '$': 0 }}
 							%td {{ subrow.in_period_amt | currency: '$': 0 }}
+							%td {{ subrow.in_period_split_amt | currency: '$': 0 }}
 							%td {{ subrow.start_date | date: 'MM/dd/yyyy' }}
 							%td {{ subrow.end_date | date: 'MM/dd/yyyy' }}
 							%td{ 'ng-class': '{ "success": subrow.wday_in_stage_color == "green", "warning": subrow.wday_in_stage_color == "yellow", "danger": subrow.wday_in_stage_color == "red" }' } {{ subrow.wday_in_stage }}

@@ -19,6 +19,14 @@
               |
               %a{href: '', 'ng-click': 'scrollTo("#deals-section")'} Deals
 
+        .header-cell{'ng-if': 'hasNetPermission'}
+          %b.mr40 Show Net
+          .show-hide-remainder-form.m0
+            .switch-remainder-form
+              %input#net-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-checked': 'isNetForecast', 'ng-click': 'toggleNetForecast($event)'}
+              %label{for: 'net-toggle'}
+                %span
+
         .header-cell
           .pull-right
             %download-button{'ng-click': 'export()'}
@@ -64,15 +72,15 @@
                   %td
                     {{product_forecast.product.product_family.name}}
                   %td{'ng-repeat': 'stage in stages'}
-                    {{(product_forecast.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
+                    {{(isNetForecast ? product_forecast.weighted_pipeline_by_stage_net[stage.id] : product_forecast.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
                   %td
-                    {{product_forecast.weighted_pipeline | currency : '$' : 0}}
+                    {{isNetForecast ? product_forecast.weighted_pipeline_net : product_forecast.weighted_pipeline | currency : '$' : 0}}
                   %td
-                    {{product_forecast.revenue | currency : '$' : 0}}
+                    {{isNetForecast ? product_forecast.revenue_net : product_forecast.revenue | currency : '$' : 0}}
                   %td
-                    {{(product_forecast.weighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
+                    {{(isNetForecast ? product_forecast.weighted_pipeline_net + product_forecast.revenue_net : product_forecast.weighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
                   %td
-                    {{(product_forecast.unweighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
+                    {{(isNetForecast ? product_forecast.unweighted_pipeline_net + product_forecast.revenue_net : product_forecast.unweighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
                 %tr{'ng-if': 'totalForecastData'}
                   %td
                     %strong
@@ -80,19 +88,19 @@
                   %td
                   %td{'ng-repeat': 'stage in stages'}
                     %strong
-                      {{(totalForecastData.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
+                      {{(isNetForecast ? totalForecastData.weighted_pipeline_by_stage_net[stage.id] : totalForecastData.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
                   %td
                     %strong
-                      {{(totalForecastData.weighted_pipeline || 0) | currency : '$' : 0}}
+                      {{(isNetForecast ? totalForecastData.weighted_pipeline_net : totalForecastData.weighted_pipeline || 0) | currency : '$' : 0}}
                   %td
                     %strong
-                      {{(totalForecastData.revenue || 0) | currency : '$' : 0}}
+                      {{(isNetForecast ? totalForecastData.revenue_net : totalForecastData.revenue || 0) | currency : '$' : 0}}
                   %td
                     %strong
-                      {{((totalForecastData.weighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
+                      {{(isNetForecast ? (totalForecastData.weighted_pipeline_net || 0) + (totalForecastData.revenue_net || 0) : (totalForecastData.weighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
                   %td
                     %strong
-                      {{((totalForecastData.unweighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
+                      {{(isNetForecast ? (totalForecastData.unweighted_pipeline_net || 0) + (totalForecastData.revenue_net || 0) : (totalForecastData.unweighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
       #revenue-section.row
         .col-xs-12
           .block

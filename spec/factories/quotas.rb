@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :quota do
     value 10000
+    value_type QUOTA_TYPES[:gross]
     user
     time_period
 

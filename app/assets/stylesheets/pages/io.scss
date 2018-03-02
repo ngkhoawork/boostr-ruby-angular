@@ -28,7 +28,7 @@
             }
         }
     }
-    #line-content-fees {
+    #line-content-fees, #costs {
         .dropdown {
             position: static;
             display: inline-block;
@@ -49,6 +49,22 @@
             }
         }
         .table {
+            table-layout: fixed;
+            .column {
+                width: 140px;
+            }
+            .wide-product-column {
+                width: 390px;
+            }
+            .type-column {
+                width: 170px;
+            }
+            .product-column {
+                width: 220px;
+            }
+            thead > tr > th {
+                padding-right: 18px;
+            }
             tbody > tr {
                 .z-icon {
                     visibility: hidden;

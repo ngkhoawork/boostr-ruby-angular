@@ -118,7 +118,7 @@ class Forecast::PmpRevenueDataService
     @_products ||= if product.present?
       [product]
     elsif product_family
-      [product_family.products]
+      product_family.products
     end
   end
 

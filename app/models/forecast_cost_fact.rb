@@ -1,0 +1,19 @@
+class ForecastCostFact < ActiveRecord::Base
+  belongs_to :forecast_time_dimension
+  belongs_to :user_dimension
+  belongs_to :product_dimension
+
+  scope :by_time_dimension_id, -> (time_dimension_id) do
+    where('forecast_cost_facts.forecast_time_dimension_id = ?', time_dimension_id) if time_dimension_id
+  end
+  scope :by_user_dimension_ids, -> (user_dimension_ids) do
+    if user_dimension_ids && user_dimension_ids.count > 0
+      where('forecast_cost_facts.user_dimension_id in (?)', user_dimension_ids)
+    end
+  end
+  scope :by_product_dimension_ids, -> (product_dimension_ids) do
+    if product_dimension_ids && product_dimension_ids.count > 0
+      where('forecast_cost_facts.product_dimension_id in (?)', product_dimension_ids)
+    end
+  end
+end

@@ -9,6 +9,7 @@
 		$scope.products = []
 		$scope.timePeriods = []
 		$scope.isUnweighted = false
+		$scope.isNetForecast = false
 		$scope.years = [2016..moment().year()]
 		$scope.totals = {}
 
@@ -21,7 +22,7 @@
 			timePeriod: emptyFilter
 			year: null
 		$scope.filter = angular.copy defaultFilter
-		appliedFilter = null
+		$scope.appliedFilter = null
 
 		$scope.setFilter = (key, val) ->
 			switch key
@@ -32,11 +33,11 @@
 			$scope.filter[key] = val
 
 		$scope.applyFilter = ->
-			appliedFilter = angular.copy $scope.filter
+			$scope.appliedFilter = angular.copy $scope.filter
 			getData getQuery()
 
 		$scope.isFilterApplied = ->
-			!angular.equals $scope.filter, appliedFilter
+			!angular.equals $scope.filter, $scope.appliedFilter
 
 		$scope.resetFilter = ->
 			$scope.filter = angular.copy defaultFilter
@@ -64,6 +65,7 @@
 					quarter: row.quarter,
 					product_id: $scope.filter.product.id,
 					product_family_id: $scope.filter.productFamily.id,
+					is_net_forecast: $scope.isNetForecast,
 					year: row.year
 				}
 				if row.type == 'member'
@@ -160,6 +162,7 @@
 			timePeriods: TimePeriod.all()
 		).then (data) ->
 			$scope.hasForecastPermission = data.user.has_forecast_permission
+			$scope.hasNetPermission = data.user.company_net_forecast_enabled
 			shouldChooseTeamFilter = $scope.currentUserIsLeader || data.user.team_id != null || !$scope.hasForecastPermission
 			shouldChooseMemberFilter = !$scope.currentUserIsLeader && data.user.team_id != null || !$scope.hasForecastPermission
 			$scope.filterTeams = data.teams
@@ -226,7 +229,7 @@
 						$scope.forecast = []
 						$scope.members = []
 						$scope.teams = []
-						if (appliedFilter.seller.id)
+						if ($scope.appliedFilter.seller.id)
 							$scope.forecast = forecast
 							$scope.members = forecast
 						else
@@ -266,10 +269,15 @@
 				name: 'TOTAL'
 				type: 'totals'
 				quota: 0
+				quota_net: 0
 				revenue: 0
 				weighted_pipeline: 0
 				amount: 0
+				revenue_net: 0
+				weighted_pipeline_net: 0
+				amount_net: 0
 				gap_to_quota: 0
+				gap_to_quota_net: 0
 				percent_booked: 0
 				percent_to_quota: 0
 				new_deals_needed: 0
@@ -278,10 +286,15 @@
 			_.each arr, (row) ->
 				if !row then return
 				totals.quota += if row.is_leader then 0 else Number(row.quota) || 0
+				totals.quota_net += if row.is_leader then 0 else Number(row.quota_net) || 0
 				totals.revenue += Number(row.revenue) || 0
 				totals.weighted_pipeline += Number(row.weighted_pipeline) || 0
 				totals.amount += Number(row.amount) || 0
+				totals.revenue_net += Number(row.revenue_net) || 0
+				totals.weighted_pipeline_net += Number(row.weighted_pipeline_net) || 0
+				totals.amount_net += Number(row.amount_net) || 0
 				totals.gap_to_quota += if row.is_leader then 0 else Number(row.gap_to_quota) || 0
+				totals.gap_to_quota_net += if row.is_leader then 0 else Number(row.gap_to_quota_net) || 0
 				totals.new_deals_needed += if row.is_leader then 0 else Number(row.new_deals_needed) || 0
 				totals.wow_weighted_pipeline += Number(row.wow_weighted_pipeline) || 0
 				totals.wow_revenue += Number(row.wow_revenue) || 0
@@ -298,6 +311,13 @@
 				return
 			$scope.isUnweighted = !$scope.isUnweighted
 			$scope.$broadcast 'updateForecastChart'
+
+		$scope.toggleNetForecast = (e) ->
+			if !$scope.isChartDrawn
+				e.preventDefault()
+				return
+			$scope.isNetForecast = !$scope.isNetForecast
+			$scope.$broadcast 'drawForecastChart', $scope.forecast
 
 		class McSort
 			constructor: (opts) ->

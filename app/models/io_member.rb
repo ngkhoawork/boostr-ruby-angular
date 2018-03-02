@@ -21,8 +21,12 @@ class IoMember < ActiveRecord::Base
     time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
     time_periods.each do |time_period|
       io.products.each do |product|
-        forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
-        forecast_revenue_fact_calculator.calculate()
+        ForecastRevenueFactCalculator::Calculator
+          .new(time_period, user, product)
+          .calculate()
+        ForecastCostFactCalculator::Calculator
+          .new(time_period, user, product)
+          .calculate()
       end
     end
   end

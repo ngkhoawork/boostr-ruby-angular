@@ -22,6 +22,10 @@ class Forecast::RevenueDataSerializer < ActiveModel::Serializer
 
   private
 
+  def company
+    @_company ||= object.company
+  end
+
   def product_ids
     @_product_ids ||= @options[:product_ids]
   end
@@ -38,9 +42,19 @@ class Forecast::RevenueDataSerializer < ActiveModel::Serializer
     @_member_ids ||= @options[:member_ids]
   end
 
+  def is_net_forecast
+    @_is_net_forecast ||= @options[:is_net_forecast]
+  end
+
   def partial_amounts
     @_partial_amounts ||= Io::FilteredRevenueDataService
-      .new(object, filter_start_date, filter_end_date, member_ids, product_ids)
-      .perform
+      .new(
+        object,
+        filter_start_date,
+        filter_end_date,
+        member_ids,
+        product_ids,
+        is_net_forecast
+      ).perform
   end
 end

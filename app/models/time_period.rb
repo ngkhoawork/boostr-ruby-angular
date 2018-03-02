@@ -8,10 +8,24 @@ class TimePeriod < ActiveRecord::Base
   validates :name, :start_date, :end_date, presence: true
   validate :unique_name
 
+  scope :for_time_period, -> (start_date, end_date) do
+    where('start_date <= ? AND end_date >= ?', end_date, start_date) if start_date.present? && end_date.present?
+  end
+
+  scope :current_year_quarters, -> (company_id) do
+    where(company_id: company_id).where("date(end_date) - date(start_date) < 100")
+                                 .where("extract(year from start_date) = ?", Date.current.year)
+  end
+
+  scope :current_quarter, -> do
+    where(period_type: 'quarter').find_by('start_date <= ? AND end_date >= ?', Date.current, Date.current)
+  end
+
+  scope :all_quarter, -> { where(period_type: 'quarter') }
+  scope :years_only, -> { where(period_type: 'year') }
+  scope :closest, -> { where('end_date >= ?', Date.current).order(:start_date) }
+
   after_create do
-    company.users.each do |user|
-      quotas.create(user_id: user.id, company_id: company.id)
-    end
     create_forecast_dimension
     update_forecast_fact_callback
   end
@@ -47,23 +61,6 @@ class TimePeriod < ActiveRecord::Base
       ForecastRevenueFact.destroy_all(forecast_time_dimension_id: time_period_record.id)
     end
   end
-
-  scope :for_time_period, -> (start_date, end_date) do
-    where('start_date <= ? AND end_date >= ?', end_date, start_date) if start_date.present? && end_date.present?
-  end
-
-  scope :current_year_quarters, -> (company_id) do
-    where(company_id: company_id).where("date(end_date) - date(start_date) < 100")
-                                 .where("extract(year from start_date) = ?", Date.current.year)
-  end
-
-  scope :current_quarter, -> do
-    where(period_type: 'quarter').find_by('start_date <= ? AND end_date >= ?', Date.current, Date.current)
-  end
-
-  scope :all_quarter, -> { where(period_type: 'quarter') }
-  scope :years_only, -> { where(period_type: 'year') }
-  scope :closest, -> { where('end_date >= ?', Date.current).order(:start_date) }
 
   def self.now
     where('start_date <= ? AND end_date >= ?', Time.now, Time.now).first
