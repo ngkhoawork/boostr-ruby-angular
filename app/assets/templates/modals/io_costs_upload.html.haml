@@ -1,0 +1,49 @@
+#revenue_upload_modal
+  .modal-header.text-center
+    %a.close{ ng: { click: 'cancel()' } }
+      %span{'aria-hidden' => 'true'}
+        = inline_svg 'icons/close.svg'
+    = inline_svg 'icons/csv.svg'
+    %h3.modal-title
+      %strong
+        Import IO Costs
+      %br
+      %small
+        Please import IO costs from a CSV file into your current system.
+
+  .modal-body
+    .well.transparent
+      %p.text-center
+        Make sure your CSV file includes these EXACT headers and columns:
+
+      %ol.row.center-block
+        %li.col-xs-4 IO Number*
+        %li.col-xs-4 Cost ID
+        %li.col-xs-4 Product ID
+        %li.col-xs-4 Product Name*
+        %li.col-xs-4 Type
+        %li.col-xs-4 Month(MM/YYYY)*
+        %li.col-xs-4 Amount*
+
+    .well.well-lg.dark
+      .row
+        .col-xs-9
+          .progress
+            .progress-bar.progress-bar-striped{ aria: { valuemax: "100", valuemin: "0", valuenow: "{{ progressPercentage }}" }, role: "progressbar", style: "width: {{ progressPercentage }}%" }
+              %span.sr-only {{ progressPercentage }}% Complete
+              .text{ ng: { show: 'progressPercentage > 0' } }
+                {{ progressPercentage }}%
+            .text{ ng: { hide: 'progressPercentage > 0' } }
+              CSV File
+        .col-xs-3
+          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files', disabled: "is_uploading" } }
+            Browse
+
+    .alert.alert-danger{ role: 'alert', ng: { repeat: 'error in errors' } }
+      {{ error.message.join(', ') }}
+
+    .alert.alert-info{ ng: { show: 'messages' } }
+      {{ messages.message }}
+
+    .modal-footer.text-center{ ng: { hide: 'progressPercentage < 100 || is_uploading == true' } }
+      %button.btn.btn-primary.btn-lg{ ng: { click: 'cancel()' } } Done
