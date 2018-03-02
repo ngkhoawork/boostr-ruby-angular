@@ -99,7 +99,9 @@ class Forecast::PipelineDataSerializer < ActiveModel::Serializer
   end
 
   def member_ids
-    @_member_ids ||= members.collect(&:id)
+    @_member_ids ||= if members.present?
+      members.collect(&:id)
+    end
   end
 
   def deal_users

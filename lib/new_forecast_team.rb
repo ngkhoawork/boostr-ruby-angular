@@ -197,12 +197,15 @@ class NewForecastTeam
       quarter: quarter,
       year: year,
       revenue: 0.0,
+      revenue_net: 0.0,
       unweighted_pipeline_by_stage: {},
       unweighted_pipeline_by_stage_net: {},
       unweighted_pipeline: 0.0,
+      unweighted_pipeline_net: 0.0,
       weighted_pipeline_by_stage: {},
       weighted_pipeline_by_stage_net: {},
       weighted_pipeline: 0.0,
+      unweighted_pipeline_net: 0.0,
       quota: 0.0,
       quota_net: 0.0
     }
