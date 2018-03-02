@@ -242,12 +242,13 @@
     $scope.selectedStageId = deal.stage_id
     $scope.verifyMembersShare()
     $scope.setBudgetPercent(deal)
-    $scope.getStages()
     checkPmpDeal()
 
   $scope.getStages = ->
-    Stage.query({active: true, sales_process_id: $scope.currentDeal.stage.sales_process_id}).$promise.then (stages) ->
-      $scope.stages = stages
+    Stage.query().$promise.then (stages) ->
+      $scope.stages = stages.filter (stage) ->
+        stage.active
+  $scope.getStages()
 
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()

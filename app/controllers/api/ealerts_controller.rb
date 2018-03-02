@@ -11,11 +11,7 @@ class Api::EalertsController < ApplicationController
         },
         ealert_stages: {
           include: {
-            stage: {
-              include: {
-                sales_process: {}
-              }
-            }
+            stage: {}
           }
         }
       }

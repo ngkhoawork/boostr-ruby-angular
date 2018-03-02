@@ -5,7 +5,6 @@ FactoryGirl.define do
     open true
     active true
     color '#ffe630'
-    sales_process
 
     before(:create) do |item|
       item.company = Company.first if item.company.blank?

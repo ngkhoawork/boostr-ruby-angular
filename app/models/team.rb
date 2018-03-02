@@ -9,7 +9,6 @@ class Team < ActiveRecord::Base
   has_many :deals, through: :members
   has_many :clients, through: :members
   has_many :revenues, through: :clients
-  belongs_to :sales_process
 
   scope :roots, proc { |root_only| where(parent_id: nil) if root_only }
 
@@ -29,7 +28,7 @@ class Team < ActiveRecord::Base
       super(options)
     else
       super(options.merge(
-        only: [:id, :members_count, :name, :parent_id, :leader_id, :sales_process_id],
+        only: [:id, :members_count, :name, :parent_id, :leader_id],
         include: {
           children: {
             only: [:id, :members_count, :name, :parent_id],

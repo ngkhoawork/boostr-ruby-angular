@@ -2,22 +2,12 @@ class Api::ValidationsController < ApplicationController
   respond_to :json
 
   def index
-    render json: company.validations
+    render json: current_user.company.validations
   end
 
   def update
     if validation.update_attributes(validation_params)
       render json: validation, status: :accepted
-    else
-      render json: { errors: validation.errors.messages }, status: :unprocessable_entity
-    end
-  end
-
-  def create
-    validation = company.validations.find_or_initialize_by(validation_params.except(:criterion_attributes))
-
-    if validation.save && validation.criterion.update_attributes(validation_params[:criterion_attributes])
-      render json: validation, status: :created
     else
       render json: { errors: validation.errors.messages }, status: :unprocessable_entity
     end
@@ -37,16 +27,10 @@ class Api::ValidationsController < ApplicationController
 
   def validation_params
     params.require(:validation).permit(
-      :object,
-      :factor,
-      :value_type,
-      criterion_attributes: [:id, :value, :value_object_id, :value_object_type]
+      {
+        criterion_attributes: [:id, :value]
+      }
     )
-  end
-
-  def destroy
-    validation.destroy
-    render nothing: true
   end
 
   private

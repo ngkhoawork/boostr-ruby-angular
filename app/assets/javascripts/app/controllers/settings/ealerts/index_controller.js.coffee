@@ -1,25 +1,24 @@
 @app.controller "SettingsEalertsController",
-['$scope', '$routeParams', '$location', '$modal', 'DealCustomFieldName', 'DealProductCfName', 'Ealert', 'Stage', '$q'
-($scope,    $routeParams,   $location,   $modal,   DealCustomFieldName,   DealProductCfName,   Ealert,   Stage,   $q) ->
+['$scope', '$routeParams', '$location', '$modal', 'DealCustomFieldName', 'DealProductCfName', 'Ealert', 'Stage',
+($scope,    $routeParams,   $location,   $modal,   DealCustomFieldName,   DealProductCfName,   Ealert,   Stage) ->
   $scope.recipients = []
-  $scope.selectedFields = []
-  $scope.availableFields = []
+  $scope.selected_fields = []
+  $scope.available_fields = []
 
   $scope.init = () ->
     getEalert()
 
   getEalert = () ->
-    $q.all({
-      dealCustomFieldNames: DealCustomFieldName.all()
-      dealProductCustomFieldNames: DealProductCfName.all()
-      stages: Stage.query({active: true}).$promise
-      ealert: Ealert.all()
-    }).then (data) ->
-      $scope.dealCustomFieldNames = data.dealCustomFieldNames
-      $scope.dealProductCustomFieldNames = data.dealProductCustomFieldNames
-      $scope.stages = data.stages
-      $scope.ealert = data.ealert
-      transformEalert()
+    DealCustomFieldName.all().then (dealCustomFieldNames) ->
+      $scope.dealCustomFieldNames = dealCustomFieldNames
+      DealProductCfName.all().then (dealProductCustomFieldNames) ->
+        $scope.dealProductCustomFieldNames = dealProductCustomFieldNames
+        Stage.query().$promise.then (stages) ->
+          $scope.stages = _.reject stages, (item) ->
+            return item.active == false
+          Ealert.all().then (ealert) ->
+            $scope.ealert = ealert
+            transformEalert()
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -53,21 +52,21 @@
     getEalert()
 
   $scope.addField = (item) ->
-    $scope.availableFields = _.reject $scope.availableFields, (field) ->
+    $scope.available_fields = _.reject $scope.available_fields, (field) ->
       if item.id
         return item.id == field.id
       else if item.subject && field.subject
         return item.subject.field_type == field.subject.field_type && item.subject.field_index == field.subject.field_index
-    $scope.selectedFields.push(item)
+    $scope.selected_fields.push(item)
     repositionFields()
 
   $scope.removeField = (item) ->
-    $scope.selectedFields = _.reject $scope.selectedFields, (field) ->
+    $scope.selected_fields = _.reject $scope.selected_fields, (field) ->
       if item.id
         return item.id == field.id
       else if item.subject && field.subject
         return item.subject.field_type == field.subject.field_type && item.subject.field_index == field.subject.field_index
-    $scope.availableFields.push(item)
+    $scope.available_fields.push(item)
     repositionFields()
 
   $scope.changeEalertEnabled = (index) ->
@@ -122,7 +121,7 @@
   # $scope.goDeal = () ->
   #   $location.path('/deals/')
   $scope.onMoved = (field, index) ->
-    $scope.selectedFields.splice(index, 1)
+    $scope.selected_fields.splice(index, 1)
     repositionFields()
 
   $scope.dealCustomFieldFilter = (item) ->
@@ -132,11 +131,11 @@
     return item.subject_type == 'DealProductCfName'
 
   repositionFields = () ->
-    $scope.selectedFields = _.map $scope.selectedFields, (item, index) ->
+    $scope.selected_fields = _.map $scope.selected_fields, (item, index) ->
       item.position = index + 1
       setFieldPosition(item)
       return item
-    $scope.availableFields = _.map $scope.availableFields, (item) ->
+    $scope.available_fields = _.map $scope.available_fields, (item) ->
       item.position = 0
       setFieldPosition(item)
       return item
@@ -165,26 +164,24 @@
     return str.join(' ');
 
   transformEalert = () ->
-    allDisabled = true
-    automaticSend = true
-    _.forEach $scope.ealert.ealert_stages, (ealertStage) ->
-      if ealertStage.enabled == true
-        allDisabled = false
-      else
-        automaticSend = false
-    $scope.ealert.all_disabled = allDisabled
-    $scope.ealert.automatic_send = automaticSend
-
     $scope.ealert.recipient_list = []
+    $scope.ealert.ealert_stages = _.reject $scope.ealert.ealert_stages, (item) ->
+      return item.stage.active == false
+    all_disabled = true
+    automatic_send = true
+    for index in [0...$scope.ealert.ealert_stages.length]
+      if $scope.ealert.ealert_stages[index].enabled == true
+        all_disabled = false
+      else
+        automatic_send = false
+    $scope.ealert.all_disabled = all_disabled
+    $scope.ealert.automatic_send = automatic_send
     if $scope.ealert.recipients
       $scope.ealert.recipient_list = $scope.ealert.recipients.split(',')
-    
-    $scope.ealert.ealert_stages = _.reject $scope.ealert.ealert_stages, (item) ->
-      item.stage.active == false
-    _.forEach $scope.stages, (stage) ->
-      found = _.find $scope.ealert.ealert_stages, (ealertStage) ->
-        ealertStage.stage_id == stage.id
-      if !found
+    _.each $scope.stages, (stage) ->
+      index = _.find $scope.ealert.ealert_stages, (ealert_stage) ->
+        return ealert_stage.stage_id == stage.id
+      if index == undefined
         $scope.ealert.ealert_stages.push({
           company_id: $scope.ealert.company_id,
           stage_id: stage.id,
@@ -192,19 +189,19 @@
           ealert_id: $scope.ealert.id,
           recipients: $scope.ealert.recipients,
           enabled: false
-        })
-    $scope.ealert.ealert_stages = _.map $scope.ealert.ealert_stages, (ealertStage) ->
-      ealertStage.recipient_list = []
-      if ealertStage.recipients
-        ealertStage.recipient_list = ealertStage.recipients.split(',')
-      ealertStage
-    $scope.ealert.ealert_stages = _.sortBy $scope.ealert.ealert_stages, (ealertStage) ->
-      [ealertStage.stage.sales_process && ealertStage.stage.sales_process.name, ealertStage.stage.position]
+          })
+    $scope.ealert.ealert_stages = _.map $scope.ealert.ealert_stages, (ealert_stage) ->
+      ealert_stage.recipient_list = []
+      if ealert_stage.recipients
+        ealert_stage.recipient_list = ealert_stage.recipients.split(',')
+      return ealert_stage
+    $scope.ealert.ealert_stages = _.sortBy $scope.ealert.ealert_stages, (ealert_stage) ->
+      return ealert_stage.stage.probability
 
-    _.forEach $scope.dealCustomFieldNames, (dealCustomFieldName) ->
-      found = _.find $scope.ealert.ealert_custom_fields, (ealertCustomField) ->
-        ealertCustomField.subject_type == 'DealCustomFieldName' && ealertCustomField.subject_id == dealCustomFieldName.id
-      if !found
+    _.each $scope.dealCustomFieldNames, (dealCustomFieldName) ->
+      index = _.find $scope.ealert.ealert_custom_fields, (ealert_custom_field) ->
+        return ealert_custom_field.subject_type == 'DealCustomFieldName' && ealert_custom_field.subject_id == dealCustomFieldName.id
+      if index == undefined
         $scope.ealert.ealert_custom_fields.push({
           company_id: $scope.ealert.company_id,
           subject_type: 'DealCustomFieldName',
@@ -212,12 +209,12 @@
           subject: dealCustomFieldName,
           ealert_id: $scope.ealert.id,
           position: 0
-        })
+          })
 
-    _.forEach $scope.dealProductCustomFieldNames, (dealProductCustomFieldName) ->
-      found = _.find $scope.ealert.ealert_custom_fields, (ealertCustomField) ->
-        ealertCustomField.subject_type == 'DealProductCfName' && ealertCustomField.subject_id == dealProductCustomFieldName.id
-      if !found
+    _.each $scope.dealProductCustomFieldNames, (dealProductCustomFieldName) ->
+      index = _.find $scope.ealert.ealert_custom_fields, (ealert_custom_field) ->
+        return ealert_custom_field.subject_type == 'DealProductCfName' && ealert_custom_field.subject_id == dealProductCustomFieldName.id
+      if index == undefined
         $scope.ealert.ealert_custom_fields.push({
           company_id: $scope.ealert.company_id,
           subject_type: 'DealProductCfName',
@@ -225,12 +222,12 @@
           subject: dealProductCustomFieldName,
           ealert_id: $scope.ealert.id,
           position: 0
-        })
+          })
 
-    $scope.selectedFields = []
-    $scope.availableFields = []
+    $scope.selected_fields = []
+    $scope.available_fields = []
 
-    positionFields = [
+    position_fields = [
       {name: 'agency', label: 'Agency', value: 'Starcom - NY'},
       {name: 'deal_type', label: 'Deal Type', value: 'Renewal'},
       {name: 'source_type', label: 'Source Type', value: 'RPF from Client'},
@@ -238,28 +235,28 @@
       {name: 'closed_reason', label: 'Closed Reason', value: 'Won'},
       {name: 'intiative', label: 'Initiative', value: 'Super Bowl'}
     ]
-    _.forEach $scope.ealert, (value, index) ->
-      positionField = _.find positionFields, (positionField) ->
-        index == positionField.name
-      if positionField
-        fieldData = {
-          name: positionField.name,
+    _.each $scope.ealert, (value, index) ->
+      position_index = _.findIndex position_fields, (position_field) ->
+        return index == position_field.name
+      if position_index > -1
+        position_field = position_fields[position_index]
+        field_data = {
+          name: position_field.name,
           subject_type: 'Deal',
           subject: {
-            field_label: positionField.label
-            field_value: positionField.value
+            field_label: position_field.label
+            field_value: position_field.value
           },
           id: index,
           position: value
         }
         if value && value > 0
-          $scope.selectedFields.push(fieldData)
+          $scope.selected_fields.push(field_data)
         else
-          $scope.availableFields.push(fieldData)
-
-    _.forEach $scope.ealert.ealert_custom_fields, (ealertCustomField) ->
+          $scope.available_fields.push(field_data)
+    _.each $scope.ealert.ealert_custom_fields, (ealert_custom_field) ->
       value = ''
-      switch ealertCustomField.subject.field_type
+      switch ealert_custom_field.subject.field_type
         when 'currency' then value = '£100,000 GBP'
         when 'text' then value = 'some text'
         when 'note' then value = 'some notes'
@@ -271,13 +268,12 @@
         when 'percentage' then value = '80.76%'
         when 'dropdown' then value = 'option 1'
         when 'sum' then value = '20,000'
-      ealertCustomField.subject.field_value = value
-      if ealertCustomField.position > 0
-        $scope.selectedFields.push(ealertCustomField)
+      ealert_custom_field.subject.field_value = value
+      if ealert_custom_field.position > 0
+        $scope.selected_fields.push(ealert_custom_field)
       else
-        $scope.availableFields.push(ealertCustomField)
-
-    $scope.selectedFields = _.sortBy $scope.selectedFields, (field) ->
-      field.position
+        $scope.available_fields.push(ealert_custom_field)
+    $scope.selected_fields = _.sortBy $scope.selected_fields, (field) ->
+      return field.position
 
 ]

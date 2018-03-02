@@ -1,51 +1,45 @@
 @app.controller "SettingsStagesController",
 ['$scope', '$modal', '$filter', 'Stage',
 ($scope, $modal, $filter, Stage) ->
-  init = () ->
-    Stage.query().$promise.then (stages) ->
-      $scope.stages = stages
-      sortStages()
 
-  sortStages = () ->
-    $scope.stages = $filter('orderBy')($scope.stages, ['sales_process_id', '-active', 'position'])
+  $scope.init = () ->
+    Stage.query().$promise.then (stages) ->
+      $scope.stages = $filter('orderBy')(stages, ['-active', 'position'])
 
   $scope.sortableOptions =
     stop: () ->
       _.each $scope.stages, (stage, index) ->
         stage.position = index
-        stage.$update()
+        $scope.updateStage(stage)
     axis: 'y'
     opacity: 0.6
     cursor: 'ns-resize'
 
+  $scope.updateStage = (stage) ->
+    stage.$update()
+
   $scope.$on 'openModal', ->
-    modalInstance = $modal.open
+    $scope.modalInstance = $modal.open
       templateUrl: 'modals/stage_form.html'
       size: 'md'
       controller: 'SettingsStagesNewController'
       backdrop: 'static'
       keyboard: false
-      resolve:
-        deal_stage: ->
-          {}
-    modalInstance.result.then (result) ->
-      $scope.stages.push result
-      sortStages()
 
   $scope.edit = (stage) ->
-    modalInstance = $modal.open
+    $scope.modalInstance = $modal.open
       templateUrl: 'modals/stage_form.html'
       size: 'md'
-      controller: 'SettingsStagesNewController'
+      controller: 'SettingsStagesEditController'
       backdrop: 'static'
       keyboard: false
       resolve:
-        deal_stage: ->
+        stage: ->
           angular.copy stage
-    modalInstance.result.then (result) ->
-      index = $scope.stages.indexOf(stage)
-      $scope.stages[index] = result
-      sortStages()
 
-  init()
+  $scope.$on 'updated_stages', ->
+    $scope.init()
+
+  $scope.init()
+
 ]
