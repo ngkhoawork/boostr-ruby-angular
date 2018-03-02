@@ -130,7 +130,7 @@ class Csv::Quota
   end
 
   def quota
-    @_quota = company.quotas.where(time_period_id: time_period.id, user_id: user.id, value_type: Quota.value_types[type], product_id: product_id, product_type: product_type).first
+    @_quota = company.quotas.find_by(time_period_id: time_period.id, user_id: user.id, value_type: Quota.value_types[type], product_id: product_id, product_type: product_type)
   end
 
   def persisted?

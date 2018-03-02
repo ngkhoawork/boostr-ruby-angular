@@ -2,21 +2,16 @@ class Api::CostsController < ApplicationController
   respond_to :json
 
   def create
-    exchange_rate = io.exchange_rate
-    converted_params = ConvertCurrency.call(exchange_rate, cost_params)
-    converted_params[:is_estimated] = false
-    cost_obj = io.costs.new(converted_params)
-    cost_obj.update_periods if params[:cost][:cost_monthly_amounts_attributes]
-    if cost_obj.save
-      render json: io.full_json
+    cost = io.costs.new(converted_params)
+    cost.update_periods if params[:cost][:cost_monthly_amounts_attributes]
+    if cost.save
+      render json: io.full_json, status: :created
     else
       render json: { errors: cost_obj.errors.messages }, status: :unprocessable_entity
     end
   end
 
   def update
-    exchange_rate = io.exchange_rate
-    converted_params = ConvertCurrency.call(exchange_rate, cost_params)
     if cost.update_attributes(converted_params)
       cost.io.update_total_budget
 
@@ -67,5 +62,9 @@ class Api::CostsController < ApplicationController
           ]
         }
     )
+  end
+
+  def converted_params
+    ConvertCurrency.call(io.exchange_rate, cost_params)
   end
 end

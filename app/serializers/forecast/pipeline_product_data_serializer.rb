@@ -61,8 +61,8 @@ class Forecast::PipelineProductDataSerializer < ActiveModel::Serializer
   end
 
   def wday_in_stage_color
-    if stage.red_threshold.present? or stage.yellow_threshold.present?
-      if stage.red_threshold.present? and wday_in_stage >= stage.red_threshold
+    if stage.red_threshold.present? || stage.yellow_threshold.present?
+      if stage.red_threshold.present? && wday_in_stage >= stage.red_threshold
         'red'
       elsif stage.yellow_threshold.present? and wday_in_stage >= stage.yellow_threshold
         'yellow'

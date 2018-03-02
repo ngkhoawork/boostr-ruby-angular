@@ -17,7 +17,7 @@ class Cost < ActiveRecord::Base
 
 
   after_create do
-    Cost::AmountsGenerateService.new(self).perform if self.cost_monthly_amounts.count == 0
+    generate_cost_monthly_amounts if self.cost_monthly_amounts.count == 0
   end
 
   after_destroy do

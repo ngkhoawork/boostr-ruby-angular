@@ -58,7 +58,6 @@
 			sets.unshift {type: 'revenue'}
 			sets.unshift {type: 'quota'}
 			sets.push {type: 'quotaLine'}
-			console.log('isNetForecast', $scope.isNetForecast);
 			items = switch data.type
 				when 'team'
 					[].concat data.teams, data.members

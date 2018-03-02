@@ -5,6 +5,7 @@ class Product < ActiveRecord::Base
   has_many :values, as: :subject
   has_many :ad_units
   has_many :quotas, as: :product
+  has_many :pmp_items
 
   validates :name, presence: true
   validates :margin,
