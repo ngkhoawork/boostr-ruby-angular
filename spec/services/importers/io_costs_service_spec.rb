@@ -5,16 +5,24 @@ describe Importers::IoCostsService do
     after(:each) { FileUtils.rm(file.path) if File.exist?(file.path) }
     subject { instance.perform }
 
-    it 'creates new io cost' do
+    before do
+      cost
+    end
+
+    it 'creates new cost' do
       expect{subject}.to change{Cost.count}.by(1)
     end
 
-    it 'creates new io cost monthly amounts' do
+    it 'creates new cost monthly amounts' do
       expect{subject}.to change{CostMonthlyAmount.count}.by(3)
     end
 
-    it 'updates cost budgets' do
-      expect{subject}.to change{io.costs.first&.budget}.to(150)
+    it 'updates existing cost budgets' do
+      expect{subject}.to change{cost.reload.budget}.to(150)
+    end
+
+    it 'updates new cost budgets' do
+      expect{subject}.to change{Cost.last.budget}.to(450)
     end
 
     it 'saves import logs' do
@@ -48,14 +56,25 @@ describe Importers::IoCostsService do
     @_option ||= create :option, name: 'test', field: field, company: company
   end
 
+  def option2
+    @_option2 ||= create :option, name: 'test2', field: field, company: company
+  end
+
+  def cost
+    @_cost ||= create :cost, io: io, product: product, budget: 0, budget_loc: 0, is_estimated: true
+  end
+
   def file
     @_file ||= Tempfile.open([Dir.tmpdir, '.csv']) do |fh|
       begin
         csv = CSV.new(fh)
-        csv << ['IO Number', 'Product', 'Type', 'Month' ,'Amount']
-        csv << [io.io_number, product.name, option.name, '2018/01', '100']
-        csv << [io.io_number, product.name, option.name, '2018/03', '50']
-        csv << [io.io_number, product.name, 'test1', '2018/02', '100']
+        csv << ['IO Number', 'Cost ID', 'Product ID', 'Product Name', 'Type', 'Month' ,'Amount']
+        csv << [io.io_number, cost.id, nil, product.name, option.name, '01/2018', '100']
+        csv << [io.io_number, cost.id, product.id, product.name, option.name, '03/2018', '50']
+        csv << [io.io_number, nil, product.id, product.name, option2.name, '01/2018', '50']
+        csv << [io.io_number, nil, product.id, product.name, option2.name, '02/2018', '150']
+        csv << [io.io_number, nil, product.id, product.name, option2.name, '03/2018', '250']
+        csv << [io.io_number, nil, nil, product.name, 'test1', '02/2018', '100']
       ensure
         fh.close()
       end

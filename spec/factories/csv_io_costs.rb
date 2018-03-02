@@ -8,6 +8,7 @@ FactoryGirl.define do
 
     io_number { io&.io_number }
     product_name { product&.name }
+    product_id { product&.id }
     amount { rand(1000..9999) }
     month '2018/01'
     company_id { company&.id }

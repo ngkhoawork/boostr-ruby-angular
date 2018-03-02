@@ -19,7 +19,7 @@ RSpec.describe Csv::IoCost do
 
     context 'with existing data' do
       before do
-        cost
+        csv_io_cost(cost.id)
       end
 
       it 'updates amount' do
@@ -66,8 +66,8 @@ RSpec.describe Csv::IoCost do
     @_cost_monthly_amount ||= io.costs.first.cost_monthly_amounts.find_by(start_date: Date.new(2018,01,10), end_date: Date.new(2018,01,31))
   end
 
-  def csv_io_cost
-    @_csv_io_cost ||= build :csv_io_cost, company: company, io: io, product: product, amount: 100, month: '2018/01', type: option.name 
+  def csv_io_cost(cost_id=nil)
+    @_csv_io_cost ||= build :csv_io_cost, company: company, io: io, product: product, amount: 100, month: '01/2018', type: option.name, cost_id: cost_id, imported_costs: cost_id.nil? ? [] : [cost]
   end
 end
 
@@ -98,9 +98,9 @@ RSpec.describe Csv::IoCost, 'validations' do
   end
 
   it 'validates month format yyyy/mm' do
-    csv_io_cost = build :csv_io_cost, io: io, product: product, company: company, month: '01/2018'
+    csv_io_cost = build :csv_io_cost, io: io, product: product, company: company, month: '2018/01'
     expect(csv_io_cost).not_to be_valid
-    expect(csv_io_cost.errors.full_messages).to include('Month --01/2018-- does not match yyyy/mm format')
+    expect(csv_io_cost.errors.full_messages).to include('Month --2018/01-- does not match mm/yyyy format')
   end
 
   private

@@ -16,11 +16,14 @@ class Importers::IoCostsService < Importers::BaseService
   def build_csv(row)
     Csv::IoCost.new(
       io_number: row[:io_number],
-      product_name: row[:product],
+      cost_id: row[:cost_id],
+      product_id: row[:product_id],
+      product_name: row[:product_name],
       type: row[:type],
       month: row[:month],
       amount: row[:amount],
-      company_id: company_id
+      company_id: company_id,
+      imported_costs: costs
     )
   end
 

@@ -1,7 +1,7 @@
 class Csv::IoCost
   include ActiveModel::Validations
 
-  attr_accessor :io_number, :product_name, :type, :month, :amount, :company_id
+  attr_accessor :io_number, :cost_id, :product_id, :product_name, :type, :month, :amount, :company_id, :imported_costs
 
   validates_presence_of :io_number, :product_name, :month, :amount, :company_id
   validates_numericality_of :amount
@@ -17,9 +17,8 @@ class Csv::IoCost
   end
 
   def perform
+    cost.product = product
     cost.is_estimated = false if cost.id
-    cost.budget_loc = 0
-    cost.budget = 0
     cost.save!
 
     cost_monthly_amount.budget = amount / io.exchange_rate
@@ -31,10 +30,12 @@ class Csv::IoCost
   end
 
   def cost
-    @_cost ||= Cost.find_or_initialize_by(
-      product: product,
-      io: io
-    )
+    if cost_id.present?
+      @_cost ||= Cost.find_by(id: cost_id, io: io)
+    else
+      @_cost ||= imported_costs.uniq.find {|cost| cost.io == io && cost.product == product && cost.values.find_by(field: field, option: option).present?}
+    end
+    @_cost ||= Cost.new(io: io, product: product, budget: 0, budget_loc: 0)
   end
 
   private
@@ -56,7 +57,11 @@ class Csv::IoCost
   end
 
   def product
-    @_product ||= company&.products&.find_by(name: product_name, active: true)
+    if product_id.present?
+      @_product ||= company&.products&.find_by(id: product_id, name: product_name, active: true)
+    else
+      @_product ||= company&.products&.find_by(name: product_name, active: true)
+    end
   end
 
   def company
@@ -68,7 +73,7 @@ class Csv::IoCost
   end
 
   def start_date
-    [Date.strptime(month, '%Y/%m'), io.start_date].max
+    [Date.strptime(month, '%m/%Y'), io.start_date].max
   end
 
   def end_date
@@ -76,9 +81,9 @@ class Csv::IoCost
   end
 
   def validate_month_format
-    Date.strptime(month, '%Y/%m')
+    Date.strptime(month, '%m/%Y')
   rescue
-    errors.add(:base, "Month --#{month}-- does not match yyyy/mm format")
+    errors.add(:base, "Month --#{month}-- does not match mm/yyyy format")
   end
 
   def validate_type_existence
@@ -88,7 +93,9 @@ class Csv::IoCost
   end
 
   def validate_product_existence
-    if product.nil?
+    if product.nil? && product_id.present?
+      errors.add(:base, "Product with --#{product_id}-- ID and --#{product_name}-- name doesn't exist")
+    elsif product.nil?
       errors.add(:base, "Product with --#{product_name}-- name doesn't exist")
     end
   end
