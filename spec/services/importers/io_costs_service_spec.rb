@@ -69,12 +69,12 @@ describe Importers::IoCostsService do
       begin
         csv = CSV.new(fh)
         csv << ['IO Number', 'Cost ID', 'Product Name', 'Type', 'Month' ,'Amount']
-        csv << [io.io_number, cost.id, product.name, option.name, '01/2018', '100']
-        csv << [io.io_number, cost.id, product.name, option.name, '03/2018', '50']
-        csv << [io.io_number, nil, product.name, option2.name, '01/2018', '50']
-        csv << [io.io_number, nil, product.name, option2.name, '02/2018', '150']
-        csv << [io.io_number, nil, product.name, option2.name, '03/2018', '250']
-        csv << [io.io_number, nil, product.name, 'test1', '02/2018', '100']
+        csv << [io.io_number, cost.id, product.name, option.name, '01/01/2018', '100']
+        csv << [io.io_number, cost.id, product.name, option.name, '03/01/2018', '50']
+        csv << [io.io_number, nil, product.name, option2.name, '01/01/2018', '50']
+        csv << [io.io_number, nil, product.name, option2.name, '02/01/2018', '150']
+        csv << [io.io_number, nil, product.name, option2.name, '03/01/2018', '250']
+        csv << [io.io_number, nil, product.name, 'test1', '02/01/2018', '100']
       ensure
         fh.close()
       end

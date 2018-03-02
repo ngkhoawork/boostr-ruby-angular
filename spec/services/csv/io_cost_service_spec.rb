@@ -12,7 +12,7 @@ describe Csv::IoCostService do
   it { is_expected.to_not be_nil }
 
   it 'includes headers' do
-    expect(csv_report).to match 'IO Number,Cost ID,Product ID,Product Name,Type,Month,Amount,IO Name,IO Seller,IO Account Manager,IO Account Manager2'
+    expect(csv_report).to match 'IO Number,Cost ID,Product ID,Product Name,Type,Month,Amount,IO Name,IO Seller,IO Account Manager,Second IO Account Manager'
   end
 
   it 'includes io cost records' do
