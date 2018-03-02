@@ -25,9 +25,7 @@
                 $scope.cost.months.push(month)
 
             Product.all({active: true}).then (products) ->
-                cost_products = _.map $scope.currentIO.costs, (cost_item) ->
-                    return cost_item.product
-                $scope.products = $filter('notIn')(products, cost_products)
+                $scope.products = products
 
             addProductBudgetCorrection = ->
                 budgetSum = 0
