@@ -20,6 +20,8 @@ class Company < ActiveRecord::Base
   has_many :activities
   has_many :activity_types
   has_many :ios
+  has_many :costs, through: :ios
+  has_many :cost_monthly_amounts, through: :costs
   has_many :content_fees, through: :ios
   has_many :content_fee_product_budgets, through: :content_fees
   has_many :pmps

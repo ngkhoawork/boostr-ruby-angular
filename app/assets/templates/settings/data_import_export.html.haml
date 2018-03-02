@@ -210,6 +210,15 @@
             .col-sm-4
               .panel
                 .panel-body
+                  %h4 IO Costs Export
+                  %li.export
+                    %a.upload{ href: '', ng: { click: 'exportIOCosts()' } }
+                      = inline_svg 'icons/import.svg'
+                      Export IO Costs
+
+            .col-sm-4
+              .panel
+                .panel-body
                   %h4 IO Monthly Product Budget Export
                   %li.export
                     %a{ href: '', ng: { click: 'exportDisplayIOMonthlyBudgets()' } }

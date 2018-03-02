@@ -312,6 +312,10 @@
     $window.open('/api/influencers.csv')
     return true
 
+  $scope.exportIOCosts = ->
+    $window.open('/api/ios/costs.csv')
+    return true
+
   $scope.showBodyModal = (body) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/csv_logs_body.html'
