@@ -65,10 +65,15 @@ class Deal::IoGenerateService
         budget: budget,
         budget_loc: budget_loc,
         is_estimated: true,
-        cost_monthly_amounts_attributes: cost_monthly_amounts
+        cost_monthly_amounts_attributes: cost_monthly_amounts,
+        values_attributes: [cost_values_param]
       }
       cost = Cost.create(cost_param)
     end
+  end
+
+  def company
+    @_company ||= deal.company
   end
 
   def cost_amounts_param(deal_product, margin)
@@ -82,6 +87,19 @@ class Deal::IoGenerateService
         end_date: deal_product_budget.end_date
       }
     end
+  end
+
+  def cost_values_param
+    return @_cost_values_param if defined?(@_cost_values_param)
+    cost_type_field = company.fields.find_by(subject_type: 'Cost', name: 'Cost Type')
+    cost_type = cost_type_field.option_from_name('General')
+    @_cost_values_param = {
+      value_type: 'Option',
+      subject_type: 'Cost',
+      field_id: cost_type_field.id,
+      option_id: cost_type.id,
+      company_id: company.id
+    }
   end
 
   def io_param

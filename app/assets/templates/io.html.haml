@@ -108,7 +108,7 @@
 									%td.right{'ng-repeat': 'month in currentIO.months'}
 										%b {{sumContentFeeBudget($index) | currency: currency_symbol : 2}}
 								%tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
-									%td.center{ 'colspan': '{{4+currentIO.readable_months.length}}' }
+									%td.center{ 'colspan': '{{5+currentIO.readable_months.length}}' }
 										No data available
 				%div{'ng-include': '"partials/io/io_costs.html"'}
 				.block#line-display
