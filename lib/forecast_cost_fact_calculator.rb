@@ -59,7 +59,7 @@ module ForecastCostFactCalculator
       amount = daily_budget * days * io_member.share / 100.0
 
       month_name = cost_amount.start_date.strftime("%b-%y")
-      @monthly_value[month_name] += calc_amt
+      @monthly_value[month_name] += amount
 
       amount
     end
