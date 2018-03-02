@@ -308,6 +308,36 @@
         metadata: ->
           false
 
+  $scope.showUploadActivePmpItem = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/active_pmp_item.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/active_pmps/import_item'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
+  $scope.showUploadActivePmpObject = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/active_pmp_object.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/active_pmps/import_object'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.exportInfluencers = ->
     $window.open('/api/influencers.csv')
     return true
@@ -343,6 +373,8 @@
     { title: 'Influencer Content Fee Import', click: $scope.showUploadInfluencerContentFeesModal, linkText: 'Import Content Fee' },
     { title: 'Influencers Import', click: $scope.showUploadInfluencersModal, linkText: 'Import Influencers' },
     { title: 'Integration ID Import', click: $scope.showUploadIntegrationIdModal, linkText: 'Import Integration IDs' },
+    { title: 'Active PMP Import', click: $scope.showUploadActivePmpObject, linkText: 'Active PMP Import' },
+    { title: 'Active PMP Item Import', click: $scope.showUploadActivePmpItem, linkText: 'Active PMP Item Import' }
     { title: 'PMP Daily Actual Import', click: $scope.showUploadPmpItemDailyActualsModal, linkText: 'Import PMP Daily Actual' },
     { title: 'Publishers Daily Actuals Import', click: $scope.showUploadPublisherModal, linkText: 'Publishers Daily Actuals Import' },
     { title: 'Quotas Import', click: $scope.showUploadQuotasModal, linkText: 'Import Quotas' },
