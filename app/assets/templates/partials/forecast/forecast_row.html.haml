@@ -23,11 +23,11 @@
 	%td
 		{{ row.is_leader ? '--' : isFinite((isNetForecast ? row.percent_booked_net : row.percent_booked)) ? ((isNetForecast ? row.percent_booked_net : row.percent_booked) | number: 0) + '%' : '--' }}
 	%td
-		{{ row.is_leader ? '--' : row.new_deals_needed }}
+		{{ row.is_leader || appliedFilter.product.id || appliedFilter.productFamily.id || isNetForecast ? '--' : row.new_deals_needed }}
 	%td
-		{{ filter.product.id || filter.productFamily.id ? '--' : (row.wow_weighted_pipeline | currency: '$': 0) }}
+		{{ appliedFilter.product.id || appliedFilter.productFamily.id ? '--' : (row.wow_weighted_pipeline | currency: '$': 0) }}
 	%td.center
-		{{ filter.product.id || filter.productFamily.id ? '--' : (row.wow_revenue | currency: '$': 0) }}
+		{{ appliedFilter.product.id || appliedFilter.productFamily.id ? '--' : (row.wow_revenue | currency: '$': 0) }}
 	-#%td
 		--
 %tr.subtable-row

@@ -22,7 +22,7 @@
 			timePeriod: emptyFilter
 			year: null
 		$scope.filter = angular.copy defaultFilter
-		appliedFilter = null
+		$scope.appliedFilter = null
 
 		$scope.setFilter = (key, val) ->
 			switch key
@@ -33,11 +33,11 @@
 			$scope.filter[key] = val
 
 		$scope.applyFilter = ->
-			appliedFilter = angular.copy $scope.filter
+			$scope.appliedFilter = angular.copy $scope.filter
 			getData getQuery()
 
 		$scope.isFilterApplied = ->
-			!angular.equals $scope.filter, appliedFilter
+			!angular.equals $scope.filter, $scope.appliedFilter
 
 		$scope.resetFilter = ->
 			$scope.filter = angular.copy defaultFilter
@@ -229,7 +229,7 @@
 						$scope.forecast = []
 						$scope.members = []
 						$scope.teams = []
-						if (appliedFilter.seller.id)
+						if ($scope.appliedFilter.seller.id)
 							$scope.forecast = forecast
 							$scope.members = forecast
 						else
