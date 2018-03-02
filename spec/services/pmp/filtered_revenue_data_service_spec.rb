@@ -19,9 +19,9 @@ describe Pmp::FilteredRevenueDataService do
 
     expect(result[0]).to eq(15000)
     expect(result[1]).to eq(9000)
-    expect(result[2][3]).to eq(4833.333333333333)
-    expect(result[2][4]).to eq(5166.666666666666)
-    expect(result[2][5]).to eq(5000.0)
+    expect(result[2][3].to_i).to eq(4833)
+    expect(result[2][4].to_i).to eq(5166)
+    expect(result[2][5].to_i).to eq(5000.0)
     expect(result[3][1].to_i).to eq(15000)
   end
   
@@ -53,9 +53,9 @@ describe Pmp::FilteredRevenueDataService do
 
     expect(result[0]).to eq(15000)
     expect(result[1]).to eq(9000)
-    expect(result[2][3]).to eq(4833.333333333333)
-    expect(result[2][4]).to eq(5166.666666666666)
-    expect(result[2][5]).to eq(5000.0)
+    expect(result[2][3].to_i).to eq(4833)
+    expect(result[2][4].to_i).to eq(5166)
+    expect(result[2][5].to_i).to eq(5000.0)
     expect(result[3][1].to_i).to eq(15000)
   end
   
@@ -70,9 +70,9 @@ describe Pmp::FilteredRevenueDataService do
 
     expect(result[0]).to eq(15000)
     expect(result[1]).to eq(15000)
-    expect(result[2][3]).to eq(9666.666666666666)
-    expect(result[2][4]).to eq(10333.333333333332)
-    expect(result[2][5]).to eq(10000.0)
+    expect(result[2][3].to_i).to eq(9666)
+    expect(result[2][4].to_i).to eq(10333)
+    expect(result[2][5].to_i).to eq(10000.0)
     expect(result[3][1].to_i).to eq(30000)
   end
 
