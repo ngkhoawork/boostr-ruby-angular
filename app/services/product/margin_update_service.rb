@@ -3,7 +3,7 @@ class Product::MarginUpdateService
   
   def initialize(product, prev_margin)
     @product = product
-    @prev_margin = prev_margin
+    @prev_margin = prev_margin || 100
   end
 
   def perform

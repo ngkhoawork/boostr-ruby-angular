@@ -6,6 +6,7 @@ class Product < ActiveRecord::Base
   has_many :ad_units
   has_many :quotas, as: :product
   has_many :pmp_items
+  has_many :costs
 
   validates :name, presence: true
   validates :margin,

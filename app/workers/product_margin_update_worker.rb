@@ -1,7 +1,7 @@
 class ProductMarginUpdateWorker < BaseWorker
   def perform(product_id, margin, prev_margin)
     product = Product.find(product_id)
-    update_budgets(product, margin, prev_margin)
+    update_budgets(product, margin || 100, prev_margin || 100)
   end
 
   private

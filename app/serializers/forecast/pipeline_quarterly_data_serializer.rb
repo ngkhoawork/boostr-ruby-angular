@@ -8,12 +8,6 @@ class Forecast::PipelineQuarterlyDataSerializer < ActiveModel::Serializer
   has_one :stage, serializer: Deals::StageSerializer
   has_many :deal_members, serializer: Deals::DealMemberSerializer
 
-  def total_budget
-    deal_products.inject(0) do |sum, deal_product|
-      sum + deal_product.budget
-    end
-  end
-
   def in_period_amt
     partial_amounts[:period_amt]
   end
@@ -68,7 +62,9 @@ class Forecast::PipelineQuarterlyDataSerializer < ActiveModel::Serializer
   end
 
   def member_ids
-    @_member_ids ||= members.collect(&:id)
+    @_member_ids ||= if members.present?
+      members.collect(&:id)
+    end
   end
 
   def deal_users
@@ -78,10 +74,6 @@ class Forecast::PipelineQuarterlyDataSerializer < ActiveModel::Serializer
 
   def is_net_forecast
     @_is_net_forecast ||= @options[:is_net_forecast]
-  end
-
-  def stage
-    @_stage ||= object.stage
   end
 
   def company
