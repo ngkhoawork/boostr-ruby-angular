@@ -1,5 +1,5 @@
 class Cost < ActiveRecord::Base
-  belongs_to :io
+  belongs_to :io, required: true
   belongs_to :product
   has_many :values, as: :subject
   has_many :cost_monthly_amounts, dependent: :destroy
@@ -72,7 +72,7 @@ class Cost < ActiveRecord::Base
   def update_budget
     new_budget = cost_monthly_amounts.sum(:budget)
     new_budget_loc = cost_monthly_amounts.sum(:budget_loc)
-    self.update(budget: new_budget, budget_loc: new_budget_loc, is_estimated: false)
+    update(budget: new_budget, budget_loc: new_budget_loc, is_estimated: false)
   end
 
   def daily_budget
@@ -84,10 +84,11 @@ class Cost < ActiveRecord::Base
   end
 
   def active_exchange_rate
-    if io.curr_cd != 'USD'
-      unless io.exchange_rate
-        errors.add(:curr_cd, "does not have an exchange rate for #{io.curr_cd} at #{io.created_at.strftime("%m/%d/%Y")}")
-      end
+    if io.curr_cd != 'USD' && !io.exchange_rate
+      errors.add(
+        :curr_cd,
+        "does not have an exchange rate for #{io.curr_cd} at #{io.created_at.strftime("%m/%d/%Y")}"
+      )
     end
   end
 
@@ -100,7 +101,7 @@ class Cost < ActiveRecord::Base
   end
 
   def update_periods
-    cost_monthly_amounts.each_with_index do |cost_monthly_amount, index|
+    cost_monthly_amounts.each.with_index do |cost_monthly_amount, index|
       period = Date.new(*io.months[index])
       cost_monthly_amount.start_date = [period, io.start_date].max
       cost_monthly_amount.end_date = [period.end_of_month, io.end_date].min
@@ -111,9 +112,9 @@ class Cost < ActiveRecord::Base
     if cost_monthly_amounts.sum(:budget) != budget || cost_monthly_amounts.sum(:budget_loc) != budget_loc
       if budget_changed? || budget_loc_changed?
         update_cost_monthly_amounts
-        self.update(is_estimated: false)
+        update(is_estimated: false)
       else
-        self.update_budget
+        update_budget
       end
     end
   end

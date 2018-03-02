@@ -44,7 +44,7 @@ class Csv::IoCostDecorator
     io.account_manager.first&.name
   end
 
-  def io_account_manager2
+  def second_io_account_manager
     io.account_manager.second&.name
   end
 

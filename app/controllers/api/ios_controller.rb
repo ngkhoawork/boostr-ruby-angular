@@ -87,7 +87,7 @@ class Api::IosController < ApplicationController
     end
   end
 
-  def costs
+  def export_costs
     respond_to do |format|
       format.csv {
         require 'timeout'

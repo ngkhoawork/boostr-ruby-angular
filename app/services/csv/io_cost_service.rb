@@ -24,7 +24,7 @@ class Csv::IoCostService < Csv::BaseService
       'IO Name',
       'IO Seller',
       'IO Account Manager',
-      'IO Account Manager2'
+      'Second IO Account Manager'
     ]
   end
 end

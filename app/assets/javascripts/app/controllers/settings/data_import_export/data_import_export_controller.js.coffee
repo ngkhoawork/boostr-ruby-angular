@@ -343,7 +343,7 @@
     return true
 
   $scope.exportIOCosts = ->
-    $window.open('/api/ios/costs.csv')
+    $window.open('/api/ios/export_costs.csv')
     return true
 
   $scope.showBodyModal = (body) ->

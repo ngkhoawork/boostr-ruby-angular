@@ -30,10 +30,11 @@ class Csv::IoCost
   end
 
   def cost
-    if cost_id.present?
-      @_cost ||= Cost.find_by(id: cost_id, io: io)
+    @_cost ||= if cost_id.present?
+      Cost.find_by(id: cost_id, io: io)
     else
-      @_cost ||= imported_costs.uniq.find {|cost| cost.io == io && cost.product == product && cost.values.find_by(field: field, option: option).present?}
+      imported_costs.uniq.find { |cost| cost.io == io && cost.product == product &&
+        cost.values.find_by(field: field, option: option).present? }
     end
     @_cost ||= Cost.new(io: io, product: product, budget: 0, budget_loc: 0)
   end
