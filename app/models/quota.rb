@@ -14,7 +14,7 @@ class Quota < ActiveRecord::Base
   before_save :set_dates
 
   validates :user_id, :time_period_id, :company_id, :value_type, presence: true
-  validates_uniqueness_of :product, :scope => [:time_period_id, :value_type, :user_id], message: 'has already been taken along with user, time period and type'
+  validates_uniqueness_of :product, :scope => [:product_type, :time_period_id, :value_type, :user_id], message: 'has already been taken along with user, time period and type'
   validate :validate_product_existence
 
   def as_json(options={})

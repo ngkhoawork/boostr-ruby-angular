@@ -21,9 +21,10 @@
 
   $scope.submitForm = () ->
     if validateForm()
-      if $scope.quota.product_type == 'ProductFamily'
-        $scope.quota.product_id = $scope.quota.product_family_id
-      Quota.create(quota: $scope.quota).then (quota) ->
+      quota = angular.copy($scope.quota)
+      if quota.product_type == 'ProductFamily'
+        quota.product_id = quota.product_family_id
+      Quota.create(quota: quota).then (quota) ->
         $modalInstance.close()
 
   $scope.onSelectProduct = () ->
