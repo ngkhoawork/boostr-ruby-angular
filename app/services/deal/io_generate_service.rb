@@ -54,7 +54,8 @@ class Deal::IoGenerateService
 
   def generate_costs(io)
     deal.deal_products.created_asc.each do |deal_product|
-      margin = deal_product.product&.margin || 100
+      margin = deal_product.product&.margin
+      next if margin.nil?
       budget = deal_product.budget * margin / 100.0
       budget_loc = deal_product.budget_loc * margin / 100.0
       cost_monthly_amounts = cost_amounts_param(deal_product, margin)

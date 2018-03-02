@@ -38,9 +38,10 @@
                         return '%'
                     )()
 
-                    Product.all({active: true, revenue_type: 'Content-Fee'}).then (products) ->
-                        $scope.products = products
-                        $scope.costProducts = products
+                    Product.all({active: true}).then (products) ->
+                        $scope.products = _.filter products, (product) ->
+                            return product.revenue_type == 'Content-Fee'
+                        $scope.costProducts = angular.copy(products)
                         resetProducts()
                     
                     Field.all(subject: 'Cost').then (fields) ->
@@ -54,10 +55,6 @@
                 io_products = _.map $scope.currentIO.content_fees, (content_fee_item) ->
                     return content_fee_item.product
                 $scope.products = $filter('notIn')($scope.products, io_products)
-
-                cost_products = _.map $scope.currentIO.costs, (cost) ->
-                    return cost.product
-                $scope.costProducts = $filter('notIn')($scope.costProducts, cost_products)
 
             $scope.showIOEditModal = (io) ->
                 $scope.modalInstance = $modal.open
