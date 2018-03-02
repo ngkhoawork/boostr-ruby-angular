@@ -359,7 +359,7 @@ class NewForecastTeam
 
     data[:unweighted_pipeline_by_stage] ||= {}
     data[:unweighted_pipeline_by_stage][item.stage_id] ||= 0.0
-    data[:unweighted_pipeline_by_stage][item.stage_id] += item.pipeline_amount
+    data[:unweighted_pipeline_by_stage][item.stage_id] += item.pipeline_amount.to_f
 
     data[:weighted_pipeline] ||= 0.0
     data[:weighted_pipeline] += weighted_amount
@@ -375,7 +375,7 @@ class NewForecastTeam
 
     data[:unweighted_pipeline_by_stage_net] ||= {}
     data[:unweighted_pipeline_by_stage_net][item.stage_id] ||= 0.0
-    data[:unweighted_pipeline_by_stage_net][item.stage_id] += item.pipeline_amount
+    data[:unweighted_pipeline_by_stage_net][item.stage_id] += item.pipeline_amount.to_f
 
     data[:weighted_pipeline_net] ||= 0.0
     data[:weighted_pipeline_net] += weighted_amount

@@ -54,7 +54,7 @@ class NewProductForecast
   def add_pipeline_data(data, item)
     data[item.product_id][:unweighted_pipeline] += item.pipeline_amount.to_f
     data[item.product_id][:unweighted_pipeline_by_stage][item.stage_id] ||= 0.0
-    data[item.product_id][:unweighted_pipeline_by_stage][item.stage_id] += item.pipeline_amount
+    data[item.product_id][:unweighted_pipeline_by_stage][item.stage_id] += item.pipeline_amount.to_f
 
     weighted_amount = item.pipeline_amount.to_f * item.probability.to_f / 100
     data[item.product_id][:weighted_pipeline] += weighted_amount
@@ -65,7 +65,7 @@ class NewProductForecast
   def add_pipeline_net_data(data, item)
     data[item.product_id][:unweighted_pipeline_net] += item.pipeline_amount.to_f
     data[item.product_id][:unweighted_pipeline_by_stage_net][item.stage_id] ||= 0.0
-    data[item.product_id][:unweighted_pipeline_by_stage_net][item.stage_id] += item.pipeline_amount
+    data[item.product_id][:unweighted_pipeline_by_stage_net][item.stage_id] += item.pipeline_amount.to_f
 
     weighted_amount = item.pipeline_amount.to_f * item.probability.to_f / 100
     data[item.product_id][:weighted_pipeline_net] += weighted_amount
