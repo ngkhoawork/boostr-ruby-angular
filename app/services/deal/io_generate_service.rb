@@ -57,18 +57,7 @@ class Deal::IoGenerateService
       margin = deal_product.product&.margin || 100
       budget = deal_product.budget * margin / 100.0
       budget_loc = deal_product.budget_loc * margin / 100.0
-      cost_monthly_amounts = []
-      deal_product.deal_product_budgets.each do |deal_product_budget|
-        monthly_budget = deal_product_budget.budget * margin / 100.0
-        monthly_budget_loc = deal_product_budget.budget_loc * margin / 100.0
-        cost_monthly_amounts << {
-          budget: monthly_budget,
-          budget_loc: monthly_budget_loc,
-          start_date: deal_product_budget.start_date,
-          end_date: deal_product_budget.end_date
-        }
-      end
-
+      cost_monthly_amounts = cost_amounts_param(deal_product, margin)
       cost_param = {
         io_id: io.id,
         product_id: deal_product.product.id,
@@ -78,6 +67,19 @@ class Deal::IoGenerateService
         cost_monthly_amounts_attributes: cost_monthly_amounts
       }
       cost = Cost.create(cost_param)
+    end
+  end
+
+  def cost_amounts_param(deal_product, margin)
+    deal_product.deal_product_budgets.inject([]) do |result, deal_product_budget|
+      monthly_budget = deal_product_budget.budget * margin / 100.0
+      monthly_budget_loc = deal_product_budget.budget_loc * margin / 100.0
+      result << {
+        budget: monthly_budget,
+        budget_loc: monthly_budget_loc,
+        start_date: deal_product_budget.start_date,
+        end_date: deal_product_budget.end_date
+      }
     end
   end
 

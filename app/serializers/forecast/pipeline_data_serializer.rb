@@ -15,12 +15,6 @@ class Forecast::PipelineDataSerializer < ActiveModel::Serializer
     stage.probability rescue nil
   end
 
-  def margin_budget
-    deal_products.inject(0) do |sum, deal_product|
-      sum + deal_product.budget * deal_product&.product&.margin / 100
-    end
-  end
-
   def total_budget
     deal_products.inject(0) do |sum, deal_product|
       sum + deal_product.budget
@@ -28,11 +22,11 @@ class Forecast::PipelineDataSerializer < ActiveModel::Serializer
   end
 
   def in_period_amt
-    partial_amounts[0]
+    partial_amounts[:period_amt]
   end
 
   def in_period_split_amt
-    partial_amounts[1]
+    partial_amounts[:split_period_amt]
   end
 
   def wday_in_stage

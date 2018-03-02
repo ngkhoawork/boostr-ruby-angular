@@ -15,8 +15,7 @@ class Cost::AmountsUpdateService
 
   def update_cost_monthly_amounts
     last_index = cost_monthly_amounts.count - 1
-    total = 0.0
-    total_loc = 0.0
+    total, total_loc = 0, 0
 
     cost_monthly_amounts.order("start_date asc").each_with_index do |cost_monthly_amount, index|
       if last_index == index
@@ -24,9 +23,8 @@ class Cost::AmountsUpdateService
         monthly_budget_loc = cost.budget_loc - total_loc
       else
         monthly_budget = (cost.daily_budget * io.days_per_month[index]).round(2)
-        total += monthly_budget
-
         monthly_budget_loc = (cost.daily_budget_loc * io.days_per_month[index]).round(2)
+        total += monthly_budget
         total_loc += monthly_budget_loc
       end
       cost_monthly_amount.update(

@@ -36,7 +36,7 @@ class Deal::FilteredPipelineDataService
   end
 
   def partial_amounts
-    @_partial_amounts ||= deal_users.inject([0, 0, init_months, init_quarters]) do |total, member|
+    @_partial_amounts ||= deal_users.inject(init_data) do |total, member|
       months = init_months
       quarters = init_quarters
       item_data = deal_products.inject([0, 0]) do |item_total, item|
@@ -45,10 +45,10 @@ class Deal::FilteredPipelineDataService
         item_total[1] += budget_data[1]
         item_total
       end
-      total[0] += item_data[0] if total[0] == 0
-      total[1] += item_data[1]
-      total[2] = months if total[2].nil?
-      total[3] = quarters if total[3].nil?
+      total[:period_amt] += item_data[0] if total[:period_amt] == 0
+      total[:split_period_amt] += item_data[1]
+      total[:months] = months if total[:months].nil?
+      total[:quarters] = quarters if total[:quarters].nil?
       total
     end
   end
@@ -115,6 +115,15 @@ class Deal::FilteredPipelineDataService
       @_init_months[i - 1] = 0
     end
     @_init_months
+  end
+
+  def init_data
+    {
+      period_amt: 0,
+      split_period_amt: 0,
+      months: init_months,
+      quarters: init_quarters,
+    }
   end
 
   def months

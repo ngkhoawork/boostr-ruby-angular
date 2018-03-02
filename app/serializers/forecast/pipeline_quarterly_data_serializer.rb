@@ -15,19 +15,19 @@ class Forecast::PipelineQuarterlyDataSerializer < ActiveModel::Serializer
   end
 
   def in_period_amt
-    partial_amounts[0]
+    partial_amounts[:period_amt]
   end
 
   def split_period_budget
-    partial_amounts[1]
+    partial_amounts[:split_period_amt]
   end
 
   def month_amounts
-    partial_amounts[2]
+    partial_amounts[:months]
   end
 
   def quarter_amounts
-    partial_amounts[3]
+    partial_amounts[:quarters]
   end
 
   private

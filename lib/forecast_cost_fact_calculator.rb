@@ -7,30 +7,13 @@ module ForecastCostFactCalculator
       @end_date = time_period.end_date
       @user = user
       @product = product
+      @monthly_value = init_monthly_value
     end
 
     def calculate
-      total = 0
-      monthly_value = {}
-
       return if !@forecast_time_dimension
-
-      months.each do |month_row|
-        monthly_value[month_row[:start_date].strftime("%b-%y")] = 0
-      end
-      ios.each do |io|
-        io_member = io.io_members.find_by(user_id: @user.id)
-        share = io_member.share
-        costs = io.costs
-        costs = costs.for_product_ids([@product.id]) if @product.present?
-        costs.each do |cost_item|
-          cost_item.cost_monthly_amounts.for_time_period(@start_date, @end_date).each do |cost_monthly_amount_item|
-            calc_amt = cost_monthly_amount_item.corrected_daily_budget(io.start_date, io.end_date) * effective_days(io_member, [cost_monthly_amount_item]) * (share/100.0)
-            monthly_value[cost_monthly_amount_item.start_date.strftime("%b-%y")] += calc_amt
-            total += calc_amt
-          end
-        end
-      end
+      
+      total = calculate_forecast_amount
 
       forecast_cost_fact = ForecastCostFact.find_or_initialize_by(
         forecast_time_dimension_id: @forecast_time_dimension.id,
@@ -38,20 +21,64 @@ module ForecastCostFactCalculator
         product_dimension_id: @product.id
       )
       if forecast_cost_fact.id.present? && total <= 0
-        puts "==========="
         forecast_cost_fact.destroy
       end
       if (total > 0)
         forecast_cost_fact.amount = total
-        forecast_cost_fact.monthly_amount = monthly_value
+        forecast_cost_fact.monthly_amount = @monthly_value
         forecast_cost_fact.save
       end
+    end
 
-      monthly_value
+    def calculate_forecast_amount
+      ios.inject(0) do |total, io|
+        total += io_total(io)
+      end
+    end
+
+    def io_total(io)
+      io_member = io.io_members.find_by(user_id: @user.id)
+      costs = io.costs
+      costs = costs.for_product_ids([@product.id]) if @product.present?
+      costs.inject(0) do |total, cost|
+        total += cost_total(cost, io, io_member)
+      end
+    end
+
+    def cost_total(cost, io, io_member)
+      cost_amounts = cost.cost_monthly_amounts.for_time_period(@start_date, @end_date)
+      cost_amounts.inject(0) do |total, cost_amount|
+        total += cost_monthly_amount_total(cost_amount, io, io_member)
+      end
+    end
+
+    def cost_monthly_amount_total(cost_amount, io, io_member)
+      daily_budget = cost_amount.corrected_daily_budget(io.start_date, io.end_date)
+      days = effective_days(io_member, [cost_amount])
+
+      amount = daily_budget * days * io_member.share / 100.0
+
+      month_name = cost_amount.start_date.strftime("%b-%y")
+      @monthly_value[month_name] += calc_amt
+
+      amount
+    end
+
+    def init_monthly_value
+      months.inject({}) do |result, month_row|
+        month_name = month_row[:start_date].strftime("%b-%y")
+        result[month_name] = 0
+        result
+      end
     end
 
     def open_deals
-      @open_deals ||= @user.deals.where(open: true).for_time_period(@start_date, @end_date).by_stage_id(@stage.id).includes(:deal_product_budgets).to_a
+      @open_deals ||= @user.deals
+        .open_partial
+        .for_time_period(@start_date, @end_date)
+        .by_stage_id(@stage.id)
+        .includes(:deal_product_budgets)
+        .to_a
     end
 
     def ios
@@ -61,7 +88,9 @@ module ForecastCostFactCalculator
     def months
       return @months if defined?(@months)
 
-      @months = (@start_date.to_date..@end_date.to_date).map { |d| { start_date: d.beginning_of_month, end_date: d.end_of_month } }.uniq
+      @months = (@start_date.to_date..@end_date.to_date)
+        .map { |d| { start_date: d.beginning_of_month, end_date: d.end_of_month } 
+        }.uniq
       @months
     end
 
