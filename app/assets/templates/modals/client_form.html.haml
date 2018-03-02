@@ -33,7 +33,7 @@
               %li.list-group-item{ 'ng-if': 'duplicates.length > 0' }
                 Accounts with similar names
               %li.list-group-item{ 'ng-if': 'duplicates.length == 0 || duplicates === undefined' }
-                Account name is 
+                Account name is
                 %strong
                   unique
               %li.list-group-item.duplicates{ ng: { repeat: 'duplicate in duplicates' } }
