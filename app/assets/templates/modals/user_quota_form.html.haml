@@ -33,7 +33,7 @@
             %span.error-text {{errors.product_id}}
             %label{ for: 'product' } Product
             %ui-select{ name: 'product', ng: { model: 'quota.product_id', disabled: true }, 'on-select': 'onSelectProduct()' }
-              %ui-select-match{ placeholder: 'Product' }
+              %ui-select-match{ placeholder: 'Product', 'allow-clear': 'true' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'product.id as product in products | filter: { name: $select.search } | orderBy: "name"' }
                 %div{ ng: { bind: { html: 'product.name' } } }
@@ -41,7 +41,7 @@
             %span.error-text {{errors.product_family_id}}
             %label{ for: 'product_family' } Product Family
             %ui-select{ name: 'product_family', ng: { model: 'quota.product_family_id', disabled: true }, 'on-select': 'onSelectProductFamily()' }
-              %ui-select-match{ placeholder: 'Product Family' }
+              %ui-select-match{ placeholder: 'Product Family', 'allow-clear': 'true' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'productFamily.id as productFamily in productFamilies | filter: { name: $select.search } | orderBy: "name"' }
                 %div{ ng: { bind: { html: 'productFamily.name' } } }

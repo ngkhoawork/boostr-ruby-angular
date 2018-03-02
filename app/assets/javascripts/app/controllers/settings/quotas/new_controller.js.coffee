@@ -1,13 +1,19 @@
 @app.controller "SettingsQuotasNewController",
-['$scope', '$modalInstance', '$q', '$filter', 'Quota', 'User', 'TimePeriod', 'timePeriod', 'quotas', 'Product', 'ProductFamily',
-($scope, $modalInstance, $q, $filter, Quota, User, TimePeriod, timePeriod, quotas, Product, ProductFamily) ->
+['$scope', '$modalInstance', '$q', '$filter', 'Quota', 'User', 'TimePeriod', 'timePeriod', 'Product', 'ProductFamily', 'quota',
+($scope, $modalInstance, $q, $filter, Quota, User, TimePeriod, timePeriod, Product, ProductFamily, quota) ->
 
   init = () ->
-    $scope.formType = "New"
-    $scope.submitText = "Create"
+    if quota
+      $scope.formType = "Edit"
+      $scope.submitText = "Save"
+      if quota.product_type == 'ProductFamily'
+        quota.product_family_id = quota.product_id
+        quota.product_id = null
+    else
+      $scope.formType = "New"
+      $scope.submitText = "Create"
     $scope.types = ['gross', 'net']
-    $scope.quota =
-      time_period_id: timePeriod.id
+    $scope.quota = quota || {time_period_id: timePeriod.id}
     $q.all({
       time_periods: TimePeriod.all()
       users: User.query().$promise
@@ -24,8 +30,16 @@
       quota = angular.copy($scope.quota)
       if quota.product_type == 'ProductFamily'
         quota.product_id = quota.product_family_id
-      Quota.create(quota: quota).then (quota) ->
-        $modalInstance.close()
+      if !quota.product_id
+        quota.product_id = null
+        quota.product_type = null
+
+      if $scope.formType == "New"
+        Quota.create(quota: quota).then (quota) ->
+          $modalInstance.close()
+      else
+        Quota.update(id: quota.id, quota: quota).then (quota) ->
+          $modalInstance.close()
 
   $scope.onSelectProduct = () ->
     $scope.quota.product_family_id = null

@@ -4,7 +4,7 @@
       .header-item
         .main-title Quotas
       .header-item
-        %add-button.plus-btn{ ng: { click: 'showModal()'} }
+        %add-button.plus-btn{ ng: { click: 'showNewModal()'} }
           Add Quota
       .header-item.filter
         %div.filter-title Quota Period
@@ -29,9 +29,10 @@
                 %th.left Product Family
                 %th.right Quota ($)
             %tbody
-              %tr{ ng: { repeat: 'quota in quotas | orderBy: "::user_name"' } }
+              %tr{ ng: { repeat: 'quota in quotas | orderBy: "::user_name"', click: 'showEditModal(quota)' } }
                 %td.left
                   {{ quota.user_name }}
+                  %i.fa.fa-pencil.edit-icon
                 %td.left
                   {{ quota.value_type | firstUppercase}}
                 %td.left
@@ -39,4 +40,4 @@
                 %td.left
                   {{ quota.product_type == 'ProductFamily' ? quota.product.name : '' }}
                 %td.right
-                  %input.editable-control.text-center{ type: 'text', 'ng-model': 'quota.value', placeholder: "0", 'ng-blur': 'updateQuota(quota)', 'ng-style': "{width:'100px'}" }
+                  %input.editable-control.text-center{ type: 'text', 'ng-model': 'quota.value', placeholder: "0", 'ng-blur': 'updateQuota(quota)', 'ng-style': "{width:'100px'}", 'ng-click': '$event.stopPropagation();' }

@@ -25,6 +25,7 @@
     deferred = $q.defer()
     resource.update params, (deal) ->
       deferred.resolve(deal)
+      $rootScope.$broadcast 'updated_quotas'
     deferred.promise
 
   return
