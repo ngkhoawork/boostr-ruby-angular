@@ -67,7 +67,7 @@ RSpec.describe Csv::IoCost do
   end
 
   def csv_io_cost(cost_id=nil)
-    @_csv_io_cost ||= build :csv_io_cost, company: company, io: io, product: product, amount: 100, month: '01/2018', type: option.name, cost_id: cost_id, imported_costs: cost_id.nil? ? [] : [cost]
+    @_csv_io_cost ||= build :csv_io_cost, company: company, io: io, product_name: product.name, amount: 100, month: '01/01/2018', type: option.name, cost_id: cost_id, imported_costs: cost_id.nil? ? [] : [cost]
   end
 end
 
@@ -86,21 +86,21 @@ RSpec.describe Csv::IoCost, 'validations' do
   end
 
   it 'validates io existence' do
-    csv_io_cost = build :csv_io_cost, io_number: '123', product: product, company: company
+    csv_io_cost = build :csv_io_cost, io_number: '123', product_name: product.name, company: company
     expect(csv_io_cost).not_to be_valid
     expect(csv_io_cost.errors.full_messages).to include('IO with --123-- number doesn\'t exist')
   end
 
   it 'validates type existence' do
-    csv_io_cost = build :csv_io_cost, io: io, product: product, company: company, type: 'invalid'
+    csv_io_cost = build :csv_io_cost, io: io, product_name: product.name, company: company, type: 'invalid'
     expect(csv_io_cost).not_to be_valid
     expect(csv_io_cost.errors.full_messages).to include('Cost type with --invalid-- doesn\'t exist')
   end
 
   it 'validates month format yyyy/mm' do
-    csv_io_cost = build :csv_io_cost, io: io, product: product, company: company, month: '2018/01'
+    csv_io_cost = build :csv_io_cost, io: io, product_name: product.name, company: company, month: '2018/01'
     expect(csv_io_cost).not_to be_valid
-    expect(csv_io_cost.errors.full_messages).to include('Month --2018/01-- does not match mm/yyyy format')
+    expect(csv_io_cost.errors.full_messages).to include('Month --2018/01-- does not match mm/dd/yyyy format')
   end
 
   private

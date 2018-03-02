@@ -1,7 +1,7 @@
 class Csv::IoCost
   include ActiveModel::Validations
 
-  attr_accessor :io_number, :cost_id, :product_name, :type, :month, :amount, :company_id, :imported_costs
+  attr_accessor :io_number, :cost_id, :product_id, :product_name, :type, :month, :amount, :company_id, :imported_costs
 
   validates_presence_of :io_number, :product_name, :month, :amount, :company_id
   validates_numericality_of :amount
