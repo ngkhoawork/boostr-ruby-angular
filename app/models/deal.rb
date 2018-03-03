@@ -22,6 +22,7 @@ class Deal < ActiveRecord::Base
   has_one :io, class_name: "Io", foreign_key: 'deal_id', dependent: :restrict_with_exception
 
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
+  has_one :egnyte_folder, as: :subject
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :deal_products, dependent: :destroy
@@ -1785,8 +1786,6 @@ class Deal < ActiveRecord::Base
   end
 
   def setup_egnyte_folders
-    return unless company.egnyte_integration
-
-    SetupEgnyteDealFoldersWorker.perform_async(company.egnyte_integration.id, name, advertiser.name)
+    SetupEgnyteDealFoldersWorker.perform_async(company.egnyte_integration.id, id) if company.egnyte_integration
   end
 end

@@ -23,6 +23,8 @@ class Egnyte::Actions::CreateFolderTree::Base
     traverse_folder_tree(root_folder) do |node|
       create_folder_request(folder_path: node[:path], domain: app_domain, access_token: access_token)
     end
+
+    save_root_folder
   end
 
   private
@@ -58,8 +60,23 @@ class Egnyte::Actions::CreateFolderTree::Base
     )
   end
 
+  def save_root_folder
+    egnyte_folder.update(
+      uuid: get_root_folder_request.parsed_response_body[:folder_id],
+      path: get_root_folder_request.parsed_response_body[:path]
+    )
+  end
+
   def create_folder_request(options)
     Egnyte::Endpoints::CreateFolder.new(options).tap { |req| req.perform }
+  end
+
+  def get_root_folder_request
+    @get_root_folder_request ||= Egnyte::Endpoints::GetFolderByPath.new(
+      folder_path: root_folder[:path],
+      domain: app_domain,
+      access_token: access_token
+    ).tap { |req| req.perform }
   end
 
   def egnyte_integration
@@ -68,6 +85,14 @@ class Egnyte::Actions::CreateFolderTree::Base
 
   def encode_space_sign(str)
     str.gsub(/ /, ENCODED_SPACE_SIGN)
+  end
+
+  def egnyte_folder
+    @egnyte_folder ||= record.egnyte_folder || record.build_egnyte_folder
+  end
+
+  def record
+    raise NotImplementedError, __method__
   end
 
   def root_folder_path

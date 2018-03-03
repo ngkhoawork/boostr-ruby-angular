@@ -1,7 +1,7 @@
 class Egnyte::Actions::CreateFolderTree::Deal < Egnyte::Actions::CreateFolderTree::Base
   class << self
     def required_option_keys
-      @required_option_keys ||= %i(egnyte_integration_id advertiser_name deal_name)
+      @required_option_keys ||= %i(egnyte_integration_id deal_id)
     end
 
     def folder_tree_attribute_name
@@ -16,10 +16,14 @@ class Egnyte::Actions::CreateFolderTree::Deal < Egnyte::Actions::CreateFolderTre
   end
 
   def encoded_advertiser_name
-    encode_space_sign(@options[:advertiser_name])
+    encode_space_sign(record.advertiser_name)
   end
 
   def encoded_deal_name
-    encode_space_sign(@options[:deal_name])
+    encode_space_sign(record.name)
+  end
+
+  def record
+    @record ||= Deal.find(@options[:deal_id])
   end
 end

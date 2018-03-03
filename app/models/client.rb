@@ -55,6 +55,7 @@ class Client < ActiveRecord::Base
   has_one :primary_user, through: :primary_client_member, source: :user
   has_one :address, as: :addressable
   has_one :publisher
+  has_one :egnyte_folder, as: :subject
 
   belongs_to :client_category, class_name: 'Option', foreign_key: 'client_category_id'
   belongs_to :client_subcategory, class_name: 'Option', foreign_key: 'client_subcategory_id'
@@ -603,6 +604,6 @@ class Client < ActiveRecord::Base
   end
 
   def setup_egnyte_folders
-    SetupEgnyteClientFoldersWorker.perform_async(company.egnyte_integration.id, name) if company.egnyte_integration
+    SetupEgnyteClientFoldersWorker.perform_async(company.egnyte_integration.id, id) if company.egnyte_integration
   end
 end
