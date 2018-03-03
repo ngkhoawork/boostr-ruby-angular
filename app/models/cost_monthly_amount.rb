@@ -1,5 +1,5 @@
 class CostMonthlyAmount < ActiveRecord::Base
-  belongs_to :cost, required: true
+  belongs_to :cost
 
   delegate :io, to: :cost
 

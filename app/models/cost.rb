@@ -1,5 +1,5 @@
 class Cost < ActiveRecord::Base
-  belongs_to :io, required: true
+  belongs_to :io
   belongs_to :product
   has_many :values, as: :subject
   has_many :cost_monthly_amounts, dependent: :destroy
