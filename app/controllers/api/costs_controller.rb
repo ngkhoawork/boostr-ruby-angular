@@ -7,7 +7,7 @@ class Api::CostsController < ApplicationController
     if cost.save
       render json: io.full_json, status: :created
     else
-      render json: { errors: cost_obj.errors.messages }, status: :unprocessable_entity
+      render json: { errors: cost.errors.messages }, status: :unprocessable_entity
     end
   end
 

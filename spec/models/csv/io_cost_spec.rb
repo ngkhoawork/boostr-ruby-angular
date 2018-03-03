@@ -97,10 +97,17 @@ RSpec.describe Csv::IoCost, 'validations' do
     expect(csv_io_cost.errors.full_messages).to include('Cost type with --invalid-- doesn\'t exist')
   end
 
-  it 'validates month format yyyy/mm' do
+  it 'validates month format mm/dd/yyyy' do
     csv_io_cost = build :csv_io_cost, io: io, product_name: product.name, company: company, month: '2018/01'
     expect(csv_io_cost).not_to be_valid
     expect(csv_io_cost.errors.full_messages).to include('Month --2018/01-- does not match mm/dd/yyyy format')
+  end
+
+  it 'validates month in io time period' do
+    month = (io.end_date + 1.month).strftime('%m/%d/%Y')
+    csv_io_cost = build :csv_io_cost, io: io, company: company, product_name: product.name, month: month
+    expect(csv_io_cost).not_to be_valid
+    expect(csv_io_cost.errors.full_messages).to include("Month with --#{month}-- is not in between IO start date and end date")
   end
 
   private
