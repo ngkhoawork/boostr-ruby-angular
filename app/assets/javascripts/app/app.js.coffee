@@ -362,6 +362,10 @@
       templateUrl: 'api_reference.html'
       controller: 'ApiReferenceController'
 
+    .when '/contracts',
+      templateUrl: 'contracts/contracts.html'
+      controller: 'ContractsController'
+
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
