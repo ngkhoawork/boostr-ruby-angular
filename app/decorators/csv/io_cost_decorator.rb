@@ -25,7 +25,7 @@ class Csv::IoCostDecorator
   end
 
   def month
-    cost_monthly_amount.start_date.strftime('%m/%d/%Y')
+    cost_monthly_amount.start_date.strftime('%m/%Y')
   end
 
   def amount
