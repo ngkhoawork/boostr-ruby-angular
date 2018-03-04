@@ -1,7 +1,7 @@
 class Csv::IoCost
   include ActiveModel::Validations
 
-  attr_accessor :io_number, :cost_id, :product_id, :product_name, :type, :month, :amount, :company_id, :imported_costs
+  attr_accessor :io_number, :cost_id, :product_name, :type, :month, :amount, :company_id, :imported_costs
 
   validates_presence_of :io_number, :product_name, :month, :amount, :company_id
   validates_numericality_of :amount
@@ -70,15 +70,19 @@ class Csv::IoCost
   end
 
   def start_date
-    [Date.strptime(month, '%m/%d/%Y'), io.start_date].max
+    [parsed_month.beginning_of_month, io.start_date].max
   end
 
   def end_date
-    [start_date.end_of_month, io.end_date].min
+    [parsed_month.end_of_month, io.end_date].min
+  end
+
+  def parsed_month
+    @_parsed_month ||= Date.strptime(month.gsub(/[-:]/, '/'), '%m/%d/%Y')
   end
 
   def validate_month_format
-    Date.strptime(month.gsub(/[-:]/, '/'), '%m/%d/%Y')
+    parsed_month
   rescue
     errors.add(:base, "Month --#{month}-- does not match mm/dd/yyyy format")
   end
