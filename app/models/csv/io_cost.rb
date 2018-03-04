@@ -83,6 +83,7 @@ class Csv::IoCost
 
   def validate_month_format
     parsed_month
+    validate_month_in_period
   rescue
     errors.add(:base, "Month --#{month}-- does not match mm/dd/yyyy format")
   end
@@ -102,6 +103,12 @@ class Csv::IoCost
   def validate_io_existence
     if io.nil?
       errors.add(:base, "IO with --#{io_number}-- number doesn't exist")
+    end
+  end
+
+  def validate_month_in_period
+    if start_date > end_date
+      errors.add(:base, "Month with --#{month}-- is not in between IO start date and end date")
     end
   end
 end
