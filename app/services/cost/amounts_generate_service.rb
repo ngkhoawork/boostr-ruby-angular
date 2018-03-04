@@ -8,7 +8,7 @@ class Cost::AmountsGenerateService
   end
 
   def perform
-    generate_cost_amounts
+    generate_empty_amounts
   end
 
   private
@@ -26,6 +26,18 @@ class Cost::AmountsGenerateService
       generate_from_deal_products
     else
       generate_auto_amounts
+    end
+  end
+
+  def generate_empty_amounts
+    io.months.each_with_index do |month, index|
+      period = Date.new(*month)
+      cost.cost_monthly_amounts.create(
+        start_date: [period, io.start_date].max,
+        end_date: [period.end_of_month, io.end_date].min,
+        budget: 0,
+        budget_loc: 0
+      )
     end
   end
 
