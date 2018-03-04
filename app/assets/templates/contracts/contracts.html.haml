@@ -1,0 +1,39 @@
+#contacts.z-styles
+	.container-fluid.contacts-inner
+		.row.contacts-header.mb30
+			.header-item
+				.main-title Contracts
+			.header-item
+				%add-button{'ng-click': 'showModal()'}
+					Add Contract
+			.header-item.contact-search
+				%i.fa.fa-search
+				%input.form-control{placeholder: 'Search', ng: {model: 'search', 'model-options': '{debounce: 400}' }}
+			.header-item
+				%div{ng: {include: '"contracts/contracts_filter.html"', controller: 'ContractsFilterController'}}
+
+		.row.block{'ng-if': '!contracts.length'}
+			.title No Data Available
+		.row.block{'ng-if': 'contracts.length'}
+			.table-wrapper
+				%table.table.table-hover
+					%thead
+						%tr.z-sortable-prime
+							%th.z-sortable{by: 'id'} ID
+							%th.z-sortable{by: 'name', default: true} Name
+							%th.z-sortable{by: 'type'} Type
+							%th.z-sortable{by: 'restricted'} Restricted
+							%th.z-sortable{by: 'status'} Status
+							%th.z-sortable{by: 'advertiser'} Advertiser
+							%th.z-sortable{by: 'agency'} Agency
+							%th.z-sortable{by: 'deal'} Deal
+					%tbody{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading || allContactsLoaded'}}
+						%tr{'ng-repeat': 'contract in contracts | orderBy : zSort.by : zSort.rev'}
+							%td {{contract.id}}
+							%td {{contract.name}}
+							%td {{contract.type}}
+							%td {{contract.restricted}}
+							%td {{contract.status}}
+							%td {{contract.advertiser}}
+							%td {{contract.agency}}
+							%td {{contract.deal}}
