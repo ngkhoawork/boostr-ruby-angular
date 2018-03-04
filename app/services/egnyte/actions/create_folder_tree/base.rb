@@ -83,12 +83,12 @@ class Egnyte::Actions::CreateFolderTree::Base
     @egnyte_integration ||= EgnyteIntegration.find(@options[:egnyte_integration_id])
   end
 
-  def encode_space_sign(str)
-    str.gsub(/ /, ENCODED_SPACE_SIGN)
-  end
-
   def egnyte_folder
     @egnyte_folder ||= record.egnyte_folder || record.build_egnyte_folder
+  end
+
+  def encode_space_sign(str)
+    str.gsub(/ /, ENCODED_SPACE_SIGN)
   end
 
   def record
