@@ -88,7 +88,7 @@
 
 
     $scope.loadMoreRevenues = ->
-      if !$scope.allContactsLoaded then getData(getQuery())
+      if !$scope.allItemsLoaded then getData(getQuery())
 
     parseBudget = (data) ->
       data = _.map data, (item) ->
