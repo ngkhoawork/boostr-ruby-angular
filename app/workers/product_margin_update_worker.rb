@@ -1,7 +1,7 @@
 class ProductMarginUpdateWorker < BaseWorker
   def perform(product_id, margin, prev_margin)
     product = Product.find(product_id)
-    update_budgets(product, margin || 100, prev_margin || 100)
+    update_budgets(product, margin || 0, prev_margin || 0)
   end
 
   private
@@ -14,8 +14,8 @@ class ProductMarginUpdateWorker < BaseWorker
 
   def update_cost_budget(cost, margin, prev_margin)
     cost.cost_monthly_amounts.each do |monthly_cost_amount|
-      budget = monthly_cost_amount.budget / prev_margin * margin
-      budget_loc = monthly_cost_amount.budget_loc / prev_margin * margin
+      budget = monthly_cost_amount.budget / (100 - prev_margin) * (100 - margin)
+      budget_loc = monthly_cost_amount.budget_loc / (100 - prev_margin) * (100 - margin)
       monthly_cost_amount.update(budget: budget, budget_loc: budget_loc)
     end
     budget = cost.budget / prev_margin * margin
