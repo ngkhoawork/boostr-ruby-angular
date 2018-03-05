@@ -206,7 +206,7 @@ GEM
     fuubar (2.0.0)
       rspec (~> 3.0)
       ruby-progressbar (~> 1.4)
-    geocoder (1.4.4)
+    geocoder (1.4.6)
     globalid (0.3.5)
       activesupport (>= 4.1.0)
     google-ads-common (0.12.6)
@@ -653,7 +653,7 @@ DEPENDENCIES
   ffaker
   font-awesome-rails
   fuubar
-  geocoder
+  geocoder (>= 1.4.6)
   google-api-client
   google-dfp-api (= 0.20.0)
   griddler
