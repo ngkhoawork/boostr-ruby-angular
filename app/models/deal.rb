@@ -176,6 +176,9 @@ class Deal < ActiveRecord::Base
       where('deals.id in (?)', ids)
     end
   end
+  scope :has_io, -> {
+    joins('LEFT JOIN ios ON deals.id = ios.io_number').where('ios.id IS NOT NULL')
+  }
 
   def update_pipeline_fact_callback
     if stage_id_changed?

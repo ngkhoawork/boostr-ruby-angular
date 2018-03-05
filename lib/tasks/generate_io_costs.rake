@@ -6,8 +6,7 @@ namespace :generate_io_costs do
       if company.present?
         deals = company.deals
           .at_percent(100)
-          .joins("LEFT JOIN ios ON deals.id = ios.io_number")
-          .where("ios.id IS NOT NULL")
+          .has_io
         deals.each do |deal|
           deal.deal_products.each do |deal_product|
             create_io_cost(company, deal, deal_product)
