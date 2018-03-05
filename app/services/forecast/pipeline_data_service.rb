@@ -101,7 +101,7 @@ class Forecast::PipelineDataService
     elsif is_team_id_valid
       team
     else
-      raise ActiveRecord::RecordNotFound
+      nil
     end
   end
 
@@ -115,7 +115,7 @@ class Forecast::PipelineDataService
     elsif is_team_id_valid
       team.all_members + team.all_leaders
     else
-      raise ActiveRecord::RecordNotFound
+      nil
     end
   end
 
