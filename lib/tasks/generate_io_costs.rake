@@ -9,25 +9,29 @@ namespace :generate_io_costs do
           .joins("LEFT JOIN ios ON deals.id = ios.io_number")
           .where("ios.id IS NOT NULL")
         deals.each do |deal|
-          io = deal.io
           deal.deal_products.each do |deal_product|
-            product = deal_product.product
-            cost = io.costs.find_by(product_id: product.id)
-            if cost.nil? && product.margin && product.margin < 100 && product.margin > 0
-              cost = io.costs.create({
-                product_id: product.id,
-                budget: deal_product.budget * (100 - product.margin) / 100,
-                budget_loc: deal_product.budget_loc * (100 - product.margin) / 100,
-                is_estimated: true,
-                values_attributes: [cost_values_param(company)]
-              })
-              puts "=========="
-              puts cost.id
-              puts deal.id
-            end
+            create_io_cost(company, deal, deal_product)
           end
         end
       end
+    end
+  end
+
+  def create_io_cost(company, deal, deal_product)
+    io = deal.io
+    product = deal_product.product
+    cost = io.costs.find_by(product_id: product.id)
+    if cost.nil? && product.margin && product.margin < 100 && product.margin > 0
+      cost = io.costs.create({
+        product_id: product.id,
+        budget: deal_product.budget * (100 - product.margin) / 100,
+        budget_loc: deal_product.budget_loc * (100 - product.margin) / 100,
+        is_estimated: true,
+        values_attributes: [cost_values_param(company)]
+      })
+      puts "=========="
+      puts cost.id
+      puts deal.id
     end
   end
 
@@ -43,5 +47,4 @@ namespace :generate_io_costs do
       company_id: company.id
     }
   end
-
 end
