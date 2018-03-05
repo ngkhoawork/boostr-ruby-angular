@@ -111,6 +111,10 @@ class User < ActiveRecord::Base
     self.company.forecast_gap_to_quota_positive
   end
 
+  def company_net_forecast_enabled
+    self.company.enable_net_forecasting
+  end
+
   def is_admin
     is?(:admin)
   end
@@ -181,6 +185,7 @@ class User < ActiveRecord::Base
           :roles,
           :company_influencer_enabled,
           :company_forecast_gap_to_quota_positive,
+          :company_net_forecast_enabled,
           :has_forecast_permission
         ]
       ).except(:override))
@@ -461,5 +466,13 @@ class User < ActiveRecord::Base
 
   def self.current=(user)
     Thread.current[:user] = user
+  end
+
+  def total_gross_quotas(start_date, end_date, product_id = nil, product_type = nil, value_type = QUOTA_TYPES[:gross])
+    quotas.for_time_period(start_date, end_date)
+      .by_product_type(product_type)
+      .by_product_id(product_id)
+      .by_type(value_type)
+      .sum(:value)
   end
 end

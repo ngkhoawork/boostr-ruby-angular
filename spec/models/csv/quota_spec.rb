@@ -5,23 +5,23 @@ describe Csv::Quota do
     it 'create new quota' do
       expect {
         Csv::Quota.import(file, user.id, 'quota.csv')
-      }.to change(Quota, :count).by(1)
+      }.to change(Quota, :count).by(2)
 
       quota = company.quotas.last
 
-      expect(quota.value).to eq(500)
+      expect(quota.value).to eq(1500)
       expect(quota.time_period_id).to eq(time_period.id)
       expect(quota.user_id).to eq(user.id)
     end
 
     it 'update existed quota' do
-      quota = company.quotas.create(value: 1000, time_period_id: time_period.id, user_id: user.id)
+      quota = company.quotas.create(value: 1000, time_period_id: time_period.id, user_id: user.id, value_type: 'net', product_type: 'ProductFamily', product_id: product_family.id)
 
       expect {
         Csv::Quota.import(file, user.id, 'quota.csv')
-      }.to_not change(Quota, :count)
+      }.to change(Quota, :count).by(1)
 
-      expect(quota.reload.value).to eq(500)
+      expect(quota.reload.value).to eq(1500)
     end
   end
 
@@ -39,10 +39,19 @@ describe Csv::Quota do
     @_time_period ||= create :time_period, name: 'Q3-2017'
   end
 
+  def product
+    @_product ||= create :product, name: 'quota', company: company
+  end
+
+  def product_family
+    @_product_family ||= create :product_family, name: 'quota', company: company
+  end
+
   def file
     @_file = CSV.generate do |csv|
-      csv << ['Time Period', 'Email', 'Quota']
-      csv << ['Q3-2017', 'test@user.com', '500']
+      csv << ['Time Period', 'Email', 'Quota', 'Type', 'Product', 'Product Family']
+      csv << ['Q3-2017', 'test@user.com', '500', 'Gross', product.name, '']
+      csv << ['Q3-2017', 'test@user.com', '1500', 'Net', '', product_family.name]
     end
   end
 end

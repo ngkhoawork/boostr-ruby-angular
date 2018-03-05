@@ -115,7 +115,7 @@ class Report::QuotaAttainmentService
   def user_data(user, team, data)
     data ||= init_record(user, team)
     data[:amount] = data[:weighted_pipeline] + data[:revenue]
-    quota = user.quotas.for_time_period(start_date, end_date).sum(:value)
+    quota = user.total_gross_quotas(start_date, end_date)
     data[:quota] = quota
     data[:percent_to_quota] = (quota > 0 ? data[:amount] / quota * 100 : 100)
     data[:percent_booked] = (quota > 0 ? data[:revenue] / quota * 100 : 100)

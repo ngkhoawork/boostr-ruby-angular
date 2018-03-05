@@ -46,6 +46,18 @@ class NewForecast
     @weighted_pipeline_by_stage
   end
 
+  def weighted_pipeline_by_stage_net
+    return @weighted_pipeline_by_stage_net if defined?(@weighted_pipeline_by_stage_net)
+    @weighted_pipeline_by_stage_net = {}
+    teams.each do |t|
+      t.weighted_pipeline_by_stage.each do |stage_id, total|
+        @weighted_pipeline_by_stage_net[stage_id] ||= 0
+        @weighted_pipeline_by_stage_net[stage_id] += total
+      end
+    end
+    @weighted_pipeline_by_stage_net
+  end
+
   def unweighted_pipeline_by_stage
     return @unweighted_pipeline_by_stage if defined?(@unweighted_pipeline_by_stage)
     @unweighted_pipeline_by_stage = {}
@@ -58,16 +70,40 @@ class NewForecast
     @unweighted_pipeline_by_stage
   end
 
+  def unweighted_pipeline_by_stage_net
+    return @unweighted_pipeline_by_stage_net if defined?(@unweighted_pipeline_by_stage)
+    @unweighted_pipeline_by_stage_net = {}
+    teams.each do |t|
+      t.unweighted_pipeline_by_stage_net.each do |stage_id, total|
+        @unweighted_pipeline_by_stage_net[stage_id] ||= 0
+        @unweighted_pipeline_by_stage_net[stage_id] += total
+      end
+    end
+    @unweighted_pipeline_by_stage_net
+  end
+
   def weighted_pipeline
     teams.sum(&:weighted_pipeline)
+  end
+
+  def weighted_pipeline_net
+    teams.sum(&:weighted_pipeline_net)
   end
 
   def revenue
     teams.sum(&:revenue)
   end
 
+  def revenue_net
+    teams.sum(&:revenue_net)
+  end
+
   def amount
     teams.sum(&:amount)
+  end
+
+  def amount_net
+    teams.sum(&:amount_net)
   end
 
   def percent_booked
@@ -75,17 +111,35 @@ class NewForecast
     revenue / quota * 100
   end
 
+  def percent_booked_net
+    return 100 unless quota_net > 0
+    revenue_net / quota_net * 100
+  end
+
   def percent_to_quota
     return 100 unless quota > 0
     amount / quota * 100
+  end
+
+  def percent_to_quota_net
+    return 100 unless quota_net > 0
+    amount_net / quota_net * 100
   end
 
   def gap_to_quota
     teams.sum(&:gap_to_quota)
   end
 
+  def gap_to_quota_net
+    teams.sum(&:gap_to_quota_net)
+  end
+
   def quota
-    teams.sum(&:quota)
+    @_quota ||= teams.sum(&:quota)
+  end
+
+  def quota_net
+    @_quota_net ||= teams.sum(&:quota_net)
   end
 
   def win_rate

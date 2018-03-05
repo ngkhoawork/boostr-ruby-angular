@@ -48,7 +48,7 @@ class Api::QuotasController < ApplicationController
   end
 
   def quota_params
-    params.require(:quota).permit(:value, :user_id, :time_period_id)
+    params.require(:quota).permit(:value, :user_id, :time_period_id, :value_type, :product_id, :product_type)
   end
 
   def import_message

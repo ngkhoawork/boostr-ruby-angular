@@ -19,7 +19,7 @@ feature 'BillingSummary' do
     select_year_and_month
   end
 
-  it 'has all data in page', js: true do
+  xit 'has all data in page', js: true do
     expect(ios_for_approval_table).to include io.io_number.to_s
     expect(ios_for_approval_table).to include io.name
     expect(ios_for_approval_table).to include display_line_item.line_number.to_s
@@ -45,7 +45,7 @@ feature 'BillingSummary' do
     expect(io_with_with_missing_monthly_actual_table).to include display_line_item_with_missing_monthly_actual.ad_server
   end
 
-  it 'update content fee product budget successfully', js: true do
+  xit 'update content fee product budget successfully', js: true do
     expect(find('.display-line-budget').text).to eq('$20,000.00')
 
     find('.display-line-quantity').trigger('click')

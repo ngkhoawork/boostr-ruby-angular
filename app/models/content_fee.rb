@@ -106,13 +106,13 @@ class ContentFee < ActiveRecord::Base
     last_index = io.months.count - 1
     total = 0
     total_loc = 0
-
+    
     io_start_date = io.start_date
     io_end_date = io.end_date
     io.months.each_with_index do |month, index|
       if last_index == index
-        monthly_budget = budget - total
-        monthly_budget_loc = budget_loc - total_loc
+        monthly_budget = budget.to_f - total
+        monthly_budget_loc = budget_loc.to_f - total_loc
       else
         monthly_budget = (daily_budget * io.days_per_month[index]).round(0)
         total += monthly_budget
@@ -140,11 +140,11 @@ class ContentFee < ActiveRecord::Base
   end
 
   def daily_budget
-    budget / (io.end_date - io.start_date + 1)
+    budget.to_f / (io.end_date - io.start_date + 1)
   end
 
   def daily_budget_loc
-    budget_loc / (io.end_date - io.start_date + 1)
+    budget_loc.to_f / (io.end_date - io.start_date + 1)
   end
 
   def update_content_fee_product_budgets
