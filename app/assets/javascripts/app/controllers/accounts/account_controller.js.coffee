@@ -44,6 +44,14 @@
       $scope.accountCfNames = accountCfNames
 
   $scope.egnyte = (token, domain, account) ->
+    console.log(account)
+    Egnyte.navigateToAccount(advertiser_id: account.id).then (response) ->
+      console.log(response)
+      if response.navigate_to_deal_uri
+        $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
+      else
+        $scope.egnyteHealthy = false
+
     req =
       method: 'POST'
       url: 'https://' + domain + '/pubapi/v2/navigate'

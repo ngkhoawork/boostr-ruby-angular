@@ -110,7 +110,7 @@
       (deal) ->
         $modalInstance.close(deal)
         if options.type != 'gmail'
-          $location.path('/deals' + '/' + deal.id)
+          $location.path('/deals' + '/' + deal.id).search({isNew: 'true'});
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

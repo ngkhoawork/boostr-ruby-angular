@@ -1,6 +1,7 @@
 .contacts.block.egnyte-section
   %div.mb20
     %span.title Egnyte
+    %div.loading-pulse{'ng-show': 'egnyteIsLoading'}
   %div{'ng-if': 'egnyteConnected'}
     %iframe{width: "1000px", height: "400px", "ng-src": "{{embeddedUrl}}" }
   %div{'ng-if': '!egnyteConnected'}
