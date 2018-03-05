@@ -44,8 +44,8 @@ class Cost::AmountsGenerateService
   def generate_from_deal_products
     margin = deal_product.product&.margin || 100
     deal_product.deal_product_budgets.order("start_date asc").each_with_index do |monthly_budget, index|
-      budget = monthly_budget.budget * margin / 100.0
-      budget_loc = monthly_budget.budget_loc * margin / 100.0
+      budget = monthly_budget.budget * (100 - margin) / 100.0
+      budget_loc = monthly_budget.budget_loc * (100 - margin) / 100.0
       cost.cost_monthly_amounts.create(
         start_date: monthly_budget.start_date,
         end_date: monthly_budget.end_date,
