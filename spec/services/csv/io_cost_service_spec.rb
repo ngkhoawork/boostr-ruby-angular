@@ -16,7 +16,7 @@ describe Csv::IoCostService do
   end
 
   it 'includes io cost records' do
-    expect(csv_report).to match "888,#{cost.id},#{product.id},display,option1,01/2018,100.0,test-io,nik andreev,mary manager,yujun zhang"
+    expect(csv_report).to match "888,#{cost.id},#{product.id},display,option1,01/2018,0.0,test-io,nik andreev,mary manager,yujun zhang"
   end
 
   private
