@@ -505,6 +505,7 @@ Rails.application.routes.draw do
         get :oauth_settings
         get :oauth_callback
         get :navigate_to_deal
+        get :navigate_to_account_deals
         put :disconnect_egnyte
       end
     end

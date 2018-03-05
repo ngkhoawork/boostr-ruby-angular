@@ -1,6 +1,6 @@
-class Egnyte::Actions::GetNavigateDealUri
+class Egnyte::Actions::GetNavigateUri::Base
   def self.required_option_keys
-    @required_option_keys ||= %i(egnyte_integration_id deal_id)
+    raise NotImplementedError, __method__
   end
 
   def initialize(options)
@@ -34,7 +34,7 @@ class Egnyte::Actions::GetNavigateDealUri
 
   def navigate_request
     Egnyte::Endpoints::Navigate.new(
-      folder_path: egnyte_folder.path,
+      folder_path: folder_path,
       domain: app_domain,
       access_token: access_token
     ).tap { |req| req.perform }
@@ -57,14 +57,18 @@ class Egnyte::Actions::GetNavigateDealUri
   end
 
   def egnyte_folder
-    @egnyte_folder ||= deal.egnyte_folder
-  end
-
-  def deal
-    Deal.find(@options[:deal_id])
+    @egnyte_folder ||= record.egnyte_folder
   end
 
   def encode_space_sign(str)
     str.gsub(/ /, ENCODED_SPACE_SIGN)
+  end
+
+  def record
+    raise NotImplementedError, __method__
+  end
+
+  def folder_path
+    raise NotImplementedError, __method__
   end
 end

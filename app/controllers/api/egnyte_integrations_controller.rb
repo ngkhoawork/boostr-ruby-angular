@@ -51,6 +51,10 @@ class Api::EgnyteIntegrationsController < ApplicationController
     render json: { navigate_to_deal_uri: build_navigate_deal_uri }
   end
 
+  def navigate_to_account_deals
+    render json: { navigate_to_deal_uri: build_navigate_account_deals_uri }
+  end
+
   def oauth_callback
     @resource = EgnyteIntegration.find_by_state_token(params[:state])
 
@@ -100,9 +104,16 @@ class Api::EgnyteIntegrationsController < ApplicationController
   end
 
   def build_navigate_deal_uri
-    Egnyte::Actions::GetNavigateDealUri.new(
+    Egnyte::Actions::GetNavigateUri::Deal.new(
       egnyte_integration_id: resource.id,
       deal_id: params.require(:deal_id)
+    ).perform
+  end
+
+  def build_navigate_account_deals_uri
+    Egnyte::Actions::GetNavigateUri::AccountDeals.new(
+      egnyte_integration_id: resource.id,
+      advertiser_id: params.require(:advertiser_id)
     ).perform
   end
 end

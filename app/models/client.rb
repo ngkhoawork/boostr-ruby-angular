@@ -611,6 +611,6 @@ class Client < ActiveRecord::Base
   def update_egnyte_folder_name
     return unless company.egnyte_integration && previous_changes[:name]
 
-    UpdateEgnyteAccountFolderNameWorker.perform_async(company.egnyte_integration.id, id)
+    UpdateEgnyteClientFolderNameWorker.perform_async(company.egnyte_integration.id, id)
   end
 end
