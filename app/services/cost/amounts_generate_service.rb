@@ -8,7 +8,7 @@ class Cost::AmountsGenerateService
   end
 
   def perform
-    generate_empty_amounts
+    generate_cost_amounts
   end
 
   private
@@ -22,8 +22,8 @@ class Cost::AmountsGenerateService
   end
 
   def generate_cost_amounts
-    if deal_product && deal_product.deal_product_budgets.length == io.months.length
-      generate_from_deal_products
+    if cost.imported
+      generate_empty_amounts
     else
       generate_auto_amounts
     end

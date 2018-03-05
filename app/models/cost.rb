@@ -1,4 +1,6 @@
 class Cost < ActiveRecord::Base
+  attr_accessor :imported
+
   belongs_to :io
   belongs_to :product
   has_many :values, as: :subject
