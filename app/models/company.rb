@@ -8,6 +8,7 @@ class Company < ActiveRecord::Base
   has_many :deals
   has_many :deal_products, through: :deals
   has_many :deal_product_budgets, through: :deal_products
+  has_many :contracts
   has_many :stages
   has_many :distinct_stages, -> {distinct}, class_name: 'Stage'
   has_many :products
@@ -101,6 +102,8 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Publisher Type', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Renewal Terms', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Member Role', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Type', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Status', value_type: 'Option', locked: true)
     cost_type = fields.find_or_initialize_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
     setup_default_options(cost_type, ['General'])
 
