@@ -47,7 +47,7 @@ RSpec.describe Pmp, 'model' do
   it 'updates end_date as the latest from pmp_item_daily_actuals' do
     end_date = pmp.end_date + 1.day
     pmp_item_daily_actuals.first.update(date: end_date)
-    pmp.calculate_end_date!
+    pmp.calculate_dates!
     expect(pmp.end_date).to eq(end_date)
   end
 

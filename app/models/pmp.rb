@@ -55,9 +55,9 @@ class Pmp < ActiveRecord::Base
     Forecast::PmpRevenueCalcTriggerService.new(self, 'item', {}).perform
   end
   
-  def self.calculate_end_date(ids)
+  def self.calculate_dates(ids)
     Pmp.where(id: ids).find_each do |pmp|
-      pmp.calculate_end_date!
+      pmp.calculate_dates!
     end
   end
 
@@ -76,12 +76,16 @@ class Pmp < ActiveRecord::Base
     self.save!
   end
 
-  def calculate_end_date!
+  def calculate_dates!
     daily_actual_end_date = pmp_item_daily_actuals.maximum(:date)
+    daily_actual_start_date = pmp_item_daily_actuals.minimum(:date)
     if daily_actual_end_date.present? && end_date < daily_actual_end_date
       self.end_date = daily_actual_end_date
-      self.save!
     end
+    if daily_actual_start_date.present? && start_date > daily_actual_start_date
+      self.start_date = daily_actual_start_date
+    end
+    self.save!
   end
 
   def opened?

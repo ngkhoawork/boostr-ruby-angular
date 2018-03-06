@@ -78,7 +78,7 @@ class PmpItemDailyActual < ActiveRecord::Base
 
   def update_pmp_end_date
     if date_changed?
-      pmp.calculate_end_date!
+      pmp.calculate_dates!
     end
   end
 
