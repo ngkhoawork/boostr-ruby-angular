@@ -815,6 +815,35 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_index "content_fees", ["io_id"], name: "index_content_fees_on_io_id", using: :btree
   add_index "content_fees", ["product_id"], name: "index_content_fees_on_product_id", using: :btree
 
+  create_table "contracts", force: :cascade do |t|
+    t.integer  "company_id",                                                  null: false
+    t.integer  "deal_id"
+    t.integer  "publisher_id"
+    t.integer  "advertiser_id"
+    t.integer  "agency_id"
+    t.integer  "type_id"
+    t.integer  "status_id"
+    t.string   "name"
+    t.text     "description"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.decimal  "amount",             precision: 15, scale: 2
+    t.boolean  "restricted",                                  default: false, null: false
+    t.boolean  "auto_renew",                                  default: false, null: false
+    t.boolean  "auto_notifications",                          default: false, null: false
+    t.string   "curr_cd",                                     default: "USD"
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
+  end
+
+  add_index "contracts", ["advertiser_id"], name: "index_contracts_on_advertiser_id", using: :btree
+  add_index "contracts", ["agency_id"], name: "index_contracts_on_agency_id", using: :btree
+  add_index "contracts", ["company_id"], name: "index_contracts_on_company_id", using: :btree
+  add_index "contracts", ["deal_id"], name: "index_contracts_on_deal_id", using: :btree
+  add_index "contracts", ["publisher_id"], name: "index_contracts_on_publisher_id", using: :btree
+  add_index "contracts", ["status_id"], name: "index_contracts_on_status_id", using: :btree
+  add_index "contracts", ["type_id"], name: "index_contracts_on_type_id", using: :btree
+
   create_table "cost_monthly_amounts", force: :cascade do |t|
     t.integer  "cost_id"
     t.date     "start_date"

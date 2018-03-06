@@ -529,6 +529,8 @@ Rails.application.routes.draw do
     resources :publisher_contacts, only: [:create, :update, :destroy]
 
     resources :sales_processes, only: [:index, :create, :show, :update]
+
+    resources :contracts
   end
 
   mount Sidekiq::Web => '/sidekiq'
