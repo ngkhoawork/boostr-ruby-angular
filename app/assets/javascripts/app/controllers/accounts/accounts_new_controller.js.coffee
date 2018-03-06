@@ -147,7 +147,6 @@
         duplicate.name =  duplicateName.replace(re, '<strong>$1</strong>');
     )
 
-
   $scope.onNameChanged = ->
     if $scope.client.name.length < $scope.minSearchStringLength
       $scope.closeDuplicateList()

@@ -29,10 +29,10 @@
           .duplicate-list
             .loader-wrapper{ 'ng-if': 'isLoaderShow' }
               .loading-pulse
-            %ul.list-group.duplicates-list
+            %ul.list-group.duplicates-list{ 'ng-if': 'duplicates !== undefined' }
               %li.list-group-item{ 'ng-if': 'duplicates.length > 0' }
                 Accounts with similar names
-              %li.list-group-item{ 'ng-if': 'duplicates.length == 0 || duplicates === undefined' }
+              %li.list-group-item{ 'ng-if': 'duplicates.length == 0' }
                 Account name is
                 %strong
                   unique
