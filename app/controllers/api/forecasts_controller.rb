@@ -204,11 +204,14 @@ class Api::ForecastsController < ApplicationController
 
   def valid_time_period?
     if params[:time_period_id].present? && time_period.present?
-      if time_period.start_date == time_period.start_date.beginning_of_year && time_period.end_date == time_period.start_date.end_of_year
+      if time_period.start_date == time_period.start_date.beginning_of_year &&
+          time_period.end_date == time_period.start_date.end_of_year
         return true
-      elsif time_period.start_date == time_period.start_date.beginning_of_quarter && time_period.end_date == time_period.start_date.end_of_quarter
+      elsif time_period.start_date == time_period.start_date.beginning_of_quarter &&
+          time_period.end_date == time_period.start_date.end_of_quarter
         return true
-      elsif time_period.start_date == time_period.start_date.beginning_of_month && time_period.end_date == time_period.start_date.end_of_month
+      elsif time_period.start_date == time_period.start_date.beginning_of_month &&
+          time_period.end_date == time_period.start_date.end_of_month
         return true
       else
         return false
