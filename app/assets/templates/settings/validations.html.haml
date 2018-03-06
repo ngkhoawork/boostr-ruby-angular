@@ -42,6 +42,10 @@
             .form-group
               %z-toggle{'ng-model': 'restrict_deal_reopen.criterion.value', 'ng-change': 'restrictDealReopen()',  id: "restrict"}
 
+            %h5 Require Reason for Wins
+            .form-group
+              %z-toggle{'ng-model': 'require_won_reason.criterion.value', 'ng-change': 'updateValidation(require_won_reason)',  id: "require_won_reason"}
+
             %h5 Select which fields are required
             %table.table.table-hover
               %thead

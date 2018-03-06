@@ -32,6 +32,8 @@
           $scope.deal_base_fields.push validation
         else if validation.factor == 'Restrict Deal Reopen'
           $scope.restrict_deal_reopen = validation
+        else if validation.factor == 'Require Won Reason'
+          $scope.require_won_reason = validation
       $scope.stages = data.stages
 
   $scope.updateValidation = (validation) ->

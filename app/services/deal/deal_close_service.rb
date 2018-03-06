@@ -33,7 +33,10 @@ class Deal::DealCloseService
         if !deal.fields.nil? && !deal.values.nil?
           field = deal.fields.find_by_name('Close Reason')
           close_reason = deal.values.find_by_field_id(field.id) if !field.nil?
-          close_reason.destroy if !close_reason.nil?
+          if !close_reason.nil?
+            close_reason.destroy 
+            deal.closed_reason_text = nil
+          end
         end
       end
 

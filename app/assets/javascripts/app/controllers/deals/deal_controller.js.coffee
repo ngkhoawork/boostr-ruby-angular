@@ -106,8 +106,9 @@
       $scope.activeDealProductCfLength = (_.filter dealProductCfNames, (item) -> !item.disabled).length
 
   getValidations = () ->
-    Validation.deal_base_fields().$promise.then (data) ->
-      $scope.base_fields_validations = data
+    Validation.query().$promise.then (data) ->
+      $scope.won_reason_required = _.find data, factor: 'Require Won Reason'
+      $scope.base_fields_validations = _.filter data, object: 'Deal Base Field'
 
   $scope.sumDealProductBudget = (index) ->
     products = $scope.currentDeal.deal_products
@@ -569,7 +570,9 @@
           $scope.showWarningModal('SSP, SSP Deal-ID and PMP Type fields are required for PMP products.')
           return          
         if !stage.open && stage.probability == 0
-          $scope.showModal(currentDeal)
+          $scope.showWonLossModal(currentDeal, false)
+        else if !stage.open && stage.probability == 100 && $scope.won_reason_required && $scope.won_reason_required.criterion.value
+          $scope.showWonLossModal(currentDeal, true)
         else
           Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
             (deal) ->
@@ -698,7 +701,7 @@
   $scope.cancelAddProduct = ->
     $scope.showProductForm = !$scope.showProductForm
 
-  $scope.showModal = (currentDeal) ->
+  $scope.showWonLossModal = (currentDeal, hasWon) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_close_form.html'
       size: 'md'
@@ -708,6 +711,8 @@
       resolve:
         currentDeal: ->
           currentDeal
+        hasWon: ->
+          hasWon
 
   $scope.showWarningModal = (message) ->
     $scope.modalInstance = $modal.open
