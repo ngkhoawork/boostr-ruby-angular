@@ -1,0 +1,48 @@
+#quotas {
+  .container {
+    padding: 0 40px;
+    width: 90%;
+    margin: 0 auto;
+    min-width: $content-min-width;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    margin-left: 0;
+    margin-right: 0;
+
+    .header-item {
+      margin-right: 30px;
+      white-space: nowrap;
+      &:last-child {
+        margin: 0 0 0 auto;
+      }
+    }
+
+    .add-btn {
+      position: relative;
+      top: 2px;
+    }
+
+    .filter a.dropdown-selected {
+      color: #ff7200
+    }
+
+    .filter .filter-title {
+      font-weight: bold;
+    }
+  }
+
+  .table-wrapper tr:hover {
+    cursor: pointer;
+    
+    .edit-icon {
+      display: inline-block;
+    }
+  }
+
+  .table-wrapper .edit-icon {
+    display: none;
+  }
+}

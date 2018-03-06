@@ -6,6 +6,7 @@
         $scope.sellers = []
         $scope.timePeriods = []
         $scope.appliedFilter = {}
+        $scope.isNetForecast = false
         $scope.switch =
             revenues: 'quarters'
             pmp_revenues: 'quarters'
@@ -50,6 +51,9 @@
             query.user_id = 'all' if !query.user_id
             getData(query)
 
+        $scope.toggleNetForecast = (e) ->
+            $scope.isNetForecast = !$scope.isNetForecast
+
         $scope.getAnnualSum = (data) ->
             sum = 0
             _.each $scope.quarters, (quarter) ->
@@ -63,6 +67,7 @@
             timePeriods: TimePeriod.all()
         ).then (data) ->
             $scope.user = data.user
+            $scope.hasNetPermission = data.user.company_net_forecast_enabled
             $scope.teams = data.teams
             data.timePeriods = data.timePeriods.filter (period) ->
                 period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
@@ -73,27 +78,44 @@
         handleForecast = (data) ->
             fc = data.forecast
             fc.quarterly_weighted_forecast = {}
+            fc.quarterly_weighted_forecast_net = {}
             fc.quarterly_unweighted_forecast = {}
+            fc.quarterly_unweighted_forecast_net = {}
             fc.quarterly_weighted_gap_to_quota = {}
+            fc.quarterly_weighted_gap_to_quota_net = {}
             fc.quarterly_unweighted_gap_to_quota = {}
+            fc.quarterly_unweighted_gap_to_quota_net = {}
             fc.quarterly_percentage_of_annual_quota = {}
+            fc.quarterly_percentage_of_annual_quota_net = {}
             quotaSum = _.reduce fc.quarterly_quota, (result, val) -> result + Number val
+            quotaSumNet = _.reduce fc.quarterly_quota_net, (result, val) -> result + Number val
             _.each data.quarters, (quarter) ->
                 weighted = Number fc.quarterly_revenue[quarter]
+                weighted_net = Number fc.quarterly_revenue_net[quarter]
                 unweighted = Number fc.quarterly_revenue[quarter]
+                unweighted_net = Number fc.quarterly_revenue_net[quarter]
                 _.each fc.stages, (stage) ->
                     weighted += Number fc.quarterly_weighted_pipeline_by_stage[stage.id][quarter]
+                    weighted_net += Number fc.quarterly_weighted_pipeline_by_stage_net[stage.id][quarter]
                     unweighted += Number fc.quarterly_unweighted_pipeline_by_stage[stage.id][quarter]
+                    unweighted_net += Number fc.quarterly_unweighted_pipeline_by_stage_net[stage.id][quarter]
                 fc.quarterly_weighted_forecast[quarter] = weighted
+                fc.quarterly_weighted_forecast_net[quarter] = weighted_net
                 fc.quarterly_unweighted_forecast[quarter] = unweighted
+                fc.quarterly_unweighted_forecast_net[quarter] = unweighted_net
                 if $scope.forecast_gap_to_quota_positive
                     fc.quarterly_weighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - weighted
+                    fc.quarterly_weighted_gap_to_quota_net[quarter] = fc.quarterly_quota_net[quarter] - weighted_net
                     fc.quarterly_unweighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - unweighted
+                    fc.quarterly_unweighted_gap_to_quota_net[quarter] = fc.quarterly_quota_net[quarter] - unweighted_net
                 else
                     fc.quarterly_weighted_gap_to_quota[quarter] = weighted - fc.quarterly_quota[quarter]
+                    fc.quarterly_weighted_gap_to_quota_net[quarter] = weighted_net - fc.quarterly_quota_net[quarter]
                     fc.quarterly_unweighted_gap_to_quota[quarter] = unweighted - fc.quarterly_quota[quarter]
+                    fc.quarterly_unweighted_gap_to_quota_net[quarter] = unweighted_net - fc.quarterly_quota_net[quarter]
 
                 fc.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota[quarter]) / quotaSum * 100) else null
+                fc.quarterly_percentage_of_annual_quota_net[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota_net[quarter]) / quotaSumNet * 100) else null
             fc.stages.sort (s1, s2) -> s2.probability - s1.probability
 
         addDetailAmounts = (data, type) ->
@@ -189,7 +211,8 @@
                 parseRevenueBudgets pmp_data
                 addDetailAmounts pmp_data, 'pmp_revenues'
                 $scope.pmp_revenues = pmp_data
-                return Deal.forecast_detail(query)
+                query.type='quarterly'
+                return Forecast.pipeline_data(query).$promise
             .then (deal_data) ->
                 parseDealBudgets deal_data
                 addDetailAmounts deal_data, 'deals'

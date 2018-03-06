@@ -408,11 +408,11 @@ class Api::DealsController < ApplicationController
       deal['split_period_budget'] = split_period_budget
       deal['month_amounts'] = []
       monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
-                                 .select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue")
-                                 .for_time_period(time_period.start_date, time_period.end_date)
-                                 .where("deal_products.deal_id = ?", deal['id'])
-                                 .group("date_part('month', start_date)").order("date_part('month', start_date) asc")
-                                 .collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
+        .select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue")
+        .for_time_period(time_period.start_date, time_period.end_date)
+        .where("deal_products.deal_id = ? AND deal_products.open IS TRUE", deal['id'])
+        .group("date_part('month', start_date)").order("date_part('month', start_date) asc")
+        .collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
 
       index = 0
       monthly_revenues.each do |monthly_revenue|
@@ -438,12 +438,12 @@ class Api::DealsController < ApplicationController
 
       deal['quarter_amounts'] = []
       quarterly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
-                                   .select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue")
-                                   .for_time_period(time_period.start_date, time_period.end_date)
-                                   .where("deal_id = ?", deal['id'])
-                                   .group("date_part('quarter', start_date)")
-                                   .order("date_part('quarter', start_date) asc")
-                                   .collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
+        .select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue")
+        .for_time_period(time_period.start_date, time_period.end_date)
+        .where("deal_id = ? AND deal_products.open IS TRUE", deal['id'])
+        .group("date_part('quarter', start_date)")
+        .order("date_part('quarter', start_date) asc")
+        .collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
       index = 0
       quarterly_revenues.each do |quarterly_revenue|
         for i in index..(quarterly_revenue[:quarter]-2)

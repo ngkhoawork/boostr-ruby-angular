@@ -12,6 +12,8 @@ class Io < ActiveRecord::Base
   has_many :users, dependent: :destroy, through: :io_members
   has_many :content_fees, dependent: :destroy
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
+  has_many :costs, dependent: :destroy
+  has_many :cost_monthly_amounts, dependent: :destroy, through: :costs
   has_many :display_line_items, dependent: :destroy
   has_many :display_line_item_budgets, dependent: :destroy, through: :display_line_items
   has_many :print_items, dependent: :destroy
@@ -50,6 +52,7 @@ class Io < ActiveRecord::Base
   after_update do
     if (start_date_changed? || end_date_changed?)
       reset_content_fees
+      reset_costs
       reset_member_effective_dates
     end
   end
@@ -83,6 +86,16 @@ class Io < ActiveRecord::Base
     end
   end
 
+  def reset_costs
+    # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
+    ActiveRecord::Base.no_touching do
+      costs.each do |cost|
+        cost.cost_monthly_amounts.destroy_all
+        cost.generate_cost_monthly_amounts
+      end
+    end
+  end
+
   def reset_member_effective_dates
     io_members.each do |io_member|
       date_changed = false
@@ -104,8 +117,12 @@ class Io < ActiveRecord::Base
     time_periods.each do |time_period|
       self.users.each do |user|
         self.products.each do |product|
-          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
-          forecast_revenue_fact_calculator.calculate()
+          ForecastRevenueFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
+          ForecastCostFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
         end
       end
     end
@@ -117,8 +134,12 @@ class Io < ActiveRecord::Base
     time_periods.each do |time_period|
       io.users.each do |user|
         io.products.each do |product|
-          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
-          forecast_revenue_fact_calculator.calculate()
+          ForecastRevenueFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
+          ForecastCostFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
         end
       end
     end
@@ -301,6 +322,14 @@ class Io < ActiveRecord::Base
         content_fees: {
             include: {
                 content_fee_product_budgets: {}
+            },
+            methods: [
+                :product
+            ]
+        },
+        costs: {
+            include: {
+                cost_monthly_amounts: {}
             },
             methods: [
                 :product

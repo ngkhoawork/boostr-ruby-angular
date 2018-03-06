@@ -127,6 +127,36 @@
         metadata: ->
           false
 
+  $scope.showUploadIOContentFeeModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/io_content_fee_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/ios/import_content_fee'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
+  $scope.showUploadIOCostsModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/io_costs_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/ios/import_costs'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.showUploadIntegrationIdModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/integration_id_upload.html'
@@ -278,8 +308,42 @@
         metadata: ->
           false
 
+  $scope.showUploadActivePmpItem = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/active_pmp_item.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/active_pmps/import_item'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
+  $scope.showUploadActivePmpObject = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/active_pmp_object.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/active_pmps/import_object'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.exportInfluencers = ->
     $window.open('/api/influencers.csv')
+    return true
+
+  $scope.exportIOCosts = ->
+    $window.open('/api/ios/export_costs.csv')
     return true
 
   $scope.showBodyModal = (body) ->
@@ -303,10 +367,14 @@
     { title: 'Deal Products Import', click: $scope.showUploadDealProductModal, linkText: 'Import Deal Products' },
     { title: 'Deals Import', click: $scope.showUploadDealsModal, linkText: 'Import Deals' },
     { title: 'IO Import', click: $scope.showUploadDisplayIOModal, linkText: 'Import IOs' },
+    { title: 'IO Costs Import', click: $scope.showUploadIOCostsModal, linkText: 'Import IO Costs' },
+    { title: 'IO Content Fees Import', click: $scope.showUploadIOContentFeeModal, linkText: 'Import IO Content Fees' },
     { title: 'IO Monthly Product Budget Import', click: $scope.showUploadDisplayIOMonthlyBudgetModal, linkText: 'Import IO Monthly Budgets' },
     { title: 'Influencer Content Fee Import', click: $scope.showUploadInfluencerContentFeesModal, linkText: 'Import Content Fee' },
     { title: 'Influencers Import', click: $scope.showUploadInfluencersModal, linkText: 'Import Influencers' },
     { title: 'Integration ID Import', click: $scope.showUploadIntegrationIdModal, linkText: 'Import Integration IDs' },
+    { title: 'Active PMP Import', click: $scope.showUploadActivePmpObject, linkText: 'Active PMP Import' },
+    { title: 'Active PMP Item Import', click: $scope.showUploadActivePmpItem, linkText: 'Active PMP Item Import' }
     { title: 'PMP Daily Actual Import', click: $scope.showUploadPmpItemDailyActualsModal, linkText: 'Import PMP Daily Actual' },
     { title: 'Publishers Daily Actuals Import', click: $scope.showUploadPublisherModal, linkText: 'Publishers Daily Actuals Import' },
     { title: 'Quotas Import', click: $scope.showUploadQuotasModal, linkText: 'Import Quotas' },
@@ -321,6 +389,7 @@
     { title: 'Deals Export', click: $scope.exportDeals, linkText: 'Export Deals' },
     { title: 'Influencers Export', click: $scope.exportInfluencers, linkText: 'Export Influencers' },
     { title: 'IO Monthly Product Budget Export', click: $scope.exportDisplayIOMonthlyBudgets, linkText: 'Export IO Monthly Product Budgets' },
+    { title: 'IO Costs Export', click: $scope.exportIOCosts, linkText: 'Export IO Costs' }
   ]
 
 ]

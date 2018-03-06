@@ -33,6 +33,7 @@
 							%th Family
 							%th Type
 							%th Revenue Type
+							%th Margin
 							%th Active
 							%th Is Influencer
 					%tbody{ ng: { repeat: 'product in products' } }
@@ -44,6 +45,7 @@
 							%td {{ product.product_family.name }}
 							%td {{ product.pricing_type.option.name }}
 							%td {{ product.revenue_type }}
+							%td {{ product.margin }}
 							%td {{ product.active ? 'Yes' : 'No' }}
 							%td {{ product.is_influencer_product ? 'Yes' : 'No' }}
 						%tr{'ng-show': 'expendedRow == product.id'}

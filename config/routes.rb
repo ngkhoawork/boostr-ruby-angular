@@ -300,6 +300,10 @@ Rails.application.routes.draw do
     end
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
       put :update_influencer_budget
+      post :import_content_fee, on: :collection
+      post :import_costs, on: :collection
+      get :export_costs, on: :collection
+      resources :costs, only: [:create, :update, :destroy]
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]
     end
@@ -508,6 +512,13 @@ Rails.application.routes.draw do
     resources :publisher_custom_field_names, only: [:index, :create, :update, :destroy]
     resources :publisher_daily_actuals, only: [] do
       post :import, on: :collection
+    end
+
+    resources :active_pmps, only: [] do
+      collection do
+        post :import_item
+        post :import_object
+      end
     end
 
     resources :sales_stages, only: [:index, :create, :update] do

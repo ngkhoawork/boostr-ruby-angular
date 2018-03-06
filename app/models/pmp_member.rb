@@ -2,6 +2,8 @@ class PmpMember < ActiveRecord::Base
   belongs_to :pmp, required: true
   belongs_to :user, required: true
 
+  attr_accessor :skip_callback
+
   validates :share, :from_date, :to_date, presence: true
 
   after_save do
@@ -13,6 +15,6 @@ class PmpMember < ActiveRecord::Base
   end
 
   def update_revenue_fact
-    Forecast::PmpRevenueCalcTriggerService.new(pmp, 'user', { users: [user] }).perform
+    Forecast::PmpRevenueCalcTriggerService.new(pmp, 'user', { users: [user] }).perform unless skip_callback
   end
 end

@@ -13,11 +13,23 @@
               %span.mr8 Go to
               %a{href: '', 'ng-click': 'scrollTo("#revenue-section")'} Revenue
               |
+              %a{href: '', 'ng-click': 'scrollTo("#pmp-section")'} PMP
+              |
               %a{href: '', 'ng-click': 'scrollTo("#deals-section")'} Deals
+
+        .header-cell{'ng-if': 'hasNetPermission'}
+          %b.mr40 Show Net
+          .show-hide-remainder-form.m0
+            .switch-remainder-form
+              %input#net-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-checked': 'isNetForecast', 'ng-click': 'toggleNetForecast($event)'}
+              %label{for: 'net-toggle'}
+                %span
+
         .header-cell
           .pull-right
             %download-button{'ng-click': 'export($event)'}
               Export
+
     %div
       .row
         .col-xs-6
@@ -27,6 +39,7 @@
             %table.table.table-hover.exportable-table
               %thead
                 %tr.hide
+                  -#title for export
                   %th Weighted Forecast
                 %tr
                   %th
@@ -38,43 +51,44 @@
                   %td
                     %b Revenue
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{(forecast.quarterly_revenue[quarter] || 0) | currency : '$' : 0}}
+                    {{(isNetForecast ? forecast.quarterly_revenue_net[quarter] : forecast.quarterly_revenue[quarter] || 0) | currency : '$' : 0}}
                   %td{'ng-if': 'isYear()'}
-                    {{getAnnualSum(forecast.quarterly_revenue) | currency : '$' : 0}}
+                    {{getAnnualSum(isNetForecast ? forecast.quarterly_revenue_net : forecast.quarterly_revenue) | currency : '$' : 0}}
                 %tr{'ng-repeat': 'stage in forecast.stages'}
                   %td
                     %b {{stage.probability}}%
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{forecast.quarterly_weighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
+                    {{isNetForecast ? forecast.quarterly_weighted_pipeline_by_stage_net[stage.id][quarter] : forecast.quarterly_weighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
                   %td{'ng-if': 'isYear()'}
-                    {{getAnnualSum(forecast.quarterly_weighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
+                    {{getAnnualSum(isNetForecast ? forecast.quarterly_weighted_pipeline_by_stage_net[stage.id] : forecast.quarterly_weighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
                 %tr
                   %td
                     %b Forecast
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{(forecast.quarterly_weighted_forecast[quarter] || 0) | currency : '$' : 0}}
+                    {{(isNetForecast ? forecast.quarterly_weighted_forecast_net[quarter] : forecast.quarterly_weighted_forecast[quarter] || 0) | currency : '$' : 0}}
                   %td{'ng-if': 'isYear()'}
-                    {{getAnnualSum(forecast.quarterly_weighted_forecast) | currency : '$' : 0}}
+                    {{getAnnualSum(isNetForecast ? forecast.quarterly_weighted_forecast_net : forecast.quarterly_weighted_forecast) | currency : '$' : 0}}
+
                 %tr
                   %td
                     %b Quota
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{(forecast.quarterly_quota[quarter] || 0) | currency : '$' : 0}}
+                    {{(isNetForecast ? forecast.quarterly_quota_net[quarter] : forecast.quarterly_quota[quarter] || 0) | currency : '$' : 0}}
                   %td{'ng-if': 'isYear()'}
-                    {{getAnnualSum(forecast.quarterly_quota) | currency : '$' : 0}}
+                    {{(getAnnualSum(forecast.quarterly_quota) || 0) | currency : '$' : 0}}
 
                 %tr
                   %td
                     %b Gap to Quota
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{(forecast.quarterly_weighted_gap_to_quota[quarter] || 0) | currency : '$' : 0}}
+                    {{(isNetForecast ? forecast.quarterly_weighted_gap_to_quota_net[quarter] : forecast.quarterly_weighted_gap_to_quota[quarter] || 0) | currency : '$' : 0}}
                   %td{'ng-if': 'isYear()'}
-                    {{getAnnualSum(forecast.quarterly_weighted_gap_to_quota) | currency : '$' : 0}}
+                    {{getAnnualSum(isNetForecast ? forecast.quarterly_weighted_gap_to_quota_net : forecast.quarterly_weighted_gap_to_quota) | currency : '$' : 0}}
                 %tr
                   %td
                     %b % of Annual Quota
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{isNumber(forecast.quarterly_percentage_of_annual_quota[quarter]) ? forecast.quarterly_percentage_of_annual_quota[quarter] + '%' : 'N/A'}}
+                    {{isNumber(isNetForecast ? forecast.quarterly_percentage_of_annual_quota_net[quarter] : forecast.quarterly_percentage_of_annual_quota[quarter]) ? (isNetForecast ? forecast.quarterly_percentage_of_annual_quota_net[quarter] : forecast.quarterly_percentage_of_annual_quota[quarter]) + '%' : 'N/A'}}
                   %td{'ng-if': 'isYear()'}
 
         .col-xs-6
@@ -84,6 +98,7 @@
             %table.table.table-hover.exportable-table
               %thead
                 %tr.hide
+                  -#title for export
                   %th Unweighted Forecast
                 %tr
                   %th
@@ -95,23 +110,23 @@
                   %td
                     %b Revenue
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{(forecast.quarterly_revenue[quarter] || 0) | currency : '$' : 0}}
+                    {{(isNetForecast ? forecast.quarterly_revenue_net[quarter] : forecast.quarterly_revenue[quarter] || 0) | currency : '$' : 0}}
                   %td{'ng-if': 'isYear()'}
-                    {{getAnnualSum(forecast.quarterly_revenue) | currency : '$' : 0}}
+                    {{getAnnualSum(isNetForecast ? forecast.quarterly_revenue_net : forecast.quarterly_revenue) | currency : '$' : 0}}
                 %tr{'ng-repeat': 'stage in forecast.stages'}
                   %td
                     %b {{stage.probability}}%
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{forecast.quarterly_unweighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
+                    {{isNetForecast ? forecast.quarterly_unweighted_pipeline_by_stage_net[stage.id][quarter] : forecast.quarterly_unweighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
                   %td{'ng-if': 'isYear()'}
-                    {{getAnnualSum(forecast.quarterly_unweighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
+                    {{getAnnualSum(isNetForecast ? forecast.quarterly_unweighted_pipeline_by_stage_net[stage.id] : forecast.quarterly_unweighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
                 %tr
                   %td
                     %b Forecast
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{(forecast.quarterly_unweighted_forecast[quarter] || 0) | currency : '$' : 0}}
+                    {{(isNetForecast ? forecast.quarterly_unweighted_forecast_net[quarter] : forecast.quarterly_unweighted_forecast[quarter] || 0) | currency : '$' : 0}}
                   %td{'ng-if': 'isYear()'}
-                    {{getAnnualSum(forecast.quarterly_unweighted_forecast) | currency : '$' : 0}}
+                    {{getAnnualSum(isNetForecast ? forecast.quarterly_unweighted_forecast_net : forecast.quarterly_unweighted_forecast) | currency : '$' : 0}}
 
                 %tr
                   %td
@@ -125,9 +140,9 @@
                   %td
                     %b Gap to Quota
                   %td{'ng-repeat': 'quarter in quarters'}
-                    {{(forecast.quarterly_unweighted_gap_to_quota[quarter] || 0) | currency : '$' : 0}}
+                    {{(isNetForecast ? forecast.quarterly_unweighted_gap_to_quota_net[quarter] : forecast.quarterly_unweighted_gap_to_quota[quarter] || 0) | currency : '$' : 0}}
                   %td{'ng-if': 'isYear()'}
-                    {{getAnnualSum(forecast.quarterly_unweighted_gap_to_quota) | currency : '$' : 0}}
+                    {{getAnnualSum(isNetForecast ? forecast.quarterly_unweighted_gap_to_quota_net : forecast.quarterly_unweighted_gap_to_quota) | currency : '$' : 0}}
                 %tr
                   %td
                     %b % of Annual Quota
@@ -146,6 +161,7 @@
               %table.table.table-hover.exportable-table
                 %thead
                   %tr.hide
+                    -#title for export
                     %th Revenue Details
                   %tr.z-sortable-prime{'sort-name': 'revenues', 'z-fixed-header': true, watch: '["revenues", "revenues.detail_amounts[switch.revenues]"]'}
                     %th
@@ -188,10 +204,9 @@
                   %tr{ ng: { if: 'revenues.length == 0' }}
                     %td.center.auto-colspan
                       No Data for the Filters Selected
-
       #pmp-section.row
         .col-xs-12
-          .block  
+          .block
             .switch-row.pull-right
               %span{'ng-class': '{active: switch.pmp_revenues == "quarters"}', 'ng-click': 'switch.set("pmp_revenues", "quarters")'} Quarterly
               %span{'ng-class': '{active: switch.pmp_revenues == "months"}', 'ng-click': 'switch.set("pmp_revenues", "months")'} Monthly
@@ -207,12 +222,12 @@
                     %th
                       .z-sortable{by: 'name'} IO Name
                     %th
-                      .z-sortable{by: 'advertiser.name'}Advertiser
+                      .z-sortable{by: 'advertiser.name'} Advertiser
                     %th
                       .z-sortable{by: 'agency.name'} Agency
                     %th
                       .z-sortable{by: 'members'} Team
-                    %th  
+                    %th
                       .z-sortable{by: 'start_date'} Start Date
                     %th
                       .z-sortable{by: 'end_date'} End Date
@@ -220,8 +235,11 @@
                       .z-sortable{by: 'budget', default: true} Total Budget
                     %th
                       .z-sortable{by: 'in_period_split_amt'} Split In-Period Amt
-                    %th{'ng-repeat': '(index, key) in pmp_revenues.detail_amounts[switch.pmp_revenues]'}
-                      .z-sortable{by: 'getSortableAmountKey("pmp_revenues", index)'} {{key}}
+                    %th.totalCol{'ng-repeat': '(index, key) in pmp_revenues.detail_amounts[switch.pmp_revenues]'}
+                      %span
+                        {{key.total | currency : '$' : 0}}
+                      .z-sortable.totalLabel{by: 'getSortableAmountKey("pmp_revenues", index)'}
+                        {{key.month || key.quarter}}
                 %tbody
                   %tr{'ng-repeat': 'pmp_revenue in pmp_revenues | orderBy : zSort.pmp_revenues.by : zSort.pmp_revenues.rev'}
                     %td
@@ -229,7 +247,7 @@
                     %td {{pmp_revenue.advertiser}}
                     %td {{pmp_revenue.agency}}
                     %td
-                      %div{'ng-repeat': 'member in pmp_revenue.pmp_members'} {{member.name}} {{member.share}}%  
+                      %div{'ng-repeat': 'member in pmp_revenue.pmp_members'} {{member.name}} {{member.share}}%
                     %td {{pmp_revenue.start_date | date : 'MM/dd/yyyy'}}
                     %td {{pmp_revenue.end_date | date : 'MM/dd/yyyy'}}
                     %td {{pmp_revenue.budget | currency : '$' : 2}}
@@ -254,6 +272,7 @@
               %table.table.table-hover.exportable-table
                 %thead
                   %tr.hide
+                    -#title for export
                     %th Deals
                   %tr.z-sortable-prime{'sort-name': 'deals', 'z-fixed-header': true, watch: '["deals", "deals.detail_amounts[switch.deals]"]'}
                     %th
