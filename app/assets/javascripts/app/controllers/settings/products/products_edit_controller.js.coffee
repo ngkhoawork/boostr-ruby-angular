@@ -4,7 +4,7 @@
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"
-  $scope.revenue_types = ['Display', 'Content-Fee']
+  $scope.revenue_types = Product.revenue_types
 
   ProductFamily.all(active: true).then (product_families) ->
     $scope.product_families = product_families

@@ -321,6 +321,8 @@
         activity: ->
           activity
 
+  $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
+
   $scope.searchContact = (searchText) ->
     if ($scope.contactSearchText != searchText)
       $scope.contactSearchText = searchText

@@ -1,5 +1,6 @@
 class Notification < ActiveRecord::Base
   LOST_DEAL = 'Lost Deal'.freeze
+  PMP_STOPPED_RUNNING = 'PMP-stopped Running'.freeze
 
   belongs_to :company
   

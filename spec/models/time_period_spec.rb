@@ -54,13 +54,4 @@ RSpec.describe TimePeriod, type: :model do
       expect(another_time_period).to be_valid
      end
   end
-
-  context 'quotas' do
-    it 'should create a quota for each user of the company' do
-      create_list :user, 2
-      expect {
-        create :time_period
-      }.to change(Quota, :count).by(2)
-    end
-  end
 end

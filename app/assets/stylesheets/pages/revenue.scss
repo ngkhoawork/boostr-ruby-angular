@@ -38,13 +38,22 @@
       &:last-child {
         margin: 0 0 0 auto;
       }
+      &.title {
+        min-width: 110px;
+        max-width: 110px;
+      }
     }
     .search {
       width: 30%;
     }
+    .add-btn {
+      margin: 10px 0 0 20px;
+      position: relative;
+      top: 2px;
+    }
   }
   .date-filter {
-    padding: 10px 0;
+    padding: 5px 0;
     font-weight: bold;
     .date-picker-wrap {
       cursor: pointer;
@@ -61,6 +70,21 @@
     thead {
       .action-column {
         width: auto;
+      }
+
+      .add-button {
+        color: $main-color !important;
+
+        svg {
+          width: 14px;
+          path {
+            transition: fill 300ms;
+            fill: $main-color;
+          }
+        }
+        svg, span {
+          vertical-align: middle;
+        }
       }
     }
     tbody {

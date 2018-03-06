@@ -107,6 +107,14 @@ class Api::ForecastsController < ApplicationController
     render json: forecast_revenue_data_serializer
   end
 
+  def pmp_product_data
+    render json: forecast_pmp_revenue_product_data_serializer
+  end
+
+  def pmp_data
+    render json: forecast_pmp_revenue_data_serializer
+  end
+
   def show
     render json: ForecastTeam.new(team, time_period.start_date, time_period.end_date, nil, year)
   end
@@ -125,6 +133,7 @@ class Api::ForecastsController < ApplicationController
 
       job = ForecastCalculationLog.create(company_id: current_user.company_id, start_date: DateTime.now, end_date: nil, finished: false)
       ForecastRevenueCalculatorWorker.perform_async(io_change)
+      ForecastPmpRevenueCalculatorWorker.perform_async(io_change)
       ForecastPipelineCalculatorWorker.perform_async(deal_change, current_user.company_id)
 
       render nothing: true
@@ -283,6 +292,14 @@ class Api::ForecastsController < ApplicationController
 
   def forecast_revenue_data_serializer
     Forecast::RevenueDataService.new(company, params).perform
+  end
+
+  def forecast_pmp_revenue_data_serializer
+    Forecast::PmpRevenueDataService.new(company, params).perform
+  end
+
+  def forecast_pmp_revenue_product_data_serializer
+    Forecast::PmpRevenueDataService.new(company, params, true).perform
   end
 
   def forecast_pipeline_data_serializer

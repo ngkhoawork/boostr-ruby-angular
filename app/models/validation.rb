@@ -32,6 +32,8 @@ class Validation < ActiveRecord::Base
         .where('values.value_boolean = ?', true)
   end
 
+  scope :by_factor, ->(factor) { where(factor: factor) unless factor.nil? }
+
   def as_json(options = {})
     super(options.merge(
       include: {

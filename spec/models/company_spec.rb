@@ -22,13 +22,13 @@ RSpec.describe Company, type: :model do
     it 'creates default fields' do
       expect {
         create :company
-      }.to change(Field, :count).by(18)
+      }.to change(Field, :count).by(19)
     end
 
     it 'creates default field options' do
       expect {
         create :company
-      }.to change(Option, :count).by(3)
+      }.to change(Option, :count).by(4)
     end
 
     it 'creates Contact Role field and option' do

@@ -16,8 +16,6 @@ describe Deal do
 
       it 'restricts deleting deal with IO' do
         deal.update(stage: closed_won_stage)
-        deal.update_stage
-        deal.update_close
 
         expect{deal.destroy}.to raise_error(ActiveRecord::DeleteRestrictionError)
       end

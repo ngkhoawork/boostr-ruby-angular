@@ -26,6 +26,7 @@ class Ios::IoSerializer < ActiveModel::Serializer
 
   has_many :io_members, serializer: Ios::IoMemberSerializer
   has_many :content_fees, serializer: Ios::ContentFeeSerializer
+  has_many :costs, serializer: Ios::CostSerializer
   has_many :influencer_content_fees, serializer: Ios::InfluencerContentFeeSerializer
 
   has_one :advertiser

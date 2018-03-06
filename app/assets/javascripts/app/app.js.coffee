@@ -84,6 +84,10 @@
       templateUrl: 'io.html'
       controller: 'IOController'
 
+    .when '/revenue/pmps/:id',
+      templateUrl: 'pmp.html'
+      controller: 'PMPController'
+
     .when '/activities',
       templateUrl: 'activities.html'
       controller: 'ActivitiesController'
@@ -421,6 +425,7 @@
       email: user.email
     )
 ]
+window._fixedHeaderHeight = 0 #updating in NavbarController
 
 @service = angular.module 'services', ['ngResource']
 @directives = angular.module 'directives', []

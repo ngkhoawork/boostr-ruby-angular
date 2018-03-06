@@ -1,6 +1,6 @@
 @app.controller 'ProductForecastsDetailController', [
-    '$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'Forecast', 'Revenue', 'Deal', 'Product', 'ProductFamily', 'Stage', 'zError'
-    ($scope,   $q,   Team,   Seller,   TimePeriod,   Forecast,   Revenue,   Deal,   Product,   ProductFamily,   Stage,   zError) ->
+    '$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast', 'Revenue', 'Deal', 'Product', 'ProductFamily', 'Stage', 'zError'
+    ($scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal,   Product,   ProductFamily,   Stage,   zError) ->
 
         $scope.teams = []
         $scope.sellers = []
@@ -9,6 +9,7 @@
         $scope.quarters = []
         $scope.forecast = {}
         $scope.isLoading = false
+        $scope.isNetForecast = false
 
         $scope.scrollTo = (id) ->
             angular.element('html, body').animate {
@@ -18,6 +19,7 @@
 
         $q.all(
             teams: Team.all(all_teams: true)
+            user: CurrentUser.get().$promise
             sellers: Seller.query({id: 'all'}).$promise
             timePeriods: TimePeriod.all()
             products: Product.all()
@@ -25,6 +27,7 @@
             productFamilies: ProductFamily.all(active: true)
         ).then (data) ->
             $scope.teams = data.teams
+            $scope.hasNetPermission = data.user.company_net_forecast_enabled
             data.timePeriods = data.timePeriods.filter (period) ->
                 period.visible and (
                     period.period_type is 'quarter' or
@@ -44,12 +47,28 @@
                 $scope.sellers = sellers
         )()
 
+        $scope.toggleNetForecast = (e) ->
+            $scope.isNetForecast = !$scope.isNetForecast
 
         parseBudget = (data) ->
             data = _.map data, (item) ->
                 item.budget = parseFloat item.budget if item.budget
                 item.budget_loc = parseFloat item.budget_loc if item.budget_loc
                 item
+        parsePmpData = (data) ->
+            new_data = []
+            _.each data, (pmp) ->
+                _.each pmp.products, (product_item) ->
+                    new_pmp = angular.copy(pmp)
+                    new_pmp.$$hashKey = new_pmp.$$hashKey + product_item.product_id
+                    new_pmp.product_id = product_item.product_id
+                    new_pmp.product = product_item.product
+                    new_pmp.budget = parseFloat new_pmp.budget if new_pmp.budget
+                    new_pmp.budget_loc = parseFloat new_pmp.budget_loc if new_pmp.budget_loc
+                    new_pmp.in_period_amt = product_item.in_period_amt
+                    new_pmp.in_period_split_amt = product_item.in_period_split_amt
+                    new_data.push(new_pmp)
+            return new_data
 
         $scope.onFilterApply = (query) ->
             query.id = query.id || 'all'
@@ -70,37 +89,66 @@
                     unweighted_pipeline_by_stage: {}, 
                     unweighted_pipeline: 0,
                     weighted_pipeline_by_stage: {}, 
-                    weighted_pipeline: 0
+                    weighted_pipeline: 0,
+                    revenue_net: 0,
+                    unweighted_pipeline_by_stage_net: {}, 
+                    unweighted_pipeline_net: 0,
+                    weighted_pipeline_by_stage_net: {}, 
+                    weighted_pipeline_net: 0
                 }
                 _.each data, (item) ->
                     if item.revenue && item.revenue > 0
                         $scope.totalForecastData.revenue += parseFloat(item.revenue)
 
+                    if item.revenue_net && item.revenue_net > 0
+                        $scope.totalForecastData.revenue_net += parseFloat(item.revenue_net)
+
                     if item.unweighted_pipeline && item.unweighted_pipeline > 0
                         $scope.totalForecastData.unweighted_pipeline += parseFloat(item.unweighted_pipeline)
 
+                    if item.unweighted_pipeline_net && item.unweighted_pipeline_net > 0
+                        $scope.totalForecastData.unweighted_pipeline_net += parseFloat(item.unweighted_pipeline_net)
+
                     if item.weighted_pipeline && item.weighted_pipeline > 0
                         $scope.totalForecastData.weighted_pipeline += parseFloat(item.weighted_pipeline)
+
+                    if item.weighted_pipeline_net && item.weighted_pipeline_net > 0
+                        $scope.totalForecastData.weighted_pipeline_net += parseFloat(item.weighted_pipeline_net)
 
                     _.each item.unweighted_pipeline_by_stage, (val, index) ->
                         if !$scope.totalForecastData.unweighted_pipeline_by_stage[index]
                             $scope.totalForecastData.unweighted_pipeline_by_stage[index] = 0
                         $scope.totalForecastData.unweighted_pipeline_by_stage[index] += parseFloat(val)
 
+                    _.each item.unweighted_pipeline_by_stage_net, (val, index) ->
+                        if !$scope.totalForecastData.unweighted_pipeline_by_stage_net[index]
+                            $scope.totalForecastData.unweighted_pipeline_by_stage_net[index] = 0
+                        $scope.totalForecastData.unweighted_pipeline_by_stage_net[index] += parseFloat(val)
+
                     _.each item.weighted_pipeline_by_stage, (val, index) ->
                         if !$scope.totalForecastData.weighted_pipeline_by_stage[index]
                             $scope.totalForecastData.weighted_pipeline_by_stage[index] = 0
                         $scope.totalForecastData.weighted_pipeline_by_stage[index] += parseFloat(val)
+
+                    _.each item.weighted_pipeline_by_stage_net, (val, index) ->
+                        if !$scope.totalForecastData.weighted_pipeline_by_stage_net[index]
+                            $scope.totalForecastData.weighted_pipeline_by_stage_net[index] = 0
+                        $scope.totalForecastData.weighted_pipeline_by_stage_net[index] += parseFloat(val)
                 query.team_id = query.id
                 delete query.id
-                Revenue.forecast_detail(query).$promise.then (data) ->
-                    parseBudget data
-                    $scope.revenues = data
+                return Revenue.forecast_detail(query).$promise
+            .then (data) ->
+                parseBudget data
+                $scope.revenues = data
 
-                    Deal.forecast_detail(query).then (data) ->
-                        parseBudget data
-                        $scope.deals = data
-                        $scope.isLoading = false
+                return Forecast.pmp_product_data(query).$promise
+            .then (data) ->
+                $scope.pmp_revenues = parsePmpData data
+                return Deal.forecast_detail(query)
+            .then (data) ->
+                parseBudget data
+                $scope.deals = data
+                $scope.isLoading = false
 
         tableToCSV = (el) ->
             table = angular.element(el)

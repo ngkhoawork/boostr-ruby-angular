@@ -1,6 +1,6 @@
 @app.controller 'NavbarController',
-['$scope', '$location'
-( $scope,   $location ) ->
+['$scope', '$window', '$document', '$location', '$timeout'
+( $scope,   $window,   $document,   $location,   $timeout ) ->
 
     $scope.isActive = (viewLocation) ->
       $location.path().indexOf(viewLocation) == 0
@@ -47,5 +47,30 @@
         {name: 'REQUESTS', url: '/requests'} if _isRequestsVisible
         {name: 'SETTINGS', url: '/settings'} if $scope.currentUserRoles.isAdmin() || $scope.currentUserRoles.isSuperAdmin()
     ]
+
+    windowEl = $($window)
+    header = $('#header')
+    headerOffset = 70
+
+    updateFixedHeaderHeight = -> window._fixedHeaderHeight = header.outerHeight() - headerOffset
+    $timeout -> updateFixedHeaderHeight()
+
+    $scope.scrollTop = ->
+        windowEl.scrollTop(0)
+        return
+
+    scroll = ->
+        if windowEl.scrollTop() > headerOffset
+            header.addClass 'fixed-header'
+            header.css 'top', windowEl.scrollTop() - headerOffset
+        else
+            header.removeClass 'fixed-header'
+            header.css 'top', 0
+
+    $document.on 'scroll', scroll
+    windowEl.on 'resize', updateFixedHeaderHeight
+    $scope.$on '$destroy', ->
+        $document.off 'scroll', scroll
+        windowEl.off 'resize', updateFixedHeaderHeight
 
 ]

@@ -1,6 +1,6 @@
 @app.controller 'DashboardController',
-    ['$scope', '$rootScope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage', 'CurrentUser', 'PacingAlerts'
-    ( $scope,   $rootScope,   $document,   $http,   $modal,   $sce,   Dashboard,   Deal,   Client,   Field,   Contact,   Activity,   ActivityType,   Reminder,   Stage,   CurrentUser,   PacingAlerts ) ->
+    ['$scope', '$rootScope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage', 'CurrentUser', 'PacingAlerts', 'Validation'
+    ( $scope,   $rootScope,   $document,   $http,   $modal,   $sce,   Dashboard,   Deal,   Client,   Field,   Contact,   Activity,   ActivityType,   Reminder,   Stage,   CurrentUser,   PacingAlerts,   Validation ) ->
 
             $scope.progressPercentage = 10
             $scope.showMeridian = true
@@ -88,6 +88,7 @@
 
                 getDashboardData()
                 getPacingAlerts()
+                getValidations()
 
             $scope.$on 'dashboard.updateBlocks', (e, blocks) ->
                 blocks.forEach (name) -> $scope[name + 'Init']()
@@ -117,6 +118,10 @@
                 , (error) ->
                     $scope.pacingAlerts = null
                     $scope.pacingAlertsIsLoading = false
+
+            getValidations = ->
+              Validation.query(factor: 'Require Won Reason').$promise.then (data) ->
+                $scope.won_reason_required = data && data[0]
 
             getActivityDateRange = ->
                 switch $scope.activitySwitch
@@ -325,12 +330,14 @@
                 if currentDeal != null
                     Stage.get(id: currentDeal.stage_id).$promise.then (stage) ->
                         if !stage.open && stage.probability == 0
-                            $scope.showModal(currentDeal)
+                            $scope.showModal(currentDeal, false)
+                        else if !stage.open && stage.probability == 100 && $scope.won_reason_required && $scope.won_reason_required.criterion.value
+                            $scope.showModal(currentDeal, true)
                         else
                             Deal.update(id: currentDeal.id, deal: currentDeal).then (deal) ->
                                 $scope.init()
 
-            $scope.showModal = (currentDeal) ->
+            $scope.showModal = (currentDeal, hasWon) ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/deal_close_form.html'
                     size: 'md'
@@ -340,6 +347,8 @@
                     resolve:
                         currentDeal: ->
                             currentDeal
+                        hasWon: ->
+                            hasWon
 
             $scope.showEmailsModal = (activity) ->
                 $scope.modalInstance = $modal.open
@@ -351,6 +360,8 @@
                     resolve:
                         activity: ->
                             activity
+
+            $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
 
             $scope.$on 'updated_deal', ->
                 $scope.init()

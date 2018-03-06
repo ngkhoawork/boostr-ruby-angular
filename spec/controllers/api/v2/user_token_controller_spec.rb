@@ -20,4 +20,30 @@ RSpec.describe Api::V2::UserTokenController, type: :controller do
       expect(response.body).to include 'jwt'
     end
   end
+
+  describe "POST #extension (copy of create with OK status)" do
+    subject { post :extension, params }
+
+    context 'when user does not exist' do
+      let(:params) { { auth: { email: 'wrong@example.net', password: '' } } }
+
+      it { subject; expect(response).to have_http_status(:not_found) }
+    end
+
+    context 'when password is invalid' do
+      let(:params) { { auth: { email: user.email, password: 'wrong' } } }
+
+      it { subject; expect(response).to have_http_status(:not_found) }
+    end
+
+    context 'when creds are valid' do
+      let(:params) { { auth: { email: user.email, password: 'password' } } }
+
+      it do
+        subject
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include 'jwt'
+      end
+    end
+  end
 end

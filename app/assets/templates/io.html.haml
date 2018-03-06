@@ -65,15 +65,16 @@
 						%table.table.table-hover
 							%thead
 								%tr
-									%th.left Product
-									%th.left Start Date
-									%th.left End Date
-									%th.left Total Budget
-									%th.left{ ng: { repeat: "range in currentIO.readable_months" } }
+									%th.left.product-column Product
+									%th.type-column
+									%th.column.left Start Date
+									%th.column.left End Date
+									%th.column.right Total Budget
+									%th.column.right{ ng: { repeat: "range in currentIO.readable_months" } }
 										{{ range.name }}
 							%tbody
 								%tr{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0', repeat: "content_fee in currentIO.content_fees"} }
-									%td
+									%td.product-column
 										.dropdown
 											%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
 												%span.editable
@@ -84,29 +85,32 @@
 													%a{'href': '', 'ng-click': 'content_fee.product_id = product.id; updateContentFee(content_fee);'}
 														%span.text {{product.name}}
 											%i.fa.fa-trash.z-icon{'ng-click': 'deleteContentFee(content_fee)'}
+									%td.type-column
+										&nbsp;
 									%td
 										{{ currentIO.start_date | date: 'M/d/yyyy' }}
 									%td
 										{{ currentIO.end_date | date: 'M/d/yyyy' }}
-									%td
+									%td.right
 										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "content_fee.budget_loc", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "currentUser.is_admin || canEditIO" }
 										%span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
 											{{ content_fee.budget_loc | currency:currency_symbol:2 }}
-									%td.left{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
+									%td.right{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
 										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "product_budget.budget_loc", 'on-after-save': 'updateContentFeeAndBudget(content_fee)', 'ng-if': "currentUser.is_admin || canEditIO" }
 										%span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
 											{{ product_budget.budget_loc | currency:currency_symbol:2 }}
 								%tr.sum-budgets-row{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0'} }
-									%td{colspan: 2}
+									%td{colspan: 3}
 									%td.right
 										%b TOTAL
-									%td.left
+									%td.right
 										%b {{sumContentFeeBudget() | currency: currency_symbol : 2}}
-									%td.left{'ng-repeat': 'month in currentIO.months'}
+									%td.right{'ng-repeat': 'month in currentIO.months'}
 										%b {{sumContentFeeBudget($index) | currency: currency_symbol : 2}}
 								%tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
-									%td.center{ 'colspan': '{{4+currentIO.readable_months.length}}' }
+									%td.center{ 'colspan': '{{5+currentIO.readable_months.length}}' }
 										No data available
+				%div{'ng-include': '"partials/io/io_costs.html"'}
 				.block#line-display
 					%div.mb20
 						%span.title Line Items - display

@@ -63,7 +63,51 @@ class Api::IosController < ApplicationController
     end
   end
 
+  def import_content_fee
+    if params[:file].present?
+      S3FileImportWorker.perform_async('Importers::IoContentFeesService',
+                                      company.id,
+                                      params[:file][:s3_file_path],
+                                      params[:file][:original_filename])
+      render json: {
+          message: import_success_message
+      }, status: :ok
+    end
+  end
+
+  def import_costs
+    if params[:file].present?
+      S3FileImportWorker.perform_async('Importers::IoCostsService',
+                                      company.id,
+                                      params[:file][:s3_file_path],
+                                      params[:file][:original_filename])
+      render json: {
+          message: import_success_message
+      }, status: :ok
+    end
+  end
+
+  def export_costs
+    respond_to do |format|
+      format.csv {
+        require 'timeout'
+        begin
+          status = Timeout::timeout(120) {
+            send_data io_costs_csv, filename: "io-costs-#{Date.today}.csv"
+          }
+        rescue Timeout::Error
+          return
+        end
+      }
+    end
+  end
+
   private
+
+  def import_success_message
+    @_import_success_message ||= 'Your file is being processed.
+      Please check status at Import Status tab in a few minutes (depending on the file size)'
+  end
 
   def io_params
     params.require(:io).permit(
@@ -91,6 +135,10 @@ class Api::IosController < ApplicationController
       .by_advertiser_id(params[:advertiser_id])
       .limit(limit)
       .offset(offset)
+  end
+
+  def io_costs_csv
+    Csv::IoCostService.new(company, company.cost_monthly_amounts).perform
   end
 
   def io

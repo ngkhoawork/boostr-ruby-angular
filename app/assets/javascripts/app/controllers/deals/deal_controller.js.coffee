@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation', 'DealAttachment'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation, DealAttachment) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment) ->
 
   $scope.showMeridian = true
   $scope.isAdmin = false
@@ -17,18 +17,20 @@
   $scope.ealertReminder = false
   $scope.activitiesOrder = '-happened_at'
   $scope.activities = []
+  $scope.isPmpDeal = false
+  $scope.pmpColumns = 0
   $anchorScroll()
   $scope.operativeIntegration =
     isEnabled: false
     isLoading: false
     dealLog: null
+  $scope.PMPType = PMPType
 
   ###*
    * FileUpload
   ###
 
   $scope.fileToUploadTst = null
-  # $scope.progressBarMax = 0
   $scope.progressBarCur = 0
   $scope.uploadedFiles = []
   $scope.dealFiles = []
@@ -71,7 +73,7 @@
       if(err && err.status == 404)
         $location.url('/deals')
 
-    $scope.anchors = [{name: 'campaign', id: 'campaign'},
+        $scope.anchors = [{name: 'campaign', id: 'campaign'},
                       {name: 'activities', id: 'activities'},
                       {name: 'team & split', id: 'teamsplit'},
                       {name: 'attachments', id: 'attachments'},
@@ -82,7 +84,18 @@
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
+    getSsps()
 
+  checkPmpDeal = () ->
+    $scope.isPmpDeal = false
+    $scope.pmpColumns = 0
+    _.each $scope.currentDeal.products, (product) ->
+      if product.revenue_type == 'PMP'
+        $scope.isPmpDeal = true
+        $scope.pmpColumns = 3
+  getSsps = () ->
+    SSP.all().then (ssps) ->
+      $scope.ssps = ssps
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
@@ -93,8 +106,9 @@
       $scope.activeDealProductCfLength = (_.filter dealProductCfNames, (item) -> !item.disabled).length
 
   getValidations = () ->
-    Validation.deal_base_fields().$promise.then (data) ->
-      $scope.base_fields_validations = data
+    Validation.query().$promise.then (data) ->
+      $scope.won_reason_required = _.find data, factor: 'Require Won Reason'
+      $scope.base_fields_validations = _.filter data, object: 'Deal Base Field'
 
   $scope.sumDealProductBudget = (index) ->
     products = $scope.currentDeal.deal_products
@@ -225,10 +239,11 @@
       deal.close_reason = Field.field(deal, 'Close Reason')
       deal.contact_roles = Field.field(deal, 'Contact Role')
       deal.next_steps_expired = moment(deal.next_steps_due) < moment().startOf('day')
-      $scope.currentDeal = deal
-      $scope.selectedStageId = deal.stage_id
-      $scope.verifyMembersShare()
-      $scope.setBudgetPercent(deal)
+    $scope.currentDeal = deal
+    $scope.selectedStageId = deal.stage_id
+    $scope.verifyMembersShare()
+    $scope.setBudgetPercent(deal)
+    checkPmpDeal()
 
   $scope.getStages = ->
     Stage.query().$promise.then (stages) ->
@@ -365,9 +380,7 @@
           $scope.errors[key] = error && error[0]
     )
   $scope.$on 'deal_product_added', (e, deal) ->
-    $scope.currentDeal = deal
-    $scope.selectedStageId = deal.stage_id
-    $scope.setBudgetPercent(deal)
+    $scope.setCurrentDeal(deal)
 
   $scope.resetDealProduct = ->
     $scope.deal_product = {
@@ -545,8 +558,22 @@
       $scope.prevStageId = currentDeal.stage_id
       currentDeal.stage_id = stageId
       Stage.get(id: stageId).$promise.then (stage) ->
+        # validation check for pmp products
+        if !stage.open && $scope.isPmpDeal
+          for deal_product in $scope.currentDeal.deal_products
+            if !deal_product.ssp_id
+              $scope.errors['ssp_id' + deal_product.id] = "can't be blank"
+            if !deal_product.ssp_deal_id
+              $scope.errors['ssp_deal_id' + deal_product.id] = "can't be blank"
+            if !deal_product.pmp_type
+              $scope.errors['pmp_type' + deal_product.id] = "can't be blank"
+        if !_.isEmpty($scope.errors)
+          $scope.showWarningModal('SSP, SSP Deal-ID and PMP Type fields are required for PMP products.')
+          return          
         if !stage.open && stage.probability == 0
-          $scope.showModal(currentDeal)
+          $scope.showWonLossModal(currentDeal, false)
+        else if !stage.open && stage.probability == 100 && $scope.won_reason_required && $scope.won_reason_required.criterion.value
+          $scope.showWonLossModal(currentDeal, true)
         else
           Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
             (deal) ->
@@ -626,7 +653,6 @@
           deal_contact.id == deletedContact.id
 
   $scope.submitDealContact = (deal_contact, option) ->
-    console.log(option)
     if option == 'Billing'
       if !confirm("Confirm you want to assign an unrelated billing contact")
         return
@@ -676,7 +702,7 @@
   $scope.cancelAddProduct = ->
     $scope.showProductForm = !$scope.showProductForm
 
-  $scope.showModal = (currentDeal) ->
+  $scope.showWonLossModal = (currentDeal, hasWon) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_close_form.html'
       size: 'md'
@@ -686,6 +712,8 @@
       resolve:
         currentDeal: ->
           currentDeal
+        hasWon: ->
+          hasWon
 
   $scope.showWarningModal = (message) ->
     $scope.modalInstance = $modal.open
@@ -707,6 +735,8 @@
       resolve:
         currentDeal: ->
           currentDeal
+        isPmpDeal: ->
+          $scope.isPmpDeal
 
   $scope.addContact = ->
     $scope.modalInstance = $modal.open
@@ -804,6 +834,8 @@
       resolve:
         activity: ->
           activity
+
+  $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
 
   $scope.showDealEditModal = (deal) ->
     $scope.modalInstance = $modal.open
