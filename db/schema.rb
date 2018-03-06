@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180223233554) do
+ActiveRecord::Schema.define(version: 20180227012316) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -2556,12 +2556,15 @@ ActiveRecord::Schema.define(version: 20180223233554) do
   add_index "revenues", ["user_id"], name: "index_revenues_on_user_id", using: :btree
 
   create_table "sales_processes", force: :cascade do |t|
-    t.integer "company_id"
-    t.string  "name"
-    t.boolean "active",     default: true
+    t.integer  "company_id"
+    t.string   "name"
+    t.boolean  "active",     default: true
+    t.datetime "deleted_at"
   end
 
+  add_index "sales_processes", ["company_id", "name"], name: "index_sales_processes_on_company_id_and_name", unique: true, using: :btree
   add_index "sales_processes", ["company_id"], name: "index_sales_processes_on_company_id", using: :btree
+  add_index "sales_processes", ["deleted_at"], name: "index_sales_processes_on_deleted_at", using: :btree
 
   create_table "sales_stages", force: :cascade do |t|
     t.integer  "sales_stageable_id"

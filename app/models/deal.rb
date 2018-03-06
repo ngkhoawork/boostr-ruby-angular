@@ -270,20 +270,20 @@ class Deal < ActiveRecord::Base
   end
 
   def billing_contact_presence
-    validation = company.validation_for(:billing_contact)
-    stage_threshold = validation.criterion.try(:value) if validation
+    validation = company.validations.find_by(object: 'Billing Contact', factor: stage.sales_process_id) if stage.present?
+    stage_threshold = validation.criterion&.value&.probability if validation
 
     if validation && stage_threshold && stage && stage.probability >= stage_threshold
-      errors.add(:stage, "#{self.stage.try(:name)} requires a valid Billing Contact with address") unless self.has_billing_contact?
+      errors.add(:stage, "#{self.stage&.name} requires a valid Billing Contact with address") unless self.has_billing_contact?
     end
   end
 
   def account_manager_presence
-    validation = company.validation_for(:account_manager)
-    stage_threshold = validation.criterion.try(:value) if validation
+    validation = company.validations.find_by(object: 'Account Manager', factor: stage.sales_process_id) if stage.present?
+    stage_threshold = validation.criterion&.value&.probability if validation
 
     if validation && stage_threshold && stage && stage.probability >= stage_threshold
-      errors.add(:stage, "#{self.stage.try(:name)} requires an Account Manager on Deal") unless self.has_account_manager_member?
+      errors.add(:stage, "#{self.stage&.name} requires an Account Manager on Deal") unless self.has_account_manager_member?
     end
   end
 

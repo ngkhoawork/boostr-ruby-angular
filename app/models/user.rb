@@ -462,4 +462,12 @@ class User < ActiveRecord::Base
   def self.current=(user)
     Thread.current[:user] = user
   end
+
+  def current_team
+    if leader?
+      company.teams.find_by(leader: self)
+    else
+      team
+    end    
+  end
 end
