@@ -75,7 +75,11 @@ describe Deal do
 
     context 'billing contact' do
       let(:stage) { create :stage, sales_process: deal.stage.sales_process }
-      let(:validation) { create :validation, object: 'Billing Contact', factor: stage.sales_process.id, value_type: 'Object' }
+      let(:validation) do
+        create :validation, object: 'Billing Contact', 
+                            factor: stage.sales_process.id, 
+                            value_type: 'Object'
+      end
 
       it 'passes validation if company does not have it' do
         expect(deal).to be_valid
@@ -114,7 +118,11 @@ describe Deal do
 
     context 'account manager' do
       let(:stage) { create :stage, sales_process: deal.stage.sales_process }
-      let(:validation) { create :validation, object: 'Account Manager', factor: stage.sales_process.id, value_type: 'Object' }
+      let(:validation) do
+        create :validation, object: 'Account Manager', 
+                            factor: stage.sales_process.id, 
+                            value_type: 'Object'
+      end
       let!(:deal_account_manager) { create :deal_account_manager, deal: deal }
 
       it 'passes validation if company does not have it' do

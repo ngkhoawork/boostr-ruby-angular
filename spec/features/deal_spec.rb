@@ -11,8 +11,14 @@ feature 'Deals' do
   let!(:deal_type_pitch_option) { create :option, company: company, field: deal_source_field(company), name: "Pitch to Client" }
 
   describe 'showing a list of deals filtered by stages' do
-    let!(:another_open_stage) { create :stage, company: company, sales_process: sales_process, position: 2, probability: 50, name: 'Proposal' }
-    let!(:closed_stage) { create :stage, company: company, sales_process: sales_process, position: 3, probability: 90, name: 'Won' }
+    let!(:another_open_stage) do
+      create :stage, company: company, sales_process: sales_process, 
+                     position: 2, probability: 50, name: 'Proposal'
+    end
+    let!(:closed_stage) do 
+      create :stage, company: company, sales_process: sales_process, 
+                     position: 3, probability: 90, name: 'Won'
+    end
     let!(:another_open_deal) do
       create :deal, company: company, stage: another_open_stage,
                     advertiser: advertiser, created_by: user.id, updated_by: user.id
