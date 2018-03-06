@@ -10,6 +10,7 @@
     $scope.agency_base_fields            = _.filter(validations, object: 'Agency Base Field')
     $scope.deal_base_fields            = _.filter(validations, object: 'Deal Base Field')
     $scope.restrict_deal_reopen       = _.findWhere(validations, factor: 'Restrict Deal Reopen')
+    $scope.require_won_reason = _.findWhere(validations, factor: 'Require Won Reason')
 
   $scope.updateValidation = (validation) ->
     Validation.update(id: validation.id, validation: validation)

@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$scope', '$window', '$timeout', '$document', '$filter', '$modal', '$q', '$location', 'Deal', 'Team', 'Stage', 'ExchangeRate', 'DealsFilter', 'TimePeriod', 'shadeColor',
-    ( $rootScope,   $scope,   $window,   $timeout,   $document,   $filter,   $modal,   $q,   $location,   Deal, Team,   Stage,   ExchangeRate,   DealsFilter,   TimePeriod,   shadeColor ) ->
+    ['$rootScope', '$scope', '$window', '$timeout', '$document', '$filter', '$modal', '$q', '$location', 'Deal', 'Team', 'Stage', 'ExchangeRate', 'DealsFilter', 'TimePeriod', 'shadeColor', 'Validation'
+    ( $rootScope,   $scope,   $window,   $timeout,   $document,   $filter,   $modal,   $q,   $location,   Deal,   Team,   Stage,   ExchangeRate,   DealsFilter,   TimePeriod,   shadeColor,   Validation) ->
             formatMoney = $filter('formatMoney')
 
             $scope.isLoading = false
@@ -204,8 +204,9 @@
                     deals_info: Deal.deals_info_by_stage(params)
                     filter: Deal.filter_data()
                     stages: Stage.query().$promise
-                    timePeriods: TimePeriod.all(),
+                    timePeriods: TimePeriod.all()
                     teams: Team.all(all_teams: true)
+                    validations: Validation.query(factor: 'Require Won Reason').$promise
                 }).then (data) ->
                     $scope.filter.members = data.filter.members
                     $scope.filter.teams = data.filter.teams
@@ -226,6 +227,7 @@
                         column.open = stage.open
                         columns.push column
                     $scope.emptyColumns = angular.copy columns
+                    $scope.won_reason_required = data.validations && data.validations[0]
                     updateDealsTable()
                     $timeout -> $scope.isLoading = false
             $scope.init()
@@ -264,7 +266,9 @@
                 if deal.stage_id is newStage.id then return
                 deal.stage_id = newStage.id
                 if !newStage.open && newStage.probability == 0
-                    $scope.showCloseDealModal(deal)
+                    $scope.showCloseDealModal(deal, false)
+                else if !newStage.open && newStage.probability == 100 && $scope.won_reason_required && $scope.won_reason_required.criterion.value
+                    $scope.showCloseDealModal(deal, true)
                 else
                     if $scope.history[deal.id] && $scope.history[deal.id].locked
                         return deal
@@ -357,7 +361,7 @@
                         deal: -> {}
                         options: -> {}
 
-            $scope.showCloseDealModal = (currentDeal) ->
+            $scope.showCloseDealModal = (currentDeal, hasWon) ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/deal_close_form.html'
                     size: 'md'
@@ -367,6 +371,8 @@
                     resolve:
                         currentDeal: ->
                             currentDeal
+                        hasWon: ->
+                            hasWon
 
             $scope.coloringColumns = ->
                 baseColor = '#ff7200'

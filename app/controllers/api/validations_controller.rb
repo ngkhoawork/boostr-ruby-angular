@@ -2,7 +2,7 @@ class Api::ValidationsController < ApplicationController
   respond_to :json
 
   def index
-    render json: current_user.company.validations
+    render json: current_user.company.validations.by_factor(params[:factor])
   end
 
   def update
