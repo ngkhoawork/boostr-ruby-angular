@@ -1,6 +1,6 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation'
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation) ->
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation', 'Egnyte'
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation, Egnyte) ->
 
   $scope.init = ->
     $scope.formType = 'New'
@@ -110,7 +110,11 @@
       (deal) ->
         $modalInstance.close(deal)
         if options.type != 'gmail'
-          $location.path('/deals' + '/' + deal.id).search({isNew: 'true'});
+          Egnyte.show().then (egnyteSettings) ->
+            if(egnyteSettings.access_token && egnyteSettings.connected)
+              $location.path('/deals' + '/' + deal.id).search({isNew: 'true'});
+            else
+              $location.path('/deals' + '/' + deal.id);
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

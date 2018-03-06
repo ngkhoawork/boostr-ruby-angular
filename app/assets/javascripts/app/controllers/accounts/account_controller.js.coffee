@@ -44,26 +44,11 @@
       $scope.accountCfNames = accountCfNames
 
   $scope.egnyte = (token, domain, account) ->
-    console.log(account)
     Egnyte.navigateToAccount(advertiser_id: account.id).then (response) ->
-      console.log(response)
       if response.navigate_to_deal_uri
         $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
       else
         $scope.egnyteHealthy = false
-
-    req =
-      method: 'POST'
-      url: 'https://' + domain + '/pubapi/v2/navigate'
-      headers: 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token
-      data: embedded: true, path: 'Shared/Accounts/' + account.name + '/Deals'
-
-    $http(req).then ((response) ->
-      $scope.embeddedUrl = $sce.trustAsResourceUrl(response.data.redirect)
-      return
-    ), (error) ->
-      $scope.egnyteHealthy = false
-      return
 
   $scope.setClientTypes = (client_types) ->
     client_types.options.forEach (option) ->
