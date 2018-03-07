@@ -43,6 +43,17 @@
 							%div.stats-col
 								.col-body-wrap
 									.col-body
+										.description Freeze Budgets
+										.title
+											.show-hide-remainder-form
+												.switch-remainder-form
+													%input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'currentIO.is_freezed', 'ng-change': 'updateIO()', id: "rem-act-modal-toggle12"}
+													%label{:for => "rem-act-modal-toggle12"}
+														%span
+
+							%div.stats-col
+								.col-body-wrap
+									.col-body
 										.description Start-End Dates
 										%div{'ng-if': 'currentUser.is_admin || canEditIO'}
 											.title.bs-datepicker
@@ -59,16 +70,6 @@
 												{{'-'}}
 												%span {{currentIO.end_date | date : 'mediumDate'}}
 
-							%div.stats-col
-								.col-body-wrap
-									.col-body
-										.description Is Freezed
-										.title
-											.show-hide-remainder-form
-												.switch-remainder-form
-													%input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'currentIO.is_freezed', 'ng-change': 'updateIO()', id: "rem-act-modal-toggle12"}
-													%label{:for => "rem-act-modal-toggle12"}
-														%span
 				.block#line-content-fees
 					%div.mb20
 						%span.title Line Items - content & fees

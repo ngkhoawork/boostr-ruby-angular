@@ -4,7 +4,7 @@
     .detail-stats {
         .stats-col {
             width: 15%;
-            &:nth-child(4) {
+            &:last-child {
                 width: 40%;
             }
             .show-hide-remainder-form {
