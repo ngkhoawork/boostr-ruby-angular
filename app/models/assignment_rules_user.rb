@@ -8,11 +8,17 @@ class AssignmentRulesUser < ActiveRecord::Base
   validates :user_id, uniqueness: { scope: :assignment_rule_id, message: 'User should be unique per rule' }
 
   scope :not_next, -> { where(next: false) }
+  scope :order_by_position, -> { order(:position) }
 
   private
 
   def set_position
-    self.position ||= related_assignment_rules_users.count
+    self.position ||=
+      related_assignment_rules_users
+        .order_by_position
+        .last
+        .position
+        .next rescue 1
   end
 
   def set_next_user_for_first_created_record_in_assignment_rule_scope
