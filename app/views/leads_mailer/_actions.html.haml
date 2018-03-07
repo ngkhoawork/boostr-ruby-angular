@@ -7,5 +7,5 @@
   %div{style: 'text-align: center; margin-bottom: 10px;'}
     %a{href: "#{root_url}api/leads/#{@lead.id}/reject_from_email", target: '_blank', style: 'padding: 10px 0; width: 140px; background: #F4F5F6; color: #9faab3; text-decoration: none; margin-right: 8px; display: inline-block; border-radius: 5px; font-weight: bold;'}
       Reject
-    %a{href: "#{root_url}leads", target: '_blank', style: 'padding: 10px 0; width: 140px; background: #ff7200; color: white; text-decoration: none; margin-left: 8px; display: inline-block; border-radius: 5px; font-weight: bold;'}
+    %a{href: "#{root_url}leads?relation=my&status=new_leads", target: '_blank', style: 'padding: 10px 0; width: 140px; background: #ff7200; color: white; text-decoration: none; margin-left: 8px; display: inline-block; border-radius: 5px; font-weight: bold;'}
       View Lead
