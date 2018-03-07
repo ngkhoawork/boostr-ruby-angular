@@ -40,7 +40,8 @@ class Api::Settings::AssignmentRulesController < ApplicationController
   end
 
   def remove_user
-    assignment_rule.users.delete user
+    assignment_rules_user = assignment_rule.assignment_rules_users.find_by(user_id: user.id)
+    assignment_rules_user.destroy
 
     render json: assignment_rule, serializer: Api::AssignmentRules::IndexSerializer
   end
