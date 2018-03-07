@@ -271,7 +271,7 @@
             team_id: $scope.selectedTeam.id
             user_id: $scope.selectedUser.id
             page: $scope.page
-            per: 10
+            per: 15
             client_name: $scope.searchText if $scope.searchText
           }
           $scope.isLoading = true
