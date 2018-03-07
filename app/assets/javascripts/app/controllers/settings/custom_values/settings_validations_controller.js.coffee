@@ -73,6 +73,7 @@
       value_type: 'Object',
       criterion: {
         value_object_id: item.id,
+        value_type: 'Object',
         value_object_type: 'Stage'
       }
     }).$promise.then (validation) ->
@@ -93,6 +94,7 @@
       value_type: 'Object',
       criterion: {
         value_object_id: item.id,
+        value_type: 'Object',
         value_object_type: 'Stage'
       }
     }).$promise.then (validation) ->

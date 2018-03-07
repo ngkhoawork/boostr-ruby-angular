@@ -11,7 +11,7 @@ class Validation < ActiveRecord::Base
   delegate :value, to: :criterion, allow_nil: true
 
   after_create do
-    self.create_criterion
+    self.create_criterion unless criterion.present?
   end
 
   scope :account_base_fields, -> do

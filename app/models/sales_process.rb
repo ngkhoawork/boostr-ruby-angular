@@ -1,7 +1,7 @@
 class SalesProcess < ActiveRecord::Base
   acts_as_paranoid
 
-  belongs_to :company
+  belongs_to :company, required: true
   has_many :stages
   has_many :teams
 

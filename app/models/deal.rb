@@ -277,7 +277,7 @@ class Deal < ActiveRecord::Base
     ) 
     stage_threshold = validation&.criterion&.value&.probability
 
-    if validation && stage_threshold && stage.probability >= stage_threshold && !self.has_billing_contact?
+    if stage_threshold && stage.probability >= stage_threshold && !self.has_billing_contact?
       errors.add(:stage, "#{self.stage&.name} requires a valid Billing Contact with address") 
     end
   end
@@ -290,7 +290,7 @@ class Deal < ActiveRecord::Base
     )
     stage_threshold = validation&.criterion&.value&.probability
 
-    if validation && stage_threshold && stage.probability >= stage_threshold && !self.has_account_manager_member?
+    if stage_threshold && stage.probability >= stage_threshold && !self.has_account_manager_member?
       errors.add(:stage, "#{self.stage&.name} requires an Account Manager on Deal")
     end
   end

@@ -14,9 +14,14 @@ class Api::ValidationsController < ApplicationController
   end
 
   def create
-    validation = company.validations.find_or_initialize_by(validation_params.except(:criterion_attributes))
+    validation = company.validations.find_by(validation_params.except(:criterion_attributes))
+    if validation.present?
+      validation.assign_attributes(validation_params)
+    else
+      validation = company.validations.new(validation_params)
+    end
 
-    if validation.save && validation.criterion.update_attributes(validation_params[:criterion_attributes])
+    if validation.save
       render json: validation, status: :created
     else
       render json: { errors: validation.errors.messages }, status: :unprocessable_entity
@@ -40,7 +45,7 @@ class Api::ValidationsController < ApplicationController
       :object,
       :factor,
       :value_type,
-      criterion_attributes: [:id, :value, :value_object_id, :value_object_type]
+      criterion_attributes: [:id, :value, :value_object_id, :value_object_type, :value_type]
     )
   end
 
