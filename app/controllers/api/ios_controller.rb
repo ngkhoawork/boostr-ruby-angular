@@ -117,7 +117,8 @@ class Api::IosController < ApplicationController
       :agency_id,
       :io_number,
       :external_io_number,
-      :deal_id
+      :deal_id,
+      :is_freezed
     )
   end
 

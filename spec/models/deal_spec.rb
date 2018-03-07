@@ -443,30 +443,6 @@ describe Deal do
     end
   end
 
-  describe '#in_period_amt' do
-    let(:deal) { create :deal }
-    let(:product) { create :product }
-    let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-01-31' }
-
-    it 'returns 0 when there are no deal products' do
-      expect(deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(0)
-    end
-
-    it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
-      single_month_deal = create :deal, start_date: '2015-01-01', end_date: '2015-01-31'
-      create :deal_product, deal: single_month_deal, product: product, budget: 1000
-
-      expect(single_month_deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(1000)
-    end
-
-    it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
-      two_month_deal = create :deal, start_date: '2015-01-27', end_date: '2015-02-05'
-      create :deal_product, deal: two_month_deal, product: product, budget: 1000
-
-      expect(two_month_deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(500)
-    end
-  end
-
   describe '#days' do
     let(:deal) { create :deal, start_date: Date.new(2015, 1, 1), end_date: Date.new(2015, 1, 31) }
 
