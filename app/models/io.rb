@@ -311,62 +311,6 @@ class Io < ActiveRecord::Base
     )
   end
 
-  def full_json
-    self.as_json( include: {
-        io_members: {
-            methods: [
-                :name
-            ]
-        },
-        currency: {},
-        content_fees: {
-            include: {
-                content_fee_product_budgets: {}
-            },
-            methods: [
-                :product
-            ]
-        },
-        costs: {
-            include: {
-                cost_monthly_amounts: {}
-            },
-            methods: [
-                :product
-            ]
-        },
-        influencer_content_fees: {
-            include: {
-                influencer: {
-                  only: [:id, :name],
-                  include: {
-                    agreement: {
-                      only: [:id, :fee_type, :amount]
-                    }
-                  }
-                },
-                currency: {},
-                content_fee: {
-                  only: [:id],
-                  include: {
-                    product: {
-                      only: [:id, :name]
-                    }
-                  }
-                }
-            }
-        },
-        display_line_items: {
-            methods: [
-                :product
-            ]
-        },
-        print_items: {}
-      },
-      methods: [:readable_months, :months, :days_per_month, :days]
-    )
-  end
-
   def get_agency
     agency.present? ? agency.name : ''
   end

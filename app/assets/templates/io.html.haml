@@ -58,6 +58,17 @@
 												%span {{currentIO.start_date | date : 'mediumDate'}}
 												{{'-'}}
 												%span {{currentIO.end_date | date : 'mediumDate'}}
+
+							%div.stats-col
+								.col-body-wrap
+									.col-body
+										.description Is Freezed
+										.title
+											.show-hide-remainder-form
+												.switch-remainder-form
+													%input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'currentIO.is_freezed', 'ng-change': 'updateIO()', id: "rem-act-modal-toggle12"}
+													%label{:for => "rem-act-modal-toggle12"}
+														%span
 				.block#line-content-fees
 					%div.mb20
 						%span.title Line Items - content & fees
@@ -278,7 +289,7 @@
 									%td.left
 										{{ influencerContentFee.content_fee.product.name }}
 									%td.left
-										{{ influencerContentFee.effect_date | date: 'M/d/yyyy'  }}
+										{{ influencerContentFee.effect_date | date: 'M/d/yyyy'	}}
 									%td.left
 										{{ influencerContentFee.fee_type == 'flat' ? 'Flat' : '%' }}
 									%td.right{'ng-if': 'influencerContentFee.fee_type == "flat"'}
@@ -311,7 +322,7 @@
 				.block#team-split
 					%div.mb20
 						%span.title Team & Split
-						%span{ 'ng-show': 'currentUser.is_admin || canEditIO', dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
+						%span{ 'ng-show': 'currentUser.is_admin || canEditIO', dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'	}
 							%add-button{ dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } } Add
 							%ul.dropdown-menu.new-member-options
 								%li.existing-user-options

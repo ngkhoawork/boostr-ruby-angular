@@ -5,7 +5,7 @@ class Api::CostsController < ApplicationController
     cost = io.costs.new(converted_params)
     cost.update_periods if params[:cost][:cost_monthly_amounts_attributes]
     if cost.save
-      render json: io.full_json, status: :created
+      render json: io, serializer: Ios::IoSerializer, status: :created
     else
       render json: { errors: cost.errors.messages }, status: :unprocessable_entity
     end
@@ -15,7 +15,7 @@ class Api::CostsController < ApplicationController
     if cost.update_attributes(converted_params)
       cost.io.update_total_budget
 
-      render json: io.full_json
+      render json: io, serializer: Ios::IoSerializer
     else
       render json: { errors: cost.errors.messages }, status: :unprocessable_entity
     end
@@ -24,7 +24,7 @@ class Api::CostsController < ApplicationController
   def destroy
     cost.destroy
     io.update_total_budget
-    render json: io.full_json
+    render json: io, serializer: Ios::IoSerializer
   end
 
   private

@@ -19,7 +19,7 @@ class Api::IosController < ApplicationController
     end
 
     if io.save
-      render json: io.full_json, status: :created
+      render json: io, serializer: Ios::IoSerializer, status: :created
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity
     end
@@ -27,7 +27,7 @@ class Api::IosController < ApplicationController
 
   def update
     if io.update_attributes(io_params)
-      render json: io.full_json
+      render json: io, serializer: Ios::IoSerializer
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity
     end
@@ -47,7 +47,7 @@ class Api::IosController < ApplicationController
       end
       io.update_influencer_budget
       io.reload
-      render json: io.full_json
+      render json: io, serializer: Ios::IoSerializer
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity
     end
