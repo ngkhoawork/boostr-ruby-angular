@@ -1,6 +1,6 @@
 @app.controller "AccountsNewController",
-['$scope', '$rootScope', '$modalInstance', 'Client', 'HoldingCompany', 'Field', 'AccountCfName', 'client', 'CountriesList', 'Validation', 'AccountsDuplicate'
-($scope, $rootScope, $modalInstance, Client, HoldingCompany, Field, AccountCfName, client, CountriesList, Validation, AccountsDuplicate) ->
+['$scope', '$rootScope', '$modalInstance', 'Client', 'HoldingCompany', 'Field', 'AccountCfName', 'client', 'CountriesList', 'Validation'
+($scope, $rootScope, $modalInstance, Client, HoldingCompany, Field, AccountCfName, client, CountriesList, Validation) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
@@ -153,7 +153,7 @@
     else
       $scope.openDuplicateList()
       $scope.isLoaderShow = true
-      AccountsDuplicate.query({ name: $scope.client.name }).$promise.then (duplicates) ->
+      Client.search_duplicates({ name: $scope.client.name }).$promise.then (duplicates) ->
         $scope.isLoaderShow = false
         $scope.duplicates = duplicates
         $scope.markDuplicateString()

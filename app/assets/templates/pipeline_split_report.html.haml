@@ -85,11 +85,11 @@
 								%tr{'ng-repeat': 'deal in deals | orderBy : zSort.by : zSort.rev'}
 									%td {{deal.deal_id}}
 									%td
-										%a{href: '', 'ng-href': '/deals/{{deal.deal_id}}', 'target': '_blank'} {{deal.deal_name}}
+										%a{href: '', 'ng-href': '/deals/{{deal.deal_id}}'} {{deal.deal_name}}
 									%td
-										%a{href: '', 'ng-href': '/accounts/{{deal.advertiser.id}}', 'target': '_blank'} {{deal.advertiser.name}}
+										%a{href: '', 'ng-href': '/accounts/{{deal.advertiser.id}}'} {{deal.advertiser.name}}
 									%td
-										%a{href: '', 'ng-href': '/accounts/{{deal.agency.id}}', 'target': '_blank'} {{deal.agency.name}}
+										%a{href: '', 'ng-href': '/accounts/{{deal.agency.id}}'} {{deal.agency.name}}
 									%td {{deal.name}}
 									%td {{deal.share}}%
 									%td {{deal.stage.name}}
