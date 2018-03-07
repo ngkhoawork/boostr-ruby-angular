@@ -115,8 +115,13 @@ class Deal::IoGenerateService
         io_number: deal.id,
         external_io_number: nil,
         company_id: deal.company_id,
-        deal_id: deal.id
+        deal_id: deal.id,
+        is_freezed: company_io_freeze_budgets
     }
+  end
+
+  def company_io_freeze_budgets
+    @_company_io_freeze_budgets ||= company.default_io_freeze_budgets
   end
 
   def destroy_io
