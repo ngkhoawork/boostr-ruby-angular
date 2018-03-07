@@ -266,7 +266,7 @@
             team_id: $scope.selectedTeam.id
             user_id: $scope.selectedUser.id
             page: $scope.page
-            per: 10
+            per: 15
           }
           $scope.isLoading = true
           BpEstimate.all(filters).then (data) ->
