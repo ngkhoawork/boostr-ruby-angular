@@ -14,21 +14,23 @@ class ContentFee < ActiveRecord::Base
   default_scope { order(:created_at) }
   scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) if product_id.present? }
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
-  scope :for_time_period, -> (start_date, end_date) { where('content_fees.start_date <= ? AND content_fees.end_date >= ?', end_date, start_date) }
+  scope :for_time_period, -> (start_date, end_date) {
+    where('content_fees.start_date <= ? AND content_fees.end_date >= ?', end_date, start_date)
+  }
   
   after_update do
     if content_fee_product_budgets.sum(:budget) != budget || content_fee_product_budgets.sum(:budget_loc) != budget_loc
       if (budget_changed? || budget_loc_changed?) && !io.is_freezed
-        self.update_content_fee_product_budgets
+        update_content_fee_product_budgets
       else
-        self.update_budget
+        update_budget
       end
       io.update_total_budget
     end
   end
 
   after_create do
-    create_content_fee_product_budgets if self.content_fee_product_budgets.count == 0
+    create_content_fee_product_budgets if content_fee_product_budgets.count == 0
     io.update_total_budget
   end
 
@@ -57,22 +59,19 @@ class ContentFee < ActiveRecord::Base
       time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
       time_periods.each do |time_period|
         io.users.each do |user|
-          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
-          forecast_revenue_fact_calculator.calculate()
+          ForecastRevenueFactCalculator::Calculator.new(time_period, user, product).calculate()
         end
       end
     end
   end
 
   def update_revenue_pipeline_product(product)
-    io = self.io
     if io.present? && product.present?
       company = io.company
       time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
       time_periods.each do |time_period|
         io.users.each do |user|
-          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
-          forecast_revenue_fact_calculator.calculate()
+          ForecastRevenueFactCalculator::Calculator.new(time_period, user, product).calculate()
         end
       end
     end
@@ -152,7 +151,10 @@ class ContentFee < ActiveRecord::Base
   def update_budget
     new_budget = content_fee_product_budgets.sum(:budget)
     new_budget_loc = content_fee_product_budgets.sum(:budget_loc)
-    self.update(budget: new_budget, budget_loc: new_budget_loc)
+    update(
+      budget: new_budget,
+      budget_loc: new_budget_loc
+    )
   end
 
   def as_json(options = {})

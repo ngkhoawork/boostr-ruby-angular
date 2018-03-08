@@ -17,7 +17,7 @@ class Cost < ActiveRecord::Base
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
 
   after_create do
-    generate_cost_monthly_amounts if cost_monthly_amounts.count == 0
+    Cost::AmountsGenerateService.new(self).perform if cost_monthly_amounts.count == 0
   end
 
   after_destroy do
@@ -94,10 +94,6 @@ class Cost < ActiveRecord::Base
     end
   end
 
-  def generate_cost_monthly_amounts
-    Cost::AmountsGenerateService.new(self).perform
-  end
-
   def update_cost_monthly_amounts
     Cost::AmountsUpdateService.new(self).perform
   end
@@ -112,7 +108,7 @@ class Cost < ActiveRecord::Base
 
   def update_cost_or_monthly_budget
     if cost_monthly_amounts.sum(:budget) != budget || cost_monthly_amounts.sum(:budget_loc) != budget_loc
-      if budget_changed? || budget_loc_changed?
+      if (budget_changed? || budget_loc_changed?) && !io.is_freezed
         update_cost_monthly_amounts
         update(is_estimated: false)
       else
