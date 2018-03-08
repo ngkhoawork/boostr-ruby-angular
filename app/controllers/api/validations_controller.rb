@@ -2,7 +2,7 @@ class Api::ValidationsController < ApplicationController
   respond_to :json
 
   def index
-    render json: company.validations.by_factor(params[:factor])
+    render json: validations.by_factor(params[:factor])
   end
 
   def update
@@ -14,17 +14,10 @@ class Api::ValidationsController < ApplicationController
   end
 
   def create
-    validation = company.validations.find_by(validation_params.except(:criterion_attributes))
-    if validation.present?
-      validation.assign_attributes(validation_params)
+    if build_validation.save
+      render json: build_validation, status: :created
     else
-      validation = company.validations.new(validation_params)
-    end
-
-    if validation.save
-      render json: validation, status: :created
-    else
-      render json: { errors: validation.errors.messages }, status: :unprocessable_entity
+      render json: { errors: build_validation.errors.messages }, status: :unprocessable_entity
     end
   end
 
@@ -40,6 +33,13 @@ class Api::ValidationsController < ApplicationController
     render json: billing_contact_fields_json
   end
 
+  def destroy
+    validation.destroy
+    render nothing: true
+  end
+
+  private
+
   def validation_params
     params.require(:validation).permit(
       :object,
@@ -49,30 +49,41 @@ class Api::ValidationsController < ApplicationController
     )
   end
 
-  def destroy
-    validation.destroy
-    render nothing: true
+  def core_validation_params
+    validation_params.except(:criterion_attributes)
   end
 
-  private
+  def criterion_params
+    validation_params[:criterion_attributes]
+  end
+
+  def build_validation
+    @_build_validation ||= validations.find_or_initialize_by(core_validation_params).tap do |validation|
+      validation.criterion_attributes = criterion_params
+    end
+  end
 
   def validation
-    @validation ||= company.validations.find(params[:id])
+    @_validation ||= validations.find(params[:id])
+  end
+
+  def validations
+    @_validations ||= company.validations
   end
 
   def company
-    @company ||= current_user.company
+    @_company ||= current_user.company
   end
 
   def billing_contact_fields_json
-    company.validations.billing_contact_fields.preload(:criterion)
+    validations.billing_contact_fields.preload(:criterion)
   end
 
   def account_base_fields_json
-    company.validations.account_base_fields.preload(:criterion).group_by(&:object)
+    validations.account_base_fields.preload(:criterion).group_by(&:object)
   end
 
   def deal_base_fields_json
-    company.validations.deal_base_fields.preload(:criterion)
+    validations.deal_base_fields.preload(:criterion)
   end
 end
