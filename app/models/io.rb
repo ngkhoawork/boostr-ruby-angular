@@ -51,7 +51,7 @@ class Io < ActiveRecord::Base
 
   after_update do
     if (start_date_changed? || end_date_changed?)
-      reset_content_fees
+      Io::ResetBudgetsService.new(self).perform
       reset_costs
       reset_member_effective_dates
     end
@@ -73,16 +73,6 @@ class Io < ActiveRecord::Base
         e_date = end_date
       end
       update_revenue_fact_date(s_date, e_date)
-    end
-  end
-
-  def reset_content_fees
-    # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
-    ActiveRecord::Base.no_touching do
-      content_fees.each do |content_fee|
-        content_fee.content_fee_product_budgets.destroy_all
-        content_fee.generate_content_fee_product_budgets
-      end
     end
   end
 
