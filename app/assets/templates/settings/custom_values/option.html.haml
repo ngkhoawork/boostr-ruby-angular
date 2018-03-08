@@ -4,5 +4,8 @@
     |
     %span.total
       {{ option.suboptions.length }}-Sub
+
+    %span.default-label{ ng: {if: 'option.locked' }}
+      (Default)
   %a.delete{ href: '', ng: { click: 'deleteOption(option)', if: '!option.locked' } }
     = inline_svg 'icons/trash.svg'
