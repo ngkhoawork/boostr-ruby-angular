@@ -187,27 +187,7 @@ class Io < ActiveRecord::Base
   end
 
   def update_influencer_budget
-    data = {}
-
-    self.influencer_content_fees.by_effect_date(start_date, end_date).each do |influencer_content_fee|
-      content_fee_product_budget = influencer_content_fee
-                                      .content_fee
-                                      .content_fee_product_budgets
-                                      .for_year_month(influencer_content_fee.effect_date)
-                                      .try(:first)
-      if content_fee_product_budget
-        data[content_fee_product_budget.id] ||= 0
-        data[content_fee_product_budget.id] += influencer_content_fee.gross_amount.to_f
-      end
-    end
-
-    data.each do |id, budget|
-      content_fee_product_budget = self.content_fee_product_budgets.find(id)
-      if content_fee_product_budget && content_fee_product_budget.update_budget!(budget)
-        content_fee_product_budget.content_fee.update_budget
-        content_fee_product_budget.content_fee.io.update_total_budget
-      end
-    end
+    Io::UpdateInfluencerBudgetService.new(self).perform
   end
 
   def effective_revenue_budget(member, start_date, end_date)
