@@ -21,7 +21,7 @@ class ContentFee < ActiveRecord::Base
   after_update do
     if content_fee_product_budgets.sum(:budget) != budget || content_fee_product_budgets.sum(:budget_loc) != budget_loc
       if (budget_changed? || budget_loc_changed?) && !io.is_freezed
-        update_content_fee_product_budgets
+        ContentFee::UpdateBudgetsService.new(self).perform
       else
         update_budget
       end
@@ -115,29 +115,6 @@ class ContentFee < ActiveRecord::Base
 
   def daily_budget_loc
     budget_loc.to_f / (io.end_date - io.start_date + 1)
-  end
-
-  def update_content_fee_product_budgets
-    last_index = content_fee_product_budgets.count - 1
-    total = 0.0
-    total_loc = 0.0
-
-    content_fee_product_budgets.order("start_date asc").each_with_index do |content_fee_product_budget, index|
-      if last_index == index
-        monthly_budget = (budget) - total
-        monthly_budget_loc = budget_loc - total_loc
-      else
-        monthly_budget = (daily_budget * io.days_per_month[index]).round(2)
-        total += monthly_budget
-
-        monthly_budget_loc = (daily_budget_loc * io.days_per_month[index]).round(2)
-        total_loc += monthly_budget_loc
-      end
-      content_fee_product_budget.update(
-        budget: monthly_budget.round(2),
-        budget_loc: monthly_budget_loc.round(2)
-      )
-    end
   end
 
   def update_periods
