@@ -14,7 +14,7 @@ class Ios::IoSerializer < ActiveModel::Serializer
     :company_id,
     :deal_id,
     :budget_loc,
-    :is_freezed,
+    :freezed,
     :curr_cd,
     :readable_months,
     :months,

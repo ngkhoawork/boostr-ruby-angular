@@ -1,7 +1,7 @@
 class ContentFee::ResetBudgetsService
   def initialize(content_fee)
-    @content_fee      = content_fee
-    @io               = content_fee.io
+    @content_fee  = content_fee
+    @io           = content_fee.io
   end
 
   def perform

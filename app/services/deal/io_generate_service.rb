@@ -116,7 +116,7 @@ class Deal::IoGenerateService
         external_io_number: nil,
         company_id: deal.company_id,
         deal_id: deal.id,
-        is_freezed: company_io_freeze_budgets
+        freezed: company_io_freeze_budgets
     }
   end
 

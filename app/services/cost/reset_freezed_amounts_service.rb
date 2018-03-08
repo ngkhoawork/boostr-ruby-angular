@@ -47,9 +47,10 @@ class Cost::ResetFreezedAmountsService
   end
 
   def reset_amount_date(budget_item)
-    budget_item.start_date = [budget_item.start_date.beginning_of_month, start_date].max
-    budget_item.end_date = [budget_item.end_date.end_of_month, end_date].min
-    budget_item.save
+    budget_item.update(
+      start_date: [budget_item.start_date.beginning_of_month, start_date].max,
+      end_date: [budget_item.end_date.end_of_month, end_date].min
+    )
   end
 
   def remove_amount(month)

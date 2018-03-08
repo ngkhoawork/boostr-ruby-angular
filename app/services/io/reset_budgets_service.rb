@@ -17,7 +17,7 @@ class Io::ResetBudgetsService
   def reset_content_fees
     ActiveRecord::Base.no_touching do
       io.content_fees.each do |content_fee|
-        if io.is_freezed
+        if io.freezed?
           ContentFee::ResetFreezedBudgetsService.new(content_fee).perform
         else
           ContentFee::ResetBudgetsService.new(content_fee).perform
@@ -30,7 +30,7 @@ class Io::ResetBudgetsService
     # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
     ActiveRecord::Base.no_touching do
       io.costs.each do |cost|
-        if io.is_freezed
+        if io.freezed?
           Cost::ResetFreezedAmountsService.new(cost).perform
         else
           Cost::AmountsGenerateService.new(cost).perform

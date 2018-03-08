@@ -20,7 +20,7 @@ class ContentFee < ActiveRecord::Base
   
   after_update do
     if content_fee_product_budgets.sum(:budget) != budget || content_fee_product_budgets.sum(:budget_loc) != budget_loc
-      if (budget_changed? || budget_loc_changed?) && !io.is_freezed
+      if (budget_changed? || budget_loc_changed?) && !io.freezed?
         ContentFee::UpdateBudgetsService.new(self).perform
       else
         update_budget
@@ -59,7 +59,7 @@ class ContentFee < ActiveRecord::Base
       time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
       time_periods.each do |time_period|
         io.users.each do |user|
-          ForecastRevenueFactCalculator::Calculator.new(time_period, user, product).calculate()
+          ForecastRevenueFactCalculator::Calculator.new(time_period, user, product).calculate
         end
       end
     end
@@ -71,7 +71,7 @@ class ContentFee < ActiveRecord::Base
       time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
       time_periods.each do |time_period|
         io.users.each do |user|
-          ForecastRevenueFactCalculator::Calculator.new(time_period, user, product).calculate()
+          ForecastRevenueFactCalculator::Calculator.new(time_period, user, product).calculate
         end
       end
     end

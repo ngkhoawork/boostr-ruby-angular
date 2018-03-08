@@ -108,7 +108,7 @@ class Cost < ActiveRecord::Base
 
   def update_cost_or_monthly_budget
     if cost_monthly_amounts.sum(:budget) != budget || cost_monthly_amounts.sum(:budget_loc) != budget_loc
-      if (budget_changed? || budget_loc_changed?) && !io.is_freezed
+      if (budget_changed? || budget_loc_changed?) && !io.freezed?
         update_cost_monthly_amounts
         update(is_estimated: false)
       else

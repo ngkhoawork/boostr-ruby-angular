@@ -42,8 +42,8 @@
           %td.column
             {{ currentIO.end_date | date: 'M/d/yyyy' }}
           %td.right.column
-            %span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "cost.budget_loc", 'on-after-save': 'updateCost(cost)', 'ng-if': "(currentUser.is_admin || canEditIO) && !currentIO.is_freezed" }
-            %span{ ng: { if: "(!currentUser.is_admin && !canEditIO) || currentIO.is_freezed" } }
+            %span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "cost.budget_loc", 'on-after-save': 'updateCost(cost)', 'ng-if': "(currentUser.is_admin || canEditIO) && !currentIO.freezed" }
+            %span{ ng: { if: "(!currentUser.is_admin && !canEditIO) || currentIO.freezed" } }
               {{ cost.budget_loc | currency:currency_symbol:2 }}
           %td.right.column{ ng: { repeat: "monthly_amount in cost.cost_monthly_amounts | orderBy: 'start_date'" } }
             %span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "monthly_amount.budget_loc", 'on-after-save': 'updateCost(cost)', 'ng-if': "currentUser.is_admin || canEditIO" }

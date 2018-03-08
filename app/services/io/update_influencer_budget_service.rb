@@ -14,13 +14,12 @@ class Io::UpdateInfluencerBudgetService
               :company
 
   def update_influencer_budget
-    data = {}
-    build_product_data(data)
+    data = build_product_data
     update_product_budgets(data)
   end
 
-  def build_product_data(data)
-    influencer_content_fees.each do |influencer_content_fee|
+  def build_product_data
+    influencer_content_fees.inject({}) do |data, influencer_content_fee|
       content_fee_product_budget = influencer_content_fee
                                       .content_fee
                                       .content_fee_product_budgets
@@ -30,6 +29,7 @@ class Io::UpdateInfluencerBudgetService
         data[content_fee_product_budget.id] ||= 0
         data[content_fee_product_budget.id] += influencer_content_fee.gross_amount.to_f
       end
+      data
     end
   end
 

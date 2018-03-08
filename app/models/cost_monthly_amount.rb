@@ -13,7 +13,7 @@ class CostMonthlyAmount < ActiveRecord::Base
       effect_date.month
     )
   }
-  scope :by_oldest, -> { order('start_date ASC') }
+  scope :by_oldest, -> { order(:start_date) }
 
   def daily_budget
     budget.to_f / (end_date - start_date + 1)

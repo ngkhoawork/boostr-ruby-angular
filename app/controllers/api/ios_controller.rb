@@ -118,7 +118,7 @@ class Api::IosController < ApplicationController
       :io_number,
       :external_io_number,
       :deal_id,
-      :is_freezed
+      :freezed
     )
   end
 
