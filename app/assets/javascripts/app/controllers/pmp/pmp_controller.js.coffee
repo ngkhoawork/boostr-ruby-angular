@@ -125,91 +125,255 @@
           top: 35
           left: 85
           right: 85
-          bottom: 115
+          bottom: 25
+      miniMargin = 
+          top: 20
+          left: 85
+          right: 85
+          bottom: 10
       duration = 1000
       ratio = 0.35
-      ticks = 11
+      miniRatio = 0.05
+      miniWidth = chartContainer.width() - miniMargin.left - miniMargin.right || 800
+      miniHeight = 60
       width = chartContainer.width() - margin.left - margin.right || 800
-      height = chartContainer.width()*ratio
-      data = _.sortBy data, (d) -> -parseFloat(d.revenue_loc)
-      advertisers = data.map (item) -> item.advertiser.name
-      dataset = getGraphDataSet(data, svgID)
-      return if dataset.length == 0 
+      height = chartContainer.width()*ratio - margin.top - margin.bottom - miniHeight - miniMargin.top - miniMargin.bottom
+      data = _.map data, (d) -> 
+        d.revenue_loc = parseFloat(d.revenue_loc)
+        d
+      data = _.sortBy data, (d) -> -d.revenue_loc
+      return if data.length == 0
+
+      update = () ->
+        c = d3.scale.category10()
+        bar = d3.select(".mainGroup").selectAll(".bar")
+            .data(data)
+
+        bar.attr("x", (d,i) -> x(d.advertiser.name))
+          .attr("width", x.rangeBand())
+          .attr("y", (d) -> y(d.revenue_loc))
+          .transition().duration(50)
+          .attr("height", (d) -> height - y(d.revenue_loc))
+
+        bar.enter().append("rect")
+          .attr("class", "bar")
+          .style("fill", (d) -> c(Math.random()*10))
+          .attr("x", (d,i) -> x(d.advertiser.name))
+          .attr("width", x.rangeBand())
+          .attr("y", (d) -> y(d.revenue_loc))
+          .transition().duration(50)
+          .attr("height", (d) -> height - y(d.revenue_loc))
+          .style('cursor', 'pointer')
+
+        bar.exit()
+          .remove()
+
+      brushmove = () ->
+        extent = brush.extent()
+
+        selected = miniX.domain()
+          .filter((d) -> (extent[0] - miniX.rangeBand() + 1e-2 <= miniX(d)) && (miniX(d) <= extent[1] - 1e-2)) 
+
+        d3.select(".miniGroup").selectAll(".bar")
+          .style("fill", (d, i) -> "#e0e0e0")
+
+        d3.selectAll(".axisX text")
+          .style("font-size", textScale(selected.length))
+        
+        originalRange = mainXZoom.range()
+        mainXZoom.domain( extent )
+
+        x.domain(data.map((d) -> d.advertiser.name))
+        x.rangeBands( [ mainXZoom(originalRange[0]), mainXZoom(originalRange[1]) ], 0.4, 0)
+
+        d3.select(".mainGroup")
+          .select(".axisX")
+          .call(xAxis)
+
+        # newMaxYScale = d3.max(data, (d) -> if selected.indexOf(d.advertiser.name) > -1 then d.revenue_loc else 0)
+        # y.domain([0, newMaxYScale])
+
+        d3.select(".mainGroupWrapper")
+          .select(".axisY")
+          .transition().duration(50)
+          .call(yAxis)
+
+        update()
+
+      brushcenter = () -> 
+        target = d3.event.target
+        extent = brush.extent()
+        size = extent[1] - extent[0]
+        range = miniX.range()
+        x0 = d3.min(range) + size / 2
+        x1 = d3.max(range) + miniX.rangeBand() - size / 2
+        center = Math.max( x0, Math.min( x1, d3.mouse(target)[0] ) )
+
+        d3.event.stopPropagation()
+
+        gBrush
+            .call(brush.extent([center - size / 2, center + size / 2]))
+            .call(brush.event)
+
+      scroll = () ->
+        extent = brush.extent()
+        size = extent[1] - extent[0]
+        range = miniX.range()
+        x0 = d3.min(range)
+        x1 = d3.max(range) + miniX.rangeBand()
+        dx = d3.event.deltaY
+        topSection = null
+
+        if extent[0] - dx < x0
+          topSection = x0
+        else if extent[1] - dx > x1
+          topSection = x1 - size 
+        else
+          topSection = extent[0] - dx
+
+        d3.event.stopPropagation()
+        d3.event.preventDefault()
+
+        gBrush
+            .call(brush.extent([ topSection, topSection + size ]))
+            .call(brush.event)
+
+      zoomer = d3.behavior.zoom().on("zoom", null)
 
       svg = d3.select(svgID)
               .attr("preserveAspectRatio", "xMinYMin meet")
-              .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + height)
+              .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom + miniHeight + miniMargin.top + miniMargin.bottom))
+              .call(zoomer)
+              .on("wheel.zoom", scroll)
+              .on("mousedown.zoom", null)
+              .on("touchstart.zoom", null)
+              .on("touchmove.zoom", null)
+              .on("touchend.zoom", null)
               .html('')
-              .append('g')
-              .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-      height = height - margin.top - margin.bottom - 10
+      mainGroup = svg.append('g')            
+                    .attr("class","mainGroupWrapper")                                                               
+                    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+                    .append("g")
+                    .attr("clip-path", "url(#clip)")
+                    .style("clip-path", "url(#clip)")
+                    .attr("class", "mainGroup")
+      miniGroup = svg.append("g")
+                    .attr("class", "miniGroup")
+                    .attr("transform", "translate(" + miniMargin.left + "," + (margin.top + height + margin.bottom + miniMargin.top) + ")")
+      brushGroup = svg.append(                                                                                                        "g")
+                    .attr("class", "brushGroup")
+                    .attr("transform", "translate(" + miniMargin.left + "," + (margin.top + height + margin.bottom + miniMargin.top) + ")")
 
       # Axes
-      maxValue = d3.max(dataset, (item) -> d3.max item.values) || 50
-      yMax = Math.max(100, Math.ceil(maxValue*1.2 / (ticks - 1)) * (ticks - 1))
-      yTickValues = []
-      for i in [0..ticks-1]
-        yTickValues.push i*Math.ceil(yMax / (ticks - 1))
-      x = d3.scale.ordinal().domain(advertisers).rangePoints([20, width-20])
-          .rangeRoundBands([0, width], 0.5)
-      y = d3.scale.linear().domain([yMax, 0]).rangeRound([0, height])
-      xAxis = d3.svg.axis().scale(x).orient('bottom')
-              .outerTickSize(0)
-              .innerTickSize(0)
-              .tickPadding(10)
-      yAxis = d3.svg.axis().scale(y).orient('left')
-              .innerTickSize(-width)
-              .outerTickSize(0)
-              .tickValues(yTickValues)
-              .tickFormat (v) -> 
-                d = dataset[0] || {}
-                if d.unit == $scope.currency_symbol then $scope.currency_symbol + $filter('number')(v) else $filter('number')(v) + d.unit
-      svg.append('g').attr('class', 'axisX')
-        .attr('transform', 'translate(0,' + height + ')')
-        .call(xAxis)
-        .selectAll("text")  
-          .style("text-anchor", "end")
-          .attr("dx", "-.8em")
-          .attr("dy", "-.3em")
-          .attr("transform", "rotate(-90)" )
-      svg.append('g').attr('class', 'axisY').call yAxis
-      svg.append('line')
+      mainGroup.append('line')
           .style('stroke', '#d9dde0')
           .attr('x1', 0)
           .attr('y1', 0)
           .attr('x2', 0)
           .attr('y2', height + 80)
-      svg.append('line')
+      mainGroup.append('line')
           .style('stroke', '#d9dde0')
           .attr('x1', 0)
           .attr('y1', height)
           .attr('x2', width)
           .attr('y2', height)
 
-      # Graphs
-      c = d3.scale.category10()
-      graphLine = d3.svg.line()
-              .x((value, i) -> x(advertisers[i]))
-              .y((value, i) -> y(value))
-              .defined((value, i) -> _.isNumber value)
-      graphsContainer = svg.append('g')
-              .attr('class', 'graphs-container')
-      graphs = graphsContainer.selectAll('.bar')
-              .data(data)
-              .enter()
-              .append('g')
-              .attr('class', 'bar')
-              .append('rect')
-              .style('fill', (d) -> c(Math.random()*10))
-              .attr('x', (d) -> x(d.advertiser.name))
-              .attr('width', x.rangeBand())
-              .attr('y', (d) -> height)
-              .attr('height', (d) -> 0)              
-              .transition()
-              .duration(duration)
-              .attr('y', (d) -> y(d.revenue_loc))
-              .attr('height', (d) -> height-y(d.revenue_loc))
-              .style('cursor', 'pointer') 
+      x = d3.scale.ordinal().rangeBands([0, width], 0.4, 0)
+      miniX = d3.scale.ordinal().rangeBands([0, miniWidth], 0.4, 0)
+      y = d3.scale.linear().range([height, 0])
+      miniY = d3.scale.linear().range([miniHeight, 0])
+
+      mainXZoom = d3.scale.linear()
+        .range([0, width])
+        .domain([0, width])
+
+      xAxis = d3.svg.axis().scale(x).orient('bottom')
+              .outerTickSize(0)
+              .innerTickSize(0)
+              .tickPadding(10)
+      mainGroup.append('g')
+        .attr('class', 'axisX axis')
+        .attr('transform', 'translate(0,' + height + ')')
+
+      yAxis = d3.svg.axis().scale(y).orient('left')
+              .innerTickSize(-width)
+              .outerTickSize(0)
+              .tickFormat (v) -> 
+                $scope.currency_symbol + $filter('number')(v)
+      d3.select(".mainGroupWrapper").insert('g', ':first-child')
+        .attr('class', 'axisY axis')
+
+      y.domain([0, d3.max(data, (d) -> d.revenue_loc)*1.1])
+      miniY.domain([0, d3.max(data, (d) -> d.revenue_loc)*1.1])
+      x.domain(data.map((item) -> item.advertiser.name))
+      miniX.domain(data.map((item) -> item.advertiser.name))
+
+      mainGroup.select("axisX").call(xAxis)
+
+      textScale = d3.scale.linear()
+        .domain([15,50])
+        .range([12,6])
+        .clamp(true)
+
+      brushExtent = Math.max( 1, Math.min( 20, Math.round(data.length*0.2) ) )
+      lastExtent = if data.length <= 7 then miniWidth else miniX(data[brushExtent].advertiser.name)
+
+      brush = d3.svg.brush()
+          .x(miniX)
+          .extent([miniX(data[0].advertiser.name), lastExtent])
+          .on("brush", brushmove)
+
+      gBrush = d3.select(".brushGroup").append("g")
+        .attr("class", "brush")
+        .call(brush)
+      
+      gBrush.selectAll(".resize")
+        .append("line")
+        .attr("y2", miniHeight)
+
+      gBrush.selectAll(".resize")
+        .append("path")
+        .attr("d", d3.svg.symbol().type("triangle-up").size(20))
+        .attr("transform", (d,i) -> 
+          if i then "translate(" + -4 + "," + (miniHeight/2) + ") rotate(270)" else "translate(" + 4 + "," + (miniHeight/2) + ") rotate(90)"
+        )
+
+      gBrush.selectAll("rect")
+        .attr("height", miniHeight);
+
+      gBrush.select(".background")
+        .on("mousedown.brush", brushcenter)
+        .on("touchstart.brush", brushcenter);
+
+      defs = svg.append("defs")
+
+      defs.append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width)
+        .attr("height", height + margin.bottom)
+
+      miniBar = d3.select(".miniGroup").selectAll(".bar")
+        .data(data)
+
+      miniBar
+        .attr("height", (d) -> miniY(d.revenue_loc))
+        .attr("x", (d,i) -> miniX(d.advertiser.name))
+        .attr("width", miniX.rangeBand())
+
+      miniBar.enter().append("rect")
+        .attr("class", "bar")
+        .attr("y", (d) -> miniY(d.revenue_loc))
+        .attr("height", (d) -> miniHeight - miniY(d.revenue_loc))
+        .attr("x", (d,i) -> miniX(d.advertiser.name))
+        .attr("width", miniX.rangeBand())
+
+      miniBar.exit()
+        .remove()
+
+      gBrush.call(brush.event)
 
       # Tooltip
       tooltipText = (selectedItem, unit, d, title) ->
@@ -245,7 +409,7 @@
               .style("top", (d3.event.pageY + 18) + "px")
 
       svg.selectAll('.bar')   
-              .on('mouseover', mouseOver(dataset[0].unit))
+              .on('mouseover', mouseOver($scope.currency_symbol))
               .on('mouseout', mouseOut) 
               .on('mousemove', mouseMove) 
 
@@ -352,7 +516,7 @@
           .style("text-anchor", "end")
           .attr("dx", "-.8em")
           .attr("dy", "-.3em")
-          .attr("transform", "rotate(-90)" )
+          .attr("transform", "rotate(-90)")
       svg.append('g').attr('class', 'axisY1').call y1Axis
       svg.append('g').attr('class', 'axisY2').call y2Axis
       svg.append('line')

@@ -13,6 +13,7 @@ class PmpItemDailyActualsQuery
         .by_pmp_item_id(options[:pmp_item_id])
         .with_advertiser(options[:with_advertiser])
         .order(:pmp_item_id, :date)
+        .distinct
   end
 
   private
