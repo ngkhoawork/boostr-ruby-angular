@@ -7,7 +7,11 @@ class CostMonthlyAmount < ActiveRecord::Base
     where('cost_monthly_amounts.start_date <= ? AND cost_monthly_amounts.end_date >= ?', end_date, start_date) 
   }
   scope :for_year_month, -> (effect_date) {
-    where("DATE_PART('year', start_date) = ? AND DATE_PART('month', start_date) = ?", effect_date.year, effect_date.month)
+    where(
+      "DATE_PART('year', start_date) = ? AND DATE_PART('month', start_date) = ?",
+      effect_date.year,
+      effect_date.month
+    )
   }
   scope :by_oldest, -> { order('start_date ASC') }
 
