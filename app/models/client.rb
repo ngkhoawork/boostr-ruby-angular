@@ -78,6 +78,20 @@ class Client < ActiveRecord::Base
   before_create :ensure_client_member
   after_commit :update_account_dimension, on: [:create, :update]
 
+  pg_search_scope :search_by_name,
+                  against: :name,
+                  using: {
+                    tsearch: {
+                      dictionary: :english,
+                      prefix: true,
+                      any_word: true
+                    },
+                    dmetaphone: {
+                      any_word: true
+                    }
+                  },
+                  ranked_by: ':trigram'
+
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
   scope :exclude_ids, -> ids { where.not(id: ids) }

@@ -10,6 +10,39 @@ RSpec.describe Client, type: :model do
     it { should have_many(:users).through(:client_members) }
   end
 
+  describe 'scopes' do
+    describe '.search_by_name' do
+      let(:company) { create :company }
+      let(:user) { create :user, company: company }
+      let(:category_field) { user.company.fields.where(name: 'Category').first }
+      let(:category) { create :option, field: category_field, company: user.company }
+      let!(:client) do
+        create :client,
+          name: 'Amazon', client_category: category, client_type_id: advertiser_type_id(company), company: company
+      end
+
+      subject { Client.search_by_name(search_name) }
+
+      context 'with exact param match' do
+        let(:search_name) { client.name }
+
+        it { expect(subject).to include client }
+      end
+
+      context 'with partial param match' do
+        let(:search_name) { 'The Amazon Corp.' }
+
+        it { expect(subject).to include client }
+      end
+
+      context 'with fuzzy param match' do
+        let(:search_name) { 'Amozon' }
+
+        it { expect(subject).to include client }
+      end
+    end
+  end
+
   context 'to_csv' do
     let!(:user) { create :user, company: company }
     let!(:user2) { create :user, company: company }
