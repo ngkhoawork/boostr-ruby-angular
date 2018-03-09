@@ -11,8 +11,8 @@
 						%tr
 							%th Family Name
 							%th Active
-					%tbody{ ng: { repeat: 'product_family in product_families' } }
-						%tr
+					%tbody
+						%tr{ ng: { repeat: 'product_family in product_families' } }
 							%td
 								%span.mr8 {{ product_family.name }}
 								%i.fa.fa-pencil.z-icon.edit-family{'ng-click': 'editFamilyModal(product_family); $event.stopPropagation()'}

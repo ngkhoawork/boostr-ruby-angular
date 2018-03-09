@@ -4,6 +4,7 @@
 
   transformRequest = (original, headers) ->
     original.team.parent_id = null if original.team.parent_id == undefined
+    original.team.sales_process_id = null if original.team.sales_process_id == undefined
     angular.toJson(original)
 
   resource = $resource '/api/teams/:id', { id: '@id' },

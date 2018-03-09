@@ -105,7 +105,14 @@ class Api::TeamsController < ApplicationController
   end
 
   def team_params
-    params.require(:team).permit(:name, :parent_id, :leader_id, :member_ids, member_ids: [])
+    params.require(:team).permit(
+      :name, 
+      :parent_id, 
+      :leader_id, 
+      :member_ids,
+      :sales_process_id,
+      member_ids: []
+    )
   end
 
   def team
