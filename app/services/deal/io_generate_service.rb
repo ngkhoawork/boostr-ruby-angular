@@ -92,12 +92,12 @@ class Deal::IoGenerateService
   def cost_values_param
     return @_cost_values_param if defined?(@_cost_values_param)
     cost_type_field = company.fields.find_by(subject_type: 'Cost', name: 'Cost Type')
-    cost_type = cost_type_field.option_from_name('General')
+    cost_type = cost_type_field.option_locked
     @_cost_values_param = {
       value_type: 'Option',
       subject_type: 'Cost',
-      field_id: cost_type_field.id,
-      option_id: cost_type.id,
+      field_id: cost_type_field&.id,
+      option_id: cost_type&.id,
       company_id: company.id
     }
   end

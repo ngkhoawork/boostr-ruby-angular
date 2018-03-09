@@ -24,6 +24,8 @@ class Cost::AmountsGenerateService
   def generate_cost_amounts
     if cost.imported
       generate_empty_amounts
+    elsif deal_product && deal_product.deal_product_budgets.length == io.months.length
+      generate_from_deal_products
     else
       generate_auto_amounts
     end
