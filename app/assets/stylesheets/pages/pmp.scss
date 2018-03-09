@@ -327,8 +327,10 @@
   }
 }
 
-#pmp-revenue-by-advertiser {
-  .axisY line {
+#pmp-delivery, #pmp-price-revenue, #pmp-revenue-by-advertiser {
+  .axisY line,
+  .axisY1 line,
+  .axisY2 line {
     fill: none;
   }
 
