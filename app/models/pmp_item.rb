@@ -72,13 +72,14 @@ class PmpItem < ActiveRecord::Base
   end
 
   def update_stopped_status!
-    return if !daily_actual_end_date
-    if pmp.opened? && is_stopped == true && daily_actual_end_date >= Time.now.in_time_zone('Pacific Time (US & Canada)').to_date
+    last_date = daily_actual_end_date || (pmp.start_date - 1.day) rescue nil
+    return if last_date.nil?
+    if pmp.opened? && is_stopped == true && last_date >= pmp.today
       self.is_stopped = false
       self.stopped_at = nil
-    elsif pmp.opened? && is_stopped == false && daily_actual_end_date < Time.now.in_time_zone('Pacific Time (US & Canada)').to_date - 1.day
+    elsif pmp.opened? && is_stopped == false && last_date < pmp.today - 1.day
       self.is_stopped = true
-      self.stopped_at = daily_actual_end_date + 1.day
+      self.stopped_at = last_date + 1.day
     end
   end
 
