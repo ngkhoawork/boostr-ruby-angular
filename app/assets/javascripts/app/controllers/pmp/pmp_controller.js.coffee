@@ -253,17 +253,17 @@
             .call(brush.extent([ topSection, topSection + size ]))
             .call(brush.event)
 
-      zoomer = d3.behavior.zoom().on("zoom", null)
+      # zoomer = d3.behavior.zoom().on("zoom", null)
 
       svg = d3.select(svgID)
               .attr("preserveAspectRatio", "xMinYMin meet")
               .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom + miniHeight + miniMargin.top + miniMargin.bottom))
-              .call(zoomer)
-              .on("wheel.zoom", scroll)
-              .on("mousedown.zoom", null)
-              .on("touchstart.zoom", null)
-              .on("touchmove.zoom", null)
-              .on("touchend.zoom", null)
+              # .call(zoomer)
+              # .on("wheel.zoom", scroll)
+              # .on("mousedown.zoom", null)
+              # .on("touchstart.zoom", null)
+              # .on("touchmove.zoom", null)
+              # .on("touchend.zoom", null)
               .html('')
       mainGroupWrapper = svg.append('g')            
                     .attr("class","mainGroupWrapper")                                                               
@@ -645,17 +645,17 @@
             .call(brush.extent([ topSection, topSection + size ]))
             .call(brush.event)
 
-      zoomer = d3.behavior.zoom().on("zoom", null)
+      # zoomer = d3.behavior.zoom().on("zoom", null)
 
       svg = d3.select(svgID)
               .attr("preserveAspectRatio", "xMinYMin meet")
               .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom + miniHeight + miniMargin.top + miniMargin.bottom))
-              .call(zoomer)
-              .on("wheel.zoom", scroll)
-              .on("mousedown.zoom", null)
-              .on("touchstart.zoom", null)
-              .on("touchmove.zoom", null)
-              .on("touchend.zoom", null)
+              # .call(zoomer)
+              # .on("wheel.zoom", scroll)
+              # .on("mousedown.zoom", null)
+              # .on("touchstart.zoom", null)
+              # .on("touchmove.zoom", null)
+              # .on("touchend.zoom", null)
               .html('')
 
 
@@ -745,6 +745,28 @@
           .attr('x2', width)
           .attr('y2', height)
 
+      # Axis titles
+      y1TitlePos = () ->
+        c = -y1Max.toString().length * 10 - 15
+        Math.max(c, 10 - margin.left)
+      y2TitlePos = () ->
+        c = width + y2Max.toString().length * 10 + 15
+        Math.min(c, width + margin.right - 10)
+      y1Title = dataset.filter((d) -> d.graphType==1 && !d.hideTitle).map((d) -> d.name).join(' , ')
+      y2Title = dataset.filter((d) -> d.graphType==2 && !d.hideTitle).map((d) -> d.name).join(' , ')
+      mainGroupWrapper.append('text')
+          .attr('text-anchor', 'middle')
+          .attr('transform', 'translate(' + y1TitlePos() + ',' + (height/2) + ')rotate(-90)')
+          .attr('class', 'title titleY1')
+          .text(y1Title)
+      mainGroupWrapper.append('text')
+          .attr('text-anchor', 'middle')
+          .attr('transform', 'translate(' + y2TitlePos() + ',' + (height/2) + ')rotate(90)')
+          .attr('class', 'title titleY2')
+          .text(y2Title)
+
+      return if data.length == 0
+
       # Brush
       brushExtent = Math.max( 1, Math.min( 30, Math.round(days.length*0.2) ) )
       lastExtent = if days.length <= 30 then miniWidth else miniX(days[brushExtent])
@@ -812,26 +834,6 @@
 
       gBrush.call(brush.event)
 
-      # Axis titles
-      y1TitlePos = () ->
-        c = -y1Max.toString().length * 10 - 15
-        Math.max(c, 10 - margin.left)
-      y2TitlePos = () ->
-        c = width + y2Max.toString().length * 10 + 15
-        Math.min(c, width + margin.right - 10)
-      y1Title = dataset.filter((d) -> d.graphType==1 && !d.hideTitle).map((d) -> d.name).join(' , ')
-      y2Title = dataset.filter((d) -> d.graphType==2 && !d.hideTitle).map((d) -> d.name).join(' , ')
-      mainGroupWrapper.append('text')
-          .attr('text-anchor', 'middle')
-          .attr('transform', 'translate(' + y1TitlePos() + ',' + (height/2) + ')rotate(-90)')
-          .attr('class', 'title titleY1')
-          .text(y1Title)
-      mainGroupWrapper.append('text')
-          .attr('text-anchor', 'middle')
-          .attr('transform', 'translate(' + y2TitlePos() + ',' + (height/2) + ')rotate(90)')
-          .attr('class', 'title titleY2')
-          .text(y2Title)
-
       # Graphs
       # graphLine1 = d3.svg.line()
       #         .x((value, i) -> x(days[i]))
@@ -854,7 +856,6 @@
       #         .duration(duration)
       #         .attr 'd', (d) -> if d.graphType==2 then graphLine2(d.values) else graphLine1(d.values)
 
-      return if data.length == 0
 
       # Legends
       legend = mainGroupWrapper.selectAll('g.legend')
