@@ -7,11 +7,3 @@ general:
   branches:
     ignore:
       - /.*testing.*/
-
-machine:
-  environment:
-    CONTINUOUS_INTEGRATION: true
-
-test:
-  override:
-    - bundle exec rspec --color --format Fuubar --order rand
