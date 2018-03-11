@@ -1,0 +1,51 @@
+#contracts {
+    overflow-x: hidden;
+    position: relative;
+    .contracts-inner {
+        margin: 0 25px;
+    }
+    .z-sliding-filter {
+        top: 0
+    }
+    .contracts-header {
+        display: flex;
+        align-items: center;
+        .header-item {
+            margin-right: 30px;
+            white-space: nowrap;
+            &:last-child {
+                margin: 0 0 0 auto;
+            }
+
+        }
+        .add-btn {
+            position: relative;
+            top: 0;
+        }
+        .contract-search {
+            width: 30%;
+            position: relative;
+            i.fa {
+                position: absolute;
+                font-size: 20px;
+                color: lighten($secondary-font-color, 15%);
+                top: 13px;
+                left: 10px;
+            }
+            input {
+                width: 100%;
+                padding-left: 38px;
+                background-color: white;
+            }
+        }
+        .download-btn {
+            position: relative;
+            top: 0;
+        }
+    }
+    table.table {
+        th, td {
+            text-align: left;
+        }
+    }
+}
