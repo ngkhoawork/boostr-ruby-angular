@@ -28,13 +28,17 @@
           d.startDate = $scope.timeFilter.savedTimePeriod.startDate
           d.endDate = $scope.timeFilter.savedTimePeriod.endDate
         if d.startDate && d.endDate
-          $scope.timeFilter.timePeriodString = d.startDate.format('MMM D, YY') + ' - ' + d.endDate.format('MMM D, YY')
+          $scope.timeFilter.timePeriodString = $scope.timeFilter.getStartDate() + ' - ' + $scope.timeFilter.getEndDate()
           $scope.timeFilter.updateCharts()
       removeTimePeriod: (e) ->
         e.stopPropagation()
         $scope.timeFilter.timePeriod = {startDate: null, endDate: null}
         $scope.timeFilter.timePeriodString = ''
         $scope.timeFilter.updateCharts()
+      getStartDate: () ->
+        $scope.timeFilter.timePeriod.startDate.format('MMM D, YY')
+      getEndDate: () ->
+        $scope.timeFilter.timePeriod.endDate.format('MMM D, YY')
     }
     $scope.revenueFilter = {
       item: null
@@ -46,6 +50,13 @@
     graphRevenueData = {}
     
     init = () ->
+      $scope.timeFilter.timePeriod.endDate = moment()
+      $scope.timeFilter.timePeriod.startDate = moment().subtract(6, 'days')
+      $scope.timeFilter.savedTimePeriod = angular.copy $scope.timeFilter.timePeriod
+      $scope.timeFilter.timePeriodString = $scope.timeFilter.getStartDate()
+      $scope.timeFilter.timePeriodString += ' - '
+      $scope.timeFilter.timePeriodString += $scope.timeFilter.getEndDate()
+
       PMP.get($routeParams.id).then (pmp) ->
         $scope.currentPMP = pmp
         $scope.updateDeliveryChart('all')
@@ -100,7 +111,13 @@
       if graphData[id]
         drawChart(graphData[id], '#pmp-delivery-chart-container', '#pmp-delivery-chart')
       else if $scope.timeFilter.timePeriodString
-        PMPItemDailyActual.aggregate(pmp_id: $routeParams.id, pmp_item_id: $scope.selectedDeliveryItem.id || 'all', group_by: 'date', start_date: $scope.timeFilter.timePeriod.startDate, end_date: $scope.timeFilter.timePeriod.endDate).then (data) ->
+        PMPItemDailyActual.aggregate(
+          pmp_id: $routeParams.id, 
+          pmp_item_id: $scope.selectedDeliveryItem.id || 'all', 
+          group_by: 'date', 
+          start_date: $scope.timeFilter.timePeriod.startDate.startOf('day'), 
+          end_date: $scope.timeFilter.timePeriod.endDate.startOf('day')
+        ).then (data) ->
           if data && data.length > 0
             graphData[id] = data
           drawChart(data, '#pmp-delivery-chart-container', '#pmp-delivery-chart')
@@ -115,7 +132,13 @@
       if graphData[id]
         drawChart(graphData[id], '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
       else if $scope.timeFilter.timePeriodString
-        PMPItemDailyActual.aggregate(pmp_id: $routeParams.id, pmp_item_id: $scope.selectedPriceItem.id || 'all', group_by: 'date', start_date: $scope.timeFilter.timePeriod.startDate, end_date: $scope.timeFilter.timePeriod.endDate).then (data) ->
+        PMPItemDailyActual.aggregate(
+          pmp_id: $routeParams.id, 
+          pmp_item_id: $scope.selectedPriceItem.id || 'all', 
+          group_by: 'date', 
+          start_date: $scope.timeFilter.timePeriod.startDate.startOf('day'), 
+          end_date: $scope.timeFilter.timePeriod.endDate.startOf('day')
+        ).then (data) ->
           if data && data.length > 0
             graphData[id] = data
           drawChart(data, '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
@@ -129,7 +152,13 @@
       if graphRevenueData[id]
         drawRevenueChart(graphRevenueData[id], '#pmp-revenue-advertiser-chart-container', '#pmp-revenue-advertiser-chart')
       else if $scope.timeFilter.timePeriodString
-        PMPItemDailyActual.aggregate(pmp_id: $routeParams.id, pmp_item_id: $scope.revenueFilter.item.id || 'all', group_by: 'advertiser', start_date: $scope.timeFilter.timePeriod.startDate, end_date: $scope.timeFilter.timePeriod.endDate).then (data) ->
+        PMPItemDailyActual.aggregate(
+          pmp_id: $routeParams.id, 
+          pmp_item_id: $scope.revenueFilter.item.id || 'all', 
+          group_by: 'advertiser', 
+          start_date: $scope.timeFilter.timePeriod.startDate.startOf('day'), 
+          end_date: $scope.timeFilter.timePeriod.endDate.startOf('day')
+        ).then (data) ->
           if data && data.length > 0
             graphRevenueData[id] = data
           drawRevenueChart(data, '#pmp-revenue-advertiser-chart-container', '#pmp-revenue-advertiser-chart')
@@ -159,7 +188,6 @@
         d.revenue_loc = parseFloat(d.revenue_loc)
         d
       data = _.sortBy data, (d) -> -d.revenue_loc
-      return d3.select(svgID).html('') if data.length == 0
 
       update = () ->
         c = d3.scale.category10()
@@ -285,7 +313,7 @@
           .attr('x1', 0)
           .attr('y1', 0)
           .attr('x2', 0)
-          .attr('y2', height + 80)
+          .attr('y2', height + 25)
       mainGroup.append('line')
           .style('stroke', '#d9dde0')
           .attr('x1', 0)
@@ -318,12 +346,15 @@
       mainGroupWrapper.insert('g', ':first-child')
         .attr('class', 'axisY axis')
 
-      y.domain([0, d3.max(data, (d) -> d.revenue_loc)*1.1])
-      miniY.domain([0, d3.max(data, (d) -> d.revenue_loc)*1.1])
+      y.domain([0, (d3.max(data, (d) -> d.revenue_loc) || 100)*1.1])
+      miniY.domain([0, (d3.max(data, (d) -> d.revenue_loc) || 100)*1.1])
       x.domain(data.map((item) -> item.advertiser.name))
       miniX.domain(data.map((item) -> item.advertiser.name))
 
       mainGroup.select("axisX").call(xAxis)
+      mainGroupWrapper.select(".axisY").call(yAxis)
+
+      return if data.length == 0
 
       textScale = d3.scale.linear()
         .domain([15,50])
@@ -523,11 +554,11 @@
       update = () ->
         c = d3.scale.category10()
         graphLine1 = d3.svg.line()
-                .x((value, i) -> x(days[i]))
+                .x((value, i) -> x(days[i]) + x.rangeBand()/2)
                 .y((value, i) -> y1(value))
                 .defined((value, i) -> _.isNumber value)
         graphLine2 = d3.svg.line()
-                .x((value, i) -> x(days[i]))
+                .x((value, i) -> x(days[i]) + x.rangeBand()/2)
                 .y((value, i) -> y2(value))
                 .defined((value, i) -> _.isNumber value)
 
@@ -549,7 +580,7 @@
           dot = mainGroup.selectAll("circle.graph-" + d.name.replace(' ', '_'))
               .data(d.values)
 
-          dot.attr("cx", (v, i) -> x(days[i]))       
+          dot.attr("cx", (v, i) -> x(days[i]) + x.rangeBand()/2)       
               .attr("cy", (v) -> if d.graphType == 1 then y1(v) else y2(v))
 
           dot.enter()
@@ -558,7 +589,7 @@
               .style("cursor", "pointer")  
               .attr("fill", d.color)                              
               .attr("r", 4)       
-              .attr("cx", (v, i) -> x(days[i]))       
+              .attr("cx", (v, i) -> x(days[i]) + x.rangeBand()/2)       
               .attr("cy", (v) -> if d.graphType == 1 then y1(v) else y2(v))
               .on("mouseover", mouseOver(d.name, d.unit))
               .on("mouseout", mouseOut)
@@ -589,11 +620,11 @@
 
         mainGroup.select(".axisX")
           .call(xAxis)
-          .selectAll("text")  
-          .style("text-anchor", "end")
-          .attr("dx", "-.8em")
-          .attr("dy", "-1.6em")
-          .attr("transform", "rotate(-90)")
+          .selectAll("text")
+            .style("text-anchor", "end")  
+            .attr("transform", "rotate(-90)")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.6em")
 
         # newMaxYScale = d3.max(data, (d) -> if selected.indexOf(d.advertiser.name) > -1 then d.revenue_loc else 0)
         # y.domain([0, newMaxYScale])
@@ -685,8 +716,8 @@
       for i in [0..ticks-1]
         y1TickValues.push i*Math.ceil(y1Max / (ticks - 1))
         y2TickValues.push i*Math.ceil(y2Max / (ticks - 1))
-      x = d3.scale.ordinal().domain(days).rangeBands([0, width], 0.4, 0.4)
-      miniX = d3.scale.ordinal().domain(days).rangeBands([0, miniWidth], 0, 0)
+      x = d3.scale.ordinal().domain(days).rangeBands([0, width])
+      miniX = d3.scale.ordinal().domain(days).rangeBands([0, miniWidth])
       y1 = d3.scale.linear().domain([y1Max, 0]).rangeRound([0, height])
       miniY1 = d3.scale.linear().domain([y1Max, 0]).rangeRound([0, miniHeight])
       y2 = d3.scale.linear().domain([y2Max, 0]).rangeRound([0, height])
@@ -719,11 +750,6 @@
       mainGroup.append('g').attr('class', 'axisX')
         .attr('transform', 'translate(0,' + height + ')')
         .call(xAxis)
-        .selectAll("text")  
-          .style("text-anchor", "end")
-          .attr("dx", "-3.8em")
-          .attr("dy", "-10.3em")
-          .attr("transform", "rotate(-90)")
       mainGroupWrapper.insert('g', ':first-child').attr('class', 'axisY1').call y1Axis
       mainGroupWrapper.insert('g', ':first-child').attr('class', 'axisY2').call y2Axis
       mainGroup.append('line')
@@ -810,11 +836,11 @@
 
       # Mini graph
       miniGraphLine1 = d3.svg.line()
-              .x((value, i) -> miniX(days[i]))
+              .x((value, i) -> miniX(days[i]) + miniX.rangeBand()/2)
               .y((value, i) -> miniY1(value))
               .defined((value, i) -> _.isNumber value)
       miniGraphLine2 = d3.svg.line()
-              .x((value, i) -> miniX(days[i]))
+              .x((value, i) -> miniX(days[i]) + miniX.rangeBand()/2)
               .y((value, i) -> miniY2(value))
               .defined((value, i) -> _.isNumber value)
       miniGraph = miniGroup.selectAll('.graph')
