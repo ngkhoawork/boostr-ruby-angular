@@ -37,7 +37,7 @@ class Option < ActiveRecord::Base
     scope = neighbour_options.where('LOWER(name) = ?', self.name.downcase)
     scope = scope.where('id <> ?', self.id) if self.id
 
-    errors.add(:name, 'Name has already been taken') if scope.count > 0
+    errors.add(:name, "Option name #{name} has already been taken") if scope.count > 0
   end
 
   def neighbour_options

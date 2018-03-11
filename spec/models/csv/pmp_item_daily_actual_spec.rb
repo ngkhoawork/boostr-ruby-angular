@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe Csv::PmpItemDailyActual, 'model' do
+  let!(:company) { create :company, :fast_create_company }
+
   describe 'validates attributes' do
     context 'with valid attributes' do
       it 'returns true' do
@@ -107,10 +109,6 @@ describe Csv::PmpItemDailyActual, 'model' do
   end
 
   private
-
-  def company
-    @_company ||= create :company
-  end
 
   def user
     @_user ||= create :user, company: company, email: 'test@user.com'

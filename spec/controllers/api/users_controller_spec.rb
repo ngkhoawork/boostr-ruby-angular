@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::UsersController, type: :controller do
-  let(:company) { Company.first }
+  let!(:company) { create :company, :fast_create_company }
   let!(:user) { create :user }
 
   before do

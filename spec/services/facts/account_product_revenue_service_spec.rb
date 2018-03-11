@@ -118,7 +118,7 @@ describe Facts::AccountProductRevenueFactService do
   private
 
   def company
-    @company ||= create(:company)
+    @company ||= create(:company, :fast_create_company)
   end
 
   def client

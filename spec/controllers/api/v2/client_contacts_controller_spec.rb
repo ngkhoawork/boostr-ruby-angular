@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V2::ClientContactsController, type: :controller do
-  let!(:company) { Company.first }
+  let!(:company) { create :company, :fast_create_company }
   let(:client_type_id) { Field.where(company: company, name: "Client Type").first.options.first.id }
   let!(:client) { create :client, company: company, client_type_id: client_type_id }
   let!(:user) { create :user, company: company }

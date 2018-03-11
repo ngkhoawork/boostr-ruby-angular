@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe Pmps::PmpDetailSerializer do
   it 'serialize pmp details' do
+    User.current = create :user
     expect(pmp_detail_serializer.id).to eq(pmp.id)
     expect(pmp_detail_serializer.name).to eq(pmp.name)
     expect(pmp_detail_serializer.deal_id).to eq(pmp.deal_id)

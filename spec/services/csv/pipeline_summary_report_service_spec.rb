@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe Csv::PipelineSummaryReportService do
   it "pipeline service report" do
+    User.current = create :user
     expect(pipeline_summary_service).to_not be_nil
   end
 

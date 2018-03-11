@@ -77,12 +77,14 @@ class Company < ActiveRecord::Base
   accepts_nested_attributes_for :physical_address
   accepts_nested_attributes_for :assets
 
-  before_create :setup_defaults
+  before_create :setup_defaults, :setup_clients
 
-  def setup_defaults
+  def setup_clients
     client_type = fields.find_or_initialize_by(subject_type: 'Client', name: 'Client Type', value_type: 'Option', locked: true)
     setup_default_options(client_type, %w(Advertiser Agency))
+  end
 
+  def setup_defaults
     contact_role = fields.find_or_initialize_by(subject_type: 'Deal', name: 'Contact Role', value_type: 'Option', locked: true)
     setup_default_options(contact_role, ['Billing'])
 

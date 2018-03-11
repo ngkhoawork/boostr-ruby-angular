@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe DealProductBudget, type: :model do
+  let!(:company) { create :company }
+
   context 'scopes' do
-    let(:company) { create :company }
 
     context 'for_time_period' do
       let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-12-31', company: company }
@@ -25,7 +26,6 @@ RSpec.describe DealProductBudget, type: :model do
 
   describe '#import' do
     let!(:user) { create :user }
-    let!(:company) { user.company }
     let!(:product) { create :product }
     let!(:existing_deal) { create :deal }
     let!(:three_month_deal) { create :deal, start_date: Date.new(2015, 7), end_date: Date.new(2015, 9).end_of_month }
@@ -109,7 +109,7 @@ RSpec.describe DealProductBudget, type: :model do
       end
 
       it 'counts failed rows' do
-        data = build :deal_product_csv_data, deal_id: 'N/A'
+        data = build :deal_product_csv_data, company: company, deal_id: 'N/A'
         DealProductBudget.import(generate_csv(data), user.id, 'deal_product_budgets.csv')
 
         expect(import_log.rows_processed).to be 1
@@ -118,7 +118,7 @@ RSpec.describe DealProductBudget, type: :model do
     end
 
     context 'invalid data' do
-      let!(:duplicate_deal) { create :deal, name: FFaker::NatoAlphabet.callsign }
+      let!(:duplicate_deal) { create :deal }
       let!(:duplicate_deal2) { create :deal, name: duplicate_deal.name }
 
       it 'requires deal ID to match' do

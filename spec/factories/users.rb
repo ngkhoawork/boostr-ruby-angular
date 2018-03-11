@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :user do
-    email { rand(999999).to_s + FFaker::Internet.email }
+    sequence(:email) {|n| "#{n}#{rand(9999)}" + FFaker::Internet.email }
     password { FFaker::Internet.password }
     first_name { FFaker::Name.first_name }
     last_name { FFaker::Name.last_name }

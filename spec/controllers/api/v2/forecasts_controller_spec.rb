@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V2::ForecastsController, type: :controller do
-  let(:company) { Company.first }
+  let!(:company) { create :company, :fast_create_company }
   let(:user) { create :user }
   let(:parent_team) { create :parent_team, leader: user }
   let(:time_period) { create :time_period }

@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe Dataexport::IoSerializer do
+  let!(:company) { create :company, :fast_create_company }
+
   it 'serializes io data' do
     expect(serializer.id).to eq(io.id)
     expect(serializer.io_number).to eq(io.io_number)

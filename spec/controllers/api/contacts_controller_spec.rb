@@ -1,6 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Api::ContactsController, type: :controller do
+  let!(:company) { create :company, :fast_create_company }
+
+  let!(:job_level_field) do
+    create :field, subject_type: 'Contact', name: 'Job Level', value_type: 'Option', locked: true
+  end
+
   let(:team) { create :parent_team }
   let(:user) { create :user, team: team }
   let(:team_user) { create :user, team: team }

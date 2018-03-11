@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Operative::ExtractVerifyService, datafeed: :true do
-  let(:company) { Company.first }
+  let!(:company) { create :company, :fast_create_company }
   let(:files) { './testfile_4148282_v3.tar.gz' }
   let(:tar_archive) { double() }
   subject(:subject) { Operative::ExtractVerifyService.new(files, timestamp) }

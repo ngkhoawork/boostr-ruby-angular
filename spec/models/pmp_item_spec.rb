@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe PmpItem, 'model' do
+  let!(:company) { create :company, :fast_create_company }
+
   describe '#destroy' do
     before do
       pmp_item_daily_actuals

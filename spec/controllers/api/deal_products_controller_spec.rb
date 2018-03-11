@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 describe Api::DealProductsController do
+  let!(:company) { create :company, :fast_create_company }
   let(:user) { create :user }
   let(:deal) { create :deal, creator: user }
   let(:product) { create :product, company: user.company }

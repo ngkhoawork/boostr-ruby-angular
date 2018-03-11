@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe ForecastSerializer do
-  let(:company) { Company.first }
+  let!(:company) { create :company }
   let(:leader) { create :user }
   let(:parent) { create :parent_team }
   let(:child) { create :child_team, parent: parent, leader: leader }

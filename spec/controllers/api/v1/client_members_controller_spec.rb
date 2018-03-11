@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ClientMembersController, type: :controller do
-  let(:company) { Company.first }
+  let!(:company) { create :company, :fast_create_company }
   let(:client) { create :client, company: company }
   let(:user) { create :user, company: company }
   let(:client_member_params) { attributes_for :client_member, user_id: user.id, values_attributes: [create_member_role(company).attributes] }

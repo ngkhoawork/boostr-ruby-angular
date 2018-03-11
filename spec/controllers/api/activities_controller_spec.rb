@@ -1,19 +1,20 @@
 require 'rails_helper'
 
 describe Api::ActivitiesController, type: :controller do
+  let!(:company) { create :company, :fast_create_company }
   let(:new_company) { create :company }
-  let(:team) { create :parent_team }
-  let(:user) { create :user, team: team }
-  let(:client) { create :client }
-  let(:deal) { create :deal, advertiser: client }
-  let(:contacts) { create_list :contact, 10, clients: [client] }
+  let(:team) { create :parent_team, company: company }
+  let(:user) { create :user, team: team, company: company }
+  let(:client) { create :client, company: company }
+  let(:deal) { create :deal, advertiser: client, company: company }
+  let(:contacts) { create_list :contact, 10, clients: [client], company: company }
   let(:activity_params) {
     attributes_for(:activity)
   }
-  let(:existing_activity) { create :activity }
-  let(:user_contact) { create :contact, address_attributes: { email: user.email } }
+  let(:existing_activity) { create :activity, company: company }
+  let(:user_contact) { create :contact, address_attributes: { email: user.email }, company: company }
 
-  before do
+  before :each do
     sign_in user
   end
 

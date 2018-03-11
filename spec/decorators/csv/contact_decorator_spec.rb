@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 describe Csv::ContactDecorator do
+  let!(:company) { create :company, :fast_create_company }
   subject { described_class.new(contact) }
 
   let(:contact) { create :contact }

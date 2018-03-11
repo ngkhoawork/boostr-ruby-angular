@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Activity, type: :model do
+  let!(:company) { create :company }
+
   describe '#add_activity' do
     let(:client) { create :client }
     let(:deal) { create :deal, advertiser: client }
@@ -13,7 +15,6 @@ RSpec.describe Activity, type: :model do
 
     describe '#import' do
       let!(:user) { create :user }
-      let!(:company) { user.company }
       let!(:advertiser) { create :client, created_by: user.id, client_type_id: advertiser_type_id(company) }
       let!(:agency) { create :client, created_by: user.id, client_type_id: agency_type_id(company) }
       let!(:deal) { create :deal, name: 'New Big Deal' }
@@ -22,7 +23,7 @@ RSpec.describe Activity, type: :model do
       let(:import_log) { CsvImportLog.last }
 
       it 'creates a new activity from csv' do
-        data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name
+        data = build :activity_csv_data, company: company, agency: agency.name, advertiser: advertiser.name
         expect do
           Activity.import(generate_csv(data), user.id, 'activity.csv')
         end.to change(Activity, :count).by(1)
@@ -41,7 +42,7 @@ RSpec.describe Activity, type: :model do
       end
 
       it 'updates an existing activity by ID match' do
-        data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name, id: activity.id
+        data = build :activity_csv_data, company: company, agency: agency.name, advertiser: advertiser.name, id: activity.id
         expect do
           Activity.import(generate_csv(data), user.id, 'activities.csv')
         end.not_to change(Activity, :count)
@@ -61,7 +62,7 @@ RSpec.describe Activity, type: :model do
 
       it 'adds new contacts to the existing ones' do
         activity_contacts = activity.contacts.map(&:address).map(&:email)
-        data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name, id: activity.id
+        data = build :activity_csv_data, company: company, agency: agency.name, advertiser: advertiser.name, id: activity.id
         Activity.import(generate_csv(data), user.id, 'activities.csv')
         activity.reload
 
@@ -70,7 +71,7 @@ RSpec.describe Activity, type: :model do
       end
 
       it 'correctly processes year in YY format' do
-        data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name, id: activity.id, date: '10/11/17'
+        data = build :activity_csv_data, company: company, agency: agency.name, advertiser: advertiser.name, id: activity.id, date: '10/11/17'
         Activity.import(generate_csv(data), user.id, 'activities.csv')
         activity.reload
 
@@ -79,7 +80,7 @@ RSpec.describe Activity, type: :model do
 
       context 'csv import log' do
         it 'creates csv import log' do
-          data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name
+          data = build :activity_csv_data, company: company, agency: agency.name, advertiser: advertiser.name
 
           expect do
             Activity.import(generate_csv(data), user.id, 'activities.csv')
@@ -87,7 +88,7 @@ RSpec.describe Activity, type: :model do
         end
 
         it 'saves amount of processed rows for new objects' do
-          data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name
+          data = build :activity_csv_data, company: company, agency: agency.name, advertiser: advertiser.name
 
           Activity.import(generate_csv(data), user.id, 'activities.csv')
 
@@ -97,7 +98,7 @@ RSpec.describe Activity, type: :model do
         end
 
         it 'saves amount of processed rows when updating existing objects' do
-          data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name, id: activity.id
+          data = build :activity_csv_data, company: company, agency: agency.name, advertiser: advertiser.name, id: activity.id
 
           Activity.import(generate_csv(data), user.id, 'activities.csv')
 
@@ -106,7 +107,7 @@ RSpec.describe Activity, type: :model do
         end
 
         it 'counts failed rows' do
-          data = build :activity_csv_data, date: nil
+          data = build :activity_csv_data, company: company, date: nil
           Activity.import(generate_csv(data), user.id, 'activities.csv')
 
           expect(import_log.rows_processed).to be 1

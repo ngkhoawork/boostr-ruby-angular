@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe SalesProcess, 'model' do
+  let!(:company) { create :company, :fast_create_company }
+
   describe 'scopes' do
     context 'active' do
       before do

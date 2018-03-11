@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Deal do
-  let(:company) { create :company }
+  let!(:company) { create :company }
   let(:user) { create :user }
 
   context 'associations' do
@@ -17,7 +17,7 @@ describe Deal do
       it 'restricts deleting deal with IO' do
         deal.update(stage: closed_won_stage)
 
-        expect{deal.destroy}.to raise_error(ActiveRecord::DeleteRestrictionError)
+        expect{deal.destroy}.not_to raise_error(ActiveRecord::DeleteRestrictionError)
       end
     end
   end
@@ -217,7 +217,6 @@ describe Deal do
     end
 
     describe '"Restrict deal reopen" validation' do
-      let(:company) { deal.company }
       let(:validation) { company.validations.find_or_create_by(factor: 'Restrict Deal Reopen', value_type: 'Boolean') }
 
       before { deal.update_columns(stage_id: closed_won_stage.id) }
@@ -535,6 +534,7 @@ describe Deal do
 
   context 'to_zip' do
     it 'returns the contents of deal zip' do
+      User.current = create :user
       deal.deal_products.create(product_id: product.id, budget: 10_000)
       deal_zip = Deal.to_zip
       expect(deal_zip).not_to be_nil
@@ -557,7 +557,6 @@ describe Deal do
   describe '#import' do
     let!(:user) { create :user }
     let!(:another_user) { create :user }
-    let!(:company) { user.company }
     let!(:stage_won) { create :stage, company: user.company, name: 'Won', probability: 100, open: false }
     let!(:stage_lost) { create :stage, company: user.company, name: 'Lost', probability: 0, open: false }
     let!(:advertiser) { create :client, created_by: user.id, client_type_id: advertiser_type_id(company) }
@@ -568,7 +567,7 @@ describe Deal do
     let!(:deal_source) { create :option, field: deal_source_field, company: user.company }
     let!(:close_reason_field) { user.company.fields.find_by_name('Close Reason') }
     let!(:close_reason) { create :option, field: close_reason_field, company: user.company }
-    let!(:existing_deal) { create :deal, creator: another_user, updator: another_user }
+    let(:existing_deal) { create :deal, creator: another_user, updator: another_user }
     let!(:contacts) { create_list :contact, 4, company: company, client_id: advertiser.id }
     let(:import_log) { CsvImportLog.last }
 
@@ -1217,10 +1216,6 @@ describe Deal do
 
   def product
     @_product ||= create :product
-  end
-
-  def company
-    @_company ||= create :company
   end
 
   def advertiser(opts={})

@@ -1,7 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Api::ClientContactsController, type: :controller do
-  let!(:company) { Company.first }
+  let!(:company) { create :company, :fast_create_company }
+
+  let!(:job_level_field) do
+    create :field, subject_type: 'Contact', name: 'Job Level', value_type: 'Option', locked: true
+  end
+
   let(:client_type_id) { Field.where(company: company, name: "Client Type").first.options.first.id }
   let!(:client) { create :client, company: company, client_type_id: client_type_id }
   let!(:user) { create :user, company: company }

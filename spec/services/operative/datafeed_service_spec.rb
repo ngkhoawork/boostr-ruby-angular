@@ -18,7 +18,7 @@ RSpec.describe Operative::DatafeedService, datafeed: :true do
   end
 
   def company
-    @_company ||= Company.first
+    @_company ||= create :company, :fast_create_company
   end
 
   def fileservice

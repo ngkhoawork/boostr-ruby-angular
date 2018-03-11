@@ -1,6 +1,23 @@
 require 'rails_helper'
 
 describe Api::DashboardsController do
+  let!(:company) { create :company, :fast_create_company }
+  let!(:time_period) do
+    create :time_period,
+            name: 'Q3',
+            period_type: 'quarter',
+            start_date: '2017-06-01',
+            end_date: '2017-09-30'
+  end
+
+  let!(:next_time_period) do
+    create :time_period,
+            name: 'Q4',
+            period_type: 'quarter',
+            start_date: '2017-10-01',
+            end_date: '2017-12-31'
+  end
+
   before do
     Timecop.freeze(2017, 7, 30)
     create :deal_member, user: user, deal: deal
@@ -32,32 +49,12 @@ describe Api::DashboardsController do
 
   private
 
-  def company
-    @_company ||= create :company, time_periods: [time_period, next_time_period]
-  end
-
   def user
     @_user ||= create :user, company: company
   end
 
   def parent_team
     @_parent_team ||= create :parent_team, company: company, leader: user
-  end
-
-  def time_period
-    @_time_period ||= create :time_period,
-                             name: 'Q3',
-                             period_type: 'quarter',
-                             start_date: '2017-06-01',
-                             end_date: '2017-09-30'
-  end
-
-  def next_time_period
-    @_next_time_period ||= create :time_period,
-                                  name: 'Q4',
-                                  period_type: 'quarter',
-                                  start_date: '2017-10-01',
-                                  end_date: '2017-12-31'
   end
 
   def deal

@@ -93,7 +93,7 @@ describe Api::IosController do
   private
 
   def company
-    @_company ||= create :company
+    @_company ||= create :company, :fast_create_company
   end
 
   def admin_user

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::OptionsController, type: :controller do
 
-  let(:company) { Company.first }
+  let!(:company) { create :company, :fast_create_company }
   let(:user) { create :user }
   let(:option_params) { attributes_for :option }
   let(:field) { client_type_field(company) }
