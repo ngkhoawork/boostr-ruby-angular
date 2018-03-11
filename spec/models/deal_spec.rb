@@ -551,8 +551,9 @@ describe Deal do
   end
 
   context 'to_zip' do
+    before { User.current = create :user }
+
     it 'returns the contents of deal zip' do
-      User.current = create :user
       deal.deal_products.create(product_id: product.id, budget: 10_000)
       deal_zip = Deal.to_zip
       expect(deal_zip).not_to be_nil
