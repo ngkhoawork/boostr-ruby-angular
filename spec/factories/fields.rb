@@ -5,7 +5,7 @@ FactoryGirl.define do
     name "Deal Type"
 
     before(:create) do |item|
-      item.company = Company.first
+      item.company ||= Company.first
     end
   end
 end

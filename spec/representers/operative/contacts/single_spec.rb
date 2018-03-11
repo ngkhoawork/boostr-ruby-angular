@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Operative::Contacts::Single, operative: true do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   it 'has proper mapped value' do
     expect(contact_mapper['externalID']).to eq external_id

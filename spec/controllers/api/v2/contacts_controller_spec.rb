@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V2::ContactsController, type: :controller do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let(:team) { create :parent_team }
   let(:user) { create :user, team: team }
   let(:team_user) { create :user, team: team }

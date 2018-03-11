@@ -2,12 +2,18 @@ FactoryGirl.define do
   factory :company do
     name { FFaker::Company.name }
 
-    trait :fast_create_company do
-      after(:build) do |item| 
+    after(:build) do |item| 
+      class << item
+        def setup_defaults; true; end
+      end
+    end
+
+    trait :setup_defaults do
+      after(:build) do |item|
         class << item
-          def setup_defaults; true; end
+          def setup_defaults; super; end
         end
       end
-    end # trait
+    end
   end # factory
 end # Factory defina

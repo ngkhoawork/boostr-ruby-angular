@@ -57,7 +57,7 @@ describe Forecast::RevenueDataService do
   end
 
   def company
-    @_company ||= create :company, :fast_create_company
+    @_company ||= create :company
   end
 
   def team

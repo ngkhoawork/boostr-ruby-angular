@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Api::ActivitiesController, type: :controller do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let(:new_company) { create :company }
   let(:team) { create :parent_team, company: company }
   let(:user) { create :user, team: team, company: company }

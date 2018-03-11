@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Csv::Quota do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let!(:time_period) { create :time_period, name: 'Q3-2017', company: company }
 
   context 'import' do

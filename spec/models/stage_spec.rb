@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Stage, type: :model do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let(:user) { create :user, company: company }
 
   context 'scopes' do

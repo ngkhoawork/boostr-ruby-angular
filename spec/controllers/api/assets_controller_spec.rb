@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Api::AssetsController, type: :controller do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let(:user) { create :user }
 
   before do

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Quota, type: :model do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   describe 'scopes' do
     before do

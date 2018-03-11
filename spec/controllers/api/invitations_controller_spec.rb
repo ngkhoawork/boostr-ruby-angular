@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::InvitationsController, type: :controller do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let(:user) { create :user }
   let(:user_params) { attributes_for :user, first_name: 'Bob', last_name: 'Dawg' }
 

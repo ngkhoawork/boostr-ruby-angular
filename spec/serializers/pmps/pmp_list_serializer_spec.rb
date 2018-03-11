@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Pmps::PmpListSerializer do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   it 'serialize for the pmp list' do
     User.current = create :user

@@ -1,7 +1,10 @@
 require 'rails_helper'
 
 describe BillingSummary::IosForMissingDisplayLineItemsSerializer do
-  before { create :billing_deal_contact, deal: deal, contact: contact }
+  before do
+    create :billing_address_validation, company: company
+    create :billing_deal_contact, deal: deal, contact: contact
+  end
 
   it 'has proper serialized data' do
     expect(serializer[:io_number]).to eql io.io_number

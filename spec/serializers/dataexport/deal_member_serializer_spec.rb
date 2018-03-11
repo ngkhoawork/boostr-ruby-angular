@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Dataexport::DealMemberSerializer do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   before { role }
 
   it 'serializes deal_member data' do

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe DealProduct, type: :model do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let!(:product) { create :product }
   let!(:deal) { create :deal, start_date: Date.new(2015, 7, 29), end_date: Date.new(2015, 8, 29) }
   let!(:deal_product) { create :deal_product, deal: deal, product: product, budget: 10_000 }

@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe BillingSummary::IosForApprovalSerializer do
   before do
+    create :billing_address_validation, company: company
     create :billing_deal_contact, deal: deal, contact: contact
     content_fee = create :content_fee, product: content_fee_product, budget: 50_000, io: io
     io.content_fees << content_fee

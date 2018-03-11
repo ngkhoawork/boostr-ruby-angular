@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Api::DashboardsController do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let!(:time_period) do
     create :time_period,
             name: 'Q3',

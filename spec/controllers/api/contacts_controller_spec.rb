@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::ContactsController, type: :controller do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   let!(:job_level_field) do
     create :field, subject_type: 'Contact', name: 'Job Level', value_type: 'Option', locked: true

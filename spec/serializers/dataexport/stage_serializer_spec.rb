@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Dataexport::StageSerializer do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   it 'serializes stage data' do
     expect(serializer.id).to eq(stage.id)

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Pmp, 'model' do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   it 'is valid with name, start_date, end_date and curr_cd' do
     pmp = build :pmp
@@ -122,7 +122,7 @@ RSpec.describe Pmp, 'model' do
 end
 
 RSpec.describe Pmp, 'scopes' do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   describe 'by name' do
     let!(:pmp1) { create :pmp, name: "pmp 1" }

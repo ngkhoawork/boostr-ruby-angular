@@ -7,6 +7,7 @@ RSpec.describe Activity, type: :model do
     let(:client) { create :client }
     let(:deal) { create :deal, advertiser: client }
     let(:user) { create :user }
+    let!(:activity_types) { create_list :activity_type, 5 }
     let(:activity) { create :activity, deal: deal, user: user, happened_at: Date.new(2016, 3, 31) }
 
     it 'return activity date' do

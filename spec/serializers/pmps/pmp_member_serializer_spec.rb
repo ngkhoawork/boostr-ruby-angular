@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Pmps::PmpMemberSerializer do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   it 'serialize pmp_member' do
     expect(serializer.id).to eq(pmp_member.id)
     expect(serializer.user_id).to eq(pmp_member.user_id)

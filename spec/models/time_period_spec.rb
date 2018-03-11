@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe TimePeriod, type: :model do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   context 'scopes' do
     let!(:time_period) { create :time_period }

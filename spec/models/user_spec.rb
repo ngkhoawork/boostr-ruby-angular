@@ -6,7 +6,7 @@ RSpec.describe User, 'association' do
 end
 
 RSpec.describe User, type: :model do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let(:user) { create :user }
   let(:user_dimension) { UserDimension.find_by_id(user.id) }
 

@@ -14,7 +14,9 @@ RSpec.describe Client, type: :model do
     describe '.search_by_name' do
       let(:company) { create :company }
       let(:user) { create :user, company: company }
-      let(:category_field) { user.company.fields.where(name: 'Category').first }
+      let(:category_field) do
+        company.fields.find_or_initialize_by(subject_type: 'Client', name: 'Category', value_type: 'Option', locked: true)
+      end
       let(:category) { create :option, field: category_field, company: user.company }
       let!(:client) do
         create :client,
@@ -44,10 +46,13 @@ RSpec.describe Client, type: :model do
   end
 
   context 'to_csv' do
+    let(:company) { create :company }
     let!(:user) { create :user, company: company }
     let!(:user2) { create :user, company: company }
     let!(:user3) { create :user, company: company }
-    let!(:category_field) { user.company.fields.where(name: 'Category').first }
+    let(:category_field) do
+      company.fields.find_or_initialize_by(subject_type: 'Client', name: 'Category', value_type: 'Option', locked: true)
+    end
     let!(:category) { create :option, field: category_field, company: user.company }
     let!(:subcategory) { create :option, option: category, company: user.company }
     let!(:client) { create :client, client_category: category, client_subcategory: subcategory, client_type_id: advertiser_type_id(company), company: company }
@@ -132,6 +137,7 @@ RSpec.describe Client, type: :model do
   end
 
   context 'base field validations' do
+    let(:company) { create :company, :setup_defaults }
     let(:advertiser) { create :bare_client, client_type_id: advertiser_type_id(company), company: company }
     let(:agency) { create :bare_client, client_type_id: agency_type_id(company), company: company }
 
@@ -169,11 +175,21 @@ RSpec.describe Client, type: :model do
   end
 
   describe '#import' do
+    let(:company) { create :company }
     let!(:user) { create :user, company: company }
     let!(:client) { create :client, company: company }
     let!(:existing_client) { create :client, company: company }
     let!(:existing_client2) { create :client, company: company }
-    let!(:category_field) { user.company.fields.where(name: 'Category').first }
+    let(:category_field) do
+      company.fields.find_or_initialize_by(subject_type: 'Client', name: 'Category', value_type: 'Option', locked: true)
+    end
+    let!(:region_field) do
+      create :field, subject_type: 'Client', name: 'Region', value_type: 'Option', locked: true
+    end
+    let!(:segment_field) do
+      create :field, subject_type: 'Client', name: 'Segment', value_type: 'Option', locked: true
+    end
+
     let!(:category) { create :option, field: category_field, company: user.company }
     let!(:subcategory) { create :option, option: category, company: user.company }
 
@@ -435,6 +451,7 @@ RSpec.describe Client, type: :model do
   end
 
   describe '#connection_entry_ids' do
+    let(:company) { create :company }
     subject { client.connection_entry_ids }
 
     context 'when client is advertiser' do
@@ -474,9 +491,5 @@ RSpec.describe Client, type: :model do
 
   def base_validations(subject)
     subject.base_field_validations
-  end
-
-  def company
-    @_company ||= create :company
   end
 end

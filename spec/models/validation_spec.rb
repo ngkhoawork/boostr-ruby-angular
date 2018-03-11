@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Validation, type: :model do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let(:validation) { create :validation, company: company }
-  let(:new_company) { create :company, :fast_create_company }
+  let(:new_company) { create :company }
 
   context 'associations' do
     it { should belong_to(:company) }

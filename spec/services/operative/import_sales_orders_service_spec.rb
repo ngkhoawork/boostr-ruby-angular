@@ -8,7 +8,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       {sales_order: sales_order_file, currency: currency_file}
     )
   }
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let(:auto_close_deals) { true }
   let(:sales_order_file) { './spec/sales_order_file.csv' }
   let(:currency_file)    { './spec/currency_file.csv' }

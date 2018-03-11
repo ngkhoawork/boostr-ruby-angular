@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Csv::PmpItemDailyActual, 'model' do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   describe 'validates attributes' do
     context 'with valid attributes' do

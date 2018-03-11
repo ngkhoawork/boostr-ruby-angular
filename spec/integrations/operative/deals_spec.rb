@@ -1,7 +1,10 @@
 require 'rails_helper'
 
 describe 'Deals integration', operative: true do
-  before { create :billing_deal_contact, deal: deal, contact: contact }
+  before do
+    create :billing_address_validation, company: company
+    create :billing_deal_contact, deal: deal, contact: contact
+ end
 
   context 'create deal' do
     let(:response) { Operative::DealsService.new(deal, false, auth_details).perform }

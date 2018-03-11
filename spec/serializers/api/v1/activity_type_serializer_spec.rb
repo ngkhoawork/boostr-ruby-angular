@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ActivityTypeSerializer do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   subject { Api::V1::ActivityTypeSerializer.new(activity_type) }
 
   it "includes the expected attributes" do

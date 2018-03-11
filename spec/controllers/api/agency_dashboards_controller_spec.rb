@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Api::AgencyDashboardsController, type: :controller do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let(:response_body) { JSON.parse(response.body, symbolize_names: true) }
 
   before do

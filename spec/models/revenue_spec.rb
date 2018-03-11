@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Revenue, type: :model do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let(:user) { create :user }
   let(:client) { create :client }
   let(:product) { create :product }

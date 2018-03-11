@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe NewForecastTeam do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   context 'as_json' do
     before do

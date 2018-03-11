@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Forecast do
   context 'as_json' do
-    let!(:company) { create :company, :fast_create_company }
+    let!(:company) { create :company }
     let(:leader) { create :user }
     let(:parent) { create :parent_team }
     let(:child) { create :child_team, parent: parent, leader: leader }

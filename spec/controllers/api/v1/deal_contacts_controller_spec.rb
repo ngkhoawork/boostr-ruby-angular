@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::DealContactsController, type: :controller do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
   let!(:billing_validation) { create :validation, factor: 'Billing Contact Full Address', value_type: 'Boolean' }
   let!(:user) { create :user }
   let!(:agency) { create :client }

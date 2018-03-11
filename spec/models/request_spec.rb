@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Request do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   context 'validations' do
     it { should validate_length_of(:description).is_at_most(1000) }
@@ -127,7 +127,7 @@ describe Request do
   end
 
   # def company
-  #   @_company ||= create :company, :fast_create_company
+  #   @_company ||= create :company
   # end
 
   def request(opts = {})

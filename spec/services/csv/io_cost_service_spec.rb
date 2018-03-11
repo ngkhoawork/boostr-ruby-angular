@@ -56,7 +56,7 @@ describe Csv::IoCostService do
   end
 
   def field
-    @_field ||= company.fields.find_by(subject_type: 'Cost', name: 'Cost Type')
+    @_field ||= company.fields.find_or_create_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
   end
 
   def cost_monthly_amount

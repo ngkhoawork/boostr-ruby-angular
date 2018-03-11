@@ -10,6 +10,7 @@ RSpec.describe DealContact, type: :model do
 
   context 'validations' do
     context 'billing contact uniqueness' do
+      let!(:billing_validation) { create :billing_address_validation, company: company }
       let(:billing_contact) { create :deal_contact, role: 'Billing' }
 
       it 'validates that billing contact is unique on a deal' do
@@ -32,7 +33,7 @@ RSpec.describe DealContact, type: :model do
 
     context 'full billing address validation' do
       let(:deal_contact) { create :deal_contact, role: nil }
-      let(:billing_validation) { Validation.find_by(factor: 'Billing Contact Full Address', company: deal_contact.deal.company) }
+      let(:billing_validation) { create :billing_address_validation, company: company }
       let(:address_without_street) { create(:address, street1: nil) }
       let(:full_address) { create(:address) }
       let(:contact_with_full_address) { create(:contact, address: full_address) }

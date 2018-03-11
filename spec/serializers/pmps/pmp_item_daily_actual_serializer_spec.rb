@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Pmps::PmpItemDailyActualSerializer do
-  let!(:company) { create :company, :fast_create_company }
+  let!(:company) { create :company }
 
   it 'serialize pmp_item_daily_actual' do
     expect(serializer.id).to eq(pmp_item_daily_actual.id)
