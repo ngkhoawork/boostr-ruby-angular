@@ -1,7 +1,7 @@
 @app.controller 'AdvertiserAssignPmpController',
   ['$scope', '$modalInstance', 'object', 'Client', 'PMP', '$modal',
     ( $scope,   $modalInstance,   object,   Client,   PMP,   $modal) ->
-      if object.ssp_advertiser != undefined
+      if object.ssp_advertiser != null
         $scope.searchText = object.ssp_advertiser.name
       else
         $scope.searchText = ''

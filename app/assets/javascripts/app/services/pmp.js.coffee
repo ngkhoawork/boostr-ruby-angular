@@ -16,13 +16,15 @@
           method: 'PUT'
           url: '/api/pmps/:id'
           transformRequest: transformRequest
-        assignAdvertiser:
+        assignAdvertiser: {
           method: 'POST'
           url: '/api/pmps/:id/assign_advertiser'
-        bulkAssignAdvertiser:
+        }
+        bulkAssignAdvertiser: {
           method: 'POST'
           url: 'api/pmps/bulk_assign_advertiser'
           isArray: true
+        }
 
       currentIO = undefined
 
@@ -31,6 +33,12 @@
       custom_resource = $resource '/api/pmps/no_match_advertisers'
 
       @custom_query = custom_resource.query
+
+      @all = (params) ->
+        deferred = $q.defer()
+        resource.query params, (pmps) ->
+          deferred.resolve(pmps)
+        deferred.promise
 
       @assignAdvertiser = (params) ->
         deferred = $q.defer()
@@ -42,12 +50,6 @@
         deferred = $q.defer()
         resource.bulkAssignAdvertiser params, (ids) ->
           deferred.resolve(ids)
-        deferred.promise
-
-      @all = (params) ->
-        deferred = $q.defer()
-        resource.query params, (pmps) ->
-          deferred.resolve(pmps)
         deferred.promise
 
       @create = (params) ->

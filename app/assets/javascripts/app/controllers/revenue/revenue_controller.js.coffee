@@ -10,7 +10,7 @@
       {name: 'IOs', value: ''}
       {name: 'No-Match IOs', value: 'no-match'}
       {name: 'PMPs', value: 'pmp'}
-      {name: 'No-Match Advertisers', value: 'no-match-adv'}
+      {name: 'No-Match Advertisers', value: 'no-match-adv' || 'no-match-adv-ssp-advertisers'}
       {name: 'Upside Revenues', value: 'upside'}
       {name: 'At Risk Revenues', value: 'risk'}
     ]
@@ -183,7 +183,7 @@
           PMP.query query, (pmps) -> revenueRequest.resolve pmps
         when 'no-match-adv'
           query.with_advertiser = false
-          PMPItemDailyActual.query query, (pmpItemDailyActuals) -> 
+          PMPItemDailyActual.query query, (pmpItemDailyActuals) ->
             revenueRequest.resolve pmpItemDailyActuals
         when 'no-match-adv-ssp-advertisers'
           PMP.custom_query query, (pmps) ->
@@ -195,6 +195,12 @@
 
     $scope.loadMoreRevenues = ->
       if !$scope.allItemsLoaded then getData(getQuery())
+
+    $scope.setCurrentTab = (val) ->
+      $scope.filter.revenue = val
+      $scope.applyFilter()
+
+
 
     parseBudget = (data) ->
       data = _.map data, (item) ->
@@ -238,10 +244,23 @@
         backdrop: 'static'
         keyboard: false
         resolve:
-          pmpItemDailyActual: ->
+          object: ->
             pmpItemDailyActual
       modalInstance.result.then (ids) ->
-        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id) 
+        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id)
+
+    $scope.showAssignPmpAdvertiserModal = (pmpObject) ->
+      modalInstance = $modal.open
+        templateUrl: 'modals/pmp_ssp_advertiser_assign_form.html'
+        size: 'lg'
+        controller: 'AdvertiserAssignPmpController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          object: ->
+            pmpObject
+      modalInstance.result.then (ids) ->
+        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id)
 
     $scope.deleteIo = (io, $event) ->
       $event.stopPropagation();
