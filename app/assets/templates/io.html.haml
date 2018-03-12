@@ -9,15 +9,17 @@
 								%span.mr8 {{ currentIO.name }}
 								%i.fa.fa-pencil.z-icon{'ng-if': 'canEditIO', 'ng-click': 'showIOEditModal(currentIO)'}
 								%i.fa.fa-trash.z-icon{'ng-if': 'canEditIO', 'ng-click': 'deleteIo(currentIO)'}
+								.right-link.pull-right{'ng-if': 'currentIO.deal_id'}
+									Go to
+									%a{'href': '', 'ng-href': '/deals/{{currentIO.deal_id}}'}
+										{{currentIO.deal.name}}
 							.detail-info
 								%a{'href': '', 'ng-href': '/accounts/{{currentIO.advertiser.id}}'} {{currentIO.advertiser.name || ''}}
 								{{currentIO.advertiser.name && currentIO.agency.name && '|'}}
 								%a{'href': '', 'ng-href': '/accounts/{{currentIO.agency.id}}'} {{currentIO.agency.name || ''}}
 							.detail-info
 								%span.mr8 IO # {{currentIO.io_number}}
-								-#{{currentIO.io_number && currentIO.external_io_number && '|'}}
 								%span External IO # {{currentIO.external_io_number}}
-
 						.clearfix
 						%div.stats-numbers.mb30
 							%div.stats-col
