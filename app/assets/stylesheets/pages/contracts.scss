@@ -49,3 +49,48 @@
         }
     }
 }
+#contract_modal {
+    .toggle-wrap {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        height: 47px;
+        .z-toggle {
+            margin-right: 8px;
+        }
+    }
+    .form-row {
+        display: flex;
+        align-items: flex-end;
+        .row-w33 {
+            width: 33.33%;
+        }
+        .row-w35 {
+            width: 35%;
+        }
+        .row-w40 {
+            width: 40%;
+        }
+        .row-w50 {
+            width: 50%;
+        }
+        .row-w60 {
+            width: 60%;
+        }
+        .row-w70 {
+            width: 70%;
+        }
+    }
+    .pl8 {
+        padding-left: 8px;
+    }
+    .pr8 {
+        padding-right: 8px;
+    }
+    .pl16 {
+        padding-left: 16px;
+    }
+    .pr16 {
+        padding-right: 16px;
+    }
+}
