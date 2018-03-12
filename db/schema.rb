@@ -11,13 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180303003530) do
+ActiveRecord::Schema.define(version: 20180319160144) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "fuzzystrmatch"
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
-  enable_extension "fuzzystrmatch"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -430,31 +430,6 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_index "assets", ["attachable_id", "attachable_type"], name: "index_assets_on_attachable_id_and_attachable_type", using: :btree
   add_index "assets", ["created_by"], name: "index_assets_on_created_by", using: :btree
 
-  create_table "assignment_rules", force: :cascade do |t|
-    t.integer  "company_id"
-    t.text     "name"
-    t.string   "countries",  default: [],                 array: true
-    t.string   "states",     default: [],                 array: true
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-    t.integer  "position"
-    t.boolean  "default",    default: false
-  end
-
-  add_index "assignment_rules", ["company_id"], name: "index_assignment_rules_on_company_id", using: :btree
-
-  create_table "assignment_rules_users", force: :cascade do |t|
-    t.integer  "assignment_rule_id"
-    t.integer  "user_id"
-    t.integer  "position"
-    t.boolean  "next",               default: false
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
-  end
-
-  add_index "assignment_rules_users", ["assignment_rule_id"], name: "index_assignment_rules_users_on_assignment_rule_id", using: :btree
-  add_index "assignment_rules_users", ["user_id"], name: "index_assignment_rules_users_on_user_id", using: :btree
-
   create_table "audit_logs", force: :cascade do |t|
     t.string   "auditable_type"
     t.integer  "auditable_id"
@@ -467,7 +442,7 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.integer  "user_id"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
-    t.decimal  "changed_amount", precision: 12, scale: 2
+    t.decimal  "changed_amount", precision: 15, scale: 2
   end
 
   add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree
@@ -576,7 +551,7 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.integer  "client_segment_id"
     t.integer  "holding_company_id"
     t.text     "note"
-    t.boolean  "web_lead",               default: false
+    t.boolean  "is_multibuyer",          default: false
   end
 
   add_index "clients", ["client_category_id"], name: "index_clients_on_client_category_id", using: :btree
@@ -614,9 +589,7 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.boolean  "gmail_enabled",                     default: false
     t.boolean  "gcalendar_enabled",                 default: false
     t.boolean  "enable_net_forecasting",            default: false
-    t.boolean  "product_options_enabled",           default: false
-    t.string   "product_option1_field",             default: "Option1"
-    t.string   "product_option2_field",             default: "Option2"
+    t.boolean  "default_io_freeze_budgets",         default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -774,14 +747,13 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.integer  "client_id"
     t.integer  "created_by"
     t.integer  "updated_by"
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
     t.integer  "company_id"
     t.datetime "deleted_at"
     t.datetime "activity_updated_at"
     t.text     "note"
     t.integer  "publisher_id"
-    t.boolean  "web_lead",            default: false
   end
 
   add_index "contacts", ["client_id"], name: "index_contacts_on_client_id", using: :btree
@@ -872,333 +844,6 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.string "curr_symbol"
     t.string "name"
   end
-
-  create_table "custom_field_names", force: :cascade do |t|
-    t.string   "subject_type"
-    t.integer  "company_id"
-    t.integer  "column_index"
-    t.string   "column_type"
-    t.string   "field_type"
-    t.string   "field_label"
-    t.boolean  "is_required"
-    t.integer  "position"
-    t.boolean  "show_on_modal"
-    t.boolean  "disabled"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
-  end
-
-  add_index "custom_field_names", ["company_id", "subject_type", "field_type", "position"], name: "index_custom_field_names_on_company_subject_field_type_position", unique: true, using: :btree
-
-  create_table "custom_field_options", force: :cascade do |t|
-    t.integer  "custom_field_name_id"
-    t.string   "value"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-  end
-
-  add_index "custom_field_options", ["custom_field_name_id"], name: "index_custom_field_options_on_custom_field_name_id", using: :btree
-
-  create_table "custom_fields", force: :cascade do |t|
-    t.integer  "company_id"
-    t.integer  "subject_id"
-    t.string   "subject_type"
-    t.decimal  "decimal1",       precision: 15, scale: 2
-    t.decimal  "decimal2",       precision: 15, scale: 2
-    t.decimal  "decimal3",       precision: 15, scale: 2
-    t.decimal  "decimal4",       precision: 15, scale: 2
-    t.decimal  "decimal5",       precision: 15, scale: 2
-    t.decimal  "decimal6",       precision: 15, scale: 2
-    t.decimal  "decimal7",       precision: 15, scale: 2
-    t.decimal  "decimal8",       precision: 15, scale: 2
-    t.decimal  "decimal9",       precision: 15, scale: 2
-    t.decimal  "decimal10",      precision: 15, scale: 2
-    t.decimal  "decimal11",      precision: 15, scale: 2
-    t.decimal  "decimal12",      precision: 15, scale: 2
-    t.decimal  "decimal13",      precision: 15, scale: 2
-    t.decimal  "decimal14",      precision: 15, scale: 2
-    t.decimal  "decimal15",      precision: 15, scale: 2
-    t.decimal  "decimal16",      precision: 15, scale: 2
-    t.decimal  "decimal17",      precision: 15, scale: 2
-    t.decimal  "decimal18",      precision: 15, scale: 2
-    t.decimal  "decimal19",      precision: 15, scale: 2
-    t.decimal  "decimal20",      precision: 15, scale: 2
-    t.decimal  "decimal21",      precision: 15, scale: 2
-    t.decimal  "decimal22",      precision: 15, scale: 2
-    t.decimal  "decimal23",      precision: 15, scale: 2
-    t.decimal  "decimal24",      precision: 15, scale: 2
-    t.decimal  "decimal25",      precision: 15, scale: 2
-    t.decimal  "decimal26",      precision: 15, scale: 2
-    t.decimal  "decimal27",      precision: 15, scale: 2
-    t.decimal  "decimal28",      precision: 15, scale: 2
-    t.decimal  "decimal29",      precision: 15, scale: 2
-    t.decimal  "decimal30",      precision: 15, scale: 2
-    t.decimal  "decimal31",      precision: 15, scale: 2
-    t.decimal  "decimal32",      precision: 15, scale: 2
-    t.decimal  "decimal33",      precision: 15, scale: 2
-    t.decimal  "decimal34",      precision: 15, scale: 2
-    t.decimal  "decimal35",      precision: 15, scale: 2
-    t.decimal  "decimal36",      precision: 15, scale: 2
-    t.decimal  "decimal37",      precision: 15, scale: 2
-    t.decimal  "decimal38",      precision: 15, scale: 2
-    t.decimal  "decimal39",      precision: 15, scale: 2
-    t.decimal  "decimal40",      precision: 15, scale: 2
-    t.string   "string1"
-    t.string   "string2"
-    t.string   "string3"
-    t.string   "string4"
-    t.string   "string5"
-    t.string   "string6"
-    t.string   "string7"
-    t.string   "string8"
-    t.string   "string9"
-    t.string   "string10"
-    t.string   "string11"
-    t.string   "string12"
-    t.string   "string13"
-    t.string   "string14"
-    t.string   "string15"
-    t.string   "string16"
-    t.string   "string17"
-    t.string   "string18"
-    t.string   "string19"
-    t.string   "string20"
-    t.string   "string21"
-    t.string   "string22"
-    t.string   "string23"
-    t.string   "string24"
-    t.string   "string25"
-    t.string   "string26"
-    t.string   "string27"
-    t.string   "string28"
-    t.string   "string29"
-    t.string   "string30"
-    t.string   "string31"
-    t.string   "string32"
-    t.string   "string33"
-    t.string   "string34"
-    t.string   "string35"
-    t.string   "string36"
-    t.string   "string37"
-    t.string   "string38"
-    t.string   "string39"
-    t.string   "string40"
-    t.text     "note1"
-    t.text     "note2"
-    t.text     "note3"
-    t.text     "note4"
-    t.text     "note5"
-    t.text     "note6"
-    t.text     "note7"
-    t.text     "note8"
-    t.text     "note9"
-    t.text     "note10"
-    t.datetime "datetime1"
-    t.datetime "datetime2"
-    t.datetime "datetime3"
-    t.datetime "datetime4"
-    t.datetime "datetime5"
-    t.datetime "datetime6"
-    t.datetime "datetime7"
-    t.datetime "datetime8"
-    t.datetime "datetime9"
-    t.datetime "datetime10"
-    t.integer  "integer1"
-    t.integer  "integer2"
-    t.integer  "integer3"
-    t.integer  "integer4"
-    t.integer  "integer5"
-    t.integer  "integer6"
-    t.integer  "integer7"
-    t.integer  "integer8"
-    t.integer  "integer9"
-    t.integer  "integer10"
-    t.integer  "integer11"
-    t.integer  "integer12"
-    t.integer  "integer13"
-    t.integer  "integer14"
-    t.integer  "integer15"
-    t.integer  "integer16"
-    t.integer  "integer17"
-    t.integer  "integer18"
-    t.integer  "integer19"
-    t.integer  "integer20"
-    t.boolean  "boolean1"
-    t.boolean  "boolean2"
-    t.boolean  "boolean3"
-    t.boolean  "boolean4"
-    t.boolean  "boolean5"
-    t.boolean  "boolean6"
-    t.boolean  "boolean7"
-    t.boolean  "boolean8"
-    t.boolean  "boolean9"
-    t.boolean  "boolean10"
-    t.boolean  "boolean11"
-    t.boolean  "boolean12"
-    t.boolean  "boolean13"
-    t.boolean  "boolean14"
-    t.boolean  "boolean15"
-    t.boolean  "boolean16"
-    t.boolean  "boolean17"
-    t.boolean  "boolean18"
-    t.boolean  "boolean19"
-    t.boolean  "boolean20"
-    t.decimal  "number_4_dec1",  precision: 15, scale: 4
-    t.decimal  "number_4_dec2",  precision: 15, scale: 4
-    t.decimal  "number_4_dec3",  precision: 15, scale: 4
-    t.decimal  "number_4_dec4",  precision: 15, scale: 4
-    t.decimal  "number_4_dec5",  precision: 15, scale: 4
-    t.decimal  "number_4_dec6",  precision: 15, scale: 4
-    t.decimal  "number_4_dec7",  precision: 15, scale: 4
-    t.decimal  "number_4_dec8",  precision: 15, scale: 4
-    t.decimal  "number_4_dec9",  precision: 15, scale: 4
-    t.decimal  "number_4_dec10", precision: 15, scale: 4
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
-  end
-
-  add_index "custom_fields", ["boolean1"], name: "index_custom_fields_on_boolean1", where: "(boolean1 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean10"], name: "index_custom_fields_on_boolean10", where: "(boolean10 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean11"], name: "index_custom_fields_on_boolean11", where: "(boolean11 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean12"], name: "index_custom_fields_on_boolean12", where: "(boolean12 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean13"], name: "index_custom_fields_on_boolean13", where: "(boolean13 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean14"], name: "index_custom_fields_on_boolean14", where: "(boolean14 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean15"], name: "index_custom_fields_on_boolean15", where: "(boolean15 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean16"], name: "index_custom_fields_on_boolean16", where: "(boolean16 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean17"], name: "index_custom_fields_on_boolean17", where: "(boolean17 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean18"], name: "index_custom_fields_on_boolean18", where: "(boolean18 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean19"], name: "index_custom_fields_on_boolean19", where: "(boolean19 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean2"], name: "index_custom_fields_on_boolean2", where: "(boolean2 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean20"], name: "index_custom_fields_on_boolean20", where: "(boolean20 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean3"], name: "index_custom_fields_on_boolean3", where: "(boolean3 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean4"], name: "index_custom_fields_on_boolean4", where: "(boolean4 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean5"], name: "index_custom_fields_on_boolean5", where: "(boolean5 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean6"], name: "index_custom_fields_on_boolean6", where: "(boolean6 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean7"], name: "index_custom_fields_on_boolean7", where: "(boolean7 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean8"], name: "index_custom_fields_on_boolean8", where: "(boolean8 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["boolean9"], name: "index_custom_fields_on_boolean9", where: "(boolean9 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["company_id"], name: "index_custom_fields_on_company_id", using: :btree
-  add_index "custom_fields", ["datetime1"], name: "index_custom_fields_on_datetime1", where: "(datetime1 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["datetime10"], name: "index_custom_fields_on_datetime10", where: "(datetime10 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["datetime2"], name: "index_custom_fields_on_datetime2", where: "(datetime2 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["datetime3"], name: "index_custom_fields_on_datetime3", where: "(datetime3 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["datetime4"], name: "index_custom_fields_on_datetime4", where: "(datetime4 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["datetime5"], name: "index_custom_fields_on_datetime5", where: "(datetime5 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["datetime6"], name: "index_custom_fields_on_datetime6", where: "(datetime6 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["datetime7"], name: "index_custom_fields_on_datetime7", where: "(datetime7 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["datetime8"], name: "index_custom_fields_on_datetime8", where: "(datetime8 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["datetime9"], name: "index_custom_fields_on_datetime9", where: "(datetime9 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal1"], name: "index_custom_fields_on_decimal1", where: "(decimal1 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal10"], name: "index_custom_fields_on_decimal10", where: "(decimal10 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal11"], name: "index_custom_fields_on_decimal11", where: "(decimal11 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal12"], name: "index_custom_fields_on_decimal12", where: "(decimal12 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal13"], name: "index_custom_fields_on_decimal13", where: "(decimal13 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal14"], name: "index_custom_fields_on_decimal14", where: "(decimal14 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal15"], name: "index_custom_fields_on_decimal15", where: "(decimal15 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal16"], name: "index_custom_fields_on_decimal16", where: "(decimal16 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal17"], name: "index_custom_fields_on_decimal17", where: "(decimal17 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal18"], name: "index_custom_fields_on_decimal18", where: "(decimal18 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal19"], name: "index_custom_fields_on_decimal19", where: "(decimal19 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal2"], name: "index_custom_fields_on_decimal2", where: "(decimal2 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal20"], name: "index_custom_fields_on_decimal20", where: "(decimal20 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal21"], name: "index_custom_fields_on_decimal21", where: "(decimal21 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal22"], name: "index_custom_fields_on_decimal22", where: "(decimal22 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal23"], name: "index_custom_fields_on_decimal23", where: "(decimal23 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal24"], name: "index_custom_fields_on_decimal24", where: "(decimal24 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal25"], name: "index_custom_fields_on_decimal25", where: "(decimal25 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal26"], name: "index_custom_fields_on_decimal26", where: "(decimal26 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal27"], name: "index_custom_fields_on_decimal27", where: "(decimal27 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal28"], name: "index_custom_fields_on_decimal28", where: "(decimal28 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal29"], name: "index_custom_fields_on_decimal29", where: "(decimal29 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal3"], name: "index_custom_fields_on_decimal3", where: "(decimal3 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal30"], name: "index_custom_fields_on_decimal30", where: "(decimal30 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal31"], name: "index_custom_fields_on_decimal31", where: "(decimal31 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal32"], name: "index_custom_fields_on_decimal32", where: "(decimal32 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal33"], name: "index_custom_fields_on_decimal33", where: "(decimal33 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal34"], name: "index_custom_fields_on_decimal34", where: "(decimal34 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal35"], name: "index_custom_fields_on_decimal35", where: "(decimal35 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal36"], name: "index_custom_fields_on_decimal36", where: "(decimal36 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal37"], name: "index_custom_fields_on_decimal37", where: "(decimal37 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal38"], name: "index_custom_fields_on_decimal38", where: "(decimal38 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal39"], name: "index_custom_fields_on_decimal39", where: "(decimal39 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal4"], name: "index_custom_fields_on_decimal4", where: "(decimal4 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal40"], name: "index_custom_fields_on_decimal40", where: "(decimal40 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal5"], name: "index_custom_fields_on_decimal5", where: "(decimal5 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal6"], name: "index_custom_fields_on_decimal6", where: "(decimal6 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal7"], name: "index_custom_fields_on_decimal7", where: "(decimal7 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal8"], name: "index_custom_fields_on_decimal8", where: "(decimal8 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["decimal9"], name: "index_custom_fields_on_decimal9", where: "(decimal9 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer1"], name: "index_custom_fields_on_integer1", where: "(integer1 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer10"], name: "index_custom_fields_on_integer10", where: "(integer10 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer11"], name: "index_custom_fields_on_integer11", where: "(integer11 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer12"], name: "index_custom_fields_on_integer12", where: "(integer12 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer13"], name: "index_custom_fields_on_integer13", where: "(integer13 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer14"], name: "index_custom_fields_on_integer14", where: "(integer14 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer15"], name: "index_custom_fields_on_integer15", where: "(integer15 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer16"], name: "index_custom_fields_on_integer16", where: "(integer16 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer17"], name: "index_custom_fields_on_integer17", where: "(integer17 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer18"], name: "index_custom_fields_on_integer18", where: "(integer18 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer19"], name: "index_custom_fields_on_integer19", where: "(integer19 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer2"], name: "index_custom_fields_on_integer2", where: "(integer2 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer20"], name: "index_custom_fields_on_integer20", where: "(integer20 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer3"], name: "index_custom_fields_on_integer3", where: "(integer3 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer4"], name: "index_custom_fields_on_integer4", where: "(integer4 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer5"], name: "index_custom_fields_on_integer5", where: "(integer5 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer6"], name: "index_custom_fields_on_integer6", where: "(integer6 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer7"], name: "index_custom_fields_on_integer7", where: "(integer7 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer8"], name: "index_custom_fields_on_integer8", where: "(integer8 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["integer9"], name: "index_custom_fields_on_integer9", where: "(integer9 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["number_4_dec1"], name: "index_custom_fields_on_number_4_dec1", where: "(number_4_dec1 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["number_4_dec10"], name: "index_custom_fields_on_number_4_dec10", where: "(number_4_dec10 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["number_4_dec2"], name: "index_custom_fields_on_number_4_dec2", where: "(number_4_dec2 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["number_4_dec3"], name: "index_custom_fields_on_number_4_dec3", where: "(number_4_dec3 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["number_4_dec4"], name: "index_custom_fields_on_number_4_dec4", where: "(number_4_dec4 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["number_4_dec5"], name: "index_custom_fields_on_number_4_dec5", where: "(number_4_dec5 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["number_4_dec6"], name: "index_custom_fields_on_number_4_dec6", where: "(number_4_dec6 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["number_4_dec7"], name: "index_custom_fields_on_number_4_dec7", where: "(number_4_dec7 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["number_4_dec8"], name: "index_custom_fields_on_number_4_dec8", where: "(number_4_dec8 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["number_4_dec9"], name: "index_custom_fields_on_number_4_dec9", where: "(number_4_dec9 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string1"], name: "index_custom_fields_on_string1", where: "(string1 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string10"], name: "index_custom_fields_on_string10", where: "(string10 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string11"], name: "index_custom_fields_on_string11", where: "(string11 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string12"], name: "index_custom_fields_on_string12", where: "(string12 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string13"], name: "index_custom_fields_on_string13", where: "(string13 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string14"], name: "index_custom_fields_on_string14", where: "(string14 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string15"], name: "index_custom_fields_on_string15", where: "(string15 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string16"], name: "index_custom_fields_on_string16", where: "(string16 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string17"], name: "index_custom_fields_on_string17", where: "(string17 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string18"], name: "index_custom_fields_on_string18", where: "(string18 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string19"], name: "index_custom_fields_on_string19", where: "(string19 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string2"], name: "index_custom_fields_on_string2", where: "(string2 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string20"], name: "index_custom_fields_on_string20", where: "(string20 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string21"], name: "index_custom_fields_on_string21", where: "(string21 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string22"], name: "index_custom_fields_on_string22", where: "(string22 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string23"], name: "index_custom_fields_on_string23", where: "(string23 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string24"], name: "index_custom_fields_on_string24", where: "(string24 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string25"], name: "index_custom_fields_on_string25", where: "(string25 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string26"], name: "index_custom_fields_on_string26", where: "(string26 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string27"], name: "index_custom_fields_on_string27", where: "(string27 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string28"], name: "index_custom_fields_on_string28", where: "(string28 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string29"], name: "index_custom_fields_on_string29", where: "(string29 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string3"], name: "index_custom_fields_on_string3", where: "(string3 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string30"], name: "index_custom_fields_on_string30", where: "(string30 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string31"], name: "index_custom_fields_on_string31", where: "(string31 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string32"], name: "index_custom_fields_on_string32", where: "(string32 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string33"], name: "index_custom_fields_on_string33", where: "(string33 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string34"], name: "index_custom_fields_on_string34", where: "(string34 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string35"], name: "index_custom_fields_on_string35", where: "(string35 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string36"], name: "index_custom_fields_on_string36", where: "(string36 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string37"], name: "index_custom_fields_on_string37", where: "(string37 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string38"], name: "index_custom_fields_on_string38", where: "(string38 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string39"], name: "index_custom_fields_on_string39", where: "(string39 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string4"], name: "index_custom_fields_on_string4", where: "(string4 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string40"], name: "index_custom_fields_on_string40", where: "(string40 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string5"], name: "index_custom_fields_on_string5", where: "(string5 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string6"], name: "index_custom_fields_on_string6", where: "(string6 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string7"], name: "index_custom_fields_on_string7", where: "(string7 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string8"], name: "index_custom_fields_on_string8", where: "(string8 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["string9"], name: "index_custom_fields_on_string9", where: "(string9 IS NOT NULL)", using: :btree
-  add_index "custom_fields", ["subject_type", "subject_id"], name: "index_custom_fields_on_subject_type_and_subject_id", unique: true, using: :btree
 
   create_table "datafeed_configuration_details", force: :cascade do |t|
     t.boolean  "auto_close_deals",            default: false
@@ -1639,8 +1284,6 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.string   "closed_reason_text"
     t.datetime "next_steps_due"
     t.string   "ssp_deal_id"
-    t.integer  "lead_id"
-    t.boolean  "web_lead",                                     default: false
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree
@@ -1649,7 +1292,6 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_index "deals", ["created_by"], name: "index_deals_on_created_by", using: :btree
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
   add_index "deals", ["initiative_id"], name: "index_deals_on_initiative_id", using: :btree
-  add_index "deals", ["lead_id"], name: "index_deals_on_lead_id", using: :btree
   add_index "deals", ["previous_stage_id"], name: "index_deals_on_previous_stage_id", using: :btree
   add_index "deals", ["stage_id"], name: "index_deals_on_stage_id", using: :btree
   add_index "deals", ["stage_updated_by"], name: "index_deals_on_stage_updated_by", using: :btree
@@ -1780,20 +1422,6 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   end
 
   add_index "ealerts", ["company_id"], name: "index_ealerts_on_company_id", using: :btree
-
-  create_table "egnyte_integrations", force: :cascade do |t|
-    t.integer  "company_id"
-    t.string   "app_domain"
-    t.string   "access_token"
-    t.boolean  "connected",           default: false
-    t.boolean  "enabled",             default: false
-    t.datetime "created_at",                                                                                                                                                        null: false
-    t.datetime "updated_at",                                                                                                                                                        null: false
-    t.jsonb    "deal_folder_tree",    default: {"nodes"=>[{"nodes"=>[], "title"=>"RFP"}, {"nodes"=>[], "title"=>"Proposal"}, {"nodes"=>[], "title"=>"Creative"}], "title"=>"Deal"}, null: false
-    t.jsonb    "account_folder_tree", default: {"nodes"=>[{"nodes"=>[], "title"=>"Contract"}, {"nodes"=>[], "title"=>"Templates"}], "title"=>"Account"},                            null: false
-  end
-
-  add_index "egnyte_integrations", ["company_id"], name: "index_egnyte_integrations_on_company_id", using: :btree
 
   create_table "email_opens", force: :cascade do |t|
     t.string   "ip"
@@ -1958,30 +1586,6 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "hoopla_integrations", force: :cascade do |t|
-    t.integer  "company_id"
-    t.string   "hoopla_client_id"
-    t.string   "hoopla_client_secret"
-    t.boolean  "credentials_confirmed",   default: false
-    t.boolean  "active",                  default: false
-    t.string   "access_token"
-    t.datetime "access_token_expires_in"
-    t.string   "deal_won_newsflash_href"
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
-  end
-
-  add_index "hoopla_integrations", ["company_id"], name: "index_hoopla_integrations_on_company_id", using: :btree
-
-  create_table "hoopla_users", force: :cascade do |t|
-    t.string   "href"
-    t.integer  "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "hoopla_users", ["user_id"], name: "index_hoopla_users_on_user_id", using: :btree
-
   create_table "influencer_content_fees", force: :cascade do |t|
     t.integer  "influencer_id"
     t.integer  "content_fee_id"
@@ -2086,49 +1690,13 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.integer  "deal_id"
     t.decimal  "budget_loc",                   precision: 15, scale: 2, default: 0.0
     t.string   "curr_cd",                                               default: "USD"
+    t.boolean  "freezed",                                               default: false
   end
 
   add_index "ios", ["advertiser_id"], name: "index_ios_on_advertiser_id", using: :btree
   add_index "ios", ["agency_id"], name: "index_ios_on_agency_id", using: :btree
   add_index "ios", ["company_id"], name: "index_ios_on_company_id", using: :btree
   add_index "ios", ["deal_id"], name: "index_ios_on_deal_id", using: :btree
-
-  create_table "leads", force: :cascade do |t|
-    t.string   "first_name"
-    t.string   "last_name"
-    t.string   "title"
-    t.string   "email"
-    t.string   "company_name"
-    t.string   "country"
-    t.string   "state"
-    t.string   "budget"
-    t.text     "notes"
-    t.string   "status"
-    t.integer  "company_id"
-    t.integer  "user_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
-    t.datetime "accepted_at"
-    t.datetime "rejected_at"
-    t.datetime "reassigned_at"
-    t.integer  "client_id"
-    t.integer  "contact_id"
-  end
-
-  add_index "leads", ["client_id"], name: "index_leads_on_client_id", using: :btree
-  add_index "leads", ["company_id"], name: "index_leads_on_company_id", using: :btree
-  add_index "leads", ["contact_id"], name: "index_leads_on_contact_id", using: :btree
-  add_index "leads", ["user_id"], name: "index_leads_on_user_id", using: :btree
-
-  create_table "notification_reminders", force: :cascade do |t|
-    t.string   "notification_type"
-    t.integer  "lead_id"
-    t.datetime "sending_time"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-  end
-
-  add_index "notification_reminders", ["lead_id"], name: "index_notification_reminders_on_lead_id", using: :btree
 
   create_table "notifications", force: :cascade do |t|
     t.integer  "company_id"
@@ -2236,6 +1804,7 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.date    "end_date"
     t.string  "curr_cd",                                       default: "USD"
     t.integer "deal_id"
+    t.integer "ssp_advertiser_id"
   end
 
   add_index "pmps", ["company_id"], name: "index_pmps_on_company_id", using: :btree
@@ -2285,15 +1854,10 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.boolean  "is_influencer_product", default: false
     t.integer  "product_family_id"
     t.integer  "margin"
-    t.integer  "parent_id"
-    t.integer  "top_parent_id"
-    t.integer  "level",                 default: 0
   end
 
   add_index "products", ["company_id"], name: "index_products_on_company_id", using: :btree
-  add_index "products", ["parent_id"], name: "index_products_on_parent_id", using: :btree
   add_index "products", ["product_family_id"], name: "index_products_on_product_family_id", using: :btree
-  add_index "products", ["top_parent_id"], name: "index_products_on_top_parent_id", using: :btree
 
   create_table "publisher_custom_field_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -2644,18 +2208,18 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_index "stage_dimensions", ["company_id"], name: "index_stage_dimensions_on_company_id", using: :btree
 
   create_table "stages", force: :cascade do |t|
+    t.string   "name"
     t.integer  "company_id"
+    t.integer  "probability"
+    t.boolean  "open"
+    t.boolean  "active"
     t.integer  "deals_count"
+    t.integer  "position"
     t.string   "color"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
     t.integer  "yellow_threshold"
     t.integer  "red_threshold"
-    t.string   "name"
-    t.integer  "probability"
-    t.boolean  "open"
-    t.boolean  "active"
-    t.integer  "position"
     t.integer  "sales_process_id"
   end
 
@@ -2874,68 +2438,6 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
-  create_table "workflow_actions", force: :cascade do |t|
-    t.integer  "workflow_id"
-    t.integer  "api_configuration_id"
-    t.string   "workflow_type"
-    t.string   "workflow_method"
-    t.string   "template"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-  end
-
-  add_index "workflow_actions", ["api_configuration_id"], name: "index_workflow_actions_on_api_configuration_id", using: :btree
-  add_index "workflow_actions", ["workflow_id"], name: "index_workflow_actions_on_workflow_id", using: :btree
-
-  create_table "workflow_criterions", force: :cascade do |t|
-    t.integer  "workflow_id"
-    t.integer  "workflow_criterion_id"
-    t.integer  "parent_criterion_id"
-    t.string   "base_object"
-    t.string   "field"
-    t.string   "math_operator"
-    t.string   "value"
-    t.string   "relation"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
-  end
-
-  add_index "workflow_criterions", ["workflow_criterion_id"], name: "index_workflow_criterions_on_workflow_criterion_id", using: :btree
-  add_index "workflow_criterions", ["workflow_id"], name: "index_workflow_criterions_on_workflow_id", using: :btree
-
-  create_table "workflow_logs", force: :cascade do |t|
-    t.integer  "company_id"
-    t.integer  "workflow_id"
-    t.string   "workflowable_type"
-    t.boolean  "criteria_passed"
-    t.boolean  "workflow_successful"
-    t.text     "workflow_result"
-    t.datetime "started_at"
-    t.datetime "ended_at"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
-  end
-
-  add_index "workflow_logs", ["company_id"], name: "index_workflow_logs_on_company_id", using: :btree
-  add_index "workflow_logs", ["workflow_id"], name: "index_workflow_logs_on_workflow_id", using: :btree
-
-  create_table "workflows", force: :cascade do |t|
-    t.integer  "company_id"
-    t.integer  "user_id"
-    t.string   "name"
-    t.string   "description"
-    t.string   "workflowable_type"
-    t.boolean  "switched_on",       default: false
-    t.boolean  "fire_on_update",    default: false
-    t.boolean  "fire_on_create",    default: false
-    t.boolean  "fire_on_destroy",   default: false
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
-  end
-
-  add_index "workflows", ["company_id"], name: "index_workflows_on_company_id", using: :btree
-  add_index "workflows", ["user_id"], name: "index_workflows_on_user_id", using: :btree
-
   add_foreign_key "account_cf_names", "companies"
   add_foreign_key "account_cf_options", "account_cf_names"
   add_foreign_key "account_cfs", "clients"
@@ -2979,9 +2481,6 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_foreign_key "costs", "products"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
-  add_foreign_key "custom_field_names", "companies"
-  add_foreign_key "custom_field_options", "custom_field_names"
-  add_foreign_key "custom_fields", "companies"
   add_foreign_key "datafeed_configuration_details", "api_configurations"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
@@ -3004,7 +2503,6 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_foreign_key "ealert_stages", "ealerts"
   add_foreign_key "ealert_stages", "stages"
   add_foreign_key "ealerts", "companies"
-  add_foreign_key "egnyte_integrations", "companies"
   add_foreign_key "exchange_rates", "companies"
   add_foreign_key "exchange_rates", "currencies"
   add_foreign_key "forecast_calculation_logs", "companies"
@@ -3051,12 +2549,4 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_foreign_key "user_dimensions", "companies"
   add_foreign_key "user_dimensions", "teams"
   add_foreign_key "users", "teams"
-  add_foreign_key "workflow_actions", "api_configurations"
-  add_foreign_key "workflow_actions", "workflows"
-  add_foreign_key "workflow_criterions", "workflow_criterions"
-  add_foreign_key "workflow_criterions", "workflows"
-  add_foreign_key "workflow_logs", "companies"
-  add_foreign_key "workflow_logs", "workflows"
-  add_foreign_key "workflows", "companies"
-  add_foreign_key "workflows", "users"
 end
