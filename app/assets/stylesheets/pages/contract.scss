@@ -1,0 +1,17 @@
+#contract {
+    .detail-stats {
+        .stats-numbers {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            .stats-col {
+                width: auto;
+                .title {
+                   .z-toggle {
+                       vertical-align: middle;
+                   }
+                }
+            }
+        }
+    }
+}
