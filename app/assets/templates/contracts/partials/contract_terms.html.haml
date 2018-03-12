@@ -1,0 +1,34 @@
+.members.block
+	%div.mb20
+		%span.title Special Terms
+		%span{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
+			%add-button{ dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } } Add
+			%ul.dropdown-menu.new-member-options
+				%li.existing-user-options
+					%ui-select{ name: 'user-list', ng: { model: 'userToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingUser($item)' }
+						%ui-select-match{ placeholder: 'start typing their name here' }
+							{{ $select.selected.name }}
+						%ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }
+							%div{ ng: { bind: { html: 'user.name' } } }
+	%table.table.table-striped
+		%thead
+			%tr
+				%th Team Name
+				%th Team Type
+				%th.left Comments
+		%tbody
+			%tr{ ng: { repeat: "member in dealMembers | orderBy: 'name'"} }
+				%td
+					{{ member.name }}
+					%i.fa.fa-trash.delete-deal{'ng-click': 'deleteMember(member)'}
+				%td
+					.dropdown
+						%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+							%span.editable{'ng-class': '{"not-selected": !member.role.option.name}'} {{member.role.option.name || 'Select role'}}
+							%span.caret
+						%ul.dropdown-menu
+							%li{'ng-repeat': 'option in member.role.options', 'ng-class': '{active: member.role.option_id == option.id}'}
+								%a{'href': '', 'ng-click': 'member.role.option_id = option.id; updateDealMember(member)'}
+									%span.text {{option.name}}
+				%td.left
+					%div{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "member.share", 'on-after-save': 'updateDealMember(member)'}
