@@ -137,7 +137,7 @@ RSpec.describe Client, type: :model do
   end
 
   context 'base field validations' do
-    let(:company) { create :company, :setup_defaults }
+    let(:company) { create :company_with_defaults }
     let(:advertiser) { create :bare_client, client_type_id: advertiser_type_id(company), company: company }
     let(:agency) { create :bare_client, client_type_id: agency_type_id(company), company: company }
 

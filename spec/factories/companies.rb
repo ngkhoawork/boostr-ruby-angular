@@ -3,17 +3,17 @@ FactoryGirl.define do
     name { FFaker::Company.name }
 
     after(:build) do |item| 
-      class << item
-        def setup_defaults; true; end
-      end
+      def item.setup_defaults; true; end
     end
 
-    trait :setup_defaults do
-      after(:build) do |item|
-        class << item
-          def setup_defaults; super; end
-        end
-      end
+    after(:create) do |item|
+      create :field, :client_type_field, company: item
     end
-  end # factory
+  end
+
+  factory :company_with_defaults, class: Company do
+    after(:build) do |item|
+      def item.setup_defaults; super; end
+    end
+  end
 end # Factory defina
