@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   before_filter :authenticate_user!
   after_filter :set_csrf_cookie
   rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
+  rescue_from Timeout::Error, with: :handle_timeout
 
   layout :layout_by_resource
   # Prevent CSRF attacks by raising an exception.
@@ -41,6 +42,12 @@ class ApplicationController < ActionController::Base
       'devise'
     else
       'application'
+    end
+  end
+
+  def handle_timeout
+    respond_to do |format|
+      format.all  { head 503 }
     end
   end
 end
