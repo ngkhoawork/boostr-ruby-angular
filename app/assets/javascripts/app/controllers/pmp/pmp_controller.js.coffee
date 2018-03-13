@@ -169,21 +169,22 @@
       chartContainer = angular.element(containerID)
       margin =
           top: 35
-          left: 85
-          right: 85
-          bottom: 25
+          left: 240
+          right: 50
+          bottom: 35
       miniMargin = 
-          top: 20
-          left: 85
-          right: 85
-          bottom: 10
+          top: 35
+          left: 50
+          right: 120
+          bottom: 35
       duration = 1000
       ratio = 0.35
+      maxBarWidth = 100
       miniRatio = 0.05
-      miniWidth = chartContainer.width() - miniMargin.left - miniMargin.right || 800
-      miniHeight = 60
-      width = chartContainer.width() - margin.left - margin.right || 800
-      height = chartContainer.width()*ratio - margin.top - margin.bottom - miniHeight - miniMargin.top - miniMargin.bottom
+      miniWidth = 100
+      miniHeight = chartContainer.width()*ratio - miniMargin.top - miniMargin.bottom
+      width = chartContainer.width() - margin.left - margin.right - miniWidth - miniMargin.left - miniMargin.right
+      height = chartContainer.width()*ratio - margin.top - margin.bottom
       data = _.map data, (d) -> 
         d.revenue_loc = parseFloat(d.revenue_loc)
         d
@@ -194,20 +195,20 @@
         bar = mainGroup.selectAll(".bar")
             .data(data)
 
-        bar.attr("x", (d,i) -> x(d.advertiser.name))
-          .attr("width", x.rangeBand())
-          .attr("y", (d) -> y(d.revenue_loc))
-          .transition().duration(50)
-          .attr("height", (d) -> height - y(d.revenue_loc))
+        bar.attr("y", (d,i) -> x(d.advertiser.name) + (x.rangeBand() - d3.min([x.rangeBand(), maxBarWidth]))/2)
+          .attr("x", (d) -> 0)
+          .attr("height", d3.min([x.rangeBand(), maxBarWidth]))
+          .attr("width", (d) -> y(d.revenue_loc))
 
         bar.enter().append("rect")
           .attr("class", "bar")
           .style("fill", (d) -> c(Math.random()*10))
-          .attr("x", (d,i) -> x(d.advertiser.name))
-          .attr("width", x.rangeBand())
-          .attr("y", (d) -> y(d.revenue_loc))
-          .transition().duration(50)
-          .attr("height", (d) -> height - y(d.revenue_loc))
+          .attr("y", (d,i) -> x(d.advertiser.name) + (x.rangeBand() - d3.min([x.rangeBand(), maxBarWidth]))/2)
+          .attr("x", (d) -> 0)
+          .attr("height", d3.min([x.rangeBand(), maxBarWidth]))
+          .attr("width", 0)
+          .transition().duration(duration)
+          .attr("width", (d) -> y(d.revenue_loc))
           .style('cursor', 'pointer')
 
         bar.exit()
@@ -250,7 +251,7 @@
         range = miniX.range()
         x0 = d3.min(range) + size / 2
         x1 = d3.max(range) + miniX.rangeBand() - size / 2
-        center = Math.max( x0, Math.min( x1, d3.mouse(target)[0] ) )
+        center = Math.max( x0, Math.min( x1, d3.mouse(target)[1] ) )
 
         d3.event.stopPropagation()
 
@@ -258,40 +259,9 @@
             .call(brush.extent([center - size / 2, center + size / 2]))
             .call(brush.event)
 
-      scroll = () ->
-        extent = brush.extent()
-        size = extent[1] - extent[0]
-        range = miniX.range()
-        x0 = d3.min(range)
-        x1 = d3.max(range) + miniX.rangeBand()
-        dx = d3.event.deltaY
-        topSection = null
-
-        if extent[0] - dx < x0
-          topSection = x0
-        else if extent[1] - dx > x1
-          topSection = x1 - size 
-        else
-          topSection = extent[0] - dx
-
-        d3.event.stopPropagation()
-        d3.event.preventDefault()
-
-        gBrush
-            .call(brush.extent([ topSection, topSection + size ]))
-            .call(brush.event)
-
-      # zoomer = d3.behavior.zoom().on("zoom", null)
-
       svg = d3.select(svgID)
               .attr("preserveAspectRatio", "xMinYMin meet")
-              .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom + miniHeight + miniMargin.top + miniMargin.bottom))
-              # .call(zoomer)
-              # .on("wheel.zoom", scroll)
-              # .on("mousedown.zoom", null)
-              # .on("touchstart.zoom", null)
-              # .on("touchmove.zoom", null)
-              # .on("touchend.zoom", null)
+              .attr("viewBox", "0 0 " + (width + margin.left + margin.right + miniWidth + miniMargin.left + miniMargin.right) + " " + (Math.max(height + margin.top + margin.bottom, miniHeight + miniMargin.top + miniMargin.bottom)))
               .html('')
       mainGroupWrapper = svg.append('g')            
                     .attr("class","mainGroupWrapper")                                                               
@@ -302,10 +272,10 @@
                     .attr("class", "mainGroup")
       miniGroup = svg.append("g")
                     .attr("class", "miniGroup")
-                    .attr("transform", "translate(" + miniMargin.left + "," + (margin.top + height + margin.bottom + miniMargin.top) + ")")
-      brushGroup = svg.append(                                                                                                        "g")
+                    .attr("transform", "translate(" + (miniMargin.left + margin.left + width + margin.right) + "," + miniMargin.top + ")")
+      brushGroup = svg.append("g")
                     .attr("class", "brushGroup")
-                    .attr("transform", "translate(" + miniMargin.left + "," + (margin.top + height + margin.bottom + miniMargin.top) + ")")
+                    .attr("transform", "translate(" + (miniMargin.left + margin.left + width + margin.right) + "," + miniMargin.top + ")")
 
       # Axes
       mainGroup.append('line')
@@ -313,7 +283,7 @@
           .attr('x1', 0)
           .attr('y1', 0)
           .attr('x2', 0)
-          .attr('y2', height + 25)
+          .attr('y2', height)
       mainGroup.append('line')
           .style('stroke', '#d9dde0')
           .attr('x1', 0)
@@ -321,37 +291,38 @@
           .attr('x2', width)
           .attr('y2', height)
 
-      x = d3.scale.ordinal().rangeBands([0, width], 0.4, 0)
-      miniX = d3.scale.ordinal().rangeBands([0, miniWidth], 0.4, 0)
-      y = d3.scale.linear().range([height, 0])
-      miniY = d3.scale.linear().range([miniHeight, 0])
+      x = d3.scale.ordinal().rangeBands([0, height], 0.4, 0)
+      miniX = d3.scale.ordinal().rangeBands([0, miniHeight], 0.4, 0)
+      y = d3.scale.linear().range([0, width])
+      miniY = d3.scale.linear().range([0, miniWidth])
 
       mainXZoom = d3.scale.linear()
-        .range([0, width])
-        .domain([0, width])
+        .range([0, height])
+        .domain([0, height])
 
-      xAxis = d3.svg.axis().scale(x).orient('bottom')
+      xAxis = d3.svg.axis().scale(x).orient('left')
               .outerTickSize(0)
               .innerTickSize(0)
               .tickPadding(10)
-      mainGroup.append('g')
+      mainGroup.insert('g', ':first-child')
         .attr('class', 'axisX axis')
-        .attr('transform', 'translate(0,' + height + ')')
+        .attr('transform', 'translate(0,0)')
 
-      yAxis = d3.svg.axis().scale(y).orient('left')
-              .innerTickSize(-width)
+      yAxis = d3.svg.axis().scale(y).orient('bottom')
+              .innerTickSize(-height)
               .outerTickSize(0)
               .tickFormat (v) -> 
                 $scope.currency_symbol + $filter('number')(v)
       mainGroupWrapper.insert('g', ':first-child')
         .attr('class', 'axisY axis')
+        .attr('transform', 'translate(0,' + height + ')')
 
       y.domain([0, (d3.max(data, (d) -> d.revenue_loc) || 100)*1.1])
       miniY.domain([0, (d3.max(data, (d) -> d.revenue_loc) || 100)*1.1])
       x.domain(data.map((item) -> item.advertiser.name))
       miniX.domain(data.map((item) -> item.advertiser.name))
 
-      mainGroup.select("axisX").call(xAxis)
+      mainGroup.select(".axisX").call(xAxis)
       mainGroupWrapper.select(".axisY").call(yAxis)
 
       return if data.length == 0
@@ -362,10 +333,10 @@
         .clamp(true)
 
       brushExtent = Math.max( 1, Math.min( 20, Math.round(data.length*0.2) ) )
-      lastExtent = if data.length <= 7 then miniWidth else miniX(data[brushExtent].advertiser.name)
+      lastExtent = if data.length <= 7 then miniHeight else miniX(data[brushExtent].advertiser.name)
 
       brush = d3.svg.brush()
-          .x(miniX)
+          .y(miniX)
           .extent([miniX(data[0].advertiser.name), lastExtent])
           .on("brush", brushmove)
 
@@ -375,17 +346,17 @@
       
       gBrush.selectAll(".resize")
         .append("line")
-        .attr("y2", miniHeight)
+        .attr("x2", miniWidth)
 
       gBrush.selectAll(".resize")
         .append("path")
         .attr("d", d3.svg.symbol().type("triangle-up").size(20))
         .attr("transform", (d,i) -> 
-          if i then "translate(" + -4 + "," + (miniHeight/2) + ") rotate(270)" else "translate(" + 4 + "," + (miniHeight/2) + ") rotate(90)"
+          if i then "translate(" + (miniWidth/2) + "," + 4 + ") rotate(180)" else "translate(" + (miniWidth/2) + "," + -4 + ") rotate(0)"
         )
 
       gBrush.selectAll("rect")
-        .attr("height", miniHeight);
+        .attr("width", miniWidth);
 
       gBrush.select(".background")
         .on("mousedown.brush", brushcenter)
@@ -396,25 +367,25 @@
       defs.append("clipPath")
         .attr("id", "clip")
         .append("rect")
-        .attr("x", 0)
+        .attr("x", -margin.left)
         .attr("y", 0)
-        .attr("width", width)
-        .attr("height", height + margin.bottom)
+        .attr("width", width + margin.left)
+        .attr("height", height)
 
       miniBar = miniGroup.selectAll(".bar")
         .data(data)
 
       miniBar
-        .attr("height", (d) -> miniY(d.revenue_loc))
-        .attr("x", (d,i) -> miniX(d.advertiser.name))
-        .attr("width", miniX.rangeBand())
+        .attr("width", (d) -> miniY(d.revenue_loc))
+        .attr("y", (d,i) -> miniX(d.advertiser.name) + (miniX.rangeBand() - d3.min([miniX.rangeBand(), maxBarWidth]))/2)
+        .attr("height", d3.min([miniX.rangeBand(), maxBarWidth]))
 
       miniBar.enter().append("rect")
         .attr("class", "bar")
-        .attr("y", (d) -> miniY(d.revenue_loc))
-        .attr("height", (d) -> miniHeight - miniY(d.revenue_loc))
-        .attr("x", (d,i) -> miniX(d.advertiser.name))
-        .attr("width", miniX.rangeBand())
+        .attr("x", (d) -> 0)
+        .attr("width", (d) -> miniY(d.revenue_loc))
+        .attr("y", (d,i) -> miniX(d.advertiser.name) + (miniX.rangeBand() - d3.min([miniX.rangeBand(), maxBarWidth]))/2)
+        .attr("height", d3.min([miniX.rangeBand(), maxBarWidth]))
 
       miniBar.exit()
         .remove()
