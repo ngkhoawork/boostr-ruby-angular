@@ -8,6 +8,7 @@ class Cost::AmountsGenerateService
   end
 
   def perform
+    cost.cost_monthly_amounts.destroy_all
     generate_cost_amounts
   end
 

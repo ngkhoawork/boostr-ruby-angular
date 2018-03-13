@@ -43,6 +43,17 @@
 							%div.stats-col
 								.col-body-wrap
 									.col-body
+										.description Freeze Budgets
+										.title
+											.show-hide-remainder-form
+												.switch-remainder-form
+													%input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'currentIO.freezed', 'ng-change': 'updateIO()', id: "rem-act-modal-toggle12"}
+													%label{:for => "rem-act-modal-toggle12"}
+														%span
+
+							%div.stats-col
+								.col-body-wrap
+									.col-body
 										.description Start-End Dates
 										%div{'ng-if': 'currentUser.is_admin || canEditIO'}
 											.title.bs-datepicker
@@ -58,6 +69,7 @@
 												%span {{currentIO.start_date | date : 'mediumDate'}}
 												{{'-'}}
 												%span {{currentIO.end_date | date : 'mediumDate'}}
+
 				.block#line-content-fees
 					%div.mb20
 						%span.title Line Items - content & fees
@@ -94,8 +106,8 @@
 									%td
 										{{ currentIO.end_date | date: 'M/d/yyyy' }}
 									%td.right
-										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "content_fee.budget_loc", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "currentUser.is_admin || canEditIO" }
-										%span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
+										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "content_fee.budget_loc", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "(currentUser.is_admin || canEditIO) && !currentIO.freezed" }
+										%span{ ng: { if: "(!currentUser.is_admin && !canEditIO) || currentIO.freezed" } }
 											{{ content_fee.budget_loc | currency:currency_symbol:2 }}
 									%td.right{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
 										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "product_budget.budget_loc", 'on-after-save': 'updateContentFeeAndBudget(content_fee)', 'ng-if': "currentUser.is_admin || canEditIO" }
@@ -278,7 +290,7 @@
 									%td.left
 										{{ influencerContentFee.content_fee.product.name }}
 									%td.left
-										{{ influencerContentFee.effect_date | date: 'M/d/yyyy'  }}
+										{{ influencerContentFee.effect_date | date: 'M/d/yyyy'	}}
 									%td.left
 										{{ influencerContentFee.fee_type == 'flat' ? 'Flat' : '%' }}
 									%td.right{'ng-if': 'influencerContentFee.fee_type == "flat"'}
@@ -311,7 +323,7 @@
 				.block#team-split
 					%div.mb20
 						%span.title Team & Split
-						%span{ 'ng-show': 'currentUser.is_admin || canEditIO', dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
+						%span{ 'ng-show': 'currentUser.is_admin || canEditIO', dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'	}
 							%add-button{ dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } } Add
 							%ul.dropdown-menu.new-member-options
 								%li.existing-user-options

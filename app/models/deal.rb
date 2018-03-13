@@ -413,97 +413,9 @@ class Deal < ActiveRecord::Base
     end
   end
 
-  def as_weighted_pipeline(start_date, end_date, product = nil)
-    total_budget = 0
-    in_period_budget = 0
-    if product.present?
-      in_period_budget = product_in_period_amt(product, start_date, end_date)
-      deal_product = deal_products.find_by(product_id: product.id)
-      total_budget = budget
-    else
-      in_period_budget = in_period_amt(start_date, end_date)
-      total_budget = budget
-    end
-
-    weighted_pipeline = {
-      id: id,
-      name: name,
-      client_name: (advertiser.nil? ? "" : advertiser.name),
-      agency_name: (agency.nil? ? "" : agency.name),
-      probability: stage.probability,
-      stage_id: stage.id,
-      budget: total_budget,
-      in_period_amt: in_period_budget,
-      wday_in_stage: wday_in_stage,
-      wday_since_opened: wday_since_opened,
-      start_date: self.start_date,
-      end_date: self.end_date
-    }
-
-    if stage.red_threshold.present? or stage.yellow_threshold.present?
-      if stage.red_threshold.present? and wday_in_stage >= stage.red_threshold
-        weighted_pipeline[:wday_in_stage_color] = 'red'
-      elsif stage.yellow_threshold.present? and wday_in_stage >= stage.yellow_threshold
-        weighted_pipeline[:wday_in_stage_color] = 'yellow'
-      else
-        weighted_pipeline[:wday_in_stage_color] = 'green'
-      end
-    end
-
-    if company.red_threshold.present? or company.yellow_threshold.present?
-      if company.red_threshold.present? and wday_since_opened >= company.red_threshold
-        weighted_pipeline[:wday_since_opened_color] = 'red'
-      elsif company.yellow_threshold.present? and wday_since_opened >= company.yellow_threshold
-        weighted_pipeline[:wday_since_opened_color] = 'yellow'
-      else
-        weighted_pipeline[:wday_since_opened_color] = 'green'
-      end
-    end
-
-    weighted_pipeline
-  end
-
-  def in_period_amt(start_date, end_date)
-    deal_product_budgets.for_time_period(start_date, end_date).to_a.sum do |deal_product_budget|
-      from = [start_date, deal_product_budget.start_date].max
-      to = [end_date, deal_product_budget.end_date].min
-      num_days = (to.to_date - from.to_date) + 1
-      deal_product_budget.daily_budget.to_f * num_days
-    end
-  end
-
-  def product_in_period_amt(product, start_date, end_date)
-    total = 0
-    deal_product = deal_products.find_by(product_id: product.id)
-    if deal_product.present?
-      deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
-        if deal_product_budget.deal_product.open == true
-          from = [start_date, deal_product_budget.start_date].max
-          to = [end_date, deal_product_budget.end_date].min
-          num_days = (to.to_date - from.to_date) + 1
-          total += deal_product_budget.daily_budget.to_f * num_days
-        end
-      end
-    end
-    total
-  end
-
   def in_period_open_amt(start_date, end_date)
     total = 0
     deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
-      if deal_product_budget.deal_product.open == true
-        from = [start_date, deal_product_budget.start_date].max
-        to = [end_date, deal_product_budget.end_date].min
-        num_days = (to.to_date - from.to_date) + 1
-        total += deal_product_budget.daily_budget.to_f * num_days
-      end
-    end
-    total
-  end
-
-  def product_in_period_open_amt(product, start_date, end_date)
-    total = 0
-    deal_product_budgets.for_product_id(product.id).for_time_period(start_date, end_date).each do |deal_product_budget|
       if deal_product_budget.deal_product.open == true
         from = [start_date, deal_product_budget.start_date].max
         to = [end_date, deal_product_budget.end_date].min

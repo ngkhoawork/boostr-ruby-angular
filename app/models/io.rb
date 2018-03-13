@@ -51,8 +51,7 @@ class Io < ActiveRecord::Base
 
   after_update do
     if (start_date_changed? || end_date_changed?)
-      reset_content_fees
-      reset_costs
+      Io::ResetBudgetsService.new(self).perform
       reset_member_effective_dates
     end
   end
@@ -73,26 +72,6 @@ class Io < ActiveRecord::Base
         e_date = end_date
       end
       update_revenue_fact_date(s_date, e_date)
-    end
-  end
-
-  def reset_content_fees
-    # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
-    ActiveRecord::Base.no_touching do
-      content_fees.each do |content_fee|
-        content_fee.content_fee_product_budgets.destroy_all
-        content_fee.generate_content_fee_product_budgets
-      end
-    end
-  end
-
-  def reset_costs
-    # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
-    ActiveRecord::Base.no_touching do
-      costs.each do |cost|
-        cost.cost_monthly_amounts.destroy_all
-        cost.generate_cost_monthly_amounts
-      end
     end
   end
 
@@ -208,27 +187,7 @@ class Io < ActiveRecord::Base
   end
 
   def update_influencer_budget
-    data = {}
-
-    self.influencer_content_fees.by_effect_date(start_date, end_date).each do |influencer_content_fee|
-      content_fee_product_budget = influencer_content_fee
-                                      .content_fee
-                                      .content_fee_product_budgets
-                                      .for_year_month(influencer_content_fee.effect_date)
-                                      .try(:first)
-      if content_fee_product_budget
-        data[content_fee_product_budget.id] ||= 0
-        data[content_fee_product_budget.id] += influencer_content_fee.gross_amount.to_f
-      end
-    end
-
-    data.each do |id, budget|
-      content_fee_product_budget = self.content_fee_product_budgets.find(id)
-      if content_fee_product_budget && content_fee_product_budget.update_budget!(budget)
-        content_fee_product_budget.content_fee.update_budget
-        content_fee_product_budget.content_fee.io.update_total_budget
-      end
-    end
+    Io::UpdateInfluencerBudgetService.new(self).perform
   end
 
   def effective_revenue_budget(member, start_date, end_date)
@@ -308,62 +267,6 @@ class Io < ActiveRecord::Base
             deal: { name: {} }
         }
       )
-    )
-  end
-
-  def full_json
-    self.as_json( include: {
-        io_members: {
-            methods: [
-                :name
-            ]
-        },
-        currency: {},
-        content_fees: {
-            include: {
-                content_fee_product_budgets: {}
-            },
-            methods: [
-                :product
-            ]
-        },
-        costs: {
-            include: {
-                cost_monthly_amounts: {}
-            },
-            methods: [
-                :product
-            ]
-        },
-        influencer_content_fees: {
-            include: {
-                influencer: {
-                  only: [:id, :name],
-                  include: {
-                    agreement: {
-                      only: [:id, :fee_type, :amount]
-                    }
-                  }
-                },
-                currency: {},
-                content_fee: {
-                  only: [:id],
-                  include: {
-                    product: {
-                      only: [:id, :name]
-                    }
-                  }
-                }
-            }
-        },
-        display_line_items: {
-            methods: [
-                :product
-            ]
-        },
-        print_items: {}
-      },
-      methods: [:readable_months, :months, :days_per_month, :days]
     )
   end
 

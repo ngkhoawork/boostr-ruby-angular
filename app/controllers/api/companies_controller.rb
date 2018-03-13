@@ -27,6 +27,7 @@ class Api::CompaniesController < ApplicationController
       :publishers_enabled,
       :forecast_gap_to_quota_positive,
       :enable_net_forecasting,
+      :default_io_freeze_budgets,
       forecast_permission: ["0", "1", "2", "3", "4", "5", "6", "7"],
       io_permission: ["0", "1", "2", "3", "4", "5", "6", "7"]
     )
