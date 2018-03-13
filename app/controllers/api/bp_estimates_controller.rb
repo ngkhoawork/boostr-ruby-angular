@@ -228,14 +228,14 @@ class Api::BpEstimatesController < ApplicationController
       when 'my'
         [current_user.id]
       when 'team'
-        current_user.teams.map(&:all_sales_reps).flatten.collect{ |member| member.id}
+        current_user.teams.map(&:all_members_and_leaders).flatten
       else
         if user.present?
           [user.id]
         elsif team.present?
-          team.all_sales_reps.collect{ |member| member.id}
+          team.all_members_and_leaders
         else
-          company.all_sales_reps
+          nil
         end
       end
   end
