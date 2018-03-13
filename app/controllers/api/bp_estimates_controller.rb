@@ -234,8 +234,6 @@ class Api::BpEstimatesController < ApplicationController
           [user.id]
         elsif team.present?
           team.all_members_and_leaders
-        else
-          nil
         end
       end
   end
