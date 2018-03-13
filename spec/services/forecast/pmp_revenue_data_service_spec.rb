@@ -57,7 +57,7 @@ describe Forecast::PmpRevenueDataService do
   end
   
   def company
-    @_company ||= Company.first
+    @_company ||= create :company
   end
 
   def team

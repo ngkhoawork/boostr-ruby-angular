@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Deal do
-  let(:company) { create :company }
+  let!(:company) { create :company }
   let(:user) { create :user }
 
   context 'associations' do
@@ -72,6 +72,11 @@ describe Deal do
 
   context 'validations' do
     let!(:deal) { create :deal }
+    let!(:billing_contact_validation) do
+      create :validation, factor: 'Billing Contact Full Address',
+                          value_type: 'Boolean',
+                          company: company
+    end
 
     context 'billing contact' do
       let(:stage) { create :stage, sales_process: deal.stage.sales_process }
@@ -159,7 +164,8 @@ describe Deal do
     end
 
     context 'disable deal closed won' do
-      let(:validation) { deal.company.validation_for(:disable_deal_won) }
+      let(:validation) { deal.company.validations.find_or_create_by(factor: 'Disable Deal Won', value_type: 'Boolean') }
+
       let(:closed_won_stage) { create :closed_won_stage }
 
       it 'passes validation if company does not have it' do
@@ -217,7 +223,6 @@ describe Deal do
     end
 
     describe '"Restrict deal reopen" validation' do
-      let(:company) { deal.company }
       let(:validation) { company.validations.find_or_create_by(factor: 'Restrict Deal Reopen', value_type: 'Boolean') }
 
       before { deal.update_columns(stage_id: closed_won_stage.id) }
@@ -259,6 +264,12 @@ describe Deal do
   end
 
   describe '#has_billing_contact?' do
+    let!(:billing_contact_validation) do
+      create :validation, factor: 'Billing Contact Full Address',
+                          value_type: 'Boolean',
+                          company: company
+    end
+
     let!(:deal) { create :deal }
     let!(:deal_contact) { create :deal_contact, deal: deal }
 
@@ -273,6 +284,12 @@ describe Deal do
   end
 
   describe '#no_more_one_billing_contact?' do
+    let!(:billing_contact_validation) do
+      create :validation, factor: 'Billing Contact Full Address',
+                          value_type: 'Boolean',
+                          company: company
+    end
+
     let!(:deal) { create :deal }
 
     it 'is true if deal has no billing contacts' do
@@ -534,6 +551,8 @@ describe Deal do
   end
 
   context 'to_zip' do
+    before { User.current = create :user }
+
     it 'returns the contents of deal zip' do
       deal.deal_products.create(product_id: product.id, budget: 10_000)
       deal_zip = Deal.to_zip
@@ -555,20 +574,38 @@ describe Deal do
   end
 
   describe '#import' do
+    let!(:billing_contact_validation) do
+      create :validation, factor: 'Billing Contact Full Address',
+                          value_type: 'Boolean',
+                          company: company
+    end
+
     let!(:user) { create :user }
     let!(:another_user) { create :user }
-    let!(:company) { user.company }
     let!(:stage_won) { create :stage, company: user.company, name: 'Won', probability: 100, open: false }
     let!(:stage_lost) { create :stage, company: user.company, name: 'Lost', probability: 0, open: false }
     let!(:advertiser) { create :client, created_by: user.id, client_type_id: advertiser_type_id(company) }
     let!(:agency) { create :client, created_by: user.id, client_type_id: agency_type_id(company) }
-    let!(:deal_type_field) { user.company.fields.find_by_name('Deal Type') }
+    let!(:deal_type_field) do
+      user.company.fields.find_or_initialize_by(
+        subject_type: 'Deal', name: 'Deal Type', value_type: 'Option', locked: true
+      )
+    end
+    let!(:deal_source_field) do
+      user.company.fields.find_or_initialize_by(
+        subject_type: 'Deal', name: 'Deal Source', value_type: 'Option', locked: true
+      )
+    end
+    let!(:close_reason_field) do
+      user.company.fields.find_or_initialize_by(
+        subject_type: 'Deal', name: 'Close Reason', value_type: 'Option', locked: true
+      )
+    end
+
     let!(:deal_type) { create :option, field: deal_type_field, company: user.company }
-    let!(:deal_source_field) { user.company.fields.find_by_name('Deal Source') }
     let!(:deal_source) { create :option, field: deal_source_field, company: user.company }
-    let!(:close_reason_field) { user.company.fields.find_by_name('Close Reason') }
     let!(:close_reason) { create :option, field: close_reason_field, company: user.company }
-    let!(:existing_deal) { create :deal, creator: another_user, updator: another_user }
+    let(:existing_deal) { create :deal, creator: another_user, updator: another_user }
     let!(:contacts) { create_list :contact, 4, company: company, client_id: advertiser.id }
     let(:import_log) { CsvImportLog.last }
 
@@ -1217,10 +1254,6 @@ describe Deal do
 
   def product
     @_product ||= create :product
-  end
-
-  def company
-    @_company ||= create :company
   end
 
   def advertiser(opts={})

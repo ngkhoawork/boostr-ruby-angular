@@ -255,6 +255,7 @@ RSpec.describe Api::PublishersController, type: :controller do
     before do
       publisher_type_option
       publisher_stage
+      publisher_renewal_term
     end
 
     it 'updates a publisher' do
@@ -387,7 +388,14 @@ RSpec.describe Api::PublishersController, type: :controller do
   end
 
   def type_field
-    @_type_field ||= company.fields.where(subject_type: 'Publisher', name: 'Publisher Type').last
+    @_type_field ||=
+    create(
+      :field, 
+        subject_type: 'Publisher',
+        name: 'Publisher Type',
+        value_type: 'Option',
+        locked: true
+    )
   end
 
   def client
@@ -428,6 +436,17 @@ RSpec.describe Api::PublishersController, type: :controller do
         field_index: 1,
         position: 1
       )
+  end
+
+  def publisher_renewal_term
+    @_publisher_renewal_term ||=
+    create(
+      :field,
+        subject_type: 'Publisher',
+        name: 'Renewal Terms',
+        value_type: 'Option',
+        locked: true
+    )
   end
 
   def publisher_custom_field_option

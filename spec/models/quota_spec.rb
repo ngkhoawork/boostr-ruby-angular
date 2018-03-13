@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Quota, type: :model do
+  let!(:company) { create :company }
+
   describe 'scopes' do
     before do
       create_list :quota, 2

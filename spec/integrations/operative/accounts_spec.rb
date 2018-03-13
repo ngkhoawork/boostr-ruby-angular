@@ -1,7 +1,10 @@
 require 'rails_helper'
 
 describe 'Accounts integration', operative: true do
-  before { create :billing_deal_contact, deal: deal, contact: contact }
+  before do
+    create :billing_address_validation, company: company
+    create :billing_deal_contact, deal: deal, contact: contact
+ end
 
   describe 'agency' do
     context 'create agency' do

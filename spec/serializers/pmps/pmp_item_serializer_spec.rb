@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe Pmps::PmpItemSerializer do
+  let!(:company) { create :company }
+
   it 'serialize pmp_item' do
     expect(serializer.id).to eq(pmp_item.id)
     expect(serializer.ssp_deal_id).to eq(pmp_item.ssp_deal_id)

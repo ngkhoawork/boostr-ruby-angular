@@ -31,7 +31,7 @@ describe Forecast::PmpRevenueDataSerializer do
   end
   
   def company
-    @_company ||= Company.first
+    @_company ||= create :company
   end
 
   def team

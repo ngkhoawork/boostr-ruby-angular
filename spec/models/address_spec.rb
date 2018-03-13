@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Address, type: :model do
-  let(:company) { Company.first }
+  let!(:company) { create :company }
   let(:user) { create :user }
 
   context 'validations' do

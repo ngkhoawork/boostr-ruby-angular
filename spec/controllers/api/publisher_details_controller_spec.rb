@@ -135,7 +135,14 @@ RSpec.describe Api::PublisherDetailsController, type: :controller do
   end
 
   def type_field
-    @_type_field ||= company.fields.where(subject_type: 'Publisher', name: 'Publisher Type').last
+    @_type_field ||=
+    create(
+      :field, 
+        subject_type: 'Publisher',
+        name: 'Publisher Type',
+        value_type: 'Option',
+        locked: true
+    )
   end
 
   def client

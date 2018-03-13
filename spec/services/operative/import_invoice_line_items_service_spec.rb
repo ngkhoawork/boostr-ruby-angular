@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
-  let(:company) { Company.first }
+  let!(:company) { create :company }
   let(:invoice_lines_file) { './spec/invoice_line_item_file.csv' }
   let(:invoices_file) { './spec/invoices_file.csv' }
   let(:line_item_budget_csv) { double() }

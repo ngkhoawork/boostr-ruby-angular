@@ -4,7 +4,14 @@ include ActionView::Helpers::NumberHelper
 RSpec.describe UserMailer, :type => :mailer do
   describe 'lost deal email' do
     before do
-      field = company.fields.find_by_name('Close Reason')
+      field = create :field, {
+        subject_type: 'Deal',
+        name: 'Close Reason',
+        value_type: 'Option',
+        locked: true,
+        company: company
+      }
+
       option = create :option, name: 'Price', field: field, company: company
       closed_stage = create :lost_stage
       deal.update(

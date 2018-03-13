@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Contact, type: :model do
+  let!(:company) { create :company }
   let(:user) { create :user }
   let(:client) { create :client }
   let(:client2) { create :client }
@@ -160,7 +161,7 @@ RSpec.describe Contact, type: :model do
     end
 
     context 'by job level' do
-      let!(:field) { company.fields.find_by(subject_type: 'Contact', name: 'Job Level') }
+      let!(:field) { company.fields.find_or_initialize_by(subject_type: 'Contact', name: 'Job Level', value_type: 'Option', locked: true) }
       let!(:pro) { create :option, name: 'Pro', field: field }
       let!(:rookie) { create :option, name: 'Rookie', field: field }
       let!(:new_contacts) { create_list :contact, 3, values_attributes: [{ field_id: field.id, option_id: rookie.id }]}
@@ -243,9 +244,5 @@ RSpec.describe Contact, type: :model do
       expect(metadata[:countries]).to include 'Ukraine'
       expect(metadata[:countries]).to include 'France'
     end
-  end
-
-  def company
-    @_company ||= create :company
   end
 end

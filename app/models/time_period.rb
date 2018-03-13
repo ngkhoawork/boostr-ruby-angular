@@ -85,6 +85,6 @@ class TimePeriod < ActiveRecord::Base
     scope = company.time_periods.where('LOWER(name) = ?', self.name.downcase)
     scope = scope.where('id <> ?', self.id) if self.id
 
-    errors.add(:name, 'Name has already been taken') if scope.count > 0
+    errors.add(:name, "with value #{name} has already been taken") if scope.count > 0
   end
 end

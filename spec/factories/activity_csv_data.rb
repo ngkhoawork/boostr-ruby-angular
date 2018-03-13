@@ -13,12 +13,14 @@ FactoryGirl.define do
     initialize_with { attributes }
 
     after(:build) do |item|
+      item[:company] ||= Company.first
+
       if item[:creator].nil?
-        item[:creator] = Company.first.users.first.email
+        item[:creator] = item[:company].users.first.email
       end
 
       if item[:type].nil?
-        item[:type] = Company.first.activity_types.sample.name
+        item[:type] = item[:company].activity_types.sample.name
       end
 
       if item[:deal].nil?
@@ -26,7 +28,7 @@ FactoryGirl.define do
       end
 
       if item[:contacts].nil?
-        item[:contacts] = Company.first.contacts.map(&:address).map(&:email).join(';')
+        item[:contacts] = item[:company].contacts.map(&:address).map(&:email).join(';')
       end
     end
   end

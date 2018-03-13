@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 describe Api::AgencyDashboardsController, type: :controller do
+  let!(:company) { create :company }
   let(:response_body) { JSON.parse(response.body, symbolize_names: true) }
 
   before do
@@ -259,14 +260,14 @@ describe Api::AgencyDashboardsController, type: :controller do
   private
 
   def future_month_time_dimension
-    @_future_month_time_dimension || create(:time_dimension,
+    @_future_month_time_dimension ||= create(:time_dimension,
                                            start_date: Date.today.beginning_of_month + 1.month,
                                            end_date: Date.today.end_of_month + 1.month,
                                            days_length: (Date.today.end_of_month - Date.today.beginning_of_month).to_i)
   end
 
   def current_month_time_dimension
-    @_current_month_time_dimension || create(:time_dimension,
+    @_current_month_time_dimension ||= create(:time_dimension,
                                             start_date: Date.today.beginning_of_month,
                                             end_date: Date.today.end_of_month,
                                             days_length: (Date.today.end_of_month - Date.today.beginning_of_month).to_i)
@@ -328,10 +329,6 @@ describe Api::AgencyDashboardsController, type: :controller do
 
   def holding_company
     @_holding_company ||= create(:holding_company)
-  end
-
-  def company
-    @_company ||= create(:company)
   end
 
   def closed_won_stage

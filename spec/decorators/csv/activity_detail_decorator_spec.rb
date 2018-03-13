@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe Csv::ActivityDetailDecorator do
+  let!(:company) { create :company }
+
   it 'decorate activity successfully and return expected values' do
     expect(activity_detail_decorator.date).to eq activity_date
     expect(activity_detail_decorator.type).to eq activity_type

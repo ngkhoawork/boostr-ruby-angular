@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe Dataexport::DealProductBudgetSerializer do
+  let!(:company) { create :company }
+
   it 'serializes deal_product_budget data' do
     expect(serializer.deal_product_id).to eq(deal_product_budget.deal_product_id)
     expect(serializer.start_date).to eq(deal_product_budget.start_date)

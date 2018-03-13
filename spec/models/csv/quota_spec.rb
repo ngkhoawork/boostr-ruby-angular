@@ -1,6 +1,9 @@
 require 'rails_helper'
 
 describe Csv::Quota do
+  let!(:company) { create :company }
+  let!(:time_period) { create :time_period, name: 'Q3-2017', company: company }
+
   context 'import' do
     it 'create new quota' do
       expect {
@@ -27,16 +30,8 @@ describe Csv::Quota do
 
   private
 
-  def company
-    @_company ||= create :company, time_periods: [time_period]
-  end
-
   def user
     @_user ||= create :user, company: company, email: 'test@user.com'
-  end
-
-  def time_period
-    @_time_period ||= create :time_period, name: 'Q3-2017'
   end
 
   def product

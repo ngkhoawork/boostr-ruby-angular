@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 describe DisplayLineItemCsv do
+  let!(:company) { create :company }
 
   context 'validations' do
     subject { line_item_csv }

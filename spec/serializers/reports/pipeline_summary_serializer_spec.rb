@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe Report::PipelineSummarySerializer do
   before do
+    create :billing_address_validation, company: company
     create :billing_deal_contact, deal: deal, contact: contact
     create :deal_custom_field, company: company, deal: deal, sum1: "100"
     deal_custom_field_name
