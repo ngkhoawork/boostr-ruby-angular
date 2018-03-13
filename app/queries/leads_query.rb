@@ -10,6 +10,7 @@ class LeadsQuery
       .by_status(options[:status])
       .by_search(options[:search])
       .by_id(options[:search])
+      .order_by_created_at
       .includes(:contact, :user, :company, :client, :deals)
   end
 

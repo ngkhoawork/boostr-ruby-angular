@@ -26,6 +26,7 @@ class Lead < ActiveRecord::Base
   scope :accepted, -> { where('lower(status) = ?', ACCEPTED) }
   scope :rejected, -> { where('lower(status) = ?', REJECTED) }
   scope :by_company_id, -> (company_id) { where(company_id: company_id) }
+  scope :order_by_created_at, -> { order(created_at: :desc) }
   scope :notification_reminders_by_dates, -> (reminder_type, start_date, end_date) do
     joins(:notification_reminders)
       .where('notification_reminders.notification_type = ? AND
@@ -140,7 +141,7 @@ class Lead < ActiveRecord::Base
   end
 
   def first_assignment_rules_user
-    find_rule.assignment_rules_users.find_by(position: 0)
+    find_rule.assignment_rules_users.first
   end
 
   def default_rule
