@@ -785,6 +785,28 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_index "content_fees", ["io_id"], name: "index_content_fees_on_io_id", using: :btree
   add_index "content_fees", ["product_id"], name: "index_content_fees_on_product_id", using: :btree
 
+  create_table "contract_contacts", force: :cascade do |t|
+    t.integer  "contract_id", null: false
+    t.integer  "contact_id",  null: false
+    t.integer  "role_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "contract_contacts", ["contract_id", "contact_id"], name: "index_contract_contacts_on_contract_id_and_contact_id", unique: true, using: :btree
+  add_index "contract_contacts", ["role_id"], name: "index_contract_contacts_on_role_id", using: :btree
+
+  create_table "contract_members", force: :cascade do |t|
+    t.integer  "contract_id", null: false
+    t.integer  "user_id",     null: false
+    t.integer  "role_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "contract_members", ["contract_id", "user_id"], name: "index_contract_members_on_contract_id_and_user_id", unique: true, using: :btree
+  add_index "contract_members", ["role_id"], name: "index_contract_members_on_role_id", using: :btree
+
   create_table "contracts", force: :cascade do |t|
     t.integer  "company_id",                                                  null: false
     t.integer  "deal_id"
@@ -804,12 +826,16 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.string   "curr_cd",                                     default: "USD"
     t.datetime "created_at",                                                  null: false
     t.datetime "updated_at",                                                  null: false
+    t.integer  "holding_company_id"
+    t.datetime "deleted_at"
   end
 
   add_index "contracts", ["advertiser_id"], name: "index_contracts_on_advertiser_id", using: :btree
   add_index "contracts", ["agency_id"], name: "index_contracts_on_agency_id", using: :btree
   add_index "contracts", ["company_id"], name: "index_contracts_on_company_id", using: :btree
   add_index "contracts", ["deal_id"], name: "index_contracts_on_deal_id", using: :btree
+  add_index "contracts", ["deleted_at"], name: "index_contracts_on_deleted_at", using: :btree
+  add_index "contracts", ["holding_company_id"], name: "index_contracts_on_holding_company_id", using: :btree
   add_index "contracts", ["publisher_id"], name: "index_contracts_on_publisher_id", using: :btree
   add_index "contracts", ["status_id"], name: "index_contracts_on_status_id", using: :btree
   add_index "contracts", ["type_id"], name: "index_contracts_on_type_id", using: :btree
@@ -2189,6 +2215,19 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_index "snapshots", ["user_id"], name: "index_snapshots_on_user_id", using: :btree
   add_index "snapshots", ["year", "quarter"], name: "index_snapshots_on_year_and_quarter", using: :btree
 
+  create_table "special_terms", force: :cascade do |t|
+    t.integer  "contract_id", null: false
+    t.integer  "name_id"
+    t.integer  "type_id"
+    t.text     "comment"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "special_terms", ["contract_id"], name: "index_special_terms_on_contract_id", using: :btree
+  add_index "special_terms", ["name_id"], name: "index_special_terms_on_name_id", using: :btree
+  add_index "special_terms", ["type_id"], name: "index_special_terms_on_type_id", using: :btree
+
   create_table "ssp_advertisers", force: :cascade do |t|
     t.string   "name",       null: false
     t.integer  "company_id"
@@ -2486,6 +2525,20 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_foreign_key "contact_cfs", "contacts"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
+  add_foreign_key "contract_contacts", "contacts"
+  add_foreign_key "contract_contacts", "contracts"
+  add_foreign_key "contract_contacts", "options", column: "role_id"
+  add_foreign_key "contract_members", "contracts"
+  add_foreign_key "contract_members", "options", column: "role_id"
+  add_foreign_key "contract_members", "users"
+  add_foreign_key "contracts", "clients", column: "advertiser_id"
+  add_foreign_key "contracts", "clients", column: "agency_id"
+  add_foreign_key "contracts", "companies"
+  add_foreign_key "contracts", "deals"
+  add_foreign_key "contracts", "options", column: "status_id"
+  add_foreign_key "contracts", "options", column: "type_id"
+  add_foreign_key "contracts", "publishers"
+  add_foreign_key "contracts", "users"
   add_foreign_key "cost_monthly_amounts", "costs"
   add_foreign_key "costs", "ios"
   add_foreign_key "costs", "products"

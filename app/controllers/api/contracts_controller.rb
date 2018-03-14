@@ -38,6 +38,10 @@ class Api::ContractsController < ApplicationController
     render nothing: true
   end
 
+  def settings
+    render json: Api::Contracts::SettingsSerializer.new(company)
+  end
+
   private
 
   def resource
@@ -45,7 +49,7 @@ class Api::ContractsController < ApplicationController
   end
 
   def collection
-    company.contracts
+    ContractsQuery.new(filter_params).perform
   end
 
   def company
@@ -73,7 +77,33 @@ class Api::ContractsController < ApplicationController
       :restricted,
       :auto_renew,
       :auto_notifications,
-      :curr_cd
+      :curr_cd,
+      contract_members_attributes: [:id, :user_id, :role_id, :_destroy],
+      contract_contacts_attributes: [:id, :contact_id, :role_id, :_destroy],
+      special_terms_attributes: [:id, :name_id, :type_id, :comment, :_destroy]
     ).merge!(company_id: current_user.company_id)
+  end
+
+  def filter_params
+    params
+      .permit(
+        :relation,
+        :user_id,
+        :team_id,
+        :advertiser_id,
+        :agency_id,
+        :deal_id,
+        :holding_company_id,
+        :type_id,
+        :status_id,
+        :start_date_start,
+        :start_date_end,
+        :end_date_start,
+        :end_date_end,
+        :q
+      ).merge(
+        company_id: company.id,
+        current_user: current_user
+      )
   end
 end

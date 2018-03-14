@@ -2,21 +2,13 @@ class Api::Contracts::BaseSerializer < ActiveModel::Serializer
   attributes(
     :id,
     :company_id,
-    :deal_id,
-    :publisher_id,
-    :advertiser_id,
-    :agency_id,
     :name,
-    :description,
-    :start_date,
-    :end_date,
-    :amount,
     :restricted,
-    :auto_renew,
-    :auto_notifications,
     :type,
     :status,
-    :currency
+    :advertiser,
+    :agency,
+    :deal
   )
 
   private
@@ -29,7 +21,15 @@ class Api::Contracts::BaseSerializer < ActiveModel::Serializer
     object.status&.serializable_hash(only: [:id, :name])
   end
 
-  def currency
-    object.currency&.serializable_hash(only: [:curr_cd, :curr_symbol, :name])
+  def advertiser
+    object.advertiser&.serializable_hash(only: [:id, :name])
+  end
+
+  def agency
+    object.agency&.serializable_hash(only: [:id, :name])
+  end
+
+  def deal
+    object.deal&.serializable_hash(only: [:id, :name])
   end
 end

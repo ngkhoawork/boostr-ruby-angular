@@ -104,6 +104,10 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Member Role', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contract', name: 'Type', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contract', name: 'Status', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Member Role', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Contact Role', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Special Term Name', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Special Term Type', value_type: 'Option', locked: true)
     cost_type = fields.find_or_initialize_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
     setup_default_options(cost_type, ['General'])
 
@@ -130,6 +134,7 @@ class Company < ActiveRecord::Base
       { name: 'Multiple', fields: fields.where(subject_type: 'Multiple') },
       { name: 'Influencers', fields: fields.where(subject_type: 'Influencer') },
       { name: 'Publishers', fields: fields.where(subject_type: 'Publisher') },
+      { name: 'Contracts', fields: fields.where(subject_type: 'Contract') },
       { name: 'Costs', fields: fields.where(subject_type: 'Cost') }
     ]
   end

@@ -20,9 +20,6 @@ class CreateContractsV2 < ActiveRecord::Migration
       t.string :curr_cd, default: 'USD'
       t.string :name
 
-      # t.string :type_id
-      # t.string :status_id
-
       t.timestamps null: false
     end
 

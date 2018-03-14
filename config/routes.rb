@@ -528,7 +528,10 @@ Rails.application.routes.draw do
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
 
-    resources :contracts
+    resources :contracts do
+      resources :attachments, only: [:index, :update, :create, :destroy]
+      get :settings, on: :collection
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'
