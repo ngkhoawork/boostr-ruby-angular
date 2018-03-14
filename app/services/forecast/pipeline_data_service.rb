@@ -77,9 +77,9 @@ class Forecast::PipelineDataService
 
   def all_deals
     @_all_deals ||= if member_or_team
-      member_or_team.all_deals_for_time_period(start_date, end_date)
+      member_or_team.all_deals_for_time_period(start_date, end_date).open_partial
     else
-      company.deals.for_time_period(start_date, end_date)
+      company.deals.for_time_period(start_date, end_date).open_partial
     end
   end
 
