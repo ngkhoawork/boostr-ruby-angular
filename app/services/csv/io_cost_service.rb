@@ -9,7 +9,7 @@ class Csv::IoCostService < Csv::BaseService
   attr_reader :company
 
   def decorated_records
-    records.map { |record| Csv::IoCostDecorator.new(record, company) }
+    records.map { |record| Csv::IoCostDecorator.new(record, company, field) }
   end
 
   def headers
@@ -26,5 +26,9 @@ class Csv::IoCostService < Csv::BaseService
       'IO Account Manager',
       'Second IO Account Manager'
     ]
+  end
+
+  def field
+    @_field ||= company.fields.find_by(subject_type: 'Cost', name: 'Cost Type')
   end
 end
