@@ -1,0 +1,15 @@
+#contract.z-detail-page.z-styles
+	.container-fluid
+		.row
+			.col-xs-9
+				%div{'ng-include': '"contracts/partials/contract_stats.html"'}
+				%div{'ng-include': '"contracts/partials/contract_terms.html"'}
+				%div{'ng-include': '"contracts/partials/contract_contacts.html"'}
+				.row
+					.col-xs-6
+						%div{'ng-include': '"contracts/partials/contract_team.html"'}
+					.col-xs-6
+						%upload-file{'deal-files': 'contractFiles', type: "contract"}
+			.col-xs-3
+				%div{'ng-include': '"contracts/partials/contract_info.html"'}
+				%div{'ng-include': '"contracts/partials/contract_description.html"'}

@@ -13,7 +13,7 @@ class Product < ActiveRecord::Base
     numericality: {
       only_integer: true,
       greater_than_or_equal_to: 1,
-      less_than_or_equal_to: 100
+      less_than_or_equal_to: 99
     },
     allow_nil: true
 

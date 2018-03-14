@@ -55,9 +55,9 @@ class Deal::IoGenerateService
   def generate_costs(io)
     deal.deal_products.created_asc.each do |deal_product|
       margin = deal_product.product&.margin
-      next if margin.nil?
-      budget = deal_product.budget * margin / 100.0
-      budget_loc = deal_product.budget_loc * margin / 100.0
+      next if margin.nil? || margin == 100
+      budget = deal_product.budget * (100 - margin) / 100.0
+      budget_loc = deal_product.budget_loc * (100 - margin) / 100.0
       cost_monthly_amounts = cost_amounts_param(deal_product, margin)
       cost_param = {
         io_id: io.id,
@@ -78,8 +78,8 @@ class Deal::IoGenerateService
 
   def cost_amounts_param(deal_product, margin)
     deal_product.deal_product_budgets.inject([]) do |result, deal_product_budget|
-      monthly_budget = deal_product_budget.budget * margin / 100.0
-      monthly_budget_loc = deal_product_budget.budget_loc * margin / 100.0
+      monthly_budget = deal_product_budget.budget * (100 - margin) / 100.0
+      monthly_budget_loc = deal_product_budget.budget_loc * (100 - margin) / 100.0
       result << {
         budget: monthly_budget,
         budget_loc: monthly_budget_loc,
@@ -92,12 +92,12 @@ class Deal::IoGenerateService
   def cost_values_param
     return @_cost_values_param if defined?(@_cost_values_param)
     cost_type_field = company.fields.find_by(subject_type: 'Cost', name: 'Cost Type')
-    cost_type = cost_type_field.option_from_name('General')
+    cost_type = cost_type_field.option_locked
     @_cost_values_param = {
       value_type: 'Option',
       subject_type: 'Cost',
-      field_id: cost_type_field.id,
-      option_id: cost_type.id,
+      field_id: cost_type_field&.id,
+      option_id: cost_type&.id,
       company_id: company.id
     }
   end

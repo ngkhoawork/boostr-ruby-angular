@@ -19,6 +19,7 @@ class Csv::IoCost
   def perform
     cost.product = product
     cost.is_estimated = false if cost.id
+    cost.imported = true
     cost.save!
 
     cost_monthly_amount.budget = amount / io.exchange_rate

@@ -1,6 +1,6 @@
 @app.controller 'ContractsController', [
-    '$scope'
-    ($scope) ->
+    '$scope', '$modal'
+    ($scope,   $modal) ->
 
         $scope.contracts = [1..10].map (i) ->
             {
@@ -13,5 +13,11 @@
                 agency: 'Agency ' + ('0' + i).slice(-2)
                 deal: 'Deal ' + ('0' + i).slice(-2)
             }
+
+        $scope.showContractModal = ->
+            $modal.open
+                templateUrl: 'contracts/contract_form.html'
+                size: 'md'
+                controller: 'ContractFormController'
 
 ]

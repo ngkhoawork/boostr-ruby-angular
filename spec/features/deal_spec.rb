@@ -3,15 +3,22 @@ require 'rails_helper'
 feature 'Deals' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
+  let(:sales_process) { create :sales_process, company: company }
   let!(:advertiser) { create :client, company: company, created_by: user.id, client_type_id: advertiser_type_id(company) }
   let!(:agency) { create :client, company: company, created_by: user.id, client_type_id: agency_type_id(company) }
-  let!(:open_stage) { create :stage, company: company, position: 1, name: 'Lead' }
+  let!(:open_stage) { create :stage, company: company, sales_process: sales_process, position: 1, name: 'Lead' }
   let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field(company), name: "Seasonal" }
   let!(:deal_type_pitch_option) { create :option, company: company, field: deal_source_field(company), name: "Pitch to Client" }
 
   describe 'showing a list of deals filtered by stages' do
-    let!(:another_open_stage) { create :stage, company: company, position: 2, probability: 50, name: 'Proposal' }
-    let!(:closed_stage) { create :stage, company: company, position: 3, probability: 90, name: 'Won' }
+    let!(:another_open_stage) do
+      create :stage, company: company, sales_process: sales_process, 
+                     position: 2, probability: 50, name: 'Proposal'
+    end
+    let!(:closed_stage) do 
+      create :stage, company: company, sales_process: sales_process, 
+                     position: 3, probability: 90, name: 'Won'
+    end
     let!(:another_open_deal) do
       create :deal, company: company, stage: another_open_stage,
                     advertiser: advertiser, created_by: user.id, updated_by: user.id
@@ -82,6 +89,7 @@ feature 'Deals' do
 
       within '#deal_modal' do
         fill_in 'name', with: 'Apple Watch Launch'
+        ui_select('sales_process', sales_process.name)
         ui_select('stage', open_stage.name)
         find('[name=start-date]').click
         find('ul td button', match: :first).click

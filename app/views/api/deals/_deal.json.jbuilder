@@ -11,7 +11,7 @@ json.currency deal.currency
 json.company_ealert_reminder deal.company.ealert_reminder
 json.requests_enabled deal.company.requests_enabled
 
-json.stage deal.stage, :name, :probability, :color, :open, :active
+json.stage deal.stage, :name, :probability, :color, :open, :active, :sales_process_id
 if deal.previous_stage
   json.previous_stage deal.previous_stage, :name, :probability, :color, :open
 end

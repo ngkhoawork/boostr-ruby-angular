@@ -1,0 +1,41 @@
+.detail-stats.block
+	%div.stats-body
+		%div.contract-title.mb30
+			%span.main-title
+				Contract Name 1
+				.ealert-label.pull-right{'ng-class': '{danger: (ealertReminder && currentDeal.company_ealert_reminder)}'}
+					eAlerts
+				%i.fa.fa-envelope.ealert.pull-right{ng: {click: 'showDealEalertModal(currentDeal)', class: '{danger: (ealertReminder && currentDeal.company_ealert_reminder)}'}}
+				
+			.detail-info
+				%a{'href': '', 'ng-href': '/accounts/{{contract.advertiser.id}}'} {{contract.advertiser.name || ''}}
+				{{contract.advertiser.name && contract.agency.name && '|'}}
+				%a{'href': '', 'ng-href': '/accounts/{{contract.agency.id}}'} {{contract.agency.name || ''}}
+
+		.clearfix
+		%div.stats-numbers
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Status
+						.title Active
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Deal
+						.title
+							%a{'href': '', 'ng-href': '/deals/{{contract.deal.id}}'} {{contract.deal.name}}
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Agency Holding
+						.title
+							%a{'href': '', 'ng-href': '/accounts/{{contract.agency_holding.id}}'} {{contract.agency_holding.name}}
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Auto Notifications
+						.title
+							%z-toggle{'ng-model': 'contract.auto_notifications'}

@@ -13,6 +13,8 @@ class BpEstimate < ActiveRecord::Base
   scope :has_status, -> { where('bp_estimates.user_id IS NOT NULL AND bp_estimates.estimate_seller > 0 AND bp_estimates.client_id IS NOT NULL') }
   scope :by_user_ids, -> (user_ids) { where(user_id: user_ids) if user_ids && user_ids.count > 0 }
   scope :order_by_client_name, -> { order('clients.name') }
+  scope :find_by_client_name,
+    ->(client_name) { joins(:client).where('clients.name ilike ?', "%#{client_name}%") if client_name }
 
   after_update do
     total = bp_estimate_products.sum(:estimate_seller)

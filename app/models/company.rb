@@ -64,6 +64,7 @@ class Company < ActiveRecord::Base
   has_many :publisher_custom_field_names, dependent: :destroy
   has_many :publisher_custom_fields, through: :publishers
   has_many :ssp_advertisers
+  has_many :sales_processes
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -209,7 +210,7 @@ class Company < ActiveRecord::Base
         .where(currency: Currency.find_by(curr_cd: currency))
         .where('start_date <= ? AND end_date >= ?', at_date, at_date)
         .first
-        .try(:rate)
+        &.rate
   end
 
   def operative_api_config
@@ -228,6 +229,10 @@ class Company < ActiveRecord::Base
     teams.pluck(:leader_id) + users.in_a_team.ids
   end
 
+  def default_sales_process
+    sales_processes.first
+  end
+  
   protected
 
   def setup_default_options(field, names)
@@ -237,11 +242,10 @@ class Company < ActiveRecord::Base
   end
 
   def setup_default_validations
-    validations.find_or_initialize_by(factor: 'Billing Contact', value_type: 'Number')
-    validations.find_or_initialize_by(factor: 'Account Manager', value_type: 'Number')
     validations.find_or_initialize_by(factor: 'Disable Deal Won', value_type: 'Boolean')
     validations.find_or_initialize_by(factor: 'Billing Contact Full Address', value_type: 'Boolean')
     validations.find_or_initialize_by(factor: 'Restrict Deal Reopen', value_type: 'Boolean')
+    validations.find_or_initialize_by(factor: 'Require Won Reason', value_type: 'Boolean')
 
     validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'client_category_id')
     validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'client_subcategory_id')

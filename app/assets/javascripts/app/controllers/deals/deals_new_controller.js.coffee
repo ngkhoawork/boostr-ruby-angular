@@ -1,6 +1,6 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation'
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation) ->
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation', 'SalesProcess'
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation, SalesProcess) ->
 
   $scope.init = ->
     $scope.formType = 'New'
@@ -32,13 +32,21 @@
       $scope.deal = deal
       $scope.setDefaultCurrency()
 
+      # get user team and team stages
+      if data.user.teams && data.user.teams[0]
+        $scope.team = data.user.teams[0]
+      else if data.user.team
+        $scope.team = data.user.team
+      else
+        SalesProcess.all({active: true}).then (salesProcesses) ->
+          $scope.salesProcesses = salesProcesses
+      if $scope.team
+        Stage.query({active: true, open: true, team_id: $scope.team.id}).$promise.then (stages) ->
+          $scope.stages = stages
+
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
       $scope.setClientTypes(client_types)
-
-    Stage.query().$promise.then (stages) ->
-      $scope.stages = stages.filter (stage) ->
-        !(stage.active is false or stage.open is false)
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -83,6 +91,7 @@
     if moment(this.deal.start_date).isAfter(this.deal.end_date) then return $scope.errors['end_date'] = 'End Date can\'t be before Start Date';
 
     fields = ['name', 'stage_id', 'advertiser_id', 'agency_id', 'deal_type', 'source_type', 'start_date', 'end_date']
+    fields.push('sales_process_id') unless $scope.team
 
     fields.forEach (key) ->
       field = $scope.deal[key]
@@ -97,6 +106,8 @@
           if !field then return $scope.errors[key] = 'Start date is required'
         when 'end_date'
           if !field then return $scope.errors[key] = 'End date is required'
+        when 'sales_process_id'
+          if !field then return $scope.errors[key] = 'Sales process is required'
 
     $scope.dealCustomFieldNames.forEach (item) ->
       if item.show_on_modal == true && item.is_required == true && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
@@ -166,6 +177,11 @@
         $scope.deal[$scope.populateClientTarget] = client.id
         $scope.populateClient = false
         $scope.populateClientTarget = false
+
+  $scope.onChangeSalesProcess = (sales_process_id) ->
+    Stage.query({active: true, open: true, sales_process_id: sales_process_id}).$promise.then (stages) ->
+      $scope.stages = stages
+      $scope.deal.stage_id = null
 
   $scope.init()
 

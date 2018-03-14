@@ -468,6 +468,14 @@ class User < ActiveRecord::Base
     Thread.current[:user] = user
   end
 
+  def current_team
+    if leader?
+      company.teams.find_by(leader: self)
+    else
+      team
+    end    
+  end
+
   def total_gross_quotas(start_date, end_date, product_id = nil, product_type = nil, value_type = QUOTA_TYPES[:gross])
     quotas.for_time_period(start_date, end_date)
       .by_product_type(product_type)
