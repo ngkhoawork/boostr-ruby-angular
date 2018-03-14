@@ -91,13 +91,9 @@ class Api::IosController < ApplicationController
     respond_to do |format|
       format.csv {
         require 'timeout'
-        begin
-          status = Timeout::timeout(120) {
-            send_data io_costs_csv, filename: "io-costs-#{Date.today}.csv"
-          }
-        rescue Timeout::Error
-          return
-        end
+        Timeout::timeout(300) {
+          send_data io_costs_csv, filename: "io-costs-#{Date.today}.csv"
+        }
       }
     end
   end
@@ -138,7 +134,20 @@ class Api::IosController < ApplicationController
   end
 
   def io_costs_csv
-    Csv::IoCostService.new(company, company.cost_monthly_amounts).perform
+    Csv::IoCostService.new(company, cost_monthly_amounts).perform
+  end
+
+  def cost_monthly_amounts
+    company.cost_monthly_amounts.includes(
+        cost: {
+          io: [
+            :io_members, 
+            :users
+          ], 
+          product: {}, 
+          values: :option
+        }
+      )
   end
 
   def io

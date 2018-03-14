@@ -1,7 +1,8 @@
 class Csv::IoCostDecorator
-  def initialize(cost_monthly_amount, company)
+  def initialize(cost_monthly_amount, company, field)
     @cost_monthly_amount = cost_monthly_amount
     @company = company
+    @field = field
   end
 
   def io_number
@@ -21,7 +22,7 @@ class Csv::IoCostDecorator
   end
 
   def type
-    cost.values.find_by(field: field).option.name rescue nil
+    value&.option&.name
   end
 
   def month
@@ -37,20 +38,20 @@ class Csv::IoCostDecorator
   end
 
   def io_seller
-    io.highest_member&.name
+    highest_member&.name
   end
 
   def io_account_manager
-    io.account_manager.first&.name
+    account_managers&.first&.name
   end
 
   def second_io_account_manager
-    io.account_manager.second&.name
+    account_managers&.second&.name
   end
 
   private
 
-  attr_reader :cost_monthly_amount, :company
+  attr_reader :cost_monthly_amount, :company, :field
 
   def cost
     @_cost ||= cost_monthly_amount.cost
@@ -64,7 +65,16 @@ class Csv::IoCostDecorator
     @_product ||= cost.product
   end
 
-  def field
-    @_field ||= company.fields.find_by(subject_type: 'Cost', name: 'Cost Type')
+  def account_managers
+    @_account_managers ||= io.users.to_a.find_all {|u| u.user_type == ACCOUNT_MANAGER}
+  end
+
+  def highest_member
+    io_member = io.io_members.sort_by{|m| m.share}.last
+    io.users.find {|u| u.id == io_member&.user_id}
+  end
+
+  def value
+    cost.values.to_a.find{|v| v.field_id == field.id}
   end
 end
