@@ -617,6 +617,9 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.boolean  "product_options_enabled",           default: false
     t.string   "product_option1_field",             default: "Option1"
     t.string   "product_option2_field",             default: "Option2"
+    t.boolean  "product_option1_enabled",           default: false
+    t.boolean  "product_option2_enabled",           default: false
+    t.boolean  "logi_enabled",                      default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree

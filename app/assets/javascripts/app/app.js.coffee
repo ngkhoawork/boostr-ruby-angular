@@ -371,6 +371,10 @@
       templateUrl: 'api_reference.html'
       controller: 'ApiReferenceController'
 
+    .when '/analytics',
+      templateUrl: 'logi.html'
+      controller: 'LogiConfigurationsController'
+
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])

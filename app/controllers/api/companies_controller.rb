@@ -25,6 +25,7 @@ class Api::CompaniesController < ApplicationController
       :ealert_reminder,
       :influencer_enabled,
       :publishers_enabled,
+      :logi_enabled,
       :forecast_gap_to_quota_positive,
       :product_options_enabled,
       :product_option1_field,

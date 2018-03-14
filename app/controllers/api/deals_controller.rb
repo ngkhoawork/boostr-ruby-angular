@@ -274,11 +274,11 @@ class Api::DealsController < ApplicationController
         message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
       }, status: :ok
     else
-      @deal = company.deals.new(deal_params.merge(manual_update: true))
+      deal = company.deals.new(deal_params.merge(manual_update: true))
 
       deal.created_by = current_user.id
       deal.updated_by = current_user.id
-      # deal.set_user_currency
+
       if deal.save(context: :manual_update)
         render json: deal, status: :created
       else
