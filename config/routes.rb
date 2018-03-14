@@ -530,7 +530,10 @@ Rails.application.routes.draw do
 
     resources :sales_processes, only: [:index, :create, :show, :update]
 
-    resources :contracts
+    resources :contracts do
+      resources :attachments, only: [:index, :update, :create, :destroy]
+      get :settings, on: :collection
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'
