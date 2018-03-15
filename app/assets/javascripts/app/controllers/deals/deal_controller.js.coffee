@@ -519,7 +519,7 @@
   $scope.updateDeal = ->
     $scope.errors = {}
     ($scope.base_fields_validations || []).forEach (validation) ->
-      if $scope.currentDeal && (!$scope.currentDeal[validation.factor] && !validationValueFactorExists($scope.currentDeal, validation.factor))
+      if $scope.currentDeal && validation.criterion.value && (!$scope.currentDeal[validation.factor] && !validationValueFactorExists($scope.currentDeal, validation.factor))
         $scope.errors[validation.factor] = validation.name + ' is required'
 
     if Object.keys($scope.errors).length > 0 then return
@@ -906,7 +906,7 @@
   $scope.baseFieldRequired = (factor) ->
     if $scope.currentDeal && $scope.base_fields_validations
       validation = _.findWhere($scope.base_fields_validations, factor: factor)
-      return validation?
+      return validation && validation.criterion.value
 
   $scope.submitReminderForm = () ->
     $scope.reminderOptions.errors = {}
