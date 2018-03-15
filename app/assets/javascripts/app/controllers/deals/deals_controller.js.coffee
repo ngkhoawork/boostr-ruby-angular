@@ -391,7 +391,7 @@
             updateDealsInfo = ->
                 params = getDealParams()
                 Deal.deals_info_by_stage(params).then (data) ->
-                    $scope.dealsInfo = data
+                    $scope.dealsInfo = data.deals_info
 
             $scope.deleteDeal = (deal) ->
                 if confirm('Are you sure you want to delete "' +  deal.name + '"?')
