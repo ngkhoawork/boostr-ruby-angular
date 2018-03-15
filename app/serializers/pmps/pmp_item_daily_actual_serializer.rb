@@ -19,6 +19,14 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
     :pmp
   )
 
+  def revenue
+    object.revenue&.to_f
+  end
+
+  def revenue_loc
+    object.revenue_loc&.to_f
+  end
+
   def ssp_deal_id
     object.pmp_item.ssp_deal_id rescue nil
   end

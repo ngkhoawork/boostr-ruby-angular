@@ -2,36 +2,64 @@ class PmpItemDailyActualsQuery
   def initialize(options, company)
     @options = options
     @company = company
-    @relation = default_relation.extending(Scopes)
   end
 
   def perform
-    return relation if options.blank?
-    relation
-        .by_name(options[:name])
-        .by_start_date(options[:start_date], options[:end_date])
-        .by_pmp_item_id(options[:pmp_item_id])
+    relation.by_start_date(options[:start_date], options[:end_date])
         .with_advertiser(options[:with_advertiser])
         .order(:pmp_item_id, :date)
+        .includes({
+          pmp_item: {
+            product: {}, 
+            ssp: {},
+            pmp: :currency
+          },
+          advertiser: {}
+        })
   end
 
   private
 
-  attr_reader :relation, :options, :pmp, :company
+  attr_reader :relation, :options, :company
 
-  def default_relation
-    if options[:pmp_id]
-      pmp.pmp_item_daily_actuals
+  def relation
+    if options[:name].nil?
+      default_relation
     else
-      company.pmp_item_daily_actuals
+      name_relation
+        .union(advertiser_relation)
+        .extending(Scopes)
     end
   end
 
-  def pmp
-    @_pmp ||= Pmp.find(options[:pmp_id])
+  def default_relation
+    PmpItemDailyActual.all.extending(Scopes)
+      .joins(pmp_item: :pmp)
+      .by_company_id(company.id)
+      .by_pmp_id(options[:pmp_id])
+      .by_pmp_item_id(options[:pmp_item_id])
+      .distinct
+  end
+
+  def name_relation
+    default_relation
+      .by_name(options[:name])
+  end
+
+  def advertiser_relation
+    default_relation
+      .by_pmp_name(options[:name])
   end
 
   module Scopes
+    def by_company_id(company_id)
+      company_id.nil? ? self : where(pmps: {company_id: company_id})
+    end
+
+    def by_pmp_id(pmp_id)
+      pmp_id.nil? ? self : where(pmps: {id: pmp_id})
+    end
+
     def by_pmp_item_id(pmp_item_id)
       return self unless pmp_item_id
       where('pmp_item_id = ?', pmp_item_id)
@@ -43,6 +71,10 @@ class PmpItemDailyActualsQuery
 
     def by_start_date(start_date, end_date)
       start_date.nil? || end_date.nil? ? self : where(date: start_date..end_date)
+    end
+
+    def by_pmp_name(name)
+      name.nil? ? self : where('pmps.name ilike ?', "%#{name}%")
     end
 
     def with_advertiser(bool)

@@ -38,9 +38,9 @@
           %td.right
             {{ pmpItemDailyActual.win_rate | percentage:0 }}
           %td.right
-            {{ pmpItemDailyActual.price | currency:currency_symbol:2 }}
+            {{ pmpItemDailyActual.price | currency:currencySymbol:2 }}
           %td.right
-            {{ pmpItemDailyActual.revenue_loc | currency:currency_symbol:2 }}
+            {{ pmpItemDailyActual.revenue_loc | currency:currencySymbol:2 }}
           %td.right.action-td
             %i.fa.fa-pencil.z-icon{ ng: { click: 'showDailyActualEditModal(pmpItemDailyActual)' } }
             %i.fa.fa-trash.z-icon{ ng: { click: 'deleteDailyActual(pmpItemDailyActual)' } }
