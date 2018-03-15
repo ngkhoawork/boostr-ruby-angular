@@ -16,21 +16,20 @@ describe Report::PipelineSummaryService do
       closed_date_end: Date.tomorrow.to_formatted_s(:iso8601)
     }
 
-    expect(pipeline_summary_service(company, closed_date_params).perform.object.to_a).to be_empty
+    expect(pipeline_summary_service(company, closed_date_params).perform.object.count).to eq(0)
   end
 
-  it 'pipeline summary by source and type' do
-    source_and_type = {
-      source_id: options.id,
-      type_id: options.id
+  it 'pipeline summary by source' do
+    source = {
+      source_id: options.id
     }
 
-    expect(pipeline_summary_service(company, source_and_type).perform.object.to_a).to_not be_empty
+    expect(pipeline_summary_service(company, source).perform.object.count).to eq(1)
   end
 
   it 'pipeline summary by type' do
-    source = { type_id: options.id }
-    expect(pipeline_summary_service(company, source).perform.object.to_a).to_not be_empty
+    type = { type_id: options.id }
+    expect(pipeline_summary_service(company, type).perform.object.count).to eq(1)
   end
 
   it 'pipeline summary find by stage' do
