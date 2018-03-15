@@ -58,32 +58,21 @@ class Report::PipelineSummaryService
           advertiser: {
             client_category: {}
           }
-        )
+        ).distinct
   end
 
   def data_for_serializer
     @_data_for_serializer ||=
       if source_id.present? && type_id.present?
-        deals_with_source_and_type
+        deals.with_all_options([type_id, source_id])
       elsif source_id.present? || type_id.present?
-        deals.by_options([type_id, source_id]).flatten.uniq
+        deals.by_options([type_id, source_id])
       else
-        deals.flatten.uniq
+        deals
       end
   end
 
   def deal_custom_fields
     company.fields.where(subject_type: 'Deal').pluck(:id, :name)
-  end
-
-  def deals_with_source_and_type
-    deals.flatten.uniq.select do |deal|
-      source_matched, type_matched = false, false
-      deal.values.each do |value|
-        source_matched = true if (value&.option_id == source_id.to_i)
-        type_matched = true if (value&.option_id == type_id.to_i)
-      end
-      source_matched && type_matched
-    end
   end
 end
