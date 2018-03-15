@@ -106,9 +106,9 @@
                     this.appliedSelection = angular.copy this.selected
                     $scope.page = 1
                     params = getDealParams()
-
+                    console.log($rootScope);
                     # check team is selected
-                    if params.filter == 'all' && !params.team_id
+                    if params.filter == 'all' && !params.team_id && $rootScope.currentUser.has_multiple_sales_process?
                       if this.teams.length == 1
                         this.selected.team = this.teams[0]
                       else if this.teams.length > 1
