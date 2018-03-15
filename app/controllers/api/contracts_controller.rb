@@ -8,13 +8,13 @@ class Api::ContractsController < ApplicationController
 
   def show
     render json: resource,
-           serializer: Api::Contracts::BaseSerializer
+           serializer: Api::Contracts::ExtendedSerializer
   end
 
   def create
     if build_resource.save
       render json: resource,
-             serializer: Api::Contracts::BaseSerializer,
+             serializer: Api::Contracts::ExtendedSerializer,
              status: :created
     else
       render json: { errors: resource.errors.messages },
@@ -25,7 +25,7 @@ class Api::ContractsController < ApplicationController
   def update
     if resource.update(resource_params)
       render json: resource,
-             serializer: Api::Contracts::BaseSerializer
+             serializer: Api::Contracts::ExtendedSerializer
     else
       render json: { errors: resource.errors.messages },
              status: :unprocessable_entity

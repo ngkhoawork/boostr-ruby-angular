@@ -365,6 +365,8 @@ RSpec.describe Api::ContractsController, type: :controller do
       expect(response_body).to have_key :status_options
       expect(response_body).to have_key :member_role_options
       expect(response_body).to have_key :contact_role_options
+      expect(response_body).to have_key :special_term_name_options
+      expect(response_body).to have_key :special_term_type_options
     end
   end
 
