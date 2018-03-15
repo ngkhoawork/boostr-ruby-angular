@@ -187,7 +187,7 @@ class User < ActiveRecord::Base
           :company_forecast_gap_to_quota_positive,
           :company_net_forecast_enabled,
           :has_forecast_permission,
-          :has_multiple_sales_process?
+          :has_multiple_sales_process
         ]
       ).except(:override))
     end
@@ -217,7 +217,7 @@ class User < ActiveRecord::Base
     ios.for_time_period(start_date, end_date)
   end
 
-  def has_multiple_sales_process?
+  def has_multiple_sales_process
     company.sales_processes.by_active(true).count > 1
   end
 
