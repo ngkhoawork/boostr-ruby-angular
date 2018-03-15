@@ -41,9 +41,7 @@ class Report::PipelineSummaryService
           deal_custom_field: {},
           initiative: {},
           currency: {},
-          deal_contacts: {
-            address: {}
-          },
+          billing_contact: {},
           deal_members: {
             user: {
               team: {}

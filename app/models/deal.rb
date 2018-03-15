@@ -42,6 +42,9 @@ class Deal < ActiveRecord::Base
   has_many :requests
   has_many :audit_logs, as: :auditable
 
+  has_one :billing_deal_contact, -> { where(role: 'Billing') }, class_name: 'DealContact'
+  has_one :billing_contact, through: :billing_deal_contact, source: :contact
+
   has_one :deal_custom_field, dependent: :destroy
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
     order('activities.deal_id', 'activities.happened_at DESC')
@@ -345,14 +348,7 @@ class Deal < ActiveRecord::Base
   end
 
   def has_billing_contact?
-    billing_contact = self.deal_contacts.find_by(role: 'Billing')
     !!(billing_contact) && billing_contact.valid?
-  end
-
-  def billing_contact
-    contact_index = deal_contacts.find_index{|item| item.role == 'Billing'}
-    billing_contact = deal_contacts[contact_index]
-    return billing_contact&.contact
   end
 
   def has_account_manager_member?
