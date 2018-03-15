@@ -107,23 +107,6 @@
                     $scope.page = 1
                     params = getDealParams()
 
-                    # check team is selected
-                    if params.filter == 'all' && !params.team_id && $rootScope.currentUser.has_multiple_sales_process?
-                      if this.teams.length == 1
-                        this.selected.team = this.teams[0]
-                      else if this.teams.length > 1
-                        modalInstance = $modal.open
-                          templateUrl: 'modals/deal_warning.html'
-                          size: 'md'
-                          controller: 'DealWarningController'
-                          backdrop: 'static'
-                          keyboard: true
-                          resolve:
-                            message: -> "Please select a team in Filter"
-                        modalInstance.result.then ->
-                          $scope.filter.isOpen = true
-                      return
-
                     $window.scrollTo(0, 0)
                     $scope.isLoading = true
                     $q.all({
