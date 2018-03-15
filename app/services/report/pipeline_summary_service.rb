@@ -28,33 +28,48 @@ class Report::PipelineSummaryService
               :created_date_end, :stage_ids, :closed_date_start, :closed_date_end
 
   def deals
-    @_deals ||= company.deals
-           .includes(
-             :stage,
-             :deal_custom_field,
-             :initiative,
-             :currency,
-             deal_members: [{ user: :team }],
-             values: [:option],
-             agency: [:holding_company],
-             advertiser: [:client_category]
-           )
-           .by_team_id(team_id)
-           .by_seller_id(seller_id)
-           .by_stage_ids(stage_ids)
-           .by_start_date(start_date, end_date)
-           .by_created_date(created_date_start, created_date_end)
-           .closed_at(closed_date_start, closed_date_end)
+    @_deals ||=
+      company.deals
+        .by_team_id(team_id)
+        .by_seller_id(seller_id)
+        .by_stage_ids(stage_ids)
+        .by_start_date(start_date, end_date)
+        .by_created_date(created_date_start, created_date_end)
+        .closed_at(closed_date_start, closed_date_end)
+        .includes(
+          stage: {},
+          deal_custom_field: {},
+          initiative: {},
+          currency: {},
+          deal_contacts: {
+            address: {}
+          },
+          deal_members: {
+            user: {
+              team: {}
+            }
+          },
+          values: {
+            option: {}
+          },
+          agency: {
+            holding_company: {}
+          },
+          advertiser: {
+            client_category: {}
+          }
+        )
   end
 
   def data_for_serializer
-    if source_id.present? && type_id.present?
-      deals_with_source_and_type
-    elsif source_id.present? || type_id.present?
-      deals.by_options([type_id, source_id])
-    else
-      deals
-    end
+    @_data_for_serializer ||=
+      if source_id.present? && type_id.present?
+        deals_with_source_and_type
+      elsif source_id.present? || type_id.present?
+        deals.by_options([type_id, source_id]).flatten.uniq
+      else
+        deals.flatten.uniq
+      end
   end
 
   def deal_custom_fields
@@ -62,8 +77,14 @@ class Report::PipelineSummaryService
   end
 
   def deals_with_source_and_type
-    deals.select do |deal|
-      deal.option_ids.include?(source_id.to_i) && deal.option_ids.include?(type_id.to_i)
+    deals.flatten.uniq.select do |deal|
+      source_matched = false
+      type_matched = false
+      deal.values.each do |value|
+        source_matched = true if (value&.option_id == source_id.to_i)
+        type_matched = true if (value&.option_id == type_id.to_i)
+      end
+      source_matched && type_matched
     end
   end
 end

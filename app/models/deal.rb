@@ -350,8 +350,8 @@ class Deal < ActiveRecord::Base
   end
 
   def billing_contact
-    billing_contact = self.deal_contacts.find_by(role: 'Billing')
-    billing_contact.contact
+    contact_index = deal_contacts.find_index{|item| item.role == 'Billing'}
+    return deal_contacts[contact_index]&.contact
   end
 
   def has_account_manager_member?
