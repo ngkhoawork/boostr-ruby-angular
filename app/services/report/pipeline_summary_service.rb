@@ -78,8 +78,7 @@ class Report::PipelineSummaryService
 
   def deals_with_source_and_type
     deals.flatten.uniq.select do |deal|
-      source_matched = false
-      type_matched = false
+      source_matched, type_matched = false, false
       deal.values.each do |value|
         source_matched = true if (value&.option_id == source_id.to_i)
         type_matched = true if (value&.option_id == type_id.to_i)
