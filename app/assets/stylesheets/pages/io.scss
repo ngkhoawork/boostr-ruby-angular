@@ -3,11 +3,22 @@
     }
     .detail-stats {
         .stats-col {
-            width: 20%;
+            width: 15%;
             &:last-child {
                 width: 40%;
             }
+            .show-hide-remainder-form {
+                margin: 0;
+                .switch-remainder-form {
+                    float: none;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+            }
         }
+    }
+    .right-link {
+        font-size: 14px;
     }
     .editable {
         &:hover {

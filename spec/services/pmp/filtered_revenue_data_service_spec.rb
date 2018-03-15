@@ -83,7 +83,7 @@ describe Pmp::FilteredRevenueDataService do
   end
 
   def company
-    @_company ||= Company.first
+    @_company ||= create :company
   end
 
   def user

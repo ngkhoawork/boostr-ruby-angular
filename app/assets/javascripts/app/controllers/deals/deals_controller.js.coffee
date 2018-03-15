@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$scope', '$window', '$timeout', '$document', '$filter', '$modal', '$q', '$location', 'Deal', 'Team', 'Stage', 'ExchangeRate', 'DealsFilter', 'TimePeriod', 'shadeColor',
-    ( $rootScope,   $scope,   $window,   $timeout,   $document,   $filter,   $modal,   $q,   $location,   Deal, Team,   Stage,   ExchangeRate,   DealsFilter,   TimePeriod,   shadeColor ) ->
+    ['$rootScope', '$scope', '$window', '$timeout', '$document', '$filter', '$modal', '$q', '$location', 'Deal', 'Team', 'Stage', 'ExchangeRate', 'DealsFilter', 'TimePeriod', 'shadeColor', 'Validation'
+    ( $rootScope,   $scope,   $window,   $timeout,   $document,   $filter,   $modal,   $q,   $location,   Deal,   Team,   Stage,   ExchangeRate,   DealsFilter,   TimePeriod,   shadeColor,   Validation) ->
             formatMoney = $filter('formatMoney')
 
             $scope.isLoading = false
@@ -106,6 +106,24 @@
                     this.appliedSelection = angular.copy this.selected
                     $scope.page = 1
                     params = getDealParams()
+
+                    # check team is selected
+                    if params.filter == 'all' && !params.team_id
+                      if this.teams.length == 1
+                        this.selected.team = this.teams[0]
+                      else if this.teams.length > 1
+                        modalInstance = $modal.open
+                          templateUrl: 'modals/deal_warning.html'
+                          size: 'md'
+                          controller: 'DealWarningController'
+                          backdrop: 'static'
+                          keyboard: true
+                          resolve:
+                            message: -> "Please select a team in Filter"
+                        modalInstance.result.then ->
+                          $scope.filter.isOpen = true
+                      return
+
                     $window.scrollTo(0, 0)
                     $scope.isLoading = true
                     $q.all({
@@ -113,7 +131,15 @@
                         deals_info: Deal.deals_info_by_stage(params)
                     }).then (data) ->
                         $scope.deals = data.deals
-                        $scope.dealsInfo = data.deals_info
+                        $scope.dealsInfo = data.deals_info.deals_info
+                        $scope.stages = data.deals_info.stages
+                        columns = []
+                        $scope.stages.forEach (stage, i) ->
+                            stage.index = i
+                            column = []
+                            column.open = stage.open
+                            columns.push column
+                        $scope.emptyColumns = angular.copy columns
                         updateDealsTable()
                         $scope.filter.isOpen = false
                         $scope.allDealsLoaded = false
@@ -184,9 +210,10 @@
 
             alignColumnsHeight = ->
                 columns = angular.element('.column-body')
-                minHeight = angular.element(window).height() - ((columns.offset() && columns.offset().top) || 0)
-                maxHeight =  _.chain(columns).map((el) -> angular.element(el).outerHeight()).max().value()
-                columns.css('min-height', Math.max(minHeight, maxHeight))
+                if columns && columns.offset()
+                    minHeight = angular.element(window).height() - columns.offset().top
+                    maxHeight =  _.chain(columns).map((el) -> angular.element(el).outerHeight()).max().value()
+                    columns.css('min-height', Math.max(minHeight, maxHeight))
 
             getDealParams = ->
                 params = {filter: $scope.teamFilter().param}
@@ -197,15 +224,11 @@
                     $scope.teamFilter $scope.teamFilter()
                 else
                     $scope.teamFilter $scope.dealTypes[0]
-                params = getDealParams()
-                $scope.isLoading = true
+                $scope.filter.apply()
                 $q.all({
-                    deals: Deal.list(params)
-                    deals_info: Deal.deals_info_by_stage(params)
                     filter: Deal.filter_data()
-                    stages: Stage.query().$promise
-                    timePeriods: TimePeriod.all(),
-                    teams: Team.all(all_teams: true)
+                    timePeriods: TimePeriod.all()
+                    validations: Validation.query(factor: 'Require Won Reason').$promise
                 }).then (data) ->
                     $scope.filter.members = data.filter.members
                     $scope.filter.teams = data.filter.teams
@@ -215,19 +238,7 @@
                     $scope.filter.dealYears = [2015.. DealsFilter.currentYear]
                     $scope.filter.slider.maxValue = $scope.filter.slider.options.ceil = data.filter.max_budget
                     $scope.filter.timePeriods = data.timePeriods
-                    $scope.dealsInfo = data.deals_info
-                    $scope.deals = data.deals
-                    $scope.stages = data.stages
-                    $scope.stages = $scope.stages.filter (stage) -> stage.active
-                    columns = []
-                    $scope.stages.forEach (stage, i) ->
-                        stage.index = i
-                        column = []
-                        column.open = stage.open
-                        columns.push column
-                    $scope.emptyColumns = angular.copy columns
-                    updateDealsTable()
-                    $timeout -> $scope.isLoading = false
+                    $scope.won_reason_required = data.validations && data.validations[0]
             $scope.init()
 
             $scope.loadMoreDeals = ->
@@ -264,7 +275,9 @@
                 if deal.stage_id is newStage.id then return
                 deal.stage_id = newStage.id
                 if !newStage.open && newStage.probability == 0
-                    $scope.showCloseDealModal(deal)
+                    $scope.showCloseDealModal(deal, false)
+                else if !newStage.open && newStage.probability == 100 && $scope.won_reason_required && $scope.won_reason_required.criterion.value
+                    $scope.showCloseDealModal(deal, true)
                 else
                     if $scope.history[deal.id] && $scope.history[deal.id].locked
                         return deal
@@ -357,7 +370,7 @@
                         deal: -> {}
                         options: -> {}
 
-            $scope.showCloseDealModal = (currentDeal) ->
+            $scope.showCloseDealModal = (currentDeal, hasWon) ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/deal_close_form.html'
                     size: 'md'
@@ -367,6 +380,8 @@
                     resolve:
                         currentDeal: ->
                             currentDeal
+                        hasWon: ->
+                            hasWon
 
             $scope.coloringColumns = ->
                 baseColor = '#ff7200'

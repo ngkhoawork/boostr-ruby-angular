@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Pmp, 'model' do
+  let!(:company) { create :company }
+
   it 'is valid with name, start_date, end_date and curr_cd' do
     pmp = build :pmp
     expect(pmp).to be_valid
@@ -93,10 +95,6 @@ RSpec.describe Pmp, 'model' do
 
   private
 
-  def company
-    @_company ||= create :company
-  end
-
   def pmp
     exchange_rate
     @_pmp ||= create :pmp, company: company, curr_cd: 'EUR'
@@ -124,6 +122,8 @@ RSpec.describe Pmp, 'model' do
 end
 
 RSpec.describe Pmp, 'scopes' do
+  let!(:company) { create :company }
+
   describe 'by name' do
     let!(:pmp1) { create :pmp, name: "pmp 1" }
     let!(:pmp2) { create :pmp, name: "pmp 2" }

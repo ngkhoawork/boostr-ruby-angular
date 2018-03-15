@@ -51,7 +51,7 @@ RSpec.describe Csv::IoCost do
   end
 
   def field
-    @_field ||= company.fields.find_by(subject_type: 'Cost', name: 'Cost Type')
+    @_field ||= company.fields.find_or_create_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
   end
 
   def option
@@ -72,6 +72,10 @@ RSpec.describe Csv::IoCost do
 end
 
 RSpec.describe Csv::IoCost, 'validations' do
+  before do
+    company.fields.find_or_create_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
+  end
+
   it { should validate_presence_of(:io_number) }
   it { should validate_presence_of(:product_name) }
   it { should validate_presence_of(:amount) }

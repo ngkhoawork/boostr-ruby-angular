@@ -18,22 +18,22 @@ class Api::BpEstimatesController < ApplicationController
       year_time_period = nil
       prev_time_period = nil
       if time_dimensions.count > 0
-        pipelines = AccountPipelineFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, time_dimensions[0].id)
-        revenues = AccountRevenueFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, time_dimensions[0].id)
+        pipelines = apply_filters_for_account_pipeline_facts(bp.company.id, time_dimensions[0].id)
+        revenues = apply_filters_for_account_revenue_facts(bp.company.id, time_dimensions[0].id)
       end
       if year_time_dimensions.count > 0
         year_time_periods = TimePeriod.where(company_id: company.id, start_date: year_time_dimensions[0].start_date, end_date: year_time_dimensions[0].end_date)
         if year_time_periods.count > 0
-          year_pipelines = AccountPipelineFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, year_time_dimensions[0].id)
-          year_revenues = AccountRevenueFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, year_time_dimensions[0].id)
+          year_pipelines = apply_filters_for_account_pipeline_facts(bp.company.id, year_time_dimensions[0].id)
+          year_revenues = apply_filters_for_account_revenue_facts(bp.company.id, year_time_dimensions[0].id)
           year_time_period = year_time_periods[0]
         end
       end
       if prev_time_dimensions.count > 0
         prev_time_periods = TimePeriod.where(company_id: company.id, start_date: prev_time_dimensions[0].start_date, end_date: prev_time_dimensions[0].end_date)
         if prev_time_periods.count > 0
-          prev_pipelines = AccountPipelineFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, prev_time_dimensions[0].id)
-          prev_revenues = AccountRevenueFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, prev_time_dimensions[0].id)
+          prev_pipelines = apply_filters_for_account_pipeline_facts(bp.company.id, prev_time_dimensions[0].id)
+          prev_revenues = apply_filters_for_account_revenue_facts(bp.company.id, prev_time_dimensions[0].id)
           prev_time_period = prev_time_periods[0]
         end
       end
@@ -189,6 +189,12 @@ class Api::BpEstimatesController < ApplicationController
        })
     else
       @bp_estimates = bp.bp_estimates
+        .find_by_client_name(params[:client_name])
+        .unassigned(unassigned)
+        .incomplete(incomplete)
+        .completed(completed)
+        .by_user_ids(member_ids)
+        .order_by_client_name
         .includes(
           {
             bp_estimate_products: {
@@ -198,12 +204,23 @@ class Api::BpEstimatesController < ApplicationController
           :user,
           :client
         )
-        .unassigned(unassigned)
-        .incomplete(incomplete)
-        .completed(completed)
-        .by_user_ids(member_ids)
-        .order_by_client_name
     end
+  end
+
+  def apply_filters_for_account_pipeline_facts(company_id, time_dimension_id)
+    AccountPipelineFactQuery.new(
+      company_id: company_id,
+      time_dimension_id: time_dimension_id,
+      client_name: params[:client_name]
+    ).perform
+  end
+
+  def apply_filters_for_account_revenue_facts(company_id, time_dimension_id)
+    AccountRevenueFactQuery.new(
+      company_id: company_id,
+      time_dimension_id: time_dimension_id,
+      client_name: params[:client_name]
+    ).perform
   end
 
   def member_ids
@@ -211,14 +228,12 @@ class Api::BpEstimatesController < ApplicationController
       when 'my'
         [current_user.id]
       when 'team'
-        current_user.teams.map(&:all_sales_reps).flatten.collect{ |member| member.id}
+        current_user.teams.map(&:all_members_and_leaders).flatten
       else
         if user.present?
           [user.id]
         elsif team.present?
-          team.all_sales_reps.collect{ |member| member.id}
-        else
-          company.all_sales_reps
+          team.all_members_and_leaders
         end
       end
   end

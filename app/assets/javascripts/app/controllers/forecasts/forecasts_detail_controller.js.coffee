@@ -70,7 +70,11 @@
             $scope.hasNetPermission = data.user.company_net_forecast_enabled
             $scope.teams = data.teams
             data.timePeriods = data.timePeriods.filter (period) ->
-                period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
+                period.visible and (
+                    period.period_type is 'quarter' or
+                    period.period_type is 'year' or
+                    period.period_type is 'month'
+                )
             $scope.timePeriods = data.timePeriods
             $scope.sellers = data.sellers
             $scope.forecast_gap_to_quota_positive = data.user.company_forecast_gap_to_quota_positive

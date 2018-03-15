@@ -1,5 +1,6 @@
 class Stage < ActiveRecord::Base
   belongs_to :company
+  belongs_to :sales_process
   has_many :deals
 
   default_scope { order('active, position') }

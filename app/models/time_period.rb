@@ -35,7 +35,7 @@ class TimePeriod < ActiveRecord::Base
   end
 
   after_update do
-    if start_date_changed? || end_date_changed?
+    if start_date_changed? || end_date_changed? || period_type_changed?
       update_forecast_fact_callback
     end
   end
@@ -85,6 +85,6 @@ class TimePeriod < ActiveRecord::Base
     scope = company.time_periods.where('LOWER(name) = ?', self.name.downcase)
     scope = scope.where('id <> ?', self.id) if self.id
 
-    errors.add(:name, 'Name has already been taken') if scope.count > 0
+    errors.add(:name, "with value #{name} has already been taken") if scope.count > 0
   end
 end

@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe DealProduct, type: :model do
+  let!(:company) { create :company }
   let!(:product) { create :product }
   let!(:deal) { create :deal, start_date: Date.new(2015, 7, 29), end_date: Date.new(2015, 8, 29) }
   let!(:deal_product) { create :deal_product, deal: deal, product: product, budget: 10_000 }
@@ -81,17 +82,17 @@ RSpec.describe DealProduct, type: :model do
   end
 
   describe '#import' do
-    let!(:user) { create :user }
-    let!(:company) { user.company }
-    let!(:product) { create :product }
-    let!(:existing_deal) { create :deal }
-    let!(:three_month_deal) { create :deal, start_date: Date.new(2015, 7), end_date: Date.new(2015, 9).end_of_month }
-    let!(:deal_with_product) { create :deal }
+    let!(:full_company) { create :company }
+    let!(:user) { create :user, company: full_company }
+    let!(:product) { create :product, company: full_company }
+    let!(:existing_deal) { create :deal, company: full_company }
+    let!(:three_month_deal) { create :deal, start_date: Date.new(2015, 7), end_date: Date.new(2015, 9).end_of_month, company: full_company }
+    let!(:deal_with_product) { create :deal, company: full_company }
     let!(:existing_deal_product) { create :deal_product, deal: deal_with_product, product: product, budget: 1_000 }
     let(:import_log) { CsvImportLog.last }
 
     it 'creates new deal product' do
-      data = build :deal_product_csv_data, deal_name: three_month_deal.name
+      data = build :deal_product_csv_data, company: full_company, deal_name: three_month_deal.name
       expect do
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
       end.to change(DealProduct, :count).by(1)
@@ -105,7 +106,7 @@ RSpec.describe DealProduct, type: :model do
     end
 
     it 'updates existing deal product' do
-      data = build :deal_product_csv_data, deal_id: deal_with_product.id, product: product.name, budget: 50_000
+      data = build :deal_product_csv_data, company: full_company, deal_id: deal_with_product.id, product: product.name, budget: 50_000
       expect do
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
       end.not_to change(DealProduct, :count)
@@ -121,7 +122,7 @@ RSpec.describe DealProduct, type: :model do
 
     context 'csv import log' do
       it 'creates csv import log' do
-        data = build :deal_product_csv_data, deal_name: three_month_deal.name
+        data = build :deal_product_csv_data, company: full_company, deal_name: three_month_deal.name
 
         expect do
           DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
@@ -129,7 +130,7 @@ RSpec.describe DealProduct, type: :model do
       end
 
       it 'saves amount of processed rows for new objects' do
-        data = build :deal_product_csv_data, deal_name: three_month_deal.name
+        data = build :deal_product_csv_data, company: full_company, deal_name: three_month_deal.name
 
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
 
@@ -139,7 +140,7 @@ RSpec.describe DealProduct, type: :model do
       end
 
       it 'saves amount of processed rows when updating existing objects' do
-        data = build :deal_product_csv_data, deal_id: deal_with_product.id
+        data = build :deal_product_csv_data, company: full_company, deal_id: deal_with_product.id
 
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
 
@@ -148,7 +149,7 @@ RSpec.describe DealProduct, type: :model do
       end
 
       it 'counts failed rows' do
-        data = build :deal_product_csv_data, deal_name: 'N/A'
+        data = build :deal_product_csv_data, company: full_company, deal_name: 'N/A'
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
 
         expect(import_log.rows_processed).to be 1
@@ -157,11 +158,11 @@ RSpec.describe DealProduct, type: :model do
     end
 
     context 'invalid data' do
-      let!(:duplicate_deal) { create :deal, name: FFaker::NatoAlphabet.callsign }
-      let!(:duplicate_deal2) { create :deal, name: duplicate_deal.name }
+      let!(:duplicate_deal) { create :deal, company: full_company }
+      let!(:duplicate_deal2) { create :deal, name: duplicate_deal.name, company: full_company }
 
       it 'requires deal ID to match' do
-        data = build :deal_product_csv_data, deal_id: 0
+        data = build :deal_product_csv_data, company: full_company, deal_id: 0
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
 
         expect(import_log.rows_failed).to be 1
@@ -171,7 +172,7 @@ RSpec.describe DealProduct, type: :model do
       end
 
       it 'requires deal name to be present' do
-        data = build :deal_product_csv_data
+        data = build :deal_product_csv_data, company: full_company
         data[:deal_name] = nil
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
 
@@ -182,7 +183,7 @@ RSpec.describe DealProduct, type: :model do
       end
 
       it 'requires deal name to match only 1 record' do
-        data = build :deal_product_csv_data, deal_name: duplicate_deal.name
+        data = build :deal_product_csv_data, company: full_company, deal_name: duplicate_deal.name
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
 
         expect(import_log.rows_failed).to be 1
@@ -192,7 +193,7 @@ RSpec.describe DealProduct, type: :model do
       end
 
       it 'requires deal name to match at least one record' do
-        data = build :deal_product_csv_data, deal_name: 'N/A'
+        data = build :deal_product_csv_data, company: full_company, deal_name: 'N/A'
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
 
         expect(import_log.rows_failed).to be 1
@@ -202,7 +203,7 @@ RSpec.describe DealProduct, type: :model do
       end
 
       it 'requires product to be present' do
-        data = build :deal_product_csv_data
+        data = build :deal_product_csv_data, company: full_company
         data[:product] = nil
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
 
@@ -213,7 +214,7 @@ RSpec.describe DealProduct, type: :model do
       end
 
       it 'requires product to exist' do
-        data = build :deal_product_csv_data, product: 'N/A'
+        data = build :deal_product_csv_data, company: full_company, product: 'N/A'
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
 
         expect(import_log.rows_failed).to be 1
@@ -223,7 +224,7 @@ RSpec.describe DealProduct, type: :model do
       end
 
       it 'requires budget to be present' do
-        data = build :deal_product_csv_data
+        data = build :deal_product_csv_data, company: full_company
         data[:budget] = nil
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
 
@@ -234,7 +235,7 @@ RSpec.describe DealProduct, type: :model do
       end
 
       it 'validates numericality of budget' do
-        data = build :deal_product_csv_data, budget: 'test'
+        data = build :deal_product_csv_data, company: full_company, budget: 'test'
         DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
 
         expect(import_log.rows_failed).to be 1
@@ -246,13 +247,14 @@ RSpec.describe DealProduct, type: :model do
 
     context 'deal custom fields' do
       before do
-        setup_custom_fields(company)
+        setup_custom_fields(full_company)
       end
 
       it 'imports deal product custom field' do
         data = build :deal_product_csv_data_custom_fields,
+               company: full_company,
                deal_name: three_month_deal.name,
-               custom_field_names: company.deal_product_cf_names
+               custom_field_names: full_company.deal_product_cf_names
 
         expect do
           DealProduct.import(generate_csv(data), user.id, 'deals.csv')

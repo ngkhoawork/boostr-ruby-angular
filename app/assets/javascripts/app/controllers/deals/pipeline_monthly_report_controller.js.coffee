@@ -36,8 +36,8 @@
           $scope.sellers = sellers
       )()
 
-      Stage.query().$promise.then (stages) ->
-          $scope.stages = _.filter stages, (stage) -> stage.active
+      Stage.query({active: true}).$promise.then (stages) ->
+          $scope.stages = stages
 
       TimePeriod.all().then (timePeriods) ->
         $scope.timePeriods = angular.copy timePeriods

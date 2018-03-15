@@ -1,16 +1,16 @@
 .bp-detail.skin-background
   .container-fluid
     .row
-      %h3.pull-left Business Plans
+      %h3.pull-left Bottoms Up
       %ul.bp-filter.pull-left
         %li.title
-          Business Plan
+          Bottoms Up
         %li{ dropdown: true }
           %a{ href: '', dropdown: { toggle: true } }
             %span{ 'ng-if': 'filter.bp.id > 0' }
               {{ filter.bp.name }}
             %span{ 'ng-if': 'filter.bp.id == 0' }
-              Select a Business Plan
+              Select a Bottoms Up
             %span.caret
           %ul.dropdown-menu
             %li{ ng: { repeat: 'bp in bps | filter: { name: bpSearch }', class: '{active: bp.id == filter.bp.id}' } }
@@ -42,10 +42,18 @@
         %li
           %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{"disabled": isLoading == true}'}
             Apply Filters
+      %ul.bp-filter.action.bp-search.pull-left
+        %li
+          .search
+            %form
+              .input-group
+                .input-group-addon
+                  %i.glyphicon.glyphicon-search
+                %input.form-control{ ng: { model: 'searchText', change: 'handleSearch()', 'model-options': '{ debounce: 300 }' }, placeholder: "Search by Account" }
       %ul.bp-filter.action.pull-right{ ng: { if: 'selectedBP.id > 0' } }
         %li
           %button.add-btn{'ng-click': 'export()'}
-            Export
+            Export      
       .bp-info.col-xs-12
         .info
           .info-body-wrap

@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 describe Pmps::PmpListSerializer do
+  let!(:company) { create :company }
+
+  before { User.current = create :user }
+
   it 'serialize for the pmp list' do
     expect(serializer.id).to eq(pmp.id)
     expect(serializer.name).to eq(pmp.name)

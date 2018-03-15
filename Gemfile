@@ -81,7 +81,7 @@ group :production, :staging do
 end
 
 group :test do
-  gem 'shoulda-matchers'
+  gem 'shoulda-matchers', require: false
   gem 'vcr'
   gem 'webmock'
   gem 'simplecov', require: false
@@ -110,6 +110,8 @@ group :development, :test do
   gem 'fuubar'
   gem 'timecop'
   gem 'pry-rails'
+  gem 'pry-rescue'
+  gem 'pry-stack_explorer'
   gem 'byebug'
   # code smell detector
   gem 'reek'
@@ -118,6 +120,7 @@ group :development, :test do
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+  gem 'spring-commands-rspec'
 
   source 'https://rails-assets.org' do
     gem 'rails-assets-angular-mocks'

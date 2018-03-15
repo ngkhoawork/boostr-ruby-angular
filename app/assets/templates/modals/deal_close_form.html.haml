@@ -5,22 +5,22 @@
       %span.close-btn{'ng-click': 'cancel()'}
     .popup-modal-body
       .form-group{'ng-class':'{error: errors.reason}'}
-        %span.error-text {{errors.reason}}
-        %label{ for: 'close-reason' } Loss Reason
+        %span.error-text {{ errors.reason }}
+        %label{ for: 'close-reason' } {{ reasonText }}
         %span.star *
         .dropdown
           %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
             %span{'ng-hide': 'selectedReason', style: 'color: #D4CFDA'} Reason
             %span
-              %b {{selectedReason}}
+              %b {{ selectedReason }}
             %span.caret
           %ul.dropdown-menu
             %li{'ng-repeat': 'option in currentDeal.close_reason.options', 'ng-class': '{active: currentDeal.close_reason.option_id == option.id}'}
-              %a{'href': '', 'ng-click': 'currentDeal.close_reason.option_id = option.id; selectReason(option.name)'}
+              %a{'href': '', 'ng-click': 'currentDeal.close_reason.option_id = option.id; selectReason(option)'}
                 %span
-                  %b {{option.name}}
+                  %b {{ option.name }}
       .form-group
-        %label Loss Comments
+        %label {{ commentText }}
         %textarea.form-control{'msd-elastic': '', rows: '1', 'ng-model': 'currentDeal.closed_reason_text', placeholder: 'Enter comments'}
 
     .popup-modal-footer.text-center

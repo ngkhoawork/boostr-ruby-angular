@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Company, type: :model do
-  let(:company) { create :company }
+  let(:company) { create :company_with_defaults }
 
   context 'associations' do
     it { should have_many(:contact_cf_names) }
@@ -21,13 +21,13 @@ RSpec.describe Company, type: :model do
   context 'before create' do
     it 'creates default fields' do
       expect {
-        create :company
-      }.to change(Field, :count).by(19)
+        create :company_with_defaults
+      }.to change(Field, :count).by(23)
     end
 
     it 'creates default field options' do
       expect {
-        create :company
+        create :company_with_defaults
       }.to change(Option, :count).by(4)
     end
 
@@ -41,12 +41,12 @@ RSpec.describe Company, type: :model do
     context 'default activity types' do
       it 'creates default activity types' do
         expect {
-          create :company
+          create :company_with_defaults
         }.to change(ActivityType, :count).by(12)
       end
 
       it 'assigns defult activity type values' do
-        company = create :company
+        company = create :company_with_defaults
 
         expect(company.activity_types.by_name('Email').last).to have_attributes(
           action:'emailed to',

@@ -88,7 +88,13 @@
       isArray: true
       method: "GET"
       url: 'api/clients/fuzzy_search'
+    },
+    search_duplicates: {
+      isArray: true
+      method: 'GET'
+      url: '/api/clients/search_clients?name=:name&full_text_search=true'
     }
+
 
   resource.allClients = []
   resource.currentClient = {}
