@@ -180,7 +180,7 @@ class Io < ActiveRecord::Base
   def update_total_budget
     new_budget = (content_fees.sum(:budget) + display_line_items.sum(:budget))
     new_budget_loc = (content_fees.sum(:budget_loc) + display_line_items.sum(:budget_loc))
-    update_attributes(
+    update_columns(
       budget: new_budget,
       budget_loc: new_budget_loc
     )

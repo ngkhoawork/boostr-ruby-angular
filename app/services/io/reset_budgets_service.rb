@@ -23,6 +23,7 @@ class Io::ResetBudgetsService
           ContentFee::ResetBudgetsService.new(content_fee).perform
         end
       end
+      io.update_total_budget
     end
   end
 
