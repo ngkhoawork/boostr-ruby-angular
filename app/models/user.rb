@@ -186,7 +186,8 @@ class User < ActiveRecord::Base
           :company_influencer_enabled,
           :company_forecast_gap_to_quota_positive,
           :company_net_forecast_enabled,
-          :has_forecast_permission
+          :has_forecast_permission,
+          :has_multiple_sales_process
         ]
       ).except(:override))
     end
@@ -214,6 +215,10 @@ class User < ActiveRecord::Base
 
   def all_ios_for_time_period(start_date, end_date)
     ios.for_time_period(start_date, end_date)
+  end
+
+  def has_multiple_sales_process
+    company.sales_processes.by_active(true).count > 1
   end
 
   def set_alert(should_save=false)
