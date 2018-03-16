@@ -5,17 +5,32 @@ class PmpItemDailyActualsQuery
   end
 
   def perform
-    name_relation
-        .union(advertiser_relation)
-        .extending(Scopes)
-        .by_start_date(options[:start_date], options[:end_date])
+    relation.by_start_date(options[:start_date], options[:end_date])
         .with_advertiser(options[:with_advertiser])
         .order(:pmp_item_id, :date)
+        .includes({
+          pmp_item: {
+            product: {}, 
+            ssp: {},
+            pmp: :currency
+          },
+          advertiser: {}
+        })
   end
 
   private
 
   attr_reader :relation, :options, :company
+
+  def relation
+    if options[:name].nil?
+      default_relation
+    else
+      name_relation
+        .union(advertiser_relation)
+        .extending(Scopes)
+    end
+  end
 
   def default_relation
     PmpItemDailyActual.all.extending(Scopes)
