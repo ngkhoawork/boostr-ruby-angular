@@ -106,9 +106,10 @@
       $scope.activeDealProductCfLength = (_.filter dealProductCfNames, (item) -> !item.disabled).length
 
   getValidations = () ->
-    Validation.query().$promise.then (data) ->
-      $scope.won_reason_required = _.find data, factor: 'Require Won Reason'
-      $scope.base_fields_validations = _.filter data, object: 'Deal Base Field'
+    Validation.deal_base_fields().$promise.then (data) ->
+      $scope.base_fields_validations = data
+    Validation.query(factor: 'Require Won Reason').$promise.then (data) ->
+      $scope.won_reason_required = data && data[0]
 
   $scope.sumDealProductBudget = (index) ->
     products = $scope.currentDeal.deal_products
