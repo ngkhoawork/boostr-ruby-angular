@@ -2,14 +2,71 @@
   ['$rootScope', '$scope', '$modal', '$location', '$filter', '$timeout', '$routeParams', 'PMP', 'PMPMember', 'User', 'PMPItem', 'PMPItemDailyActual', 'PMPType',
   ( $rootScope,   $scope,   $modal,   $location,   $filter,   $timeout,   $routeParams,   PMP,   PMPMember,   User,   PMPItem,   PMPItemDailyActual,   PMPType) ->
     $scope.currentPMP = {}
-    $scope.currency_symbol = '$'
-    $scope.selectedDeliveryItem = {}
-    $scope.selectedPriceItem = {}
     $scope.pmpItemDailyActuals = []
     $scope.isLoading = false
     $scope.allDataLoaded = false
     $scope.page = 1
     $scope.PMPType = PMPType
+    $scope.currencySymbol = '$'
+
+    $scope.revenueChart = {
+      selectedItem: {}
+      data: []
+      update: (pmpItem) ->
+        self = this
+        self.selectedItem = pmpItem if pmpItem
+        if $scope.timeFilter.timePeriodString && self.selectedItem
+          PMPItemDailyActual.aggregate(
+            pmp_id: $routeParams.id, 
+            pmp_item_id: self.selectedItem.id || 'all', 
+            group_by: 'advertiser', 
+            start_date: $scope.timeFilter.timePeriod.startDate.startOf('day'), 
+            end_date: $scope.timeFilter.timePeriod.endDate.startOf('day')
+          ).then (res) ->
+            if res && res.length > 0
+              res = _.map res, (d) -> {x: d.advertiser.name, y: parseFloat(d.revenue_loc)}
+              self.data = _.sortBy res, (d) -> -d.y
+            else
+              self.data = []
+        else
+          self.data = []
+      settings: () ->
+        chartContainer = angular.element('#pmp-revenue-advertiser-chart-container')
+        width = chartContainer.width()        
+        height = chartContainer.width()*0.35
+        margin = {
+          top: 35
+          left: 240
+          right: 50
+          bottom: 35           
+        }
+        miniMargin = {
+          top: 35
+          left: 50
+          right: 120
+          bottom: 35            
+        }
+        settings = {
+          margin: margin
+          miniMargin: miniMargin
+          miniWidth: 100
+          miniHeight: height - miniMargin.top - miniMargin.bottom
+          width: width - margin.left - margin.right - 100 - miniMargin.left - miniMargin.right
+          height: height - margin.top - margin.bottom
+        }
+      tooltipText: (x, y) ->
+        value = 'N/A'
+        value = $scope.currencySymbol + $filter('number')(y) if y?
+        '<p>' + (this.selectedItem.ssp_deal_id || $filter('firstUppercase')(this.selectedItem)) + '</p>' + 
+        '<p><span>' + value + '</span></p>' + 
+        '<p><span>' + x + '</span></p>'
+      yAxisLabelFormat: (v) ->
+        $scope.currencySymbol + $filter('number')(v)
+    }
+
+    $scope.selectedDeliveryItem = {}
+    $scope.selectedPriceItem = {}
+
     $scope.timeFilter = {
       timePeriodString: ''
       timePeriod: {
@@ -17,7 +74,7 @@
         endDate: null
       }      
       updateCharts: () ->
-        $scope.updateRevenueChart()
+        $scope.revenueChart.update()
         $scope.updateDeliveryChart()
         $scope.updatePriceChart()
       applyTimePeriod: () ->
@@ -40,14 +97,6 @@
       getEndDate: () ->
         $scope.timeFilter.timePeriod.endDate.format('MMM D, YY')
     }
-    $scope.revenueFilter = {
-      item: null
-      id: () ->
-        id = if $scope.revenueFilter.item == 'all' then 'all' else $scope.revenueFilter.item.id
-        id + $scope.timeFilter.timePeriodString
-    }
-    graphData = {}
-    graphRevenueData = {}
     
     init = () ->
       $scope.timeFilter.timePeriod.endDate = moment()
@@ -61,8 +110,8 @@
         $scope.currentPMP = pmp
         $scope.updateDeliveryChart('all')
         $scope.updatePriceChart('all')
-        $scope.updateRevenueChart('all', 'item')
-        $scope.currency_symbol = pmp.currency && (pmp.currency.curr_symbol || pmp.currency.curr_cd)
+        $scope.revenueChart.update('all')
+        $scope.currencySymbol = pmp.currency && (pmp.currency.curr_symbol || pmp.currency.curr_cd)
 
     reloadDailyActuals = () ->
       $scope.page = 1
@@ -106,11 +155,7 @@
     $scope.updateDeliveryChart = (pmpItem) ->
       if pmpItem
         $scope.selectedDeliveryItem = pmpItem
-      id = if $scope.selectedDeliveryItem == 'all' then 'all' else $scope.selectedDeliveryItem.id
-      id = id + $scope.timeFilter.timePeriodString
-      if graphData[id]
-        drawChart(graphData[id], '#pmp-delivery-chart-container', '#pmp-delivery-chart')
-      else if $scope.timeFilter.timePeriodString
+      if $scope.timeFilter.timePeriodString
         PMPItemDailyActual.aggregate(
           pmp_id: $routeParams.id, 
           pmp_item_id: $scope.selectedDeliveryItem.id || 'all', 
@@ -118,8 +163,6 @@
           start_date: $scope.timeFilter.timePeriod.startDate.startOf('day'), 
           end_date: $scope.timeFilter.timePeriod.endDate.startOf('day')
         ).then (data) ->
-          if data && data.length > 0
-            graphData[id] = data
           drawChart(data, '#pmp-delivery-chart-container', '#pmp-delivery-chart')
       else 
         drawChart([], '#pmp-delivery-chart-container', '#pmp-delivery-chart')
@@ -127,11 +170,7 @@
     $scope.updatePriceChart = (pmpItem) ->
       if pmpItem
         $scope.selectedPriceItem = pmpItem
-      id = if $scope.selectedPriceItem == 'all' then 'all' else $scope.selectedPriceItem.id
-      id = id + $scope.timeFilter.timePeriodString
-      if graphData[id]
-        drawChart(graphData[id], '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
-      else if $scope.timeFilter.timePeriodString
+      if $scope.timeFilter.timePeriodString
         PMPItemDailyActual.aggregate(
           pmp_id: $routeParams.id, 
           pmp_item_id: $scope.selectedPriceItem.id || 'all', 
@@ -139,296 +178,9 @@
           start_date: $scope.timeFilter.timePeriod.startDate.startOf('day'), 
           end_date: $scope.timeFilter.timePeriod.endDate.startOf('day')
         ).then (data) ->
-          if data && data.length > 0
-            graphData[id] = data
           drawChart(data, '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
       else
         drawChart([], '#pmp-price-revenue-chart-container', '#pmp-price-revenue-chart')
-
-    $scope.updateRevenueChart = (val, id) ->
-      if id
-        $scope.revenueFilter[id] = val
-      id = $scope.revenueFilter.id()
-      if graphRevenueData[id]
-        drawRevenueChart(graphRevenueData[id], '#pmp-revenue-advertiser-chart-container', '#pmp-revenue-advertiser-chart')
-      else if $scope.timeFilter.timePeriodString
-        PMPItemDailyActual.aggregate(
-          pmp_id: $routeParams.id, 
-          pmp_item_id: $scope.revenueFilter.item.id || 'all', 
-          group_by: 'advertiser', 
-          start_date: $scope.timeFilter.timePeriod.startDate.startOf('day'), 
-          end_date: $scope.timeFilter.timePeriod.endDate.startOf('day')
-        ).then (data) ->
-          if data && data.length > 0
-            graphRevenueData[id] = data
-          drawRevenueChart(data, '#pmp-revenue-advertiser-chart-container', '#pmp-revenue-advertiser-chart')
-      else
-        drawRevenueChart([], '#pmp-revenue-advertiser-chart-container', '#pmp-revenue-advertiser-chart')
-
-    drawRevenueChart = (data, containerID, svgID) ->
-      chartContainer = angular.element(containerID)
-      margin =
-          top: 35
-          left: 240
-          right: 50
-          bottom: 35
-      miniMargin = 
-          top: 35
-          left: 50
-          right: 120
-          bottom: 35
-      duration = 1000
-      ratio = 0.35
-      maxBarWidth = 100
-      miniRatio = 0.05
-      miniWidth = 100
-      miniHeight = chartContainer.width()*ratio - miniMargin.top - miniMargin.bottom
-      width = chartContainer.width() - margin.left - margin.right - miniWidth - miniMargin.left - miniMargin.right
-      height = chartContainer.width()*ratio - margin.top - margin.bottom
-      data = _.map data, (d) -> 
-        d.revenue_loc = parseFloat(d.revenue_loc)
-        d
-      data = _.sortBy data, (d) -> -d.revenue_loc
-
-      update = () ->
-        c = d3.scale.category10()
-        bar = mainGroup.selectAll(".bar")
-            .data(data)
-
-        bar.attr("y", (d,i) -> x(d.advertiser.name) + (x.rangeBand() - d3.min([x.rangeBand(), maxBarWidth]))/2)
-          .attr("x", (d) -> 0)
-          .attr("height", d3.min([x.rangeBand(), maxBarWidth]))
-          .attr("width", (d) -> y(d.revenue_loc))
-
-        bar.enter().append("rect")
-          .attr("class", "bar")
-          .style("fill", (d) -> c(Math.random()*10))
-          .attr("y", (d,i) -> x(d.advertiser.name) + (x.rangeBand() - d3.min([x.rangeBand(), maxBarWidth]))/2)
-          .attr("x", (d) -> 0)
-          .attr("height", d3.min([x.rangeBand(), maxBarWidth]))
-          .attr("width", 0)
-          .transition().duration(duration)
-          .attr("width", (d) -> y(d.revenue_loc))
-          .style('cursor', 'pointer')
-
-        bar.exit()
-          .remove()
-
-      brushmove = () ->
-        extent = brush.extent()
-
-        selected = miniX.domain()
-          .filter((d) -> (extent[0] - miniX.rangeBand() + 1e-2 <= miniX(d)) && (miniX(d) <= extent[1] - 1e-2)) 
-
-        miniGroup.selectAll(".bar")
-          .style("fill", (d, i) -> "#e0e0e0")
-
-        d3.selectAll(svgID + " .axisX text")
-          .style("font-size", textScale(selected.length))
-        
-        originalRange = mainXZoom.range()
-        mainXZoom.domain( extent )
-
-        x.domain(data.map((d) -> d.advertiser.name))
-        x.rangeBands( [ mainXZoom(originalRange[0]), mainXZoom(originalRange[1]) ], 0.4, 0)
-
-        mainGroup.select(".axisX")
-          .call(xAxis)
-
-        # newMaxYScale = d3.max(data, (d) -> if selected.indexOf(d.advertiser.name) > -1 then d.revenue_loc else 0)
-        # y.domain([0, newMaxYScale])
-
-        mainGroupWrapper.select(".axisY")
-          .transition().duration(50)
-          .call(yAxis)
-
-        update()
-
-      brushcenter = () -> 
-        target = d3.event.target
-        extent = brush.extent()
-        size = extent[1] - extent[0]
-        range = miniX.range()
-        x0 = d3.min(range) + size / 2
-        x1 = d3.max(range) + miniX.rangeBand() - size / 2
-        center = Math.max( x0, Math.min( x1, d3.mouse(target)[1] ) )
-
-        d3.event.stopPropagation()
-
-        gBrush
-            .call(brush.extent([center - size / 2, center + size / 2]))
-            .call(brush.event)
-
-      svg = d3.select(svgID)
-              .attr("preserveAspectRatio", "xMinYMin meet")
-              .attr("viewBox", "0 0 " + (width + margin.left + margin.right + miniWidth + miniMargin.left + miniMargin.right) + " " + (Math.max(height + margin.top + margin.bottom, miniHeight + miniMargin.top + miniMargin.bottom)))
-              .html('')
-      mainGroupWrapper = svg.append('g')            
-                    .attr("class","mainGroupWrapper")                                                               
-                    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-      mainGroup = mainGroupWrapper.append("g")
-                    .attr("clip-path", "url(#clip)")
-                    .style("clip-path", "url(#clip)")
-                    .attr("class", "mainGroup")
-      miniGroup = svg.append("g")
-                    .attr("class", "miniGroup")
-                    .attr("transform", "translate(" + (miniMargin.left + margin.left + width + margin.right) + "," + miniMargin.top + ")")
-      brushGroup = svg.append("g")
-                    .attr("class", "brushGroup")
-                    .attr("transform", "translate(" + (miniMargin.left + margin.left + width + margin.right) + "," + miniMargin.top + ")")
-
-      # Axes
-      mainGroup.append('line')
-          .style('stroke', '#d9dde0')
-          .attr('x1', 0)
-          .attr('y1', 0)
-          .attr('x2', 0)
-          .attr('y2', height)
-      mainGroup.append('line')
-          .style('stroke', '#d9dde0')
-          .attr('x1', 0)
-          .attr('y1', height)
-          .attr('x2', width)
-          .attr('y2', height)
-
-      x = d3.scale.ordinal().rangeBands([0, height], 0.4, 0)
-      miniX = d3.scale.ordinal().rangeBands([0, miniHeight], 0.4, 0)
-      y = d3.scale.linear().range([0, width])
-      miniY = d3.scale.linear().range([0, miniWidth])
-
-      mainXZoom = d3.scale.linear()
-        .range([0, height])
-        .domain([0, height])
-
-      xAxis = d3.svg.axis().scale(x).orient('left')
-              .outerTickSize(0)
-              .innerTickSize(0)
-              .tickPadding(10)
-      mainGroup.insert('g', ':first-child')
-        .attr('class', 'axisX axis')
-        .attr('transform', 'translate(0,0)')
-
-      yAxis = d3.svg.axis().scale(y).orient('bottom')
-              .innerTickSize(-height)
-              .outerTickSize(0)
-              .tickFormat (v) -> 
-                $scope.currency_symbol + $filter('number')(v)
-      mainGroupWrapper.insert('g', ':first-child')
-        .attr('class', 'axisY axis')
-        .attr('transform', 'translate(0,' + height + ')')
-
-      y.domain([0, (d3.max(data, (d) -> d.revenue_loc) || 100)*1.1])
-      miniY.domain([0, (d3.max(data, (d) -> d.revenue_loc) || 100)*1.1])
-      x.domain(data.map((item) -> item.advertiser.name))
-      miniX.domain(data.map((item) -> item.advertiser.name))
-
-      mainGroup.select(".axisX").call(xAxis)
-      mainGroupWrapper.select(".axisY").call(yAxis)
-
-      return if data.length == 0
-
-      textScale = d3.scale.linear()
-        .domain([15,50])
-        .range([12,6])
-        .clamp(true)
-
-      brushExtent = Math.max( 1, Math.min( 20, Math.round(data.length*0.2) ) )
-      lastExtent = if data.length <= 7 then miniHeight else miniX(data[brushExtent].advertiser.name)
-
-      brush = d3.svg.brush()
-          .y(miniX)
-          .extent([miniX(data[0].advertiser.name), lastExtent])
-          .on("brush", brushmove)
-
-      gBrush = brushGroup.append("g")
-        .attr("class", "brush")
-        .call(brush)
-      
-      gBrush.selectAll(".resize")
-        .append("line")
-        .attr("x2", miniWidth)
-
-      gBrush.selectAll(".resize")
-        .append("path")
-        .attr("d", d3.svg.symbol().type("triangle-up").size(20))
-        .attr("transform", (d,i) -> 
-          if i then "translate(" + (miniWidth/2) + "," + 4 + ") rotate(180)" else "translate(" + (miniWidth/2) + "," + -4 + ") rotate(0)"
-        )
-
-      gBrush.selectAll("rect")
-        .attr("width", miniWidth);
-
-      gBrush.select(".background")
-        .on("mousedown.brush", brushcenter)
-        .on("touchstart.brush", brushcenter);
-
-      defs = svg.append("defs")
-
-      defs.append("clipPath")
-        .attr("id", "clip")
-        .append("rect")
-        .attr("x", -margin.left)
-        .attr("y", 0)
-        .attr("width", width + margin.left)
-        .attr("height", height)
-
-      miniBar = miniGroup.selectAll(".bar")
-        .data(data)
-
-      miniBar
-        .attr("width", (d) -> miniY(d.revenue_loc))
-        .attr("y", (d,i) -> miniX(d.advertiser.name) + (miniX.rangeBand() - d3.min([miniX.rangeBand(), maxBarWidth]))/2)
-        .attr("height", d3.min([miniX.rangeBand(), maxBarWidth]))
-
-      miniBar.enter().append("rect")
-        .attr("class", "bar")
-        .attr("x", (d) -> 0)
-        .attr("width", (d) -> miniY(d.revenue_loc))
-        .attr("y", (d,i) -> miniX(d.advertiser.name) + (miniX.rangeBand() - d3.min([miniX.rangeBand(), maxBarWidth]))/2)
-        .attr("height", d3.min([miniX.rangeBand(), maxBarWidth]))
-
-      miniBar.exit()
-        .remove()
-
-      gBrush.call(brush.event)
-
-      # Tooltip
-      tooltipText = (selectedItem, unit, d, title) ->
-        value = 'N/A'
-        if d?
-          if unit == $scope.currency_symbol
-            value = unit + $filter('number')(d) 
-          else 
-            value = $filter('number')(d) + unit
-        '<p>' + (selectedItem.ssp_deal_id || $filter('firstUppercase')(selectedItem)) + '</p>' + 
-        '<p><span>' + value + '</span></p>' + 
-        '<p><span>' + title + '</span></p>'
-      tooltip = d3.select("body").append("div") 
-          .attr("class", "pmp-chart-tooltip")             
-          .style("opacity", 0)
-      mouseOut = (d) ->
-        d3.select(this).transition().duration(500).attr("r", 4)   
-        tooltip.transition()        
-            .duration(500)      
-            .style("opacity", 0);
-      mouseOver = (unit) ->
-        selectedItem = $scope.revenueFilter.item
-        return (d) ->
-          d3.select(this).transition().duration(500).attr("r", 6)     
-          tooltip.transition()        
-              .duration(200)      
-              .style("opacity", .9);      
-          tooltip.html(tooltipText(selectedItem, unit, d.revenue_loc, d.advertiser.name))  
-              .style("left", (d3.event.pageX) - 50 + "px")     
-              .style("top", (d3.event.pageY + 18) + "px")
-      mouseMove = (d) ->
-        tooltip.style("left", (d3.event.pageX) - 50 + "px")     
-              .style("top", (d3.event.pageY + 18) + "px")
-
-      svg.selectAll('.bar')   
-              .on('mouseover', mouseOver($scope.currency_symbol))
-              .on('mouseout', mouseOut) 
-              .on('mousemove', mouseMove) 
 
     getGraphData = (data, attr) ->
       _.reduce(data, (arr, row) ->
@@ -459,12 +211,12 @@
           ]
         when '#pmp-price-revenue-chart'
           [
-            {name: 'Price', graphType: 1, active: true, unit: $scope.currency_symbol, color: c(0), values: getPriceGraphData(data)}
-            {name: 'Revenue', graphType: 2, active: true, unit: $scope.currency_symbol, color: c(1), values: getGraphData(data, 'revenue_loc')}          
+            {name: 'Price', graphType: 1, active: true, unit: $scope.currencySymbol, color: c(0), values: getPriceGraphData(data)}
+            {name: 'Revenue', graphType: 2, active: true, unit: $scope.currencySymbol, color: c(1), values: getGraphData(data, 'revenue_loc')}          
           ]
         when '#pmp-revenue-advertiser-chart'
           [
-            {name: 'Revenue', active: true, unit: $scope.currency_symbol, color: c(0), values: getGraphData(data, 'revenue_loc')}
+            {name: 'Revenue', active: true, unit: $scope.currencySymbol, color: c(0), values: getGraphData(data, 'revenue_loc')}
           ]
         else []
 
@@ -496,7 +248,7 @@
       tooltipText = (selectedItem, unit, d, title) ->
         value = 'N/A'
         if d?
-          if unit == $scope.currency_symbol
+          if unit == $scope.currencySymbol
             value = unit + $filter('number')(d) 
           else 
             value = $filter('number')(d) + unit
@@ -624,42 +376,10 @@
             .call(brush.extent([center - size / 2, center + size / 2]))
             .call(brush.event)
 
-      scroll = () ->
-        extent = brush.extent()
-        size = extent[1] - extent[0]
-        range = miniX.range()
-        x0 = d3.min(range)
-        x1 = d3.max(range) + miniX.rangeBand()
-        dx = d3.event.deltaY
-        topSection = null
-
-        if extent[0] - dx < x0
-          topSection = x0
-        else if extent[1] - dx > x1
-          topSection = x1 - size 
-        else
-          topSection = extent[0] - dx
-
-        d3.event.stopPropagation()
-        d3.event.preventDefault()
-
-        gBrush
-            .call(brush.extent([ topSection, topSection + size ]))
-            .call(brush.event)
-
-      # zoomer = d3.behavior.zoom().on("zoom", null)
-
       svg = d3.select(svgID)
               .attr("preserveAspectRatio", "xMinYMin meet")
               .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom + miniHeight + miniMargin.top + miniMargin.bottom))
-              # .call(zoomer)
-              # .on("wheel.zoom", scroll)
-              # .on("mousedown.zoom", null)
-              # .on("touchstart.zoom", null)
-              # .on("touchmove.zoom", null)
-              # .on("touchend.zoom", null)
               .html('')
-
 
       mainGroupWrapper = svg.append('g')            
                     .attr("class","mainGroupWrapper")                                                               
@@ -703,14 +423,14 @@
               .tickValues(y1TickValues)
               .tickFormat (v) -> 
                 d = dataset.filter((d) -> d.graphType==1)[0] || {}
-                if d.unit == $scope.currency_symbol then $scope.currency_symbol + $filter('number')(v) else $filter('number')(v) + d.unit
+                if d.unit == $scope.currencySymbol then $scope.currencySymbol + $filter('number')(v) else $filter('number')(v) + d.unit
       y2Axis = d3.svg.axis().scale(y2).orient('right')
               .innerTickSize(width)
               .outerTickSize(0)
               .tickValues(y2TickValues)
               .tickFormat (v) -> 
                 d = dataset.filter((d) -> d.graphType==2)[0] || {}
-                if d.unit == $scope.currency_symbol then $scope.currency_symbol + $filter('number')(v) else $filter('number')(v) + d.unit
+                if d.unit == $scope.currencySymbol then $scope.currencySymbol + $filter('number')(v) else $filter('number')(v) + d.unit
       mainXZoom = d3.scale.linear()
         .range([0, width])
         .domain([0, width])
@@ -830,29 +550,6 @@
         .remove()
 
       gBrush.call(brush.event)
-
-      # Graphs
-      # graphLine1 = d3.svg.line()
-      #         .x((value, i) -> x(days[i]))
-      #         .y((value, i) -> y1(value))
-      #         .defined((value, i) -> _.isNumber value)
-      # graphLine2 = d3.svg.line()
-      #         .x((value, i) -> x(days[i]))
-      #         .y((value, i) -> y2(value))
-      #         .defined((value, i) -> _.isNumber value)
-      # graphsContainer = svg.append('g')
-      #         .attr('class', 'graphs-container')
-      # graphs = graphsContainer.selectAll('.graph')
-      #         .data(dataset)
-      #         .enter()
-      #         .append('path')
-      #         .attr('class', (d) -> 'graph graph-'+d.name.replace(' ', '_'))
-      #         .attr 'stroke', (d) -> d.color
-      #         .attr 'd', -> graphLine1(_.map days, -> 0)
-      #         .transition()
-      #         .duration(duration)
-      #         .attr 'd', (d) -> if d.graphType==2 then graphLine2(d.values) else graphLine1(d.values)
-
 
       # Legends
       legend = mainGroupWrapper.selectAll('g.legend')
@@ -992,15 +689,15 @@
         updateChartsByPmpItemId(pmpItemId)
 
     updateChartsByPmpItemId = (id) ->
-      if $scope.selectedDeliveryItem.id == id || $scope.selectedPriceItem.id == id
-        pmpItem = $scope.currentPMP.pmp_items.filter((d) -> d.id == id)[0] || $scope.currentPMP.pmp_items[0]
-        graphData[id] = null
-        $scope.updateDeliveryChart(pmpItem) if $scope.selectedDeliveryItem.id == id
-        $scope.updatePriceChart(pmpItem) if $scope.selectedPriceItem.id == id
-      if $scope.selectedPriceItem == 'all' || $scope.selectedDeliveryItem == 'all'
-        graphData['all'] = null
-        $scope.updateDeliveryChart('all') if $scope.selectedDeliveryItem == 'all'
-        $scope.updatePriceChart('all') if $scope.selectedPriceItem == 'all'
+      pmpItem = $scope.currentPMP.pmp_items.filter((d) -> d.id == id)[0] || $scope.currentPMP.pmp_items[0]
+      $scope.updateDeliveryChart(pmpItem) if $scope.selectedDeliveryItem.id == id
+      $scope.updatePriceChart(pmpItem) if $scope.selectedPriceItem.id == id
+      $scope.updateDeliveryChart('all') if $scope.selectedDeliveryItem == 'all'
+      $scope.updatePriceChart('all') if $scope.selectedPriceItem == 'all'
+      if $scope.revenueChart.selectedItem.id == id
+        $scope.revenueChart.update(pmpItem)
+      else if $scope.revenueChart.selectedItem == 'all'
+        $scope.revenueChart.update('all')
     
     init()
   ]

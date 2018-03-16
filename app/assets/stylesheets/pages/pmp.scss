@@ -222,7 +222,7 @@
     margin: 0;
 }
 
-#pmp-delivery-chart, #pmp-price-revenue-chart, #pmp-revenue-advertiser-chart {
+#pmp-delivery-chart, #pmp-price-revenue-chart {
     height: auto;
     display: inline-block;
     position: absolute;
@@ -327,7 +327,7 @@
   }
 }
 
-#pmp-delivery, #pmp-price-revenue, #pmp-revenue-by-advertiser {
+#pmp-delivery, #pmp-price-revenue {
   .axisY line,
   .axisY1 line,
   .axisY2 line {

@@ -8,16 +8,15 @@
       .dropdown
         %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
           %span.editable
-            {{ revenueFilter.item.ssp_deal_id || revenueFilter.item.id || (revenueFilter.item | firstUppercase) || 'Select' }}
+            {{ revenueChart.selectedItem.ssp_deal_id || revenueChart.selectedItem.id || (revenueChart.selectedItem | firstUppercase) || 'Select' }}
           %span.caret
         %ul.dropdown-menu
-          %li{'ng-class': '{active: revenueFilter.item == "all"}'}
-            %a{'href': '', 'ng-click': 'updateRevenueChart("all", "item")'}
+          %li{'ng-class': '{active: revenueChart.selectedItem == "all"}'}
+            %a{'href': '', 'ng-click': 'revenueChart.update("all")'}
               %span.text All
-          %li{'ng-repeat': 'pmpItem in currentPMP.pmp_items', 'ng-class': '{active: revenueFilter.item.id == pmpItem.id}'}
-            %a{'href': '', 'ng-click': 'updateRevenueChart(pmpItem, "item")'}
+          %li{'ng-repeat': 'pmpItem in currentPMP.pmp_items', 'ng-class': '{active: revenueChart.selectedItem.id == pmpItem.id}'}
+            %a{'href': '', 'ng-click': 'revenueChart.update(pmpItem)'}
               %span.text {{ pmpItem.ssp_deal_id || pmpItem.id }}
-  %div#pmp-revenue-advertiser-chart-container.mb20{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0' }
-    %svg#pmp-revenue-advertiser-chart
+  %div#pmp-revenue-advertiser-chart-container.mb20{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0', 'd3-horizontal-bar-chart': '', 'data': 'revenueChart.data', 'settings': '{{revenueChart.settings()}}', 'tooltip-text': 'revenueChart.tooltipText(x,y)', 'y-axis-label-format': 'revenueChart.yAxisLabelFormat(v)'}
   %div.center{ 'ng-if': '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' }
     %span No data available
