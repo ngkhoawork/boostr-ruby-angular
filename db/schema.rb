@@ -2893,9 +2893,10 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
+    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
-    t.boolean  "revenue_requests_access",             default: false
+    t.boolean  "is_legal",                            default: false, null: false
   end
 
   add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree

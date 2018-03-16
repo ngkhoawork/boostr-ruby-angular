@@ -530,7 +530,7 @@ Rails.application.routes.draw do
 
     resources :sales_processes, only: [:index, :create, :show, :update]
 
-    resources :contracts do
+    resources :contracts, except: [:new, :edit] do
       resources :attachments, only: [:index, :update, :create, :destroy]
       get :settings, on: :collection
     end

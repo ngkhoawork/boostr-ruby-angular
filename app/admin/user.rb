@@ -1,5 +1,5 @@
 ActiveAdmin.register User do
-  permit_params :email, :password, :first_name, :last_name, :title, :company_id, roles: []
+  permit_params :email, :password, :first_name, :last_name, :title, :company_id, :is_legal, roles: []
 
   index do
     selectable_column
@@ -31,6 +31,7 @@ ActiveAdmin.register User do
   end
 
   filter :email
+  filter :is_legal
   filter :current_sign_in_at
   filter :sign_in_count
   filter :created_at
@@ -42,6 +43,7 @@ ActiveAdmin.register User do
       f.input :first_name
       f.input :last_name
       f.input :title
+      f.input :is_legal
       f.input :company
       if current_user.is?(:superadmin)
         f.input :roles, as: :check_boxes, collection: User::ROLES

@@ -1,5 +1,5 @@
 class Api::Contracts::SettingsSerializer
-  def initialize(company)
+  def initialize(company, *_args)
     @company = company
   end
 

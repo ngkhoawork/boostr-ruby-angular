@@ -1,20 +1,25 @@
 class Api::ContractsController < ApplicationController
   respond_to :json
 
+  rescue_from ApplicationPolicy::NotAuthorizedError, with: :forbidden_response
+
   def index
-    render json: by_pages(collection),
-           each_serializer: Api::Contracts::BaseSerializer
+    render json: serialize_collection(by_pages(collection))
   end
 
   def show
+    authorize!(resource)
+
     render json: resource,
-           serializer: Api::Contracts::ExtendedSerializer
+           serializer: permitted_serializer
   end
 
   def create
+    authorize!
+
     if build_resource.save
       render json: resource,
-             serializer: Api::Contracts::ExtendedSerializer,
+             serializer: permitted_serializer,
              status: :created
     else
       render json: { errors: resource.errors.messages },
@@ -23,9 +28,11 @@ class Api::ContractsController < ApplicationController
   end
 
   def update
+    authorize!(resource)
+
     if resource.update(resource_params)
       render json: resource,
-             serializer: Api::Contracts::ExtendedSerializer
+             serializer: permitted_serializer
     else
       render json: { errors: resource.errors.messages },
              status: :unprocessable_entity
@@ -33,13 +40,16 @@ class Api::ContractsController < ApplicationController
   end
 
   def destroy
+    authorize!
+
     resource.destroy
 
     render nothing: true
   end
 
   def settings
-    render json: Api::Contracts::SettingsSerializer.new(company)
+    render json: company,
+           serializer: Api::Contracts::SettingsSerializer
   end
 
   private
@@ -105,5 +115,21 @@ class Api::ContractsController < ApplicationController
         company_id: company.id,
         current_user: current_user
       )
+  end
+
+  def authorize!(record = nil)
+    ::Contracts::ActionsPolicy.new(current_user, record).authorize!(action_name)
+  end
+
+  def permitted_serializer(record = nil)
+    ::Contracts::SerializersPolicy.new(current_user, record).grand_serializer(action_name)
+  end
+
+  def serialize_collection(collection)
+    ::Contracts::SerializersPolicy.serialize_collection(current_user, collection)
+  end
+
+  def forbidden_response
+    render json: { errors: ['Not Authorized'] }, status: :forbidden
   end
 end

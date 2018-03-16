@@ -119,6 +119,10 @@ class User < ActiveRecord::Base
     is?(:admin)
   end
 
+  def is_not_legal?
+    !is_legal?
+  end
+
   def add_role(role)
     if !is?(role)
       self.roles_mask += 2**ROLES.index(role)
