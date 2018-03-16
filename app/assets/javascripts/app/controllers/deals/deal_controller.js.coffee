@@ -906,7 +906,7 @@
   $scope.baseFieldRequired = (factor) ->
     if $scope.currentDeal && $scope.base_fields_validations
       validation = _.findWhere($scope.base_fields_validations, factor: factor)
-      return validation && validation.criterion.value
+      return validation?
 
   $scope.submitReminderForm = () ->
     $scope.reminderOptions.errors = {}
