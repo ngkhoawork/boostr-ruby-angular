@@ -361,12 +361,16 @@ RSpec.describe Api::ContractsController, type: :controller do
       subject
 
       expect(response).to be_success
-      expect(response_body).to have_key :type_options
-      expect(response_body).to have_key :status_options
-      expect(response_body).to have_key :member_role_options
-      expect(response_body).to have_key :contact_role_options
-      expect(response_body).to have_key :special_term_name_options
-      expect(response_body).to have_key :special_term_type_options
+      expect(response_body.keys).to match_array(
+        [
+          :type_options,
+          :status_options,
+          :member_role_options,
+          :contact_role_options,
+          :special_term_name_options,
+          :special_term_type_options
+        ]
+      )
     end
   end
 
@@ -401,7 +405,7 @@ RSpec.describe Api::ContractsController, type: :controller do
   end
 
   def user
-    @_user ||= create(:user, company: company)
+    @_user ||= create(:user, company: company, is_legal: true)
   end
 
   def last_created_contract

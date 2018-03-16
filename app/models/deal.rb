@@ -23,6 +23,7 @@ class Deal < ActiveRecord::Base
   has_one :pmp, class_name: "Pmp", foreign_key: 'deal_id', dependent: :restrict_with_exception
 
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
+  has_many :contracts, dependent: :nullify
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :deal_products, dependent: :destroy
