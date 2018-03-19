@@ -37,7 +37,7 @@ class NewForecastMember
   def stages
     return @stages if defined?(@stages)
     ids = weighted_pipeline_by_stage.keys
-    @stages = company.stages.where(id: ids).order(:probability).all.to_a
+    @stages = company.stages.active.by_ids(ids).order_by_probability
   end
 
   def forecast_time_dimension
