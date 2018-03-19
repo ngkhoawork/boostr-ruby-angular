@@ -2,7 +2,7 @@ class Api::StatisticsController < ApplicationController
   respond_to :json
 
   def show
-    statistics = Statistic.by_pmp_id(statistics_params[:id]).limit(5)
+    statistics = Statistic.by_pmp_id(statistics_params[:id]).last(3)
     render json: statistics, each_serializer: StatisticSerializer
   end
 

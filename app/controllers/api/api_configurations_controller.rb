@@ -5,6 +5,10 @@ class Api::ApiConfigurationsController < ApplicationController
     render json: API::ApiConfigurations::Collection.new(api_configurations)
   end
 
+  def ssp_credentials
+    render json: current_user.company.ssp_credentials, root: "ssp", each_serializer: SspCredentialSerializer
+  end
+
   def update
     if api_configuration.update(api_configuration_params)
       render json: API::ApiConfigurations::Single.new(api_configuration)
@@ -17,7 +21,8 @@ class Api::ApiConfigurationsController < ApplicationController
     api_configuration_service = ApiConfigurationService.new(current_user: current_user, params: api_configuration_params)
 
     if api_configuration = api_configuration_service.create_api_configuration
-      render json: API::ApiConfigurations::Single.new(api_configuration)
+      render json: API::ApiConfigurations::Single.new(api_configuration) unless api_configuration.kind_of?(SspCredential)
+      render json: api_configuration, serialize: SspCredentialSerializer
     else
       render json: { errors: api_configuration.errors.messages }, status: :unprocessable_entity
     end
@@ -26,6 +31,24 @@ class Api::ApiConfigurationsController < ApplicationController
   def destroy
     api_configuration.destroy
     render nothing: true
+  end
+
+  def delete_ssp
+    ssp = SspCredential.find(params[:id])
+    if ssp&.destroy
+      render nothing: true
+    else
+      render json: {}, status: :unprocessable_entity
+    end
+  end
+
+  def update_ssp
+    api_configuration = SspCredential.find(params[:id])
+    if api_configuration.update(api_configuration_params)
+      render json: {}, status: 200
+    else
+      render json: { errors: api_configuration.errors.messages }, status: :unprocessable_entity
+    end
   end
 
   def metadata
@@ -43,7 +66,7 @@ class Api::ApiConfigurationsController < ApplicationController
   end
 
   def api_configurations
-    @_api_configurations ||= ApiConfiguration.where(company_id: current_user.company.id)
+    @_api_configurations ||= current_user.company.api_configurations
   end
 
   def api_configuration_params
@@ -59,6 +82,11 @@ class Api::ApiConfigurationsController < ApplicationController
                                               :json_api_key,
                                               :network_code,
                                               :recurring,
+                                              :user_name,
+                                              :publisher_id,
+                                              :key,
+                                              :secret,
+                                              :type_id,
                                               cpm_budget_adjustment_attributes: [:id,
                                                                                  :percentage,
                                                                                  :created_at,
