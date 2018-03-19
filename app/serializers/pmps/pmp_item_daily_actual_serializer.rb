@@ -50,4 +50,8 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
   def pmp
     object.pmp.serializable_hash(only: [:id, :name]) rescue nil
   end
+
+  def win_rate
+    object.win_rate * 100
+  end
 end

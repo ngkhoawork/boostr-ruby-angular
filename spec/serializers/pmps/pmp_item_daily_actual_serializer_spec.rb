@@ -12,7 +12,7 @@ describe Pmps::PmpItemDailyActualSerializer do
     expect(serializer.revenue).to eq(pmp_item_daily_actual.revenue)
     expect(serializer.revenue_loc).to eq(pmp_item_daily_actual.revenue_loc)
     expect(serializer.impressions).to eq(pmp_item_daily_actual.impressions)
-    expect(serializer.win_rate).to eq(pmp_item_daily_actual.win_rate)
+    expect(serializer.win_rate).to eq(pmp_item_daily_actual.win_rate * 100)
     expect(serializer.ad_requests).to eq(pmp_item_daily_actual.ad_requests)
   end
 
