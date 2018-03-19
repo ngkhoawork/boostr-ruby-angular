@@ -106,9 +106,10 @@
       $scope.activeDealProductCfLength = (_.filter dealProductCfNames, (item) -> !item.disabled).length
 
   getValidations = () ->
-    Validation.query().$promise.then (data) ->
-      $scope.won_reason_required = _.find data, factor: 'Require Won Reason'
-      $scope.base_fields_validations = _.filter data, object: 'Deal Base Field'
+    Validation.deal_base_fields().$promise.then (data) ->
+      $scope.base_fields_validations = data
+    Validation.query(factor: 'Require Won Reason').$promise.then (data) ->
+      $scope.won_reason_required = data && data[0]
 
   $scope.sumDealProductBudget = (index) ->
     products = $scope.currentDeal.deal_products
@@ -519,7 +520,7 @@
   $scope.updateDeal = ->
     $scope.errors = {}
     ($scope.base_fields_validations || []).forEach (validation) ->
-      if $scope.currentDeal && validation.criterion.value && (!$scope.currentDeal[validation.factor] && !validationValueFactorExists($scope.currentDeal, validation.factor))
+      if $scope.currentDeal && (!$scope.currentDeal[validation.factor] && !validationValueFactorExists($scope.currentDeal, validation.factor))
         $scope.errors[validation.factor] = validation.name + ' is required'
 
     if Object.keys($scope.errors).length > 0 then return
@@ -906,7 +907,7 @@
   $scope.baseFieldRequired = (factor) ->
     if $scope.currentDeal && $scope.base_fields_validations
       validation = _.findWhere($scope.base_fields_validations, factor: factor)
-      return validation && validation.criterion.value
+      return validation?
 
   $scope.submitReminderForm = () ->
     $scope.reminderOptions.errors = {}
