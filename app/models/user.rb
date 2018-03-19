@@ -63,6 +63,8 @@ class User < ActiveRecord::Base
     UserDimension.destroy(user_record.id)
     ForecastPipelineFact.destroy_all(user_dimension_id: user_record.id)
     ForecastRevenueFact.destroy_all(user_dimension_id: user_record.id)
+    ForecastPmpRevenueFact.destroy_all(user_dimension_id: user_record.id)
+    ForecastCostFact.destroy_all(user_dimension_id: user_record.id)
   end
 
   def update_forecast_fact_callback
@@ -74,6 +76,8 @@ class User < ActiveRecord::Base
       io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
       deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
       ForecastRevenueCalculatorWorker.perform_async(io_change)
+      ForecastPmpRevenueCalculatorWorker.perform_async(io_change)
+      ForecastCostCalculatorWorker.perform_async(io_change)
       ForecastPipelineCalculatorWorker.perform_async(deal_change)
     end
   end
