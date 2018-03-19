@@ -19,7 +19,7 @@ class Api::Leads::IndexSerializer < ActiveModel::Serializer
 
   def clients
     if object.company_name.present? && object.client.blank?
-      company.clients.by_name(object.company_name).as_json(override: true, only: [:id, :name])
+      company.clients.by_name_in_multiply_string(object.company_name).as_json(override: true, only: [:id, :name])
     end
   end
 

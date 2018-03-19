@@ -15,6 +15,6 @@ class Leads::ReminderNotificationsWorker < BaseWorker
 
   def records
     Lead.new_records
-        .notification_reminders_by_dates(Lead::REMINDER, Time.now, Time.now + 1.hour)
+        .notification_reminders_by_dates(Lead::REMINDER, Time.now.utc, Time.now.utc + 1.hour)
   end
 end
