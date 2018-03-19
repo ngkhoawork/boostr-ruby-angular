@@ -24,9 +24,19 @@ class Forecast::PmpRevenueCalcService
       end
       pmp_total
     end
-    forecast_pmp_revenue_fact.amount = total
-    forecast_pmp_revenue_fact.monthly_amount = monthly_value
-    forecast_pmp_revenue_fact.save
+
+    create_forecast_pmp_revenue_fact(total, monthly_value)
+  end
+
+  def create_forecast_pmp_revenue_fact(total, monthly_value)
+    if forecast_pmp_revenue_fact.id.present? && total <= 0
+      forecast_pmp_revenue_fact.destroy
+    end
+    if (total > 0)
+      forecast_pmp_revenue_fact.amount = total
+      forecast_pmp_revenue_fact.monthly_amount = monthly_value
+      forecast_pmp_revenue_fact.save
+    end
   end
 
   private
