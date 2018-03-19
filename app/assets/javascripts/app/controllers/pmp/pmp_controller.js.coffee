@@ -1,7 +1,8 @@
 @app.controller 'PMPController',
-  ['$rootScope', '$scope', '$modal', '$location', '$filter', '$timeout', '$routeParams', 'PMP', 'PMPMember', 'User', 'PMPItem', 'PMPItemDailyActual', 'PMPType',
-  ( $rootScope,   $scope,   $modal,   $location,   $filter,   $timeout,   $routeParams,   PMP,   PMPMember,   User,   PMPItem,   PMPItemDailyActual,   PMPType) ->
+  ['$rootScope', '$scope', '$modal', '$location', '$filter', '$timeout', '$routeParams', 'PMP', 'PMPMember', 'User', 'PMPItem', 'PMPItemDailyActual', 'PMPType', 'STATISTIC',
+  ( $rootScope,   $scope,   $modal,   $location,   $filter,   $timeout,   $routeParams,   PMP,   PMPMember,   User,   PMPItem,   PMPItemDailyActual,   PMPType, STATISTIC) ->
     $scope.currentPMP = {}
+    $scope.importStatistics = [];
     $scope.pmpItemDailyActuals = []
     $scope.isLoading = false
     $scope.allDataLoaded = false
@@ -67,6 +68,8 @@
     $scope.selectedDeliveryItem = {}
     $scope.selectedPriceItem = {}
 
+
+
     $scope.timeFilter = {
       timePeriodString: ''
       timePeriod: {
@@ -112,6 +115,8 @@
         $scope.updatePriceChart('all')
         $scope.revenueChart.update('all')
         $scope.currencySymbol = pmp.currency && (pmp.currency.curr_symbol || pmp.currency.curr_cd)
+        STATISTIC.all($scope.currentPMP.id).then (statistics) ->
+          $scope.importStatistics = statistics;
 
     reloadDailyActuals = () ->
       $scope.page = 1
@@ -687,6 +692,7 @@
       PMP.get($routeParams.id).then (pmp) ->
         $scope.currentPMP = pmp
         updateChartsByPmpItemId(pmpItemId)
+
 
     updateChartsByPmpItemId = (id) ->
       pmpItem = $scope.currentPMP.pmp_items.filter((d) -> d.id == id)[0] || $scope.currentPMP.pmp_items[0]
