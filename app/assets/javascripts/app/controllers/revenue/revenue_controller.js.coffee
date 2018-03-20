@@ -2,6 +2,7 @@
   ['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem', 'PMP', 'PMPItemDailyActual', 'RevenueFilter', 'Deal', 'TimePeriod'
   ( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem,   PMP,   PMPItemDailyActual, RevenueFilter, Deal, TimePeriod) ->
     formatMoney = $filter('formatMoney')
+    $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
     $scope.isLoading = false
     $scope.allItemsLoaded = false
     $scope.revenue = []
@@ -19,7 +20,7 @@
       {name: 'My Team\'s Lines', value: 'teammates'}
       {name: 'All Lines', value: 'all'}
     ]
-    itemsPerPage = 20
+    itemsPerPage = 10
     $scope.filter =
       page: 1
       revenue: $routeParams.filter || ''
@@ -115,7 +116,7 @@
       onDropdownToggle: ->
         this.search = ''
       apply: (reset) ->
-        $scope.applyFilter()
+        $scope.applyFilter($scope.scrollCallback)
         if !reset then this.isOpen = false
       select: (key, value) ->
         RevenueFilter.select(key, value)
@@ -138,11 +139,11 @@
       switch key
         when 'revenue', 'pacing'
           $location.search({filter: $scope.filter.revenue, io_owner: $scope.filter.pacing})
-      $scope.applyFilter()
+      $scope.applyFilter($scope.scrollCallback)
 
-    $scope.applyFilter = ->
+    $scope.applyFilter = (callback) ->
       resetPagination()
-      getData(getQuery())
+      getData(getQuery(), callback)
 
     getQuery = ->
       f = $scope.filter
@@ -171,7 +172,7 @@
 
       query
 
-    getData = (query) ->
+    getData = (query, callback) ->
       $scope.isLoading = true
       revenueRequest = $q.defer()
       $scope.prevRequest = revenueRequest
@@ -196,7 +197,7 @@
         $scope.filter.externalIoNumbers = data.map( (resource) ->
           resource.external_io_number
         )
-        setRevenue data
+        setRevenue data, callback
 
     $scope.loadMoreRevenues = ->
       if !$scope.allItemsLoaded then getData(getQuery())
@@ -207,12 +208,13 @@
         item.budget_loc = parseInt item.budget_loc if item.budget_loc
         item
 
-    setRevenue = (data) ->
+    setRevenue = (data, callback) ->
       if data.length < itemsPerPage then $scope.allItemsLoaded = true
       parseBudget data
       $scope.revenue = $scope.revenue.concat data
       $scope.filter.page++
       $timeout -> $scope.isLoading = false
+      callback() if _.isFunction callback
 
     $scope.showIOEditModal = (io) ->
       $scope.modalInstance = $modal.open

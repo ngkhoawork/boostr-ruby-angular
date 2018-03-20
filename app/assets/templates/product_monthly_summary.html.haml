@@ -44,7 +44,7 @@
                     %th.z-sortable{by: 'closed_at'} Closed Date
                     %th.z-sortable{by: 'type'} Deal Type
                     %th.z-sortable{by: 'source'} Deal Source
-                %tbody{'ng-if': 'shouldRenderList', infinite: {scroll: 'loadMoreData()', 'scroll-disabled': 'isLoading || allItemsLoaded', 'scroll-distance': '0.5'}}
+                %tbody{'ng-if': 'shouldRenderList', infinite: {scroll: 'loadMoreData()', 'scroll-disabled': 'isLoading || allItemsLoaded', 'scroll-distance': '0.5', 'scroll-listen-for-event': 'lazy:scroll'}}
                   %tr{'ng-repeat': 'row in data | orderBy : zSort.by : zSort.rev'}
                     %td {{row.product.name}}
                     %td{'ng-repeat': 'cfName in customFieldNames'}
