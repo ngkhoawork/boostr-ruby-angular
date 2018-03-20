@@ -8,7 +8,7 @@ class Api::V2::DisplayLineItemBudgetsController < ApiController
         log_transaction(imported: true)
         render json: line_item_budget, status: :created
       rescue Exception => e
-        render json: { errors: e.message }, status: :unprocessable_entity
+        render json: { errors: [e.message] }, status: :unprocessable_entity
       end
     else
       log_transaction(imported: false)
