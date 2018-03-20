@@ -156,7 +156,7 @@ class Product < ActiveRecord::Base
 
   def check_recursive_parent_id
     if parent_id.present?
-      ids = [id]
+      ids = [id].compact
       while ids.present? 
         ids = company.products.where(parent_id: ids).pluck(:id)
         errors.add(:parent_product, "You can't select child product as parent") and break if ids.include?(parent_id)
