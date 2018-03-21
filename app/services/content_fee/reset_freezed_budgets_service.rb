@@ -35,8 +35,10 @@ class ContentFee::ResetFreezedBudgetsService
   end
 
   def reset_edge_products_date
-    first_budget = content_fee_product_budgets.for_year_month(first_product_date)&.first
-    end_budget = content_fee_product_budgets.for_year_month(end_product_date)&.first
+    start_edge_date = [first_product_date, start_date].max
+    end_edge_date = [end_product_date, end_date].min
+    first_budget = content_fee_product_budgets.for_year_month(start_edge_date)&.first
+    end_budget = content_fee_product_budgets.for_year_month(end_edge_date)&.first
 
     reset_budget_date(first_budget) if first_budget
     reset_budget_date(end_budget) if end_budget
