@@ -273,6 +273,15 @@ class Team < ActiveRecord::Base
     sales_reps
   end
 
+  def all_account_managers
+    account_managers = []
+    account_managers += members.by_user_type([ACCOUNT_MANAGER, MANAGER_ACCOUNT_MANAGER])
+    children.each do |child|
+      account_managers += child.all_account_managers
+    end
+    account_managers
+  end
+
   def all_leaders
     ls = leader.nil? ? []:[leader]
     children.each do |child|

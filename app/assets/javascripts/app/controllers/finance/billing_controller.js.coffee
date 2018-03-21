@@ -19,17 +19,12 @@
                 {name: 'Revenue', value: ''}
                 {name: 'Costs', value: 'costs'}
             ]
-            $scope.userTypes = [
-                { name: 'All', id: null }
-                { name: 'Account Manager', id: 3 }
-                { name: 'Manager Account Manager', id: 4 }
-            ]
             $scope.currentTab = ''
 
             $scope.costsFilter =
                 team: {id: null, name: 'All'}
                 user: defaultUser
-                userType: { name: 'All', id: null }
+                manager: defaultUser
 
             $scope.setTab = (tab) ->
                 $scope.currentTab = tab
@@ -83,7 +78,7 @@
                 filters = 
                     team_id: $scope.costsFilter.team.id
                     user_id: $scope.costsFilter.user.id
-                    user_type: $scope.costsFilter.userType.id
+                    manager_id: $scope.costsFilter.manager.id
 
                 Billing.getCosts(filters).then (data) ->
                     $scope.costs = data;
@@ -104,9 +99,12 @@
                     $scope.products = products
 
             getTeamUsers = (team_id) ->
-                Seller.query({id: team_id || 'all'}).$promise.then (users) ->
+                Seller.query({ id: team_id || 'all' }).$promise.then (users) ->
                     $scope.users = users
                     $scope.users.unshift(defaultUser)
+                Team.all_account_managers({ team_id: team_id || 'all' }).then (managers) ->
+                    $scope.managers = managers
+                    $scope.managers.unshift(defaultUser)
                    
             #set last month
             init = () ->
@@ -194,8 +192,8 @@
                     url += """team_id=#{$scope.costsFilter.team.id || ''}&"""
                 if $scope.costsFilter.user.id
                     url += """user_id=#{$scope.costsFilter.user.id || ''}&"""
-                if $scope.costsFilter.userType.id
-                    url += """user_type=#{$scope.costsFilter.userType.id || ''}&"""
+                if $scope.costsFilter.manager.id
+                    url += """manager_id=#{$scope.costsFilter.manager.id || ''}&"""
                 $window.open(url)
                 return
 
