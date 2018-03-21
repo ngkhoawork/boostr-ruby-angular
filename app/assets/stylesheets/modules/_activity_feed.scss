@@ -36,6 +36,9 @@
             p {
                 margin-bottom: 5px;
             }
+            * {
+                overflow-wrap: break-word;
+            }
         }
         .activity-control {
             a {
