@@ -88,7 +88,7 @@
 					%td.product-budget
 						%div{'ng-if': 'currentDeal.stage.open'}
 							%div.total-budget-wrap
-								%div.budget-value.total-budget{'click-to-edit':'click-to-edit', type: "number", 'ng-attr-prefix': "{{currency_symbol}}", 'ng-model': "deal_product.budget_loc", 'on-after-save': 'updateDealProduct(deal_product)'}
+								%div.budget-value.total-budget{'click-to-edit':'click-to-edit', type: "number", 'ng-attr-prefix': "{{currency_symbol}}", 'ng-model': "deal_product.budget_loc", 'on-after-save': 'updateDealProduct(deal_product)', 'numbers-with-commas': true}
 							%div.error-tooltip{'ng-show': 'deal_product.isIncorrectTotalBudgetPercent'}
 								Total budget percentage should be equal 100%
 							%span.budget-percent{ 'ng-class': "{'has-error':deal_product.isIncorrectTotalBudgetPercent}"}
@@ -108,12 +108,12 @@
 							%div.budget-value
 								%span.symbol.currency {{currency_symbol}}
 								%input.editable{ 'ng-model': 'deal_product_budget.budget_loc',
+												'numbers-with-commas': true,
 												'ng-change': 'changeMonthBudget(deal_product, deal_product_budget, $index, $event, "moneyOnFocus")',
 												'ng-keypress': 'changeMonthBudget(deal_product, deal_product_budget, $index, $event, "moneyOnFocus")',
 												'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "moneyOnFocus")',
-												id:'{{"deal_product_budget-" + deal_product_budget.id}}',
-												'ng-blur':'disableProductsEditMode(deal_product, deal_product.deal_product_budgets, deal_product_budget)',
-												'numbers-only': ''}
+												id: '{{"deal_product_budget-" + deal_product_budget.id}}',
+												'ng-blur': 'disableProductsEditMode(deal_product, deal_product.deal_product_budgets, deal_product_budget)' }
 							%span.glyphicon.glyphicon-link
 							%div.budget-percent
 								%input.editable.month-budget__percent{ 'ng-model': 'deal_product_budget.budget_percent',
