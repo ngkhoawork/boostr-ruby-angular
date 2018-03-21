@@ -9,6 +9,10 @@ class Api::BillingSummaryController < ApplicationController
     }
   end
 
+  def costs
+    render json: billing_costs_serializer
+  end
+
   def update_quantity
     if display_line_item_budget.update(display_line_item_budget_params)
       update_display_line_item_budget
@@ -39,14 +43,50 @@ class Api::BillingSummaryController < ApplicationController
     end
   end
 
+  def update_cost
+    if cost.update(cost_params)
+      render json: cost.reload, serializer: BillingSummary::CostSerializer
+    else
+      render json: { errors: cost.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   def export
     respond_to do |format|
       format.csv { send_data billing_summary_csv_report,
-                   filename: "billing-summary-#{params[:month]}-#{params[:year]}.csv" }
+                   filename: "billing-summary-revenue#{params[:month]}-#{params[:year]}.csv" }
+    end
+  end
+
+  def export_costs
+    respond_to do |format|
+      format.csv { send_data billing_summary_costs_csv_report,
+                   filename: "billing-summary-costs-#{Date.today}.csv" }
     end
   end
 
   private
+
+  def billing_summary_costs_csv_report
+    Csv::BillingCostsService.new(company, billing_costs_data).perform
+  end
+
+  def billing_costs_serializer
+    ActiveModel::ArraySerializer.new(
+      billing_costs_data,
+      each_serializer: BillingSummary::CostSerializer
+    )
+  end
+
+  def billing_costs_data
+    BillingCostsQuery.new(billing_costs_params).perform
+  end
+
+  def billing_costs_params
+    params
+      .permit(:team_id, :user_id, :user_type)
+      .merge(company_id: current_user.company_id)
+  end
 
   def ios_for_approval_serializer
     ActiveModel::ArraySerializer.new(
@@ -115,6 +155,10 @@ class Api::BillingSummaryController < ApplicationController
     @_company ||= current_user.company
   end
 
+  def cost
+    @_cost ||= Cost.find(params[:id])
+  end
+
   def display_line_item
     @_display_line_item ||= display_line_item_budget.display_line_item
   end
@@ -129,6 +173,22 @@ class Api::BillingSummaryController < ApplicationController
 
   def content_fee
     @_content_fee ||= content_fee_product_budget.content_fee
+  end
+
+  def cost_params
+    params.require(:cost).permit(
+      :budget_loc,
+      :product_id,
+      :type,
+      {
+        values_attributes: [
+          :id,
+          :field_id,
+          :option_id,
+          :value
+        ],
+      }
+    )
   end
 
   def display_line_item_budget_params
