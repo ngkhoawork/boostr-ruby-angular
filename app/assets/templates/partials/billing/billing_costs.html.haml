@@ -26,8 +26,8 @@
               %span {{costsFilter.userType.name}}
               %span.caret
             %ul.dropdown-menu.month-dropdown
-              %li{'ng-repeat': 'userType in userTypes', 'ng-class': '{active: filter.userType.id == userType.id}'}
-                %a{'href': '', 'ng-click': 'setCostsFilter("userType", userType)'}
+              %li{'ng-repeat': 'manager in managers', 'ng-class': '{active: filter.manager.id == manager.id}'}
+                %a{'href': '', 'ng-click': 'setCostsFilter("manager", manager)'}
                   %span {{userType.name}}
 
 %div

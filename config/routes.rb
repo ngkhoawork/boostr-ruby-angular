@@ -361,6 +361,7 @@ Rails.application.routes.draw do
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
       collection do
         get :all_members
+        get :all_account_managers
       end
       get :members
       get :all_sales_reps
