@@ -1791,8 +1791,10 @@ class Deal < ActiveRecord::Base
   end
 
   def update_egnyte_folder_name
-    return unless company.egnyte_integration && previous_changes[:name]
+    return unless company.egnyte_integration && (previous_changes[:name] || previous_changes[:advertiser_id])
 
-    UpdateEgnyteDealFolderNameWorker.perform_async(company.egnyte_integration.id, id)
+    advertiser_changed = previous_changes[:advertiser_id].present?
+
+    UpdateEgnyteDealFolderNameWorker.perform_async(company.egnyte_integration.id, id, advertiser_changed)
   end
 end

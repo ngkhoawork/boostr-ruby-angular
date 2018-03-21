@@ -60,10 +60,6 @@ class Egnyte::Actions::GetNavigateUri::Base
     @egnyte_folder ||= record.egnyte_folder
   end
 
-  def encode_space_sign(str)
-    str.gsub(/ /, ENCODED_SPACE_SIGN)
-  end
-
   def record
     raise NotImplementedError, __method__
   end

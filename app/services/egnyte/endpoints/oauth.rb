@@ -20,14 +20,10 @@ class Egnyte::Endpoints::Oauth < Egnyte::Endpoints::Net
 
   private
 
-  delegate :required_option_keys, :predefined_request_params, to: self
+  delegate :required_option_keys, :predefined_request_params, to: :class
 
   def request_method
     :post
-  end
-
-  def domain
-    @options[:domain].sub(/https?:\/\//, '')
   end
 
   def path

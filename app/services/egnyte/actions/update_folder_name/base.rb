@@ -1,6 +1,4 @@
 class Egnyte::Actions::UpdateFolderName::Base
-  ENCODED_SPACE_SIGN = '%20'.freeze
-
   def self.required_option_keys
     raise NotImplementedError, __method__
   end
@@ -43,10 +41,6 @@ class Egnyte::Actions::UpdateFolderName::Base
 
   def egnyte_folder
     @egnyte_folder ||= record.egnyte_folder
-  end
-
-  def encode_space_sign(str)
-    str.gsub(/ /, ENCODED_SPACE_SIGN)
   end
 
   def record

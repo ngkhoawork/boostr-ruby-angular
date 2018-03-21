@@ -23,10 +23,6 @@ class Egnyte::Endpoints::MoveFolder < Egnyte::Endpoints::Net
     :post
   end
 
-  def domain
-    @options[:domain].sub(/https?:\/\//, '')
-  end
-
   def path
     "pubapi/v1/fs/ids/folder/#{@options[:folder_id]}"
   end

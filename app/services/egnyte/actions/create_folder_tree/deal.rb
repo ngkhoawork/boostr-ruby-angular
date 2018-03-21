@@ -4,7 +4,7 @@ class Egnyte::Actions::CreateFolderTree::Deal < Egnyte::Actions::CreateFolderTre
       @required_option_keys ||= %i(egnyte_integration_id deal_id)
     end
 
-    def folder_tree_attribute_name
+    def folder_tree_attr_name
       :deal_folder_tree
     end
   end
@@ -12,15 +12,11 @@ class Egnyte::Actions::CreateFolderTree::Deal < Egnyte::Actions::CreateFolderTre
   private
 
   def root_folder_path
-    "Shared/Accounts/#{encoded_advertiser_name}/Deals/#{encoded_deal_name}"
+    @root_folder_path ||= File.join(parent_folder_path, 'Deals', record.name)
   end
 
-  def encoded_advertiser_name
-    encode_space_sign(record.advertiser_name)
-  end
-
-  def encoded_deal_name
-    encode_space_sign(record.name)
+  def parent_folder_path
+    Egnyte::PrivateActions::BuildAccountFolderPath.new(client_id: record.advertiser_id, ensure_folders: true).perform
   end
 
   def record

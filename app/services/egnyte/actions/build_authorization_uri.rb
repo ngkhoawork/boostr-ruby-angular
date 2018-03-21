@@ -36,7 +36,7 @@ class Egnyte::Actions::BuildAuthorizationUri
 
   private
 
-  delegate :required_option_keys, :predefined_request_params, to: self
+  delegate :required_option_keys, :predefined_request_params, to: :class
 
   def url_embedded_request_params
     request_params.map { |key, value| "#{key}=#{value}" }.join('&')

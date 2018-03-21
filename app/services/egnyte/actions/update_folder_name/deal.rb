@@ -6,7 +6,20 @@ class Egnyte::Actions::UpdateFolderName::Deal < Egnyte::Actions::UpdateFolderNam
   private
 
   def root_folder_path
-    "/Shared/Accounts/#{record.advertiser_name}/Deals/#{record.name}"
+    @root_folder_path ||= File.join(parent_folder_path, 'Deals', record.name)
+  end
+
+  def parent_folder_path
+    ensure_folders = @options[:advertiser_changed] || egnyte_folder&.path.nil?
+
+    build_parent_folder_path(ensure_folders)
+  end
+
+  def build_parent_folder_path(ensure_folders)
+    Egnyte::PrivateActions::BuildAccountFolderPath.new(
+      client_id: record.advertiser_id,
+      ensure_folders: ensure_folders
+    ).perform
   end
 
   def record

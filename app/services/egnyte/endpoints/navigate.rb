@@ -23,10 +23,6 @@ class Egnyte::Endpoints::Navigate < Egnyte::Endpoints::Net
     :post
   end
 
-  def domain
-    @options[:domain].sub(/https?:\/\//, '')
-  end
-
   def path
     'pubapi/v2/navigate'
   end

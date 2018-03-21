@@ -75,6 +75,7 @@ class Client < ActiveRecord::Base
 
   before_create :ensure_client_member
   after_commit :update_account_dimension, on: [:create, :update]
+
   after_commit :setup_egnyte_folders, on: [:create]
   after_commit :update_egnyte_folder_name, on: [:update]
 
@@ -609,8 +610,10 @@ class Client < ActiveRecord::Base
   end
 
   def update_egnyte_folder_name
-    return unless company.egnyte_integration && previous_changes[:name]
+    return unless company.egnyte_integration && (previous_changes[:name] || previous_changes[:parent_client_id])
 
-    UpdateEgnyteClientFolderNameWorker.perform_async(company.egnyte_integration.id, id)
+    parent_changed = previous_changes[:parent_client_id].present?
+
+    UpdateEgnyteClientFolderNameWorker.perform_async(company.egnyte_integration.id, id, parent_changed)
   end
 end

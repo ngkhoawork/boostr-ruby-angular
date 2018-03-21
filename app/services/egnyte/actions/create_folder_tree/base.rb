@@ -1,12 +1,10 @@
 class Egnyte::Actions::CreateFolderTree::Base
-  ENCODED_SPACE_SIGN = '%20'.freeze
-
   class << self
     def required_option_keys
       raise NotImplementedError, __method__
     end
 
-    def folder_tree_attribute_name
+    def folder_tree_attr_name
       raise NotImplementedError, __method__
     end
   end
@@ -29,7 +27,7 @@ class Egnyte::Actions::CreateFolderTree::Base
 
   private
 
-  delegate :required_option_keys, :folder_tree_attribute_name, to: :class
+  delegate :required_option_keys, :folder_tree_attr_name, to: :class
   delegate :access_token, :app_domain, :enabled_and_connected?, to: :egnyte_integration
 
   def traverse_folder_tree(node, &block)
@@ -48,16 +46,13 @@ class Egnyte::Actions::CreateFolderTree::Base
 
   def folder_tree_pattern
     egnyte_integration
-      .send(folder_tree_attribute_name)
+      .send(folder_tree_attr_name)
       .deep_dup
       .deep_symbolize_keys!
   end
 
   def build_folder_path(parent_folder_path, child_folder_title)
-    File.join(
-      parent_folder_path,
-      encode_space_sign(child_folder_title)
-    )
+    File.join(parent_folder_path, child_folder_title)
   end
 
   def save_root_folder
@@ -85,10 +80,6 @@ class Egnyte::Actions::CreateFolderTree::Base
 
   def egnyte_folder
     @egnyte_folder ||= record.egnyte_folder || record.build_egnyte_folder
-  end
-
-  def encode_space_sign(str)
-    str.gsub(/ /, ENCODED_SPACE_SIGN)
   end
 
   def record

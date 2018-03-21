@@ -19,9 +19,6 @@ class Egnyte::Endpoints::GetFolderByPath < Egnyte::Endpoints::Net
     :get
   end
 
-  def domain
-    @options[:domain].sub(/https?:\/\//, '')
-  end
 
   def path
     "pubapi/v1/fs/#{@options[:folder_path]}"

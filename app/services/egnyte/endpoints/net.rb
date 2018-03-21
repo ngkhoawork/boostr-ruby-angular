@@ -6,8 +6,10 @@ class Egnyte::Endpoints::Net
   PAYLOAD_SUPPORTED_METHODS = %i(post put patch).freeze
   STATUS_CODES = {
     success: %w(200 201 204),
-    queries_rate_exceeded: %w(403)
+    queries_rate_exceeded: %w(403),
+    not_found: %w(404)
   }.freeze
+  ENCODED_SPACE_SIGN = '%20'.freeze
   MAX_REQUEST_RETRY_COUNTS = 3
 
   attr_reader :response
@@ -40,6 +42,10 @@ class Egnyte::Endpoints::Net
     STATUS_CODES[:success].include?(response_code)
   end
 
+  def not_found?
+    STATUS_CODES[:not_found].include?(response_code)
+  end
+
   def parsed_response_body
     @parsed_response_body ||= JSON.parse(@response.body, symbolize_names: true) if @response&.body.present?
   end
@@ -68,9 +74,13 @@ class Egnyte::Endpoints::Net
   end
 
   def uri
-    @uri ||= URI("https://#{domain}/#{path}").tap do |uri|
+    @uri ||= URI("https://#{domain}/#{encoded_path}").tap do |uri|
       uri.query = URI.encode_www_form(request_params) unless PAYLOAD_SUPPORTED_METHODS.include?(request_method)
     end
+  end
+
+  def encoded_path
+    path.gsub(/ /, ENCODED_SPACE_SIGN)
   end
 
   def payload
@@ -85,11 +95,11 @@ class Egnyte::Endpoints::Net
     {}
   end
 
-  def request_method
-    raise NotImplementedError, __method__
+  def domain
+    @options[:domain].sub(/https?:\/\//, '')
   end
 
-  def domain
+  def request_method
     raise NotImplementedError, __method__
   end
 

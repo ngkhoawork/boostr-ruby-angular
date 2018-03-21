@@ -4,19 +4,23 @@ class Egnyte::Actions::CreateFolderTree::Account < Egnyte::Actions::CreateFolder
       @required_option_keys ||= %i(egnyte_integration_id advertiser_id)
     end
 
-    def folder_tree_attribute_name
+    def folder_tree_attr_name
       :account_folder_tree
     end
   end
 
   private
 
+  delegate :accounts_folder_path, to: :class
+
   def root_folder_path
-    "Shared/Accounts/#{encoded_advertiser_name}"
+    @root_folder_path ||= File.join(parent_folder_path, 'Accounts', record.name)
   end
 
-  def encoded_advertiser_name
-    encode_space_sign(record.name)
+  def parent_folder_path
+    return Egnyte::PrivateActions::BuildAccountFolderPath.app_folder_path unless record.parent_client_id
+
+    Egnyte::PrivateActions::BuildAccountFolderPath.new(client_id: record.parent_client_id, ensure_folders: true).perform
   end
 
   def record
