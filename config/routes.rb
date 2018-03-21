@@ -469,12 +469,16 @@ Rails.application.routes.draw do
     end
     resources :billing_summary, only: [:index] do
       member do
+        put :update_cost
         put :update_quantity
         put :update_content_fee_product_budget
         put :update_display_line_item_budget_billing_status
       end
 
+      get 'costs', on: :collection
+
       get :export, on: :collection
+      get :export_costs, on: :collection
     end
     resources :requests, only: [:index, :show, :create, :update, :destroy]
 

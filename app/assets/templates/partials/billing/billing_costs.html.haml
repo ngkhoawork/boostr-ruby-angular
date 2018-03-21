@@ -1,0 +1,77 @@
+.row.mb40
+  .reports-header
+    .billing-header-col
+      %form.form-inline.filter-form
+        .form-group
+          %label
+            Team
+          .team-filter
+            %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'costsFilter.team'}
+        .form-group
+          %label
+            Seller
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{costsFilter.user.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'user in users | orderBy : "name"', 'ng-class': '{active: filter.user.name == user.name}'}
+                %a{'href': '', 'ng-click': 'setCostsFilter("user", user)'}
+                  %span {{user.name}}
+        .form-group
+          %label
+            Account Manager
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{costsFilter.userType.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'userType in userTypes', 'ng-class': '{active: filter.userType.id == userType.id}'}
+                %a{'href': '', 'ng-click': 'setCostsFilter("userType", userType)'}
+                  %span {{userType.name}}
+
+%div
+  .row.block.mb20
+    %div.mb20
+      %span.title Costs
+    %div{'ng-show': '!costs.length && !dataIsLoading'}
+      %h4 No Data Available
+    %div.table-wrap{'ng-hide': '!costs.length && !dataIsLoading'}
+      %table.table.table-hover.ios-for-approval
+        %thead
+          %tr
+            %th IO #
+            %th IO Name
+            %th Product
+            %th Amount
+            %th.text-right Cost Type
+        %tbody.hide-input-arrows
+          %tr{'ng-repeat': 'item in costs'}
+            %td
+              %b {{item.io_number}}
+            %td
+              %b {{item.io_name}}
+            %td
+              .dropdown{'ng-click': 'fixingDropdownPosition($event)'}
+                %div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                  %span.text.editable
+                    {{item.product || 'Select product'}}
+                  %span.caret
+                %ul.dropdown-menu
+                  %li{'ng-repeat': 'product in products'}
+                    %a{'href': '', 'ng-click': 'item.product_id = product.id; updateCost(item)'}
+                      %span.text {{product.name}}
+            %td
+              %span.display-fee-product-budget{'editable-number': 'item.amount', 'e-step': '0.01', blur: 'submit', onbeforesave: 'item.budget_loc = $data; updateCost(item)'}
+                {{ item.amount | currency : item.currency_symbol : 2 }}
+
+            %td.text-right
+              .dropdown{'ng-click': 'fixingDropdownPosition($event, "right")'}
+                %div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                  %span.text.editable
+                    {{item.type.option.name || 'Select type'}}
+                  %span.caret
+                %ul.dropdown-menu
+                  %li{'ng-repeat': 'type in item.type.options'}
+                    %a{'href': '', 'ng-click': 'item.type.option_id = type.id; updateCost(item)'}
+                      %span.text {{type.name}}
