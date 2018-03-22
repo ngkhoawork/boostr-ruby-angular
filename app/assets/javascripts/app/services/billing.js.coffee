@@ -20,6 +20,9 @@
                     method: 'PUT'
                     url: 'api/billing_summary/:id/update_cost'
                     transformRequest: transformRequest
+                updateCostBudget:
+                    method: 'PUT'
+                    url: 'api/billing_summary/:id/update_cost_budget'
                 updateContentFee:
                     method: 'PUT'
                     url: 'api/billing_summary/:id/update_content_fee_product_budget'
@@ -73,6 +76,16 @@
                         id: data.id
                         display_line_item_budget:
                             quantity: data.quantity
+                    },
+                    (resp) -> deferred.resolve(resp)
+                    (resp) -> deferred.reject(resp)
+                deferred.promise
+
+            @updateCostBudget = (data) ->
+                deferred = $q.defer()
+                resource.updateCostBudget {
+                        id: data.id
+                        cost_budget: data
                     },
                     (resp) -> deferred.resolve(resp)
                     (resp) -> deferred.reject(resp)

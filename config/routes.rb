@@ -479,6 +479,7 @@ Rails.application.routes.draw do
     resources :billing_summary, only: [:index] do
       member do
         put :update_cost
+        put :update_cost_budget
         put :update_quantity
         put :update_content_fee_product_budget
         put :update_display_line_item_budget_billing_status
@@ -487,7 +488,7 @@ Rails.application.routes.draw do
       get 'costs', on: :collection
 
       get :export, on: :collection
-      get :export_costs, on: :collection
+      get :export_cost_budgets, on: :collection
     end
     resources :requests, only: [:index, :show, :create, :update, :destroy]
 

@@ -1,6 +1,6 @@
-class Csv::BillingCostsDecorator
-  def initialize(cost, company, field)
-    @cost = cost
+class Csv::BillingCostBudgetsDecorator
+  def initialize(cost_budget, company, field)
+    @cost_budget = cost_budget
     @company = company
     @field = field
   end
@@ -18,7 +18,7 @@ class Csv::BillingCostsDecorator
   end
 
   def amount
-    cost.budget_loc
+    cost_budget.budget_loc
   end
 
   def cost_type
@@ -27,7 +27,11 @@ class Csv::BillingCostsDecorator
 
   private
 
-  attr_reader :cost, :field
+  attr_reader :cost_budget, :field
+
+  def cost
+    cost_budget.cost
+  end
 
   def io
     @_io ||= cost.io
