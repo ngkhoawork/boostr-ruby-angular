@@ -39,9 +39,10 @@ class Cost::ResetFreezedAmountsService
   end
 
   def reset_edge_amounts_date
-    first_amount = cost_monthly_amounts.for_year_month(first_amount_date)&.first
-    end_amount = cost_monthly_amounts.for_year_month(end_amount_date)&.first
-
+    start_edge_date = [first_amount_date, start_date].max
+    end_edge_date = [end_amount_date, end_date].min
+    first_amount = cost_monthly_amounts.for_year_month(start_edge_date)&.first
+    end_amount = cost_monthly_amounts.for_year_month(end_edge_date)&.first
     reset_amount_date(first_amount) if first_amount
     reset_amount_date(end_amount) if end_amount
   end
