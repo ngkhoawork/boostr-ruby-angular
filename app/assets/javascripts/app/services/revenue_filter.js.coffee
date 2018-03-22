@@ -12,7 +12,7 @@
             endDate: null
         @isEmpty = true
         @ioNumber = ''
-        @ioExteranlNumber = ''
+        @externalIoNumber = ''
         return
 
     selected = new Selection()

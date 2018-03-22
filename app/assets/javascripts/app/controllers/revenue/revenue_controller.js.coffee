@@ -27,8 +27,6 @@
       name: ''
       isOpen: false
       search: ''
-      ioNumbers: []
-      externalIoNumbers: []
       minBudget: null
       maxBudget: null
       selected: RevenueFilter.selected
@@ -193,12 +191,6 @@
         else
           IO.query query, (ios) -> revenueRequest.resolve ios
       revenueRequest.promise.then (data) ->
-        $scope.filter.ioNumbers = data.map( (resource) ->
-          resource.io_number
-        )
-        $scope.filter.externalIoNumbers = data.map( (resource) ->
-          resource.external_io_number
-        )
         setRevenue data
 
     $scope.loadMoreRevenues = ->
