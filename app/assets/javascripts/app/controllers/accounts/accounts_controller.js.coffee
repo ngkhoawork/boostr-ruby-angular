@@ -1,6 +1,6 @@
 @app.controller 'AccountsController',
-['$scope', '$filter', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts', 'ClientsTypes', 'AccountsFilter','CurrentUser'
-($scope, $filter, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http, ClientContacts, ClientsTypes, AccountsFilter, CurrentUser) ->
+['$scope', '$filter', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts', 'ClientsTypes', 'AccountsFilter'
+($scope, $filter, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http, ClientContacts, ClientsTypes, AccountsFilter) ->
   formatMoney = $filter('formatMoney')
   $scope.query = ""
   $scope.page = 1
@@ -8,20 +8,11 @@
   $scope.isLoading = false
   $scope.isClientsLoading = false
   $scope.allClientsLoaded = false
-  $scope.allow_edit = false;
   $scope.accountTypes = [
     {name: 'My Accounts', param: ''}
     {name: 'My Team\'s Accounts', param: 'team'}
     {name: 'All', param: 'all'}
   ]
-
-  $scope.checkPermissions = ->
-    if !$scope.currentUser.is_admin && $scope.currentClient.is_multibuyer
-      $scope.allow_edit = false
-    else if $scope.currentUser.is_admin && $scope.currentClient.is_multibuyer
-      $scope.allow_edit = true
-    else
-      $scope.allow_edit = true
 
   $scope.teamFilter = (value) ->
     if value then AccountsFilter.teamFilter = value else AccountsFilter.teamFilter

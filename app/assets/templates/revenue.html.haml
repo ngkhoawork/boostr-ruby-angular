@@ -174,7 +174,6 @@
 
             %tbody{ 'ng-include': "'partials/revenue_no_match_display_rows.html'" }
 
-
           %div#pmp_item_daily_actials{ng: {if: "filter.revenue == 'no-match-adv'"}}
             %tr
               %td
@@ -199,9 +198,7 @@
                   %th.right
                     %span.z-sortable{by: 'revenue_loc'} Revenue
                   %th.right
-
               %tbody{ 'ng-include': "'partials/revenue_no_match_advertiser_rows.html'" }
-
           %div#pmp_item_daily_actials{ng: {if: "filter.revenue == 'no-match-adv-ssp-advertisers'"}}
             %tr
               %td
@@ -218,7 +215,6 @@
                   %th.left
                     %span.z-sortable{by: 'ssp_advertiser'} Advertiser
                   %th.right
-
               %tbody{ 'ng-include': "'partials/revenue_no_match_advertiser_rows_ssp.html'"}
 
           %table.table.table-hover{ng: {if: "filter.revenue == 'pmp'"}}

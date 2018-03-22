@@ -29,11 +29,12 @@ class Csv::ActivePmpObject
   end
 
   def check_advertiser
-    ::Client.find_by(name: advertiser,company_id: company_id)&.id
-  end
-
-  def ssp_advertiser
-    SspAdvertiser.find_or_create_by(name: advertiser,company_id: company_id)
+    client = ::Client.find_by(name: advertiser,company_id: company_id)
+    if client.present?
+      client.id
+    else
+      raise_error("Advertiser")
+    end
   end
 
   def check_agency
@@ -73,7 +74,7 @@ class Csv::ActivePmpObject
   end
 
   def active_pmp_object_params
-    params = {
+    {
       name: name,
       advertiser_id: check_advertiser,
       agency_id: check_agency,
@@ -83,10 +84,6 @@ class Csv::ActivePmpObject
       pmp_members: create_pmp_members,
       skip_callback: true
     }
-
-    unless check_advertiser.present?
-      params.merge!(ssp_advertiser: ssp_advertiser)
-    end
   end
 
 end
