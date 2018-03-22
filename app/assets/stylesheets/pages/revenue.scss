@@ -118,6 +118,34 @@
     .filter-row {
       margin-top: 0;
 
+      .filter-textbox {
+        width: 63%;
+        display: inline-block;
+        position: relative;
+
+        input {
+          display: block;
+          width: 100%;
+          font-size: 14px;
+          font-weight: bold;
+          color: #000;
+          position: relative;
+          border: 0;
+          border-bottom: 1px solid #eaebec;
+          padding: 0 15px 5px 5px;
+
+          &::placeholder {
+            color: #d0d2d3;
+            font-size: 12px;
+            font-weight: normal;
+          }
+
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+
       span {
         display: inline;
         padding: 0;
