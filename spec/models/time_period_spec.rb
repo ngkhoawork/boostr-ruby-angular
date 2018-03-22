@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe TimePeriod, type: :model do
+  let!(:company) { create :company }
+
   context 'scopes' do
     let!(:time_period) { create :time_period }
 
@@ -53,14 +55,5 @@ RSpec.describe TimePeriod, type: :model do
       another_time_period = build(:time_period, name: time_period.name)
       expect(another_time_period).to be_valid
      end
-  end
-
-  context 'quotas' do
-    it 'should create a quota for each user of the company' do
-      create_list :user, 2
-      expect {
-        create :time_period
-      }.to change(Quota, :count).by(2)
-    end
   end
 end

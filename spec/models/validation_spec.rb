@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Validation, type: :model do
-  let(:validation) { create :validation }
+  let!(:company) { create :company }
+  let(:validation) { create :validation, company: company }
   let(:new_company) { create :company }
 
   context 'associations' do
@@ -21,7 +22,7 @@ RSpec.describe Validation, type: :model do
     end
 
     it 'allows to create different validations for same company_id' do
-      not_duplicate = build :validation
+      not_duplicate = build :validation, company: company
       expect(not_duplicate).to be_valid
     end
   end

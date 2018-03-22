@@ -69,7 +69,7 @@ module Helpers
   end
 
   def client_role_field(company)
-    company.fields.where(name: 'Member Role').first
+    company.fields.find_or_initialize_by(subject_type: 'Client', name: 'Member Role', value_type: 'Option', locked: true)
   end
 
   def create_member_role(company, name="Owner")

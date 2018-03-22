@@ -1,14 +1,20 @@
 class DealProduct < ActiveRecord::Base
   belongs_to :deal, touch: true
   belongs_to :product
+  belongs_to :ssp
   has_many :deal_product_budgets, -> { order(:start_date) }, dependent: :destroy
   has_one :deal_product_cf, dependent: :destroy
 
+  enum pmp_type: PMP_TYPES
+
   validates :product, presence: true
+  validates :budget, :budget_loc, numericality: true
   validate :active_exchange_rate
 
   accepts_nested_attributes_for :deal_product_budgets
   accepts_nested_attributes_for :deal_product_cf
+
+  before_validation :ensure_budget_attributes_have_values
 
   after_create do
     if deal_product_budgets.empty?
@@ -42,6 +48,7 @@ class DealProduct < ActiveRecord::Base
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) if product_ids.present? }
   scope :open, ->  { where('deal_products.open IS true')  }
   scope :active, -> { DealProduct.joins('LEFT JOIN products ON deal_products.product_id = products.id').where('products.active IS true') }
+  scope :created_asc, -> { order(:created_at) }
 
   def update_pipeline_fact_callback
     update_forecast_pipeline_product(self) if budget_changed? || budget_loc_changed? || open_changed?
@@ -299,6 +306,11 @@ class DealProduct < ActiveRecord::Base
   end
 
   private
+
+  def ensure_budget_attributes_have_values
+    self.budget = 0 if budget.nil?
+    self.budget_loc = 0 if budget_loc.nil?
+  end
 
   def self.import_custom_field(obj, row)
     params = {}

@@ -16,6 +16,7 @@
 @import "kpi_analytics";
 @import "monthly_forecasts";
 @import "io";
+@import "pmp";
 @import "settings/team";
 @import "settings/currencies";
 @import "settings/time_periods";
@@ -51,5 +52,6 @@
 @import "spend_by_category";
 @import "publishers";
 @import "publisher";
+@import "quotas";
 
 html,body { height:100%; }

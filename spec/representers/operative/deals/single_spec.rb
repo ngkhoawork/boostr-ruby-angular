@@ -1,7 +1,10 @@
 require 'rails_helper'
 
 describe Operative::Deals::Single, operative: true do
-  before { create :billing_deal_contact, deal: deal, contact: contact }
+  before do
+    create :billing_address_validation, company: company
+    create :billing_deal_contact, deal: deal, contact: contact
+  end
 
   it 'has proper mapped value' do
     expect(deal_mapper).to include deal_name

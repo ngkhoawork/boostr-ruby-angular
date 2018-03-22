@@ -78,7 +78,9 @@ Rails.application.routes.draw do
       post 'forgot_password' => 'forgot_password#create'
       post 'resend_confirmation' => 'forgot_password#create'
 
-      resources :user_token, only: [:create]
+      resources :user_token, only: [:create] do
+        post :extension, on: :collection
+      end
       resources :token_check, only: [:index]
 
       resource :dashboard, only: [:show]
@@ -88,6 +90,7 @@ Rails.application.routes.draw do
       resources :activities, only: [:index, :create, :show, :update, :destroy]
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
+        get :pipeline_by_stages, on: :collection
         get :won_deals, on: :collection
         get :find_by_id, on: :member
         resources :deal_products, only: [:create, :update, :destroy]
@@ -244,6 +247,7 @@ Rails.application.routes.draw do
         get :search_clients
         get :filter_options
         get :category_options
+        get :fuzzy_search
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index, :create, :update, :destroy] do
@@ -296,9 +300,24 @@ Rails.application.routes.draw do
     end
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
       put :update_influencer_budget
+      post :import_content_fee, on: :collection
+      post :import_costs, on: :collection
+      get :export_costs, on: :collection
+      resources :costs, only: [:create, :update, :destroy]
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]
     end
+    resources :pmps, only: [:index, :show, :create, :update, :destroy] do
+      resources :pmp_members, only: [:create, :update, :destroy]
+      resources :pmp_items, only: [:create, :update, :destroy]
+    end
+    resources :pmp_item_daily_actuals, only: [:index, :update, :destroy] do
+      post :import, on: :collection
+      post :assign_advertiser, on: :member
+      post :bulk_assign_advertiser, on: :collection
+      get :aggregate, on: :collection
+    end
+    resources :ssps, only: [:index]
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
       resources :deal_products, only: [:create, :update, :destroy]
       collection do
@@ -361,6 +380,8 @@ Rails.application.routes.draw do
     resources :forecasts, only: [:index, :show] do
       collection do
         get :revenue_data
+        get :pmp_data
+        get :pmp_product_data
         get :pipeline_data
         get :old_detail
         get :detail
@@ -375,7 +396,7 @@ Rails.application.routes.draw do
       end
     end
     resources :options, only: [:create, :update, :destroy]
-    resources :validations, only: [:index, :update] do
+    resources :validations, only: [:index, :update, :create, :destroy] do
       collection do
         get :account_base_fields
         get :deal_base_fields
@@ -493,12 +514,21 @@ Rails.application.routes.draw do
       post :import, on: :collection
     end
 
+    resources :active_pmps, only: [] do
+      collection do
+        post :import_item
+        post :import_object
+      end
+    end
+
     resources :sales_stages, only: [:index, :create, :update] do
       put :update_positions, on: :collection
     end
 
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
+
+    resources :sales_processes, only: [:index, :create, :show, :update]
   end
 
   mount Sidekiq::Web => '/sidekiq'

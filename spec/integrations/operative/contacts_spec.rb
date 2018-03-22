@@ -1,7 +1,10 @@
 require 'rails_helper'
 
 describe 'Contacts integration', operative: true do
-  before { create :billing_deal_contact, deal: deal, contact: contact }
+  before do
+    create :billing_address_validation, company: company
+    create :billing_deal_contact, deal: deal, contact: contact
+  end
 
   context 'create contact' do
     let(:response) { Operative::ContactsService.new(contact, advertiser_name, auth_details, deal.id).perform }

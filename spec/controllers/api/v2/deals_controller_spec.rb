@@ -1,26 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Api::V2::DealsController, type: :controller do
-  let(:company) { create :company }
-  let(:team) { create :parent_team, company: company }
-  let(:user) { create :user, company: company, team: team }
-  let(:advertiser) { create :client, company: company }
-  let(:stage) { create :stage, company: company, position: 1 }  
   let(:deal_params) { attributes_for(:deal, advertiser_id: advertiser.id, budget: '31000', stage_id: stage.id) }
-  let(:deal) { create :deal, company: company }
 
   before do
     valid_token_auth user
   end
 
   describe 'GET #index' do
-    let!(:leader_deal) { create :deal, company: company, advertiser: advertiser }
-
-    let(:user_deal) { create :deal, company: company, advertiser: advertiser }
+    let!(:leader_deal) { create :deal, company: company, advertiser: advertiser, stage: stage }
     let!(:deal_member) { create :deal_member, deal: user_deal, user: user  }
-
-    let(:team_deal) { create :deal, company: company, advertiser: advertiser }
-    let(:another_user) { create :user, company: company, team: team }
     let!(:another_deal_member) { create :deal_member, deal: team_deal, user: another_user  }
 
     it 'returns a list of deals for the current_user' do
@@ -45,6 +34,78 @@ RSpec.describe Api::V2::DealsController, type: :controller do
 
       expect(response).to be_success
       expect(json_response.length).to eq(3)
+    end
+  end
+
+  describe 'GET #pipeline_by_stages' do
+    let!(:leader_deal) { create :deal, company: company, advertiser: advertiser, stage: stage }
+    let!(:deal_member) { create :deal_member, deal: user_deal, user: user  }
+    let!(:another_deal_member) { create :deal_member, deal: team_deal, user: another_user  }
+
+    let(:params) { {} }
+
+    subject { get :pipeline_by_stages, params }
+
+    context 'when filter param is absent' do
+      it 'returns a list of deals for the current_user' do
+        subject
+
+        expect(response).to be_success
+        expect(json_response[0]['stage_id']).to eq stage.id
+        expect(json_response[0]['deals'].length).to eq(1)
+        expect(json_response[0]['deals'][0]['id']).to eq(user_deal.id)
+      end
+    end
+
+    context 'when filter param is set to team' do
+      let(:params) { { filter: 'team' } }
+
+      it 'returns a list of the deals for the current_user team' do
+        subject
+
+        expect(response).to be_success
+        expect(json_response[0]['stage_id']).to eq stage.id
+        expect(json_response[0]['deals'].length).to eq(2)
+      end
+    end
+
+    context 'when filter param is set to company' do
+      let(:params) { { filter: 'company' } }
+
+      before { team.update(leader: user) }
+
+      it 'returns a list of deals for the current_user company' do
+        subject
+
+        expect(response).to be_success
+        expect(json_response[0]['stage_id']).to eq stage.id
+        expect(json_response[0]['deals'].length).to eq(3)
+      end
+    end
+
+
+    context 'when name param is set' do
+      let(:params) { { name: leader_deal.name } }
+
+      it 'returns deals fitting to name param' do
+        subject
+
+        expect(response).to be_success
+        expect(json_response[0]['stage_id']).to eq stage.id
+        expect(json_response[0]['deals'][0]['id']).to eq leader_deal.id
+      end
+    end
+
+    context 'when year param is set' do
+      let(:params) { { year: leader_deal.start_date.year } }
+
+      it 'returns deals fitting to name param' do
+        subject
+
+        expect(response).to be_success
+        expect(json_response[0]['stage_id']).to eq stage.id
+        expect(json_response[0]['deals'].map { |deal| deal['id'] }).to include leader_deal.id
+      end
     end
   end
 
@@ -166,5 +227,43 @@ RSpec.describe Api::V2::DealsController, type: :controller do
       expect(json_response['id']).to eq deal.id
       expect(json_response['name']).to eq deal.name
     end
+  end
+
+  private
+
+  def company
+    @_company ||= create(:company)
+  end
+
+  def stage
+    @_stage ||= create(:stage, company: company, position: 1)
+  end
+
+  def team
+    @_team ||= create(:parent_team, company: company)
+  end
+
+  def advertiser
+    @_advertiser ||= create(:client, company: company)
+  end
+
+  def user
+    @_user ||= create(:user, company: company, team: team)
+  end
+
+  def another_user
+    @_another_user ||= create(:user, company: company, team: team)
+  end
+
+  def deal
+    @_deal ||= create(:deal, company: company, stage: stage)
+  end
+
+  def team_deal
+    @_team_deal ||= create(:deal, company: company, advertiser: advertiser, stage: stage)
+  end
+
+  def user_deal
+    @_user_deal ||= create(:deal, company: company, advertiser: advertiser, stage: stage)
   end
 end

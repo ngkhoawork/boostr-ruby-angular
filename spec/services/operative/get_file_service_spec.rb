@@ -3,9 +3,30 @@ require 'rails_helper'
 describe Operative::GetFileService, datafeed: :true do
   subject(:subject) { Operative::GetFileService.new(api_config, timestamp) }
 
-  it 'downloads file via SFTP' do
-    expect(Net::SFTP).to receive(:start).with('ftpprod.operativeftphost.com', 'email@test.com', password: 'password')
-    subject.perform
+  context 'FTP host parsing' do
+    it 'detects bare hostname' do
+      api_config(base_link: 'ftpprod.operativeftphost.com')
+
+      expect(Net::SFTP).to receive(:start).with('ftpprod.operativeftphost.com', 'email@test.com', password: 'password')
+
+      subject.perform
+    end
+
+    it 'detects uri and parses host' do
+      api_config(base_link: 'ftp://ftpprod.operativeftphost.com/Datafeed')
+
+      expect(Net::SFTP).to receive(:start).with('ftpprod.operativeftphost.com', 'email@test.com', password: 'password')
+
+      subject.perform
+    end
+
+    it 'handles nil value' do
+      api_config(base_link: nil)
+
+      expect(Net::SFTP).to receive(:start).with(nil, 'email@test.com', password: 'password')
+
+      subject.perform
+    end
   end
 
   it 'returns array of downloaded filenames' do
@@ -39,8 +60,12 @@ describe Operative::GetFileService, datafeed: :true do
     @_company ||= create :company, name: 'King'
   end
 
-  def api_config
-    @_api_config ||= create :operative_datafeed_configuration, company: company
+  def api_config(opts={})
+    defaults = {
+      company: company
+    }
+
+    @_api_config ||= create :operative_datafeed_configuration, defaults.merge(opts)
   end
 
   def timestamp

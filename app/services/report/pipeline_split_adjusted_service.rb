@@ -42,7 +42,7 @@ class Report::PipelineSplitAdjustedService
   end
 
   def team_params
-    determine_params_for(team_id)
+    determine_params_for(team_id) if seller_params.nil?
   end
 
   def status_params

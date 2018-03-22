@@ -4,7 +4,7 @@
   $scope.formType = 'New'
   $scope.submitText = 'Create'
   $scope.product = product || { active: true }
-  $scope.revenueTypes = ['Display', 'Content-Fee']
+  $scope.revenueTypes = Product.revenue_types
   $scope.productFamilies =  productFamilies
   $scope.product_options_enabled = company.product_options_enabled
   $scope.products = _.filter products, (p) -> p.id != $scope.product.id

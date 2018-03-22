@@ -1,9 +1,132 @@
 #revenue.z-styles
+  .z-sliding-filter{'ng-class': '{open: filter.isOpen}'}
+    .header
+      Filter
+      %span.pull-right{'ng-click': 'filter.close($event)'} Close
+    .body
+      .filter-row
+        .filter-name
+          %div
+            Start Date
+        .filter-dropdown
+          %i.fa.fa-close{'ng-show': 'filter.selected.startDate.startDate && filter.selected.startDate.endDate', 'ng-click': 'filter.reset("startDate")'}
+          %span.bs-datepicker
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.startDate.startDate && filter.selected.startDate.endDate}'}
+              %div.date-picker{'date-range-picker': true,
+                        'ng-model': 'filter.datePicker.startDate',
+                        options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyStartDate}}'}
+                %span.filter-date {{filter.getDateValue('startDate')}}
+              %span.caret
+      .filter-row
+        .filter-name
+          %div
+            End Date
+        .filter-dropdown
+          %i.fa.fa-close{'ng-show': 'filter.selected.endDate.startDate && filter.selected.endDate.endDate', 'ng-click': 'filter.reset("endDate")'}
+          %span.bs-datepicker
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.endDate.startDate && filter.selected.endDate.endDate}'}
+              %div.date-picker{'date-range-picker': true,
+                        'ng-model': 'filter.datePicker.endDate',
+                        options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyEndDate}}'}
+                %span.filter-date {{filter.getDateValue('endDate')}}
+              %span.caret					
+      .filter-row
+        .filter-name
+          %div
+            Advertiser
+        .filter-dropdown
+          %i.fa.fa-close{'ng-show': 'filter.selected.advertiser', 'ng-click': 'filter.reset("advertiser")'}
+          %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}
+              {{filter.selected.advertiser.name || 'Select an advertiser'}}
+              %span.caret
+            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+              .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                %i.fa.fa-search
+                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+              %span.dropdown-title Select from list
+              .dropdown-option{'ng-repeat': 'advertiser in filter.advertisers | filter: filtering | limitTo: 10', role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select("advertiser", advertiser)'} {{advertiser.name}}
+      .filter-row
+        .filter-name
+          %div
+            Agency
+        .filter-dropdown
+          %i.fa.fa-close{'ng-show': 'filter.selected.agency', 'ng-click': 'filter.reset("agency")'}
+          %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.agency}'}
+              {{filter.selected.agency.name || 'Select an agency'}}
+              %span.caret
+            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+              .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                %i.fa.fa-search
+                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+              %span.dropdown-title Select from list
+              .dropdown-option{'ng-repeat': 'agency in filter.agencies | filter: filtering | limitTo: 10', role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select("agency", agency)'} {{agency.name}}
+      .filter-row
+        .filter-name
+          %div
+            Budget
+        .filter-dropdown
+          %i.fa.fa-close{'ng-show': 'filter.selected.budget.min || filter.selected.budget.max', 'ng-click': 'filter.reset("budget")'}
+          %span{'dropdown': '', 'on-toggle': 'filter.slider.refresh()'}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.budget.min || filter.selected.budget.max}'}
+              {{filter.getBudgetValue()}}
+              %span.caret
+            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+              .dropdown-budget{'ng-click': '$event.stopPropagation()'}
+                .budget-range-input
+                  From
+                  %input.form-control{'ng-model': 'filter.minBudget', 'ng-change': 'filter.slider.onChangeNumber("min")'}
+                  to
+                  %input.form-control{'ng-model': 'filter.maxBudget', 'ng-change': 'filter.slider.onChangeNumber("max")'}
+                %rzslider{'rz-slider-model': 'filter.slider.minValue',
+                      'rz-slider-high': 'filter.slider.maxValue',
+                      'rz-slider-options': 'filter.slider.options'}
+      .filter-row
+        .filter-name
+          %div
+            IO Number
+        .filter-dropdown
+          %i.fa.fa-close{'ng-show': 'filter.selected.ioNumber', 'ng-click': 'filter.reset("ioNumber")'}
+          %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.ioNumber}'}
+              {{filter.selected.ioNumber || 'Select an IO Number'}}
+              %span.caret
+            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+              .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                %i.fa.fa-search
+                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+              %span.dropdown-title Select from list
+              .dropdown-option{'ng-repeat': 'ioNumber in filter.ioNumbers | filter: filtering | limitTo: 10', role: 'menuitem'}
+                %a{href: '', 'ng-click': 'filter.select("ioNumber", ioNumber)'} {{ioNumber}}
+        .filter-row
+          .filter-name
+            %div
+              External IO Number
+          .filter-dropdown
+            %i.fa.fa-close{'ng-show': 'filter.selected.externalIoNumber', 'ng-click': 'filter.reset("externalIoNumber")'}
+            %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+              .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.externalIoNumber}'}
+                {{filter.selected.externalIoNumber || 'Select an E xternal Io Number'}}
+                %span.caret
+              .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                  %i.fa.fa-search
+                  %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                %span.dropdown-title Select from list
+                .dropdown-option{'ng-repeat': 'externalIoNumber in filter.externalIoNumbers | filter: filtering | limitTo: 10', role: 'menuitem'}
+                  %a{href: '', 'ng-click': 'filter.select("externalIoNumber", externalIoNumber)'} {{externalIoNumber}}													
+    .footer
+      %span.reset{'ng-click': 'filter.resetAll()'} Reset
+      %button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters
+
   .container-fluid
     .row.revenue-header.mb20
-      .header-item
+      .header-item.title
         .main-title Revenue
-
+        %add-button{'ng-click': 'addPmp()', 'ng-if': "filter.revenue == 'pmp'"} Add PMP
       .header-item
         %div.filter-row
           %span{ ng: { repeat: 'revenueFilter in revenueFilters', class: '{active: filter.revenue == revenueFilter.value}', click: 'setFilter("revenue", revenueFilter.value)'} }
@@ -17,33 +140,13 @@
             .input-group-addon
               %i.glyphicon.glyphicon-search
             %input.form-control{ ng: { model: 'filter.name', 'model-options': '{debounce: 400}', change: 'applyFilter()' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
-      .header-item.date-filter
-        %span Start date period
-        -#%ul
-          %li{ dropdown: true }
-            %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": selectedYear === "All"}' }
-              {{selectedYear || 'All'}}
-              %span.caret
-            %ul.dropdown-menu
-              %li{ ng: { repeat: 'year in years', class: '{active: year === selectedYear}' } }
-                %a{ href: '', ng: { click: 'filterByYear(year)' } }
-                  {{year}}
-        .date-picker-wrap
-          .date-picker-wrap
-            %div.date-picker{'date-range-picker': true,
-                               'ng-model': 'filter.date',
-                               :options => "{locale: {format: 'MMMM D, YYYY'},
-                                             eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
-              %span.empty{'ng-hide': 'datePicker.toString()'}
-                Time period
-                %span.caret
-              %span{'ng-show': 'datePicker.toString()'}
-                {{datePicker.toString()}}
-                %span.caret
+      .header-item{ ng: { show: 'showExpandableFilter' } }
+        %button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
+          %i.fa.fa-filter
+          Add filter
 
     .row
       .block
-        -#.table-wrapper
         .table-wrapper{infinite: {scroll: 'loadMoreRevenues()', 'scroll-disabled': 'isLoading || allItemsLoaded', 'scroll-distance': '0.5'}}
           %table.table.table-hover{ng: {if: "filter.revenue == ''"}}
             %thead
@@ -92,8 +195,43 @@
 
             %tbody{ 'ng-include': "'partials/revenue_no_match_display_rows.html'" }
 
-          %div{'ng-if': 'filter.revenue == "programmatic"'}
-            .title Coming Soon
+          %table.table.table-hover{ng: {if: "filter.revenue == 'no-match-adv'"}}
+            %thead
+              %tr.z-sortable-prime
+                %th.left
+                  %span.z-sortable{by: 'ssp_deal_id'} Deal-ID
+                %th.left
+                  %span.z-sortable{by: 'pmp.name'} PMP Name
+                %th.left
+                  %span.z-sortable{by: 'ssp.name'} SSP Name
+                %th.left
+                  %span.z-sortable{by: 'ssp_advertiser'} Advertiser
+                %th.right
+                  %span.z-sortable{by: 'impressions'} Impressions
+                %th.right
+                  %span.z-sortable{by: 'revenue_loc'} Revenue
+                %th.right
+
+            %tbody{ 'ng-include': "'partials/revenue_no_match_advertiser_rows.html'" }
+
+          %table.table.table-hover{ng: {if: "filter.revenue == 'pmp'"}}
+            %thead
+              %tr.z-sortable-prime
+                %th.left
+                  %span.z-sortable{by: 'name'} Name
+                %th.left
+                  %span.z-sortable{by: 'deal_id'} Deal-ID
+                %th.left
+                  %span.z-sortable{by: 'advertiser.name'} Advertiser
+                %th.left
+                  %span.z-sortable{by: 'agency.name'} Agency
+                %th.left
+                  %span.z-sortable{by: 'start_date'} Start Date
+                %th.right
+                  %span.z-sortable{by: 'budget_loc'} Budget
+                %th.right
+
+            %tbody{ 'ng-include': "'partials/revenue_pmp_rows.html'" }
 
           %table.table.table-hover{ng: {if: "filter.revenue == 'risk' || filter.revenue == 'upside'"}}
             %thead

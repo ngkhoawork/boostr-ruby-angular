@@ -8,7 +8,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       {sales_order: sales_order_file, currency: currency_file}
     )
   }
-  let(:company)          { Company.first }
+  let!(:company) { create :company }
   let(:auto_close_deals) { true }
   let(:sales_order_file) { './spec/sales_order_file.csv' }
   let(:currency_file)    { './spec/currency_file.csv' }
@@ -129,11 +129,11 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       subject.perform
 
       import_log = CsvImportLog.last
-      expect(import_log.rows_processed).to eq 7
+      expect(import_log.rows_processed).to eq 8
       expect(import_log.rows_imported).to eq 4
       expect(import_log.rows_failed).to eq 2
       expect(import_log.rows_skipped).to eq 1
-      expect(import_log.error_messages).to eq [{"row"=>5, "message"=>["Io advertiser can't be blank"]}, {"row"=>6, "message"=>["Io name can't be blank"]}]
+      expect(import_log.error_messages).to eq [{"row"=>6, "message"=>["Io advertiser can't be blank"]}, {"row"=>7, "message"=>["Io name can't be blank"]}]
       expect(import_log.file_source).to eq 'sales_order_file.csv'
       expect(import_log.object_name).to eq 'io'
     end
@@ -151,10 +151,24 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       subject.perform
       import_log = CsvImportLog.last
       expect(import_log.error_messages).to eq [{
-        "row"=>1,
+        "row"=>2,
         "message"=>
           ["Internal Server Error", "{:order_currency_id=>\"100\", :order_start_date=>\"#{Date.today - 1.month}\", :sales_stage_percent=>\"100\"}"]
       }]
+    end
+
+    it 'catches and processes amendable csv rows' do
+      content_for_files([
+        amendable_malformed_csv,
+        currency_csv
+      ])
+
+      subject.perform
+      import_log = CsvImportLog.last
+      expect(import_log.error_messages).not_to be_present
+
+      expect(import_log.rows_processed).to eq 3
+      expect(import_log.rows_imported).to  eq 2
     end
 
     it 'catches and skips malformed csv rows' do
@@ -166,12 +180,12 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       subject.perform
       import_log = CsvImportLog.last
       expect(import_log.error_messages).to eq [{
-        "row"=>1,
+        "row"=>2,
         "message"=>
           ["Unclosed quoted field on line 1.",
-            ",\"To Be Malformed\"\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n"]
+            "\"(To Be Malformed\"\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n"]
       }]
-      expect(import_log.rows_processed).to eq 2
+      expect(import_log.rows_processed).to eq 3
       expect(import_log.rows_imported).to  eq 1
     end
   end
@@ -222,10 +236,20 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
 
   def malformed_csv
     list = []
-    list << (build :sales_order_csv_data, sales_order_name: 'To Be Malformed"')
+    list << (build :sales_order_csv_data, sales_order_id: '(To Be Malformed"')
     list << (build :sales_order_csv_data, valid_order_data)
     @_malformed_csv ||= generate_multiline_csv(list.first.keys, list.map(&:values)).gsub("\"\"", "\"")
     @_malformed_csv
+  end
+
+  def amendable_malformed_csv
+    list = []
+    malformed = valid_order_data
+    malformed[:sales_order_name] = "Very \"Illegal\" Quoting"
+    list << (build :sales_order_csv_data, malformed)
+    list << (build :sales_order_csv_data, valid_order_data)
+    @_amendable_malformed_csv ||= generate_multiline_csv(list.first.keys, list.map(&:values)).gsub("\"\"", "\"")
+    @_amendable_malformed_csv
   end
 
   def valid_order_data

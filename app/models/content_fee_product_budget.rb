@@ -19,13 +19,16 @@ class ContentFeeProductBudget < ActiveRecord::Base
   scope :by_created_date, -> (start_date, end_date) do
     where(ios: { created_at: (start_date.to_datetime.beginning_of_day)..(end_date.to_datetime.end_of_day) }) if start_date.present? && end_date.present?
   end
+  scope :by_oldest, -> { order(:start_date) }
 
   def daily_budget
     budget.to_f / (end_date - start_date + 1)
   end
 
   def corrected_daily_budget(io_start_date, io_end_date)
-    budget.to_f / ([io_end_date, end_date].min.to_date - [io_start_date, start_date].max.to_date + 1)
+    divider = ([io_end_date, end_date].min.to_date - [io_start_date, start_date].max.to_date + 1)
+
+    divider.zero? ? 0 : budget.to_f / divider
   end
 
   def update_budget!(budget)

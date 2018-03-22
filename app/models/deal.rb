@@ -20,6 +20,7 @@ class Deal < ActiveRecord::Base
   # Restrict with exception is used to rollback any
   # other potential dependent: :destroy relations
   has_one :io, class_name: "Io", foreign_key: 'deal_id', dependent: :restrict_with_exception
+  has_one :pmp, class_name: "Pmp", foreign_key: 'deal_id', dependent: :restrict_with_exception
 
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
   has_many :contacts, -> { uniq }, through: :deal_contacts
@@ -79,16 +80,16 @@ class Deal < ActiveRecord::Base
   end
 
   after_update do
-    generate_io() if stage_id_changed?
-    reset_products if (start_date_changed? || end_date_changed?)
     if stage_id_changed?
+      generate_io_or_pmp
       send_ealert
+      log_stage_changes
     end
+    reset_products if (start_date_changed? || end_date_changed?)
     integrate_with_operative
     send_lost_deal_notification
     connect_deal_clients
     log_start_date_changes if start_date_changed?
-    log_stage_changes if stage_id_changed?
   end
 
   before_create do
@@ -175,6 +176,9 @@ class Deal < ActiveRecord::Base
       where('deals.id in (?)', ids)
     end
   end
+  scope :has_io, -> {
+    joins(:io).where('ios.id IS NOT NULL')
+  }
 
   def update_pipeline_fact_callback
     if stage_id_changed?
@@ -269,20 +273,28 @@ class Deal < ActiveRecord::Base
   end
 
   def billing_contact_presence
-    validation = company.validation_for(:billing_contact)
-    stage_threshold = validation.criterion.try(:value) if validation
+    return unless stage.present?
+    validation = company.validations.find_by(
+      object: 'Billing Contact', 
+      factor: stage.sales_process_id
+    ) 
+    stage_threshold = validation&.criterion&.value&.probability
 
-    if validation && stage_threshold && stage && stage.probability >= stage_threshold
-      errors.add(:stage, "#{self.stage.try(:name)} requires a valid Billing Contact with address") unless self.has_billing_contact?
+    if stage_threshold && stage.probability >= stage_threshold && !self.has_billing_contact?
+      errors.add(:stage, "#{self.stage&.name} requires a valid Billing Contact with address") 
     end
   end
 
   def account_manager_presence
-    validation = company.validation_for(:account_manager)
-    stage_threshold = validation.criterion.try(:value) if validation
+    return unless stage.present?
+    validation = company.validations.find_by(
+      object: 'Account Manager', 
+      factor: stage.sales_process_id
+    )
+    stage_threshold = validation&.criterion&.value&.probability
 
-    if validation && stage_threshold && stage && stage.probability >= stage_threshold
-      errors.add(:stage, "#{self.stage.try(:name)} requires an Account Manager on Deal") unless self.has_account_manager_member?
+    if stage_threshold && stage.probability >= stage_threshold && !self.has_account_manager_member?
+      errors.add(:stage, "#{self.stage&.name} requires an Account Manager on Deal")
     end
   end
 
@@ -380,18 +392,18 @@ class Deal < ActiveRecord::Base
             deal_members: {
               methods: [:name]
             },
-              activities: {
-                include: {
-                  creator: {},
-                  publisher: { only: [:id, :name] },
-                  contacts: {},
-                  assets: {
-                    methods: [
-                      :presigned_url
-                    ]
-                  }
+            activities: {
+              include: {
+                creator: {},
+                publisher: { only: [:id, :name] },
+                contacts: {},
+                assets: {
+                  methods: [
+                    :presigned_url
+                  ]
                 }
               }
+            }
           ],
           methods: [
             :formatted_name
@@ -401,97 +413,9 @@ class Deal < ActiveRecord::Base
     end
   end
 
-  def as_weighted_pipeline(start_date, end_date, product = nil)
-    total_budget = 0
-    in_period_budget = 0
-    if product.present?
-      in_period_budget = product_in_period_amt(product, start_date, end_date)
-      deal_product = deal_products.find_by(product_id: product.id)
-      total_budget = budget
-    else
-      in_period_budget = in_period_amt(start_date, end_date)
-      total_budget = budget
-    end
-
-    weighted_pipeline = {
-      id: id,
-      name: name,
-      client_name: (advertiser.nil? ? "" : advertiser.name),
-      agency_name: (agency.nil? ? "" : agency.name),
-      probability: stage.probability,
-      stage_id: stage.id,
-      budget: total_budget,
-      in_period_amt: in_period_budget,
-      wday_in_stage: wday_in_stage,
-      wday_since_opened: wday_since_opened,
-      start_date: self.start_date,
-      end_date: self.end_date
-    }
-
-    if stage.red_threshold.present? or stage.yellow_threshold.present?
-      if stage.red_threshold.present? and wday_in_stage >= stage.red_threshold
-        weighted_pipeline[:wday_in_stage_color] = 'red'
-      elsif stage.yellow_threshold.present? and wday_in_stage >= stage.yellow_threshold
-        weighted_pipeline[:wday_in_stage_color] = 'yellow'
-      else
-        weighted_pipeline[:wday_in_stage_color] = 'green'
-      end
-    end
-
-    if company.red_threshold.present? or company.yellow_threshold.present?
-      if company.red_threshold.present? and wday_since_opened >= company.red_threshold
-        weighted_pipeline[:wday_since_opened_color] = 'red'
-      elsif company.yellow_threshold.present? and wday_since_opened >= company.yellow_threshold
-        weighted_pipeline[:wday_since_opened_color] = 'yellow'
-      else
-        weighted_pipeline[:wday_since_opened_color] = 'green'
-      end
-    end
-
-    weighted_pipeline
-  end
-
-  def in_period_amt(start_date, end_date)
-    deal_product_budgets.for_time_period(start_date, end_date).to_a.sum do |deal_product_budget|
-      from = [start_date, deal_product_budget.start_date].max
-      to = [end_date, deal_product_budget.end_date].min
-      num_days = (to.to_date - from.to_date) + 1
-      deal_product_budget.daily_budget.to_f * num_days
-    end
-  end
-
-  def product_in_period_amt(product, start_date, end_date)
-    total = 0
-    deal_product = deal_products.find_by(product_id: product.id)
-    if deal_product.present?
-      deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
-        if deal_product_budget.deal_product.open == true
-          from = [start_date, deal_product_budget.start_date].max
-          to = [end_date, deal_product_budget.end_date].min
-          num_days = (to.to_date - from.to_date) + 1
-          total += deal_product_budget.daily_budget.to_f * num_days
-        end
-      end
-    end
-    total
-  end
-
   def in_period_open_amt(start_date, end_date)
     total = 0
     deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
-      if deal_product_budget.deal_product.open == true
-        from = [start_date, deal_product_budget.start_date].max
-        to = [end_date, deal_product_budget.end_date].min
-        num_days = (to.to_date - from.to_date) + 1
-        total += deal_product_budget.daily_budget.to_f * num_days
-      end
-    end
-    total
-  end
-
-  def product_in_period_open_amt(product, start_date, end_date)
-    total = 0
-    deal_product_budgets.for_product_id(product.id).for_time_period(start_date, end_date).each do |deal_product_budget|
       if deal_product_budget.deal_product.open == true
         from = [start_date, deal_product_budget.start_date].max
         to = [end_date, deal_product_budget.end_date].min
@@ -575,7 +499,6 @@ class Deal < ActiveRecord::Base
         if creator && should_create == true
           deal_members.create(user_id: creator.id, share: [100 - total_share, 0].max)
         end
-
       end
     end
   end
@@ -1449,8 +1372,7 @@ class Deal < ActiveRecord::Base
         end
       end
     end
-    self.open = should_open
-    self.save
+    update_attribute(:open, should_open)
   end
 
   def recalculate_currency
@@ -1468,32 +1390,16 @@ class Deal < ActiveRecord::Base
       self.closed_at = updated_at
     end
 
+    self.open = self.should_open?
+    Deal::DealCloseService.new(self).perform
+  end
+
+  def should_open?
     should_open = stage.open?
-    if stage.closed? && stage.probability == 100
-      self.deal_products.each do |deal_product|
-        if deal_product.product.revenue_type != 'Content-Fee'
-          should_open = true
-          deal_product.update_columns(open: true)
-        else
-          deal_product.update_columns(open: false)
-        end
-      end
-
-      send_closed_won_deal_notification
-    else
-      self.deal_products.update_all(open: stage.open)
-
-      if !self.closed_at.nil? && stage.open?
-        if !self.fields.nil? && !self.values.nil?
-          field = self.fields.find_by_name('Close Reason')
-          close_reason = self.values.find_by_field_id(field.id) if !field.nil?
-          close_reason.destroy if !close_reason.nil?
-        end
-      end
-
-      send_stage_changed_deal_notification if stage.open?
+    if !stage.open? && stage.probability == 100
+      should_open = self.deal_products.product_type_of('Display').count > 0
     end
-    self.open = should_open.to_s
+    should_open
   end
 
   def send_new_deal_notification
@@ -1557,58 +1463,6 @@ class Deal < ActiveRecord::Base
     end
     self.open = should_open
     self.save
-  end
-
-  def generate_io
-    if !stage.open? && stage.probability == 100
-      io_param = {
-          advertiser_id: self.advertiser_id,
-          agency_id: self.agency_id,
-          budget: self.budget.nil? ? 0 : self.budget,
-          budget_loc: self.budget_loc.nil? ? 0 : self.budget_loc,
-          curr_cd: self.curr_cd,
-          start_date: self.start_date,
-          end_date: self.end_date,
-          name: self.name,
-          io_number: self.id,
-          external_io_number: nil,
-          company_id: self.company_id,
-          deal_id: self.id
-      }
-      if io = Io.create!(io_param)
-        self.deal_members.each do |deal_member|
-          if deal_member.user.present?
-            io_member_param = {
-                io_id: io.id,
-                user_id: deal_member.user_id,
-                share: deal_member.share,
-                from_date: self.start_date,
-                to_date: self.end_date,
-            }
-            IoMember.create!(io_member_param)
-          end
-        end
-
-        self.deal_products.order(:created_at).each do |deal_product|
-          if deal_product.product.revenue_type == "Content-Fee"
-            content_fee_param = {
-                io_id: io.id,
-                product_id: deal_product.product.id,
-                budget: deal_product.budget,
-                budget_loc: deal_product.budget_loc
-            }
-            content_fee = ContentFee.create(content_fee_param)
-            deal_product.update_columns(open: false)
-          end
-        end
-      end
-    else
-      if self.io.present?
-        self.io.destroy
-        self.deal_products.product_type_of("Content-Fee").update_all(open: true)
-      end
-    end
-
   end
 
   def wday_in_stage
@@ -1733,6 +1587,10 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def include_pmp_product?
+    self.products.where(revenue_type: 'PMP').count > 0
+  end
+
   def log_budget_changes(current_budget, new_budget)
     AuditLogService.new(
       record: self,
@@ -1780,5 +1638,13 @@ class Deal < ActiveRecord::Base
       old_value: previous_stage_id,
       new_value: stage_id
     ).perform
+  end
+
+  def generate_io_or_pmp
+    if include_pmp_product?
+      Deal::PmpGenerateService.new(self).perform
+    else
+      Deal::IoGenerateService.new(self).perform
+    end
   end
 end

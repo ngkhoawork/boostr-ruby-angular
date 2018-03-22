@@ -1,0 +1,15 @@
+.deals.block
+    %div.mb20
+        %span.title SSP Mapping
+
+    %table.table.table-striped
+        %thead
+            %tr
+                %th.left SSP Name
+                %th.left Value
+                %th.left Created
+        %tbody
+            %tr{ ng: { repeat: 'ssp_advertiser in currentClient.ssp_advertisers'} }
+                %td {{ ssp_advertiser.ssp.name }}
+                %td {{ ssp_advertiser.name }}
+                %td.left {{ ssp_advertiser.created_at | date: 'MM/dd/yyyy' }}

@@ -21,6 +21,8 @@
           %th 
             %span.z-sortable{by: 'revenue_type'} Revenue Type
           %th 
+            %span.z-sortable{by: 'margin'} Margin
+          %th 
             %span.z-sortable{by: 'active'} Active
           %th 
             %span.z-sortable{by: 'is_influencer_product'} Is Influencer
@@ -35,6 +37,7 @@
           %td{ 'ng-show': 'company.product_options_enabled' } {{ product.level }}
           %td {{ product.pricing_type.option.name }}
           %td {{ product.revenue_type }}
+          %td {{ product.margin }}
           %td {{ product.active ? 'Yes' : 'No' }}
           %td {{ product.is_influencer_product ? 'Yes' : 'No' }}
         %tr{'ng-show': 'expendedRow == product.id'}

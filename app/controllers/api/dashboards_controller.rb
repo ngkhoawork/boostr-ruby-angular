@@ -44,7 +44,7 @@ class Api::DashboardsController < ApplicationController
   end
 
   def user_quota_for_period(start_date, end_date)
-    current_user.quotas.for_time_period(start_date, end_date).sum(:value)
+    current_user.total_gross_quotas(start_date, end_date)
   end
 
   def company_teams

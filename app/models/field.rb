@@ -31,6 +31,12 @@ class Field < ActiveRecord::Base
     end
   end
 
+  def option_locked
+    self.options.find do |opt|
+      opt.locked == true
+    end
+  end
+
   def self.to_options
     joins(:options).pluck_to_struct('options.id as id', 'options.name as name')
   end

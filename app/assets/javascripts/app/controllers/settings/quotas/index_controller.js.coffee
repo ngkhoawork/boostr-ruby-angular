@@ -23,7 +23,7 @@
   $scope.updateQuota = (quota) ->
     Quota.update({id: quota.id, quota: quota})
 
-  $scope.showModal = ->
+  $scope.showNewModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/user_quota_form.html'
       size: 'lg'
@@ -33,8 +33,20 @@
       resolve:
         timePeriod: ->
           $scope.currentTimePeriod
-        quotas: ->
-          $scope.quotas
+        quota: ->
+
+  $scope.showEditModal = (quota) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/user_quota_form.html'
+      size: 'lg'
+      controller: 'SettingsQuotasNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        timePeriod: ->
+          $scope.currentTimePeriod
+        quota: ->
+          quota
 
   $scope.$on 'updated_quotas', ->
     $scope.getQuotas()

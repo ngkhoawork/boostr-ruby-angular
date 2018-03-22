@@ -1,0 +1,16 @@
+%tr{'ng-repeat': 'row in revenue | orderBy : zSort.by : zSort.rev | filter:searchText'}
+  %td.left
+    %a{ href: '', 'ng-href': '/revenue/pmps/{{row.id}}' }
+      {{ row.name }}
+  %td.left
+    {{ row.deal_id }}
+  %td.left
+    %a{'href': '', 'ng-href': '/accounts/{{row.advertiser.id}}'} {{row.advertiser.name}}
+  %td.left
+    %a{'href': '', 'ng-href': '/accounts/{{row.agency.id}}'} {{row.agency.name}}
+  %td.left {{row.start_date | date: 'M/d/yyyy'}} 
+  %td.right {{row.budget_loc | currency:row.currency.curr_symbol:0 }}
+  %td.right
+    %a{href: '', 'ng-href': '/deals/{{row.deal_id}}', 'ng-if': 'row.deal_id'}
+      Go to Deal page
+      %i.fa.fa-angle-right

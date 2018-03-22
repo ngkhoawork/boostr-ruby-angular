@@ -7,12 +7,15 @@ class Product < ActiveRecord::Base
   has_many :values, as: :subject
   has_many :ad_units
   has_many :children, class_name: 'Product', foreign_key: 'parent_id', inverse_of: :parent 
+  has_many :quotas, as: :product
+  has_many :pmp_items
+  has_many :costs
 
   validates :margin,
     numericality: {
       only_integer: true,
       greater_than_or_equal_to: 1,
-      less_than_or_equal_to: 100
+      less_than_or_equal_to: 99
     },
     allow_nil: true
   validates :name, 
@@ -25,7 +28,7 @@ class Product < ActiveRecord::Base
   validate :check_recursive_parent_id
   validate :check_self_as_parent
 
-  REVENUE_TYPES = %w('Display', 'Content-Fee', 'None')
+  REVENUE_TYPES = %w('Display', 'Content-Fee', 'PMP', 'None')
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
@@ -45,8 +48,16 @@ class Product < ActiveRecord::Base
     update_forecast_fact_callback
   end
 
+  after_update do
+    update_cost
+  end
+
   after_destroy do |product_record|
     delete_dimension(product_record)
+  end
+
+  def update_cost
+    ProductMarginUpdateWorker.perform_async(id, margin, margin_was) if margin_changed?
   end
 
   def create_dimension

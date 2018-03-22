@@ -19,7 +19,7 @@ class Api::IosController < ApplicationController
     end
 
     if io.save
-      render json: io.full_json, status: :created
+      render json: io, serializer: Ios::IoSerializer, status: :created
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity
     end
@@ -27,7 +27,7 @@ class Api::IosController < ApplicationController
 
   def update
     if io.update_attributes(io_params)
-      render json: io.full_json
+      render json: io, serializer: Ios::IoSerializer
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity
     end
@@ -47,7 +47,7 @@ class Api::IosController < ApplicationController
       end
       io.update_influencer_budget
       io.reload
-      render json: io.full_json
+      render json: io, serializer: Ios::IoSerializer
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity
     end
@@ -63,7 +63,47 @@ class Api::IosController < ApplicationController
     end
   end
 
+  def import_content_fee
+    if params[:file].present?
+      S3FileImportWorker.perform_async('Importers::IoContentFeesService',
+                                      company.id,
+                                      params[:file][:s3_file_path],
+                                      params[:file][:original_filename])
+      render json: {
+          message: import_success_message
+      }, status: :ok
+    end
+  end
+
+  def import_costs
+    if params[:file].present?
+      S3FileImportWorker.perform_async('Importers::IoCostsService',
+                                      company.id,
+                                      params[:file][:s3_file_path],
+                                      params[:file][:original_filename])
+      render json: {
+          message: import_success_message
+      }, status: :ok
+    end
+  end
+
+  def export_costs
+    respond_to do |format|
+      format.csv {
+        require 'timeout'
+        Timeout::timeout(300) {
+          send_data io_costs_csv, filename: "io-costs-#{Date.today}.csv"
+        }
+      }
+    end
+  end
+
   private
+
+  def import_success_message
+    @_import_success_message ||= 'Your file is being processed.
+      Please check status at Import Status tab in a few minutes (depending on the file size)'
+  end
 
   def io_params
     params.require(:io).permit(
@@ -77,20 +117,32 @@ class Api::IosController < ApplicationController
       :agency_id,
       :io_number,
       :external_io_number,
-      :deal_id
+      :deal_id,
+      :freezed
     )
   end
 
   def ios
-    ios_by_name
-      .union(ios_by_agency)
-      .union(ios_by_advertiser)
-      .includes(:currency, :deal, :agency, :advertiser)
-      .by_start_date(params[:start_date], params[:end_date])
-      .by_agency_id(params[:agency_id])
-      .by_advertiser_id(params[:advertiser_id])
-      .limit(limit)
-      .offset(offset)
+    by_pages(
+      apply_filters(company_ios).includes(:currency, :deal, :agency, :advertiser)
+    )
+  end
+
+  def io_costs_csv
+    Csv::IoCostService.new(company, cost_monthly_amounts).perform
+  end
+
+  def cost_monthly_amounts
+    company.cost_monthly_amounts.includes(
+        cost: {
+          io: [
+            :io_members, 
+            :users
+          ], 
+          product: {}, 
+          values: :option
+        }
+      )
   end
 
   def io
@@ -105,15 +157,9 @@ class Api::IosController < ApplicationController
     @_company_ios ||= company.ios
   end
 
-  def ios_by_agency
-    company_ios.by_agency_name(params[:name])
-  end
-
-  def ios_by_advertiser
-    company_ios.by_advertiser_name(params[:name])
-  end
-
-  def ios_by_name
-    company_ios.by_name(params[:name])
+  def apply_filters(relation)
+    IosQuery.new(
+      params.merge(default_relation: relation)
+    ).perform
   end
 end

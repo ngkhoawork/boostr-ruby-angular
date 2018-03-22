@@ -31,6 +31,9 @@
 .mr20 {
   margin-right: 20px;
 }
+.mr40 {
+  margin-right: 40px;
+}
 .mb10 {
   margin-bottom: 10px;
 }
@@ -42,6 +45,9 @@
 }
 .mb40 {
   margin-bottom: 40px;
+}
+.mt10 {
+  margin-top: 10px;
 }
 .fwb {
   font-weight: bold;
@@ -70,4 +76,8 @@
   input[type=number] {
     -moz-appearance:textfield;
   }
+}
+
+.pos-r {
+  position: relative;
 }

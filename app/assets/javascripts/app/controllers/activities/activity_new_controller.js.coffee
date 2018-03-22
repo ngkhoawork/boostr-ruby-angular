@@ -247,6 +247,11 @@
                 if $scope.form.contacts.length
                     $scope.form.contacts = $scope.form.contacts.map (c) ->
                         if typeof c is 'object' then c.id else c
+                if options && options.type == 'gmail' && $scope.form.guests && $scope.form.guests.length
+                    $scope.form.guests = _.chain $scope.form.guests
+                                          .reject (guest) -> !_.contains $scope.form.contacts, guest.id
+                                          .map (guest) -> _.omit guest, ['id', 'isGuest']
+                                          .value()
                 if activity
                     updateActivity(activity.id, activityData, $scope.form.contacts, $scope.form.guests)
                 else

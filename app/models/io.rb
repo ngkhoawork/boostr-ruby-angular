@@ -12,6 +12,8 @@ class Io < ActiveRecord::Base
   has_many :users, dependent: :destroy, through: :io_members
   has_many :content_fees, dependent: :destroy
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
+  has_many :costs, dependent: :destroy
+  has_many :cost_monthly_amounts, dependent: :destroy, through: :costs
   has_many :display_line_items, dependent: :destroy
   has_many :display_line_item_budgets, dependent: :destroy, through: :display_line_items
   has_many :print_items, dependent: :destroy
@@ -49,7 +51,7 @@ class Io < ActiveRecord::Base
 
   after_update do
     if (start_date_changed? || end_date_changed?)
-      reset_content_fees
+      Io::ResetBudgetsService.new(self).perform
       reset_member_effective_dates
     end
   end
@@ -70,16 +72,6 @@ class Io < ActiveRecord::Base
         e_date = end_date
       end
       update_revenue_fact_date(s_date, e_date)
-    end
-  end
-
-  def reset_content_fees
-    # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
-    ActiveRecord::Base.no_touching do
-      content_fees.each do |content_fee|
-        content_fee.content_fee_product_budgets.destroy_all
-        content_fee.generate_content_fee_product_budgets
-      end
     end
   end
 
@@ -104,8 +96,12 @@ class Io < ActiveRecord::Base
     time_periods.each do |time_period|
       self.users.each do |user|
         self.products.each do |product|
-          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
-          forecast_revenue_fact_calculator.calculate()
+          ForecastRevenueFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
+          ForecastCostFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
         end
       end
     end
@@ -117,8 +113,12 @@ class Io < ActiveRecord::Base
     time_periods.each do |time_period|
       io.users.each do |user|
         io.products.each do |product|
-          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
-          forecast_revenue_fact_calculator.calculate()
+          ForecastRevenueFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
+          ForecastCostFactCalculator::Calculator
+            .new(time_period, user, product)
+            .calculate()
         end
       end
     end
@@ -180,34 +180,14 @@ class Io < ActiveRecord::Base
   def update_total_budget
     new_budget = (content_fees.sum(:budget) + display_line_items.sum(:budget))
     new_budget_loc = (content_fees.sum(:budget_loc) + display_line_items.sum(:budget_loc))
-    update_attributes(
+    update_columns(
       budget: new_budget,
       budget_loc: new_budget_loc
     )
   end
 
   def update_influencer_budget
-    data = {}
-
-    self.influencer_content_fees.by_effect_date(start_date, end_date).each do |influencer_content_fee|
-      content_fee_product_budget = influencer_content_fee
-                                      .content_fee
-                                      .content_fee_product_budgets
-                                      .for_year_month(influencer_content_fee.effect_date)
-                                      .try(:first)
-      if content_fee_product_budget
-        data[content_fee_product_budget.id] ||= 0
-        data[content_fee_product_budget.id] += influencer_content_fee.gross_amount.to_f
-      end
-    end
-
-    data.each do |id, budget|
-      content_fee_product_budget = self.content_fee_product_budgets.find(id)
-      if content_fee_product_budget && content_fee_product_budget.update_budget!(budget)
-        content_fee_product_budget.content_fee.update_budget
-        content_fee_product_budget.content_fee.io.update_total_budget
-      end
-    end
+    Io::UpdateInfluencerBudgetService.new(self).perform
   end
 
   def effective_revenue_budget(member, start_date, end_date)
@@ -287,54 +267,6 @@ class Io < ActiveRecord::Base
             deal: { name: {} }
         }
       )
-    )
-  end
-
-  def full_json
-    self.as_json( include: {
-        io_members: {
-            methods: [
-                :name
-            ]
-        },
-        currency: {},
-        content_fees: {
-            include: {
-                content_fee_product_budgets: {}
-            },
-            methods: [
-                :product
-            ]
-        },
-        influencer_content_fees: {
-            include: {
-                influencer: {
-                  only: [:id, :name],
-                  include: {
-                    agreement: {
-                      only: [:id, :fee_type, :amount]
-                    }
-                  }
-                },
-                currency: {},
-                content_fee: {
-                  only: [:id],
-                  include: {
-                    product: {
-                      only: [:id, :name]
-                    }
-                  }
-                }
-            }
-        },
-        display_line_items: {
-            methods: [
-                :product
-            ]
-        },
-        print_items: {}
-      },
-      methods: [:readable_months, :months, :days_per_month, :days]
     )
   end
 

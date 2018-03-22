@@ -19,12 +19,33 @@
             %ui-select-choices{ repeat: 'option.id as option in client.client_type.options | filter: { name: $select.search }' }
               %div{ ng: { bind: { html: 'option.name' } } }
 
-      .form-group{'ng-class':'{error: errors.name}'}
+      .form-group.pos-r{'ng-class':'{error: errors.name}'}
         %span.error-text {{errors.name}}
         %label{ for: 'name' }
           Name
         %span.star *
-        %input.form-control{ placeholder: 'Name', ng: { model: 'client.name' }, name: 'name' }
+        %input.form-control{ autocomplete: 'off', placeholder: 'Name', ng: { model: 'client.name', 'model-options': '{ debounce: 250 }', change: 'onNameChanged()', click: 'onFocus()', blur: 'onBlur()' }, name: 'name' }
+        .duplicate-list-wrapper{ 'ng-if': 'isDuplicateShow' }
+          .duplicate-list
+            .loader-wrapper{ 'ng-if': 'isLoaderShow' }
+              .loading-pulse
+            %ul.list-group.duplicates-list{ 'ng-if': 'duplicates !== undefined' }
+              %li.list-group-item{ 'ng-if': 'duplicates.length > 0' }
+                Accounts with similar names
+              %li.list-group-item{ 'ng-if': 'duplicates.length == 0' }
+                Account name is
+                %strong
+                  unique
+              %li.list-group-item.duplicates{ ng: { repeat: 'duplicate in duplicates' } }
+                %span{ 'ng-bind-html': 'duplicate.name' }
+                %a.pull-right{'ng-href': '/accounts/{{ duplicate.id }}', target: '_blank'}
+                  Go to Account
+            %span.create-account{ ng: { click: 'closeDuplicateList()', if: 'duplicates.length > 0' } }
+              Create new account
+              %strong.duplicate-string
+                {{ client.name }}
+
+
       .form-group
         .row
           .col-xs-6{ ng: {if: 'Advertiser && client.client_type.option_id === Advertiser'} }

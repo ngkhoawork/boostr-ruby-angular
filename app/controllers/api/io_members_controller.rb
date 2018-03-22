@@ -8,7 +8,7 @@ class Api::IoMembersController < ApplicationController
   def create
     io_member = io.io_members.build(io_member_params)
     if io_member.save
-      render json: io.full_json
+      render json: io, serializer: Ios::IoSerializer
     else
       render json: { errors: io_member.errors.messages }, status: :unprocessable_entity
     end
@@ -16,7 +16,7 @@ class Api::IoMembersController < ApplicationController
 
   def update
     if io_member.update_attributes(io_member_params)
-      render json: io.full_json
+      render json: io, serializer: Ios::IoSerializer
     else
       render json: { errors: io_member.errors.messages }, status: :unprocessable_entity
     end
@@ -24,7 +24,7 @@ class Api::IoMembersController < ApplicationController
 
   def destroy
     io_member.destroy
-    render json: io.full_json
+    render json: io, serializer: Ios::IoSerializer
   end
 
   private

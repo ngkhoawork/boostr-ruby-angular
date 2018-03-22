@@ -13,9 +13,10 @@ class DealMember < ActiveRecord::Base
 
   scope :ordered_by_share, -> { order(share: :desc) }
   scope :not_account_manager_users, -> { includes(:user).where.not(users: {user_type: ACCOUNT_MANAGER}) }
+  scope :account_manager_users, -> { includes(:user).where(users: {user_type: ACCOUNT_MANAGER}) }
   scope :with_not_zero_share, -> { where('share > ?', 0) }
   scope :by_seller, -> (seller_id) { where(user_id: seller_id) if seller_id.present? }
-  scope :by_team, -> (team_id) { where(users: { team_id: team_id }) if team_id.present? }
+  scope :by_team, -> (team_id) { where(user_id: Team.find(team_id).all_members_and_leaders) if team_id.present? }
   scope :by_stage_ids, -> (stage_ids) { joins(:deal).where(deals: { stage_id: stage_ids }) if stage_ids.present? }
 
   after_update do

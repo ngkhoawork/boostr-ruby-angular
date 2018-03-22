@@ -1,0 +1,46 @@
+.block
+  %div.mb20
+    %span.title PMP Items
+    %add-button{ 'ng-click': 'showNewPmpItemModal()' } Add
+    
+  .table-wrapper
+    %table.table.table-hover
+      %thead
+        %tr
+          %th.left Deal ID
+          %th.left SSP
+          %th.left Product
+          %th.left PMP Type
+          %th.right Budget
+          %th.right Delivered
+          %th.right Remaining
+          %th.right 7 Day Run Rate
+          %th.right 30 Day Run Rate
+          %th
+      %tbody
+        %tr{ ng: { repeat: "pmpItem in currentPMP.pmp_items | orderBy: 'deal_id'"} }
+          %td.left
+            {{ pmpItem.ssp_deal_id }}
+          %td.left
+            %strong
+              {{ pmpItem.ssp && pmpItem.ssp.name }}
+          %td.left
+            {{ pmpItem.product && pmpItem.product.name }}
+          %td.left
+            {{ PMPType.getName(pmpItem.pmp_type) }}
+          %td.right
+            {{ pmpItem.budget_loc | currency:currencySymbol:2 }}
+          %td.right
+            {{ pmpItem.budget_delivered_loc | currency:currencySymbol:2 }}
+          %td.right
+            {{ pmpItem.budget_remaining_loc | currency:currencySymbol:2 }}
+          %td.right
+            {{ (pmpItem.run_rate_7_days | currency:currencySymbol:2) || 'N/A' }}
+          %td.right
+            {{ (pmpItem.run_rate_30_days | currency:currencySymbol:2) || 'N/A' }}
+          %td.right.action-td
+            %i.fa.fa-pencil.z-icon{ ng: { click: 'showPmpItemEditModal(pmpItem)' } }
+            %i.fa.fa-trash.z-icon{ ng: { click: 'deletePmpItem(pmpItem)' } }
+        %tr{ ng: { if: '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' } }
+          %td.auto-colspan.center
+            No data available

@@ -1,4 +1,5 @@
 class Client < ActiveRecord::Base
+  include PgSearch
   acts_as_paranoid
 
   belongs_to :company
@@ -43,6 +44,8 @@ class Client < ActiveRecord::Base
   has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
   has_many :integrations, as: :integratable
 
+  has_many :ssp_advertisers
+
   has_one :latest_advertiser_activity, -> { self.select_values = ["DISTINCT ON(activities.client_id) activities.*"]
     order('activities.client_id', 'activities.happened_at DESC')
   }, class_name: 'Activity'
@@ -75,6 +78,20 @@ class Client < ActiveRecord::Base
   before_create :ensure_client_member
   after_commit :update_account_dimension, on: [:create, :update]
 
+  pg_search_scope :search_by_name,
+                  against: :name,
+                  using: {
+                    tsearch: {
+                      dictionary: :english,
+                      prefix: true,
+                      any_word: true
+                    },
+                    dmetaphone: {
+                      any_word: true
+                    }
+                  },
+                  ranked_by: ':trigram'
+
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
   scope :exclude_ids, -> ids { where.not(id: ids) }
@@ -84,7 +101,7 @@ class Client < ActiveRecord::Base
   scope :by_region, -> region_id { where(client_region_id: region_id) if region_id.present? }
   scope :by_segment, -> segment_id { where(client_segment_id: segment_id) if segment_id.present? }
   scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
-  scope :by_name_and_type_with_limit, -> (name, type) { by_name(name).by_type_id(type).limit(10) }
+  scope :by_name_and_type_with_limit, -> (name, type) { by_name(name).by_type_id(type).limit(20) }
   scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }
   scope :by_ids, -> ids { where(id: ids) if ids.present?}
   scope :by_last_touch, -> (start_date, end_date) { Client.joins("INNER JOIN (select client_id, max(happened_at) as last_touch from activities group by client_id) as tb1 ON clients.id = tb1.client_id").where("tb1.last_touch >= ? and tb1.last_touch <= ?", start_date, end_date) if start_date.present? && end_date.present? }
@@ -93,10 +110,22 @@ class Client < ActiveRecord::Base
   end
   scope :without_child_clients_for, ->(client) { where.not(id: client.child_client_ids) }
   scope :without_connections_for, ->(client) { where.not(id: client.connection_entry_ids) }
-
   scope :without_related_clients, -> contact_id do
-    joins(:client_contacts).where.not(client_contacts: { contact_id: contact_id }).distinct
+    where.not(id: ClientContact.where(contact_id: contact_id).pluck(:client_id))
   end
+  
+  pg_search_scope :fuzzy_search,
+                  against: :name,
+                  using: {
+                    tsearch: {
+                      prefix: true,
+                      any_word: true
+                    },
+                    dmetaphone: {
+                      any_word: true
+                    }
+                  },
+                  ranked_by: ':trigram'
 
   ADVERTISER = 10
   AGENCY = 11
@@ -215,7 +244,13 @@ class Client < ActiveRecord::Base
               },
               activity_type: { only: [:id, :name, :css_class, :action] }
             }
-          }},
+          },
+          ssp_advertisers: {
+            include: {
+              ssp: {}
+            }
+          }
+        },
         methods: [:deals_count, :fields, :formatted_name]
       ).except(:override))
     end

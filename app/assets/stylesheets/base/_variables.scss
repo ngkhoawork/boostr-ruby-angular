@@ -17,6 +17,7 @@ $main-font-color: #2b3c49;
 $secondary-font-color: #818689;
 $separate-line-color: #EAECEE;
 $error-color: #ed5063;
+$header-color: #2B3C49;
 
 $gray-light: #ECECEC !default;
 $gray-lighter: #DFDFDF !default;
@@ -64,7 +65,7 @@ $brand-tertiary-darken: darken($brand-tertiary, 5%) !default;
 $brand-tertiary-lighten: lighten($brand-tertiary, 5%) !default;
 
 // Header
-$header-height: 151px;
+$header-height: 136px;
 
 // Content min-width
 $content-min-width: 1280px;

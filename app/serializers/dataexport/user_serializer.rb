@@ -1,4 +1,6 @@
 class Dataexport::UserSerializer < ActiveModel::Serializer
+  include Dataexport::CommonFields::TimestampFields
+
   attributes :id, :first_name, :last_name, :email, :office, :employee_id, :currency, :active, :created, :last_updated
 
   def currency
@@ -7,13 +9,5 @@ class Dataexport::UserSerializer < ActiveModel::Serializer
 
   def active
     object.is_active
-  end
-
-  def created
-    object.created_at
-  end
-
-  def last_updated
-    object.updated_at
   end
 end

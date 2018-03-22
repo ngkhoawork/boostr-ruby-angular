@@ -1,138 +1,279 @@
 @app.controller 'RevenueController',
-	['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem'
-	( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem ) ->
+  ['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem', 'PMP', 'PMPItemDailyActual', 'RevenueFilter', 'Deal', 'TimePeriod'
+  ( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem,   PMP,   PMPItemDailyActual, RevenueFilter, Deal, TimePeriod) ->
+    formatMoney = $filter('formatMoney')
+    $scope.isLoading = false
+    $scope.allItemsLoaded = false
+    $scope.revenue = []
+    $scope.prevRequest = $q.defer()
+    $scope.revenueFilters = [
+      {name: 'IOs', value: ''}
+      {name: 'No-Match IOs', value: 'no-match'}
+      {name: 'PMPs', value: 'pmp'}
+      {name: 'No-Match Advertisers', value: 'no-match-adv'}
+      {name: 'Upside Revenues', value: 'upside'}
+      {name: 'At Risk Revenues', value: 'risk'}
+    ]
+    $scope.pacingAlertsFilters = [
+      {name: 'My Lines', value: 'my'}
+      {name: 'My Team\'s Lines', value: 'teammates'}
+      {name: 'All Lines', value: 'all'}
+    ]
+    itemsPerPage = 20
+    $scope.filter =
+      page: 1
+      revenue: $routeParams.filter || ''
+      pacing: $routeParams.io_owner || ''
+      name: ''
+      isOpen: false
+      search: ''
+      ioNumbers: []
+      externalIoNumbers: []
+      minBudget: null
+      maxBudget: null
+      selected: RevenueFilter.selected
+      slider:
+        minValue: 0
+        maxValue: 0
+        options:
+          floor: 0
+          ceil: 100
+          minRange: 0
+          pushRange: true
+          translate: (value) ->
+            formatMoney(value)
+          onChange: (slideId, minValue, maxValue, type) ->
+            if !$scope.filter.selected.budget then $scope.filter.selected.budget = {}
+            budget = $scope.filter.selected.budget
+            if minValue && maxValue
+              budget.min = $scope.filter.minBudget = Math.min(minValue, maxValue)
+              budget.max = $scope.filter.maxBudget = Math.max(minValue, maxValue)
+            else
+              budget.min = $scope.filter.minBudget = minValue
+              budget.max = $scope.filter.maxBudget = maxValue
+            if this.maxValue is 0 then this.maxValue = this.options.ceil
+        onChangeNumber: (type) ->
+          if !$scope.filter.selected.budget then $scope.filter.selected.budget = {}
+          budget = $scope.filter.selected.budget
+          $scope.filter.minBudget = parseInt($scope.filter.minBudget) || 0
+          $scope.filter.maxBudget = parseInt($scope.filter.maxBudget) || 0
+          switch type
+            when 'min'
+              if $scope.filter.minBudget > this.options.ceil
+                $scope.filter.minBudget = this.options.ceil
+            when 'max'
+              if $scope.filter.maxBudget > this.options.ceil
+                $scope.filter.maxBudget = this.options.ceil
+          if $scope.filter.minBudget && $scope.filter.maxBudget
+            budget.min = this.minValue = Math.min($scope.filter.minBudget, $scope.filter.maxBudget)
+            budget.max = this.maxValue = Math.max($scope.filter.minBudget, $scope.filter.maxBudget)
+          else
+            budget.min = this.minValue = $scope.filter.minBudget
+            budget.max = this.maxValue = $scope.filter.maxBudget
+          if this.maxValue is 0 then this.maxValue = this.minValue
+        refresh: ->
+          $scope.$broadcast 'rzSliderForceRender'
+      datePicker:
+        startDate:
+          startDate: null
+          endDate: null
+        endDate:
+          startDate: null
+          endDate: null
+        applyStartDate: ->
+          _this = $scope.filter.datePicker
+          if (_this.startDate.startDate && _this.startDate.endDate)
+            $scope.filter.selected.startDate = _this.startDate
+        applyEndDate: ->
+          _this = $scope.filter.datePicker
+          if (_this.endDate.startDate && _this.endDate.endDate)
+            $scope.filter.selected.endDate = _this.endDate
+      getDateValue: (key) ->
+        date = this.selected[key]
+        if date.startDate && date.endDate
+          return "#{date.startDate.format('MMM D, YYYY')} -\n#{date.endDate.format('MMM D, YYYY')}"
+        return switch key
+          when 'startDate' then 'Start date'
+          when 'endDate' then 'End date'
+      getBudgetValue: ->
+        budget = this.selected.budget
+        if budget.min && !budget.max
+          return 'From ' + formatMoney(budget.min)
+        if !budget.min && budget.max
+          return 'To ' + formatMoney(budget.max)
+        if budget.min && budget.max
+          return formatMoney(budget.min) + ' - ' + formatMoney(budget.max)
+        return 'Budget'			
+      open: (event) ->
+        this.isOpen = true
+      close: (event) ->
+        this.isOpen = false
+      reset: (key) ->
+        RevenueFilter.reset(key)
+      resetAll: ->
+        RevenueFilter.resetAll()	
+      onDropdownToggle: ->
+        this.search = ''
+      apply: (reset) ->
+        $scope.applyFilter()
+        if !reset then this.isOpen = false
+      select: (key, value) ->
+        RevenueFilter.select(key, value)
 
-		currentYear = moment().year()
-		$scope.isLoading = false
-		$scope.allItemsLoaded = false
-		$scope.revenue = []
-		$scope.prevRequest = $q.defer()
-		$scope.revenueFilters = [
-			{name: 'IOs', value: ''}
-			{name: 'No-Match IOs', value: 'no-match'}
-			{name: 'Programmatic', value: 'programmatic'}
-			{name: 'Upside Revenues', value: 'upside'}
-			{name: 'At Risk Revenues', value: 'risk'}
-		]
-		$scope.pacingAlertsFilters = [
-			{name: 'My Lines', value: 'my'}
-			{name: 'My Team\'s Lines', value: 'teammates'}
-			{name: 'All Lines', value: 'all'}
-		]
-		itemsPerPage = 10
-		$scope.filter =
-			page: 1
-			revenue: $routeParams.filter || ''
-			pacing: $routeParams.io_owner || ''
-			name: ''
-			date:
-				startDate: moment().year(currentYear).startOf('year')
-				endDate: moment().year(currentYear).endOf('year')
+    $scope.filtering = (item) ->
+      if !item then return false
+      if item.name
+        return item.name.toString().toUpperCase().indexOf($scope.filter.search.toUpperCase()) > -1
+      else
+        return item.toString().toUpperCase().indexOf($scope.filter.search.toUpperCase()) > -1
 
-		$scope.datePicker =
-			toString: () ->
-				date = $scope.filter.date
-				if !date.startDate || !date.endDate then return false
-				date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
-			apply: ->
-				$scope.applyFilter()
+    resetPagination = ->
+      $scope.filter.page = 1
+      $scope.allItemsLoaded = false
+      $scope.revenue = []
+      $scope.prevRequest.reject()
 
-		resetPagination = ->
-			$scope.filter.page = 1
-			$scope.allItemsLoaded = false
-			$scope.revenue = []
-			$scope.prevRequest.reject()
+    $scope.setFilter = (key, val) ->
+      $scope.filter[key] = val
+      switch key
+        when 'revenue', 'pacing'
+          $location.search({filter: $scope.filter.revenue, io_owner: $scope.filter.pacing})
+      $scope.applyFilter()
 
-		$scope.setFilter = (key, val) ->
-			$scope.filter[key] = val
-			switch key
-				when 'revenue', 'pacing'
-					$location.search({filter: $scope.filter.revenue, io_owner: $scope.filter.pacing})
-			$scope.applyFilter()
+    $scope.applyFilter = ->
+      resetPagination()
+      getData(getQuery())
 
-		$scope.applyFilter = ->
-			resetPagination()
-			getData(getQuery())
+    getQuery = ->
+      f = $scope.filter
+      query = {}
+      query.per = itemsPerPage
+      query.page = f.page
+      query.filter = f.revenue
+      query.name = f.name if f.name
 
-		getQuery = ->
-			f = $scope.filter
-			query = {}
-			query.per = itemsPerPage
-			query.page = f.page
-			query.filter = f.revenue
-			query.name = f.name if f.name
-			if f.date.startDate && f.date.endDate
-				query.start_date = f.date.startDate.toDate()
-				query.end_date = f.date.endDate.toDate()
-			query
+      # Expandable filter only for IO and No Match IO subtabs
+      if query.filter == '' or query.filter == 'no-match'
+        $scope.showExpandableFilter = true
+        query.advertiser_id = f.selected.advertiser.id if f.selected.advertiser
+        query.agency_id = f.selected.agency.id if f.selected.agency
+        query.io_number = f.selected.ioNumber if f.selected.ioNumber
+        query.external_io_number = f.selected.externalIoNumber if f.selected.externalIoNumber
+        query.budget_start = f.selected.budget.min if f.selected.budget
+        query.budget_end = f.selected.budget.max if f.selected.budget
+        query.start_date_start = f.selected.startDate.startDate if f.selected.startDate.startDate
+        query.start_date_end = f.selected.startDate.endDate if f.selected.startDate.endDate
+        query.end_date_start = f.selected.endDate.startDate if f.selected.endDate.startDate
+        query.end_date_end = f.selected.endDate.endDate if f.selected.endDate.endDate
+      else
+        $scope.showExpandableFilter= false
+        $scope.filter.close()
 
-		getData = (query) ->
-			$scope.isLoading = true
-			revenueRequest = $q.defer()
-			$scope.prevRequest = revenueRequest
-			switch query.filter
-				when 'no-match'
-					TempIO.query query, (tempIOs) -> revenueRequest.resolve tempIOs
-				when 'upside', 'risk'
-					query.io_owner = $scope.filter.pacing if $scope.filter.pacing #adding extra param
-					DisplayLineItem.query query, (ios) -> revenueRequest.resolve ios
-				else
-					IO.query query, (ios) -> revenueRequest.resolve ios
-			revenueRequest.promise.then (data) -> setRevenue data
+      query
 
+    getData = (query) ->
+      $scope.isLoading = true
+      revenueRequest = $q.defer()
+      $scope.prevRequest = revenueRequest
+      switch query.filter
+        when 'no-match'
+          TempIO.query query, (tempIOs) -> revenueRequest.resolve tempIOs
+        when 'upside', 'risk'
+          query.io_owner = $scope.filter.pacing if $scope.filter.pacing #adding extra param
+          DisplayLineItem.query query, (ios) -> revenueRequest.resolve ios
+        when 'pmp'
+          PMP.query query, (pmps) -> revenueRequest.resolve pmps
+        when 'no-match-adv'
+          query.with_advertiser = false
+          PMPItemDailyActual.query query, (pmpItemDailyActuals) -> 
+            revenueRequest.resolve pmpItemDailyActuals
+        else
+          IO.query query, (ios) -> revenueRequest.resolve ios
+      revenueRequest.promise.then (data) ->
+        $scope.filter.ioNumbers = data.map( (resource) ->
+          resource.io_number
+        )
+        $scope.filter.externalIoNumbers = data.map( (resource) ->
+          resource.external_io_number
+        )
+        setRevenue data
 
-		$scope.loadMoreRevenues = ->
-			if !$scope.allContactsLoaded then getData(getQuery())
+    $scope.loadMoreRevenues = ->
+      if !$scope.allItemsLoaded then getData(getQuery())
 
-		parseBudget = (data) ->
-			data = _.map data, (item) ->
-				item.budget = parseInt item.budget if item.budget
-				item.budget_loc = parseInt item.budget_loc if item.budget_loc
-				item
+    parseBudget = (data) ->
+      data = _.map data, (item) ->
+        item.budget = parseInt item.budget if item.budget
+        item.budget_loc = parseInt item.budget_loc if item.budget_loc
+        item
 
-		setRevenue = (data) ->
-			if data.length < itemsPerPage then $scope.allItemsLoaded = true
-			parseBudget data
-			$scope.revenue = $scope.revenue.concat data
-			$scope.filter.page++
-			$timeout -> $scope.isLoading = false
+    setRevenue = (data) ->
+      if data.length < itemsPerPage then $scope.allItemsLoaded = true
+      parseBudget data
+      $scope.revenue = $scope.revenue.concat data
+      $scope.filter.page++
+      $timeout -> $scope.isLoading = false
 
-		$scope.showIOEditModal = (io) ->
-			$scope.modalInstance = $modal.open
-				templateUrl: 'modals/io_form.html'
-				size: 'md'
-				controller: 'IOEditController'
-				backdrop: 'static'
-				keyboard: false
-				resolve:
-					io: -> io
-			.result.then (updated_io) ->
-				if (updated_io)
-					$scope.init();
+    $scope.showIOEditModal = (io) ->
+      $scope.modalInstance = $modal.open
+        templateUrl: 'modals/io_form.html'
+        size: 'md'
+        controller: 'IOEditController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          io: -> io
 
-		$scope.showAssignIOModal = (tempIO) ->
-			$scope.modalInstance = $modal.open
-				templateUrl: 'modals/io_assign_form.html'
-				size: 'lg'
-				controller: 'IOAssignController'
-				backdrop: 'static'
-				keyboard: false
-				resolve:
-					tempIO: ->
-						tempIO
-			.result.then (updated_temp_io) ->
-				if (updated_temp_io)
-					$scope.init();
+    $scope.showAssignIOModal = (tempIO) ->
+      $scope.modalInstance = $modal.open
+        templateUrl: 'modals/io_assign_form.html'
+        size: 'lg'
+        controller: 'IOAssignController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          tempIO: ->
+            tempIO	
 
-		$scope.$on 'updated_ios', ->
-			$scope.init()
-			IO.query().$promise
+    $scope.showAssignAdvertiserModal = (pmpItemDailyActual) ->
+      modalInstance = $modal.open
+        templateUrl: 'modals/advertiser_assign_form.html'
+        size: 'lg'
+        controller: 'AdvertiserAssignController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          pmpItemDailyActual: ->
+            pmpItemDailyActual
+      modalInstance.result.then (ids) ->
+        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id) 
 
-		$scope.deleteIo = (io, $event) ->
-			$event.stopPropagation();
-			if confirm('Are you sure you want to delete "' + io.name + '"?')
-				IO.delete io, ->
-					$location.path('/revenue')
+    $scope.deleteIo = (io, $event) ->
+      $event.stopPropagation();
+      if confirm('Are you sure you want to delete "' + io.name + '"?')
+        IO.delete io, ->
+          $location.path('/revenue')
 
-		$scope.applyFilter()
-	]
+    $scope.addPmp = () ->
+      $scope.modalInstance = $modal.open
+        templateUrl: 'modals/pmp_form.html'
+        size: 'md'
+        controller: 'PmpsNewController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          pmp: null
+
+    $scope.getFilters = ->
+      $q.all({
+        filterData: Deal.filter_data(),
+        timePeriods: TimePeriod.all()
+      }).then (filterData) ->
+        $scope.filter.advertisers = filterData.filterData.advertisers
+        $scope.filter.agencies = filterData.filterData.agencies
+        $scope.filter.timePeriods = filterData.timePeriods
+        $scope.filter.slider.maxValue = $scope.filter.slider.options.ceil = filterData.filterData.max_budget
+
+    $scope.getFilters()
+    $scope.applyFilter()	
+  ]

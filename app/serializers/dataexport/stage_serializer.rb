@@ -1,3 +1,5 @@
 class Dataexport::StageSerializer < ActiveModel::Serializer
-  attributes :id, :name, :probability, :open, :active
+  include Dataexport::CommonFields::TimestampFields
+
+  attributes :id, :name, :probability, :open, :active, :created, :last_updated
 end
