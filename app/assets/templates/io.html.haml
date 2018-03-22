@@ -10,7 +10,7 @@
 								%i.fa.fa-pencil.z-icon{'ng-if': 'canEditIO', 'ng-click': 'showIOEditModal(currentIO)'}
 								%i.fa.fa-trash.z-icon{'ng-if': 'canEditIO', 'ng-click': 'deleteIo(currentIO)'}
 								.right-link.pull-right{'ng-if': 'currentIO.deal_id'}
-									Go to
+									Go to Deal 
 									%a{'href': '', 'ng-href': '/deals/{{currentIO.deal_id}}'}
 										{{currentIO.deal.name}}
 							.detail-info
