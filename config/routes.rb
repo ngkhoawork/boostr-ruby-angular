@@ -216,11 +216,6 @@ Rails.application.routes.draw do
       collection do
         get :metadata
         get :service_account_email
-        get :ssp_credentials
-      end
-      member do
-        post :delete_ssp
-        post :update_ssp
       end
     end
     resources :integration_types, only: [:index]
