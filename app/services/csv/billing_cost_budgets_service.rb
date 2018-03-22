@@ -1,4 +1,4 @@
-class Csv::BillingCostsService < Csv::BaseService
+class Csv::BillingCostBudgetsService < Csv::BaseService
   def initialize(company, records)
     @company = company
     @records = records
@@ -9,7 +9,7 @@ class Csv::BillingCostsService < Csv::BaseService
   attr_reader :company
 
   def decorated_records
-    records.map { |record| Csv::BillingCostsDecorator.new(record, company, field) }
+    records.map { |record| Csv::BillingCostBudgetsDecorator.new(record, company, field) }
   end
 
   def headers

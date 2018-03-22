@@ -4,6 +4,29 @@
       %form.form-inline.filter-form
         .form-group
           %label
+            Year
+          .dropdown.form-control
+            .dropdown-toggle.year-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{selectedYear || 'Select'}}
+              %span.caret
+            %ul.dropdown-menu.year-dropdown
+              %li{'ng-repeat': 'year in years', 'ng-class': '{active: selectedYear == year}'}
+                %a{'href': '', 'ng-click': 'selectYear(year)'}
+                  %span {{year}}
+
+        .form-group
+          %label
+            Month
+          .dropdown.form-control
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{selectedMonth || 'Select'}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'month in months', 'ng-class': '{active: selectedMonth == month}'}
+                %a{'href': '', 'ng-click': 'selectMonth(month)'}
+                  %span {{month}}
+        .form-group
+          %label
             Team
           .team-filter
             %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'costsFilter.team'}
@@ -15,7 +38,7 @@
               %span {{costsFilter.user.name}}
               %span.caret
             %ul.dropdown-menu.month-dropdown
-              %li{'ng-repeat': 'user in users | orderBy : "name"', 'ng-class': '{active: filter.user.name == user.name}'}
+              %li{'ng-repeat': 'user in users | orderBy : "name"', 'ng-class': '{active: costsFilter.user.name == user.name}'}
                 %a{'href': '', 'ng-click': 'setCostsFilter("user", user)'}
                   %span {{user.name}}
         .form-group
@@ -23,12 +46,12 @@
             Account Manager
           .dropdown.form-control.wide
             .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
-              %span {{costsFilter.userType.name}}
+              %span {{costsFilter.manager.name}}
               %span.caret
             %ul.dropdown-menu.month-dropdown
-              %li{'ng-repeat': 'manager in managers', 'ng-class': '{active: filter.manager.id == manager.id}'}
+              %li{'ng-repeat': 'manager in managers', 'ng-class': '{active: costsFilter.manager.id == manager.id}'}
                 %a{'href': '', 'ng-click': 'setCostsFilter("manager", manager)'}
-                  %span {{userType.name}}
+                  %span {{manager.name}}
 
 %div
   .row.block.mb20
@@ -62,7 +85,7 @@
                     %a{'href': '', 'ng-click': 'item.product_id = product.id; updateCost(item)'}
                       %span.text {{product.name}}
             %td
-              %span.display-fee-product-budget{'editable-number': 'item.amount', 'e-step': '0.01', blur: 'submit', onbeforesave: 'item.budget_loc = $data; updateCost(item)'}
+              %span.display-fee-product-budget{'editable-number': 'item.amount', 'e-step': '0.01', blur: 'submit', onbeforesave: 'item.budget_loc = $data; updateCostBudget(item)'}
                 {{ item.amount | currency : item.currency_symbol : 2 }}
 
             %td.text-right

@@ -10,7 +10,7 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def costs
-    render json: billing_costs_serializer
+    render json: billing_cost_budgets_serializer
   end
 
   def update_quantity
@@ -43,6 +43,14 @@ class Api::BillingSummaryController < ApplicationController
     end
   end
 
+  def update_cost_budget
+    if cost_budget.update(cost_budget_params)
+      render json: cost_budget.reload, serializer: BillingSummary::CostBudgetSerializer
+    else
+      render json: { errors: cost_budget.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   def update_cost
     if cost.update(cost_params)
       render json: cost.reload, serializer: BillingSummary::CostSerializer
@@ -54,37 +62,37 @@ class Api::BillingSummaryController < ApplicationController
   def export
     respond_to do |format|
       format.csv { send_data billing_summary_csv_report,
-                   filename: "billing-summary-revenue#{params[:month]}-#{params[:year]}.csv" }
+                   filename: "billing-summary-revenue-#{params[:month]}-#{params[:year]}.csv" }
     end
   end
 
-  def export_costs
+  def export_cost_budgets
     respond_to do |format|
-      format.csv { send_data billing_summary_costs_csv_report,
-                   filename: "billing-summary-costs-#{Date.today}.csv" }
+      format.csv { send_data billing_summary_cost_budgets_csv_report,
+                   filename: "billing-summary-costs-#{params[:month]}-#{params[:year]}.csv" }
     end
   end
 
   private
 
-  def billing_summary_costs_csv_report
-    Csv::BillingCostsService.new(company, billing_costs_data).perform
+  def billing_summary_cost_budgets_csv_report
+    Csv::BillingCostBudgetsService.new(company, billing_cost_budgets_data).perform
   end
 
-  def billing_costs_serializer
+  def billing_cost_budgets_serializer
     ActiveModel::ArraySerializer.new(
-      billing_costs_data,
-      each_serializer: BillingSummary::CostSerializer
+      billing_cost_budgets_data,
+      each_serializer: BillingSummary::CostBudgetSerializer
     )
   end
 
-  def billing_costs_data
-    BillingCostsQuery.new(billing_costs_params).perform
+  def billing_cost_budgets_data
+    BillingCostBudgetsQuery.new(billing_cost_budgets_params).perform
   end
 
-  def billing_costs_params
+  def billing_cost_budgets_params
     params
-      .permit(:team_id, :user_id, :user_type)
+      .permit(:year, :month, :team_id, :user_id, :manager_id)
       .merge(company_id: current_user.company_id)
   end
 
@@ -155,6 +163,10 @@ class Api::BillingSummaryController < ApplicationController
     @_company ||= current_user.company
   end
 
+  def cost_budget
+    @_cost_budget ||= CostMonthlyAmount.find(params[:id])
+  end
+
   def cost
     @_cost ||= Cost.find(params[:id])
   end
@@ -173,6 +185,10 @@ class Api::BillingSummaryController < ApplicationController
 
   def content_fee
     @_content_fee ||= content_fee_product_budget.content_fee
+  end
+
+  def cost_budget_params
+    params.require(:cost_budget).permit(:budget_loc)
   end
 
   def cost_params

@@ -79,6 +79,8 @@
                     team_id: $scope.costsFilter.team.id
                     user_id: $scope.costsFilter.user.id
                     manager_id: $scope.costsFilter.manager.id
+                    month: $scope.selectedMonth.toLowerCase()
+                    year: $scope.selectedYear
 
                 Billing.getCosts(filters).then (data) ->
                     $scope.costs = data;
@@ -141,14 +143,25 @@
                     console.log err
                     item.billing_status = oldValue
 
-            $scope.updateCost = (item) ->
-                Billing.updateCost(item).then (resp) ->
-                    item.product = resp.product
+            $scope.updateCostBudget = (item) ->
+                Billing.updateCostBudget(item).then (resp) ->
                     item.amount = resp.amount
+                , (err) ->
+                    console.log err
+                    item.amount = oldValue
+
+            $scope.updateCost = (item) ->
+                cost = {
+                    id: item.cost_id,
+                    product_id: item.product_id,
+                    values: item.values,
+                    type: item.type
+                }
+                Billing.updateCost(cost).then (resp) ->
+                    item.product = resp.product
                     item.values = resp.values
                     Field.defaults(resp, 'Cost').then (fields) ->
                         item.type = Field.field(resp, 'Type')
-                    console.log(resp);
                 , (err) ->
                     console.log err
                     item.amount = oldValue
@@ -186,14 +199,18 @@
                 return
 
             exportCosts = ->
-                console.log('test')
-                url = '/api/billing_summary/export_costs.csv?'
+                url = '/api/billing_summary/export_cost_budgets.csv?'
                 if $scope.costsFilter.team.id
                     url += """team_id=#{$scope.costsFilter.team.id || ''}&"""
                 if $scope.costsFilter.user.id
                     url += """user_id=#{$scope.costsFilter.user.id || ''}&"""
                 if $scope.costsFilter.manager.id
                     url += """manager_id=#{$scope.costsFilter.manager.id || ''}&"""
+
+                if $scope.selectedYear
+                    url += """year=#{$scope.selectedYear}&"""
+                if $scope.selectedMonth
+                    url += """month=#{$scope.selectedMonth}&"""
                 $window.open(url)
                 return
 
@@ -202,7 +219,6 @@
                 return
 
             $scope.exportBilling = ->
-                console.log('exportBilling')
                 if $scope.currentTab == 'costs'
                     exportCosts()
                 else
