@@ -7,16 +7,24 @@
   .table-wrapper
     %table.table.table-hover
       %thead
-        %tr
-          %th Name
-          %th Family
-          %th{ 'ng-show': 'company.product_options_enabled' } Parent Product
-          %th{ 'ng-show': 'company.product_options_enabled' } Level
-          %th Type
-          %th Revenue Type
-          %th Active
-          %th Is Influencer
-      %tbody{ ng: { repeat: 'product in products' } }
+        %tr.z-sortable-prime
+          %th
+            %span.z-sortable{by: 'name'} Name
+          %th
+            %span.z-sortable{by: 'product_family.name'} Family
+          %th{ 'ng-show': 'company.product_options_enabled' } 
+            %span.z-sortable{by: 'parent.name'} Parent Product
+          %th{ 'ng-show': 'company.product_options_enabled' } 
+            %span.z-sortable{by: 'level'} Level
+          %th 
+            %span.z-sortable{by: 'pricing_type.option.name'} Type
+          %th 
+            %span.z-sortable{by: 'revenue_type'} Revenue Type
+          %th 
+            %span.z-sortable{by: 'active'} Active
+          %th 
+            %span.z-sortable{by: 'is_influencer_product'} Is Influencer
+      %tbody{ ng: { repeat: 'product in products | orderBy : zSort.by : zSort.rev' } }
         %tr.clickable{'ng-click': 'expendRow(product)'}
           %td
             %i{class: 'mr8 fa fa-chevron-{{expendedRow == product.id ? "right" : "down"}}'}

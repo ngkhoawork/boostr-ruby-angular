@@ -6,10 +6,12 @@
   .table-wrapper
     %table.table.table-hover
       %thead
-        %tr
-          %th Family Name
-          %th Active
-      %tbody{ ng: { repeat: 'productFamily in productFamilies' } }
+        %tr.z-sortable-prime
+          %th
+            %span.z-sortable{by: 'name'} Family Name
+          %th 
+            %span.z-sortable{by: 'active'} Active
+      %tbody{ ng: { repeat: 'productFamily in productFamilies | orderBy : zSort.by : zSort.rev' } }
         %tr
           %td
             %span.mr8 {{ productFamily.name }}
