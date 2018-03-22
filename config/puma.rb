@@ -1,4 +1,4 @@
-workers Integer(ENV['WEB_CONCURRENCY'] || 1)
+workers Integer(ENV['WEB_CONCURRENCY'] || 2)
 worker_timeout 45
 
 threads_count = Integer(ENV['MAX_THREADS'] || 5)

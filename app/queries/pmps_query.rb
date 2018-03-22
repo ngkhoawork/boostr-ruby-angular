@@ -1,14 +1,6 @@
+
 class PmpsQuery < BaseQuery
-
-  def call
-    if options[:without_advertisers]
-      filter.without_advertiser
-    else
-      filter
-    end
-  end
-
-  def filter
+  def perform
     name_relation
         .union(advertiser_relation)
         .union(agency_relation)
@@ -19,19 +11,23 @@ class PmpsQuery < BaseQuery
   private
 
   def default_relation
-    Pmp.all.extending(Scopes).by_company_id(options[:company_id])
+    Pmp.all.extending(Scopes)
+      .by_company_id(options[:company_id])
   end
 
   def name_relation
-    default_relation.by_name(options[:name])
+    default_relation
+      .by_name(options[:name])
   end
 
   def advertiser_relation
-    default_relation.by_advertiser_name(options[:name])
+    default_relation
+      .by_advertiser_name(options[:name])
   end
 
   def agency_relation
-    default_relation.by_agency_name(options[:name])
+    default_relation
+      .by_agency_name(options[:name])
   end
 
   module Scopes
@@ -56,3 +52,4 @@ class PmpsQuery < BaseQuery
     end
   end
 end
+
