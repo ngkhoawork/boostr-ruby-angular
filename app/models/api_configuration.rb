@@ -6,8 +6,7 @@ class ApiConfiguration < ActiveRecord::Base
     'operative': 'OperativeApiConfiguration',
     'Operative Datafeed': 'OperativeDatafeedConfiguration',
     'Asana Connect': 'AsanaConnectConfiguration',
-    'Google Sheets': 'GoogleSheetsConfiguration',
-    'SSP': 'SspCredential'
+    'Google Sheets': 'GoogleSheetsConfiguration'
   }
 
   belongs_to :company

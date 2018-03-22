@@ -106,11 +106,11 @@
 									%td
 										{{ currentIO.end_date | date: 'M/d/yyyy' }}
 									%td.right
-										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "content_fee.budget_loc", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "(currentUser.is_admin || canEditIO) && !currentIO.freezed", 'numbers-with-commas': true }
+										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "content_fee.budget_loc", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "(currentUser.is_admin || canEditIO) && !currentIO.freezed" }
 										%span{ ng: { if: "(!currentUser.is_admin && !canEditIO) || currentIO.freezed" } }
 											{{ content_fee.budget_loc | currency:currency_symbol:2 }}
 									%td.right{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
-										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "product_budget.budget_loc", 'on-after-save': 'updateContentFeeAndBudget(content_fee)', 'ng-if': "currentUser.is_admin || canEditIO", 'numbers-with-commas': true }
+										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "product_budget.budget_loc", 'on-after-save': 'updateContentFeeAndBudget(content_fee)', 'ng-if': "currentUser.is_admin || canEditIO" }
 										%span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
 											{{ product_budget.budget_loc | currency:currency_symbol:2 }}
 								%tr.sum-budgets-row{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0'} }

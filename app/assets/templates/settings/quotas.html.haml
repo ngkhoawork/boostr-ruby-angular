@@ -40,4 +40,4 @@
                 %td.left
                   {{ quota.product_type == 'ProductFamily' ? quota.product.name : '' }}
                 %td.right
-                  %input.editable-control.text-center{ type: 'text', 'ng-model': 'quota.value', placeholder: "0", 'ng-blur': 'updateQuota(quota)', 'ng-style': "{width:'100px'}", 'ng-click': '$event.stopPropagation();', 'numbers-with-commas': true }
+                  %input.editable-control.text-center{ type: 'text', 'ng-model': 'quota.value', placeholder: "0", 'ng-blur': 'updateQuota(quota)', 'ng-style': "{width:'100px'}", 'ng-click': '$event.stopPropagation();' }

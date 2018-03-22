@@ -1,6 +1,6 @@
 @app.controller 'AccountController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes', 'CurrentUser'
-($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes, CurrentUser) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes'
+($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes) ->
 
   $scope.showMeridian = true
   $scope.activitiesOrder = '-happened_at'
@@ -16,15 +16,6 @@
   $scope.connectedClientContactUrl = 'api/clients/' + $routeParams.id + '/connected_client_contacts'
   $scope.url = 'api/resources'
   $scope.object = { userToLink: null }
-  $scope.allow_edit = false;
-
-  $scope.checkPermissions = ->
-    if !$scope.currentUser.is_admin && $scope.currentClient.is_multibuyer
-      $scope.allow_edit = false
-    else if $scope.currentUser.is_admin && $scope.currentClient.is_multibuyer
-      $scope.allow_edit = true
-    else
-      $scope.allow_edit = true
 
   $scope.init = ->
     ActivityType.all().then (activityTypes) ->
@@ -141,9 +132,6 @@
   $scope.getClient = (clientId) ->
     Client.get({ id: clientId }).$promise.then (client) ->
       $scope.setClient(client)
-      CurrentUser.get().$promise.then (user) ->
-        $scope.currentUser = user
-        $scope.checkPermissions();
 
   $scope.getDeals = (client) ->
     Deal.all({client_id: client.id}).then (deals) ->

@@ -4,7 +4,6 @@ RSpec.describe DealProductBudget, type: :model do
   let!(:company) { create :company }
 
   context 'scopes' do
-    let(:company) { create :company }
 
     context 'for_time_period' do
       let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-12-31', company: company }
