@@ -26,17 +26,22 @@
                 user: defaultUser
                 manager: defaultUser
 
+            $scope.shouldUpdate = true
+
             $scope.setTab = (tab) ->
                 $scope.currentTab = tab
-                if (tab == 'costs' && !$scope.costs.length)
+                if $scope.shouldUpdate
                     getData()
+                    $scope.shouldUpdate = false
 
             $scope.selectMonth = (month) ->
                 $scope.selectedMonth = month
+                $scope.shouldUpdate = true
                 getData()
 
             $scope.selectYear = (year) ->
                 $scope.selectedYear = year
+                $scope.shouldUpdate = true
                 getData()
 
             $scope.setCostsFilter = (key, value) ->
