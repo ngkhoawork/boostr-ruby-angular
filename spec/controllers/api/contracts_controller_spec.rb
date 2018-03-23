@@ -368,7 +368,12 @@ RSpec.describe Api::ContractsController, type: :controller do
           :member_role_options,
           :contact_role_options,
           :special_term_name_options,
-          :special_term_type_options
+          :special_term_type_options,
+          :linked_deals,
+          :linked_advertisers,
+          :linked_agencies,
+          :linked_holding_companies,
+          :linked_users
         ]
       )
     end
