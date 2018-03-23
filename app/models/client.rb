@@ -542,6 +542,12 @@ class Client < ActiveRecord::Base
     client_type_field(company).options.where(name: "Advertiser").first.id
   end
 
+  def self.custom_types(company)
+    opts = {}
+    client_type_field(company).options&.each{|c| opts.merge!(c.id => c.name)}
+    opts
+  end
+
   def client_type
     company.fields.where(name: 'Client Type').first.options.find_by_id(self.client_type_id)
   end
