@@ -18,6 +18,8 @@ class Contract < ActiveRecord::Base
   has_many :special_terms, inverse_of: :contract, dependent: :destroy
   has_many :assets, as: :attachable, dependent: :destroy
 
+  has_many :users, through: :contract_members, source: :user
+
   validates :name, presence: true
 
   accepts_nested_attributes_for :contract_members, allow_destroy: true

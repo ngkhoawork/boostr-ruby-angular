@@ -11,6 +11,7 @@ class User < ActiveRecord::Base
   has_many :revenues, -> (user) { where(company_id: user.company_id) }, through: :clients
   has_many :deal_members
   has_many :io_members
+  has_many :contract_members
   has_many :pmp_members
   has_many :deals, -> (user) { where(company_id: user.company_id) }, through: :deal_members
   has_many :ios, -> (user) { where(company_id: user.company_id) }, through: :io_members
