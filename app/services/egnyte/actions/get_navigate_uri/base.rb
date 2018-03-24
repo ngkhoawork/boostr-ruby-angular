@@ -24,7 +24,7 @@ class Egnyte::Actions::GetNavigateUri::Base
       return response.parsed_response_body[:redirect] if response.success?
     end
 
-    raise 'Unhandled request'
+    raise Egnyte::Errors::UnhandledRequest
   end
 
   private

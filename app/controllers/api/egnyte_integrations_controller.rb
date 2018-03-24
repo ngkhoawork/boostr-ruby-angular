@@ -48,23 +48,15 @@ class Api::EgnyteIntegrationsController < ApplicationController
   end
 
   def navigate_to_deal
-    render json: { navigate_to_deal_uri: build_navigate_deal_uri }
+    render json: { navigate_to_deal_uri: navigate_deal_uri }
   end
 
   def navigate_to_account_deals
-    render json: { navigate_to_deal_uri: build_navigate_account_deals_uri }
+    render json: { navigate_to_deal_uri: navigate_account_deals_uri }
   end
 
   def oauth_callback
-    @resource = EgnyteIntegration.find_by_state_token(params[:state])
-
-    raise ActiveRecord::RecordNotFound, 'egnyte state can not be fitted' unless @resource
-
-    oauth_request = build_oauth_request.tap { |req| req.perform }
-
-    raise oauth_request.parsed_response_body.inspect unless oauth_request.success?
-
-    resource.update(connected: true, access_token: oauth_request.parsed_response_body[:access_token])
+    connect_egnyte
 
     redirect_to WEBSITE_EGNYTE_SETTINGS_URL
   end
@@ -95,22 +87,22 @@ class Api::EgnyteIntegrationsController < ApplicationController
     ).perform
   end
 
-  def build_oauth_request
-    Egnyte::Endpoints::Oauth.new(
-      domain: resource.app_domain,
+  def connect_egnyte
+    Egnyte::Actions::Connect.new(
+      code: params.require(:code),
       redirect_uri: oauth_callback_api_egnyte_integration_url,
-      code: params.require(:code)
-    )
+      state: params[:state]
+    ).perform
   end
 
-  def build_navigate_deal_uri
+  def navigate_deal_uri
     Egnyte::Actions::GetNavigateUri::Deal.new(
       egnyte_integration_id: resource.id,
       deal_id: params.require(:deal_id)
     ).perform
   end
 
-  def build_navigate_account_deals_uri
+  def navigate_account_deals_uri
     Egnyte::Actions::GetNavigateUri::AccountDeals.new(
       egnyte_integration_id: resource.id,
       advertiser_id: params.require(:advertiser_id)

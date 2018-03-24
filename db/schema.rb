@@ -1388,6 +1388,17 @@ ActiveRecord::Schema.define(version: 20180202233414) do
 
   add_index "ealerts", ["company_id"], name: "index_ealerts_on_company_id", using: :btree
 
+  create_table "egnyte_folders", force: :cascade do |t|
+    t.integer  "subject_id"
+    t.string   "subject_type"
+    t.string   "uuid"
+    t.string   "path"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "egnyte_folders", ["subject_type", "subject_id"], name: "index_egnyte_folders_on_subject_type_and_subject_id", unique: true, using: :btree
+
   create_table "egnyte_integrations", force: :cascade do |t|
     t.integer  "company_id"
     t.string   "app_domain"
