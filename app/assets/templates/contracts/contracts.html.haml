@@ -27,13 +27,20 @@
 							%th.z-sortable{by: 'advertiser'} Advertiser
 							%th.z-sortable{by: 'agency'} Agency
 							%th.z-sortable{by: 'deal'} Deal
-					%tbody{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading || allContactsLoaded'}}
+							%th.z-sortable{by: 'publisher'} Publisher
+					%tbody{infinite: {scroll: 'loadMoreContracts()', 'scroll-disabled': 'isLoading || allContractsLoaded', 'scroll-listen-for-event': 'lazy:scroll'}}
 						%tr{'ng-repeat': 'contract in contracts | orderBy : zSort.by : zSort.rev'}
 							%td {{contract.id}}
-							%td {{contract.name}}
-							%td {{contract.type}}
+							%td
+								%a{'ng-href': '/contracts/{{contract.id}}'} {{contract.name}}
+							%td {{contract.type.name}}
 							%td {{contract.restricted}}
-							%td {{contract.status}}
-							%td {{contract.advertiser}}
-							%td {{contract.agency}}
-							%td {{contract.deal}}
+							%td {{contract.status.name}}
+							%td
+								%a{'ng-href': '/accounts/{{contract.advertiser.id}}'} {{contract.advertiser.name}}
+							%td
+								%a{'ng-href': '/accounts/{{contract.agency.id}}'} {{contract.agency.name}}
+							%td
+								%a{'ng-href': '/deals/{{contract.deal.id}}'} {{contract.deal.name}}
+							%td
+								%a{'ng-href': '/publishers/{{contract.publisher.id}}'} {{contract.publisher.name}}

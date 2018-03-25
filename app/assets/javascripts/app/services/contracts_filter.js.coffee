@@ -1,6 +1,8 @@
 @service.service 'ContractsFilter', ->
     Selection = ->
-        @field = ''
+        @date =
+            startDate: null
+            endDate: null
         @isEmpty = true
         return
 

@@ -69,11 +69,15 @@
 
             .mb30
             %h4.mb20 Account Details
-
-            .form-group{'ng-class':'{error: errors.deal}'}
-                %span.error-text {{errors.deal}}
-                %label Deal
-                %input.form-control{'placeholder': 'Search for Deal', 'ng-model': 'form.deal', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)'}
+            .form-row
+                .row-w50.pr8
+                    .form-group
+                        %label Deal
+                        %input.form-control{'placeholder': 'Search for Deal', 'ng-model': 'form.deal', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)'}
+                .row-w50.pl8
+                    .form-group
+                        %label Publisher
+                        %input.form-control{'placeholder': 'Search for Publisher', 'ng-model': 'form.publisher', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchPublishers($viewValue)'}
             .form-row
                 .row-w50.pr8
                     .form-group

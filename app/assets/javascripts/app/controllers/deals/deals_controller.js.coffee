@@ -177,7 +177,7 @@
                     query.closed_year = f.yearClosed if f.yearClosed
                     query
 
-            updateDealsTable = ->
+            updateDealsTable = (init)->
                 columns = angular.copy $scope.emptyColumns
                 $scope.deals.forEach (deal) ->
                     if !deal || !deal.stage_id then return
@@ -190,6 +190,7 @@
                 $timeout ->
                     addScrollEvent()
                     alignColumnsHeight()
+
 
             alignColumnsHeight = ->
                 columns = angular.element('.column-body')
