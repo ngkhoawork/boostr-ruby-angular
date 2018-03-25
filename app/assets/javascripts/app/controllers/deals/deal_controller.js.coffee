@@ -1016,7 +1016,7 @@
     $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser
 
   $scope.dealProductName = (dealProduct) ->
-    if $scope.company.product_options_enabled && dealProduct.top_parent
+    if dealProduct.top_parent
       dealProduct.top_parent.name
     else
       dealProduct.name

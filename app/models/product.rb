@@ -27,6 +27,7 @@ class Product < ActiveRecord::Base
   validates :revenue_type, presence: true
   validate :check_recursive_parent_id
   validate :check_self_as_parent
+  validate :check_level
 
   REVENUE_TYPES = %w('Display', 'Content-Fee', 'PMP', 'None')
 
@@ -36,12 +37,10 @@ class Product < ActiveRecord::Base
   scope :by_revenue_type, -> (revenue_type) { where('revenue_type = ?', revenue_type) if revenue_type }
   scope :by_product_family, -> (product_family_id) { where('product_family_id = ?', product_family_id) if product_family_id }
 
-  before_update do
+  before_save do
     set_top_parent
     set_level
   end
-
-  after_update :update_top_parent_on_children
 
   after_create do
     create_dimension
@@ -49,6 +48,7 @@ class Product < ActiveRecord::Base
   end
 
   after_update do
+    update_children
     update_cost
   end
 
@@ -111,6 +111,7 @@ class Product < ActiveRecord::Base
       csv << [
         "Product ID", 
         "Product Name", 
+        "Full Name",
         "Product Family", 
         "Parent Product",
         "Level",
@@ -124,6 +125,7 @@ class Product < ActiveRecord::Base
         csv << [
           product.id,
           product.name,
+          product.full_name,
           product.product_family&.name,
           product&.parent&.name,
           product.level,
@@ -137,47 +139,76 @@ class Product < ActiveRecord::Base
     end
   end
 
+  def all_children(children_array = [])
+    children_array += children.all
+    children.each do |child|
+      child.all_children(children_array)
+    end
+    children_array
+  end
+
+  def generate_full_name
+    if parent.present?
+      parent.generate_full_name() + ' ' + name
+    else
+      name
+    end
+  end
+
+  def calculate_level
+    if parent_id.nil?
+      0
+    elsif parent_id == top_parent_id
+      1
+    else
+      2
+    end
+  end
+
   private
 
   def set_top_parent
-    if parent.present?
-      self.top_parent_id = parent.top_parent_id || parent.id 
+    if parent_id.present?
+      self.top_parent_id = parent.top_parent_id || parent_id 
     else
       self.top_parent_id = nil
     end
   end
 
   def set_level
-    if parent.nil?
-      self.level = 0
-    elsif parent_id == top_parent_id
-      self.level = 1
-    else
-      self.level = 2
-    end
+    self.level = calculate_level
   end
 
-  def update_top_parent_on_children
-    if top_parent_id_changed?
-      children.each do |child|
-        child.update_attributes(top_parent_id: top_parent_id || id)
-      end
+  def update_children
+    parent_full_name = auto_generated ? full_name : generate_full_name
+    children.each do |child|
+      child.full_name = parent_full_name + ' ' + child.name if child.auto_generated
+      child.save
     end
   end
 
   def check_recursive_parent_id
     if parent_id.present?
       ids = [id].compact
+      depth = calculate_level - 1
       while ids.present? 
+        depth += 1
         ids = company.products.where(parent_id: ids).pluck(:id)
-        errors.add(:parent_product, "You can't select child product as parent") and break if ids.include?(parent_id)
+        errors.add(:base, "You can't select child parent as parent.") and break if ids.include?(parent_id)
       end
+      errors.add(:base, "Product level should be less than equal to 2. Please consider level of child products.") if depth > 2
     end
   end
 
   def check_self_as_parent
     if parent_id.present? && parent_id == id
-      errors.add(:parent_product, "You can't select current product as parent")
+      errors.add(:parent_product, "can't be self")
+    end
+  end
+
+  def check_level
+    if self.parent&.calculate_level == 2
+      errors.add(:base, "Product level should be less than equal to 2. Please consider level of parent product.")
     end
   end
 end

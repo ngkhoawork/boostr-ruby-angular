@@ -11,7 +11,7 @@
                         %ui-select{ name: 'product', ng: { model: 'deal_product.product_id', disabled: true, required: true } }
                             %ui-select-match{ placeholder: 'Product' }
                                 {{ $select.selected.name }}
-                            %ui-select-choices{ repeat: 'product.id as product in products | orderBy: "name" | filter: { name: $select.search }' }
+                            %ui-select-choices{ repeat: 'product.id as product in productsByLevel(0) | orderBy: "name" | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'product.name' } } }
                 .col-xs-4{ 'ng-if': 'productOptionsEnabled' }
                     .form-group

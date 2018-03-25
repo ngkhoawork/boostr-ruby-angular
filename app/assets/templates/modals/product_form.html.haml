@@ -8,7 +8,22 @@
         %span.error-text {{errors.name}}
         %label{ for: 'name' } Name
         %span.star *
-        %input.form-control{ placeholder: 'Name', ng: { model: 'product.name' }, name: 'name' }
+        %input.form-control{ placeholder: 'Name', ng: { model: 'product.name', change: 'onChangeAutoGenerate()' }, name: 'name' }
+
+      .form-group{ ng: { class:'{error: errors.full_name}'} }
+        .row
+          .col-md-8
+            %span.error-text {{errors.full_name}}
+            %label{ for: 'full_name' } Full Name
+            %span.star *
+            %input.form-control{ placeholder: 'Full Name', ng: { model: 'product.full_name', disabled: 'product.auto_generated' }, name: 'full_name' }
+          .col-md-4
+            %label{ for: 'auto_generate' } Auto-generate
+            .show-hide-remainder-form
+              .switch-remainder-form
+                %input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'product.auto_generated', 'ng-change': 'onChangeAutoGenerate()'}
+                %label{:for => "rem-act-modal-toggle"}
+                  %span
 
       .form-group
         %label{ for: 'family' } Family
@@ -20,11 +35,11 @@
 
       .form-group{ 'ng-if': 'product_options_enabled' }
         %label{ for: 'parent_id' } Parent Product
-        %ui-select{ name: 'parent_id', ng: { model: 'product.parent_id' } }
+        %ui-select{ name: 'parent_id', ng: { model: 'product.parent_id', change: 'onChangeAutoGenerate()' } }
           %ui-select-match{ placeholder: 'Parent Product', 'allow-clear': 'true' }
-            {{ $select.selected.name }}
+            {{ $select.selected.path }}
           %ui-select-choices{ repeat: 'product.id as product in products | filter: { name: $select.search } | orderBy: "name"' }
-            %div{ ng: { bind: { html: 'product.name' } } }
+            %div{ ng: { bind: { html: 'product.path' } } }
 
       .form-group
         %label{ for: 'pricing-type' } Pricing Type

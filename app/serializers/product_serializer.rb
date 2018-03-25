@@ -13,7 +13,9 @@ class ProductSerializer < ActiveModel::Serializer
     :parent_id,
     :parent,
     :top_parent_id,
-    :top_parent
+    :top_parent,
+    :full_name,
+    :auto_generated
   )
 
   def product_family

@@ -3,11 +3,11 @@
 ( $scope,   $modalInstance,   Product,   ProductFamily,   Field,   product,   products,   productFamilies,   company) ->
   $scope.formType = 'New'
   $scope.submitText = 'Create'
-  $scope.product = product || { active: true }
+  $scope.product = product || { active: true, auto_generated: true }
   $scope.revenueTypes = Product.revenue_types
   $scope.productFamilies =  productFamilies
   $scope.product_options_enabled = company.product_options_enabled
-  $scope.products = _.filter products, (p) -> p.id != $scope.product.id
+  $scope.products = _.filter products, (p) -> p.id != $scope.product.id && p.level != 2
 
   init = () ->
     if product
@@ -16,14 +16,22 @@
     else
       Field.defaults($scope.product, 'Product').then (fields) ->
         $scope.product.pricing_type = Field.field($scope.product, 'Pricing Type')
-    $scope.products = _.map $scope.products, (p) ->
-      if p.level > 0
-        parent = p.parent
-        while parent
-          p.name = parent.name + ' > ' + p.name
-          parent = _.find products, (o) -> o.id == parent.id
-          parent = parent.parent
+
+    $scope.products = _.map $scope.products, (p) -> 
+      p.path = getProductPath(p)
       p
+
+  getProductPath = (p, str=' > ') ->
+    path = p.name
+    parent = _.find products, (o) -> o.id == p.parent_id
+    while parent
+      path = parent.name + str + path
+      parent = _.find products, (o) -> o.id == parent.parent_id
+    path
+
+  $scope.onChangeAutoGenerate = () ->
+    if $scope.product.auto_generated
+      $scope.product.full_name = getProductPath($scope.product, ' ')
 
   $scope.submitForm = () ->
     $scope.errors = {}

@@ -47,6 +47,8 @@ class Api::ProductsController < ApplicationController
       :is_influencer_product,
       :product_family_id,
       :parent_id,
+      :full_name,
+      :auto_generated,
       {
         values_attributes: [
           :id,
