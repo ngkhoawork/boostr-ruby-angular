@@ -9,21 +9,129 @@
         .body
             .filter-row
                 .filter-name
-                    %div
-                        Field 1
+                    %div Type
                 .filter-dropdown
-                    %i.fa.fa-close{'ng-show': 'filter.selected.field', 'ng-click': 'filter.reset("field")'}
+                    %i.fa.fa-close{'ng-show': 'filter.selected.type', 'ng-click': 'filter.reset("type")'}
                     %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
-                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.field}'}
-                            {{filter.selected.field || 'Select a place'}}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.type}'}
+                            {{filter.selected.type || 'Select a type'}}
                             %span.caret
                         .dropdown-menu{'dropdown-menu': '', role: 'menu'}
                             .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
                                 %i.fa.fa-search
                                 %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
                             %span.dropdown-title Select from list
-                            .dropdown-option{'ng-repeat': 'field in filter.fields | filter: filter.searching | limitTo: 10', role: 'menuitem'}
-                                %a{href: '', 'ng-click': 'filter.select("field", field)'} {{field}}
+                            .dropdown-option{'ng-repeat': 'type in filter.types | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("type", type)'} {{type}}
+            .filter-row
+                .filter-name
+                    %div Status
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.status', 'ng-click': 'filter.reset("status")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.status}'}
+                            {{filter.selected.status || 'Select a status'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-option{'ng-repeat': 'status in filter.statuses | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("status", status)'} {{status}}
+            .filter-row
+                .filter-name
+                    %div Team Member
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.member', 'ng-click': 'filter.reset("member")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.member}'}
+                            {{filter.selected.member.name || 'Select a member'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-block
+                                .dropdown-option{'ng-repeat': "member in filter.members | filter: filter.searching  | orderBy: 'name'", role: 'menuitem'}
+                                    %a{href: '', 'ng-click': 'filter.select("member", member)'} {{member.name}}
+            .filter-row
+                .filter-name
+                    %div Deal
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.deal', 'ng-click': 'filter.reset("deal")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.deal}'}
+                            {{filter.selected.deal.name || 'Select a deal'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-option{'ng-repeat': 'deal in filter.deals | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("deal", deal)'} {{deal.name}}
+            .filter-row
+                .filter-name
+                    %div Advertiser
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.advertiser', 'ng-click': 'filter.reset("advertiser")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}
+                            {{filter.selected.advertiser.name || 'Select an advertiser'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-option{'ng-repeat': 'advertiser in filter.advertisers | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("advertiser", advertiser)'} {{advertiser.name}}
+            .filter-row
+                .filter-name
+                    %div Agency
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.agency', 'ng-click': 'filter.reset("agency")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.agency}'}
+                            {{filter.selected.agency.name || 'Select an agency'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-option{'ng-repeat': 'agency in filter.agencies | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("agency", agency)'} {{agency.name}}
+            .filter-row
+                .filter-name
+                    %div Holding Company
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.holdingCompany', 'ng-click': 'filter.reset("holdingCompany")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.holdingCompany}'}
+                            {{filter.selected.holdingCompany.name || 'Select a holding company'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-option{'ng-repeat': 'holdingCompany in filter.holdingCompanies | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("holdingCompany", holdingCompany)'} {{holdingCompany.name}}
+            .filter-row
+                .filter-name
+                    %div Time Period
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.timePeriod', 'ng-click': 'filter.reset("timePeriod")'}
+                    %span{ 'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()' }
+                        .dropdown-button{ 'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.timePeriod}' }
+                            {{ filter.selected.timePeriod.name || 'Select a time period' }}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .dropdown-option{'ng-repeat': 'timePeriod in filter.timePeriods | orderBy : ["period_type", "start_date"]', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("timePeriod", timePeriod)'} {{timePeriod.name}}
         .footer
             %span.reset{'ng-click': 'filter.resetAll()'} Reset
             %button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters
