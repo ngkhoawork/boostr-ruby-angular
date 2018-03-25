@@ -12,6 +12,6 @@ class Egnyte::Actions::GetNavigateUri::AccountDeals < Egnyte::Actions::GetNaviga
   end
 
   def folder_path
-    File.join(egnyte_folder.path, ACCOUNT_DEALS_FOLDER)
+    File.join(egnyte_folder.path, deals_folder_name)
   end
 end

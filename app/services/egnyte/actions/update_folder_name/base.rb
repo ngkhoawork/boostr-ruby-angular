@@ -20,7 +20,7 @@ class Egnyte::Actions::UpdateFolderName::Base
   private
 
   delegate :required_option_keys, to: :class
-  delegate :access_token, :app_domain, :enabled_and_connected?, to: :egnyte_integration
+  delegate :access_token, :app_domain, :deals_folder_name, :enabled_and_connected?, to: :egnyte_integration
 
   def update_folder_name_request
     Egnyte::Endpoints::MoveFolder.new(

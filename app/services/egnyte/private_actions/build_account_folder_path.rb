@@ -10,7 +10,7 @@ class Egnyte::PrivateActions::BuildAccountFolderPath < Egnyte::PrivateActions::B
   end
 
   def perform
-    File.join('/', recursive_build(@options[:client_id]))
+    recursive_build(@options[:client_id])
   end
 
   private

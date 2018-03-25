@@ -28,7 +28,7 @@ class Egnyte::Actions::CreateFolderTree::Base
   private
 
   delegate :required_option_keys, :folder_tree_attr_name, to: :class
-  delegate :access_token, :app_domain, :enabled_and_connected?, to: :egnyte_integration
+  delegate :access_token, :app_domain, :deals_folder_name, :enabled_and_connected?, to: :egnyte_integration
 
   def traverse_folder_tree(node, &block)
     block.call(node)
