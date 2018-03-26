@@ -47,6 +47,6 @@ class Egnyte::Actions::Connect
   end
 
   def egnyte_integration
-    @egnyte_integration ||= EgnyteIntegration.find_by_state_token(params[:state])
+    @egnyte_integration ||= EgnyteIntegration.find_by_state_token(@options[:state])
   end
 end
