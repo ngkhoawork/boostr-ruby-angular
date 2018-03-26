@@ -1,4 +1,4 @@
-.block.contract-info.campaign-details
+.block.contact-info.campaign-details
     -#%div.pull-right
         %span.star
             *
@@ -7,44 +7,41 @@
         %span.title Info
         -#%i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentContact)'}
     %div.custom-field-item
-        %div.custom-field-item-label Address
-        %div.custom-field-item-field.address-field
-            %div {{currentContact.address.street1}}
-            %div {{currentContact.address.street2}}
-            %div {{ concatAddress(currentContact.address) }}
-    %div.custom-field-item{'ng-if': 'currentContact.primary_client_json.name'}
-        %div.custom-field-item-label Works At
+        %div.custom-field-item-label
+            %label Start Date
         %div.custom-field-item-field
-            %a{'href': '', 'ng-href': '/accounts/{{currentContact.primary_client_json.id}}'} {{currentContact.primary_client_json.name}}
-    %div.custom-field-item{'ng-if': 'currentContact.address.email'}
-        %div.custom-field-item-label Email
-        %div.custom-field-item-field {{currentContact.address.email}}
-    %div.custom-field-item{'ng-if': 'currentContact.address.mobile'}
-        %div.custom-field-item-label Mobile
-        %div.custom-field-item-field {{currentContact.address.mobile}}
-    %div.custom-field-item{'ng-if': 'currentContact.address.phone'}
-        %div.custom-field-item-label Phone
-        %div.custom-field-item-field {{currentContact.address.phone}}
+            .datetime-field.bs-datepicker>
+                %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !contract.start_date}', model: 'contract.start_date', click: 'startDateOpened = !startDateOpened', change: 'updateContract()' }, 'is-open': 'startDateOpened' }
+                    {{(contract.start_date | date) || 'Select date'}}
     %div.custom-field-item
-        %div.custom-field-item-label Job Level
+        %div.custom-field-item-label
+            %label End Date
+        %div.custom-field-item-field
+            .datetime-field.bs-datepicker>
+                %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !contract.end_date}', model: 'contract.end_date', click: 'endDateOpened = !endDateOpened', change: 'updateContract()' }, 'is-open': 'endDateOpened' }
+                    {{(contract.end_date | date) || 'Select date'}}
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label Auto Renew
+        %div.custom-field-item-field
+            %z-toggle{'ng-model': 'contract.auto_renew', 'ng-change': 'updateContract()'}
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label Currency
         %div.custom-field-item-field
             .dropdown
                 %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-                    %span.editable{'ng-class': '{"not-selected": !currentContact.job_level}'}
-                        {{currentContact.job_level.name || currentContact.job_level || 'Select value'}}
+                    %span.editable{'ng-class': '{"not-selected": !contract.curr_cd}'}
+                        {{contract.curr_cd || 'Select currency'}}
                     %span.caret
                 %ul.dropdown-menu
-                    %li{'ng-repeat': 'jobLevel in currentContact.job_levels', 'ng-class': '{active: currentContact.job_level == jobLevel.name}'}
-                        %a{'href': '', 'ng-click': 'currentContact.job_level = jobLevel; updateContact()'}
-                            %span.text {{jobLevel.name}}
+                    %li{'ng-repeat': 'currency in currencies', 'ng-class': '{active: contract.currency.curr_cd == currency.curr_cd}'}
+                        %a{'href': '', 'ng-click': 'contract.currency.curr_cd = currency.curr_cd; updateContract()'}
+                            %span.text {{currency.curr_cd}}
     %div.custom-field-item
-        %div.custom-field-item-label Position
+        %div.custom-field-item-label
+            %label Amount
         %div.custom-field-item-field
-            .text-field
-                %input.editable{ 'ng-model': "currentContact.position", name: "position", placeholder: 'Enter position', 'ng-blur': 'updateContact()' }
-    %div.custom-field-item
-        %div.custom-field-item-label Notes
-        %div.custom-field-item-field
-            .text-area
-                %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentContact.note", name: "note", placeholder: 'Enter note', 'ng-blur': 'updateContact()' }
+            .currency-field
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "contract.amount", 'on-after-save': 'updateContract()'}
     .mb20
