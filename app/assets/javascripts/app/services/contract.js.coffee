@@ -9,7 +9,8 @@
                 url: '/api/contracts/settings'
 
 
-        this.get = (params) -> resource.query(params).$promise
+        this.all = (params) -> resource.query(params).$promise
+        this.get = (params) -> resource.get(params).$promise
         this.create = (params) -> resource.save(params).$promise
         this.update = (params) -> resource.update(params).$promise
         this.delete = (params) -> resource.delete(params).$promise

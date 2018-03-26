@@ -2,8 +2,8 @@
 	%div.stats-body
 		%div.contract-title.mb30
 			%span.main-title
-				Contract Name 1
-				.ealert-label.pull-right{'ng-class': '{danger: (ealertReminder && currentDeal.company_ealert_reminder)}'}
+				{{contract.name}}
+				.ealert-label.pull-right{'ng-class': '{danger: (ealertReminder && contract.company_ealert_reminder)}'}
 					eAlerts
 				%i.fa.fa-envelope.ealert.pull-right{ng: {click: 'showDealEalertModal(currentDeal)', class: '{danger: (ealertReminder && currentDeal.company_ealert_reminder)}'}}
 				
@@ -18,20 +18,25 @@
 				.col-body-wrap
 					.col-body
 						.description Status
-						.title Active
+						.title{'ng-if': 'contract.status'} {{contract.status.name}}
+						.title{'ng-if': '!contract.status'} None
 			%div.stats-col
 				.col-body-wrap
 					.col-body
 						.description Deal
-						.title
+						.title{'ng-if': 'contract.deal'}
 							%a{'href': '', 'ng-href': '/deals/{{contract.deal.id}}'} {{contract.deal.name}}
+						.title{'ng-if': '!contract.deal'}
+							None
 
 			%div.stats-col
 				.col-body-wrap
 					.col-body
 						.description Agency Holding
-						.title
-							%a{'href': '', 'ng-href': '/accounts/{{contract.agency_holding.id}}'} {{contract.agency_holding.name}}
+						.title{'ng-if': 'contract.holding_company'}
+							%a{'href': '', 'ng-href': '/accounts/{{contract.agency_holding.id}}'} {{contract.holding_company.name}}
+						.title{'ng-if': '!contract.holding_company'}
+							None
 
 			%div.stats-col
 				.col-body-wrap
