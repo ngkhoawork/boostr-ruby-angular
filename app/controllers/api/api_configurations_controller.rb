@@ -86,6 +86,7 @@ class Api::ApiConfigurationsController < ApplicationController
                                               :publisher_id,
                                               :key,
                                               :secret,
+                                              :create_objects,
                                               :type_id,
                                               cpm_budget_adjustment_attributes: [:id,
                                                                                  :percentage,
