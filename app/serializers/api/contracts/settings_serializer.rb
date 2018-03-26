@@ -46,25 +46,27 @@ class Api::Contracts::SettingsSerializer
   end
 
   def linked_deals
-    @company.deals.joins(:contracts).map { |deal| deal.serializable_hash(only: [:id, :name]) }
+    @company.deals.joins(:contracts).distinct.map { |deal| deal.serializable_hash(only: [:id, :name]) }
   end
 
   def linked_advertisers
-    @company.clients.joins(:advertiser_contracts).map { |advertiser| advertiser.serializable_hash(only: [:id, :name]) }
+    @company.clients.joins(:advertiser_contracts).distinct.map do |advertiser|
+      advertiser.serializable_hash(only: [:id, :name])
+    end
   end
 
   def linked_agencies
-    @company.clients.joins(:agency_contracts).map { |agency| agency.serializable_hash(only: [:id, :name]) }
+    @company.clients.joins(:agency_contracts).distinct.map { |agency| agency.serializable_hash(only: [:id, :name]) }
   end
 
   def linked_holding_companies
-    HoldingCompany.joins(:contracts).where(contracts: { company_id: @company.id }).map do |holding_company|
+    HoldingCompany.joins(:contracts).where(contracts: { company_id: @company.id }).distinct.map do |holding_company|
       holding_company.serializable_hash(only: [:id, :name])
     end
   end
 
   def linked_users
-    @company.users.joins(:contract_members).map { |user| user.serializable_hash(only: :id, methods: :name) }
+    @company.users.joins(:contract_members).distinct.map { |user| user.serializable_hash(only: :id, methods: :name) }
   end
 
   def options_for(field)
