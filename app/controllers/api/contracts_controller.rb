@@ -77,6 +77,7 @@ class Api::ContractsController < ApplicationController
       :publisher_id,
       :advertiser_id,
       :agency_id,
+      :holding_company_id,
       :type_id,
       :status_id,
       :name,

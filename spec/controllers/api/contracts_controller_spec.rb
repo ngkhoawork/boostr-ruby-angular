@@ -277,7 +277,14 @@ RSpec.describe Api::ContractsController, type: :controller do
   end
 
   describe '#create' do
-    let(:attributes) { attributes_for(:contract, type_id: type_option.id, status_id: status_option.id) }
+    let(:attributes) do
+      attributes_for(
+        :contract,
+        type_id: type_option.id,
+        status_id: status_option.id,
+        holding_company_id: holding_company.id
+      )
+    end
     let(:params) { { contract: attributes } }
 
     subject { post :create, params }
@@ -286,6 +293,7 @@ RSpec.describe Api::ContractsController, type: :controller do
       expect{subject}.to change{Contract.count}.by(1)
       expect(last_created_contract.type_id).to eq type_option.id
       expect(last_created_contract.status_id).to eq status_option.id
+      expect(last_created_contract.holding_company_id).to eq holding_company.id
       expect(response).to have_http_status(201)
       expect(response_body[:id]).to eq Contract.last.id
     end
