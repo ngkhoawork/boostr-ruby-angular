@@ -40,31 +40,4 @@
             $scope.filter.agencies = data.linked_agencies
             $scope.filter.holdingCompanies = data.linked_holding_companies
 
-#        (getDeals = (str) ->
-#            Deal.all({name: str || 'a'}).then (deals) ->
-#                $scope.filter.deals = deals
-#        )()
-
-#        getAdvertisers = (str) ->
-#            Client.query(
-#                search: str
-#                filter: 'all'
-#                client_type_id: $scope.Advertiser
-#            ).$promise.then (clients) ->
-#                $scope.filter.advertisers = clients
-#
-#        getAgencies = (str) ->
-#            Client.query(
-#                search: str
-#                filter: 'all'
-#                client_type_id: $scope.Agency
-#            ).$promise.then (clients) ->
-#                $scope.filter.agencies = clients
-#
-#        Field.defaults({}, 'Client').then (fields) ->
-#            client_types = Field.findClientTypes(fields)
-#            client_types.options.forEach (option) ->
-#                $scope[option.name] = option.id
-#            getAdvertisers()
-#            getAgencies()
 ]
