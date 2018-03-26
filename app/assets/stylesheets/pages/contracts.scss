@@ -5,7 +5,12 @@
         margin: 0 25px;
     }
     .z-sliding-filter {
-        top: 0
+        top: 0;
+        width: 400px;
+        right: -405px;
+        &.open {
+            right: 0;
+        }
     }
     .contracts-header {
         display: flex;
