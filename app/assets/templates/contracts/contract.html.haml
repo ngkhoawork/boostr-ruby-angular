@@ -1,5 +1,14 @@
 #contract.z-detail-page.z-styles
-	.container-fluid
+	-#.container-fluid{'ng-if': '!isContractLoaded'}
+		.loading-pulse
+	.container-fluid{'ng-if': 'isRestricted && isContractLoaded'}
+		%h4
+			%span.mr8 You don't have access to the contract
+			%a{'ng-href': '/contracts/'}
+				%button.btn-main
+					%i.fa.fa-arrow-left
+					Back to list
+	.container-fluid{'ng-if': '!isRestricted && isContractLoaded'}
 		.row
 			.col-xs-9
 				%div{'ng-include': '"contracts/partials/contract_stats.html"'}
