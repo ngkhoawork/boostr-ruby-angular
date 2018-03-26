@@ -1,7 +1,8 @@
 @app.controller 'ContractController', [
-    '$scope', '$routeParams', 'Contract'
-    ($scope,   $routeParams,   Contract) ->
+    '$scope', '$routeParams', 'Contract', 'Currency'
+    ($scope,   $routeParams,   Contract,   Currency) ->
         $scope.contract = {}
+        $scope.currencies = []
         $scope.isRestricted = false
         $scope.isContractLoaded = false
 
@@ -12,4 +13,7 @@
             , (err) ->
                 $scope.isRestricted = err.status is 403
                 $scope.isContractLoaded = true
+
+        Currency.active_currencies().then (data) ->
+            $scope.currencies = data
 ]
