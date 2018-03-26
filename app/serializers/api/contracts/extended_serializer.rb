@@ -13,9 +13,9 @@ class Api::Contracts::ExtendedSerializer < Api::Contracts::BaseSerializer
     :contract_contacts
   )
 
-  has_many :contract_members, serializer: ContractMembers::BaseSerializer
-  has_many :contract_contacts, serializer: ContractContacts::BaseSerializer
-  has_many :special_terms, serializer: SpecialTerms::BaseSerializer
+  has_many :contract_members, serializer: Api::Contracts::ContractMembers::BaseSerializer
+  has_many :contract_contacts, serializer: Api::Contracts::ContractContacts::BaseSerializer
+  has_many :special_terms, serializer: Api::Contracts::SpecialTerms::BaseSerializer
 
   private
 
