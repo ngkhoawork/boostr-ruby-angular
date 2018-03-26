@@ -14,7 +14,7 @@
                     %i.fa.fa-close{'ng-show': 'filter.selected.type', 'ng-click': 'filter.reset("type")'}
                     %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
                         .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.type}'}
-                            {{filter.selected.type || 'Select a type'}}
+                            {{filter.selected.type.name || 'Select a type'}}
                             %span.caret
                         .dropdown-menu{'dropdown-menu': '', role: 'menu'}
                             .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
@@ -22,7 +22,7 @@
                                 %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
                             %span.dropdown-title Select from list
                             .dropdown-option{'ng-repeat': 'type in filter.types | filter: filter.searching | limitTo: 10', role: 'menuitem'}
-                                %a{href: '', 'ng-click': 'filter.select("type", type)'} {{type}}
+                                %a{href: '', 'ng-click': 'filter.select("type", type)'} {{type.name}}
             .filter-row
                 .filter-name
                     %div Status
@@ -30,7 +30,7 @@
                     %i.fa.fa-close{'ng-show': 'filter.selected.status', 'ng-click': 'filter.reset("status")'}
                     %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
                         .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.status}'}
-                            {{filter.selected.status || 'Select a status'}}
+                            {{filter.selected.status.name || 'Select a status'}}
                             %span.caret
                         .dropdown-menu{'dropdown-menu': '', role: 'menu'}
                             .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
@@ -38,7 +38,7 @@
                                 %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
                             %span.dropdown-title Select from list
                             .dropdown-option{'ng-repeat': 'status in filter.statuses | filter: filter.searching | limitTo: 10', role: 'menuitem'}
-                                %a{href: '', 'ng-click': 'filter.select("status", status)'} {{status}}
+                                %a{href: '', 'ng-click': 'filter.select("status", status)'} {{status.name}}
             .filter-row
                 .filter-name
                     %div Team Member
@@ -122,16 +122,30 @@
                                 %a{href: '', 'ng-click': 'filter.select("holdingCompany", holdingCompany)'} {{holdingCompany.name}}
             .filter-row
                 .filter-name
-                    %div Time Period
+                    %div
+                        Start Date
                 .filter-dropdown
-                    %i.fa.fa-close{'ng-show': 'filter.selected.timePeriod', 'ng-click': 'filter.reset("timePeriod")'}
-                    %span{ 'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()' }
-                        .dropdown-button{ 'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.timePeriod}' }
-                            {{ filter.selected.timePeriod.name || 'Select a time period' }}
+                    %i.fa.fa-close{'ng-show': 'filter.selected.startDate.startDate && filter.selected.startDate.endDate', 'ng-click': 'filter.reset("startDate")'}
+                    %span.bs-datepicker
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.startDate.startDate && filter.selected.startDate.endDate}'}
+                            %div.date-picker{'date-range-picker': true,
+                                                                   'ng-model': 'filter.datePicker.startDate',
+                                                                   options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyStartDate}}'}
+                                %span.filter-date {{filter.getDateValue('startDate')}}
                             %span.caret
-                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
-                            .dropdown-option{'ng-repeat': 'timePeriod in filter.timePeriods | orderBy : ["period_type", "start_date"]', role: 'menuitem'}
-                                %a{href: '', 'ng-click': 'filter.select("timePeriod", timePeriod)'} {{timePeriod.name}}
+            .filter-row
+                .filter-name
+                    %div
+                        End Date
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.endDate.startDate && filter.selected.endDate.endDate', 'ng-click': 'filter.reset("endDate")'}
+                    %span.bs-datepicker
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.endDate.startDate && filter.selected.endDate.endDate}'}
+                            %div.date-picker{'date-range-picker': true,
+                                                                   'ng-model': 'filter.datePicker.endDate',
+                                                                   options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyEndDate}}'}
+                                %span.filter-date {{filter.getDateValue('endDate')}}
+                            %span.caret
         .footer
             %span.reset{'ng-click': 'filter.resetAll()'} Reset
             %button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters

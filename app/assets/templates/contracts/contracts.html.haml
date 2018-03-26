@@ -6,9 +6,12 @@
 			.header-item
 				%add-button{'ng-click': 'showContractModal()'}
 					Add Contract
+			.header-item.switch-row
+				%span{ng: {repeat: 'switch in switches', class: '{active: switch.name == teamFilter().name}', click: 'switchContracts(switch)'}}
+					{{switch.name}}
 			.header-item.contract-search
 				%i.fa.fa-search
-				%input.form-control{placeholder: 'Search', ng: {model: 'search', 'model-options': '{debounce: 400}' }}
+				%input.form-control{placeholder: 'Search', ng: {model: 'params.q', 'model-options': '{debounce: 400}', change: 'searchContracts()' }}
 			.header-item
 				%div{ng: {include: '"contracts/contracts_filter.html"', controller: 'ContractsFilterController'}}
 
