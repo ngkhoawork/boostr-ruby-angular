@@ -49,7 +49,7 @@
     $scope.current.option = option
 
   $scope.updateOption = (option, warn=true) ->
-    if option.name != 'Agency' && option.name != 'Advertiser'
+    if option.name != 'Agency' && option.name != 'Advertiser' && $scope.current.object.name == 'Accounts' && $scope.current.field.name == 'Client Type'
       alert 'Client Type can be only "Advertiser" or "Agency"'
       $scope.defaultClienTypes.forEach(
         (type) ->
@@ -134,7 +134,7 @@
   $scope.createNewValue = () ->
     $scope.newest = { name: '' }
     canAddOption = true
-    if $scope.current.object.name == 'Accounts' && $scope.current.field.name = 'Client Type'
+    if $scope.current.object.name == 'Accounts' && $scope.current.field.name == 'Client Type'
       isAdvertiserTypeAdded = isAgencyTypeAdded = false
       $scope.current.field.options.forEach(
         (option) ->
