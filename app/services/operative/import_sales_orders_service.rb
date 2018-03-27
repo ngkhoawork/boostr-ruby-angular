@@ -15,17 +15,16 @@ class Operative::ImportSalesOrdersService
   end
 
   private
+
   attr_reader :company_id, :auto_close_deals, :sales_order, :sales_order_file, :currency, :currency_file, :currencies_list
 
   def open_file(file)
-    begin
-      File.open(file, 'r:ISO-8859-1')
-    rescue Exception => e
-      import_log = CsvImportLog.new(company_id: company_id, object_name: 'io', source: 'operative')
-      import_log.set_file_source(file)
-      import_log.log_error [e.class.to_s, e.message]
-      import_log.save
-    end
+    File.open(file, 'r:ISO-8859-1')
+  rescue Exception => e
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'io', source: 'operative')
+    import_log.set_file_source(file)
+    import_log.log_error [e.class.to_s, e.message]
+    import_log.save
   end
 
   def parse_and_process_rows
@@ -120,7 +119,8 @@ class Operative::ImportSalesOrdersService
       io_budget_loc: row[:total_order_value],
       io_curr_cd: get_curr_cd(row[:order_currency_id]),
       company_id: company_id,
-      auto_close_deals: auto_close_deals
+      auto_close_deals: auto_close_deals,
+      exchange_rate: row[:exchange_rate_at_close]
     )
   end
 
@@ -133,10 +133,8 @@ class Operative::ImportSalesOrdersService
   end
 
   def csv_parse_line(line)
-    begin
-      CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
-    rescue CSV::MalformedCSVError => e
-      CSV.parse_line(amend_quotes(line).force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
-    end
+    CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
+  rescue CSV::MalformedCSVError => e
+    CSV.parse_line(amend_quotes(line).force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
   end
 end
