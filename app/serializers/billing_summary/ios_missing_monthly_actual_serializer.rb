@@ -1,6 +1,6 @@
 class BillingSummary::IosMissingMonthlyActualSerializer < ActiveModel::Serializer
-  attributes :io_id, :io_number, :io_name, :line_number, :advertiser_name, :agency_name, :currency, :billing_contact_name,
-             :product_name, :ad_server, :seller_name
+  attributes :io_id, :io_number, :io_name, :line_number, :advertiser_name, :agency_name, :currency,
+             :billing_contact_name, :product_name, :ad_server, :seller_name
 
   def seller_name
     io.highest_member.user.name if io.highest_member.present?

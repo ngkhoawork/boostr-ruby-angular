@@ -1,7 +1,7 @@
 class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Serializer
-  attributes :io_id, :io_number, :io_name, :advertiser_name, :agency_name, :currency, :billing_contact_name, :product_name,
-             :revenue_type, :vat, :currency_symbol, :billing_contact_email, :street1, :city, :state, :country,
-             :postal_code
+  attributes :io_id, :io_number, :io_name, :advertiser_name, :agency_name, :currency, :billing_contact_name,
+             :product_name, :revenue_type, :vat, :currency_symbol, :billing_contact_email, :street1, :city,
+             :state, :country, :postal_code
 
   def io_number
     io.io_number if io.present?
