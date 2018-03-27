@@ -21,7 +21,7 @@ class Egnyte::PrivateActions::EnsureAccountFolder < Egnyte::PrivateActions::Base
       egnyte_folder.destroy!
       create_folder_and_save_path
     else
-      raise get_folder_by_id_request.parsed_response_body
+      raise Egnyte::Errors::UnhandledRequest, get_folder_by_id_request.parsed_response_body
     end
   end
 

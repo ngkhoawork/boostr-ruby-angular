@@ -46,6 +46,10 @@ class Egnyte::Endpoints::Net
     STATUS_CODES[:not_found].include?(response_code)
   end
 
+  def folder_already_exists?
+    response_code  == '403' && parsed_response_body[:errorMessage] =~ /folder already exists/i
+  end
+
   def parsed_response_body
     @parsed_response_body ||= JSON.parse(@response.body, symbolize_names: true) if @response&.body.present?
   end

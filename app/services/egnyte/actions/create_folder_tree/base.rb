@@ -19,7 +19,7 @@ class Egnyte::Actions::CreateFolderTree::Base
     return false unless enabled_and_connected?
 
     traverse_folder_tree(root_folder) do |node|
-      create_folder_request(folder_path: node[:path], domain: app_domain, access_token: access_token)
+      node[:path] = create_uniq_folder(node[:path])
     end
 
     save_root_folder
@@ -34,7 +34,7 @@ class Egnyte::Actions::CreateFolderTree::Base
     block.call(node)
 
     node[:nodes].each do |child|
-      child[:path] = build_folder_path(node[:path], child[:title])
+      child[:path] = File.join(node[:path], child[:title])
 
       traverse_folder_tree(child, &block)
     end
@@ -46,13 +46,9 @@ class Egnyte::Actions::CreateFolderTree::Base
 
   def folder_tree_pattern
     egnyte_integration
-      .send(folder_tree_attr_name)
+      .public_send(folder_tree_attr_name)
       .deep_dup
       .deep_symbolize_keys!
-  end
-
-  def build_folder_path(parent_folder_path, child_folder_title)
-    File.join(parent_folder_path, child_folder_title)
   end
 
   def save_root_folder
@@ -62,8 +58,8 @@ class Egnyte::Actions::CreateFolderTree::Base
     )
   end
 
-  def create_folder_request(options)
-    Egnyte::Endpoints::CreateFolder.new(options).tap { |req| req.perform }
+  def create_uniq_folder(path)
+    Egnyte::PrivateActions::CreateUniqFolder.new(egnyte_integration: egnyte_integration, path: path).perform
   end
 
   def get_root_folder_request
