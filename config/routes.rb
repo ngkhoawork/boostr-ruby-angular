@@ -471,6 +471,7 @@ Rails.application.routes.draw do
     resources :billing_summary, only: [:index] do
       member do
         put :update_cost
+        put :copy_cost
         put :update_cost_budget
         put :update_quantity
         put :update_content_fee_product_budget
