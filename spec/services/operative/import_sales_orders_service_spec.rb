@@ -18,7 +18,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
 
   it 'passes rows to IoCsv' do
     content_for_files([
-      sales_order_csv,
+      sales_order_csv(exchange_rate_at_close: 1.55),
       currency_csv
     ])
 
@@ -33,7 +33,8 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       io_budget_loc: nil,
       io_curr_cd: nil,
       company_id: company.id,
-      auto_close_deals: true
+      auto_close_deals: true,
+      exchange_rate: "1.55"
     }).and_return(io_csv)
     expect(io_csv).to receive(:valid?).and_return(:true)
     expect(io_csv).to receive(:perform)
@@ -101,7 +102,8 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       io_budget_loc: nil,
       io_curr_cd: 'USD',
       company_id: company.id,
-      auto_close_deals: true
+      auto_close_deals: true,
+      exchange_rate: nil
     }).and_return(io_csv)
     expect(io_csv).to receive(:valid?).and_return(:true)
     expect(io_csv).to receive(:perform)
