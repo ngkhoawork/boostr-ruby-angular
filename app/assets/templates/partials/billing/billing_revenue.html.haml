@@ -76,26 +76,43 @@
     %div.table-wrap{'ng-hide': '!iosForApproval.length && !dataIsLoading'}
       %table.table.table-hover.ios-for-approval
         %thead
-          %tr
-            %th IO #
-            %th Line #
-            %th Name
-            %th Advertiser
-            %th Agency
-            %th Seller
-            %th Currency
-            %th Billing Contact
-            %th Product
-            %th Ad Server Product
-            %th.text-right Ad Server Budget
-            %th.text-right Ad Server Quantity
-            %th.text-right Price
-            %th.text-right Budget
-            %th.text-right Quantity
-            %th Billing Status
-            %th VAT
+          %tr.z-sortable-prime
+            %th
+              %span.z-sortable{by: 'io_number'} IO #
+            %th
+              %span.z-sortable{by: 'line'} Line #
+            %th
+              %span.z-sortable{by: 'io_name'} Name
+            %th
+              %span.z-sortable{by: 'advertiser_name'} Advertiser
+            %th
+              %span.z-sortable{by: 'agency_name'} Agency
+            %th
+              %span.z-sortable{by: 'seller_name'} Seller
+            %th
+              %span.z-sortable{by: 'currency'} Currency
+            %th
+              %span.z-sortable{by: 'billing_contact_name'} Billing Contact
+            %th
+              %span.z-sortable{by: 'product_name'} Product
+            %th
+              %span.z-sortable{by: 'ad_server'} Ad Server Product
+            %th.text-right
+              %span.z-sortable{by: 'ad_server_budget'} Ad Server Budget
+            %th.text-right
+              %span.z-sortable{by: 'ad_server_quantity'} Ad Server Quantity
+            %th.text-right
+              %span.z-sortable{by: 'price'} Price
+            %th.text-right
+              %span.z-sortable{by: 'budget_loc'} Budget
+            %th.text-right
+              %span.z-sortable{by: 'quantity'} Quantity
+            %th
+              %span.z-sortable{by: 'billing_status'} Billing Status
+            %th
+              %span.z-sortable{by: 'vat'} VAT
         %tbody.hide-input-arrows
-          %tr{'ng-repeat': 'item in iosForApproval'}
+          %tr{'ng-repeat': 'item in iosForApproval | orderBy : zSort.by : zSort.rev'}
             %td
               %b {{item.io_number}}
             %td

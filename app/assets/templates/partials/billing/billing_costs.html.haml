@@ -85,19 +85,29 @@
       %div.table-wrap{'ng-hide': '!costs.length && !dataIsLoading'}
         %table.table.table-hover.ios-for-approval
           %thead
-            %tr
-              %th IO #
-              %th IO Name
-              %th Advertiser
-              %th Agency
-              %th Seller
-              %th Account Manger
-              %th Product
-              %th Cost Type
-              %th.text-right Amount
-              %th.text-right Actualization Status
+            %tr.z-sortable-prime
+              %th
+                %span.z-sortable{by: 'io_number'} IO #
+              %th
+                %span.z-sortable{by: 'io_name'} IO Name
+              %th
+                %span.z-sortable{by: 'advertiser'} advertiser
+              %th
+                %span.z-sortable{by: 'agency'} Agency
+              %th
+                %span.z-sortable{by: 'sellers[0].name'} Seller
+              %th
+                %span.z-sortable{by: 'account_managers[0].name'} Account Manger
+              %th
+                %span.z-sortable{by: 'product'} Product
+              %th
+                %span.z-sortable{by: 'type.option.name'} Cost Type
+              %th.text-right
+                %span.z-sortable{by: 'amount'} Amount
+              %th.text-right
+                %span.z-sortable{by: 'actual_status'} Actualization Status
           %tbody.hide-input-arrows
-            %tr{'ng-repeat': 'item in costs'}
+            %tr{'ng-repeat': 'item in costs | orderBy : zSort.by : zSort.rev'}
               %td
                 %b {{item.io_number}}
                 %i.fa.fa-copy.z-icon.edit-product{'ng-click': 'copyCost(item); $event.stopPropagation()'}
