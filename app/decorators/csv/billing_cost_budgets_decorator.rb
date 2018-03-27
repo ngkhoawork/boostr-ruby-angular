@@ -34,7 +34,7 @@ class Csv::BillingCostBudgetsDecorator
   end
 
   def product
-    cost.product.name
+    cost.product&.name
   end
 
   def amount
