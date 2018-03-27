@@ -17,8 +17,7 @@ describe Csv::BillingCostBudgetsService do
   end
 
   it 'includes io cost records' do
-    expect(csv_report).to match "888,#{io.name},#{io.advertiser&.name},#{io.agency&.name}," +
-                                "nik andreev,mary manager;yujun zhang,display,100.0,option1,Pending"
+    expect(csv_report).to match record_string
   end
 
   private
@@ -47,11 +46,23 @@ describe Csv::BillingCostBudgetsService do
                          io_number: '888', name: 'test-io'
   end
 
+  def advertiser_name
+    @_advertiser_name ||= io.advertiser&.name
+  end
+
+  def agency_name
+    @_agency_name ||= io.agency&.name
+  end
+
   def cost
     @_cost ||= create :cost, io: io, product: product, budget_loc: 100, budget: 100
     @_cost.tap do |cost|
       cost.values.find_or_create_by(field: field, option: option)
     end
+  end
+
+  def record_string
+    "888,#{io.name},#{advertiser_name},#{agency_name},nik andreev,mary manager;yujun zhang,display,100.0,option1,Pending"
   end
 
   def option
