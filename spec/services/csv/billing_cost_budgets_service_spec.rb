@@ -43,7 +43,15 @@ describe Csv::BillingCostBudgetsService do
 
   def io
     @_io ||= create :io, company: company, start_date: '01/01/2018', end_date: '31/01/2018',
-                         io_number: '888', name: 'test-io'
+                         io_number: '888', name: 'test-io', agency: agency, advertiser: advertiser
+  end
+
+  def advertiser
+    @_advertiser ||= create :client, name: "test advertiser"
+  end
+
+  def agency
+    @_agency ||= create :client, name: "test agency"
   end
 
   def advertiser_name
@@ -62,7 +70,7 @@ describe Csv::BillingCostBudgetsService do
   end
 
   def record_string
-    "888,#{io.name},#{advertiser_name},#{agency_name},nik andreev,mary manager;yujun zhang,display,100.0,option1,Pending"
+    "888,#{io.name},test advertiser,test agency,nik andreev,mary manager;yujun zhang,display,100.0,option1,Pending"
   end
 
   def option
