@@ -147,7 +147,6 @@ class BillingCostBudgetsQuery < BaseQuery
 
     def by_member_ids(member_ids)
       if member_ids
-        # self
         where(io_members: { user_id: member_ids })
       else
         self

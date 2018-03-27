@@ -4,23 +4,23 @@ class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Seriali
              :state, :country, :postal_code
 
   def io_number
-    io.io_number if io.present?
+    io&.io_number
   end
 
   def io_name
-    io.name if io.present?
+    io&.name
   end
 
   def io_id
-    io.id if io.present?
+    io&.id
   end
 
   def advertiser_name
-    advertiser.name if advertiser.present?
+    advertiser&.name
   end
 
   def agency_name
-    agency.name if agency.present?
+    agency&.name
   end
 
   def currency
@@ -32,15 +32,15 @@ class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Seriali
   end
 
   def billing_contact_name
-    billing_contact.contact.name if billing_contact_present?
+    billing_contact&.contact&.name
   end
 
   def product_name
-    product.name if product.present?
+    product&.name
   end
 
   def revenue_type
-    product.revenue_type if product.present?
+    product&.revenue_type
   end
 
   def vat
