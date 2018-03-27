@@ -120,9 +120,6 @@
     .table-wrap {
         overflow-x: auto;
     }
-    form.editable-wrap {
-        width: 100px;
-    }
     .editable, .editable-input {
         padding: 5px 10px;
         height: auto;
@@ -138,6 +135,10 @@
         cursor: text;
         width: 100px;
         border: 1px dashed $secondary-font-color;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
     }
 
     table.table {

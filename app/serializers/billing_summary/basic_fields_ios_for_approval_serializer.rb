@@ -1,5 +1,5 @@
 class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Serializer
-  attributes :io_number, :io_name, :advertiser_name, :agency_name, :currency, :billing_contact_name, :product_name,
+  attributes :io_id, :io_number, :io_name, :advertiser_name, :agency_name, :currency, :billing_contact_name, :product_name,
              :revenue_type, :vat, :currency_symbol, :billing_contact_email, :street1, :city, :state, :country,
              :postal_code
 
@@ -9,6 +9,10 @@ class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Seriali
 
   def io_name
     io.name if io.present?
+  end
+
+  def io_id
+    io.id if io.present?
   end
 
   def advertiser_name

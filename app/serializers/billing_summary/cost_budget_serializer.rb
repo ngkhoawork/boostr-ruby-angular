@@ -1,9 +1,17 @@
 class BillingSummary::CostBudgetSerializer < ActiveModel::Serializer
   attributes :id, :product, :amount, :cost_id, :io_id, :io_number,
-              :io_name, :values, :currency, :currency_symbol
+              :io_name, :values, :currency, :currency_symbol, :agency, :advertiser
 
   def amount
     object.budget_loc.to_f
+  end
+
+  def agency
+    io.agency&.name
+  end
+
+  def advertiser
+    io.advertiser&.name
   end
 
   def product

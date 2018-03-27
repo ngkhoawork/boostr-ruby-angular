@@ -1,5 +1,5 @@
 class BillingSummary::IosMissingMonthlyActualSerializer < ActiveModel::Serializer
-  attributes :io_number, :io_name, :line_number, :advertiser_name, :agency_name, :currency, :billing_contact_name,
+  attributes :io_id, :io_number, :io_name, :line_number, :advertiser_name, :agency_name, :currency, :billing_contact_name,
              :product_name, :ad_server, :seller_name
 
   def seller_name
@@ -8,6 +8,10 @@ class BillingSummary::IosMissingMonthlyActualSerializer < ActiveModel::Serialize
 
   def io_number
     io.io_number
+  end
+
+  def io_id
+    io.id
   end
 
   def io_name

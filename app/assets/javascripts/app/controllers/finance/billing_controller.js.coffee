@@ -1,6 +1,6 @@
 @app.controller 'BillingController',
-    ['$scope', '$window', '$timeout', '$routeParams', '$location', 'Billing', 'Team', 'Product', 'Field', 'Seller',
-        ($scope, $window, $timeout, $routeParams, $location, Billing, Team, Product, Field, Seller) ->
+    ['$scope', '$window', '$timeout', '$routeParams', '$location', 'Billing', 'Team', 'Product', 'ProductFamily', 'Field', 'Seller',
+        ($scope, $window, $timeout, $routeParams, $location, Billing, Team, Product, ProductFamily, Field, Seller) ->
             defaultUser = {id: null, name: 'All', first_name: 'All'}
             $scope.years = [2016...moment().year() + 5]
             $scope.months = moment.months()
@@ -15,16 +15,22 @@
             $scope.missingLineItems = 0
             $scope.missingActuals = 0
             $scope.costs = []
+            $scope.productFamilies = []
+            $scope.products = []
             $scope.billingTabs = [
                 {name: 'Revenue', value: ''}
                 {name: 'Costs', value: 'costs'}
             ]
             $scope.currentTab = ''
 
-            $scope.costsFilter =
-                team: {id: null, name: 'All'}
+            emptyFilter = {id: null, name: 'All'}
+
+            $scope.filter =
+                team: emptyFilter
                 user: defaultUser
                 manager: defaultUser
+                productFamily: emptyFilter
+                product: emptyFilter
 
             $scope.shouldUpdate = true
 
@@ -44,10 +50,10 @@
                 $scope.shouldUpdate = true
                 getData()
 
-            $scope.setCostsFilter = (key, value) ->
-                if $scope.costsFilter[key]is value
+            $scope.setFilter = (key, value) ->
+                if $scope.filter[key]is value
                     return
-                $scope.costsFilter[key] = value
+                $scope.filter[key] = value
                 getData()
 
             getData = () ->
@@ -61,6 +67,9 @@
                     filter =
                         month: $scope.selectedMonth.toLowerCase()
                         year: $scope.selectedYear
+                        product_id: $scope.filter.product.id
+                        product_family_id: $scope.filter.productFamily.id
+
                     $scope.dataIsLoading = true
                     Billing.all(filter).then (data) ->
                         iosForApproval = []
@@ -81,9 +90,11 @@
 
             getCostsData = () ->
                 filters = 
-                    team_id: $scope.costsFilter.team.id
-                    user_id: $scope.costsFilter.user.id
-                    manager_id: $scope.costsFilter.manager.id
+                    team_id: $scope.filter.team.id
+                    user_id: $scope.filter.user.id
+                    manager_id: $scope.filter.manager.id
+                    product_id: $scope.filter.product.id
+                    product_family_id: $scope.filter.productFamily.id
                     month: $scope.selectedMonth.toLowerCase()
                     year: $scope.selectedYear
 
@@ -103,7 +114,14 @@
 
             getProducts = () ->
                 Product.all({active: true}).then (products) ->
+                    $scope.allProducts = products
                     $scope.products = products
+                    $scope.products.unshift emptyFilter
+
+            getProductFamilies = () ->
+                ProductFamily.all(active: true).then (productFamilies) ->
+                    $scope.productFamilies = productFamilies
+                    $scope.productFamilies.unshift emptyFilter
 
             getTeamUsers = (team_id) ->
                 Seller.query({ id: team_id || 'all' }).$promise.then (users) ->
@@ -118,6 +136,7 @@
                 getTeams()
                 getTeamUsers('all')
                 getProducts()
+                getProductFamilies()
 
                 lastMonth = moment().subtract(1, 'month')
                 $scope.selectMonth lastMonth.format('MMMM')
@@ -126,10 +145,19 @@
 
             init()
 
-            $scope.$watch 'costsFilter.team', (nextTeam, prevTeam) ->
-                if nextTeam.id then $scope.costsFilter.user = defaultUser
-                $scope.setCostsFilter('team', nextTeam)
+            $scope.$watch 'filter.team', (nextTeam, prevTeam) ->
+                if nextTeam.id then $scope.filter.user = defaultUser
+                $scope.setFilter('team', nextTeam)
                 getTeamUsers(nextTeam.id || 'all')
+                getData()
+
+            $scope.$watch 'filter.productFamily', (productFamily, prevProductFamily) ->
+                if productFamily == prevProductFamily then return
+                if productFamily.id then $scope.setFilter('product', emptyFilter)
+                $scope.setFilter('productFamily', productFamily)
+                Product.all(product_family_id: productFamily.id).then (products) ->
+                    $scope.products = products
+                    $scope.products.unshift emptyFilter
 
             updateBillingStats = () ->
                 $scope.iosNeedingApproval = _.filter($scope.iosForApproval, (item) -> item.billing_status == 'Pending').length
@@ -205,12 +233,16 @@
 
             exportCosts = ->
                 url = '/api/billing_summary/export_cost_budgets.csv?'
-                if $scope.costsFilter.team.id
-                    url += """team_id=#{$scope.costsFilter.team.id || ''}&"""
-                if $scope.costsFilter.user.id
-                    url += """user_id=#{$scope.costsFilter.user.id || ''}&"""
-                if $scope.costsFilter.manager.id
-                    url += """manager_id=#{$scope.costsFilter.manager.id || ''}&"""
+                if $scope.filter.team.id
+                    url += """team_id=#{$scope.filter.team.id || ''}&"""
+                if $scope.filter.user.id
+                    url += """user_id=#{$scope.filter.user.id || ''}&"""
+                if $scope.filter.manager.id
+                    url += """manager_id=#{$scope.filter.manager.id || ''}&"""
+                if $scope.filter.product.id
+                    url += """product_id=#{$scope.filter.product.id || ''}&"""
+                if $scope.filter.productFamily.id
+                    url += """product_family_id=#{$scope.filter.productFamily.id || ''}&"""
 
                 if $scope.selectedYear
                     url += """year=#{$scope.selectedYear}&"""
@@ -220,7 +252,16 @@
                 return
 
             exportRevenue = ->
-                $window.open("""/api/billing_summary/export.csv?year=#{$scope.selectedYear}&month=#{$scope.selectedMonth}""")
+                url = '/api/billing_summary/export.csv?'
+                if $scope.selectedYear
+                    url += """year=#{$scope.selectedYear}&"""
+                if $scope.selectedMonth
+                    url += """month=#{$scope.selectedMonth}&"""
+                if $scope.filter.product.id
+                    url += """product_id=#{$scope.filter.product.id || ''}&"""
+                if $scope.filter.productFamily.id
+                    url += """product_family_id=#{$scope.filter.productFamily.id || ''}&"""
+                $window.open(url)
                 return
 
             $scope.exportBilling = ->

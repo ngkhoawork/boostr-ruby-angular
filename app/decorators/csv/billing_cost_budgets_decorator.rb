@@ -13,6 +13,14 @@ class Csv::BillingCostBudgetsDecorator
     io.name
   end
 
+  def advertiser
+    io.advertiser&.name
+  end
+
+  def agency
+    io.agency&.name
+  end
+
   def product
     cost.product.name
   end

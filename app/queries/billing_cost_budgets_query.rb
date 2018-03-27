@@ -7,6 +7,7 @@ class BillingCostBudgetsQuery < BaseQuery
       .join_users
       .by_company_id(options[:company_id])
       .by_member_ids(member_ids)
+      .by_product_ids(product_ids)
       .by_year_month(date)
       .distinct
   end
@@ -20,7 +21,9 @@ class BillingCostBudgetsQuery < BaseQuery
         cost: {
           product: {},
           io: {
-            currency: {}
+            currency: {},
+            advertiser: {},
+            agency: {},
           },
           values: :option
         }
@@ -29,15 +32,15 @@ class BillingCostBudgetsQuery < BaseQuery
   end
 
   def user
-    User.find_by(id: options[:user_id])
+    @user ||= User.find_by(id: options[:user_id])
   end
 
   def manager
-    User.find_by(id: options[:manager_id])
+    @manager ||= User.find_by(id: options[:manager_id])
   end
 
   def team
-    Team.find_by(id: options[:team_id])
+    @team ||= Team.find_by(id: options[:team_id])
   end
 
   def member_ids
@@ -52,7 +55,7 @@ class BillingCostBudgetsQuery < BaseQuery
   end
 
   def user_ids
-    if user
+    @_user_ids ||= if user
       [user.id]
     else
       teams.map(&:all_sales_reps).flatten.map(&:id)
@@ -60,7 +63,7 @@ class BillingCostBudgetsQuery < BaseQuery
   end
 
   def manager_ids
-    if manager
+    @_manager_ids ||= if manager
       [manager.id]
     else
       teams.map(&:all_account_managers).flatten.map(&:id)
@@ -68,7 +71,7 @@ class BillingCostBudgetsQuery < BaseQuery
   end
 
   def teams
-    if team
+    @_teams ||= if team
       [team]
     else
       root_teams
@@ -76,11 +79,11 @@ class BillingCostBudgetsQuery < BaseQuery
   end
 
   def root_teams
-    company.teams.roots(true)
+    @_root_teams ||= company.teams.roots(true)
   end
 
   def company
-    Company.find_by(id: options[:company_id])
+    @_company ||= Company.find_by(id: options[:company_id])
   end
 
   def date
@@ -93,6 +96,22 @@ class BillingCostBudgetsQuery < BaseQuery
 
   def end_date
     @_end_date ||= date.end_of_month
+  end
+
+  def product_ids
+    @_product_ids ||= if product
+      [product.id]
+    elsif product_family
+      product_family.products.map(&:id)
+    end
+  end
+
+  def product
+    @_product ||= Product.find_by(id: options[:product_id])
+  end
+
+  def product_family
+    @_product_family ||= ProductFamily.find_by(id: options[:product_family_id])
   end
 
   module Scopes
@@ -128,6 +147,14 @@ class BillingCostBudgetsQuery < BaseQuery
       if member_ids
         # self
         where(io_members: { user_id: member_ids })
+      else
+        self
+      end
+    end
+    def by_product_ids(product_ids)
+      if product_ids
+        # self
+        where(costs: { product_id: product_ids })
       else
         self
       end

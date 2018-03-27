@@ -92,7 +92,15 @@ class Api::BillingSummaryController < ApplicationController
 
   def billing_cost_budgets_params
     params
-      .permit(:year, :month, :team_id, :user_id, :manager_id)
+      .permit(
+        :year,
+        :month,
+        :team_id,
+        :user_id,
+        :product_id,
+        :product_family_id,
+        :manager_id
+      )
       .merge(company_id: current_user.company_id)
   end
 
@@ -101,7 +109,8 @@ class Api::BillingSummaryController < ApplicationController
       company.ios,
       each_serializer: BillingSummary::IosForApprovalSerializer,
       start_date: start_date,
-      end_date: end_date
+      end_date: end_date,
+      product_ids: product_ids
     )
   end
 
@@ -130,16 +139,22 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def display_line_items_without_budgets_by_date
-    DisplayLineItem.by_period_without_budgets(start_date, end_date, ios_for_time_period.ids)
+    DisplayLineItem
+      .by_period_without_budgets(start_date, end_date, ios_for_time_period.ids)
+      .for_product_ids(product_ids)
   end
 
   def display_line_items_with_budgets_by_date
-    DisplayLineItem.by_period_with_budgets(start_date, end_date, ios_for_time_period.ids)
+    DisplayLineItem
+      .by_period_with_budgets(start_date, end_date, ios_for_time_period.ids)
+      .for_product_ids(product_ids)
   end
 
   def ios_missing_monthly_actual
     (display_line_items_without_budgets_by_date - display_line_items_with_budgets_by_date) +
-    DisplayLineItem.by_period_without_display_line_item_budgets(start_date, end_date, ios_for_time_period.ids)
+    DisplayLineItem
+      .by_period_without_display_line_item_budgets(start_date, end_date, ios_for_time_period.ids)
+      .for_product_ids(product_ids)
   end
 
   def ios_for_time_period
@@ -169,6 +184,22 @@ class Api::BillingSummaryController < ApplicationController
 
   def cost
     @_cost ||= Cost.find(params[:id])
+  end
+
+  def product_ids
+    @_product_ids ||= if product
+      [product.id]
+    elsif product_family
+      product_family.products.map(&:id)
+    end
+  end
+
+  def product
+    @_product ||= Product.find_by(id: params[:product_id])
+  end
+
+  def product_family
+    @_product_family ||= ProductFamily.find_by(id: params[:product_family_id])
   end
 
   def display_line_item
