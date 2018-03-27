@@ -87,7 +87,17 @@ class Product < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(include: [:ad_units, values: { include: [:option], methods: [:value] }]))
+    super(options.merge(
+      include: [
+        :ad_units, 
+        :parent,
+        :top_parent,
+        values: { 
+          include: [:option], 
+          methods: [:value] 
+        }
+      ]
+    ))
   end
 
   def fields

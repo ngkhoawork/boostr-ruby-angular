@@ -127,6 +127,8 @@
                     resolve:
                         currentIO: ->
                             $scope.currentIO
+                        company: ->
+                            $scope.company
 
             $scope.showNewCostModal = () ->
                 $scope.modalInstance = $modal.open
@@ -330,14 +332,30 @@
                     result += parseFloat product.budget_loc
                 , 0
 
+            $scope.productName = (product) ->
+                if product.top_parent
+                    product.top_parent.name
+                else
+                    product.name
+
+            $scope.productOption1 = (product) ->
+                if product.parent && product.parent_id != product.top_parent_id
+                    product.parent.name
+                else if product.parent && product.parent_id == product.top_parent_id
+                    product.name
+
+            $scope.productOption2 = (product) ->
+                if product.parent && product.parent_id != product.top_parent_id
+                    product.name
+
             $scope.$on 'updated_influencer_content_fees', ->
                 $scope.init()
 
             $scope.$on 'content_fee_added', ->
                 $scope.init()
-            $scope.init()
 
             $scope.$on 'cost_added', ->
                 $scope.init()
+
             $scope.init()
     ]
