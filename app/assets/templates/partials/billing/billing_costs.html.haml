@@ -1,5 +1,5 @@
 .row.mb20
-  .col-xs-9.reports-header
+  .reports-header
     .billing-header-col
       %form.form-inline.filter-form
         .form-group
@@ -77,7 +77,7 @@
 
 %div
   .row.mb20
-    .col-xs-9.block
+    .col-xs-12.block
       %div.mb20
         %span.title Costs
       %div{'ng-show': '!costs.length && !dataIsLoading'}
@@ -90,9 +90,12 @@
               %th IO Name
               %th Advertiser
               %th Agency
+              %th Seller
+              %th Account Manger
               %th Product
               %th Cost Type
               %th.text-right Amount
+              %th.text-right Actualization Status
           %tbody.hide-input-arrows
             %tr{'ng-repeat': 'item in costs'}
               %td
@@ -103,6 +106,12 @@
                 {{item.advertiser}}
               %td
                 {{item.agency}}
+              %td
+                %div{'ng-repeat': 'seller in item.sellers'}
+                  {{seller.name}}
+              %td
+                %div{'ng-repeat': 'account_manager in item.account_managers'}
+                  {{account_manager.name}}
               %td
                 .dropdown{'ng-click': 'fixingDropdownPosition($event)'}
                   %div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
@@ -128,3 +137,14 @@
               %td.text-right
                 %span.display-fee-product-budget{'editable-number': 'item.amount', 'e-step': '0.01', blur: 'submit', onbeforesave: 'item.budget_loc = $data; updateCostBudget(item)'}
                   {{ item.amount | currency : item.currency_symbol : 2 }}
+
+              %td{class: 'text-right {{item.actual_status.toLowerCase() + "-status"}}'}
+                .dropdown{'ng-click': 'fixingDropdownPosition($event)'}
+                  %div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.text.editable
+                      {{item.actual_status || 'Select status'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{'ng-repeat': 'status in statuses'}
+                      %a{'href': '', 'ng-click': 'item.actual_status = status; updateCostBudget(item)'}
+                        %span.text {{status}}

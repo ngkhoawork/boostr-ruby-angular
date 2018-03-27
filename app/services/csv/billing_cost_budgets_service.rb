@@ -18,9 +18,12 @@ class Csv::BillingCostBudgetsService < Csv::BaseService
       'Name',
       'Advertiser',
       'Agency',
+      'Seller',
+      'Account Manager',
       'Product',
       'Amount',
-      'Cost Type'
+      'Cost Type',
+      'Actualization Status'
     ]
   end
 

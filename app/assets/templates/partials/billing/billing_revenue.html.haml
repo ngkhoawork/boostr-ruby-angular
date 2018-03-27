@@ -127,7 +127,7 @@
                     {{item.billing_status || 'Select status'}}
                   %span.caret
                 %ul.dropdown-menu
-                  %li{'ng-repeat': 'status in billingStatuses'}
+                  %li{'ng-repeat': 'status in statuses'}
                     %a{'href': '', 'ng-click': 'updateBillingStatus(item, status)'}
                       %span.text {{status}}
             %td {{item.vat | currency : item.currency_symbol : 0}}

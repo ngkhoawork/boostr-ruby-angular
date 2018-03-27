@@ -219,7 +219,7 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def cost_budget_params
-    params.require(:cost_budget).permit(:budget_loc)
+    params.require(:cost_budget).permit(:budget_loc, :actual_status)
   end
 
   def cost_params

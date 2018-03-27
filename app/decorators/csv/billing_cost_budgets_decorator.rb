@@ -21,6 +21,18 @@ class Csv::BillingCostBudgetsDecorator
     io.agency&.name
   end
 
+  def seller
+    io.sellers&.map(&:name).join(';')
+  end
+
+  def account_manager
+    io.account_managers&.map(&:name).join(';')
+  end
+
+  def actualization_status
+    cost_budget.actual_status
+  end
+
   def product
     cost.product.name
   end

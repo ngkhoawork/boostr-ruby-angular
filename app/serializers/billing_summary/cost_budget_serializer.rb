@@ -1,6 +1,7 @@
 class BillingSummary::CostBudgetSerializer < ActiveModel::Serializer
-  attributes :id, :product, :amount, :cost_id, :io_id, :io_number,
-              :io_name, :values, :currency, :currency_symbol, :agency, :advertiser
+  attributes :id, :product, :amount, :cost_id, :io_id, :io_number, :actual_status,
+              :io_name, :values, :currency, :currency_symbol, :agency, :advertiser,
+              :sellers, :account_managers, :is_estimated
 
   def amount
     object.budget_loc.to_f
@@ -8,6 +9,18 @@ class BillingSummary::CostBudgetSerializer < ActiveModel::Serializer
 
   def agency
     io.agency&.name
+  end
+
+  def is_estimated
+    cost.is_estimated
+  end
+
+  def sellers
+    io.sellers
+  end
+
+  def account_managers
+    io.account_managers
   end
 
   def advertiser

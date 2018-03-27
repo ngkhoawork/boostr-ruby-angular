@@ -24,6 +24,8 @@ class BillingCostBudgetsQuery < BaseQuery
             currency: {},
             advertiser: {},
             agency: {},
+            sellers: {},
+            account_managers: {}
           },
           values: :option
         }

@@ -10,7 +10,7 @@
             $scope.iosMissingDisplayLineItems = []
             $scope.iosMissingMonthlyActual = []
             $scope.dataIsLoading = false
-            $scope.billingStatuses = ['Pending', 'Approved', 'Ignore']
+            $scope.statuses = ['Pending', 'Approved', 'Ignore']
             $scope.iosNeedingApproval = 0
             $scope.missingLineItems = 0
             $scope.missingActuals = 0
