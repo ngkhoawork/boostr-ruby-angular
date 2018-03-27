@@ -8,6 +8,9 @@ class ContentFeeProductBudget < ActiveRecord::Base
   scope :for_year_month, -> (effect_date) { where("DATE_PART('year', start_date) = ? AND DATE_PART('month', start_date) = ?", effect_date.year, effect_date.month) }
 
   scope :for_product_id, -> (product_id) { where('content_fees.product_id = ?', product_id) if product_id.present? }
+
+  scope :for_product_ids, -> (product_ids) { where(content_fees: { product_id: product_ids }) if product_ids.present? }
+
   scope :by_seller_id, -> (seller_id) do
     joins(content_fee: { io: :io_members })
     .where(io_members: { user_id: seller_id }) if seller_id.present?

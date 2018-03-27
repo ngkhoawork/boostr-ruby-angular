@@ -16,6 +16,8 @@ class Csv::BillingCostBudgetsService < Csv::BaseService
     [
       'IO Number',
       'Name',
+      'Advertiser',
+      'Agency',
       'Product',
       'Amount',
       'Cost Type'

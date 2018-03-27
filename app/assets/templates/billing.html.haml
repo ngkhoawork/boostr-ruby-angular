@@ -1,14 +1,21 @@
 #billing.container-fluid.z-styles
+  .row
+    %div.export.pull-right{'ng-show': 'selectedMonth && selectedYear'}
+      %download-button{'ng-click': 'exportBilling()'}
+        Export
+    .main-title.mb20 Billing Summary
+  -# .row.mb20
+  -#   .billing-header-col
+  -#     .main-title Billing Summary
+  -#   %div.export.pull-right{'ng-show': 'selectedMonth && selectedYear'}
+  -#     %download-button{'ng-click': 'exportBilling()'}
+  -#       Export
   .row.billing-header.mb20
-    .billing-header-col
-      .main-title Billing Summary
     .billing-header-col.switch-row
       %span{ng: {repeat: 'billingTab in billingTabs', class: '{active: currentTab == billingTab.value}', click: 'setTab(billingTab.value)'}}
         {{ billingTab.name }}
     .billing-header-col.right
-      %div.export.pull-right{'ng-show': 'selectedMonth && selectedYear'}
-        %download-button{'ng-click': 'exportBilling()'}
-          Export
+      
 
   %div{'ng-include': '"partials/billing/billing_revenue.html"', 'ng-if': 'currentTab == ""'}
   %div{'ng-include': '"partials/billing/billing_costs.html"', 'ng-if': 'currentTab == "costs"'}

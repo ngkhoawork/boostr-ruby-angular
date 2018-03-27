@@ -27,6 +27,29 @@
               %li{'ng-repeat': 'month in months', 'ng-class': '{active: selectedMonth == month}'}
                 %a{'href': '', 'ng-click': 'selectMonth(month)'}
                   %span {{month}}
+        
+        .form-group
+          %label
+            Product Family
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.productFamily.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'productFamily in productFamilies', 'ng-class': '{active: filter.productFamily.id == productFamily.id}'}
+                %a{'href': '', 'ng-click': 'setFilter("productFamily", productFamily)'}
+                  %span {{productFamily.name}}
+        .form-group
+          %label
+            Product
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.product.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'product in products', 'ng-class': '{active: filter.product.id == product.id}'}
+                %a{'href': '', 'ng-click': 'setFilter("product", product)'}
+                  %span {{product.name}}
     %div.billing-header-col{'ng-show': 'selectedMonth && selectedYear'}
       .col-number
         {{iosNeedingApproval}}
@@ -77,7 +100,8 @@
               %b {{item.io_number}}
             %td
               %b {{item.line}}
-            %td {{item.io_name}}
+            %td
+              %a{href: '', 'ng-href': '/revenue/ios/{{item.io_id}}'} {{item.io_name}}
             %td {{item.advertiser_name}}
             %td {{item.agency_name}}
             %td {{item.seller_name}}
@@ -129,7 +153,8 @@
           %tr{'ng-repeat': 'item in iosMissingDisplayLineItems'}
             %td
               %b {{item.io_number}}
-            %td {{item.name}}
+            %td
+              %a{href: '', 'ng-href': '/revenue/ios/{{item.id}}'} {{item.name}}
             %td {{item.advertiser_name}}
             %td {{item.agency_name}}
             %td {{item.seller_name}}
@@ -162,7 +187,8 @@
               %b {{item.io_number}}
             %td
               %b {{item.line_number}}
-            %td {{item.io_name}}
+            %td
+              %a{href: '', 'ng-href': '/revenue/ios/{{item.io_id}}'} {{item.io_name}}
             %td {{item.advertiser_name}}
             %td {{item.agency_name}}
             %td {{item.seller_name}}
