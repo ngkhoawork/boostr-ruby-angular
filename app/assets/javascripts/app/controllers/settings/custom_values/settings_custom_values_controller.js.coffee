@@ -6,6 +6,16 @@
   $scope.isUpdating = false;
 
   CustomValue.all().then (custom_values) ->
+    custom_values.forEach(
+      (value) ->
+        if value.name == 'Accounts'
+          value.fields.forEach(
+            (field) ->
+              if field.name == 'Client Type'
+                console.log 'set defaultClienTypes'
+                $scope.defaultClienTypes = angular.copy(field.options)
+          )
+    )
     $scope.objects = custom_values
     $scope.setObject($scope.objects[0])
 
@@ -39,6 +49,18 @@
     $scope.current.option = option
 
   $scope.updateOption = (option, warn=true) ->
+    if option.name != 'Agency' && option.name != 'Advertiser'
+      alert 'Client Type can be only "Advertiser" or "Agency"'
+      $scope.defaultClienTypes.forEach(
+        (type) ->
+          if type.id == option.id
+            $scope.current.field.options.forEach(
+              (currentOption, index) ->
+                if currentOption.id == option.id
+                  $scope.current.field.options[index].name = type.name
+            )
+      )
+      return
     $scope.isUpdating = true;
     if option.id
       if option.is_new || !warn || confirm('Are you sure? All existing uses of this ' + $scope.current.field.name.toLowerCase() + ' will be updated.')
@@ -111,7 +133,21 @@
 
   $scope.createNewValue = () ->
     $scope.newest = { name: '' }
-    $scope.current.field.options.push($scope.newest)
+    canAddOption = true
+    if $scope.current.object.name == 'Accounts' && $scope.current.field.name = 'Client Type'
+      isAdvertiserTypeAdded = isAgencyTypeAdded = false
+      $scope.current.field.options.forEach(
+        (option) ->
+          if option.name == 'Advertiser' then isAdvertiserTypeAdded = true
+          if option.name == 'Agency' then isAgencyTypeAdded = true
+      )
+      if isAgencyTypeAdded && isAdvertiserTypeAdded
+        canAddOption = false
+        alert '"Advertiser" and "Agency" Client Types only possible'
+      else
+        canAddOption = true
+
+    if canAddOption then $scope.current.field.options.push($scope.newest)
 
   $scope.createNewSubOption = () ->
     $scope.newest = { name: '' }
