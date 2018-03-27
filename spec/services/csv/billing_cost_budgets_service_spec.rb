@@ -12,11 +12,13 @@ describe Csv::BillingCostBudgetsService do
   it { is_expected.to_not be_nil }
 
   it 'includes headers' do
-    expect(csv_report).to match 'IO Number,Name,Advertiser,Agency,Seller,Account Manager,Product,Amount,Cost Type,Actualization Status'
+    expect(csv_report).to match "IO Number,Name,Advertiser,Agency,Seller,Account Manager," +
+                                "Product,Amount,Cost Type,Actualization Status"
   end
 
   it 'includes io cost records' do
-    expect(csv_report).to match "888,#{io.name},#{io.advertiser&.name},#{io.agency&.name},nik andreev,mary manager;yujun zhang,display,100.0,option1,Pending"
+    expect(csv_report).to match "888,#{io.name},#{io.advertiser&.name},#{io.agency&.name}," +
+                                "nik andreev,mary manager;yujun zhang,display,100.0,option1,Pending"
   end
 
   private
@@ -41,7 +43,8 @@ describe Csv::BillingCostBudgetsService do
   end
 
   def io
-    @_io ||= create :io, company: company, start_date: '01/01/2018', end_date: '31/01/2018', io_number: '888', name: 'test-io'
+    @_io ||= create :io, company: company, start_date: '01/01/2018', end_date: '31/01/2018',
+                         io_number: '888', name: 'test-io'
   end
 
   def cost
@@ -56,7 +59,12 @@ describe Csv::BillingCostBudgetsService do
   end
 
   def field
-    @_field ||= company.fields.find_or_create_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
+    @_field ||= company.fields.find_or_create_by(
+      subject_type: 'Cost',
+      name: 'Cost Type',
+      value_type: 'Option',
+      locked: true
+    )
   end
 
   def cost_monthly_amount
