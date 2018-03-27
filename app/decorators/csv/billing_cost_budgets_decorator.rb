@@ -38,7 +38,7 @@ class Csv::BillingCostBudgetsDecorator
   end
 
   def amount
-    cost_budget.budget_loc
+    cost_budget.budget_loc.to_f
   end
 
   def cost_type
