@@ -6,16 +6,6 @@
   $scope.isUpdating = false;
 
   CustomValue.all().then (custom_values) ->
-    custom_values.forEach(
-      (value) ->
-        if value.name == 'Accounts'
-          value.fields.forEach(
-            (field) ->
-              if field.name == 'Client Type'
-                console.log 'set defaultClienTypes'
-                $scope.defaultClienTypes = angular.copy(field.options)
-          )
-    )
     $scope.objects = custom_values
     $scope.setObject($scope.objects[0])
 
@@ -49,18 +39,6 @@
     $scope.current.option = option
 
   $scope.updateOption = (option, warn=true) ->
-    if option.name != 'Agency' && option.name != 'Advertiser' && $scope.current.object.name == 'Accounts' && $scope.current.field.name == 'Client Type'
-      alert 'Client Type can be only "Advertiser" or "Agency"'
-      $scope.defaultClienTypes.forEach(
-        (type) ->
-          if type.id == option.id
-            $scope.current.field.options.forEach(
-              (currentOption, index) ->
-                if currentOption.id == option.id
-                  $scope.current.field.options[index].name = type.name
-            )
-      )
-      return
     $scope.isUpdating = true;
     if option.id
       if option.is_new || !warn || confirm('Are you sure? All existing uses of this ' + $scope.current.field.name.toLowerCase() + ' will be updated.')
@@ -131,6 +109,12 @@
     $scope.current.option.suboptions = _.reject $scope.current.option.suboptions, (suboption) ->
       deleted_suboption.id == suboption.id
 
+  $scope.isDisabled = (option) ->
+    if $scope.current.object.name == 'Accounts' && $scope.current.field.name == 'Client Type' && option.name == 'Agency' || option.name == 'Advertiser'
+      true
+    else
+      false 
+
   $scope.createNewValue = () ->
     $scope.newest = { name: '' }
     canAddOption = true
@@ -143,7 +127,7 @@
       )
       if isAgencyTypeAdded && isAdvertiserTypeAdded
         canAddOption = false
-        alert '"Advertiser" and "Agency" Client Types only possible'
+        alert 'You cannot create additional types. "Advertiser" and "Agency" are the only types available.'
       else
         canAddOption = true
 
