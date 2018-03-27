@@ -183,6 +183,20 @@
                     console.log err
                     item.amount = oldValue
 
+
+
+            $scope.copyCost = (item) ->
+                cost = {
+                    id: item.cost_id,
+                    product_id: item.product_id,
+                    values: item.values,
+                    type: item.type
+                }
+                Billing.copyCost(cost).then (resp) ->
+                    getData()
+                , (err) ->
+                    console.log err
+
             $scope.updateCost = (item) ->
                 cost = {
                     id: item.cost_id,
