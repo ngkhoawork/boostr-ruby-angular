@@ -28,7 +28,7 @@ class BillingSummary::CostBudgetSerializer < ActiveModel::Serializer
   end
 
   def product
-    cost.product.name
+    cost.product&.name
   end
 
   def io_number
@@ -52,7 +52,7 @@ class BillingSummary::CostBudgetSerializer < ActiveModel::Serializer
   end
 
   def currency_symbol
-    io.currency.curr_symbol
+    io.currency&.curr_symbol
   end
 
   def cost

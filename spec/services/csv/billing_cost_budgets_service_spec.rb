@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Csv::IoCostService do
+describe Csv::BillingCostBudgetsService do
   subject(:csv_report) { described_class.new(company, cost.cost_monthly_amounts).perform }
 
   before do
@@ -12,11 +12,11 @@ describe Csv::IoCostService do
   it { is_expected.to_not be_nil }
 
   it 'includes headers' do
-    expect(csv_report).to match 'IO Number,Cost ID,Product ID,Product Name,Type,Month,Amount,IO Name,IO Seller,IO Account Manager,Second IO Account Manager'
+    expect(csv_report).to match 'IO Number,Name,Advertiser,Agency,Seller,Account Manager,Product,Amount,Cost Type,Actualization Status'
   end
 
   it 'includes io cost records' do
-    expect(csv_report).to match "888,#{cost.id},#{product.id},display,option1,01/2018,100,test-io,nik andreev,mary manager,yujun zhang"
+    expect(csv_report).to match "888,#{io.name},#{io.advertiser&.name},#{io.agency&.name},nik andreev,mary manager;yujun zhang,display,100.0,option1,Pending"
   end
 
   private
