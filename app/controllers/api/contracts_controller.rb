@@ -55,7 +55,7 @@ class Api::ContractsController < ApplicationController
   private
 
   def resource
-    @resource ||= collection.find(params[:id])
+    @resource ||= Contract.find(params[:id])
   end
 
   def collection
