@@ -4,6 +4,7 @@ class Integration < ActiveRecord::Base
   DFP = 'DFP'.freeze
   ASANA_CONNECT = 'Asana Connect'.freeze
   GOOGLE_SHEETS = 'Google Sheets'.freeze
+  SSP = 'SSP'.freeze
 
   validates :external_id, :external_type, presence: true
 
