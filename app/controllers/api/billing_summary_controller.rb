@@ -44,7 +44,8 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def update_cost_budget
-    if cost_budget.update(cost_budget_params)
+    if cost_budget.update(converted_cost_budget_params)
+      cost_budget.cost.update_budget
       render json: cost_budget.reload, serializer: BillingSummary::CostBudgetSerializer
     else
       render json: { errors: cost_budget.errors.messages }, status: :unprocessable_entity
@@ -311,5 +312,8 @@ class Api::BillingSummaryController < ApplicationController
         end
       end
     end
+  end
+  def converted_cost_budget_params
+    ConvertCurrency.call(cost_budget.cost.io.exchange_rate, cost_budget_params)
   end
 end
