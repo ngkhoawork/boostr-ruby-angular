@@ -30,6 +30,8 @@
                 controller: 'ContractFormController'
                 size: 'md'
                 backdrop: 'static'
+                resolve:
+                    contract: null
 
         ($scope.getContracts = (params) ->
             $scope.isLoading = true

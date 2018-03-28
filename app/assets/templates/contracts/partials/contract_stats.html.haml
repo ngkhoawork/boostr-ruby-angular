@@ -3,6 +3,8 @@
 		%div.contract-title.mb30
 			%span.main-title
 				{{contract.name}}
+				%i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(contract)'}
+				%i.fa.fa-trash.delete-deal{'ng-click': 'deleteContract(contract)'}
 				.ealert-label.pull-right{'ng-class': '{danger: (ealertReminder && contract.company_ealert_reminder)}'}
 					eAlerts
 				%i.fa.fa-envelope.ealert.pull-right{ng: {click: 'showDealEalertModal(currentDeal)', class: '{danger: (ealertReminder && currentDeal.company_ealert_reminder)}'}}
@@ -43,4 +45,4 @@
 					.col-body
 						.description Auto Notifications
 						.title
-							%z-toggle{'ng-model': 'contract.auto_notifications'}
+							%z-toggle{ng: {model: 'contract.auto_notifications', change: 'updateContract()'}}

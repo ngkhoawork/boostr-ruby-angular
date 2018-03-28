@@ -83,7 +83,7 @@
                 .row-w50.pr8
                     .form-group
                         %label Deal
-                        %input.form-control{'placeholder': 'Search for Deal', 'ng-model': 'form.deal', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)'}
+                        %input.form-control{'placeholder': 'Search for Deal', 'ng-model': 'form.deal', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchDeals($viewValue)'}
                 .row-w50.pl8
                     .form-group
                         %label Publisher
@@ -92,11 +92,11 @@
                 .row-w50.pr8
                     .form-group
                         %label Advertiser
-                        %input.form-control{'placeholder': 'Search for Advertiser', 'ng-model': 'form.advertiser', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "advertiser")'}
+                        %input.form-control{'placeholder': 'Search for Advertiser', 'ng-model': 'form.advertiser', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchClients($viewValue, "advertiser")'}
                 .row-w50.pl8
                     .form-group
                         %label Agency
-                        %input.form-control{'placeholder': 'Search for Agency', 'ng-model': 'form.agency', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "agency")'}
+                        %input.form-control{'placeholder': 'Search for Agency', 'ng-model': 'form.agency', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchClients($viewValue, "agency")'}
             .form-row
                 .row-w50.pr8
                     .form-group

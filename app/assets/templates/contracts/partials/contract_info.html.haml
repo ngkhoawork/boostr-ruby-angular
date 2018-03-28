@@ -1,4 +1,4 @@
-.block.contact-info.campaign-details
+.block.contract-info.campaign-details
     -#%div.pull-right
         %span.star
             *
@@ -31,8 +31,8 @@
         %div.custom-field-item-field
             .dropdown
                 %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-                    %span.editable{'ng-class': '{"not-selected": !contract.curr_cd}'}
-                        {{contract.curr_cd || 'Select currency'}}
+                    %span.editable{'ng-class': '{"not-selected": !contract.currency.curr_cd}'}
+                        {{contract.currency.curr_cd || 'Select currency'}}
                     %span.caret
                 %ul.dropdown-menu
                     %li{'ng-repeat': 'currency in currencies', 'ng-class': '{active: contract.currency.curr_cd == currency.curr_cd}'}
