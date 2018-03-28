@@ -6,6 +6,7 @@
       %div{'ng-include': '"partials/deal/deal_io_details.html"', 'ng-if': '!isPmpDeal'}
       %div{'ng-include': '"partials/deal/deal_pmp_details.html"', 'ng-if': 'isPmpDeal'}
       %div{'ng-include': '"partials/deal/deal_contacts.html"'}
+      %related-contracts{type: 'deal'}
       .row
         .col-xs-6
           %div{'ng-include': '"partials/deal/deal_members.html"'}
