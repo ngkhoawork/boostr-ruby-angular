@@ -1,7 +1,6 @@
 class Csv::BillingCostBudgetsDecorator
-  def initialize(cost_budget, company, field)
+  def initialize(cost_budget, field)
     @cost_budget = cost_budget
-    @company = company
     @field = field
   end
 

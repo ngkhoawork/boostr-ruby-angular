@@ -9,7 +9,7 @@ class Csv::BillingCostBudgetsService < Csv::BaseService
   attr_reader :company
 
   def decorated_records
-    records.map { |record| Csv::BillingCostBudgetsDecorator.new(record, company, field) }
+    records.map { |record| Csv::BillingCostBudgetsDecorator.new(record, field) }
   end
 
   def headers

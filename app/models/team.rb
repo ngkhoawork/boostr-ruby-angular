@@ -274,12 +274,17 @@ class Team < ActiveRecord::Base
   end
 
   def all_account_managers
-    account_managers = []
-    account_managers += members.by_user_type([ACCOUNT_MANAGER, MANAGER_ACCOUNT_MANAGER])
-    children.each do |child|
-      account_managers += child.all_account_managers
+    members_account_managers + children_account_managers
+  end
+
+  def members_account_managers
+    members.by_user_type([ACCOUNT_MANAGER, MANAGER_ACCOUNT_MANAGER])
+  end
+
+  def children_account_managers
+    children.inject([]) do |result, child|
+      result += child.all_account_managers
     end
-    account_managers
   end
 
   def all_leaders
