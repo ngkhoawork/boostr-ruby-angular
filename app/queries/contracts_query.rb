@@ -7,6 +7,7 @@ class ContractsQuery < BaseQuery
       .by_team_id(options[:team_id])
       .by_advertiser_id(options[:advertiser_id])
       .by_agency_id(options[:agency_id])
+      .by_client_id(options[:client_id])
       .by_deal_id(options[:deal_id])
       .by_holding_company_id(options[:holding_company_id])
       .by_type_id(options[:type_id])
@@ -58,12 +59,18 @@ class ContractsQuery < BaseQuery
       by_user_id(user_ids)
     end
 
+    def by_agency_id(agency_id)
+      agency_id ? where(agency_id: agency_id) : self
+    end
+
     def by_advertiser_id(advertiser_id)
       advertiser_id ? where(advertiser_id: advertiser_id) : self
     end
 
-    def by_agency_id(agency_id)
-      agency_id ? where(agency_id: agency_id) : self
+    def by_client_id(client_id)
+      return self unless client_id
+
+      where("advertiser_id = :client_id OR agency_id = :client_id", client_id: client_id)
     end
 
     def by_deal_id(deal_id)

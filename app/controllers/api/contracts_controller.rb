@@ -103,6 +103,7 @@ class Api::ContractsController < ApplicationController
         :team_id,
         :advertiser_id,
         :agency_id,
+        :client_id,
         :deal_id,
         :holding_company_id,
         :type_id,
