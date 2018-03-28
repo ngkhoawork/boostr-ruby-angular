@@ -8,7 +8,8 @@
         .col-md-8
           .form-group
             %input.form-control{ name: 'advertiser', placeholder: 'Search for Advertiser', ng: { model: 'searchText', change: 'searchObj()' } }
-        .col-md-4{ng: {if: 'object.ssp_advertiser'}}
+        -#.col-md-4{ng: {if: 'object.ssp_advertiser'}}
+        .col-md-4
           .form-group.toggle
             %label
               %span.mr8 Assign All

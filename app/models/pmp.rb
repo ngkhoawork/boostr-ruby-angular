@@ -27,6 +27,7 @@ class Pmp < ActiveRecord::Base
   scope :for_time_period, -> (start_date, end_date) { where('pmps.start_date <= ? AND pmps.end_date >= ?', end_date, start_date) }
   scope :by_user, -> (user) { includes(:pmp_members).where('pmp_members.user_id = ?', user.id) }
   scope :without_advertiser, -> { where('advertiser_id IS NULL OR ssp_advertiser_id IS NULL') }
+  scope :no_match_advertiser, -> (ssp_advertiser_id) { where(ssp_advertiser_id: ssp_advertiser_id, advertiser_id: nil) }
 
   before_create :set_budget_remaining_and_delivered
 
@@ -62,14 +63,6 @@ class Pmp < ActiveRecord::Base
     Pmp.where(id: ids).find_each do |pmp|
       pmp.calculate_dates!
     end
-  end
-
-  def self.bulk_assign_advertiser(ssp_advertiser_id, client, user)
-    return unless ssp_advertiser_id.present? && client.present?
-    pmps = user.company.pmps.where(ssp_advertiser_id: ssp_advertiser_id, advertiser_id: nil)
-    return unless pmps.present?
-    pmps.first.ssp_advertiser.update_attribute(:client_id, client.id)
-    pmps.update_all(advertiser_id: client.id)
   end
 
   def exchange_rate()

@@ -47,8 +47,12 @@ class Api::PmpsController < ApplicationController
   end
 
   def bulk_assign_advertiser
-    ids = Pmp.bulk_assign_advertiser(params[:ssp_advertiser_id], client, current_user)
-    render json: ids
+    opts = {
+      ssp_advertiser_id: params[:ssp_advertiser_id],
+      client: client,
+      company: current_user.company
+    }
+    render json: Pmp::AssignAdvertiser.new(opts).bulk_assign
   end
 
   private
