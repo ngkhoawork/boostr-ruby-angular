@@ -88,36 +88,15 @@
         .filter-name
           %div
             IO Number
-        .filter-dropdown
-          %i.fa.fa-close{'ng-show': 'filter.selected.ioNumber', 'ng-click': 'filter.reset("ioNumber")'}
-          %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
-            .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.ioNumber}'}
-              {{filter.selected.ioNumber || 'Select an IO Number'}}
-              %span.caret
-            .dropdown-menu{'dropdown-menu': '', role: 'menu'}
-              .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
-                %i.fa.fa-search
-                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
-              %span.dropdown-title Select from list
-              .dropdown-option{'ng-repeat': 'ioNumber in filter.ioNumbers | filter: filtering | limitTo: 10', role: 'menuitem'}
-                %a{href: '', 'ng-click': 'filter.select("ioNumber", ioNumber)'} {{ioNumber}}
+        .filter-textbox
+          %input{ ng: { model: 'filter.selected.ioNumber' }, placeholder: 'Put an IO Number' }
+
         .filter-row
           .filter-name
             %div
               External IO Number
-          .filter-dropdown
-            %i.fa.fa-close{'ng-show': 'filter.selected.externalIoNumber', 'ng-click': 'filter.reset("externalIoNumber")'}
-            %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
-              .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.externalIoNumber}'}
-                {{filter.selected.externalIoNumber || 'Select an E xternal Io Number'}}
-                %span.caret
-              .dropdown-menu{'dropdown-menu': '', role: 'menu'}
-                .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
-                  %i.fa.fa-search
-                  %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
-                %span.dropdown-title Select from list
-                .dropdown-option{'ng-repeat': 'externalIoNumber in filter.externalIoNumbers | filter: filtering | limitTo: 10', role: 'menuitem'}
-                  %a{href: '', 'ng-click': 'filter.select("externalIoNumber", externalIoNumber)'} {{externalIoNumber}}													
+          .filter-textbox
+            %input{ ng: { model: 'filter.selected.externalIoNumber' }, placeholder: 'Put an External IO Number' }
     .footer
       %span.reset{'ng-click': 'filter.resetAll()'} Reset
       %button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters
@@ -198,11 +177,11 @@
           %div#pmp_item_daily_actials{ng: {if: "filter.revenue == 'no-match-adv'"}}
             %tr
               %td
-                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv')"}
+                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv-ssp-advertisers')"}
                   Deals
               %td
-                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv-ssp-advertisers')"}
-                  Advertizers
+                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv')"}
+                  Advertisers
             %table.table.table-hover
               %thead
                 %tr.z-sortable-prime
@@ -223,11 +202,11 @@
           %div#pmp_item_daily_actials{ng: {if: "filter.revenue == 'no-match-adv-ssp-advertisers'"}}
             %tr
               %td
-                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv')"}
+                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv-ssp-advertisers')"}
                   Deals
               %td
-                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv-ssp-advertisers')"}
-                  Advertizers
+                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv')"}
+                  Advertisers
             %table.table.table-hover
               %thead
                 %tr.z-sortable-prime

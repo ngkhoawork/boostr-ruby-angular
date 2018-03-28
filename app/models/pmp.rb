@@ -108,8 +108,7 @@ class Pmp < ActiveRecord::Base
 
   def assign_advertiser!(client)
     ssp_advertiser.update_attribute(:client_id, client.id) if ssp_advertiser.present?
-    self.advertiser_id = client.id
-    save!
+    update_attribute(:advertiser_id, client.id)
   end
 
   private
