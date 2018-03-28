@@ -3,6 +3,8 @@ FactoryGirl.define do
     deal_id nil
     deal_name nil
     product nil
+    product_level1 nil
+    product_level2 nil
     budget 10000.0
 
     initialize_with { attributes }

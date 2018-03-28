@@ -204,10 +204,11 @@ class DealProduct < ActiveRecord::Base
       end
 
       if row[2]
-        product = current_user.company.products.where('name ilike ?', row[2]).first
+        full_name = row[2].to_s + ' ' + row[3].to_s + ' ' + row[4].to_s
+        product = current_user.company.products.where(full_name: full_name.strip).first
         unless product
           import_log.count_failed
-          import_log.log_error(["Product #{row[2]} could not be found"])
+          import_log.log_error(["Product #{full_name.strip} could not be found"])
           next
         end
       else
@@ -217,8 +218,8 @@ class DealProduct < ActiveRecord::Base
       end
 
       budget = nil
-      if row[3]
-        budget = Float(row[3].strip) rescue false
+      if row[5]
+        budget = Float(row[5].strip) rescue false
         budget_loc = budget
         unless budget
           import_log.count_failed
