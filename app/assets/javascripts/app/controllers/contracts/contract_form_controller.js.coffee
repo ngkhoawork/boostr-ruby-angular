@@ -60,6 +60,11 @@
             $scope.types = Field.field(fields, 'Type').options
             $scope.statuses = Field.field(fields, 'Status').options
 
+        Field.defaults({}, 'Client').then (fields) ->
+            client_types = Field.findClientTypes(fields)
+            client_types.options.forEach (option) ->
+                $scope[option.name] = option.id
+
         $scope.searchDeals = (str) ->
             Deal.all({name: str}).then (deals) ->
                 deals

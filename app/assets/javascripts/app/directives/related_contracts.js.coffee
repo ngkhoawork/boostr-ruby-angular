@@ -7,7 +7,6 @@ app.directive 'relatedContracts', [
             type: '@'
         templateUrl: 'directives/related_contracts.html'
         link: ($scope, element) ->
-            console.log $scope.type, $routeParams.id
             $scope.contracts = []
             params = {}
 
@@ -15,7 +14,6 @@ app.directive 'relatedContracts', [
                 when 'deal' then params.deal_id = $routeParams.id
                 when 'account' then params.client_id = $routeParams.id
                 when 'publisher' then params.publisher_id = $routeParams.id
-                else return
 
             Contract.all(params).then (contracts) ->
                 $scope.contracts = contracts
