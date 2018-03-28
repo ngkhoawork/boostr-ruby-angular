@@ -34,6 +34,7 @@ class Operative::ExtractVerifyService
     end
 
     tar_extract.close
+
     extracted_files
   end
 
