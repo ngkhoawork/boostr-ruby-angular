@@ -19,8 +19,8 @@ module Clockwork
     DealReportGenerator.perform_async
   end
 
-  every(1.day, 'Operative DataFeed', at: '4:00') do
-    OperativeDatafeedWorker.perform_async
+  every(1.day, 'Operative DataFeed Fullday', at: '4:00') do
+    OperativeDatafeedFulldayWorker.perform_async
   end
 
   every(1.day, 'Account Dimension Synchronizer', at: '4:50') do
@@ -61,5 +61,21 @@ module Clockwork
 
   every(1.day, 'Stopped PMPs Alert', at: '8:00') do
     StoppedPmpDetectWorker.perform_async
+  end
+
+  every(1.day, 'Operative DataFeed Intraday', at: '14:00') do
+    OperativeDatafeedIntradayWorker.perform_async
+  end
+
+  every(1.day, 'Operative DataFeed Intraday', at: '17:00') do
+    OperativeDatafeedIntradayWorker.perform_async
+  end
+
+  every(1.day, 'Operative DataFeed Intraday', at: '20:00') do
+    OperativeDatafeedIntradayWorker.perform_async
+  end
+
+  every(1.day, 'Operative DataFeed Intraday', at: '23:00') do
+    OperativeDatafeedIntradayWorker.perform_async
   end
 end

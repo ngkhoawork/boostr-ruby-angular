@@ -4,9 +4,11 @@ require 'zlib'
 class Operative::ExtractVerifyService
   FOLDER = './tmp/'
 
-  def initialize(archive, timestamp)
+  def initialize(archive, timestamp, intraday: false, hhmm: '')
     @archive = archive
     @timestamp = timestamp
+    @intraday = intraday
+    @hhmm = hhmm
   end
 
   def perform
@@ -14,7 +16,8 @@ class Operative::ExtractVerifyService
   end
 
   private
-  attr_reader :archive, :timestamp
+
+  attr_reader :archive, :timestamp, :intraday, :hhmm
 
   def extract_from_archive
     extracted_files = {}
@@ -22,7 +25,7 @@ class Operative::ExtractVerifyService
     tar_extract.rewind # The extract has to be rewinded after every iteration
     tar_extract.each do |entry|
       if entry.file? && datafeed_payload.include?(entry.full_name)
-        dest = File.join FOLDER, entry.full_name
+        dest = File.join FOLDER, destination_file_name(entry.full_name)
         extracted_files[to_table_name(entry.full_name)] = dest
         File.open dest, "wb" do |f|
           f.print entry.read
@@ -46,5 +49,9 @@ class Operative::ExtractVerifyService
 
   def to_table_name(name)
     name.split("_#{timestamp}").first.downcase.to_sym
+  end
+
+  def destination_file_name(file_name)
+    intraday ? file_name.gsub(/\.csv/, "#{hhmm}_intraday.csv") { |match|  } : file_name
   end
 end
