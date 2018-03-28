@@ -174,24 +174,48 @@
 
             %tbody{ 'ng-include': "'partials/revenue_no_match_display_rows.html'" }
 
-          %table.table.table-hover{ng: {if: "filter.revenue == 'no-match-adv'"}}
-            %thead
-              %tr.z-sortable-prime
-                %th.left
-                  %span.z-sortable{by: 'ssp_deal_id'} Deal-ID
-                %th.left
-                  %span.z-sortable{by: 'pmp.name'} PMP Name
-                %th.left
-                  %span.z-sortable{by: 'ssp.name'} SSP Name
-                %th.left
-                  %span.z-sortable{by: 'ssp_advertiser'} Advertiser
-                %th.right
-                  %span.z-sortable{by: 'impressions'} Impressions
-                %th.right
-                  %span.z-sortable{by: 'revenue_loc'} Revenue
-                %th.right
-
-            %tbody{ 'ng-include': "'partials/revenue_no_match_advertiser_rows.html'" }
+          %div#pmp_item_daily_actials{ng: {if: "filter.revenue == 'no-match-adv'"}}
+            %tr
+              %td
+                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv-ssp-advertisers')"}
+                  Deals
+              %td
+                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv')"}
+                  Advertisers
+            %table.table.table-hover
+              %thead
+                %tr.z-sortable-prime
+                  %th.left
+                    %span.z-sortable{by: 'ssp_deal_id'} Deal-ID
+                  %th.left
+                    %span.z-sortable{by: 'pmp.name'} PMP Name
+                  %th.left
+                    %span.z-sortable{by: 'ssp.name'} SSP Name
+                  %th.left
+                    %span.z-sortable{by: 'ssp_advertiser'} Advertiser
+                  %th.right
+                    %span.z-sortable{by: 'impressions'} Impressions
+                  %th.right
+                    %span.z-sortable{by: 'revenue_loc'} Revenue
+                  %th.right
+              %tbody{ 'ng-include': "'partials/revenue_no_match_advertiser_rows.html'" }
+          %div#pmp_item_daily_actials{ng: {if: "filter.revenue == 'no-match-adv-ssp-advertisers'"}}
+            %tr
+              %td
+                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv-ssp-advertisers')"}
+                  Deals
+              %td
+                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv')"}
+                  Advertisers
+            %table.table.table-hover
+              %thead
+                %tr.z-sortable-prime
+                  %th.left
+                    %span.z-sortable{by: 'pmp.name'} PMP Name
+                  %th.left
+                    %span.z-sortable{by: 'ssp_advertiser'} Advertiser
+                  %th.right
+              %tbody{ 'ng-include': "'partials/revenue_no_match_advertiser_rows_ssp.html'"}
 
           %table.table.table-hover{ng: {if: "filter.revenue == 'pmp'"}}
             %thead
