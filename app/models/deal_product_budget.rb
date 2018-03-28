@@ -149,10 +149,11 @@ class DealProductBudget < ActiveRecord::Base
       end
 
       if row[2]
-        product = current_user.company.products.where(name: row[2]).first
+        full_name = row[2].to_s + ' ' + row[3].to_s + ' ' + row[4].to_s
+        product = current_user.company.products.where(full_name: full_name.strip).first
         unless product
           import_log.count_failed
-          import_log.log_error(["Product #{row[2]} could not be found"])
+          import_log.log_error(["Product #{full_name.strip} could not be found"])
           next
         end
       else
@@ -162,8 +163,8 @@ class DealProductBudget < ActiveRecord::Base
       end
 
       budget = nil
-      if row[3]
-        budget = Float(row[3].strip) rescue false
+      if row[5]
+        budget = Float(row[5].strip) rescue false
         budget_loc = budget
         unless budget
           import_log.count_failed
@@ -184,9 +185,9 @@ class DealProductBudget < ActiveRecord::Base
         next
       end
 
-      if row[4]
+      if row[6]
         begin
-          period = Date.strptime(row[4].strip, '%b-%y')
+          period = Date.strptime(row[6].strip, '%b-%y')
         rescue ArgumentError
           import_log.count_failed
           import_log.log_error(['Period must be in valid format: Mon-YY'])
@@ -195,7 +196,7 @@ class DealProductBudget < ActiveRecord::Base
 
         unless period.between?(deal.start_date.beginning_of_month, deal.end_date.end_of_month)
           import_log.count_failed
-          import_log.log_error(["Period #{row[4]} must be within Deal Period"])
+          import_log.log_error(["Period #{row[6]} must be within Deal Period"])
           next
         end
       else
