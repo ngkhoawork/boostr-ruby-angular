@@ -12,6 +12,14 @@ class Integration < ActiveRecord::Base
 
   scope :operative, -> { find_by(external_type: OPERATIVE) }
 
+  def self.get_types(current_user)
+    integration_types = [
+      OPERATIVE, OPERATIVE_DATAFEED, DFP, ASANA_CONNECT, SSP
+    ]
+    integration_types << GOOGLE_SHEETS if current_user.company.buzzfeed?
+    integration_types
+  end
+
   def self.import(file, current_user_id, file_path)
     current_user = User.find current_user_id
 

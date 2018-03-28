@@ -6,7 +6,7 @@ class Api::ApiConfigurationsController < ApplicationController
   end
 
   def ssp_credentials
-    render json: current_user.company.ssp_credentials, root: "ssp", each_serializer: SspCredentialSerializer
+    render json: current_user.company.ssp_credentials, root: 'ssp', each_serializer: SspCredentialSerializer
   end
 
   def update
@@ -35,6 +35,7 @@ class Api::ApiConfigurationsController < ApplicationController
 
   def delete_ssp
     ssp = SspCredential.find(params[:id])
+
     if ssp&.destroy
       render nothing: true
     else
@@ -44,8 +45,9 @@ class Api::ApiConfigurationsController < ApplicationController
 
   def update_ssp
     api_configuration = SspCredential.find(params[:id])
+
     if api_configuration.update(api_configuration_params)
-      render json: {}, status: 200
+      render json: {}
     else
       render json: { errors: api_configuration.errors.messages }, status: :unprocessable_entity
     end

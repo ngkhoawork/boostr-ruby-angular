@@ -1,6 +1,6 @@
 class PmpsQuery < BaseQuery
 
-  def call
+  def perform
     if options[:without_advertisers]
       filter.without_advertiser
     else

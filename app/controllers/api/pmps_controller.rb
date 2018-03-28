@@ -88,7 +88,7 @@ class Api::PmpsController < ApplicationController
   end
 
   def pmps
-    PmpsQuery.new(filter_params).call
+    PmpsQuery.new(filter_params).perform
   end
 
   def pmp
