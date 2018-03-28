@@ -59,12 +59,7 @@ class Api::TeamsController < ApplicationController
   end
 
   def all_account_managers
-    if teams.present?
-      reps = teams.map(&:all_account_managers).flatten
-      render json: reps
-    else
-      render json: { error: 'Team Not Found' }, status: :not_found
-    end
+    render json: account_managers
   end
 
   def create
@@ -101,12 +96,25 @@ class Api::TeamsController < ApplicationController
 
   private
 
+  def account_managers
+    @_account_managers ||=
+      if team.present?
+        team.all_account_managers.flatten
+      else
+        company.users.by_user_type([ACCOUNT_MANAGER, MANAGER_ACCOUNT_MANAGER])
+      end
+  end
+
   def teams
-    if params[:team_id] && params[:team_id] == 'all'
-      @team ||= root_teams
-    elsif params[:team_id]
-      @team ||= [company.teams.find(params[:team_id])]
+    @_teams = if params[:team_id] && params[:team_id] == 'all'
+      root_teams
+    elsif team.present?
+      [team]
     end
+  end
+
+  def team
+    @_team ||= company.teams.find_by(id: params[:team_id])
   end
 
   def root_teams
@@ -122,10 +130,6 @@ class Api::TeamsController < ApplicationController
       :sales_process_id,
       member_ids: []
     )
-  end
-
-  def team
-    @team ||= current_user.company.teams.where(id: params[:id]).first
   end
 
   def company
