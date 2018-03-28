@@ -46,6 +46,11 @@
       .form-group
         .row
           .col-xs-12
+            %label.control-label{ for: 'company_name' } API username
+            %input.form-control{ placeholder: 'example@email.com', ng: { model: 'api_configuration.datafeed_configuration_details.company_name' }, name: 'company_name', required: true  }
+      .form-group
+        .row
+          .col-xs-12
             %label.control-label{ for: 'auto_close_deals' } Auto-Close Deals on IO Import
             %br
             %z-toggle{'ng-model': 'api_configuration.datafeed_configuration_details.auto_close_deals'}
@@ -73,10 +78,18 @@
             %div{ ng: { bind: { html: 'pattern.name' } } }
       .form-group
         .row
-          .col-xs-12
+          .col-xs-4
             %label.control-label{ for: 'exclude_child_line_items' } Exclude Child Line Items
             %br
             %z-toggle{'ng-model': 'api_configuration.datafeed_configuration_details.exclude_child_line_items'}
+          .col-xs-4
+            %label.control-label{ for: 'exclude_child_line_items' } Run Intraday?
+            %br
+            %z-toggle{'ng-model': 'api_configuration.datafeed_configuration_details.run_intraday'}
+          .col-xs-4
+            %label.control-label{ for: 'exclude_child_line_items' } Run Fullday?
+            %br
+            %z-toggle{'ng-model': 'api_configuration.datafeed_configuration_details.run_fullday'}
 
     .modal-footer.text-center
       %button.btn.btn-primary.btn-lg{ type: 'submit' } {{ submitText }}

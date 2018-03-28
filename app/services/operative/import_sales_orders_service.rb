@@ -4,12 +4,13 @@ class Operative::ImportSalesOrdersService
     @auto_close_deals = auto_close_deals
     @sales_order = files[:sales_order]
     @currency = files[:currency]
+    @currencies_list = {}
   end
 
   def perform
     @sales_order_file = open_file(@sales_order)
-    @currency_file = open_file(@currency)
-    if @sales_order_file && @currency_file
+    @currency_file = open_file(@currency) if @currency
+    if @sales_order_file
       parse_and_process_rows
     end
   end
@@ -29,11 +30,12 @@ class Operative::ImportSalesOrdersService
 
   def parse_and_process_rows
     parse_currencies
+    save_currency_mappings
     parse_sales_order
   end
 
   def parse_currencies
-    @currencies_list = {}
+    return if currency_file.nil?
     import_log = CsvImportLog.new(company_id: company_id, object_name: 'currency', source: 'operative')
     import_log.set_file_source(currency)
 
@@ -83,7 +85,15 @@ class Operative::ImportSalesOrdersService
         import_log.count_skipped
         next
       end
+
+      if get_curr_cd(row[:order_currency_id]).nil?
+        import_log.count_failed
+        import_log.log_error ["Currency ID #{row[:order_currency_id]} not found in mappings"]
+        next
+      end
+
       io_csv = build_io_csv(row)
+
       if io_csv.valid?
         begin
           io_csv.perform
@@ -103,8 +113,16 @@ class Operative::ImportSalesOrdersService
     import_log.save
   end
 
+  def save_currency_mappings
+    @currencies_list.each do |key, value|
+      DatafeedCurrencyMapping.find_or_create_by(
+        company_id: company_id, datafeed_curr_id: key, curr_cd: value
+      )
+    end
+  end
+
   def irrelevant_order(row)
-    row[:sales_stage_percent] != '100' || row[:order_start_date].blank? || row[:order_status].try(:downcase) == 'deleted'
+    row[:order_status] != 'active_order' || row[:order_start_date].blank? || row[:order_status].try(:downcase) == 'deleted'
   end
 
   def build_io_csv(row)
@@ -125,7 +143,7 @@ class Operative::ImportSalesOrdersService
   end
 
   def get_curr_cd(curr_id)
-    @currencies_list[curr_id]
+    @currencies_list[curr_id] ||= DatafeedCurrencyMapping.find_by(company_id: company_id, datafeed_curr_id: curr_id)&.curr_cd
   end
 
   def amend_quotes(line)

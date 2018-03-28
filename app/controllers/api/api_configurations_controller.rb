@@ -82,7 +82,10 @@ class Api::ApiConfigurationsController < ApplicationController
                                                                                   :auto_close_deals,
                                                                                   :revenue_calculation_pattern,
                                                                                   :product_mapping,
-                                                                                  :exclude_child_line_items
+                                                                                  :exclude_child_line_items,
+                                                                                  :run_intraday,
+                                                                                  :run_fullday,
+                                                                                  :company_name
                                                                                 ],
                                               google_sheets_details_attributes: [
                                                                                   :id,
