@@ -23,14 +23,14 @@
                         %span.star *
                         %ui-select{ng: {model: 'form.type_id'}}
                             %ui-select-match{placeholder: 'Type'} {{$select.selected.name}}
-                            %ui-select-choices{repeat: 'type.id as type in types'}
+                            %ui-select-choices{repeat: 'type.id as type in types | orderBy: "name"'}
                                 %div {{type.name}}
                 .row-w35.pr16
                     .form-group
                         %label Status
                         %ui-select{ng: {model: 'form.status_id'}}
                             %ui-select-match{placeholder: 'Status'} {{$select.selected.name}}
-                            %ui-select-choices{repeat: 'status.id as status in statuses'}
+                            %ui-select-choices{repeat: 'status.id as status in statuses | orderBy: "name"'}
                                 %div {{status.name}}
                 .row-w30.toggle-wrap
                     %z-toggle{ng: {model: 'form.auto_renew'}}

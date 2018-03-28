@@ -45,10 +45,10 @@
             form.publisher_id = form.publisher.id if form.publisher
             form = _.omit form, 'deal', 'advertiser', 'agency', 'publisher'
             if contract
-                Contract.update(form).then (contract) ->
+                Contract.update(id: contract.id, contract: form).then (contract) ->
                     $modalInstance.close(contract)
             else
-                Contract.create(form).then (contract) ->
+                Contract.create(contract: form).then (contract) ->
                     $modalInstance.close(contract)
                     $location.path("/contracts/#{contract.id}")
 

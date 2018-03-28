@@ -19,7 +19,7 @@
                 $scope.isContractLoaded = true
 
         $scope.updateContract = ->
-            Contract.update($scope.contract)
+            Contract.update(id: $scope.contract.id, contract: $scope.contract)
 
         $scope.showEditModal = (contract) ->
             modalInstance = $modal.open
