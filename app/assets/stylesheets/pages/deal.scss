@@ -746,6 +746,12 @@
             //color: white;
             color: #2ca02c;
         }
+        .bs-datepicker {
+            .dropdown-menu {
+                right: 0;
+                left: auto !important;
+            }
+        }
     }
     .error-tooltip {
         font-family: "Avenir Next", Arial, serif;

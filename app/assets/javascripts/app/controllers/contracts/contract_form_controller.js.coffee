@@ -1,9 +1,9 @@
 @app.controller "ContractFormController", [
-    '$scope', '$modalInstance', '$location', 'Contract', 'Deal', 'Client', 'Publisher', 'Currency', 'Field', 'HoldingCompany'
-    ($scope,   $modalInstance,   $location,   Contract,   Deal,   Client,   Publisher,   Currency,   Field,   HoldingCompany) ->
+    '$scope', '$modalInstance', '$location', 'Contract', 'Deal', 'Client', 'Publisher', 'Currency', 'Field', 'HoldingCompany', 'contract'
+    ($scope,   $modalInstance,   $location,   Contract,   Deal,   Client,   Publisher,   Currency,   Field,   HoldingCompany,   contract) ->
 
-        $scope.formType = "New"
-        $scope.submitText = "Create"
+        $scope.formType = if contract then 'Edit' else 'New'
+        $scope.submitText = if contract then 'Save' else 'Create'
         $scope.currencies = []
         $scope.types = []
         $scope.statuses = []
@@ -13,6 +13,13 @@
             auto_renew: false
             auto_notifications: false
 
+        if contract
+            console.log contract
+            $scope.form = contract
+            $scope.form.curr_cd = contract.currency.curr_cd if contract.currency
+            $scope.form.type_id = contract.type.id if contract.type
+            $scope.form.status_id = contract.status.id if contract.status
+            $scope.form.holding_company_id = contract.holding_company.id if contract.holding_company
 
         $scope.cancel = ->
             $modalInstance.dismiss()
@@ -37,9 +44,13 @@
             form.agency_id = form.agency.id if form.agency
             form.publisher_id = form.publisher.id if form.publisher
             form = _.omit form, 'deal', 'advertiser', 'agency', 'publisher'
-            Contract.create(form).then (contract) ->
-                $modalInstance.close(contract)
-                $location.path("/contracts/#{contract.id}")
+            if contract
+                Contract.update(form).then (contract) ->
+                    $modalInstance.close(contract)
+            else
+                Contract.create(form).then (contract) ->
+                    $modalInstance.close(contract)
+                    $location.path("/contracts/#{contract.id}")
 
         Currency.active_currencies().then (data) ->
             $scope.currencies = data
