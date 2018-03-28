@@ -17,7 +17,7 @@ class Cost < ActiveRecord::Base
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
 
   after_create do
-    Cost::AmountsGenerateService.new(self).perform if cost_monthly_amounts.count == 0
+    Cost::AmountsGenerateService.new(self).perform if cost_monthly_amounts.empty?
   end
 
   after_destroy do
