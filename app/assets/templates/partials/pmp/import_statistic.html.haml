@@ -16,7 +16,6 @@
           %span.mr8 {{ stat.created_at | date: 'medium' : 'PDT' }}
         %td{{style:"text-transform: uppercase;"}}
           %span.mr8 {{ stat.source }}
-
       %tr{ ng: { if: '!importStatistics || importStatistics.length == 0' } }
         %td.center{ 'colspan': '4' }
           No data available
