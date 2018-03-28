@@ -59,15 +59,6 @@ class Api::BillingSummaryController < ApplicationController
     end
   end
 
-  def copy_cost
-    new_cost = Cost::CloneService.new(cost).perform
-    if new_cost
-      render json: new_cost, serializer: BillingSummary::CostSerializer
-    else
-      render json: { errors: new_cost.errors.messages }, status: :unprocessable_entity
-    end
-  end
-
   def export
     respond_to do |format|
       format.csv { send_data billing_summary_csv_report,

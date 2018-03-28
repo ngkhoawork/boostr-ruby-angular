@@ -110,7 +110,6 @@
             %tr{'ng-repeat': 'item in costs | orderBy : zSort.by : zSort.rev'}
               %td
                 %b {{item.io_number}}
-                %i.fa.fa-copy.z-icon.edit-product{'ng-click': 'copyCost(item); $event.stopPropagation()'}
               %td
                 %a{href: '', 'ng-href': '/revenue/ios/{{item.io_id}}'} {{item.io_name}}
               %td
