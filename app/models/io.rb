@@ -10,10 +10,6 @@ class Io < ActiveRecord::Base
 
   has_many :io_members, dependent: :destroy
   has_many :users, dependent: :destroy, through: :io_members
-
-  has_many :sellers, -> { where(users: { user_type: [SELLER, SALES_MANAGER] }) }, through: :io_members, source: :user
-  has_many :account_managers, -> { where(users: { user_type: [ACCOUNT_MANAGER, MANAGER_ACCOUNT_MANAGER] }) }, through: :io_members, source: :user
-
   has_many :content_fees, dependent: :destroy
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
   has_many :costs, dependent: :destroy

@@ -1,5 +1,4 @@
 class CostMonthlyAmount < ActiveRecord::Base
-  PENDING = 'Pending'.freeze
   belongs_to :cost
 
   delegate :io, to: :cost

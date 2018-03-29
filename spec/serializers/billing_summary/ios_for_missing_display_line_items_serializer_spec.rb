@@ -7,7 +7,6 @@ describe BillingSummary::IosForMissingDisplayLineItemsSerializer do
   end
 
   it 'has proper serialized data' do
-    expect(serializer[:id]).to eql io.id
     expect(serializer[:io_number]).to eql io.io_number
     expect(serializer[:name]).to eql io.name
     expect(serializer[:advertiser_name]).to eql advertiser.name
