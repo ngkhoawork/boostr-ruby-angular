@@ -21,8 +21,11 @@ class Api::ApiConfigurationsController < ApplicationController
     api_configuration_service = ApiConfigurationService.new(current_user: current_user, params: api_configuration_params)
 
     if api_configuration = api_configuration_service.create_api_configuration
-      render json: API::ApiConfigurations::Single.new(api_configuration) unless api_configuration.kind_of?(SspCredential)
-      render json: api_configuration, serialize: SspCredentialSerializer
+      if api_configuration.kind_of?(SspCredential)
+        render json: api_configuration, serialize: SspCredentialSerializer
+      else
+        render json: API::ApiConfigurations::Single.new(api_configuration)
+      end
     else
       render json: { errors: api_configuration.errors.messages }, status: :unprocessable_entity
     end
