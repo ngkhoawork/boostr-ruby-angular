@@ -22,11 +22,6 @@
       method: 'GET'
       url: '/api/teams/:id/members'
     }
-    all_account_managers: {
-      method: 'GET'
-      url: '/api/teams/all_account_managers'
-      isArray: true
-    }
 
   collection = $resource '/api/teams/all_members'
 
@@ -49,12 +44,6 @@
   @members = (team_id) ->
     deferred = $q.defer()
     resource.members id: team_id, (members) ->
-      deferred.resolve(members)
-    deferred.promise
-
-  @all_account_managers = (params) ->
-    deferred = $q.defer()
-    resource.all_account_managers params, (members) ->
       deferred.resolve(members)
     deferred.promise
 

@@ -20,10 +20,6 @@
                 color: $secondary-font-color;
                 text-align: center;
             }
-
-            &.right {
-                margin: 0 0 0 auto;
-            }
         }
     }
     .main-title {
@@ -67,58 +63,15 @@
                 }
             }
         }
-
-        .dropdown.wide {
-            min-width: 220px;
-        }
-        .team-filter {
-            display: inline-block;
-            margin-right: 30px;
-
-            .tree-dropdown.team-list {
-                width: 200px;
-                height: 40px;
-            
-                .select {
-                    height: 40px;
-                    border-radius: 5px;
-                    border-color: #d0d2d3;
-                    background-color: #F6F8FA;
-                    &:hover {
-                        background-color: #FFFFFF;
-                        color: #58656f;
-                    }
-                    &::after {
-                        top: 18px;
-                        &:hover {
-                            border-color: #58656f;
-                        }
-                    }
-                }
-                .select p {
-                    line-height: 40px;
-                }
-
-                .list {
-                    top: 41px;
-                    p {
-                        &:hover {
-                            color: #FF7E30;
-                        }
-                    }
-                    p.selected {
-                        background-color: #FF7E30;
-                        color: #FFFFFF;
-                    }
-                }
-            }
-        }
     }
     .not-editable {
         padding: 5px 10px;
     }
     .table-wrap {
         overflow-x: auto;
+    }
+    form.editable-wrap {
+        width: 100px;
     }
     .editable, .editable-input {
         padding: 5px 10px;
@@ -135,10 +88,6 @@
         cursor: text;
         width: 100px;
         border: 1px dashed $secondary-font-color;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
     }
 
     table.table {

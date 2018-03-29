@@ -361,7 +361,6 @@ Rails.application.routes.draw do
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
       collection do
         get :all_members
-        get :all_account_managers
       end
       get :members
       get :all_sales_reps
@@ -478,18 +477,12 @@ Rails.application.routes.draw do
     end
     resources :billing_summary, only: [:index] do
       member do
-        put :update_cost
-        put :copy_cost
-        put :update_cost_budget
         put :update_quantity
         put :update_content_fee_product_budget
         put :update_display_line_item_budget_billing_status
       end
 
-      get 'costs', on: :collection
-
       get :export, on: :collection
-      get :export_cost_budgets, on: :collection
     end
     resources :requests, only: [:index, :show, :create, :update, :destroy]
 

@@ -9,10 +9,6 @@ class Api::BillingSummaryController < ApplicationController
     }
   end
 
-  def costs
-    render json: billing_cost_budgets_serializer
-  end
-
   def update_quantity
     if display_line_item_budget.update(display_line_item_budget_params)
       update_display_line_item_budget
@@ -43,83 +39,21 @@ class Api::BillingSummaryController < ApplicationController
     end
   end
 
-  def update_cost_budget
-    if cost_budget.update(cost_budget_params)
-      render json: cost_budget.reload, serializer: BillingSummary::CostBudgetSerializer
-    else
-      render json: { errors: cost_budget.errors.messages }, status: :unprocessable_entity
-    end
-  end
-
-  def update_cost
-    if cost.update(cost_params)
-      render json: cost.reload, serializer: BillingSummary::CostSerializer
-    else
-      render json: { errors: cost.errors.messages }, status: :unprocessable_entity
-    end
-  end
-
-  def copy_cost
-    new_cost = Cost::CloneService.new(cost).perform
-    if new_cost
-      render json: new_cost, serializer: BillingSummary::CostSerializer
-    else
-      render json: { errors: new_cost.errors.messages }, status: :unprocessable_entity
-    end
-  end
-
   def export
     respond_to do |format|
       format.csv { send_data billing_summary_csv_report,
-                   filename: "billing-summary-revenue-#{params[:month]}-#{params[:year]}.csv" }
-    end
-  end
-
-  def export_cost_budgets
-    respond_to do |format|
-      format.csv { send_data billing_summary_cost_budgets_csv_report,
-                   filename: "billing-summary-costs-#{params[:month]}-#{params[:year]}.csv" }
+                   filename: "billing-summary-#{params[:month]}-#{params[:year]}.csv" }
     end
   end
 
   private
-
-  def billing_summary_cost_budgets_csv_report
-    Csv::BillingCostBudgetsService.new(company, billing_cost_budgets_data).perform
-  end
-
-  def billing_cost_budgets_serializer
-    ActiveModel::ArraySerializer.new(
-      billing_cost_budgets_data,
-      each_serializer: BillingSummary::CostBudgetSerializer
-    )
-  end
-
-  def billing_cost_budgets_data
-    BillingCostBudgetsQuery.new(billing_cost_budgets_params).perform
-  end
-
-  def billing_cost_budgets_params
-    params
-      .permit(
-        :year,
-        :month,
-        :team_id,
-        :user_id,
-        :product_id,
-        :product_family_id,
-        :manager_id
-      )
-      .merge(company_id: current_user.company_id)
-  end
 
   def ios_for_approval_serializer
     ActiveModel::ArraySerializer.new(
       company.ios,
       each_serializer: BillingSummary::IosForApprovalSerializer,
       start_date: start_date,
-      end_date: end_date,
-      product_ids: product_ids
+      end_date: end_date
     )
   end
 
@@ -148,22 +82,16 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def display_line_items_without_budgets_by_date
-    DisplayLineItem
-      .by_period_without_budgets(start_date, end_date, ios_for_time_period.ids)
-      .for_product_ids(product_ids)
+    DisplayLineItem.by_period_without_budgets(start_date, end_date, ios_for_time_period.ids)
   end
 
   def display_line_items_with_budgets_by_date
-    DisplayLineItem
-      .by_period_with_budgets(start_date, end_date, ios_for_time_period.ids)
-      .for_product_ids(product_ids)
+    DisplayLineItem.by_period_with_budgets(start_date, end_date, ios_for_time_period.ids)
   end
 
   def ios_missing_monthly_actual
     (display_line_items_without_budgets_by_date - display_line_items_with_budgets_by_date) +
-    DisplayLineItem
-      .by_period_without_display_line_item_budgets(start_date, end_date, ios_for_time_period.ids)
-      .for_product_ids(product_ids)
+    DisplayLineItem.by_period_without_display_line_item_budgets(start_date, end_date, ios_for_time_period.ids)
   end
 
   def ios_for_time_period
@@ -187,30 +115,6 @@ class Api::BillingSummaryController < ApplicationController
     @_company ||= current_user.company
   end
 
-  def cost_budget
-    @_cost_budget ||= CostMonthlyAmount.find(params[:id])
-  end
-
-  def cost
-    @_cost ||= Cost.find(params[:id])
-  end
-
-  def product_ids
-    @_product_ids ||= if product
-      [product.id]
-    elsif product_family
-      product_family.products.map(&:id)
-    end
-  end
-
-  def product
-    @_product ||= Product.find_by(id: params[:product_id])
-  end
-
-  def product_family
-    @_product_family ||= ProductFamily.find_by(id: params[:product_family_id])
-  end
-
   def display_line_item
     @_display_line_item ||= display_line_item_budget.display_line_item
   end
@@ -225,26 +129,6 @@ class Api::BillingSummaryController < ApplicationController
 
   def content_fee
     @_content_fee ||= content_fee_product_budget.content_fee
-  end
-
-  def cost_budget_params
-    params.require(:cost_budget).permit(:budget_loc, :actual_status)
-  end
-
-  def cost_params
-    params.require(:cost).permit(
-      :budget_loc,
-      :product_id,
-      :type,
-      {
-        values_attributes: [
-          :id,
-          :field_id,
-          :option_id,
-          :value
-        ],
-      }
-    )
   end
 
   def display_line_item_budget_params

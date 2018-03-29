@@ -1,6 +1,5 @@
 class Cost < ActiveRecord::Base
   attr_accessor :imported
-  attr_accessor :skip_callback
 
   belongs_to :io
   belongs_to :product
@@ -18,7 +17,7 @@ class Cost < ActiveRecord::Base
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
 
   after_create do
-    Cost::AmountsGenerateService.new(self).perform unless skip_callback || cost_monthly_amounts.count > 0
+    Cost::AmountsGenerateService.new(self).perform if cost_monthly_amounts.count == 0
   end
 
   after_destroy do
@@ -26,13 +25,12 @@ class Cost < ActiveRecord::Base
   end
 
   after_update do
-    update_cost_or_monthly_budget unless skip_callback
+    update_cost_or_monthly_budget
   end
 
   set_callback :save, :after, :update_revenue_fact_callback
 
   def update_revenue_fact_callback
-    return if skip_callback
     update_revenue_budget if budget_changed? || budget_loc_changed?
     if product_id_changed?
       if product_id_was.present?
