@@ -418,11 +418,12 @@ class DisplayLineItem < ActiveRecord::Base
       ad_server_product = nil
 
       if row[12]
+        product_full_name = row[12].strip + ' ' + row[13].strip + ' ' + row[14].strip
         products = current_user
                        .company
                        .products
                        .joins(:ad_units)
-                       .where('products.name ilike :product_name OR ad_units.name ilike :product_name', product_name: row[12].strip)
+                       .where('products.full_name ilike :product_full_name OR ad_units.name ilike :product_name', product_name: row[12].strip, product_full_name: product_full_name)
         if products.count > 0
           product_id = products.first.id
           ad_server_product = row[12].strip
@@ -438,8 +439,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty = nil
-      if row[13]
-        qty = Integer(row[13].strip) rescue false
+      if row[15]
+        qty = Integer(row[15].strip) rescue false
         unless qty
           import_log.count_failed
           import_log.log_error(["Qty must be a numeric value"])
@@ -451,13 +452,13 @@ class DisplayLineItem < ActiveRecord::Base
         next
       end
 
-      price = row[14]
-      pricing_type = row[15]
+      price = row[16]
+      pricing_type = row[17]
 
       budget = nil
       budget_loc = nil
-      if row[16]
-        budget = Float(row[16].strip) rescue false
+      if row[18]
+        budget = Float(row[18].strip) rescue false
         budget_loc = budget
         unless budget
           import_log.count_failed
@@ -472,8 +473,8 @@ class DisplayLineItem < ActiveRecord::Base
 
       budget_delivered = nil
       budget_delivered_loc = nil
-      if row[17]
-        budget_delivered = Float(row[17].strip) rescue false
+      if row[19]
+        budget_delivered = Float(row[19].strip) rescue false
         budget_delivered_loc = budget_delivered
         unless budget_delivered
           import_log.count_failed
@@ -484,8 +485,8 @@ class DisplayLineItem < ActiveRecord::Base
 
       budget_remaining = nil
       budget_remaining_loc = nil
-      if row[18]
-        budget_remaining = Float(row[18].strip) rescue false
+      if row[20]
+        budget_remaining = Float(row[20].strip) rescue false
         budget_remaining_loc = budget_remaining
         unless budget_remaining
           import_log.count_failed
@@ -495,8 +496,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_delivered = nil
-      if row[19]
-        qty_delivered = Float(row[19].strip) rescue false
+      if row[21]
+        qty_delivered = Float(row[21].strip) rescue false
         unless qty_delivered
           import_log.count_failed
           import_log.log_error(["Qty Delivered must be a numeric value"])
@@ -505,8 +506,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_remaining = nil
-      if row[20]
-        qty_remaining = Float(row[20].strip) rescue false
+      if row[22]
+        qty_remaining = Float(row[22].strip) rescue false
         unless qty_remaining
           import_log.count_failed
           import_log.log_error(["Qty Remaining must be a numeric value"])
@@ -515,8 +516,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_delivered_3p = nil
-      if row[21]
-        qty_delivered_3p = Float(row[21].strip) rescue false
+      if row[23]
+        qty_delivered_3p = Float(row[23].strip) rescue false
         unless qty_delivered_3p
           import_log.count_failed
           import_log.log_error(["3P Qty Delivered must be a numeric value"])
@@ -525,8 +526,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_remaining_3p = nil
-      if row[22]
-        qty_remaining_3p = Float(row[22].strip) rescue false
+      if row[24]
+        qty_remaining_3p = Float(row[24].strip) rescue false
         unless qty_remaining_3p
           import_log.count_failed
           import_log.log_error(["3P Qty Remaining must be a numeric value"])
@@ -536,8 +537,8 @@ class DisplayLineItem < ActiveRecord::Base
 
       budget_delivered_3p = nil
       budget_delivered_3p_loc = nil
-      if row[23]
-        budget_delivered_3p = Float(row[23].strip) rescue false
+      if row[25]
+        budget_delivered_3p = Float(row[25].strip) rescue false
         budget_delivered_3p_loc = budget_delivered_3p
         unless budget_delivered_3p
           import_log.count_failed
@@ -548,8 +549,8 @@ class DisplayLineItem < ActiveRecord::Base
 
       budget_remaining_3p = nil
       budget_remaining_3p_loc = nil
-      if row[24]
-        budget_remaining_3p = Float(row[24].strip) rescue false
+      if row[26]
+        budget_remaining_3p = Float(row[26].strip) rescue false
         budget_remaining_3p_loc = budget_remaining_3p
         unless budget_remaining_3p
           import_log.count_failed
