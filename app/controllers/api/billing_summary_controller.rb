@@ -270,8 +270,10 @@ class Api::BillingSummaryController < ApplicationController
       { budget: (content_fee_product_budget.budget_loc / content_fee.io.exchange_rate).to_i }
     )
 
-    content_fee.update_column(:budget, content_fee.content_fee_product_budgets.pluck(:budget).sum)
-    content_fee.update_column(:budget_loc, content_fee.content_fee_product_budgets.pluck(:budget_loc).sum)
+    content_fee.update(
+      budget: content_fee.content_fee_product_budgets.pluck(:budget).sum,
+      budget_loc: content_fee.content_fee_product_budgets.pluck(:budget_loc).sum
+    )
 
     content_fee.io.update(
       { budget: (content_fee.io.content_fees.pluck(:budget).sum +
