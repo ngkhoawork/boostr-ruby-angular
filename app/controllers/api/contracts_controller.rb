@@ -1,6 +1,4 @@
 class Api::ContractsController < ApplicationController
-  respond_to :json
-
   rescue_from ApplicationPolicy::NotAuthorizedError, with: :forbidden_response
 
   def index
@@ -42,9 +40,12 @@ class Api::ContractsController < ApplicationController
   def destroy
     authorize!
 
-    resource.destroy
-
-    render nothing: true
+    if resource.destroy
+      render nothing: true
+    else
+      render json: { errors: resource.errors.messages },
+             status: :unprocessable_entity
+    end
   end
 
   def settings

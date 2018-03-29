@@ -442,7 +442,7 @@ RSpec.describe Api::ContractsController, type: :controller do
   end
 
   def type_field
-    @_type_field ||= company.fields.find_by!(subject_type: 'Contract', name: 'Type')
+    @_type_field ||= create(:field, subject_type: 'Contract', name: 'Type', company: company)
   end
 
   def type_option
@@ -454,7 +454,7 @@ RSpec.describe Api::ContractsController, type: :controller do
   end
 
   def status_field
-    @_status_field ||= company.fields.find_by!(subject_type: 'Contract', name: 'Status')
+    @_status_field ||= create(:field, subject_type: 'Contract', name: 'Status', company: company)
   end
 
   def status_option

@@ -534,6 +534,12 @@ Rails.application.routes.draw do
       resources :attachments, only: [:index, :update, :create, :destroy]
       get :settings, on: :collection
     end
+
+    resources :ealert_templates, only: [:show, :update], param: :type do
+      member do
+        post :send_ealert
+      end
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'

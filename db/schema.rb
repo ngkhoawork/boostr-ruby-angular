@@ -1457,6 +1457,26 @@ ActiveRecord::Schema.define(version: 20180303003530) do
   add_index "ealert_stages", ["ealert_id"], name: "index_ealert_stages_on_ealert_id", using: :btree
   add_index "ealert_stages", ["stage_id"], name: "index_ealert_stages_on_stage_id", using: :btree
 
+  create_table "ealert_template_fields", force: :cascade do |t|
+    t.integer  "ealert_template_id", null: false
+    t.string   "name"
+    t.integer  "position"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "ealert_template_fields", ["ealert_template_id", "position"], name: "index_ealert_template_fields_on_ealert_template_id_and_position", unique: true, using: :btree
+
+  create_table "ealert_templates", force: :cascade do |t|
+    t.integer  "company_id",              null: false
+    t.string   "type"
+    t.string   "recipients", default: [],              array: true
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "ealert_templates", ["company_id", "type"], name: "index_ealert_templates_on_company_id_and_type", unique: true, using: :btree
+
   create_table "ealerts", force: :cascade do |t|
     t.integer  "company_id"
     t.string   "recipients"

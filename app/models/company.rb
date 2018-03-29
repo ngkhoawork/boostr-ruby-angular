@@ -34,6 +34,7 @@ class Company < ActiveRecord::Base
   has_many :bps
   has_many :assets, dependent: :destroy
   has_many :ealerts, dependent: :destroy
+  has_many :ealert_templates, class_name: 'EalertTemplate::Base', dependent: :destroy
   has_many :bp_estimates, through: :bps
   has_many :deal_custom_field_names
   has_many :deal_product_cf_names
