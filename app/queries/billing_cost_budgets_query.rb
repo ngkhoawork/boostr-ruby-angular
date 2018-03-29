@@ -7,6 +7,7 @@ class BillingCostBudgetsQuery < BaseQuery
       .join_users
       .by_company_id(options[:company_id])
       .by_member_ids(member_ids)
+      .by_seller_manager(seller_id, manager_id)
       .by_product_ids(product_ids)
       .by_year_month(date)
       .distinct
@@ -33,8 +34,8 @@ class BillingCostBudgetsQuery < BaseQuery
       .extending(Scopes)
   end
 
-  def user
-    @user ||= User.find_by(id: options[:user_id])
+  def seller
+    @seller ||= User.find_by(id: options[:user_id])
   end
 
   def manager
@@ -43,33 +44,6 @@ class BillingCostBudgetsQuery < BaseQuery
 
   def team
     @team ||= Team.find_by(id: options[:team_id])
-  end
-
-  def member_ids
-    member_ids = []
-    member_ids += user_ids if user_ids
-    member_ids += manager_ids if manager_ids
-    if member_ids.count > 0
-      member_ids.uniq
-    else
-      nil
-    end
-  end
-
-  def user_ids
-    @_user_ids ||= if user
-      [user.id]
-    else
-      teams.map(&:all_sales_reps).flatten.map(&:id)
-    end
-  end
-
-  def manager_ids
-    @_manager_ids ||= if manager
-      [manager.id]
-    else
-      teams.map(&:all_account_managers).flatten.map(&:id)
-    end
   end
 
   def teams
@@ -82,6 +56,45 @@ class BillingCostBudgetsQuery < BaseQuery
 
   def root_teams
     @_root_teams ||= company.teams.roots(true)
+  end
+
+  def member_ids
+    member_ids = []
+    member_ids += seller_ids if seller_ids
+    member_ids += manager_ids if manager_ids
+    if member_ids.count > 0
+      member_ids.uniq
+    else
+      nil
+    end
+  end
+
+  def seller_ids
+    @_seller_ids ||= if seller
+      [seller.id]
+    elsif team
+      team.all_sales_reps.map(&:id)
+    else
+      teams.map(&:all_sales_reps).flatten.map(&:id)
+    end
+  end
+
+  def manager_ids
+    @_manager_ids ||= if manager
+      [manager.id]
+    elsif team
+      team.all_account_managers.map(&:id)
+    else
+      company.users.by_user_type([ACCOUNT_MANAGER, MANAGER_ACCOUNT_MANAGER]).map(&:id)
+    end
+  end
+
+  def manager_id
+    @_manager_id ||= manager&.id
+  end
+
+  def seller_id
+    @_seller_id ||= seller&.id
   end
 
   def company
@@ -145,6 +158,19 @@ class BillingCostBudgetsQuery < BaseQuery
       joins('INNER JOIN users ON users.id = io_members.user_id')
     end
 
+    def by_seller_manager(seller_id, manager_id)
+      user_ids = [seller_id, manager_id].compact
+      if user_ids.empty?
+        self
+      else
+        io_ids = IoMember.by_user_ids(user_ids)
+                .group(:io_id)
+                .having('count(distinct user_id) >= ?', user_ids.count)
+                .pluck(:io_id)
+        where(costs: { io_id: io_ids })
+      end
+    end
+
     def by_member_ids(member_ids)
       if member_ids
         where(io_members: { user_id: member_ids })
@@ -154,7 +180,6 @@ class BillingCostBudgetsQuery < BaseQuery
     end
     def by_product_ids(product_ids)
       if product_ids
-        # self
         where(costs: { product_id: product_ids })
       else
         self
