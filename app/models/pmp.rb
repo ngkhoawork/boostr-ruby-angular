@@ -26,7 +26,7 @@ class Pmp < ActiveRecord::Base
   scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) if (start_date && end_date).present? }
   scope :for_time_period, -> (start_date, end_date) { where('pmps.start_date <= ? AND pmps.end_date >= ?', end_date, start_date) }
   scope :by_user, -> (user) { includes(:pmp_members).where('pmp_members.user_id = ?', user.id) }
-  scope :without_advertiser, -> { where('advertiser_id IS NULL OR ssp_advertiser_id IS NULL') }
+  scope :without_advertiser, -> { where(advertiser_id: nil) }
   scope :no_match_advertiser, -> (ssp_advertiser_id) { where(ssp_advertiser_id: ssp_advertiser_id, advertiser_id: nil) }
 
   before_create :set_budget_remaining_and_delivered

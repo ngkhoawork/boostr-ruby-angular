@@ -26,13 +26,16 @@ class Csv::ActivePmpObject
   private
 
   def record
-    Pmp.new(active_pmp_object_params)
+    Pmp.new(check_advertiser.present? ? active_pmp_object_params : active_pmp_object_params.merge!(ssp_advertiser: ssp_advertiser))
+  end
+
+  def account
+    ::Client.find_or_create_by(name: 'Multi-Buyer', company_id: company_id)
   end
 
   def check_advertiser
-    if is_multibuyer.eql?("yes")
-      account = ::Client.find_or_create_by(name: 'Multi-Buyer', company_id: company_id)
-      account.update_attribute(:is_multibuyer, true) unless account.is_multibuyer
+    if is_multibuyer.eql?('yes')
+      account.update_attribute(:is_multibuyer, true) if account.is_multibuyer.blank?
       account.id
     else
       ::Client.find_by(name: advertiser,company_id: company_id)&.id
@@ -44,23 +47,23 @@ class Csv::ActivePmpObject
   end
 
   def check_agency
-    ::Client.find_by(name: agency,company_id: company_id).id if agency.present? && agency != 'No Agency'
+    ::Client.find_by(name: agency,company_id: company_id)&.id if agency.present? && agency != 'No Agency'
   end
 
   def create_pmp_members
     members = []
 
-    raise_error("Team members") unless team.present?
+    raise_error("Team members") if team.blank?
 
     emails = team.split(';')
 
-    return members unless emails.present?
+    return members if emails.blank?
 
     emails.each do |email|
       user_email, user_share = email.split('/')
 
-      raise "Team member #{user_email} share field" unless user_share.present?
-      raise "Team Split must add up to either 0 or 100" unless user_share.to_i == 0 || user_share.to_i == 100
+      raise "Team member #{user_email} share field" if user_share.blank?
+      raise "Team Split must add up to either 0 or 100" unless user_share.to_i.zero? || user_share.to_i == 100
 
       if (user = search_user(user_email))
         members << PmpMember.new(
@@ -80,7 +83,7 @@ class Csv::ActivePmpObject
   end
 
   def active_pmp_object_params
-    params = {
+    {
       name: name,
       advertiser_id: check_advertiser,
       agency_id: check_agency,
@@ -90,11 +93,6 @@ class Csv::ActivePmpObject
       pmp_members: create_pmp_members,
       skip_callback: true
     }
-
-    unless check_advertiser.present?
-      params.merge!(ssp_advertiser: ssp_advertiser)
-    end
-    params
   end
 
 end
