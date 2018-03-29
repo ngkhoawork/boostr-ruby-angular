@@ -8,7 +8,8 @@ class Csv::ActivePmpObject
                 :start_date,
                 :end_date,
                 :company_id,
-                :team
+                :team,
+                :is_multibuyer
 
   validates :name, :team, :company_id, presence: true
 
@@ -29,7 +30,13 @@ class Csv::ActivePmpObject
   end
 
   def check_advertiser
-    ::Client.find_by(name: advertiser,company_id: company_id)&.id
+    if is_multibuyer.eql?("yes")
+      account = ::Client.find_or_create_by(name: 'Multi-Buyer', company_id: company_id)
+      account.update_attribute(:is_multibuyer, true) unless account.is_multibuyer
+      account.id
+    else
+      ::Client.find_by(name: advertiser,company_id: company_id)&.id
+    end
   end
 
   def ssp_advertiser
@@ -87,6 +94,7 @@ class Csv::ActivePmpObject
     unless check_advertiser.present?
       params.merge!(ssp_advertiser: ssp_advertiser)
     end
+    params
   end
 
 end
