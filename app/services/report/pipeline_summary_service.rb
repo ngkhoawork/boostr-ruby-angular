@@ -1,8 +1,11 @@
 class Report::PipelineSummaryService
   def initialize(company, params)
     @company             = company
-    @team_id             = params[:team_id]
     @seller_id           = params[:seller_id]
+    @team_id             =
+      if params[:seller_id].nil?
+        params[:team_id]
+      end
     @stage_ids           = params[:stage_ids]
     @type_id             = params[:type_id]
     @source_id           = params[:source_id]
