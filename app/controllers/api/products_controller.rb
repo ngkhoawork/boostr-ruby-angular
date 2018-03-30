@@ -5,6 +5,7 @@ class Api::ProductsController < ApplicationController
     products = company.products
                     .by_revenue_type(params[:revenue_type])
                     .by_product_family(params[:product_family_id])
+                    .by_level(params[:level])
     if params[:active] == 'true'
       products = products.active
     end

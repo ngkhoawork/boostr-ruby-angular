@@ -18,7 +18,7 @@ class Csv::IoCostDecorator
   end
 
   def product_name
-    product&.level0&.name
+    product&.level0&.[]('name')
   end
 
   def type
@@ -51,9 +51,9 @@ class Csv::IoCostDecorator
 
   def method_missing(name)
     if company.product_options_enabled && name.eql?(product_option1)
-      product&.level1&.name
+      product&.level1&.[]('name')
     elsif company.product_options_enabled && name.eql?(product_option2)
-      product&.level2&.name
+      product&.level2&.[]('name')
     end
   end
 

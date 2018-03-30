@@ -22,7 +22,7 @@
             user: CurrentUser.get().$promise
             sellers: Seller.query({id: 'all'}).$promise
             timePeriods: TimePeriod.all()
-            products: Product.all()
+            products: Product.all({active: true, level: 0})
             stages: Stage.query().$promise
             productFamilies: ProductFamily.all(active: true)
         ).then (data) ->

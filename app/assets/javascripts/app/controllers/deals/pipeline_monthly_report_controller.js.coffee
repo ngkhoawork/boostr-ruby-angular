@@ -19,7 +19,7 @@
 
       DealCustomFieldName.all().then (dealCustomFieldNames) ->
         $scope.dealCustomFieldNames = dealCustomFieldNames
-      Product.all().then (products) ->
+      Product.all({active: true, level: 0}).then (products) ->
         $scope.products = products
 
       Field.defaults({}, 'Deal').then (fields) ->

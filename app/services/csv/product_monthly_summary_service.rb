@@ -25,6 +25,10 @@ class Csv::ProductMonthlySummaryService < Csv::BaseService
 
   def headers
     headers = ['Product']
+    if company.product_options_enabled
+      headers << company.product_option1
+      headers << company.product_option2
+    end
     headers += custom_headers
     headers.concat [
       'Record Type',

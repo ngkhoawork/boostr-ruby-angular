@@ -36,7 +36,8 @@ class Product < ActiveRecord::Base
   scope :active, -> { joins('LEFT JOIN product_families ON products.product_family_id = product_families.id').where('products.active IS true AND (product_families.active IS true OR products.product_family_id IS NULL)') }
   scope :by_revenue_type, -> (revenue_type) { where('revenue_type = ?', revenue_type) if revenue_type }
   scope :by_product_family, -> (product_family_id) { where('product_family_id = ?', product_family_id) if product_family_id }
-
+  scope :by_level, -> (level) { where(level: level) unless level.nil? }
+  
   before_save do
     set_top_parent
     set_level
@@ -96,6 +97,11 @@ class Product < ActiveRecord::Base
           include: [:option], 
           methods: [:value] 
         }
+      ],
+      methods: [
+        :level0,
+        :level1,
+        :level2
       ]
     ))
   end
@@ -177,27 +183,31 @@ class Product < ActiveRecord::Base
 
   def level0
     if level == 0
-      self
+      id_name_hash(self)
     else
-      top_parent
+      id_name_hash(top_parent)
     end
   end
 
   def level1
     if level == 1
-      self
+      id_name_hash(self)
     elsif level == 2
-      parent
+      id_name_hash(parent)
     end
   end
 
   def level2
     if level == 2
-      self
+      id_name_hash(self)
     end
   end
 
   private
+
+  def id_name_hash(obj)
+    obj.serializable_hash(only: [:id, :name]) rescue nil
+  end
 
   def set_top_parent
     if parent_id.present?

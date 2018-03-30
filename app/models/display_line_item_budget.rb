@@ -104,10 +104,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
             line << io.io_number
             line << io.name
             line << io.advertiser&.name
-            line << content_fee.product&.level0&.name
+            line << content_fee.product&.level0&.[]('name')
             if company.product_options_enabled
-              line << content_fee.product&.level1&.name
-              line << content_fee.product&.level2&.name
+              line << content_fee.product&.level1&.[]('name')
+              line << content_fee.product&.level2&.[]('name')
             end
             line << (cfpb.budget_loc&.round || 0)
             line << cfpb.start_date

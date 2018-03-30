@@ -92,7 +92,7 @@
             #init query
             $scope.isTeamsNamesInWinRateTable = true
 
-            Product.all().then (products) ->
+            Product.all({active: true}).then (products) ->
                 $scope.productsList = products
                 $scope.productsList.unshift({name:'All', id:'all'})
 

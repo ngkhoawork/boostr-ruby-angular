@@ -260,7 +260,7 @@
     for month in $scope.currentDeal.months
       $scope.deal_product.deal_product_budgets.push({ budget_loc: '' })
     $scope.showProductForm = !$scope.showProductForm
-    Product.all().then (products) ->
+    Product.all({active: true}).then (products) ->
       $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
 
 #==================add product form======================

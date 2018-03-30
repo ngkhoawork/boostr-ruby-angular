@@ -97,10 +97,10 @@ class DealProductBudget < ActiveRecord::Base
             line << deal.name
             line << (deal.stage.present? ? deal.stage.probability : nil)
             line << deal.advertiser.try(:name)
-            line << deal_product.product&.level0&.name
+            line << deal_product.product&.level0&.[]('name')
             if company.product_options_enabled
-              line << deal_product.product&.level1&.name
-              line << deal_product.product&.level2&.name
+              line << deal_product.product&.level1&.[]('name')
+              line << deal_product.product&.level2&.[]('name')
             end
             line << (dpb.budget_loc.try(:round) || 0)
             line << dpb.start_date

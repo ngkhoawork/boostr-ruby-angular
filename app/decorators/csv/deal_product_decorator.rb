@@ -43,7 +43,7 @@ class Csv::DealProductDecorator
   end
 
   def product_name
-    deal_product.product.level0.name rescue nil
+    deal_product.product.level0.[]('name') rescue nil
   end
 
   def product_budget
@@ -72,9 +72,9 @@ class Csv::DealProductDecorator
 
   def check_product_options(name)
     if company.product_options_enabled && name.eql?(product_option1)
-      deal_product.product&.level1&.name
+      deal_product.product&.level1&.[]('name')
     elsif company.product_options_enabled && name.eql?(product_option2)
-      deal_product.product&.level2&.name
+      deal_product.product&.level2&.[]('name')
     end
   end
 
