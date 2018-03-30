@@ -36,18 +36,25 @@ class DealProductBudget < ActiveRecord::Base
   end
 
   def self.to_csv(company_id)
+    company = Company.find(company_id)
     header = [
       :Deal_Id,
       :Deal_Name,
       :Deal_Percentage,
       :Advertiser,
-      :Product,
+      :Product
+    ]
+    if company.product_options_enabled
+      header << company.product_option1.to_sym
+      header << company.product_option2.to_sym
+    end
+    header += [
       :Budget,
       :Start_Date,
       :End_Date,
       :Budget_USD
     ]
-    deal_product_cf_names = Company.find(company_id).deal_product_cf_names.where("disabled IS NOT TRUE").order("position asc")
+    deal_product_cf_names = company.deal_product_cf_names.where("disabled IS NOT TRUE").order("position asc")
     deal_product_cf_names.each do |deal_product_cf_name|
       header << deal_product_cf_name.field_label
     end
@@ -90,7 +97,11 @@ class DealProductBudget < ActiveRecord::Base
             line << deal.name
             line << (deal.stage.present? ? deal.stage.probability : nil)
             line << deal.advertiser.try(:name)
-            line << deal_product.product.name
+            line << deal_product.product&.level0&.name
+            if company.product_options_enabled
+              line << deal_product.product&.level1&.name
+              line << deal_product.product&.level2&.name
+            end
             line << (dpb.budget_loc.try(:round) || 0)
             line << dpb.start_date
             line << dpb.end_date

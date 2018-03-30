@@ -13,12 +13,17 @@ class Csv::IoCostService < Csv::BaseService
   end
 
   def headers
-    [
+    headers = [
       'IO Number',
       'Cost ID',
       'Product ID',
-      'Product Name',
-      'Type',
+      'Product Name'
+    ]
+    if company.product_options_enabled
+      headers << company.product_option1
+      headers << company.product_option2
+    end
+    headers + ['Type',
       'Month',
       'Amount',
       'IO Name',

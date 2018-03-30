@@ -74,11 +74,18 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   def self.to_csv(company_id)
+    company = Company.find(company_id)
     header = [
       :IO_Num,
       :IO_Name,
       :Advertiser,
-      :Product,
+      :Product
+    ]
+    if company.product_options_enabled
+      header << company.product_option1.to_sym
+      header << company.product_option2.to_sym
+    end
+    header += [
       :Budget,
       :Start_Date,
       :End_Date,
@@ -96,13 +103,17 @@ class DisplayLineItemBudget < ActiveRecord::Base
             line = []
             line << io.io_number
             line << io.name
-            line << io.advertiser.try(:name)
-            line << content_fee.product.try(:name)
-            line << (cfpb.budget_loc.try(:round) || 0)
+            line << io.advertiser&.name
+            line << content_fee.product&.level0&.name
+            if company.product_options_enabled
+              line << content_fee.product&.level1&.name
+              line << content_fee.product&.level2&.name
+            end
+            line << (cfpb.budget_loc&.round || 0)
             line << cfpb.start_date
             line << cfpb.end_date
-            line << content_fee.product.try(:revenue_type)
-            line << (cfpb.budget.try(:round) || 0)
+            line << content_fee.product&.revenue_type
+            line << (cfpb.budget&.round || 0)
 
             csv << line
           end
@@ -115,13 +126,17 @@ class DisplayLineItemBudget < ActiveRecord::Base
             line = []
             line << io.io_number
             line << io.name
-            line << io.advertiser.try(:name)
-            line << display_line_item.product.try(:name)
-            line << (budget_loc.try(:round) || 0)
+            line << io.advertiser&.name
+            line << display_line_item.product&.name
+            if company.product_options_enabled
+              line << display_line_item.product&.level1&.name
+              line << display_line_item.product&.level2&.name
+            end
+            line << (budget_loc&.round || 0)
             line << dlib.start_date
             line << dlib.end_date
-            line << display_line_item.product.try(:revenue_type)
-            line << (budget_usd.try(:round) || 0)
+            line << display_line_item.product&.revenue_type
+            line << (budget_usd&.round || 0)
 
             csv << line
           end

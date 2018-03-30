@@ -175,6 +175,28 @@ class Product < ActiveRecord::Base
     end
   end
 
+  def level0
+    if level == 0
+      self
+    else
+      top_parent
+    end
+  end
+
+  def level1
+    if level == 1
+      self
+    elsif level == 2
+      parent
+    end
+  end
+
+  def level2
+    if level == 2
+      self
+    end
+  end
+
   private
 
   def set_top_parent

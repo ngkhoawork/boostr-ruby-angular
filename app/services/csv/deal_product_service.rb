@@ -17,10 +17,26 @@ class Csv::DealProductService < Csv::BaseService
   end
 
   def basic_headers
-    %w(
-      Deal_id Deal_name Advertiser Agency Deal_stage Deal_probability Deal_start_date Deal_end_date Deal_currency
-      Product_name Product_budget Product_budget_USD
-    )
+    headers = [
+      'Deal_id',
+      'Deal_name',
+      'Advertiser',
+      'Agency',
+      'Deal_stage',
+      'Deal_probability',
+      'Deal_start_date',
+      'Deal_end_date',
+      'Deal_currency',
+      'Product_name'
+    ]
+    if company.product_options_enabled
+      headers << company.product_option1
+      headers << company.product_option2
+    end
+    headers + [
+      'Product_budget',
+      'Product_budget_USD'
+    ]
   end
 
   def deal_product_cf_names
