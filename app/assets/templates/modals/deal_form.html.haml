@@ -69,6 +69,8 @@
                     %ui-select{ name: 'agency', ng: { model: 'deal.agency_id', disabled: true, keyup: 'searchClients($select.search, Agency)' }, 'on-select': 'agencySelected($model)' }
                         %ui-select-match{ placeholder: 'Agency' }
                             {{ $select.selected.name }}
+                            %span.clear-icon{'ng-click': 'removeAgency($event)'}
+                                %i.fa.fa-close
                         %ui-select-choices{ repeat: 'agency.id as agency in agencies' }
                             %div{ ng: { bind: { html: 'agency.name' } } }
                 %button.add-btn.plus-btn{type: 'button', 'ng-click': 'createNewClientModal()'}

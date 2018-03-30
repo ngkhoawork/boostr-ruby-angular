@@ -175,5 +175,10 @@
       $scope.stages = stages
       $scope.deal.stage_id = null
 
+  $scope.removeAgency = (e) ->
+    e.stopPropagation()
+    $scope.deal.agency_id = null
+    $scope.deal.agency = null
+
   $scope.init()
 ]
