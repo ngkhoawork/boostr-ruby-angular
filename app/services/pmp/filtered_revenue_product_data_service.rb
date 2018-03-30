@@ -49,7 +49,7 @@ class Pmp::FilteredRevenueProductDataService
   def pmp_item_budgets(pmp_item, pmp_member)
     total = [0, 0]
     share = pmp_member.share
-    pmp_actuals = pmp_item.pmp_item_daily_actuals
+    pmp_actuals = pmp_item.pmp_item_daily_actuals.oldest
 
     actual_start_date = pmp_actuals.first&.date || pmp_item.start_date
     actual_end_date = pmp_actuals.last&.date || pmp_item.start_date
@@ -118,7 +118,7 @@ class Pmp::FilteredRevenueProductDataService
   def pmp_item_run_rate(pmp_item)
     case pmp_item.pmp_type
       when 'guaranteed'
-        actual_end_date = pmp_item.pmp_item_daily_actuals.last&.date || pmp_item.start_date
+        actual_end_date = pmp_item.pmp_item_daily_actuals.oldest.last&.date || pmp_item.start_date
         remaining_days = [pmp_item.end_date - actual_end_date, 0].max
         remaining_budget = pmp_item.budget - pmp_item.pmp_item_daily_actuals.sum(:revenue)
         if remaining_days == 0
