@@ -1,7 +1,7 @@
 class OperativeDatafeedIntradayWorker < BaseWorker
   def perform
-    datafeed_configs.each do |api_config|
-      Operative::DatafeedService.new(api_config, Date.today, intraday: true).perform
+    datafeed_configs.each do |datafeed_config|
+      datafeed_config.start_job(job_type: 'intraday')
     end
   end
 

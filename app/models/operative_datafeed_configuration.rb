@@ -7,7 +7,11 @@ class OperativeDatafeedConfiguration < ApiConfiguration
 
   delegate :auto_close_deals, :revenue_calculation_pattern, :product_mapping,
            :exclude_child_line_items, :run_intraday?, :run_fullday?,
-           :company_name, to: :datafeed_configuration_details, prefix: false
+           :company_name, :job_id, to: :datafeed_configuration_details, prefix: false
+
+  ALLOWED_RERUN_STATUSES = [
+    :complete, :failed, :interrupted, nil
+  ].freeze
 
   def self.metadata
     {
@@ -22,5 +26,27 @@ class OperativeDatafeedConfiguration < ApiConfiguration
 
   def set_company_name
     datafeed_configuration_details.update(company_name: company.name) if company_name.blank?
+  end
+
+  def job_status
+    Sidekiq::Status::status(job_id)
+  end
+
+  def can_be_scheduled?
+    ALLOWED_RERUN_STATUSES.include?(job_status)
+  end
+
+  def start_job(job_type: 'intraday')
+    if can_be_scheduled?
+      datafeed_configuration_details.update(job_id: worker(job_type).perform_async(id))
+    end
+  end
+
+  def worker(job_type)
+    if job_type == 'fullday'
+      OperativeDatafeedFulldayCompanyWorker
+    elsif job_type == 'intraday'
+      OperativeDatafeedIntradayCompanyWorker
+    end
   end
 end
