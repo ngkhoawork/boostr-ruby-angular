@@ -98,8 +98,8 @@ class Api::TeamsController < ApplicationController
 
   def account_managers
     @_account_managers ||=
-      if team.present?
-        team.all_account_managers.flatten
+      if filter_team.present?
+        filter_team.all_account_managers.flatten
       else
         company.users.by_user_type([ACCOUNT_MANAGER, MANAGER_ACCOUNT_MANAGER])
       end
@@ -108,13 +108,17 @@ class Api::TeamsController < ApplicationController
   def teams
     @_teams = if params[:team_id] && params[:team_id] == 'all'
       root_teams
-    elsif team.present?
-      [team]
+    elsif filter_team.present?
+      [filter_team]
     end
   end
 
   def team
-    @_team ||= company.teams.find_by(id: params[:team_id])
+    @_team ||= company.teams.find_by(id: params[:id])
+  end
+
+  def filter_team
+    @_filter_team ||= company.teams.find_by(id: params[:team_id])
   end
 
   def root_teams
