@@ -3,7 +3,7 @@
         %span.main-title
             {{currentClient.name}}
             %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentClient)'}
-            %i.fa.fa-trash.delete-deal{'ng-click': 'delete(currentClient)'}
+            %i.fa.fa-trash.delete-deal{ng: {if: 'allow_edit'},'ng-click': 'delete(currentClient)'}
         .detail-info
             Last Touched: {{getLastTouch(currentClient) | date: 'MMM dd, yyyy'}}
     .stats-body

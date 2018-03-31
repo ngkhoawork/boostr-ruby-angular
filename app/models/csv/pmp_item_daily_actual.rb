@@ -121,7 +121,7 @@ class Csv::PmpItemDailyActual
 
     PmpItemMonthlyActual.generate(pmp_item_ids.uniq)
     PmpItem.calculate(pmp_item_ids.uniq)
-    Pmp.calculate_end_date(pmp_ids.uniq)
+    Pmp.calculate_dates(pmp_ids.uniq)
 
     pmp_change[:time_period_ids] = pmp_change[:time_period_ids].uniq
     pmp_change[:user_ids] = pmp_change[:user_ids].uniq

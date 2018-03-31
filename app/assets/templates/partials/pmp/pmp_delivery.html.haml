@@ -17,6 +17,20 @@
           %li{'ng-repeat': 'pmpItem in currentPMP.pmp_items', 'ng-class': '{active: selectedDeliveryItem.id == pmpItem.id}'}
             %a{'href': '', 'ng-click': 'updateDeliveryChart(pmpItem)'}
               %span.text {{pmpItem.ssp_deal_id || pmpItem.id}}
+    %div.custom-field-item-field.ml20
+      %div.field-value
+        .date-picker-wrap
+          %div.date-picker{'date-range-picker': 'true',
+                     'ng-model': 'timeFilter.timePeriod',
+                     :options => "{locale: {format: 'MMMM D, YYYY'},
+                           eventHandlers: {'apply.daterangepicker': timeFilter.applyTimePeriod}}"}
+            %span.empty{'ng-hide': 'timeFilter.timePeriodString'}
+              %span.editable Time period
+              %span.caret
+            %span{'ng-show': 'timeFilter.timePeriodString'}
+              %span.editable {{timeFilter.timePeriodString}}
+              %i.fa.fa-times.close-btn{'ng-click': 'timeFilter.removeTimePeriod($event)'}
+              %span.caret
   %div#pmp-delivery-chart-container.mb20{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0' }
     %svg#pmp-delivery-chart
   %div.center{ 'ng-if': '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' }

@@ -8,10 +8,13 @@ class DealProduct < ActiveRecord::Base
   enum pmp_type: PMP_TYPES
 
   validates :product, presence: true
+  validates :budget, :budget_loc, numericality: true
   validate :active_exchange_rate
 
   accepts_nested_attributes_for :deal_product_budgets
   accepts_nested_attributes_for :deal_product_cf
+
+  before_validation :ensure_budget_attributes_have_values
 
   after_create do
     if deal_product_budgets.empty?
@@ -303,6 +306,11 @@ class DealProduct < ActiveRecord::Base
   end
 
   private
+
+  def ensure_budget_attributes_have_values
+    self.budget = 0 if budget.nil?
+    self.budget_loc = 0 if budget_loc.nil?
+  end
 
   def self.import_custom_field(obj, row)
     params = {}

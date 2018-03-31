@@ -29,15 +29,15 @@
           %td.left
             {{ PMPType.getName(pmpItem.pmp_type) }}
           %td.right
-            {{ pmpItem.budget_loc | currency:currency_symbol:2 }}
+            {{ pmpItem.budget_loc | currency:currencySymbol:2 }}
           %td.right
-            {{ pmpItem.budget_delivered_loc | currency:currency_symbol:2 }}
+            {{ pmpItem.budget_delivered_loc | currency:currencySymbol:2 }}
           %td.right
-            {{ pmpItem.budget_remaining_loc | currency:currency_symbol:2 }}
+            {{ pmpItem.budget_remaining_loc | currency:currencySymbol:2 }}
           %td.right
-            {{ (pmpItem.run_rate_7_days | currency:currency_symbol:2) || 'N/A' }}
+            {{ (pmpItem.run_rate_7_days | currency:currencySymbol:2) || 'N/A' }}
           %td.right
-            {{ (pmpItem.run_rate_30_days | currency:currency_symbol:2) || 'N/A' }}
+            {{ (pmpItem.run_rate_30_days | currency:currencySymbol:2) || 'N/A' }}
           %td.right.action-td
             %i.fa.fa-pencil.z-icon{ ng: { click: 'showPmpItemEditModal(pmpItem)' } }
             %i.fa.fa-trash.z-icon{ ng: { click: 'deletePmpItem(pmpItem)' } }

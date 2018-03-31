@@ -123,15 +123,9 @@ class Api::IosController < ApplicationController
   end
 
   def ios
-    ios_by_name
-      .union(ios_by_agency)
-      .union(ios_by_advertiser)
-      .includes(:currency, :deal, :agency, :advertiser)
-      .by_start_date(params[:start_date], params[:end_date])
-      .by_agency_id(params[:agency_id])
-      .by_advertiser_id(params[:advertiser_id])
-      .limit(limit)
-      .offset(offset)
+    by_pages(
+      apply_filters(company_ios).includes(:currency, :deal, :agency, :advertiser)
+    )
   end
 
   def io_costs_csv
@@ -163,15 +157,9 @@ class Api::IosController < ApplicationController
     @_company_ios ||= company.ios
   end
 
-  def ios_by_agency
-    company_ios.by_agency_name(params[:name])
-  end
-
-  def ios_by_advertiser
-    company_ios.by_advertiser_name(params[:name])
-  end
-
-  def ios_by_name
-    company_ios.by_name(params[:name])
+  def apply_filters(relation)
+    IosQuery.new(
+      params.merge(default_relation: relation)
+    ).perform
   end
 end

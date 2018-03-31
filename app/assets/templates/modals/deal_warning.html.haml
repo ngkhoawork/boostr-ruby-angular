@@ -6,5 +6,9 @@
     .popup-modal-body
         %h5 {{message}}
 
-    .popup-modal-footer
-        %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Ok
+    .popup-modal-footer.clearfix
+        .form-group.text-left.pull-left{ ng: { if: 'dealId' } }
+            %label{ for: 'show-warnings' }
+                Do not display this message again for this deal
+            %input.form-control{id: 'show-warnings', type: 'checkbox', ng: { model: 'dontShowWarnings',  change: 'onChange()' } }
+        %button.btn.btn-default.pull-right{ 'type': 'button', ng: { click: 'cancel()' } } Ok

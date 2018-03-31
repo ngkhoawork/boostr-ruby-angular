@@ -19,6 +19,14 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
     :pmp
   )
 
+  def revenue
+    object.revenue&.to_f
+  end
+
+  def revenue_loc
+    object.revenue_loc&.to_f
+  end
+
   def ssp_deal_id
     object.pmp_item.ssp_deal_id rescue nil
   end
@@ -41,5 +49,9 @@ class Pmps::PmpItemDailyActualSerializer < ActiveModel::Serializer
 
   def pmp
     object.pmp.serializable_hash(only: [:id, :name]) rescue nil
+  end
+
+  def win_rate
+    object.win_rate * 100
   end
 end

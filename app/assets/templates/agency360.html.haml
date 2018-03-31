@@ -8,8 +8,9 @@
           %z-filter{'on-apply': 'onFilterApply', 'on-reset': 'onResetFilter'}
             %z-filter-field{data: 'holdingCompanies', 'save-as': '{holding_company_id: "id"}', 'on-change': 'updateAgency'} Holding Company
             %z-filter-field{type: 'multiselect', data: 'agencies', 'save-as': '{"account_ids[]": "id"}'} Agency
-            %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{start_date: "start_date"}', 'order-by': '["-start_date"]', id: 'start-date-field'} Start Date
-            %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{end_date: "end_date"}', 'order-by': '["-end_date"]', id: 'end-date-field'} End Date
+            #agency-date-range
+              %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{start_date: "start_date"}', 'order-by': '["-start_date"]'} Start Date
+              %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{end_date: "end_date"}', 'order-by': '["-end_date"]'} End Date
 
   .container-fluid.inner-agency360{'ng-show': 'showDashboard'}
     .row

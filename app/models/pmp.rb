@@ -3,6 +3,7 @@ class Pmp < ActiveRecord::Base
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id'
   belongs_to :company
   belongs_to :deal
+  belongs_to :ssp_advertiser
 
   attr_accessor :skip_callback
 
@@ -20,10 +21,13 @@ class Pmp < ActiveRecord::Base
   scope :for_pmp_members, -> (user_ids) { joins(:pmp_members).where('pmp_members.user_id in (?)', user_ids) if user_ids}
   scope :by_name, -> (name) { where('pmps.name ilike ?', "%#{name}%") if name.present? }
   scope :by_advertiser_name, -> (name) { joins(:advertiser).where('clients.name ilike ?', "%#{name}%") if name.present? }
+  scope :without_advertiser, -> { where(advertiser_id: nil) }
   scope :by_agency_name, -> (name) { joins(:agency).where('clients.name ilike ?', "%#{name}%") if name.present? }
   scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) if (start_date && end_date).present? }
   scope :for_time_period, -> (start_date, end_date) { where('pmps.start_date <= ? AND pmps.end_date >= ?', end_date, start_date) }
   scope :by_user, -> (user) { includes(:pmp_members).where('pmp_members.user_id = ?', user.id) }
+  scope :without_advertiser, -> { where(advertiser_id: nil) }
+  scope :no_match_advertiser, -> (ssp_advertiser_id) { where(ssp_advertiser_id: ssp_advertiser_id, advertiser_id: nil) }
 
   before_create :set_budget_remaining_and_delivered
 
@@ -55,9 +59,9 @@ class Pmp < ActiveRecord::Base
     Forecast::PmpRevenueCalcTriggerService.new(self, 'item', {}).perform
   end
   
-  def self.calculate_end_date(ids)
+  def self.calculate_dates(ids)
     Pmp.where(id: ids).find_each do |pmp|
-      pmp.calculate_end_date!
+      pmp.calculate_dates!
     end
   end
 
@@ -76,12 +80,16 @@ class Pmp < ActiveRecord::Base
     self.save!
   end
 
-  def calculate_end_date!
+  def calculate_dates!
     daily_actual_end_date = pmp_item_daily_actuals.maximum(:date)
+    daily_actual_start_date = pmp_item_daily_actuals.minimum(:date)
     if daily_actual_end_date.present? && end_date < daily_actual_end_date
       self.end_date = daily_actual_end_date
-      self.save!
     end
+    if daily_actual_start_date.present? && start_date > daily_actual_start_date
+      self.start_date = daily_actual_start_date
+    end
+    self.save!
   end
 
   def opened?
@@ -90,6 +98,11 @@ class Pmp < ActiveRecord::Base
 
   def today
     Time.now.in_time_zone('Pacific Time (US & Canada)').to_date
+  end
+
+  def assign_advertiser!(client)
+    ssp_advertiser.update_attribute(:client_id, client.id) if ssp_advertiser.present?
+    update_attribute(:advertiser_id, client.id)
   end
 
   private

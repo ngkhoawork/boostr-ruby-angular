@@ -222,7 +222,7 @@
     margin: 0;
 }
 
-#pmp-delivery-chart, #pmp-price-revenue-chart, #pmp-revenue-advertiser-chart {
+#pmp-delivery-chart, #pmp-price-revenue-chart {
     height: auto;
     display: inline-block;
     position: absolute;
@@ -324,5 +324,40 @@
   h5 {
     margin-top: 20px;
     margin-bottom: 40px;
+  }
+}
+
+#pmp-delivery, #pmp-price-revenue {
+  .axisY line,
+  .axisY1 line,
+  .axisY2 line {
+    fill: none;
+  }
+
+  .axisX line {
+    fill: none;
+    stroke: #e0e0e0;
+    shape-rendering: crispEdges;
+  }
+
+  .axis path {
+    display: none;
+  }
+
+  .brush .extent {
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+  }
+
+  .resize {
+    display: inline !important; /* show when empty */
+    fill: #7A7A7A;
+    fill-opacity: 1;
+    stroke: #7A7A7A;
+    stroke-width: 2px;
+  }
+
+  .bar {
+    /*shape-rendering: crispEdges;*/
   }
 }

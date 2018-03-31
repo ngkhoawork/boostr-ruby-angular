@@ -3,9 +3,13 @@ class Api::V2::DisplayLineItemBudgetsController < ApiController
 
   def create
     if line_item_budget.valid?
-      line_item_budget.perform
-      log_transaction(imported: true)
-      render json: line_item_budget, status: :created
+      begin
+        line_item_budget.perform
+        log_transaction(imported: true)
+        render json: line_item_budget, status: :created
+      rescue Exception => e
+        render json: { errors: [e.message] }, status: :unprocessable_entity
+      end
     else
       log_transaction(imported: false)
       render json: { errors: line_item_budget.errors.messages }, status: :unprocessable_entity

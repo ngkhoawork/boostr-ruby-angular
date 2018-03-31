@@ -15,7 +15,8 @@ class Importers::ActivePmpObjectImportService < Importers::BaseService
         agency: row[:agency],
         start_date: row[:start_date],
         end_date: row[:end_date],
-        team: row[:team]
+        team: row[:team],
+        is_multibuyer: row[:is_multibuyer]
     }
     Csv::ActivePmpObject.new(opts)
   end

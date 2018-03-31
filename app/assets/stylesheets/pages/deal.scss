@@ -156,6 +156,18 @@
         margin-left: 0
     }
     .detail-stats {
+        label {
+            position: relative;
+            &.danger {
+                color: $brand-danger;
+            }
+
+            .error-tooltip {
+                left: auto;
+                text-align: center;
+                bottom: calc(100% + 8px);
+            }
+        }
         .deal-won-indicator {
             position: absolute;
             top: 25px;

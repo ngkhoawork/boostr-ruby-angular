@@ -101,7 +101,7 @@ class Client < ActiveRecord::Base
   scope :by_region, -> region_id { where(client_region_id: region_id) if region_id.present? }
   scope :by_segment, -> segment_id { where(client_segment_id: segment_id) if segment_id.present? }
   scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
-  scope :by_name_and_type_with_limit, -> (name, type) { by_name(name).by_type_id(type).limit(10) }
+  scope :by_name_and_type_with_limit, -> (name, type) { by_name(name).by_type_id(type).limit(20) }
   scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }
   scope :by_ids, -> ids { where(id: ids) if ids.present?}
   scope :by_last_touch, -> (start_date, end_date) { Client.joins("INNER JOIN (select client_id, max(happened_at) as last_touch from activities group by client_id) as tb1 ON clients.id = tb1.client_id").where("tb1.last_touch >= ? and tb1.last_touch <= ?", start_date, end_date) if start_date.present? && end_date.present? }

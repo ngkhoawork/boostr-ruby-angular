@@ -305,7 +305,9 @@ class Deal < ActiveRecord::Base
   def base_fields_presence
     if self.company_id.present?
       factors = base_field_validations.joins(:criterion).where('values.value_boolean = ?', true).pluck(:factor)
-      self.validates_presence_of(factors) if factors.length > 0
+      factors.each do |factor|
+        errors.add(factor, 'must be present') if public_send(factor).blank?
+      end
     end
   end
 

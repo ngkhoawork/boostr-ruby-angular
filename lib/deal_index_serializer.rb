@@ -28,7 +28,6 @@ class DealIndexSerializer < ActiveModel::Serializer
     :curr_symbol
   )
 
-
   def advertiser
     object.advertiser
   end
