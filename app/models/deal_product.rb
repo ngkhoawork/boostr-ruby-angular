@@ -203,8 +203,13 @@ class DealProduct < ActiveRecord::Base
         next
       end
 
+      i = 0
       if row[2]
-        full_name = row[2].to_s + ' ' + row[3].to_s + ' ' + row[4].to_s
+        full_name = row[2].to_s
+        if current_user.company.product_options_enabled
+          i = 2
+          full_name = row[2].to_s + ' ' + row[3].to_s + ' ' + row[4].to_s
+        end
         product = current_user.company.products.where(full_name: full_name.strip).first
         unless product
           import_log.count_failed
@@ -218,8 +223,8 @@ class DealProduct < ActiveRecord::Base
       end
 
       budget = nil
-      if row[5]
-        budget = Float(row[5].strip) rescue false
+      if row[3+i]
+        budget = Float(row[3+i].strip) rescue false
         budget_loc = budget
         unless budget
           import_log.count_failed

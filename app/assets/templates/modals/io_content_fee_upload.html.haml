@@ -19,8 +19,8 @@
       %ol.row.center-block
         %li.col-xs-4 IO Number*
         %li.col-xs-4 Product*
-        %li.col-xs-4 Product Level1
-        %li.col-xs-4 Product Level2
+        %li.col-xs-4{'ng-if': 'company.product_options_enabled'} Product Level1
+        %li.col-xs-4{'ng-if': 'company.product_options_enabled'} Product Level2
         %li.col-xs-4 Budget*
         %li.col-xs-4 
           Start Date*

@@ -1,5 +1,5 @@
 @app.controller 'DataImportExportController',
-['$scope', '$modal', '$window', 'CsvImportLogs'
+['$scope', '$modal', '$window', 'CsvImportLogs',
 ($scope, $modal, $window, CsvImportLogs) ->
 
   $scope.csvImportLogsUrl = 'api/csv_import_logs'

@@ -17,13 +17,13 @@
         Make sure your CSV file includes these EXACT headers and columns:
 
       %ol.row.center-block
-        %li.col-xs-3.col-xs-offset-2 Deal ID
-        %li.col-xs-3 Deal Name*
-        %li.col-xs-3 Deal Product*
-        %li.col-xs-3.col-xs-offset-2 Product Level1
-        %li.col-xs-3 Product Level2
-        %li.col-xs-3 Budget*
-        %li.col-xs-3.col-xs-offset-2
+        %li.col-xs-4 Deal ID
+        %li.col-xs-4 Deal Name*
+        %li.col-xs-4 Deal Product*
+        %li.col-xs-4{'ng-if': 'company.product_options_enabled'} Product Level1
+        %li.col-xs-4{'ng-if': 'company.product_options_enabled'} Product Level2
+        %li.col-xs-4 Budget*
+        %li.col-xs-4
           Period*
           %br
           (Mon-YY)

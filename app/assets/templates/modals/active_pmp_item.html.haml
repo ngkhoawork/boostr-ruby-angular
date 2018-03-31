@@ -31,8 +31,8 @@
         %li SSP
         %li PMP Type
         %li Product
-        %li Product Level1
-        %li Product Level2
+        %li{'ng-if': 'company.product_options_enabled'} Product Level1
+        %li{'ng-if': 'company.product_options_enabled'} Product Level2
         %li Start_date
         %li End_date
         %li Budget
