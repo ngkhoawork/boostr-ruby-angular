@@ -244,7 +244,7 @@
         backdrop: 'static'
         keyboard: false
         resolve:
-          object: ->
+          pmpItemDailyActual: ->
             pmpItemDailyActual
       modalInstance.result.then (ids) ->
         $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id)
