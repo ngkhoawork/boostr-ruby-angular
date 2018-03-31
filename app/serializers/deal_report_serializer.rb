@@ -62,7 +62,7 @@ class DealReportSerializer < ActiveModel::Serializer
   def deal_product_budgets
     selected_products = object
     .deal_products
-    .reject{ |deal_product| deal_product.product_id != @options[:product_filter] if @options[:product_filter] }
+    .reject{ |deal_product| !@options[:product_filter].include?(deal_product.product_id) if @options[:product_filter] }
     .map(&:id)
 
     grouped_budgets = object.deal_product_budgets

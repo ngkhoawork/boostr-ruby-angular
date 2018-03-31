@@ -606,7 +606,7 @@ class Deal < ActiveRecord::Base
 
         selected_products = deal
           .deal_products
-          .reject{ |deal_product| deal_product.product_id != product_filter if product_filter }
+          .reject{ |deal_product| !product_filter.include?(deal_product.product_id) if product_filter }
           .map(&:id)
 
         deal_product_budgets = deal.deal_product_budgets
