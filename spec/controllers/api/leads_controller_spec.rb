@@ -212,6 +212,25 @@ describe Api::LeadsController do
     end
   end
 
+  describe 'POST #create_lead' do
+    before { assignment_rule.users << user }
+
+    it 'creates lead successfully' do
+      expect {
+          post :create_lead, lead: valid_lead_params, return_to: 'http://www.buzzfeed.com/advertise'
+        }.to change(Lead, :count).by(1)
+    end
+
+    it 'map to existed contact successfully' do
+      contact = create :contact, company: company, address: create(:address, email: 'test@contact.com')
+
+      post :create_lead, lead: valid_lead_params.merge(email: 'test@contact.com'),
+                         return_to: 'http://www.buzzfeed.com/advertise'
+
+      expect(Lead.last.contact.id).to eq contact.id
+    end
+  end
+
   private
 
   def company
@@ -232,5 +251,13 @@ describe Api::LeadsController do
 
   def lead
     @_lead ||= create :lead, company: company, user: user
+  end
+
+  def valid_lead_params
+    attributes_for(:lead).merge(company_id: company.id)
+  end
+
+  def assignment_rule
+    @_assignment_rule ||= create :assignment_rule, company_id: company.id, countries: ['Usa'], states: ['Ny']
   end
 end

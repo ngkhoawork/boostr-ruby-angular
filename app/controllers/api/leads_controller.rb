@@ -1,8 +1,21 @@
 class Api::LeadsController < ApplicationController
+  protect_from_forgery except: :create_lead
+  skip_before_filter :authenticate_user!, only: :create_lead
+
   respond_to :json
 
   def index
     render json: filtered_leads, each_serializer: Api::Leads::IndexSerializer
+  end
+
+  def create_lead
+    lead = Lead.new(lead_params)
+
+    if lead.save
+      redirect_to params[:return_to]
+    else
+      render json: { errors: lead.errors.messages }, status: :unprocessable_entity
+    end
   end
 
   def accept
@@ -97,5 +110,16 @@ class Api::LeadsController < ApplicationController
 
   def company
     current_user.company
+  end
+
+  def lead_params
+    params
+      .require(:lead)
+      .permit(:first_name, :last_name, :title, :email, :company_name, :country, :state, :budget, :notes, :company_id)
+      .merge(status: Lead::NEW, created_from: Lead::WEB_FORM)
+  end
+
+  def set_request_default_content_type
+    request.format = :json
   end
 end

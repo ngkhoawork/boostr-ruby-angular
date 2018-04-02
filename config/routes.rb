@@ -158,7 +158,6 @@ Rails.application.routes.draw do
       resources :account_cf_names, only: [:index]
       resources :holding_companies, only: [:index]
       resources :contact_cf_names, only: [:index]
-      resources :leads, only: [:create]
       resources :display_line_items, only: [:create]
       resources :display_line_item_budgets, only: [:create]
     end # API V2 END
@@ -512,6 +511,7 @@ Rails.application.routes.draw do
       collection do
         get :users
         post :import
+        post :create_lead
       end
     end
 
