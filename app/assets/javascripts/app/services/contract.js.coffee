@@ -7,10 +7,6 @@
                 method: 'PUT'
             filterValues:
                 url: '/api/contracts/settings'
-            assignContact:
-                url: '/api/contracts/contract_contacts_attributes'
-                method: 'PUT'
-
 
         this.all = (params) -> resource.query(params).$promise
         this.get = (params) -> resource.get(params).$promise
@@ -18,6 +14,5 @@
         this.update = (params) -> resource.update(params).$promise
         this.delete = (params) -> resource.delete(params).$promise
         this.filterValues = (params) -> resource.filterValues(params).$promise
-        this.assignContact = (params) -> resource.assignContact(params).$promise
         return
 ]

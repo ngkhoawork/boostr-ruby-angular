@@ -1,8 +1,9 @@
 @app.controller 'ContractController', [
-    '$scope', '$modal', '$routeParams', '$location', 'Contract', 'Currency'
-    ($scope,   $modal,   $routeParams,   $location,   Contract,   Currency) ->
+    '$scope', '$modal', '$filter', '$routeParams', '$location', 'Contract', 'Currency', 'User'
+    ($scope,   $modal,   $filter,   $routeParams,   $location,   Contract,   Currency,   User) ->
         $scope.contract = {}
         $scope.currencies = []
+        $scope.users = []
         $scope.isRestricted = false
         $scope.isContractLoaded = false
 
@@ -13,7 +14,7 @@
             Contract.get(id: $routeParams.id).then (contract) ->
                 $scope.contract = contract
                 $scope.isContractLoaded = true
-#                $scope.addContact(contract)
+#                $scope.showSpecialTermModal(contract)
             , (err) ->
                 $scope.isRestricted = err.status is 403
                 $scope.isContractLoaded = true
@@ -47,5 +48,23 @@
                     $location.path('/contracts')
                 , (err) ->
                     console.log (err)
+
+        $scope.showLinkExistingUser = ->
+            User.query().$promise.then (users) ->
+                $scope.users = $filter('notIn')(users, $scope.contract.contract_members, 'user_id')
+
+        $scope.linkExistingUser = (item) ->
+            Contract.update
+                id: $scope.contract.id
+                contract_members_attributes: [user_id: item.id]
+
+        $scope.showSpecialTermModal = (contract) ->
+            $modal.open
+                templateUrl: 'contracts/contract_special_term_form.html'
+                controller: 'ContractSpecialTermController'
+                size: 'md'
+                backdrop: 'static'
+                resolve:
+                    contract: -> contract
 
 ]

@@ -26,7 +26,9 @@
             _.findWhere(contract.contract_contacts, id: contact.id)
 
         $scope.addContact = (contact) ->
-            Contract.assignContact(id: contract.id, contact_id: contact.id)
+            Contract.update
+                id: contract.id
+                contract_contacts_attributes: [contact_id: contact.id]
 
         $scope.cancel = ->
             $modalInstance.close()

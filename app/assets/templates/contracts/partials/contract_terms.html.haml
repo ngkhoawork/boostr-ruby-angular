@@ -1,15 +1,7 @@
 .members.block
 	%div.mb20
 		%span.title Special Terms
-		%span{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
-			%add-button{ dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } } Add
-			%ul.dropdown-menu.new-member-options
-				%li.existing-user-options
-					%ui-select{ name: 'user-list', ng: { model: 'userToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingUser($item)' }
-						%ui-select-match{ placeholder: 'start typing their name here' }
-							{{ $select.selected.name }}
-						%ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }
-							%div{ ng: { bind: { html: 'user.name' } } }
+		%add-button{'ng-click': 'showSpecialTermModal()'} Add
 	%table.table.table-striped
 		%thead
 			%tr
