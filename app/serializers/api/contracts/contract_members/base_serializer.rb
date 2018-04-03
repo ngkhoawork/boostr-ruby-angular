@@ -1,17 +1,24 @@
 class Api::Contracts::ContractMembers::BaseSerializer < ActiveModel::Serializer
   attributes(
     :id,
-    :user,
-    :role
+    :user_id,
+    :user_name,
+    :user_type,
+    :role_id,
+    :role_name
   )
 
   private
 
-  def user
-    object.user&.serializable_hash(only: [:id, :name, :user_type])
+  def user_name
+    object.user&.name
   end
 
-  def role
-    object.role&.serializable_hash(only: [:id, :name])
+  def user_type
+    object.user&.user_type
+  end
+
+  def role_name
+    object.role&.name
   end
 end

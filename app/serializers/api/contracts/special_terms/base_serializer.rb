@@ -2,7 +2,8 @@ class Api::Contracts::SpecialTerms::BaseSerializer < ActiveModel::Serializer
   attributes(
     :id,
     :name,
-    :type
+    :type,
+    :comment
   )
 
   private
