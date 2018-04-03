@@ -8,6 +8,8 @@ class Stage < ActiveRecord::Base
   scope :for_company, -> (company_id) { where(company_id: company_id) }
   scope :is_open, -> (status) { where(open: status) unless status.nil? }
   scope :active, -> { where(active: true) }
+  scope :by_ids, -> (ids) { where(id: ids) if ids.present? }
+  scope :order_by_probability, -> { order(:probability) }
 
   validates :name, presence: true
 
