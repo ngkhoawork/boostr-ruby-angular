@@ -14,13 +14,12 @@
 		%thead
 			%tr
 				%th Member
-				%th Type
 				%th Role
 		%tbody
-			%tr{ ng: { repeat: "member in dealMembers | orderBy: 'name'"} }
+			%tr{ ng: { repeat: "member in contract.contract_members | orderBy: 'name'"} }
 				%td
-					{{ member.name }}
-					%i.fa.fa-trash.delete-deal{'ng-click': 'deleteMember(member)'}
+					{{member.user_name}}
+					%i.fa.fa-trash.delete-deal{'ng-click': 'deleteMember(member.user)'}
 				%td
 					.dropdown
 						%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
@@ -30,5 +29,3 @@
 							%li{'ng-repeat': 'option in member.role.options', 'ng-class': '{active: member.role.option_id == option.id}'}
 								%a{'href': '', 'ng-click': 'member.role.option_id = option.id; updateDealMember(member)'}
 									%span.text {{option.name}}
-				%td
-					%div{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "member.share", 'on-after-save': 'updateDealMember(member)'}

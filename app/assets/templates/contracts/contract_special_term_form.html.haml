@@ -5,12 +5,12 @@
     .popup-modal-body
         .row
             .col-xs-6
-                .form-group{'ng-class':'{error: errors.term_name_id}'}
-                    %span.error-text {{errors.term_name_id}}
+                .form-group{'ng-class':'{error: errors.name_id}'}
+                    %span.error-text {{errors.name_id}}
                     %label
                         Name
                         %span.star *
-                    %ui-select{'ng-model': 'form.term_name_id'}
+                    %ui-select{'ng-model': 'form.name_id'}
                         %ui-select-match{placeholder: 'Special Term Name'}
                             {{$select.selected.name}}
                         %ui-select-choices{repeat: 'termName.id as termName in termNames | orderBy: "name"'}
@@ -18,7 +18,7 @@
             .col-xs-6
                 .form-group
                     %label Type
-                    %ui-select{'ng-model': 'form.term_type_id'}
+                    %ui-select{'ng-model': 'form.type_id'}
                         %ui-select-match{placeholder: 'Special Term Type'}
                             {{$select.selected.name}}
                         %ui-select-choices{repeat: 'termType.id as termType in termTypes | orderBy: "name"'}

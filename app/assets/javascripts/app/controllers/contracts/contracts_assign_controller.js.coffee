@@ -1,6 +1,6 @@
 @app.controller "ContractAssignContactController", [
     '$scope', '$rootScope', '$modal', '$modalInstance', '$filter', 'Contact', 'Contract', 'contract'
-    ($scope,   $rootScope,   $modal,   $modalInstance,   $filter,   Contact,   Contract,  contract) ->
+    ($scope,   $rootScope,   $modal,   $modalInstance,   $filter,   Contact,   Contract,   contract) ->
         console.log contract
         $scope.formType = "Edit"
         $scope.submitText = "Update"
@@ -19,16 +19,20 @@
             )
 
         $scope.searchContacts = (name) ->
+
             Contact.all1({q: name, per: 10}).then (contacts) ->
                 $scope.contacts = contacts
 
         $scope.checkContact = (contact) ->
-            _.findWhere(contract.contract_contacts, id: contact.id)
+            for contractContact in contract.contract_contacts
+                if contractContact.contact.id is contact.id then return true
+            return false
 
         $scope.addContact = (contact) ->
             Contract.update
                 id: contract.id
-                contract_contacts_attributes: [contact_id: contact.id]
+                contract: {contract_contacts_attributes: [contact_id: contact.id]}
+            .then (data) -> _.extend contract, data
 
         $scope.cancel = ->
             $modalInstance.close()
@@ -46,6 +50,5 @@
                 backdrop: 'static'
                 keyboard: false
                 resolve:
-                    contact: ->
-                        {}
+                    contact: -> {}
 ]

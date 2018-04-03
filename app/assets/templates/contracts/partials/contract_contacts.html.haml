@@ -12,29 +12,29 @@
 				%th.left Account Name
 				%th.left Role
 		%tbody
-			%tr{ ng: { repeat: 'deal_contact in currentDeal.deal_contacts'} }
+			%tr{ ng: { repeat: 'contact in contract.contract_contacts'} }
 				%td
-					%a{'href': '', 'ng-href': '/contacts/{{deal_contact.contact.id}}'} {{ deal_contact.contact.name }}
-					%i.fa.fa-pencil.edit-deal{'ng-click': 'showContactEditModal(deal_contact)'}
-					%i.fa.fa-trash.delete-deal{'ng-click': 'deleteContact(deal_contact)'}
+					%a{'href': '', 'ng-href': '/contacts/{{contact.contact.id}}'} {{ contact.contact_name }}
+					%i.fa.fa-pencil.edit-deal{'ng-click': 'showContactEditModal(contact)'}
+					%i.fa.fa-trash.delete-deal{'ng-click': 'deleteContact(contact)'}
 				%td
-					{{ deal_contact.contact.position }}
+					{{contact.contact_position}}
 				%td
-					{{ deal_contact.contact.address.email }}
+					{{contact.contact_email}}
 				%td
-					{{ deal_contact.contact.primary_client_json.name }}
-				%td{ ng: { class: '{error: deal_contact.errors.role}' } }
+					{{contact.contact_client_name}}
+				%td{ ng: { class: '{error: contact.errors.role}' } }
 					%div.contact-role-dropdown
-						%span.error-tooltip{id: 'contact-role-error-{{deal_contact.id}}', 'ng-show': 'deal_contact.errors.role'}
-							{{ deal_contact.errors.role }}
+						%span.error-tooltip{id: 'contact-role-error-{{contact.id}}', 'ng-show': 'contact.errors.role'}
+							{{ contact.errors.role }}
 						.dropdown
 							%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-								%span.editable{'ng-class': '{"not-selected": !deal_contact.role}'} {{deal_contact.role || 'Select role'}}
+								%span.editable{'ng-class': '{"not-selected": !contact.role}'} {{contact.role || 'Select role'}}
 								%span.caret
 							%ul.dropdown-menu
 								%li
-									%a{'href': '', 'ng-click': 'submitDealContact(deal_contact, undefined)'}
+									%a{'href': '', 'ng-click': 'submitDealContact(contact, undefined)'}
 										%span.text No role
-								%li{'ng-repeat': 'option in currentDeal.contact_roles.options', 'ng-class': '{active: deal_contact.role == option.name}'}
-									%a{'href': '', 'ng-click': 'submitDealContact(deal_contact, option.name)'}
+								%li{'ng-repeat': 'option in currentDeal.contact_roles.options', 'ng-class': '{active: contact.role == option.name}'}
+									%a{'href': '', 'ng-click': 'submitDealContact(contact, option.name)'}
 										%span.text {{option.name}}

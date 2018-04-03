@@ -1,8 +1,6 @@
 @app.controller 'ContractSpecialTermController', [
-    '$scope', '$modalInstance', 'Field', 'contract'
-    ($scope,   $modalInstance,   Field,   contract) ->
-
-        console.log contract
+    '$scope', '$modalInstance', 'Field', 'Contract', 'contract'
+    ($scope,   $modalInstance,   Field,   Contract,   contract) ->
 
         $scope.form = {}
         $scope.termNames = []
@@ -18,15 +16,21 @@
 
         $scope.submitForm = ->
             $scope.errors = {}
-            fields = ['term_name_id']
+            fields = ['name_id']
 
             fields.forEach (key) ->
                 field = $scope.form[key]
                 switch key
-                    when 'term_name_id'
+                    when 'name_id'
                         if !field then return $scope.errors[key] = 'Name is required'
 
+            console.log contract
             return if !_.isEmpty $scope.errors
-            console.log $scope.form
-            # SEND DATA...
+            Contract.update
+                id: contract.id
+                contract:
+                    special_terms_attributes: [$scope.form]
+            .then (data) ->
+                _.extend contract, data
+
 ]

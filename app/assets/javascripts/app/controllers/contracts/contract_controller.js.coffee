@@ -56,7 +56,9 @@
         $scope.linkExistingUser = (item) ->
             Contract.update
                 id: $scope.contract.id
-                contract_members_attributes: [user_id: item.id]
+                contract: {contract_members_attributes: [user_id: item.id]}
+            .then (data) ->
+                _.extend $scope.contract, data
 
         $scope.showSpecialTermModal = (contract) ->
             $modal.open

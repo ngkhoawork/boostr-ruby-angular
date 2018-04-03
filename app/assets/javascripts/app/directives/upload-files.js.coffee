@@ -49,10 +49,13 @@
 
       $scope.deleteFile = (file) ->
         if (file && file.id && confirm('Are you sure you want to delete "' +  file.original_file_name + '"?'))
-          if $scope.type == "publisher"
-            url = '/api/publishers/'+ $routeParams.id + '/attachments/' + file.id + '?type=' + $scope.type
-          else
-            url = '/api/deals/'+ $routeParams.id + '/attachments/' + file.id + '?type=' + $scope.type
+          switch $scope.type
+            when "contract"
+              url = '/api/contracts/'+ $routeParams.id + '/attachments/' + file.id + '?type=' + $scope.type
+            when "publisher"
+              url = '/api/publishers/'+ $routeParams.id + '/attachments/' + file.id + '?type=' + $scope.type
+            else
+              url = '/api/deals/'+ $routeParams.id + '/attachments/' + file.id + '?type=' + $scope.type
 
           $http.delete url
           .then (respond) ->
@@ -60,10 +63,13 @@
               return dealFile.id != file.id
 
       $scope.saveOnServer = (file, subtype) ->
-        if $scope.type == "publisher"
-          url = '/api/publishers/'+ $routeParams.id + '/attachments/' + file.id
-        else
-          url = '/api/deals/'+ $routeParams.id + '/attachments/' + file.id
+        switch $scope.type
+          when "contract"
+            url = '/api/contracts/'+ $routeParams.id + '/attachments/' + file.id
+          when "publisher"
+            url = '/api/publishers/'+ $routeParams.id + '/attachments/' + file.id
+          else
+            url = '/api/deals/'+ $routeParams.id + '/attachments/' + file.id
 
         $http.put url,
           type: $scope.type,
@@ -132,10 +138,13 @@
               folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
               fullFileName = folder + assemblyJson.results[':original'][0].url.substr(assemblyJson.results[':original'][0].url.lastIndexOf('/') + 1);
 
-            if $scope.type == "publisher"
-              url = '/api/publishers/'+ $routeParams.id + '/attachments'
-            else
-              url = '/api/deals/'+ $routeParams.id + '/attachments'
+            switch $scope.type
+              when "contract"
+                url = '/api/contracts/'+ $routeParams.id + '/attachments'
+              when "publisher"
+                url = '/api/publishers/'+ $routeParams.id + '/attachments'
+              else
+                url = '/api/deals/'+ $routeParams.id + '/attachments'
 
             $http.post url,
                 type: $scope.type,

@@ -1,26 +1,20 @@
 .members.block
 	%div.mb20
 		%span.title Special Terms
-		%add-button{'ng-click': 'showSpecialTermModal()'} Add
+		%add-button{'ng-click': 'showSpecialTermModal(contract)'} Add
 	%table.table.table-striped
 		%thead
 			%tr
-				%th Team Name
-				%th Team Type
+				%th Term Name
+				%th Term Type
 				%th.left Comments
+
 		%tbody
-			%tr{ ng: { repeat: "member in dealMembers | orderBy: 'name'"} }
+			%tr{ ng: { repeat: "term in contract.special_terms | orderBy: 'name'"} }
 				%td
-					{{ member.name }}
-					%i.fa.fa-trash.delete-deal{'ng-click': 'deleteMember(member)'}
+					{{term.name.name}}
+					-#%i.fa.fa-trash.delete-deal{'ng-click': 'deleteTerm(term)'}
 				%td
-					.dropdown
-						%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-							%span.editable{'ng-class': '{"not-selected": !member.role.option.name}'} {{member.role.option.name || 'Select role'}}
-							%span.caret
-						%ul.dropdown-menu
-							%li{'ng-repeat': 'option in member.role.options', 'ng-class': '{active: member.role.option_id == option.id}'}
-								%a{'href': '', 'ng-click': 'member.role.option_id = option.id; updateDealMember(member)'}
-									%span.text {{option.name}}
+					{{term.type.name}}
 				%td.left
-					%div{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "member.share", 'on-after-save': 'updateDealMember(member)'}
+					{{term.comment}}
