@@ -1,7 +1,7 @@
 class Csv::Client
   include ActiveModel::Validations
 
-  CLIENT_TYPES = %(agency advertiser).freeze
+  CLIENT_TYPES = %w(agency advertiser).freeze
 
   ATTRS = [
     :account_id, :name, :type, :parent_account, :company_id,
@@ -25,6 +25,8 @@ class Csv::Client
   validate :holding_company_exists
   validate :name_matches_one_record
   validate :not_self_parent
+
+  delegate :category_field, :region_field, :segment_field, :type_field, :account_cf_names, to: :company_fields
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -86,9 +88,8 @@ class Csv::Client
   end
 
   def client_members
-    if teammembers.present?
-      @_client_members = teammembers&.split(';')&.map{|el| el.split('/')}
-    end
+    return unless teammembers.present?
+    @_client_members = teammembers&.split(';')&.map{|el| el.split('/')}
   end
 
   def client_import_params
@@ -178,9 +179,9 @@ class Csv::Client
   end
 
   def find_client_value_id(field_id)
-    client.values.find {
-      |value| value.field_id == field_id
-    }&.id
+    client.values.find do |value|
+      value.field_id == field_id
+    end&.id
   end
 
   def client_type_id
@@ -225,7 +226,7 @@ class Csv::Client
   end
 
   def client_holding_company
-    return nil if client_type != 'agency'
+    return if client_type != 'agency'
     @_client_holding_company ||= HoldingCompany.where("name ilike ?", holding_company).first
   end
 
@@ -236,7 +237,7 @@ class Csv::Client
   end
 
   def correct_client_type
-    if client_type.present? && !(CLIENT_TYPES.include? client_type)
+    unless CLIENT_TYPES.include? client_type
       errors.add(:type, 'is invalid. Use "Agency" or "Advertiser" string')
     end
   end
@@ -250,9 +251,7 @@ class Csv::Client
   end
 
   def category_exists
-    if client_type != 'advertiser' || !category.present?
-      return
-    end
+    return if client_type != 'advertiser' || category.blank?
 
     unless client_category.present?
       errors.add(:category, "#{category} could not be found")
@@ -260,7 +259,7 @@ class Csv::Client
   end
 
   def subcategory_exists
-    if client_type != 'advertiser' || !category.present? || !subcategory.present?
+    if client_type != 'advertiser' || category.blank? || subcategory.blank?
       return
     end
 
@@ -270,33 +269,31 @@ class Csv::Client
   end
 
   def client_members_have_share
-    if teammembers.present?
-      client_members.each do |member|
-        if member[1].nil?
-          errors.add(:teammember, "#{member[0]} does not have a share value")
-        end
+    return unless teammembers.present?
+
+    client_members.each do |member|
+      if member[1].nil?
+        errors.add(:teammember, "#{member[0]} does not have a share value")
       end
     end
   end
 
   def client_member_users_exist
     @client_member_list = []
-    if teammembers.present?
-      client_members.each do |member|
-        user = User.where(company_id: company_id).where('email ilike ?', member[0]).first
-        if user.nil?
-          errors.add(:teammember, "#{member[0]} could not be found in the users list")
-        else
-          @client_member_list << user
-        end
+    return unless teammembers.present?
+
+    client_members.each do |member|
+      user = User.where(company_id: company_id).where('email ilike ?', member[0]).first
+      if user.nil?
+        errors.add(:teammember, "#{member[0]} could not be found in the users list")
+      else
+        @client_member_list << user
       end
     end
   end
 
   def region_exists
-    if region.nil?
-      return
-    end
+    return if region.nil?
 
     if client_region.nil?
       errors.add(:region, "#{region} could not be found")
@@ -304,9 +301,7 @@ class Csv::Client
   end
 
   def segment_exists
-    if segment.nil?
-      return
-    end
+    return if segment.nil?
 
     if client_segment.nil?
       errors.add(:segment, "#{segment} could not be found")
@@ -322,36 +317,16 @@ class Csv::Client
   end
 
   def name_matches_one_record
-    if !account_id.present? && client_relation.count > 1
+    if account_id.blank? && client_relation.count > 1
       errors.add(:account_name, "#{name} matched more than one account record")
     end
   end
 
   def not_self_parent
-    return if !parent_account.present? || parent_account_record.nil?
+    return if parent_account.blank? || parent_account_record.nil?
 
     if parent_account_record.id == client.id
       errors.add(:account, "#{name} can't be set as a parent of itself")
     end
-  end
-
-  def category_field
-    company_fields.category_field
-  end
-
-  def region_field
-    company_fields.region_field
-  end
-
-  def segment_field
-    company_fields.segment_field
-  end
-
-  def type_field
-    company_fields.type_field
-  end
-
-  def account_cf_names
-    company_fields.account_cf_names
   end
 end

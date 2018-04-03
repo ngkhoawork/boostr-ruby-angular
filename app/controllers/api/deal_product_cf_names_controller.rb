@@ -71,7 +71,7 @@ class Api::DealProductCfNamesController < ApplicationController
   end
 
   def csv_headers
-    render json: deal_product_cf_names.order("position asc"), each_serializer: CsvHeaderSerializer
+    render json: deal_product_cf_names.order(:position), each_serializer: CsvHeaderSerializer
   end
 
   private

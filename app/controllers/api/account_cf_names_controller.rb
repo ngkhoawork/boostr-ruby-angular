@@ -56,14 +56,13 @@ class Api::AccountCfNamesController < ApplicationController
   end
 
   def destroy
-
     account_cf_name.destroy
 
     render nothing: true
   end
 
   def csv_headers
-    render json: account_cf_names.order("position asc"), each_serializer: CsvHeaderSerializer
+    render json: account_cf_names.order(:position), each_serializer: CsvHeaderSerializer
   end
 
   private

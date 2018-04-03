@@ -70,7 +70,7 @@ class Api::ClientsController < ApplicationController
   end
 
   def create
-    client = company.clients.new(client_params)
+    client = company.clients.new(client_params.merge(created_by: current_user.id))
     client.created_by = current_user.id
     if client.save
       render json: client, status: :created
@@ -80,7 +80,7 @@ class Api::ClientsController < ApplicationController
   end
 
   def update
-    if client.update_attributes(client_params)
+    if client.update_attributes(client_params.merge(created_by: current_user.id))
       render json: client, status: :accepted
     else
       render json: { errors: client.errors.messages }, status: :unprocessable_entity
