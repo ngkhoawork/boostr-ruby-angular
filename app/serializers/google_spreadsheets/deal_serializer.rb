@@ -26,9 +26,7 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def creative_ideas_needed
-    field_value = find_custom_field_value('Creative Ideas Needed')
-
-    field_value ? field_value : EMPTY
+    find_custom_field_value('Creative Ideas Needed')
   end
 
   def launch
@@ -78,19 +76,11 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def kpis
-    kpis = find_custom_field_value('KPIs')
-    strategy_considerations = find_custom_field_value('Strategy Considerations')
-
-    if kpis && strategy_considerations
-      "#{kpis} #{strategy_considerations}"
-    else
-      EMPTY
-    end
+    "#{find_custom_field_value('KPIs')} #{find_custom_field_value('Strategy Considerations')}"
   end
 
   def bae_deal
-    bae_deal = find_custom_field_value('BAE Deal')
-    bae_deal ? bae_deal : EMPTY
+    find_custom_field_value('BAE Deal')
   end
 
   def product
@@ -102,9 +92,9 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   private
 
   def find_custom_field_value(field_label)
-    return unless (field_name = deal_custom_field_names.find_by(field_label: field_label)&.field_name)
+    return EMPTY unless (field_name = deal_custom_field_names.find_by(field_label: field_label)&.field_name)
 
-    deal_custom_field&.public_send(field_name)
+    deal_custom_field&.public_send(field_name) || EMPTY
   end
 
   def csm_user
