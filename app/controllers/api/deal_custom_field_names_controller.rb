@@ -72,7 +72,7 @@ class Api::DealCustomFieldNamesController < ApplicationController
   end
 
   def csv_headers
-    render json: deal_custom_field_names.order("position asc"), each_serializer: CsvHeaderSerializer
+    render json: deal_custom_field_names.order(:position), each_serializer: CsvHeaderSerializer
   end
 
   private
