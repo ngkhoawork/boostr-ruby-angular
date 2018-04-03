@@ -1,0 +1,215 @@
+.row.mb40
+  %div.billing-header
+    %div.billing-header-col
+      .filter-text.mb10
+        Select a Month to View Billing Details
+      %form.form-inline.filter-form
+        %div.form-group
+          %label
+            Year
+          .dropdown.form-control
+            .dropdown-toggle.year-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{selectedYear || 'Select'}}
+              %span.caret
+            %ul.dropdown-menu.year-dropdown
+              %li{'ng-repeat': 'year in years', 'ng-class': '{active: selectedYear == year}'}
+                %a{'href': '', 'ng-click': 'selectYear(year)'}
+                  %span {{year}}
+
+        %div.form-group
+          %label
+            Month
+          .dropdown.form-control
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{selectedMonth || 'Select'}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'month in months', 'ng-class': '{active: selectedMonth == month}'}
+                %a{'href': '', 'ng-click': 'selectMonth(month)'}
+                  %span {{month}}
+        
+        .form-group
+          %label
+            Product Family
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.productFamily.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'productFamily in productFamilies', 'ng-class': '{active: filter.productFamily.id == productFamily.id}'}
+                %a{'href': '', 'ng-click': 'setFilter("productFamily", productFamily)'}
+                  %span {{productFamily.name}}
+        .form-group
+          %label
+            Product
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.product.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'product in products', 'ng-class': '{active: filter.product.id == product.id}'}
+                %a{'href': '', 'ng-click': 'setFilter("product", product)'}
+                  %span {{product.name}}
+    %div.billing-header-col{'ng-show': 'selectedMonth && selectedYear'}
+      .col-number
+        {{iosNeedingApproval}}
+      .col-text
+        IOs Needing Approval
+
+    %div.billing-header-col{'ng-show': 'selectedMonth && selectedYear'}
+      .col-number
+        {{missingLineItems}}
+      .col-text
+        Missing Line Items
+    %div.billing-header-col{'ng-show': 'selectedMonth && selectedYear'}
+      .col-number
+        {{missingActuals}}
+      .col-text
+        Missing Actuals
+
+%div{'ng-if': 'selectedMonth && selectedYear'}
+  .row.block.mb20
+    %div.mb20
+      %span.title IO's for Approval
+    %div{'ng-show': '!iosForApproval.length && !dataIsLoading'}
+      %h4 No Data Available
+    %div.table-wrap{'ng-hide': '!iosForApproval.length && !dataIsLoading'}
+      %table.table.table-hover.ios-for-approval
+        %thead
+          %tr.z-sortable-prime
+            %th
+              %span.z-sortable{by: 'io_number'} IO #
+            %th
+              %span.z-sortable{by: 'line'} Line #
+            %th
+              %span.z-sortable{by: 'io_name'} Name
+            %th
+              %span.z-sortable{by: 'advertiser_name'} Advertiser
+            %th
+              %span.z-sortable{by: 'agency_name'} Agency
+            %th
+              %span.z-sortable{by: 'seller_name'} Seller
+            %th
+              %span.z-sortable{by: 'currency'} Currency
+            %th
+              %span.z-sortable{by: 'billing_contact_name'} Billing Contact
+            %th
+              %span.z-sortable{by: 'product_name'} Product
+            %th
+              %span.z-sortable{by: 'ad_server'} Ad Server Product
+            %th.text-right
+              %span.z-sortable{by: 'ad_server_budget'} Ad Server Budget
+            %th.text-right
+              %span.z-sortable{by: 'ad_server_quantity'} Ad Server Quantity
+            %th.text-right
+              %span.z-sortable{by: 'price'} Price
+            %th.text-right
+              %span.z-sortable{by: 'budget_loc'} Budget
+            %th.text-right
+              %span.z-sortable{by: 'quantity'} Quantity
+            %th
+              %span.z-sortable{by: 'billing_status'} Billing Status
+            %th
+              %span.z-sortable{by: 'vat'} VAT
+        %tbody.hide-input-arrows
+          %tr{'ng-repeat': 'item in iosForApproval | orderBy : zSort.by : zSort.rev'}
+            %td
+              %b {{item.io_number}}
+            %td
+              %b {{item.line}}
+            %td
+              %a{href: '', target: '_blank', 'ng-href': '/revenue/ios/{{item.io_id}}'} {{item.io_name}}
+            %td {{item.advertiser_name}}
+            %td {{item.agency_name}}
+            %td {{item.seller_name}}
+            %td {{item.currency}}
+            %td {{item.billing_contact_name}}
+            %td {{item.product_name}}
+            %td {{item.ad_server}}
+            %td.text-right {{item.ad_server_budget | currency : item.currency_symbol : 0}}
+            %td.text-right {{item.ad_server_quantity | number : 0}}
+            %td.text-right {{item.price | currency : item.currency_symbol}}
+            %td.text-right
+              %span.display-fee-product-budget{'ng-if': 'item.type == "ContentFeeProductBudget"', 'editable-number': 'item.amount', 'e-step': '0.01', blur: 'submit', onbeforesave: 'updateBudget(item, $data)'}
+                {{ item.amount | currency : item.currency_symbol : 2 }}
+              %span.not-editable.display-line-budget{'ng-if': 'item.type == "DisplayLineItemBudget"'}
+                {{ item.budget_loc | currency : item.currency_symbol : 2 }}
+            %td.text-right
+              %span.display-line-quantity{'ng-if': 'item.type == "DisplayLineItemBudget"', 'editable-number': 'item.quantity', blur: 'submit', onbeforesave: 'updateQuantity(item, $data)'}
+                {{(item.quantity | number : 0) || 'Enter quantity'}}
+            %td{class: '{{item.billing_status.toLowerCase() + "-status"}}'}
+              .dropdown{'ng-click': 'fixingDropdownPosition($event)'}
+                %div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                  %span.text.editable
+                    {{item.billing_status || 'Select status'}}
+                  %span.caret
+                %ul.dropdown-menu
+                  %li{'ng-repeat': 'status in statuses'}
+                    %a{'href': '', 'ng-click': 'updateBillingStatus(item, status)'}
+                      %span.text {{status}}
+            %td {{item.vat | currency : item.currency_symbol : 0}}
+
+  .row.block.mb20
+    %div.mb20
+      %span.title IO's Missing Display Line Items
+    %div{'ng-show': '!iosMissingDisplayLineItems.length && !dataIsLoading'}
+      %h4 No Data Available
+    %div.table-wrap{'ng-hide': '!iosMissingDisplayLineItems.length && !dataIsLoading'}
+      %table.table.table-hover.ios-missing-display-line-items
+        %thead
+          %tr
+            %th IO #
+            %th Name
+            %th Advertiser
+            %th Agency
+            %th Seller
+            %th Currency
+            %th Billing Contact
+            %th Details
+        %tbody
+          %tr{'ng-repeat': 'item in iosMissingDisplayLineItems'}
+            %td
+              %b {{item.io_number}}
+            %td
+              %a{href: '', target: '_blank', 'ng-href': '/revenue/ios/{{item.id}}'} {{item.name}}
+            %td {{item.advertiser_name}}
+            %td {{item.agency_name}}
+            %td {{item.seller_name}}
+            %td {{item.currency}}
+            %td {{item.billing_contact_name}}
+            %td {{item.details}}
+
+  .row.block.mb20
+    %div.mb20
+      %span.title IO's Missing Monthly Actuals
+    %div{'ng-show': '!iosMissingMonthlyActual.length && !dataIsLoading'}
+      %h4 No Data Available
+    %div.table-wrap{'ng-hide': '!iosMissingMonthlyActual.length && !dataIsLoading'}
+      %table.table.table-hover.ios-missing-monthly-actual
+        %thead
+          %tr
+            %th IO #
+            %th Line #
+            %th Name
+            %th Advertiser
+            %th Agency
+            %th Seller
+            %th Currency
+            %th Billing Contact
+            %th Product
+            %th Ad Server Product
+        %tbody
+          %tr{'ng-repeat': 'item in iosMissingMonthlyActual'}
+            %td
+              %b {{item.io_number}}
+            %td
+              %b {{item.line_number}}
+            %td
+              %a{href: '', target: '_blank', 'ng-href': '/revenue/ios/{{item.io_id}}'} {{item.io_name}}
+            %td {{item.advertiser_name}}
+            %td {{item.agency_name}}
+            %td {{item.seller_name}}
+            %td {{item.currency}}
+            %td {{item.billing_contact_name}}
+            %td {{item.product_name}}
+            %td {{item.ad_server}}
