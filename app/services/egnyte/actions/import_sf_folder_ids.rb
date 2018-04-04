@@ -21,7 +21,10 @@ class Egnyte::Actions::ImportSfFolderIds
 
           attrs = build_attrs(row)
 
-          raise 'Some attr is nil' if attrs.values.include?(nil)
+          if attrs.values.include?(nil)
+            keys_with_nils = attrs.select { |_k, v| v.nil? }.keys.join(', ')
+            raise "#{keys_with_nils} attrs are nil"
+          end
 
           record = EgnyteFolder.new(attrs)
 
@@ -51,7 +54,7 @@ class Egnyte::Actions::ImportSfFolderIds
 
   def match_subject_id(sf_type, sf_id)
     subject_class(sf_type)
-      .where(salesforce_id: clean_double_quotes(sf_id))
+      .where(legacy_id: clean_double_quotes(sf_id))
       .limit(1)
       .select(:id)
       .first
