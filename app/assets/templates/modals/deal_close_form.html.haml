@@ -15,7 +15,7 @@
               %b {{ selectedReason }}
             %span.caret
           %ul.dropdown-menu
-            %li{'ng-repeat': 'option in currentDeal.close_reason.options', 'ng-class': '{active: currentDeal.close_reason.option_id == option.id}'}
+            %li{'ng-repeat': 'option in currentDeal.close_reason.options | orderBy: "-name": true', 'ng-class': '{active: currentDeal.close_reason.option_id == option.id}'}
               %a{'href': '', 'ng-click': 'currentDeal.close_reason.option_id = option.id; selectReason(option)'}
                 %span
                   %b {{ option.name }}
