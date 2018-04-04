@@ -428,4 +428,8 @@ class Api::ClientsController < ApplicationController
      current_user.company_id,
      file_params[:original_filename]]
   end
+
+  def file_params
+    params.require(:file).permit(:s3_file_path, :original_filename)
+  end
 end
