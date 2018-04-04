@@ -48,7 +48,6 @@ class Product < ActiveRecord::Base
 
   after_create do
     create_dimension
-    update_forecast_fact_callback
   end
 
   after_update do
@@ -79,19 +78,6 @@ class Product < ActiveRecord::Base
     ForecastRevenueFact.destroy_all(product_dimension_id: product_record.id)
     ForecastPmpRevenueFact.destroy_all(product_dimension_id: product_record.id)
     ForecastCostFact.destroy_all(product_dimension_id: product_record.id)
-  end
-
-  def update_forecast_fact_callback
-    time_period_ids = company.time_periods.collect{|time_period| time_period.id}
-    user_ids = company.users.collect{|user| user.id}
-    product_ids = [self.id]
-    stage_ids = company.stages.collect{|stage| stage.id}
-    io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
-    deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
-    ForecastRevenueCalculatorWorker.perform_async(io_change)
-    ForecastPmpRevenueCalculatorWorker.perform_async(io_change)
-    ForecastCostCalculatorWorker.perform_async(io_change)
-    ForecastPipelineCalculatorWorker.perform_async(deal_change)
   end
 
   def as_json(options = {})

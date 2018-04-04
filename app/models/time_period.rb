@@ -27,7 +27,6 @@ class TimePeriod < ActiveRecord::Base
 
   after_create do
     create_forecast_dimension
-    update_forecast_fact_callback
   end
 
   after_destroy do |time_period_record|
