@@ -2,7 +2,7 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   EMPTY = ''.freeze
   FIEDLS_ORDER = %w(id opportunity_title brand creative_ideas_needed launch seller csm seller_email
                     csm_email parent category sub_category agency region budget demo kpis product
-                    bae_deal).freeze
+                    bae_deal opportunity_url pitchdate operative_id probability).freeze
 
   attributes :id
 
@@ -85,6 +85,22 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
 
   def product
     object.products.pluck(:name).join(', ')
+  end
+
+  def opportunity_url
+    "#{ENV['HOST']}#{Rails.application.routes.url_helpers.api_deal_path(object)}"
+  end
+
+  def operative_id
+    object.integrations&.find_by(external_type: Integration::OPERATIVE)
+  end
+
+  def probability
+    object.stage.probability
+  end
+
+  def pitchdate
+    find_custom_field_value('Proposal Due Date')
   end
 
   alias_method :demo, :empty
