@@ -473,15 +473,15 @@ RSpec.describe Csv::Client, type: :model do
   end
 
   def category_field
-    @_category_field ||= company.fields.find_by_name 'Category'
+    @_category_field ||= company.fields.find_or_create_by(subject_type: 'Client', name: 'Category', value_type: 'Option', locked: true)
   end
 
   def region_field
-    @_region_field ||= company.fields.find_by_name 'Region'
+    @_region_field ||= company.fields.find_or_create_by(subject_type: 'Client', name: 'Region', value_type: 'Option', locked: true)
   end
 
   def segment_field
-    @_segment_field ||= company.fields.find_by_name 'Segment'
+    @_segment_field ||= company.fields.find_or_create_by(subject_type: 'Client', name: 'Segment', value_type: 'Option', locked: true)
   end
 
   def add_user(email)
@@ -500,6 +500,10 @@ RSpec.describe Csv::Client, type: :model do
   end
 
   def company_fields
+    category_field
+    region_field
+    segment_field
+
     company.account_fields_data
   end
 end
