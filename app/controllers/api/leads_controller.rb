@@ -11,7 +11,7 @@ class Api::LeadsController < ApplicationController
   def create_lead
     lead = Lead.new(lead_params)
 
-    if lead.save
+    if captcha_succeed? && lead.save
       redirect_to params[:return_to]
     else
       render json: { errors: lead.errors.messages }, status: :unprocessable_entity
@@ -119,7 +119,7 @@ class Api::LeadsController < ApplicationController
       .merge(status: Lead::NEW, created_from: Lead::WEB_FORM)
   end
 
-  def set_request_default_content_type
-    request.format = :json
+  def captcha_succeed?
+    RecaptchaService.new(company.id, params['g-recaptcha-response']).succeed?
   end
 end
