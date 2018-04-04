@@ -7,6 +7,8 @@
             %li.pull-left.dfp-import-buttons{ ng: { if: 'dfp_turned_on'} }
               %button.add-btn{ ng: { click: 'dfp_cumulative_import()'} } Run Cumulative DFP Report
               %button.add-btn{ ng: { click: 'dfp_monthly_import()'} } Run Monthly DFP Report
+            %li.pull-left.slack-button
+              %button.add-btn{ ng: { click: 'auth_slack()'} } Enable Slack
             %li.pull-right.last{ dropdown: true }
               %a.add-api-integration{ href: '', dropdown: { toggle: true } }
                 = inline_svg 'icons/add.svg'

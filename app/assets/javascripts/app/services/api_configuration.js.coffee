@@ -21,7 +21,11 @@
           url: 'api/api_configurations/:id/delete_ssp'
         update_ssp:
           method: 'POST'
-          url: 'api/api_configurations/:id/update_ssp'
+          url: 'api/api_configurations/:id/update_ssp',
+        workflowable_actions:
+          method: 'GET'
+          url: 'api/api_configurations/workflowable_actions'
+          isArray: true
 
       @all = (params) ->
         deferred = $q.defer()
@@ -81,6 +85,9 @@
           deferred.resolve(data)
           $rootScope.$broadcast 'updated_api_integrations'
         deferred.promise
+
+      @workflowable_actions = ->
+        resource.workflowable_actions().$promise
 
       return
   ]

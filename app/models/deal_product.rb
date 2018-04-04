@@ -1,4 +1,6 @@
 class DealProduct < ActiveRecord::Base
+  SAFE_COLUMNS = %i{budget created_at updated_at budget_loc ssp_deal_id pmp_type}
+
   belongs_to :deal, touch: true
   belongs_to :product
   belongs_to :ssp

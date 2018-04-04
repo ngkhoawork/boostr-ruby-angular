@@ -1,4 +1,7 @@
 class Io < ActiveRecord::Base
+  SAFE_COLUMNS = %i{budget start_date end_date external_io_number io_number
+                    created_at updated_at name budget_loc curr_cd}
+
   include CurrencyExchangeble
 
   belongs_to :advertiser, class_name: 'Client', foreign_key: 'advertiser_id'

@@ -1,0 +1,72 @@
+{
+  "deal": {
+    "mappings": [
+      {
+        "related_class_name": "Client",
+        "ui_prefix": "advertiser",
+        "join_statements": [
+          "JOIN clients as advertisers ON advertisers.id = deals.advertiser_id",
+          "JOIN account_cfs ON account_cfs.client_id = advertisers.id"
+        ],
+        "cf_table_name": "account_cf_names",
+        "cf_name_class_name": "AccountCfName",
+        "cf_value_class_name": "AccountCf",
+        "is_base": false,
+        "select_collection": false
+      },
+      {
+        "related_class_name": "Client",
+        "ui_prefix": "agency",
+        "join_statements": [
+          "JOIN clients as agencies ON agencies.id = deals.agency_id",
+          "JOIN account_cfs ON account_cfs.client_id = agencies.id"
+        ],
+        "cf_table_name": "account_cf_names",
+        "cf_name_class_name": "AccountCfName",
+        "cf_value_class_name": "AccountCf",
+        "is_base": false,
+        "select_collection": false
+      },
+      {
+        "related_class_name": "Contact",
+        "ui_prefix": "contacts",
+        "join_statements": [
+          "JOIN deal_contacts ON deal_contacts.deal_id = deals.id",
+          "JOIN contacts ON deal_contacts.contact_id = contacts.id",
+          "JOIN contact_cfs ON contact_cfs.contact_id = contacts.id"
+        ],
+        "cf_table_name": "contact_cf_names",
+        "cf_name_class_name": "ContactCfName",
+        "cf_value_class_name": "ContactCf",
+        "is_base": false,
+        "select_collection": true
+      },
+      {
+        "related_class_name": "DealProduct",
+        "ui_prefix": "deal_products",
+        "join_statements": [
+          "JOIN deal_products ON deal_products.deal_id = deals.id",
+          "JOIN deal_product_cfs ON deal_product_cfs.deal_product_id = deal_products.id"
+        ],
+        "cf_table_name": "deal_product_cf_names",
+        "cf_name_class_name": "DealProductCfName",
+        "cf_value_class_name": "DealProductCf",
+        "is_base": false,
+        "select_collection": true
+      },
+      {
+        "related_class_name": "Deal",
+        "ui_prefix": "deal",
+        "join_statements": [
+          "JOIN deal_custom_fields ON deal_custom_fields.deal_id = deals.id"
+        ],
+        "cf_table_name": "deal_custom_field_names",
+        "cf_name_class_name": "DealCustomFieldName",
+        "cf_value_class_name": "DealCustomField",
+        "foreign_key": "deal_id",
+        "is_base": true,
+        "select_collection": false
+      }
+    ]
+  }
+}

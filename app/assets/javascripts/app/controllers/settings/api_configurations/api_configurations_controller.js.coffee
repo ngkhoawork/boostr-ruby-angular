@@ -1,6 +1,6 @@
 @app.controller 'ApiConfigurationsController',
-  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType', 'DfpImportService', 'DatafeedService'
-    ($window, $scope, $modal, ApiConfiguration, IntegrationType, DfpImportService, DatafeedService) ->
+  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType', 'DfpImportService', 'SlackConnectService', 'DatafeedService'
+    ($window, $scope, $modal, ApiConfiguration, IntegrationType, DfpImportService, SlackConnectService, DatafeedService) ->
       mappings = {
         providers: {
           dfp: {
@@ -103,6 +103,10 @@
         DatafeedService.import(api_configuration_id: api_configuration.id, job_type: 'fullday').then (resp) ->
           $scope.showInfoModal(resp)
           init()
+
+      $scope.auth_slack = ->
+        SlackConnectService.auth().then (resp) ->
+          $window.location.href = resp.url
 
       $scope.editModal = (api_configuration) ->
         selectControllerTemplate = selectMapping(api_configuration.integration_provider)

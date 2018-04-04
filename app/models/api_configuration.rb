@@ -20,4 +20,8 @@ class ApiConfiguration < ActiveRecord::Base
     klass = self::INTEGRATION_PROVIDERS[routing_param.to_sym]
     klass.constantize.metadata
   end
+
+  def workflowable?
+    false
+  end
 end

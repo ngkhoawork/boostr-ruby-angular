@@ -298,6 +298,10 @@
       templateUrl: 'settings/stages/main_stages.html'
       controller: 'MainStageController'
 
+    .when '/settings/workflows/',
+      templateUrl: 'settings/workflows.html',
+      controller: 'SettingsWorkflowsController'
+
     .when '/settings/bps',
       templateUrl: 'settings/bps.html'
       controller: 'BPsController'

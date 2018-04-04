@@ -1,4 +1,5 @@
 class Team < ActiveRecord::Base
+  SAFE_COLUMNS = %i{name}
   acts_as_paranoid
 
   belongs_to :company

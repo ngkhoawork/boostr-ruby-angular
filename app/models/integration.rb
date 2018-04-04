@@ -5,6 +5,7 @@ class Integration < ActiveRecord::Base
   ASANA_CONNECT = 'Asana Connect'.freeze
   GOOGLE_SHEETS = 'Google Sheets'.freeze
   SSP = 'SSP'.freeze
+  SLACK = 'Slack'.freeze
 
   validates :external_id, :external_type, presence: true
 

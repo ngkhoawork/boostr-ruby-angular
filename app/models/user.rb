@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  SAFE_COLUMNS = %i{email first_name last_name title employee_id office}
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable and :omniauthable
   devise :invitable, :database_authenticatable, :registerable,

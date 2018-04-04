@@ -1,4 +1,6 @@
 class Client < ActiveRecord::Base
+  SAFE_COLUMNS = %i{name}
+
   include PgSearch
   acts_as_paranoid
 
