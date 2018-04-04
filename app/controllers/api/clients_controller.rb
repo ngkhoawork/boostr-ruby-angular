@@ -123,16 +123,8 @@ class Api::ClientsController < ApplicationController
   end
 
   def csv_import
-    if params[:file].present?
-      SmartCsvImportWorker.perform_async(
-        params[:file][:s3_file_path],
-        'Client',
-        current_user.id,
-        params[:file][:original_filename]
-      )
-
-      render json: { message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)" }, status: :ok
-    end
+    SmartCsvImportWorker.perform_async(*csv_import_params('Clients'))
+    render_csv_importer_response
   end
 
   def sellers
@@ -423,5 +415,17 @@ class Api::ClientsController < ApplicationController
 
   def category_options
     company.fields.client_category_fields.to_options
+  end
+
+  def render_csv_importer_response
+    render json: { message: I18n.t('csv.importer.response') }, status: :ok
+  end
+
+  def csv_import_params(name)
+    [file_params[:s3_file_path],
+     "Importers::#{name}Service",
+     current_user.id,
+     current_user.company_id,
+     file_params[:original_filename]]
   end
 end
