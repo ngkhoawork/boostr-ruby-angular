@@ -29,13 +29,13 @@ class Forecast::PmpRevenueCalcService
   end
 
   def create_forecast_pmp_revenue_fact(total, monthly_value)
-    if forecast_pmp_revenue_fact.id.present? && total <= 0
+    if total > 0
+      forecast_pmp_revenue_fact.update(
+        amount: total,
+        monthly_amount: monthly_value
+      )
+    elsif forecast_pmp_revenue_fact.id.present?
       forecast_pmp_revenue_fact.destroy
-    end
-    if (total > 0)
-      forecast_pmp_revenue_fact.amount = total
-      forecast_pmp_revenue_fact.monthly_amount = monthly_value
-      forecast_pmp_revenue_fact.save
     end
   end
 
@@ -49,7 +49,7 @@ class Forecast::PmpRevenueCalcService
               :product
 
   def forecast_pmp_revenue_fact
-    @_forecast_pmp_revenue_fact ||= ForecastPmpRevenueFact.find_or_initialize_by(
+    ForecastPmpRevenueFact.find_or_initialize_by(
       forecast_time_dimension_id: forecast_time_dimension.id,
       user_dimension_id: user.id,
       product_dimension_id: product&.id

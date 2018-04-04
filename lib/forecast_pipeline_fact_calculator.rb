@@ -41,21 +41,24 @@ module ForecastPipelineFactCalculator
     end
 
     def create_forecast_pipeline_fact(total, monthly_value)
-      forecast_pipeline_fact = ForecastPipelineFact.find_or_initialize_by(
+      if total > 0
+        forecast_pipeline_fact.update(
+          amount: total,
+          monthly_amount: monthly_value,
+          probability: @stage.probability
+        )
+      elsif forecast_pipeline_fact.id.present?
+        forecast_pipeline_fact.destroy
+      end
+    end
+
+    def forecast_pipeline_fact
+      ForecastPipelineFact.find_or_initialize_by(
         forecast_time_dimension_id: @forecast_time_dimension.id,
         user_dimension_id: @user.id,
         product_dimension_id: @product.id,
         stage_dimension_id: @stage.id
       )
-      if forecast_pipeline_fact.id.present? && total <= 0
-        forecast_pipeline_fact.destroy
-      end
-      if (total > 0)
-        forecast_pipeline_fact.amount = total
-        forecast_pipeline_fact.monthly_amount = monthly_value
-        forecast_pipeline_fact.probability = @stage.probability
-        forecast_pipeline_fact.save
-      end
     end
 
     def open_deals

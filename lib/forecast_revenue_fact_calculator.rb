@@ -75,19 +75,22 @@ module ForecastRevenueFactCalculator
     end
 
     def create_forecast_revenue_fact(total, monthly_value)
-      forecast_revenue_fact = ForecastRevenueFact.find_or_initialize_by(
+      if total > 0
+        forecast_revenue_fact.update(
+          amount: total,
+          monthly_amount: monthly_value
+        )
+      elsif forecast_revenue_fact.id.present?
+        forecast_revenue_fact.destroy
+      end
+    end
+
+    def forecast_revenue_fact
+      ForecastRevenueFact.find_or_initialize_by(
         forecast_time_dimension_id: @forecast_time_dimension.id,
         user_dimension_id: @user.id,
         product_dimension_id: @product.id
       )
-      if forecast_revenue_fact.id.present? && total <= 0
-        forecast_revenue_fact.destroy
-      end
-      if (total > 0)
-        forecast_revenue_fact.amount = total
-        forecast_revenue_fact.monthly_amount = monthly_value
-        forecast_revenue_fact.save
-      end
     end
 
     def open_deals
