@@ -26,7 +26,9 @@ class AssignmentRulesUser < ActiveRecord::Base
   end
 
   def set_next_user_to_last_rule
-    related_assignment_rules_users.not_next.last.update(next: true) if self.next
+    if self.next && not_next_related_assignment_rules_users.present?
+      not_next_related_assignment_rules_users.last.update(next: true)
+    end
   end
 
   def self.next_available
@@ -35,5 +37,9 @@ class AssignmentRulesUser < ActiveRecord::Base
 
   def related_assignment_rules_users
     @_related_assignment_rules_users ||= self.assignment_rule.assignment_rules_users
+  end
+
+  def not_next_related_assignment_rules_users
+    @_not_next_related_assignment_rules_users ||= related_assignment_rules_users.not_next
   end
 end
