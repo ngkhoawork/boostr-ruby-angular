@@ -7,7 +7,7 @@ class Csv::Client
     :account_id, :name, :type, :parent_account, :company_id,
     :user_id, :category, :subcategory, :teammembers, :region,
     :segment, :holding_company, :address, :city, :state, :zip,
-    :country, :phone, :website, :custom_field_names,
+    :country, :phone, :website, :legacy_id, :custom_field_names,
     :replace_team, :unmatched_fields, :company_fields
   ]
   attr_accessor(*ATTRS)
@@ -114,7 +114,8 @@ class Csv::Client
       client_region: client_region,
       client_segment: client_segment,
       parent_client: parent_account_record,
-      holding_company: client_holding_company
+      holding_company: client_holding_company,
+      legacy_id: legacy_id
     }
   end
 

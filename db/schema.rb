@@ -558,6 +558,7 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.integer  "client_segment_id"
     t.integer  "holding_company_id"
     t.text     "note"
+    t.string   "legacy_id"
   end
 
   add_index "clients", ["client_category_id"], name: "index_clients_on_client_category_id", using: :btree
@@ -1259,6 +1260,7 @@ ActiveRecord::Schema.define(version: 20171213215450) do
     t.string   "closed_reason_text"
     t.datetime "next_steps_due"
     t.string   "ssp_deal_id"
+    t.string   "legacy_id"
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree
