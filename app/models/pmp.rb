@@ -118,7 +118,10 @@ class Pmp < ActiveRecord::Base
 
   def update_pmp_members_date
     if end_date_changed? && !pmp_members.empty?
-      pmp_members.update_all(to_date: end_date) 
+      pmp_members.where(to_date: end_date_was).update_all(to_date: end_date)
+    end
+    if start_date_changed? && !pmp_members.empty?
+      pmp_members.where(from_date: start_date_was).update_all(from_date: start_date)
     end
   end
 end
