@@ -155,12 +155,20 @@ class Product < ActiveRecord::Base
     end
   end
 
+  def self.include_children(products)
+    products.map(&:include_children).flatten.uniq
+  end
+
   def all_children(children_array = [])
     children_array += children.all
     children.each do |child|
       child.all_children(children_array)
     end
     children_array
+  end
+
+  def include_children
+    [self] + all_children
   end
 
   def generate_full_name
@@ -236,7 +244,7 @@ class Product < ActiveRecord::Base
       while ids.present? 
         depth += 1
         ids = company.products.where(parent_id: ids).pluck(:id)
-        errors.add(:base, "You can't select child parent as parent.") and break if ids.include?(parent_id)
+        errors.add(:base, "You can't select child product as parent.") and break if ids.include?(parent_id)
       end
       errors.add(:base, "Product level should be less than equal to 2. Please consider level of child products.") if depth > 2
     end

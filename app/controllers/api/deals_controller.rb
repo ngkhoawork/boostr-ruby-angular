@@ -105,8 +105,8 @@ class Api::DealsController < ApplicationController
             ).distinct,
             each_serializer: DealIndexSerializer
           )
-      end
-    }
+        end
+      }
       format.csv {
         require 'timeout'
         begin
@@ -824,9 +824,9 @@ class Api::DealsController < ApplicationController
 
   def product_ids
     @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
-      params[:product_ids]
+      Product.include_children(company.products.where(id: params[:product_ids])).collect(&:id)
     elsif product_family
-      product_family.products.collect(&:id)
+      Product.include_children(product_family.products).collect(&:id)
     else
       nil
     end
