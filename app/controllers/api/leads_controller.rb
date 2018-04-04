@@ -120,6 +120,6 @@ class Api::LeadsController < ApplicationController
   end
 
   def captcha_succeed?
-    RecaptchaService.new(company.id, params['g-recaptcha-response']).succeed?
+    RecaptchaService.new(lead_params[:company_id], params['g-recaptcha-response']).succeed?
   end
 end
