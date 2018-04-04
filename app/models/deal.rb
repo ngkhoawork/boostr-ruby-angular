@@ -65,7 +65,7 @@ class Deal < ActiveRecord::Base
   delegate :open?, to: :stage, allow_nil: true, prefix: true
   delegate :active?, to: :stage, allow_nil: true, prefix: true
 
-  attr_accessor :modifying_user
+  attr_accessor :modifying_user, :manual_update
 
   before_update do
     if curr_cd_changed?
@@ -275,20 +275,20 @@ class Deal < ActiveRecord::Base
   def billing_contact_presence
     return unless stage.present?
     validation = company.validations.find_by(
-      object: 'Billing Contact', 
+      object: 'Billing Contact',
       factor: stage.sales_process_id
-    ) 
+    )
     stage_threshold = validation&.criterion&.value&.probability
 
     if stage_threshold && stage.probability >= stage_threshold && !self.has_billing_contact?
-      errors.add(:stage, "#{self.stage&.name} requires a valid Billing Contact with address") 
+      errors.add(:stage, "#{self.stage&.name} requires a valid Billing Contact with address")
     end
   end
 
   def account_manager_presence
     return unless stage.present?
     validation = company.validations.find_by(
-      object: 'Account Manager', 
+      object: 'Account Manager',
       factor: stage.sales_process_id
     )
     stage_threshold = validation&.criterion&.value&.probability
