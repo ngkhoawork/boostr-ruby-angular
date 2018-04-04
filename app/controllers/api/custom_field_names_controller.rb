@@ -2,33 +2,44 @@ class Api::CustomFieldNamesController < ApplicationController
   respond_to :json
 
   def index
-    render json: collection, each_serializer: CustomFieldNames::Serializer
+    render json: collection,
+           each_serializer: CustomFieldNames::Serializer
   end
 
   def show
-    render json: CustomFieldNames::Serializer.new(resource)
+    render json: resource,
+           serializer: CustomFieldNames::Serializer
   end
 
   def create
     if build_resource.save
-      render json: CustomFieldNames::Serializer.new(resource), status: :created
+      render json: resource,
+             serializer: CustomFieldNames::Serializer,
+             status: :created
     else
-      render json: { errors: resource.errors.messages }, status: :unprocessable_entity
+      render json: { errors: resource.errors.messages },
+             status: :unprocessable_entity
     end
   end
 
   def update
     if resource.update(resource_params)
-      render json: CustomFieldNames::Serializer.new(resource), status: :ok
+      render json: resource,
+             serializer: CustomFieldNames::Serializer
     else
-      render json: { errors: resource.errors.messages }, status: :unprocessable_entity
+      render json: { errors: resource.errors.messages },
+             status: :unprocessable_entity
     end
   end
 
   def destroy
-    resource.destroy!
-
-    render nothing: true, status: :no_content
+    if resource.destroy
+      render nothing: true,
+             status: :no_content
+    else
+      render json: { errors: resource.errors.messages },
+             status: :unprocessable_entity
+    end
   end
 
   private

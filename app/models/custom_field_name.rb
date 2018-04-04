@@ -17,7 +17,7 @@ class CustomFieldName < ActiveRecord::Base
 
   class << self
     def check_subject_type!(subject_type)
-      allowed_subject_types.include?(subject_type) || (raise 'Unknown subject type')
+      allowed_subject_types.include?(subject_type) || (raise ArgumentError, 'Unknown subject type')
     end
 
     def allowed_subject_types
@@ -34,9 +34,8 @@ class CustomFieldName < ActiveRecord::Base
 
     def column_type_limits
       @column_type_limits ||=
-        allowed_column_types.inject({}) do |acc, column_type|
+        allowed_column_types.each.with_object({}) do |column_type, acc|
           acc[column_type] = column_type_limit(column_type)
-          acc
         end.freeze
     end
 
