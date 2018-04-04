@@ -29,6 +29,8 @@ class Api::CompaniesController < ApplicationController
       :product_options_enabled,
       :product_option1_field,
       :product_option2_field,
+      :product_option1_enabled,
+      :product_option2_enabled,
       :enable_net_forecasting,
       :default_io_freeze_budgets,
       forecast_permission: ["0", "1", "2", "3", "4", "5", "6", "7"],

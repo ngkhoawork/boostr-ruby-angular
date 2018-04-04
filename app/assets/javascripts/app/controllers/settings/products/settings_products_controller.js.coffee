@@ -27,6 +27,16 @@
     $scope.updateSettings = () ->
       $scope.company.$update()
 
+    $scope.enableProductOption1 = () ->
+      if !$scope.company.product_option1_enabled
+        $scope.company.product_option2_enabled = false
+      $scope.updateSettings()
+
+    $scope.enableProductOption2 = () ->
+      if $scope.company.product_option2_enabled
+        $scope.company.product_option1_enabled = true
+      $scope.updateSettings()
+
     getProducts = () ->
       Product.all().then (products) ->
         $scope.products = products

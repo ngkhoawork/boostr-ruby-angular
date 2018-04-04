@@ -420,9 +420,13 @@ class DisplayLineItem < ActiveRecord::Base
       i = 0
       if row[12]
         product_full_name = row[12].strip
-        if current_user.company.product_options_enabled
-          i = 2
-          product_full_name = row[12].strip + ' ' + row[13].strip + ' ' + row[14].strip
+        if current_user.company.product_options_enabled && current_user.company.product_option1_enabled
+          i += 1
+          product_full_name += ' ' + row[13].strip
+        end
+        if current_user.company.product_options_enabled && current_user.company.product_option2_enabled
+          i += 1
+          product_full_name += ' ' + row[14].strip
         end
         products = current_user
                        .company

@@ -127,6 +127,14 @@ class User < ActiveRecord::Base
     self.company.product_option2
   end
 
+  def product_option1_enabled
+    self.company.product_option1_enabled
+  end
+
+  def product_option2_enabled
+    self.company.product_option2_enabled
+  end
+
   def is_admin
     is?(:admin)
   end
@@ -202,7 +210,9 @@ class User < ActiveRecord::Base
           :has_multiple_sales_process,
           :product_options_enabled,
           :product_option1,
-          :product_option2
+          :product_option2,
+          :product_option1_enabled,
+          :product_option2_enabled
         ]
       ).except(:override))
     end

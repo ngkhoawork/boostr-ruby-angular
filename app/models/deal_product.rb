@@ -207,8 +207,14 @@ class DealProduct < ActiveRecord::Base
       if row[2]
         full_name = row[2].to_s
         if current_user.company.product_options_enabled
-          i = 2
-          full_name = row[2].to_s + ' ' + row[3].to_s + ' ' + row[4].to_s
+          if current_user.company.product_option1_enabled
+            i += 1
+            full_name += ' ' + row[3].to_s
+          end
+          if current_user.company.product_option2_enabled
+            i += 1
+            full_name += ' ' + row[4].to_s
+          end
         end
         product = current_user.company.products.where(full_name: full_name.strip).first
         unless product

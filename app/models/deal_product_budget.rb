@@ -45,8 +45,8 @@ class DealProductBudget < ActiveRecord::Base
       :Product
     ]
     if company.product_options_enabled
-      header << company.product_option1.to_sym
-      header << company.product_option2.to_sym
+      header << company.product_option1.to_sym if company.product_option1_enabled
+      header << company.product_option2.to_sym if company.product_option2_enabled
     end
     header += [
       :Budget,
@@ -99,8 +99,8 @@ class DealProductBudget < ActiveRecord::Base
             line << deal.advertiser.try(:name)
             line << deal_product.product&.level0&.[]('name')
             if company.product_options_enabled
-              line << deal_product.product&.level1&.[]('name')
-              line << deal_product.product&.level2&.[]('name')
+              line << deal_product.product&.level1&.[]('name') if company.product_option1_enabled
+              line << deal_product.product&.level2&.[]('name') if company.product_option2_enabled
             end
             line << (dpb.budget_loc.try(:round) || 0)
             line << dpb.start_date
@@ -162,9 +162,13 @@ class DealProductBudget < ActiveRecord::Base
       i = 0
       if row[2]
         full_name = row[2].to_s
-        if current_user.company.product_options_enabled
-          i = 2
-          full_name = row[2].to_s + ' ' + row[3].to_s + ' ' + row[4].to_s
+        if current_user.company.product_options_enabled && current_user.company.product_option1_enabled
+          i += 1
+          full_name += ' ' + row[3].to_s
+        end
+        if current_user.company.product_options_enabled && current_user.company.product_option2_enabled
+          i += 1
+          full_name += ' ' + row[4].to_s
         end
         product = current_user.company.products.where(full_name: full_name.strip).first
         unless product

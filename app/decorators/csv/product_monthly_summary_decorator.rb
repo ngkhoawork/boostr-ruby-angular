@@ -96,9 +96,9 @@ class Csv::ProductMonthlySummaryDecorator
   attr_reader :row, :company, :custom_field_names
 
   def check_product_options(name)
-    if company.product_options_enabled && name.eql?(product_option1)
+    if company.product_options_enabled && company.product_option1_enabled && name.eql?(product_option1)
       row[:product]&.[]('level1')&.[]('name')
-    elsif company.product_options_enabled && name.eql?(product_option2)
+    elsif company.product_options_enabled && company.product_option2_enabled && name.eql?(product_option2)
       row[:product]&.[]('level2')&.[]('name')
     end
   end

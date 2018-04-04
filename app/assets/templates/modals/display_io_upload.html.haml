@@ -42,8 +42,8 @@
           %br
           (MM/DD/YYYY)
         %li.col-xs-3 Product *
-        %li.col-xs-3{'ng-if': 'company.product_options_enabled'} Product Level1
-        %li.col-xs-3{'ng-if': 'company.product_options_enabled'} Product Level2
+        %li.col-xs-3{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} Product Level1
+        %li.col-xs-3{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} Product Level2
         %li.col-xs-3 Qty *
         %li.col-xs-3 Price
         %li.col-xs-3 Price Type

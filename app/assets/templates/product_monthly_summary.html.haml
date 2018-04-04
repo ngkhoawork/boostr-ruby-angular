@@ -24,9 +24,9 @@
                 %thead
                   %tr.z-sortable-prime{'z-fixed-header': true, watch: '"data"'}
                     %th.z-sortable{by: 'product.level0.name'} Name
-                    %th.z-sortable{by: 'product.level1.name', 'ng-if': 'company.product_options_enabled'}
+                    %th.z-sortable{by: 'product.level1.name', 'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
                       {{company.product_option1_field || 'Option1'}}
-                    %th.z-sortable{by: 'product.level2.name', 'ng-if': 'company.product_options_enabled'}
+                    %th.z-sortable{by: 'product.level2.name', 'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
                       {{company.product_option2_field || 'Option2'}}
                     %th{'ng-repeat': 'cfName in customFieldNames'}
                       .z-sortable{by: 'custom_fields["{{cfName.field_type + cfName.field_index}}"]'} {{cfName.field_label}}
@@ -51,8 +51,8 @@
                 %tbody{'ng-if': 'shouldRenderList', infinite: {scroll: 'loadMoreData()', 'scroll-disabled': 'isLoading || allItemsLoaded', 'scroll-distance': '0.5'}}
                   %tr{'ng-repeat': 'row in data | orderBy : zSort.by : zSort.rev'}
                     %td {{row.product.level0.name}}
-                    %td{'ng-if': 'company.product_options_enabled'} {{row.product.level1.name}}
-                    %td{'ng-if': 'company.product_options_enabled'}  {{row.product.level2.name}}
+                    %td{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} {{row.product.level1.name}}
+                    %td{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}  {{row.product.level2.name}}
                     %td{'ng-repeat': 'cfName in customFieldNames'}
                       {{row.custom_fields[cfName.field_type + cfName.field_index]}}
                     %td {{row.record_type}}

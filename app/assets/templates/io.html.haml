@@ -80,8 +80,8 @@
 							%thead
 								%tr
 									%th.left.product-column Product
-									%th.left.column{ 'ng-show': 'company.product_options_enabled' } {{ company.product_option1_field || 'Option1' }}
-									%th.left.column{ 'ng-show': 'company.product_options_enabled' } {{ company.product_option2_field || 'Option2' }}
+									%th.left.column{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled' } {{ company.product_option1_field || 'Option1' }}
+									%th.left.column{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled' } {{ company.product_option2_field || 'Option2' }}
 									%th.column.left Start Date
 									%th.column.left End Date
 									%th.column.right Total Budget
@@ -92,9 +92,9 @@
 									%td.product-column
 										{{ productName(content_fee.product) }}
 										%i.fa.fa-trash.z-icon{'ng-click': 'deleteContentFee(content_fee)'}
-									%td{ 'ng-if': 'company.product_options_enabled' }
+									%td{ 'ng-if': 'company.product_options_enabled && company.product_option1_enabled' }
 										{{ productOption1(content_fee.product) }}
-									%td{ 'ng-if': 'company.product_options_enabled' }
+									%td{ 'ng-if': 'company.product_options_enabled && company.product_option2_enabled' }
 										{{ productOption2(content_fee.product) }}
 									%td
 										{{ currentIO.start_date | date: 'M/d/yyyy' }}
@@ -109,7 +109,8 @@
 										%span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
 											{{ product_budget.budget_loc | currency:currency_symbol:2 }}
 								%tr.sum-budgets-row{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0'} }
-									%td{ 'ng-show': 'company.product_options_enabled', colspan: 2 }
+									%td{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled'}
+									%td{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled'}
 									%td{colspan: 2}
 									%td.right
 										%b TOTAL

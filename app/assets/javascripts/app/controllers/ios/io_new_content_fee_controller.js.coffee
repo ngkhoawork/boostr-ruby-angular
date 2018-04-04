@@ -17,6 +17,8 @@
             }
             content_fee_products = _.map currentIO.content_fees, (c) -> c.product
             $scope.productOptionsEnabled = company.product_options_enabled
+            $scope.productOption1Enabled = company.product_option1_enabled
+            $scope.productOption2Enabled = company.product_option2_enabled
             $scope.option1Field = company.product_option1_field || 'Option1'
             $scope.option2Field = company.product_option2_field || 'Option2'
 

@@ -26,8 +26,8 @@ class Csv::ProductMonthlySummaryService < Csv::BaseService
   def headers
     headers = ['Product']
     if company.product_options_enabled
-      headers << company.product_option1
-      headers << company.product_option2
+      headers << company.product_option1 if company.product_option1_enabled
+      headers << company.product_option2 if company.product_option2_enabled
     end
     headers += custom_headers
     headers.concat [

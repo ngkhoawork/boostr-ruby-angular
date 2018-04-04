@@ -53,9 +53,9 @@
                 %tr.z-sortable-prime{'sort-name': 'forecast'}
                   %th
                     .z-sortable{by: 'product.level0.name', default: true} Product
-                  %th{'ng-if': 'productOptionsEnabled'}
+                  %th{'ng-if': 'productOptionsEnabled && productOption1Enabled'}
                     .z-sortable{by: 'product.level1.name'} {{ productOption1 }}
-                  %th{'ng-if': 'productOptionsEnabled'}
+                  %th{'ng-if': 'productOptionsEnabled && productOption2Enabled'}
                     .z-sortable{by: 'product.level2.name'} {{ productOption2 }}
                   %th
                     .z-sortable{by: 'product.product_family.name'} Product Family
@@ -73,9 +73,9 @@
                 %tr{'ng-repeat': 'product_forecast in forecastData | orderBy : zSort.forecast.by : zSort.forecast.rev'}
                   %td
                     {{product_forecast.product.level0.name}}
-                  %td{'ng-if': 'productOptionsEnabled'}
+                  %td{'ng-if': 'productOptionsEnabled && productOption1Enabled'}
                     {{product_forecast.product.level1.name}}
-                  %td{'ng-if': 'productOptionsEnabled'}
+                  %td{'ng-if': 'productOptionsEnabled && productOption2Enabled'}
                     {{product_forecast.product.level2.name}}
                   %td
                     {{product_forecast.product.product_family.name}}
@@ -93,8 +93,8 @@
                   %td
                     %strong
                       Total
-                  %td{'ng-if': 'productOptionsEnabled'}
-                  %td{'ng-if': 'productOptionsEnabled'}
+                  %td{'ng-if': 'productOptionsEnabled && productOption1Enabled'}
+                  %td{'ng-if': 'productOptionsEnabled && productOption2Enabled'}
                   %td
                   %td{'ng-repeat': 'stage in stages'}
                     %strong
@@ -131,9 +131,9 @@
                       .z-sortable{by: 'budget', default: true} Total Budget
                     %th
                       .z-sortable{by: 'product.level0.name'} Product
-                    %th{'ng-if': 'productOptionsEnabled'}
+                    %th{'ng-if': 'productOptionsEnabled && productOption1Enabled'}
                       .z-sortable{by: 'product.level1.name'} {{productOption1}}
-                    %th{'ng-if': 'productOptionsEnabled'}
+                    %th{'ng-if': 'productOptionsEnabled && productOption2Enabled'}
                       .z-sortable{by: 'product.level2.name'} {{productOption2}}
                     %th.right
                       .z-sortable{by: 'in_period_split_amt'} Product Budget
@@ -150,8 +150,8 @@
                     %td {{revenue.advertiser.name}}
                     %td.right {{revenue.budget | currency : '$' : 2}}
                     %td {{revenue.product.level0.name}}
-                    %td{'ng-if': 'productOptionsEnabled'} {{revenue.product.level1.name}}
-                    %td{'ng-if': 'productOptionsEnabled'} {{revenue.product.level2.name}}
+                    %td{'ng-if': 'productOptionsEnabled && productOption1Enabled'} {{revenue.product.level1.name}}
+                    %td{'ng-if': 'productOptionsEnabled && productOption2Enabled'} {{revenue.product.level2.name}}
                     %td.right {{revenue.in_period_amt | currency : '$' : 2}}
                     %td {{revenue.start_date | date : 'MM/dd/yyyy'}}
                     %td {{revenue.end_date | date : 'MM/dd/yyyy'}}
@@ -180,9 +180,9 @@
                       .z-sortable{by: 'budget', default: true} Total Budget
                     %th
                       .z-sortable{by: 'product.level0.name'} Product
-                    %th{'ng-if': 'productOptionsEnabled'}
+                    %th{'ng-if': 'productOptionsEnabled && productOption1Enabled'}
                       .z-sortable{by: 'product.level1.name'} {{productOption1}}
-                    %th{'ng-if': 'productOptionsEnabled'}
+                    %th{'ng-if': 'productOptionsEnabled && productOption2Enabled'}
                       .z-sortable{by: 'product.level2.name'} {{productOption2}}
                     %th.right
                       .z-sortable{by: 'in_period_split_amt'} Product Budget
@@ -199,8 +199,8 @@
                     %td {{pmp_revenue.advertiser}}
                     %td.right {{pmp_revenue.budget | currency : '$' : 2}}
                     %td {{pmp_revenue.product.level0.name}}
-                    %td{'ng-if': 'productOptionsEnabled'} {{pmp_revenue.product.level1.name}}
-                    %td{'ng-if': 'productOptionsEnabled'} {{pmp_revenue.product.level2.name}}
+                    %td{'ng-if': 'productOptionsEnabled && productOption1Enabled'} {{pmp_revenue.product.level1.name}}
+                    %td{'ng-if': 'productOptionsEnabled && productOption2Enabled'} {{pmp_revenue.product.level2.name}}
                     %td.right {{pmp_revenue.in_period_amt | currency : '$' : 2}}
                     %td {{pmp_revenue.start_date | date : 'MM/dd/yyyy'}}
                     %td {{pmp_revenue.end_date | date : 'MM/dd/yyyy'}}
@@ -232,9 +232,9 @@
                       .z-sortable{by: 'budget', default: true} Total Budget
                     %th
                       .z-sortable{by: 'product.level0.name'} Product
-                    %th{'ng-if': 'productOptionsEnabled'}
+                    %th{'ng-if': 'productOptionsEnabled && productOption1Enabled'}
                       .z-sortable{by: 'product.level1.name'} {{productOption1}}
-                    %th{'ng-if': 'productOptionsEnabled'}
+                    %th{'ng-if': 'productOptionsEnabled && productOption2Enabled'}
                       .z-sortable{by: 'product.level2.name'} {{productOption2}}
                     %th.right
                       .z-sortable{by: 'in_period_amt'} Product Budget
@@ -252,8 +252,8 @@
                     %td {{deal.stage.probability}}%
                     %td.right {{deal.budget | currency : '$' : 0}}
                     %td {{deal.product.level0.name}}
-                    %td{'ng-if': 'productOptionsEnabled'} {{deal.product.level1.name}}
-                    %td{'ng-if': 'productOptionsEnabled'} {{deal.product.level2.name}}
+                    %td{'ng-if': 'productOptionsEnabled && productOption1Enabled'} {{deal.product.level1.name}}
+                    %td{'ng-if': 'productOptionsEnabled && productOption2Enabled'} {{deal.product.level2.name}}
                     %td.right {{deal.in_period_amt | currency : '$' : 0}}
                     %td {{deal.start_date | date : 'MM/dd/yyyy'}}
                     %td {{deal.end_date | date : 'MM/dd/yyyy'}}

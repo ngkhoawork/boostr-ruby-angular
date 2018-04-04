@@ -12,9 +12,9 @@
             %span.z-sortable{by: 'name'} Name
           %th
             %span.z-sortable{by: 'product_family.name'} Family
-          %th{ 'ng-show': 'company.product_options_enabled' } 
+          %th{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled' } 
             %span.z-sortable{by: 'parent.name'} Parent Product
-          %th{ 'ng-show': 'company.product_options_enabled' } 
+          %th{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled' } 
             %span.z-sortable{by: 'level'} Level
           %th 
             %span.z-sortable{by: 'pricing_type.option.name'} Type
@@ -33,8 +33,8 @@
             %span.mr8 {{ product.name }}
             %i.fa.fa-pencil.z-icon.edit-product{'ng-click': 'showNewProductModal(product); $event.stopPropagation()'}
           %td {{ product.product_family.name }}
-          %td{ 'ng-show': 'company.product_options_enabled' } {{ product.parent.name }}
-          %td{ 'ng-show': 'company.product_options_enabled' } {{ product.level }}
+          %td{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled' } {{ product.parent.name }}
+          %td{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled' } {{ product.level }}
           %td {{ product.pricing_type.option.name }}
           %td {{ product.revenue_type }}
           %td {{ product.margin }}

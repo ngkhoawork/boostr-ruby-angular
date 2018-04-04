@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180325011447) do
+ActiveRecord::Schema.define(version: 20180404030523) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -619,6 +619,8 @@ ActiveRecord::Schema.define(version: 20180325011447) do
     t.string   "product_option1_field",             default: "Option1"
     t.string   "product_option2_field",             default: "Option2"
     t.boolean  "default_io_freeze_budgets",         default: false
+    t.boolean  "product_option1_enabled",           default: false
+    t.boolean  "product_option2_enabled",           default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -821,10 +823,11 @@ ActiveRecord::Schema.define(version: 20180325011447) do
     t.integer  "cost_id"
     t.date     "start_date"
     t.date     "end_date"
-    t.decimal  "budget",     precision: 15, scale: 2
-    t.decimal  "budget_loc", precision: 15, scale: 2
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.decimal  "budget",        precision: 15, scale: 2
+    t.decimal  "budget_loc",    precision: 15, scale: 2
+    t.datetime "created_at",                                                 null: false
+    t.datetime "updated_at",                                                 null: false
+    t.string   "actual_status",                          default: "Pending"
   end
 
   add_index "cost_monthly_amounts", ["cost_id"], name: "index_cost_monthly_amounts_on_cost_id", using: :btree
@@ -1643,18 +1646,24 @@ ActiveRecord::Schema.define(version: 20180325011447) do
     t.string   "ssp_deal_id"
     t.integer  "lead_id"
     t.string   "created_from",                                 default: "false"
+    t.integer  "type_id"
+    t.integer  "source_id"
+    t.integer  "close_reason_id"
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree
   add_index "deals", ["agency_id"], name: "index_deals_on_agency_id", using: :btree
+  add_index "deals", ["close_reason_id"], name: "index_deals_on_close_reason_id", using: :btree
   add_index "deals", ["company_id"], name: "index_deals_on_company_id", using: :btree
   add_index "deals", ["created_by"], name: "index_deals_on_created_by", using: :btree
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
   add_index "deals", ["initiative_id"], name: "index_deals_on_initiative_id", using: :btree
   add_index "deals", ["lead_id"], name: "index_deals_on_lead_id", using: :btree
   add_index "deals", ["previous_stage_id"], name: "index_deals_on_previous_stage_id", using: :btree
+  add_index "deals", ["source_id"], name: "index_deals_on_source_id", using: :btree
   add_index "deals", ["stage_id"], name: "index_deals_on_stage_id", using: :btree
   add_index "deals", ["stage_updated_by"], name: "index_deals_on_stage_updated_by", using: :btree
+  add_index "deals", ["type_id"], name: "index_deals_on_type_id", using: :btree
   add_index "deals", ["updated_by"], name: "index_deals_on_updated_by", using: :btree
 
   create_table "dfp_report_queries", force: :cascade do |t|
@@ -1800,10 +1809,11 @@ ActiveRecord::Schema.define(version: 20180325011447) do
     t.string   "access_token"
     t.boolean  "connected",           default: false
     t.boolean  "enabled",             default: false
-    t.datetime "created_at",                                                                                                                                                        null: false
-    t.datetime "updated_at",                                                                                                                                                        null: false
-    t.jsonb    "deal_folder_tree",    default: {"nodes"=>[{"nodes"=>[], "title"=>"RFP"}, {"nodes"=>[], "title"=>"Proposal"}, {"nodes"=>[], "title"=>"Creative"}], "title"=>"Deal"}, null: false
-    t.jsonb    "account_folder_tree", default: {"nodes"=>[{"nodes"=>[], "title"=>"Contract"}, {"nodes"=>[], "title"=>"Templates"}], "title"=>"Account"},                            null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.jsonb    "deal_folder_tree"
+    t.jsonb    "account_folder_tree"
+    t.string   "deals_folder_name"
   end
 
   add_index "egnyte_integrations", ["company_id"], name: "index_egnyte_integrations_on_company_id", using: :btree
@@ -2152,8 +2162,9 @@ ActiveRecord::Schema.define(version: 20180325011447) do
     t.text     "message"
     t.boolean  "active"
     t.text     "recipients"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.integer  "event_type", default: 0
   end
 
   add_index "notifications", ["company_id"], name: "index_notifications_on_company_id", using: :btree
@@ -2650,6 +2661,24 @@ ActiveRecord::Schema.define(version: 20180325011447) do
   add_index "ssp_advertisers", ["ssp_id"], name: "index_ssp_advertisers_on_ssp_id", using: :btree
   add_index "ssp_advertisers", ["updated_by"], name: "index_ssp_advertisers_on_updated_by", using: :btree
 
+  create_table "ssp_credentials", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "key",                                      null: false
+    t.string   "secret",                                   null: false
+    t.integer  "publisher_id",                             null: false
+    t.integer  "ssp_id"
+    t.integer  "type_id",              default: 1
+    t.boolean  "switched_on",          default: true
+    t.string   "parser_type",          default: "rubicon"
+    t.string   "integration_type"
+    t.string   "integration_provider"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "ssp_credentials", ["company_id"], name: "index_ssp_credentials_on_company_id", using: :btree
+  add_index "ssp_credentials", ["ssp_id"], name: "index_ssp_credentials_on_ssp_id", using: :btree
+
   create_table "ssps", force: :cascade do |t|
     t.string "name"
   end
@@ -2902,8 +2931,9 @@ ActiveRecord::Schema.define(version: 20180325011447) do
     t.string   "workflow_type"
     t.string   "workflow_method"
     t.string   "template"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+    t.text     "slack_attachment_mappings", default: "[]"
   end
 
   add_index "workflow_actions", ["api_configuration_id"], name: "index_workflow_actions_on_api_configuration_id", using: :btree
@@ -2920,6 +2950,7 @@ ActiveRecord::Schema.define(version: 20180325011447) do
     t.string   "relation"
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
+    t.string   "data_type"
   end
 
   add_index "workflow_criterions", ["workflow_criterion_id"], name: "index_workflow_criterions_on_workflow_criterion_id", using: :btree

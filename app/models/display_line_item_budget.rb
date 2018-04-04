@@ -82,8 +82,8 @@ class DisplayLineItemBudget < ActiveRecord::Base
       :Product
     ]
     if company.product_options_enabled
-      header << company.product_option1.to_sym
-      header << company.product_option2.to_sym
+      header << company.product_option1.to_sym if company.product_option1_enabled
+      header << company.product_option2.to_sym if company.product_option2_enabled
     end
     header += [
       :Budget,
@@ -106,8 +106,8 @@ class DisplayLineItemBudget < ActiveRecord::Base
             line << io.advertiser&.name
             line << content_fee.product&.level0&.[]('name')
             if company.product_options_enabled
-              line << content_fee.product&.level1&.[]('name')
-              line << content_fee.product&.level2&.[]('name')
+              line << content_fee.product&.level1&.[]('name') if company.product_option1_enabled
+              line << content_fee.product&.level2&.[]('name') if company.product_option2_enabled
             end
             line << (cfpb.budget_loc&.round || 0)
             line << cfpb.start_date
@@ -129,8 +129,8 @@ class DisplayLineItemBudget < ActiveRecord::Base
             line << io.advertiser&.name
             line << display_line_item.product&.name
             if company.product_options_enabled
-              line << display_line_item.product&.level1&.name
-              line << display_line_item.product&.level2&.name
+              line << display_line_item.product&.level1&.name if company.product_option1_enabled
+              line << display_line_item.product&.level2&.name if company.product_option2_enabled
             end
             line << (budget_loc&.round || 0)
             line << dlib.start_date

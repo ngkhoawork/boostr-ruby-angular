@@ -30,8 +30,8 @@ class Csv::DealProductService < Csv::BaseService
       'Product_name'
     ]
     if company.product_options_enabled
-      headers << company.product_option1
-      headers << company.product_option2
+      headers << company.product_option1 if company.product_option1_enabled
+      headers << company.product_option2 if company.product_option2_enabled
     end
     headers + [
       'Product_budget',

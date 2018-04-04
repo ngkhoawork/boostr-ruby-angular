@@ -71,9 +71,9 @@ class Csv::DealProductDecorator
   end
 
   def check_product_options(name)
-    if company.product_options_enabled && name.eql?(product_option1)
+    if company.product_options_enabled && company.product_option1_enabled && name.eql?(product_option1)
       deal_product.product&.level1&.[]('name')
-    elsif company.product_options_enabled && name.eql?(product_option2)
+    elsif company.product_options_enabled && company.product_option2_enabled && name.eql?(product_option2)
       deal_product.product&.level2&.[]('name')
     end
   end

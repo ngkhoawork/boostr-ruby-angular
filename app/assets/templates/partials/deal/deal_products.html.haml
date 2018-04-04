@@ -7,8 +7,8 @@
 			%thead
 				%tr
 					%th Product
-					%th.text-left{ 'ng-show': 'company.product_options_enabled' } {{ company.product_option1_field || 'Option1' }}
-					%th.text-left{ 'ng-show': 'company.product_options_enabled' } {{ company.product_option2_field || 'Option2' }}
+					%th.text-left{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled' } {{ company.product_option1_field || 'Option1' }}
+					%th.text-left{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled' } {{ company.product_option2_field || 'Option2' }}
 					%th.vtop{'ng-if': 'isPmpDeal'}
 						SSP
 						%span.star *
@@ -28,9 +28,9 @@
 					%td
 						{{ dealProductName(deal_product) }}
 						%i.fa.fa-trash.delete-product{'ng-if': 'currentDeal.stage.open', 'ng-click': 'deleteDealProduct(deal_product)'}
-					%td.text-left{ 'ng-if': 'company.product_options_enabled' }
+					%td.text-left{ 'ng-if': 'company.product_options_enabled && company.product_option1_enabled' }
 						{{ dealProductOption1(deal_product) }}
-					%td.text-left{ 'ng-if': 'company.product_options_enabled' }
+					%td.text-left{ 'ng-if': 'company.product_options_enabled && company.product_option2_enabled' }
 						{{ dealProductOption2(deal_product) }}
 					%td{'ng-if': 'isPmpDeal'}
 						.dropdown{'ng-class':'{error: errors["ssp_id"+deal_product.id]}'}
@@ -136,7 +136,8 @@
 						%div.budget-percent
 							{{ deal_product_budget.budget_percent || 0}}%
 				%tr.sum-budgets-row
-					%td{ 'ng-show': 'company.product_options_enabled', colspan: 2 }
+					%td{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled' }
+					%td{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled' }
 					%td{colspan: '{{activeDealProductCfLength + pmpColumns}}', 'ng-show': 'activeDealProductCfLength'}
 					%td.right
 						%b TOTAL

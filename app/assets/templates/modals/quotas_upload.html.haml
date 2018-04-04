@@ -25,8 +25,8 @@
           %br
           %span Gross or Net
         %li.col-xs-4 Product
-        %li.col-xs-4{'ng-if': 'company.product_options_enabled'} Product Level1
-        %li.col-xs-4{'ng-if': 'company.product_options_enabled'} Product Level2
+        %li.col-xs-4{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} Product Level1
+        %li.col-xs-4{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} Product Level2
         %li.col-xs-4 Product Family
 
     .well.well-lg.dark
