@@ -731,7 +731,13 @@ class DisplayLineItem < ActiveRecord::Base
   def as_json(options = {})
     super(merge_recursively(options,
         include: {
-          product: {}
+          product: {
+            methods: [
+              :level0,
+              :level1,
+              :level2
+            ]
+          }
         }
       )
     )

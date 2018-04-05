@@ -1,6 +1,6 @@
 @app.controller "IONewCostController",
-    ['$scope', '$rootScope', '$modalInstance', '$filter', 'Product', 'Cost', 'Field', 'currentIO',
-        ($scope, $rootScope, $modalInstance, $filter, Product, Cost, Field, currentIO) ->
+    ['$scope', '$rootScope', '$modalInstance', '$filter', 'Product', 'Cost', 'Field', 'currentIO', 'company',
+        ($scope, $rootScope, $modalInstance, $filter, Product, Cost, Field, currentIO, company) ->
             $scope.currency_symbol = (->
                 if currentIO && currentIO.currency
                     if currentIO.currency.curr_symbol
@@ -15,6 +15,11 @@
                 cost_monthly_amounts: []
                 months: []
             }
+            $scope.productOptionsEnabled = company.product_options_enabled
+            $scope.productOption1Enabled = company.product_option1_enabled
+            $scope.productOption2Enabled = company.product_option2_enabled
+            $scope.option1Field = company.product_option1_field || 'Option1'
+            $scope.option2Field = company.product_option2_field || 'Option2'
 
             Field.defaults($scope.cost, 'Cost').then (fields) ->
                 $scope.cost.type = Field.field($scope.cost, 'Type')
@@ -24,8 +29,32 @@
                 $scope.cost.cost_monthly_amounts.push({ budget_loc: '' })
                 $scope.cost.months.push(month)
 
-            Product.all({active: true}).then (products) ->
+            Product.all({active: true, revenue_type: 'Content-Fee'}).then (products) ->
                 $scope.products = products
+
+            $scope.productsByLevel = (level) ->
+                _.filter $scope.products, (p) -> 
+                  if level == 0
+                    p.level == level
+                  else if level == 1
+                    p.level == 1 && p.parent_id == $scope.cost.product0
+                  else if level == 2
+                    p.level == 2 && p.parent_id == $scope.cost.product1
+
+            $scope.onChangeProduct = (item, model) ->
+                if item
+                  $scope.cost.product_id = item.id
+                  if item.level == 0
+                    $scope.cost.product1 = null
+                    $scope.cost.product2 = null
+                  else if item.level == 1
+                    $scope.cost.product2 = null
+                else
+                  if !$scope.cost.product1
+                    $scope.cost.product_id = $scope.cost.product0
+                    $scope.cost.product2 = null
+                  else if !$scope.cost.product2
+                    $scope.cost.product_id = $scope.cost.product1
 
             addProductBudgetCorrection = ->
                 budgetSum = 0
