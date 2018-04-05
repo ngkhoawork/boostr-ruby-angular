@@ -9,6 +9,7 @@ class Csv::Lead
   validate :check_status
   validate :user_presence
   validate :check_created_from
+  validate :check_skip_assignment
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -41,30 +42,40 @@ class Csv::Lead
       budget: budget,
       notes: notes,
       status: status,
-      user_id: assignee.id,
-      skip_callback: convert_skip_assignment_to_bool,
+      user_id: determine_assignee,
+      skip_callback: skip_assignment?,
       created_from: created_from
     }
   end
 
-  def convert_skip_assignment_to_bool
+  def determine_assignee
+    skip_assignment? ? assignee.id : nil
+  end
+
+  def skip_assignment?
     skip_assignment.downcase.eql?('true')
   end
 
+  def check_skip_assignment
+    if skip_assignment.blank? || !['true', 'false'].include?(skip_assignment.downcase)
+      errors.add(:skip_assignment, "should be one from true or false" )
+    end
+  end
+
   def check_status
-    unless ::Lead::STATUSES.include? status.downcase
+    if status.blank? || !::Lead::STATUSES.include?(status.downcase)
       errors.add(:status, "should be one from #{::Lead::STATUSES.join(', ')}" )
     end
   end
 
   def user_presence
-    if assigned_to.present? && assignee.nil?
+    if assigned_to.present? && assignee.nil? && skip_assignment?
       errors.add(:user, 'is not present in system')
     end
   end
 
   def check_created_from
-    unless ::Lead::CREATED_FROM_LIST.include? created_from.downcase
+    if created_from.blank? || !::Lead::CREATED_FROM_LIST.include?(created_from.downcase)
       errors.add(:created_from, "should be one from #{::Lead::CREATED_FROM_LIST.join(', ')}" )
     end
   end
