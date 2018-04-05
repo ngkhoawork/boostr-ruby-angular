@@ -10,7 +10,9 @@ class Egnyte::Actions::GetNavigateUri::Base
   end
 
   def perform
-    return unless enabled_and_connected? && egnyte_folder&.path
+    return unless enabled_and_connected? && egnyte_folder
+
+    update_folder_path unless egnyte_folder.path
 
     response = navigate_request
 
