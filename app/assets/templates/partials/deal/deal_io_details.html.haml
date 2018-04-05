@@ -14,6 +14,8 @@
         %thead
           %tr
             %th.left Product
+            %th.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} {{ company.product_option1_field }}
+            %th.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} {{ company.product_option2_field }}
             %th.left Start Date
             %th.left End Date
             %th.left Total Budget
@@ -23,7 +25,11 @@
         %tbody
           %tr{ ng: { if: 'currentDeal.io.content_fees && currentDeal.io.content_fees.length > 0', repeat: "content_fee in currentDeal.io.content_fees"} }
             %td
-              {{ content_fee.product.name }}
+              {{ content_fee.product.level0.name }}
+            %td{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+              {{ content_fee.product.level1.name }}
+            %td{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+              {{ content_fee.product.level2.name }}
             %td
               {{ currentDeal.io.start_date | date: 'M/d/yyyy' }}
             %td
@@ -38,7 +44,7 @@
               %a{href: '', ng: { click: "showNewRequestModal(content_fee, 'ContentFee')" } }
                 Revenue Request
           %tr{ ng: { if: '!currentDeal.io.content_fees || currentDeal.io.content_fees.length == 0' } }
-            %td.center{ 'colspan': '{{4+currentDeal.months.length}}' }
+            %td.center.auto-colspan
               No data available
 
   .block#line-display
@@ -54,6 +60,8 @@
             %th.left End Date
             %th.left
               .product Product
+            %th.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} {{ company.product_option1_field }}
+            %th.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} {{ company.product_option2_field }}
             %th.left Ad Server Product
             %th.right Qty
             %th.right Price
@@ -81,7 +89,11 @@
             %td.left
               {{ displayLineItem.end_date | date: 'M/d/yyyy' }}
             %td.left
-              {{ displayLineItem.product.name }}
+              {{ displayLineItem.product.level0.name }}
+            %td.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+              {{ displayLineItem.product.level1.name }}
+            %td.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+              {{ displayLineItem.product.level2.name }}
             %td.left
               {{ displayLineItem.ad_server_product }}
             %td.right
@@ -120,7 +132,7 @@
               %a{href: '', ng: { click: "showNewRequestModal(displayLineItem, 'DisplayLineItem')" } }
                 Revenue Request
           %tr.display-line-budgets-row
-            %td.left{colspan: 21}
+            %td.left.auto-colspan
               %div.display-line-budgets{'data-displayID': '{{displayLineItem.id}}', 'ng-class': '{active: selectedIORow == displayLineItem }'}
                 %div.budgets-inner
                   %div.title
@@ -132,5 +144,5 @@
 
         %tbody{ ng: { if: '!currentDeal.io.display_line_items || currentDeal.io.display_line_items.length == 0' } }
           %tr
-            %td.center{ 'colspan': '20' }
+            %td.center.auto-colspan
               No data available

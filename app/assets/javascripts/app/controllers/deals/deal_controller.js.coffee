@@ -1015,20 +1015,4 @@
   $scope.$watch 'currentUser', (currentUser) ->
     $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser
 
-  $scope.dealProductName = (dealProduct) ->
-    if dealProduct.top_parent
-      dealProduct.top_parent.name
-    else
-      dealProduct.name
-
-  $scope.dealProductOption1 = (dealProduct) ->
-    if dealProduct.parent && dealProduct.parent_id != dealProduct.top_parent_id
-      dealProduct.parent.name
-    else if dealProduct.parent && dealProduct.parent_id == dealProduct.top_parent_id
-      dealProduct.name
-
-  $scope.dealProductOption2 = (dealProduct) ->
-    if dealProduct.parent && dealProduct.parent_id != dealProduct.top_parent_id
-      dealProduct.name
-
 ]

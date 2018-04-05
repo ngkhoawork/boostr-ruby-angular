@@ -26,12 +26,12 @@
 			%tbody
 				%tr{ ng: { repeat: 'deal_product in currentDeal.deal_products' } }
 					%td
-						{{ dealProductName(deal_product) }}
+						{{ deal_product.product.level0.name }}
 						%i.fa.fa-trash.delete-product{'ng-if': 'currentDeal.stage.open', 'ng-click': 'deleteDealProduct(deal_product)'}
 					%td.text-left{ 'ng-if': 'company.product_options_enabled && company.product_option1_enabled' }
-						{{ dealProductOption1(deal_product) }}
+						{{ deal_product.product.level1.name }}
 					%td.text-left{ 'ng-if': 'company.product_options_enabled && company.product_option2_enabled' }
-						{{ dealProductOption2(deal_product) }}
+						{{ deal_product.product.level2.name }}
 					%td{'ng-if': 'isPmpDeal'}
 						.dropdown{'ng-class':'{error: errors["ssp_id"+deal_product.id]}'}
 							%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}

@@ -60,6 +60,8 @@
             %th.left Deal ID
             %th.left SSP
             %th.left Product
+            %th.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} {{ company.product_option1_field }}
+            %th.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} {{ company.product_option2_field }}
             %th.left PMP Type
             %th.right Budget
             %th.right Delivered
@@ -74,7 +76,11 @@
               %strong
                 {{ pmpItem.ssp && pmpItem.ssp.name }}
             %td.left
-              {{ pmpItem.product && pmpItem.product.name }}
+              {{ pmpItem.product && pmpItem.product.level0.name }}
+            %td.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+              {{ pmpItem.product && pmpItem.product.level1.name }}
+            %td.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+              {{ pmpItem.product && pmpItem.product.level2.name }}
             %td.left
               {{ PMPType.getName(pmpItem.pmp_type) }}
             %td.right

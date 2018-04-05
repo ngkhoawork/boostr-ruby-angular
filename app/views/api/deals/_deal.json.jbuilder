@@ -35,21 +35,8 @@ end
 
 json.deal_products deal.deal_products.order(:created_at) do |deal_product|
   json.id deal_product.id
-  json.name deal_product.product.name
-  json.parent_id deal_product.product.parent_id
-  if deal_product.product.parent.present?
-    json.parent do 
-      json.id deal_product.product.parent.id
-      json.name deal_product.product.parent.name
-    end
-  end
-  json.top_parent_id deal_product.product.top_parent_id
-  if deal_product.product.top_parent.present?
-    json.top_parent do 
-      json.id deal_product.product.top_parent.id
-      json.name deal_product.product.top_parent.name
-    end
-  end
+  json.name deal_product.product&.name
+  json.product deal_product.product
   json.ssp deal_product.ssp
   json.ssp_id deal_product.ssp_id
   json.pmp_type deal_product.pmp_type
@@ -147,7 +134,7 @@ if !deal.stage.open && deal.stage.probability == 100 && deal.pmp.present?
     json.pmp_items deal.pmp.pmp_items do |pmp_item|
       json.extract! pmp_item, :ssp_deal_id, :pmp_type, :budget, :budget_delivered, :budget_remaining_loc, :budget_loc, :budget_delivered_loc, :budget_remaining_loc 
       json.ssp pmp_item.ssp
-      json.product pmp_item.product, :id, :name
+      json.product pmp_item.product
     end
   end
 end
