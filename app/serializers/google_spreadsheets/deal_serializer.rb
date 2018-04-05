@@ -100,7 +100,10 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def pitchdate
-    find_custom_field_value('Proposal Due Date')
+    value = find_custom_field_value('Proposal Due Date')
+    return value if value.is_a?(String)
+
+    value.strftime('%d-%m-%Y')
   end
 
   alias_method :demo, :empty
