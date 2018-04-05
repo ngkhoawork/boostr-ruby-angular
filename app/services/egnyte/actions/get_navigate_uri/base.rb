@@ -14,16 +14,16 @@ class Egnyte::Actions::GetNavigateUri::Base
 
     update_folder_path unless egnyte_folder.path
 
-    response = navigate_request
+    response = navigate_response
 
-    return response.parsed_response_body[:redirect] if response.success?
+    return response.body[:redirect] if response.success?
 
-    if response.response_code == '400'
+    if response.code == '400'
       update_folder_path
 
-      response = navigate_request
+      response = navigate_response
 
-      return response.parsed_response_body[:redirect] if response.success?
+      return response.body[:redirect] if response.success?
     end
 
     raise Egnyte::Errors::UnhandledRequest
@@ -34,24 +34,24 @@ class Egnyte::Actions::GetNavigateUri::Base
   delegate :required_option_keys, to: :class
   delegate :access_token, :app_domain, :deals_folder_name, :enabled_and_connected?, to: :egnyte_integration
 
-  def navigate_request
+  def navigate_response
     Egnyte::Endpoints::Navigate.new(
+      app_domain,
       folder_path: folder_path,
-      domain: app_domain,
       access_token: access_token
-    ).tap { |req| req.perform }
+    ).perform
   end
 
-  def get_folder_request
-    @get_folder_request ||= Egnyte::Endpoints::GetFolderById.new(
+  def get_folder_response
+    @get_folder_response ||= Egnyte::Endpoints::GetFolderById.new(
+      app_domain,
       folder_id: egnyte_folder.uuid,
-      domain: app_domain,
       access_token: access_token
-    ).tap { |req| req.perform }
+    ).perform
   end
 
   def update_folder_path
-    egnyte_folder.update(path: get_folder_request.parsed_response_body[:path])
+    egnyte_folder.update(path: get_folder_response.body[:path])
   end
 
   def egnyte_integration

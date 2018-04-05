@@ -1,7 +1,7 @@
-class Egnyte::Endpoints::CreateFolder < Egnyte::Endpoints::Net
+class Egnyte::Endpoints::CreateFolder < Egnyte::Endpoints::Request
   class << self
     def required_option_keys
-      %i(domain folder_path access_token)
+      %i(folder_path access_token)
     end
 
     def predefined_request_params
@@ -9,15 +9,9 @@ class Egnyte::Endpoints::CreateFolder < Egnyte::Endpoints::Net
     end
   end
 
-  def initialize(options)
-    @options = options.deep_symbolize_keys
-
-    required_option_keys.each { |option_key| raise "#{option_key} is required" unless @options[option_key] }
-  end
-
   private
 
-  delegate :required_option_keys, :predefined_request_params, to: :class
+  delegate :predefined_request_params, to: :class
 
   def request_method
     :post
@@ -27,16 +21,16 @@ class Egnyte::Endpoints::CreateFolder < Egnyte::Endpoints::Net
     "pubapi/v1/fs/#{@options[:folder_path]}"
   end
 
-  def request_params
-    {
-      action: predefined_request_params[:action]
-    }
-  end
-
   def request_headers
     {
       'Content-Type' => 'application/json',
       'Authorization' => "Bearer #{@options[:access_token]}"
+    }
+  end
+
+  def request_params
+    {
+      action: predefined_request_params[:action]
     }
   end
 end

@@ -1,19 +1,11 @@
-class Egnyte::Endpoints::GetFolderById < Egnyte::Endpoints::Net
+class Egnyte::Endpoints::GetFolderById < Egnyte::Endpoints::Request
   class << self
     def required_option_keys
-      %i(domain folder_id access_token)
+      %i(folder_id access_token)
     end
   end
 
-  def initialize(options)
-    @options = options.deep_symbolize_keys
-
-    required_option_keys.each { |option_key| raise "#{option_key} is required" unless @options[option_key] }
-  end
-
   private
-
-  delegate :required_option_keys, to: :class
 
   def request_method
     :get

@@ -1,11 +1,14 @@
 class Egnyte::Actions::BuildAuthorizationUri
-  CONFIGS = {
-    client_id: ENV['egnyte_client_id'],
-    client_secret: ENV['egnyte_client_secret']
-  }.freeze
   REQUESTED_ACCESS_TOKEN_MARKER = 'SHOULD_BE_REPLACED_WITH_ACCESS_TOKEN'.freeze
 
   class << self
+    def api_credentials
+      {
+        client_id: ENV['egnyte_client_id']         || (raise 'ENV[egnyte_client_id] has not been provided'),
+        client_secret: ENV['egnyte_client_secret'] || (raise 'ENV[egnyte_client_secret] has not been provided')
+      }
+    end
+
     def generate_state_token(salt)
       random_hash = Digest::MD5.hexdigest("#{DateTime.current}-#{salt}")
 
@@ -36,7 +39,7 @@ class Egnyte::Actions::BuildAuthorizationUri
 
   private
 
-  delegate :required_option_keys, :predefined_request_params, to: :class
+  delegate :api_credentials, :required_option_keys, :predefined_request_params, to: :class
 
   def url_embedded_request_params
     request_params.map { |key, value| "#{key}=#{value}" }.join('&')
@@ -46,8 +49,8 @@ class Egnyte::Actions::BuildAuthorizationUri
     {
       redirect_uri: @options[:redirect_uri],
       state: @options[:state],
-      client_id: CONFIGS[:client_id],
-      client_secret: CONFIGS[:client_secret],
+      client_id: api_credentials[:client_id],
+      client_secret: api_credentials[:client_secret],
       scope: predefined_request_params[:scope],
       response_type: predefined_request_params[:response_code]
     }

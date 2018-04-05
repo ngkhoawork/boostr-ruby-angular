@@ -12,7 +12,7 @@ class Egnyte::Actions::UpdateFolderName::Base
   def perform
     return false unless enabled_and_connected? && egnyte_folder&.uuid
 
-    update_folder_name_request
+    update_folder_name_response
 
     update_folder_path
   end
@@ -22,13 +22,13 @@ class Egnyte::Actions::UpdateFolderName::Base
   delegate :required_option_keys, to: :class
   delegate :access_token, :app_domain, :deals_folder_name, :enabled_and_connected?, to: :egnyte_integration
 
-  def update_folder_name_request
+  def update_folder_name_response
     Egnyte::Endpoints::MoveFolder.new(
+      app_domain,
       destination: root_folder_path,
       folder_id: egnyte_folder.uuid,
-      domain: app_domain,
       access_token: access_token
-    ).tap { |req| req.perform }
+    ).perform
   end
 
   def update_folder_path

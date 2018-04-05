@@ -53,8 +53,8 @@ class Egnyte::Actions::CreateFolderTree::Base
 
   def save_root_folder
     egnyte_folder.update(
-      uuid: get_root_folder_request.parsed_response_body[:folder_id],
-      path: get_root_folder_request.parsed_response_body[:path]
+      uuid: get_root_folder_response.body[:folder_id],
+      path: get_root_folder_response.body[:path]
     )
   end
 
@@ -62,12 +62,12 @@ class Egnyte::Actions::CreateFolderTree::Base
     Egnyte::PrivateActions::CreateUniqFolder.new(egnyte_integration: egnyte_integration, path: path).perform
   end
 
-  def get_root_folder_request
-    @get_root_folder_request ||= Egnyte::Endpoints::GetFolderByPath.new(
+  def get_root_folder_response
+    @get_root_folder_response ||= Egnyte::Endpoints::GetFolderByPath.new(
+      app_domain,
       folder_path: root_folder[:path],
-      domain: app_domain,
       access_token: access_token
-    ).tap { |req| req.perform }
+    ).perform
   end
 
   def egnyte_integration

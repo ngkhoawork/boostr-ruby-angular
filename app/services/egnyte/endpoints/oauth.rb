@@ -1,7 +1,7 @@
-class Egnyte::Endpoints::Oauth < Egnyte::Endpoints::Net
+class Egnyte::Endpoints::Oauth < Egnyte::Endpoints::Request
   class << self
     def required_option_keys
-      %i(domain redirect_uri code)
+      %i(redirect_uri code)
     end
 
     def predefined_request_params
@@ -12,15 +12,9 @@ class Egnyte::Endpoints::Oauth < Egnyte::Endpoints::Net
     end
   end
 
-  def initialize(options)
-    @options = options.deep_symbolize_keys
-
-    required_option_keys.each { |option_key| raise "#{option_key} is required" unless @options[option_key] }
-  end
-
   private
 
-  delegate :required_option_keys, :predefined_request_params, to: :class
+  delegate :predefined_request_params, to: :class
 
   def request_method
     :post
@@ -38,8 +32,8 @@ class Egnyte::Endpoints::Oauth < Egnyte::Endpoints::Net
     {
       code: @options[:code],
       redirect_uri: @options[:redirect_uri],
-      client_id: CONFIGS[:client_id],
-      client_secret: CONFIGS[:client_secret],
+      client_id: api_credentials[:client_id],
+      client_secret: api_credentials[:client_secret],
       scope: predefined_request_params[:scope],
       grant_type: predefined_request_params[:grant_type]
     }

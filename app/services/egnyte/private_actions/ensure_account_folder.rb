@@ -14,48 +14,48 @@ class Egnyte::PrivateActions::EnsureAccountFolder < Egnyte::PrivateActions::Base
   delegate :access_token, :app_domain, to: :egnyte_integration
 
   def refresh_folder_path
-    if get_folder_by_id_request.success?
-      folder_info = get_folder_by_id_request.parsed_response_body
-      egnyte_folder.update!(uuid: folder_info[:folder_id], path: folder_info[:path])
-    elsif get_folder_by_id_request.not_found?
+    if get_folder_by_id_response.success?
+      folder = get_folder_by_id_response.body
+      egnyte_folder.update!(uuid: folder[:folder_id], path: folder[:path])
+    elsif get_folder_by_id_response.not_found?
       egnyte_folder.destroy!
       create_folder_and_save_path
     else
-      raise Egnyte::Errors::UnhandledRequest, get_folder_by_id_request.parsed_response_body
+      raise Egnyte::Errors::UnhandledRequest, get_folder_by_id_response.body
     end
   end
 
   def create_folder_and_save_path
-    create_folder_request
+    create_folder_response
 
-    folder_info = get_folder_by_path_request.parsed_response_body
+    folder = get_folder_by_path_response.body
 
-    record.create_egnyte_folder!(uuid: folder_info[:folder_id], path: folder_info[:path])
+    record.create_egnyte_folder!(uuid: folder[:folder_id], path: folder[:path])
   end
 
-  def get_folder_by_id_request
-    @get_folder_by_id_request ||=
+  def get_folder_by_id_response
+    @get_folder_by_id_response ||=
       Egnyte::Endpoints::GetFolderById.new(
+        app_domain,
         folder_id: egnyte_folder.uuid,
-        domain: app_domain,
         access_token: access_token
-      ).tap { |req| req.perform }
+      ).perform
   end
 
-  def create_folder_request
+  def create_folder_response
     Egnyte::Endpoints::CreateFolder.new(
+      app_domain,
       folder_path: @options[:pattern_path],
-      domain: app_domain,
       access_token: access_token
-    ).tap { |req| req.perform }
+    ).perform
   end
 
-  def get_folder_by_path_request
+  def get_folder_by_path_response
     Egnyte::Endpoints::GetFolderByPath.new(
+      app_domain,
       folder_path: @options[:pattern_path],
-      domain: app_domain,
       access_token: access_token
-    ).tap { |req| req.perform }
+    ).perform
   end
 
   def record

@@ -14,14 +14,14 @@ class Egnyte::Actions::Connect
   def perform
     raise Egnyte::Errors::InvalidAuthState unless egnyte_integration
 
-    if oauth_request.success?
+    if oauth_response.success?
       egnyte_integration.update(
         connected: true,
-        access_token: oauth_request.parsed_response_body[:access_token]
+        access_token: oauth_response.body[:access_token]
       )
-      create_app_folder_request
+      create_app_folder_response
     else
-      raise Egnyte::Errors::UnhandledRequest, oauth_request.parsed_response_body
+      raise Egnyte::Errors::UnhandledRequest, oauth_response.body
     end
   end
 
@@ -30,20 +30,20 @@ class Egnyte::Actions::Connect
   delegate :required_option_keys, to: :class
   delegate :access_token, :app_domain, :enabled_and_connected?, to: :egnyte_integration
 
-  def oauth_request
-    @oauth_request ||= Egnyte::Endpoints::Oauth.new(
-      domain: egnyte_integration.app_domain,
+  def oauth_response
+    @oauth_response ||= Egnyte::Endpoints::Oauth.new(
+      app_domain,
       redirect_uri: @options[:redirect_uri],
       code: @options[:code]
-    ).tap { |req| req.perform }
+    ).perform
   end
 
-  def create_app_folder_request
+  def create_app_folder_response
     Egnyte::Endpoints::CreateFolder.new(
+      app_domain,
       folder_path: APP_FOLDER_PATH,
-      domain: app_domain,
       access_token: access_token
-    ).tap { |req| req.perform }
+    ).perform
   end
 
   def egnyte_integration
