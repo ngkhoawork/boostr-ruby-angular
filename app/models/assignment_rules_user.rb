@@ -13,7 +13,7 @@ class AssignmentRulesUser < ActiveRecord::Base
   private
 
   def set_position
-    self.position ||=
+    self.position =
       related_assignment_rules_users
         .order_by_position
         .last

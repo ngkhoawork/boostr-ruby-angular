@@ -1,5 +1,5 @@
 class AssignmentRule < ActiveRecord::Base
-  has_many :assignment_rules_users
+  has_many :assignment_rules_users, dependent: :destroy
   has_many :users, through: :assignment_rules_users
 
   belongs_to :company
@@ -25,7 +25,6 @@ class AssignmentRule < ActiveRecord::Base
     self.position =
       AssignmentRule
         .by_company_id(self.company.id)
-        .not_default
         .order_by_position
         .last
         .position
