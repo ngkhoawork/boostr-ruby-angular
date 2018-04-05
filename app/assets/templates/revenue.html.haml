@@ -259,7 +259,11 @@
                 %th.left
                   %span.z-sortable{by: 'end_date'} End Date
                 %th.left
-                  %span.z-sortable{by: 'product.name'} Product
+                  %span.z-sortable{by: 'product.level0.name'} Product
+                %th.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+                  %span.z-sortable{by: 'product.level1.name'} {{ company.product_option1_field }}
+                %th.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+                  %span.z-sortable{by: 'product.level2.name'} {{ company.product_option2_field }}
                 %th.right
                   %span.z-sortable{by: 'quantity'} Qty
                 %th.right
