@@ -49,7 +49,7 @@ class Pmp::FilteredRevenueProductDataService
     pmp_actuals = pmp_item.pmp_item_daily_actuals
 
     actual_start_date = pmp_actuals.minimum(:date) || pmp_item.start_date
-    actual_end_date = pmp_actuals.maximum(:date) || pmp_item.end_date
+    actual_end_date = pmp_actuals.maximum(:date) || pmp_item.start_date
 
     range_start_date = [
       start_date,
