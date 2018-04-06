@@ -130,10 +130,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
             line << io.io_number
             line << io.name
             line << io.advertiser&.name
-            line << display_line_item.product&.name
+            line << display_line_item.product&.level0&.[]('name')
             if company.product_options_enabled
-              line << display_line_item.product&.level1&.name if company.product_option1_enabled
-              line << display_line_item.product&.level2&.name if company.product_option2_enabled
+              line << display_line_item.product&.level1&.[]('name') if company.product_option1_enabled
+              line << display_line_item.product&.level2&.[]('name') if company.product_option2_enabled
             end
             line << (budget_loc&.round || 0)
             line << dlib.start_date
