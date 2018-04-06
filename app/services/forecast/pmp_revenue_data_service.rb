@@ -115,12 +115,10 @@ class Forecast::PmpRevenueDataService
   end
 
   def products
-    @_products ||= if product&.level == 2
-      [product]
-    elsif product.present?
-      product.include_children
-    elsif product_family.present?
-      product_family.products
+    @_products ||= if product.present?
+      Product.include_children(product)
+    elsif product_family
+      Product.include_children(product_family.products)
     end
   end
 
