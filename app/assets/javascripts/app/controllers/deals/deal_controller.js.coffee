@@ -645,6 +645,7 @@
 
   $scope.showContactEditModal = (deal_contact) ->
     deal_contact.errors = {}
+    console.log deal_contact.contact
 
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'

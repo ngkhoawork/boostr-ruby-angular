@@ -1,6 +1,6 @@
 @app.controller "ContractFormController", [
-    '$scope', '$modalInstance', '$location', 'Contract', 'Deal', 'Client', 'Publisher', 'Currency', 'Field', 'HoldingCompany', 'contract'
-    ($scope,   $modalInstance,   $location,   Contract,   Deal,   Client,   Publisher,   Currency,   Field,   HoldingCompany,   contract) ->
+    '$scope', '$modalInstance', '$location', 'Contract', 'Deal', 'Client', 'Publisher', 'Currency', 'Field', 'HoldingCompany', 'CurrentUser', 'contract'
+    ($scope,   $modalInstance,   $location,   Contract,   Deal,   Client,   Publisher,   Currency,   Field,   HoldingCompany,   CurrentUser,   contract) ->
 
         $scope.formType = if contract then 'Edit' else 'New'
         $scope.submitText = if contract then 'Save' else 'Create'
@@ -8,13 +8,16 @@
         $scope.types = []
         $scope.statuses = []
         $scope.holdingCompanies = []
+        $scope.userIsLegal = false
         $scope.form =
             restricted: false
             auto_renew: false
             auto_notifications: false
 
+        CurrentUser.get().$promise.then (user) ->
+            $scope.userIsLegal = user && user.is_legal
+
         if contract
-            console.log contract
             $scope.form = contract
             $scope.form.curr_cd = contract.currency.curr_cd if contract.currency
             $scope.form.type_id = contract.type.id if contract.type

@@ -55,7 +55,7 @@
     $scope.contact.set_primary_client = true
     Contact._update(id: $scope.contact.id, contact: $scope.contact).then(
       (contact) ->
-        $modalInstance.close()
+        $modalInstance.close(contact)
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

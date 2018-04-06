@@ -14,23 +14,66 @@
             }
         }
     }
-    .contract-info {
-        .editable, .editable-field {
-            &:focus {
-                outline: none;
-                border: 1px dashed $secondary-font-color;
-                &:hover {
-                    background-color: inherit;
+    .editable, .editable-field {
+        &:focus {
+            outline: none;
+            border: 1px dashed $secondary-font-color;
+            &:hover {
+                background-color: inherit;
+            }
+        }
+     }
+    .dropdown {
+        .dropdown-menu {
+            .active {
+                a, a:hover {
+                    color: white;
                 }
             }
-         }
-        .dropdown {
-            button:not(.add-btn) {
-                color: inherit;
-                background-color: inherit;
-                &:active {
-                    outline: none;
-                    box-shadow: none;
+            a {
+                color: $main-font-color;
+                &:hover {
+                    color: $main-color;
+                }
+            }
+        }
+        button:not(.add-btn) {
+            color: inherit;
+            background-color: inherit;
+            &:active {
+                outline: none;
+                box-shadow: none;
+            }
+        }
+    }
+    .table {
+        .comment-column {
+            width: 33%;
+        }
+        .comment-td {
+            .editable-controls {
+                width: 100%;
+                textarea {
+                    //width: 100%;
+                    resize: none;
+                    box-sizing: border-box;
+                }
+            }
+        }
+        .comment-field {
+            width: 100%;
+            height: 32px;
+            background: transparent;
+            &:hover {
+                background: #eaecee;
+            }
+            &::placeholder {
+                color: lightgrey;
+            }
+            &:focus {
+                background: transparent;
+                &::placeholder {
+                    color: transparent;
                 }
             }
         }

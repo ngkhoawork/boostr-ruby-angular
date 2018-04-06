@@ -24,7 +24,6 @@
                     when 'name_id'
                         if !field then return $scope.errors[key] = 'Name is required'
 
-            console.log contract
             return if !_.isEmpty $scope.errors
             Contract.update
                 id: contract.id
@@ -32,5 +31,6 @@
                     special_terms_attributes: [$scope.form]
             .then (data) ->
                 _.extend contract, data
+                $modalInstance.close()
 
 ]

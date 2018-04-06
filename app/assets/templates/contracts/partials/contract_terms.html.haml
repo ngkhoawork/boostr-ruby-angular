@@ -7,14 +7,31 @@
 			%tr
 				%th Term Name
 				%th Term Type
-				%th.left Comments
+				%th.comment-column.left Comments
 
 		%tbody
-			%tr{ ng: { repeat: "term in contract.special_terms | orderBy: 'name'"} }
+			%tr{ ng: { repeat: "term in contract.special_terms | orderBy: 'id'"} }
 				%td
-					{{term.name.name}}
-					-#%i.fa.fa-trash.delete-deal{'ng-click': 'deleteTerm(term)'}
+					.dropdown
+						%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+							%span.editable{'ng-class': '{"not-selected": !term.name}'} {{term.name.name || 'Select name'}}
+							%span.caret
+						%i.fa.fa-trash.delete-deal{'ng-click': 'deleteTerm(term)'}
+						%ul.dropdown-menu
+							%li{'ng-repeat': 'name in termNames', 'ng-class': '{active: term.name.id == name.id}'}
+								%a{'href': '', 'ng-click': 'updateTerm(term, "name_id", name.id)'}
+									%span.text {{name.name}}
 				%td
-					{{term.type.name}}
-				%td.left
-					{{term.comment}}
+					.dropdown
+						%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+							%span.editable{'ng-class': '{"not-selected": !term.type}'} {{term.type.name || 'Select type'}}
+							%span.caret
+						%ul.dropdown-menu
+							%li{'ng-repeat': 'type in termTypes', 'ng-class': '{active: term.type.id == type.id}'}
+								%a{'href': '', 'ng-click': 'updateTerm(term, "type_id", type.id)'}
+									%span.text {{type.name}}
+				%td.left.comment-td
+					-#%span.editable{'editable-textarea': 'term.comment', blur: 'submit', onaftersave: 'updateTerm(term, "comment", $data)'}
+						{{term.comment}}
+					-#%div{ng: {if: '!term._inEdit', click: 'term._inEdit = true'}} {{term.comment}}
+					%textarea.editable.comment-field{'msd-elastic': '', placeholder: 'Type your comment', ng: {model: 'term.comment', blur: 'term._inEdit = false; updateTerm(term, "comment", term.comment)'}}

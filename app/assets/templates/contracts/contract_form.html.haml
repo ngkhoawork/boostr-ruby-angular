@@ -6,13 +6,13 @@
         .popup-modal-body
             %h4.mb20 Contract Details
             .form-row
-                .row-w70.pr16
+                %div{'ng-class': '{"row-w70 pr16": userIsLegal, "row-w100": !userIsLegal}'}
                     .form-group{'ng-class':'{error: errors.name}'}
                         %span.error-text {{errors.name}}
                         %label Name
                         %span.star *
                         %input.form-control{placeholder: 'Name', ng: {model: 'form.name'}}
-                .row-w30.toggle-wrap
+                .row-w30.toggle-wrap{'ng-if': 'userIsLegal'}
                     %z-toggle{ng: {model: 'form.restricted'}}
                     %span Restricted
             .form-row

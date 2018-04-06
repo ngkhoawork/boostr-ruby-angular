@@ -14,18 +14,18 @@
 		%thead
 			%tr
 				%th Member
-				%th Role
+				%th.left Role
 		%tbody
-			%tr{ ng: { repeat: "member in contract.contract_members | orderBy: 'name'"} }
+			%tr{ ng: { repeat: "member in contract.contract_members | orderBy: 'user_name'"} }
 				%td
 					{{member.user_name}}
-					%i.fa.fa-trash.delete-deal{'ng-click': 'deleteMember(member.user)'}
-				%td
+					%i.fa.fa-trash.delete-deal{'ng-click': 'unassignMember(member)'}
+				%td.left
 					.dropdown
 						%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-							%span.editable{'ng-class': '{"not-selected": !member.role.option.name}'} {{member.role.option.name || 'Select role'}}
+							%span.editable{'ng-class': '{"not-selected": !member.role_id}'} {{member.role_name || 'Select role'}}
 							%span.caret
 						%ul.dropdown-menu
-							%li{'ng-repeat': 'option in member.role.options', 'ng-class': '{active: member.role.option_id == option.id}'}
-								%a{'href': '', 'ng-click': 'member.role.option_id = option.id; updateDealMember(member)'}
-									%span.text {{option.name}}
+							%li{'ng-repeat': 'role in memberRoles', 'ng-class': '{active: member.role_id == role.id}'}
+								%a{'href': '', 'ng-click': 'updateMemberRole(member, role)'}
+									%span.text {{role.name}}

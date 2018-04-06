@@ -39,8 +39,13 @@
 							%a{'href': '', 'ng-href': '/accounts/{{contract.agency_holding.id}}'} {{contract.holding_company.name}}
 						.title{'ng-if': '!contract.holding_company'}
 							None
-
 			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Auto Renew
+						.title
+							%z-toggle{'ng-model': 'contract.auto_renew', 'ng-change': 'updateContract()'}
+			-#%div.stats-col
 				.col-body-wrap
 					.col-body
 						.description Auto Notifications

@@ -22,11 +22,6 @@
                     {{(contract.end_date | date) || 'Select date'}}
     %div.custom-field-item
         %div.custom-field-item-label
-            %label Auto Renew
-        %div.custom-field-item-field
-            %z-toggle{'ng-model': 'contract.auto_renew', 'ng-change': 'updateContract()'}
-    %div.custom-field-item
-        %div.custom-field-item-label
             %label Currency
         %div.custom-field-item-field
             .dropdown

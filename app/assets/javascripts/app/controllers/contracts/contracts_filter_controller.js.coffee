@@ -72,7 +72,6 @@
                 this.isOpen = false
 
         Contract.filterValues().then (data) ->
-            console.log data
             $scope.filter.types = data.type_options
             $scope.filter.statuses = data.status_options
             $scope.filter.members = data.linked_users
