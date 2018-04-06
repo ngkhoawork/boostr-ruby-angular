@@ -14,7 +14,7 @@ class Api::Leads::IndexSerializer < ActiveModel::Serializer
   end
 
   def untouched_days
-    (Date.current - date_for_untouched_calculation.to_date).to_i if object.status.eql?(Lead::NEW)
+    (Time.now.utc.to_date - date_for_untouched_calculation.to_date).to_i if object.status.eql?(Lead::NEW)
   end
 
   def clients
