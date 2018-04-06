@@ -42,6 +42,9 @@ class Deal < ActiveRecord::Base
   has_many :requests
   has_many :audit_logs, as: :auditable
 
+  has_one :billing_deal_contact, -> { where(role: 'Billing') }, class_name: 'DealContact'
+  has_one :billing_contact, through: :billing_deal_contact, source: :contact
+
   has_one :deal_custom_field, dependent: :destroy
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
     order('activities.deal_id', 'activities.happened_at DESC')
@@ -305,7 +308,9 @@ class Deal < ActiveRecord::Base
   def base_fields_presence
     if self.company_id.present?
       factors = base_field_validations.joins(:criterion).where('values.value_boolean = ?', true).pluck(:factor)
-      self.validates_presence_of(factors) if factors.length > 0
+      factors.each do |factor|
+        errors.add(factor, 'must be present') if public_send(factor).blank?
+      end
     end
   end
 
@@ -345,13 +350,7 @@ class Deal < ActiveRecord::Base
   end
 
   def has_billing_contact?
-    billing_contact = self.deal_contacts.find_by(role: 'Billing')
     !!(billing_contact) && billing_contact.valid?
-  end
-
-  def billing_contact
-    billing_contact = self.deal_contacts.find_by(role: 'Billing')
-    billing_contact.contact
   end
 
   def has_account_manager_member?

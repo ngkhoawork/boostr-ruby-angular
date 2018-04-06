@@ -16,9 +16,16 @@
 				%i.fa.fa-envelope.ealert.pull-right{ng: {click: 'showDealEalertModal(currentDeal)', class: '{danger: (ealertReminder && currentDeal.company_ealert_reminder)}'}}
 				
 			.detail-info
-				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.advertiser.id}}'} {{currentDeal.advertiser.name || ''}}
-				{{currentDeal.advertiser.name && currentDeal.agency.name && '|'}}
-				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.agency.id}}'} {{currentDeal.agency.name || ''}}
+				%div
+					%label Advertiser Name:
+					%a{'href': '', 'ng-href': '/accounts/{{currentDeal.advertiser.id}}'} {{currentDeal.advertiser.name || ''}}
+	
+				%div
+					%label{ ng: { class: '{ danger: agencyRequired }' } }
+						%div.error-tooltip{ ng: { show: 'agencyRequired' } }
+							Agency is required
+						Agency Name:
+					%a{'href': '', 'ng-href': '/accounts/{{currentDeal.agency.id}}'} {{currentDeal.agency.name || ''}}
 
 		.clearfix
 		%div.stats-numbers.mb30

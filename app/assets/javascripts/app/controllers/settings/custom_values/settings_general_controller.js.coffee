@@ -41,5 +41,6 @@
             keyboard: true
             resolve:
               message: -> error.data['error']
+              id: -> null
       )
 ]

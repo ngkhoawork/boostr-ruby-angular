@@ -216,6 +216,11 @@ Rails.application.routes.draw do
       collection do
         get :metadata
         get :service_account_email
+        get :ssp_credentials
+      end
+      member do
+        post :delete_ssp
+        post :update_ssp
       end
     end
     resources :integration_types, only: [:index]
@@ -310,6 +315,9 @@ Rails.application.routes.draw do
     resources :pmps, only: [:index, :show, :create, :update, :destroy] do
       resources :pmp_members, only: [:create, :update, :destroy]
       resources :pmp_items, only: [:create, :update, :destroy]
+      get :no_match_advertisers, on: :collection
+      post :bulk_assign_advertiser, on: :collection
+      post :assign_advertiser, on: :member
     end
     resources :pmp_item_daily_actuals, only: [:index, :update, :destroy] do
       post :import, on: :collection
@@ -353,6 +361,7 @@ Rails.application.routes.draw do
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
       collection do
         get :all_members
+        get :all_account_managers
       end
       get :members
       get :all_sales_reps
@@ -469,12 +478,17 @@ Rails.application.routes.draw do
     end
     resources :billing_summary, only: [:index] do
       member do
+        put :update_cost
+        put :update_cost_budget
         put :update_quantity
         put :update_content_fee_product_budget
         put :update_display_line_item_budget_billing_status
       end
 
+      get 'costs', on: :collection
+
       get :export, on: :collection
+      get :export_cost_budgets, on: :collection
     end
     resources :requests, only: [:index, :show, :create, :update, :destroy]
 
@@ -529,6 +543,7 @@ Rails.application.routes.draw do
     resources :publisher_contacts, only: [:create, :update, :destroy]
 
     resources :sales_processes, only: [:index, :create, :show, :update]
+    resources :statistics, only: [:show]
   end
 
   mount Sidekiq::Web => '/sidekiq'

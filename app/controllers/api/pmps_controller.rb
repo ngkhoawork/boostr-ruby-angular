@@ -36,6 +36,25 @@ class Api::PmpsController < ApplicationController
     end
   end
 
+  def no_match_advertisers
+    params.merge!(without_advertisers: true)
+    render json: pmps_serializer
+  end
+
+  def assign_advertiser
+    pmp.assign_advertiser!(client)
+    render json: pmp, serializer: Pmps::PmpDetailSerializer
+  end
+
+  def bulk_assign_advertiser
+    opts = {
+      ssp_advertiser_id: params[:ssp_advertiser_id],
+      client: client,
+      company: current_user.company
+    }
+    render json: Pmp::AssignAdvertiser.new(opts).bulk_assign
+  end
+
   private
 
   def pmp_params
@@ -56,7 +75,8 @@ class Api::PmpsController < ApplicationController
     params.permit(
       :name,
       :start_date,
-      :end_date
+      :end_date,
+      :without_advertisers
     ).merge(company_id: company.id)
   end
 
@@ -65,6 +85,10 @@ class Api::PmpsController < ApplicationController
       by_pages(pmps),
       each_serializer: Pmps::PmpListSerializer
     )
+  end
+
+  def client
+    @_client ||= company.clients.find(params[:client_id])
   end
 
   def pmps

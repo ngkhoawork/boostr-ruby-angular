@@ -133,9 +133,6 @@ GEM
       json
     chronic (0.10.2)
     clean_pagination (1.0.0)
-    clockwork (2.0.2)
-      activesupport
-      tzinfo
     codeclimate-engine-rb (0.4.0)
       virtus (~> 1.0)
     coderay (1.1.0)
@@ -182,6 +179,8 @@ GEM
     encryptor (3.0.0)
     equalizer (0.0.11)
     erubis (2.7.0)
+    et-orbi (1.0.9)
+      tzinfo
     execjs (2.5.2)
     factory_girl (4.8.1)
       activesupport (>= 3.0.0)
@@ -545,6 +544,8 @@ GEM
     ruby_parser (3.7.0)
       sexp_processor (~> 4.1)
     rubyzip (1.1.7)
+    rufus-scheduler (3.4.2)
+      et-orbi (~> 1.0)
     safe_yaml (1.0.4)
     sass (3.4.15)
     sass-rails (5.0.3)
@@ -562,6 +563,11 @@ GEM
       connection_pool (~> 2.2, >= 2.2.0)
       rack-protection (>= 1.5.0)
       redis (~> 3.3, >= 3.3.3)
+    sidekiq-scheduler (2.2.1)
+      redis (>= 3, < 5)
+      rufus-scheduler (~> 3.2)
+      sidekiq (>= 3)
+      tilt (>= 1.4.0)
     signet (0.7.3)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -648,7 +654,6 @@ DEPENDENCIES
   capybara-webkit
   chronic
   clean_pagination
-  clockwork
   coffee-rails (~> 4.1.0)
   countries
   daemons
@@ -722,6 +727,7 @@ DEPENDENCIES
   sass-rails (~> 5.0)
   shoulda-matchers
   sidekiq
+  sidekiq-scheduler
   simplecov
   smarter_csv
   spring

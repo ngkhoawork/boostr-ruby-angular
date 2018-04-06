@@ -65,6 +65,7 @@ class Company < ActiveRecord::Base
   has_many :publisher_custom_fields, through: :publishers
   has_many :ssp_advertisers
   has_many :sales_processes
+  has_many :ssp_credentials, dependent: :destroy
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'

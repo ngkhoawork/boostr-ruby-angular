@@ -1,7 +1,8 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'Company',
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment,   Company) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company',
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window, $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment, localStorageService, Company) ->
 
+  $scope.agencyRequired = false
   $scope.showMeridian = true
   $scope.isAdmin = false
   $scope.feedName = 'Deal Updates'
@@ -40,6 +41,15 @@
   $scope.company = {}
 
   $scope._scope = -> this
+  $scope.showWarnings = true
+  roleIdWarningDisplayToShow = 1 # Role type = seller
+
+  $scope.checkAgencyRequiredError = (errors) ->
+    if errors.agency && errors.agency.length != 0
+      $scope.agencyRequired = true
+      $window.scrollTo 0, 0
+    else
+      $scope.agencyRequired = false
 
   $scope.isUrlValid = (url) ->
     regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
@@ -208,6 +218,9 @@
       (deal) ->
         $scope.ealertReminder = true
       (resp) ->
+        if resp.data.errors
+          $scope.checkAgencyRequiredError resp.data.errors
+
         $timeout ->
           delete $scope.errors.curr_cd
         , 6000
@@ -527,12 +540,18 @@
       if $scope.currentDeal && (!$scope.currentDeal[validation.factor] && !validationValueFactorExists($scope.currentDeal, validation.factor))
         $scope.errors[validation.factor] = validation.name + ' is required'
 
+    if $scope.errors
+      $scope.checkAgencyRequiredError $scope.errors
+
     if Object.keys($scope.errors).length > 0 then return
 
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
       (deal) ->
         $scope.ealertReminder = true
       (resp) ->
+        if resp.data.errors
+          $scope.checkAgencyRequiredError resp.data.errors
+
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
     )
@@ -584,6 +603,9 @@
               if currentDeal.close_reason.option then $scope.init()
               $scope.ealertReminder = true
             (resp) ->
+              if resp.data.errors
+                $scope.checkAgencyRequiredError resp.data.errors
+
               $timeout ->
                 delete $scope.errors.stage
               , 6000
@@ -598,6 +620,9 @@
         $scope.setCurrentDeal(deal)
         $scope.ealertReminder = true
       (resp) ->
+        if resp.data.errors
+          $scope.checkAgencyRequiredError resp.data.errors
+
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
     )
@@ -719,7 +744,7 @@
         hasWon: ->
           hasWon
 
-  $scope.showWarningModal = (message) ->
+  $scope.showWarningModal = (message, id) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_warning.html'
       size: 'md'
@@ -728,6 +753,7 @@
       keyboard: true
       resolve:
         message: -> message
+        id: -> id
 
   $scope.showNewProductModal = (currentDeal) ->
     $scope.modalInstance = $modal.open
@@ -1005,12 +1031,20 @@
         Deal.latest_log(id: dealId).then (log) ->
           $scope.operativeIntegration.dealLog = log if log && log.id
 
+  $scope.getWarningSettings = () ->
+    dealsWithoutWarning = localStorageService.get('dealsWithoutWarning') || []
+    dealsWithoutWarning.forEach((deal) -> 
+      if deal.dealId == $scope.currentDeal.id
+        $scope.showWarnings = false
+    )
+
 
   checkCurrentUserDealShare = (members) ->
     CurrentUser.get().$promise.then (currentUser) ->
+      $scope.getWarningSettings()
       _.forEach members, (member) ->
-        if member.user_id == currentUser.id && !(member.share > 0)
-          $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.'
+        if member.user_id == currentUser.id && !(member.share > 0) && $scope.showWarnings && currentUser.user_type == roleIdWarningDisplayToShow
+          $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.', $scope.currentDeal.id
 
   $scope.$watch 'currentUser', (currentUser) ->
     $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser

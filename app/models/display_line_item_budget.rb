@@ -14,6 +14,9 @@ class DisplayLineItemBudget < ActiveRecord::Base
   scope :for_product_id, -> (product_id) do
     where('display_line_items.product_id = ?', product_id) if product_id.present?
   end
+  scope :for_product_ids, -> (product_ids) do
+    where(display_line_items: { product_id: product_ids }) if product_ids.present?
+  end
   scope :by_seller_id, -> (seller_id) do
     joins(display_line_item: { io: :io_members })
     .where(io_members: { user_id: seller_id }) if seller_id.present?
