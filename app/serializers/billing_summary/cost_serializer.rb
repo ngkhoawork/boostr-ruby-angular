@@ -2,7 +2,7 @@ class BillingSummary::CostSerializer < ActiveModel::Serializer
   attributes :id, :product, :io_id, :values
 
   def product
-    object.product.name
+    object.product
   end
 
   def values

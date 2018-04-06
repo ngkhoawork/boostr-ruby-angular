@@ -115,9 +115,9 @@ class BillingCostBudgetsQuery < BaseQuery
 
   def product_ids
     @_product_ids ||= if product
-      [product.id]
+      product.include_children.map(&:id)
     elsif product_family
-      product_family.products.map(&:id)
+      Product.include_children(product_family.products).map(&:id)
     end
   end
 

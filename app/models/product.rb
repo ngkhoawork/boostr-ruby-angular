@@ -162,7 +162,7 @@ class Product < ActiveRecord::Base
   def all_children(children_array = [])
     children_array += children.all
     children.each do |child|
-      child.all_children(children_array)
+      children_array = child.all_children(children_array)
     end
     children_array
   end
@@ -202,19 +202,23 @@ class Product < ActiveRecord::Base
       id_name_hash(self)
     elsif level == 2
       id_name_hash(parent)
+    else
+      {}
     end
   end
 
   def level2
     if level == 2
       id_name_hash(self)
+    else
+      {}
     end
   end
 
   private
 
   def id_name_hash(obj)
-    obj.serializable_hash(only: [:id, :name]) rescue nil
+    obj.serializable_hash(only: [:id, :name]) rescue {}
   end
 
   def set_top_parent

@@ -9,18 +9,24 @@ class Csv::BillingCostBudgetsService < Csv::BaseService
   attr_reader :company
 
   def decorated_records
-    records.map { |record| Csv::BillingCostBudgetsDecorator.new(record, field) }
+    records.map { |record| Csv::BillingCostBudgetsDecorator.new(record, field, company) }
   end
 
   def headers
-    [
+    headers = [
       'IO Number',
       'Name',
       'Advertiser',
       'Agency',
       'Seller',
       'Account Manager',
-      'Product',
+      'Product'
+    ]
+    if company.product_options_enabled
+      headers << company.product_option1 if company.product_option1_enabled
+      headers << company.product_option2 if company.product_option2_enabled
+    end
+    headers += [
       'Amount',
       'Cost Type',
       'Actualization Status'
