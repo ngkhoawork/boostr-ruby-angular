@@ -39,6 +39,6 @@ describe Api::Leads::IndexSerializer do
   end
 
   def lead
-    @_lead ||= create :lead, company: company, contact: contact, user: user
+    @_lead ||= create :lead, company: company, contact: contact, user: user, status: Lead::NEW
   end
 end
