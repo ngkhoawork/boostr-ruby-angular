@@ -3,7 +3,7 @@ class Forecast::PipelineDataService
     @company             = company
     @team_id             = params[:team_id]
     @product_family_id   = params[:product_family_id]
-    @product_id          = params[:product_id]
+    @product_id          = params[:product2_id] || params[:product1_id] || params[:product_id]
     @member_id           = params[:member_id] || params[:user_id]
     @time_period_id      = params[:time_period_id]
     @is_net_forecast     = (params[:is_net_forecast] && params[:is_net_forecast] == 'true')
@@ -136,9 +136,11 @@ class Forecast::PipelineDataService
   end
 
   def products
-    @_products ||= if product.present?
+    @_products ||= if product&.level == 2
       [product]
-    elsif product_family
+    elsif product.present?
+      product.include_children
+    elsif product_family.present?
       product_family.products
     end
   end

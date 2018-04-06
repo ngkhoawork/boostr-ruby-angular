@@ -246,11 +246,14 @@ class Api::ForecastsController < ApplicationController
   end
 
   def product
-    return @product if defined?(@product)
-    @product = nil
-    if params[:product_id] && params[:product_id] != 'all'
-      @product = company.products.find(params[:product_id])
-    end
+    @_product ||=
+      if params[:product2_id] && params[:product2_id] != 'all'
+        company.products.find(params[:product2_id])
+      elsif params[:product1_id] && params[:product1_id] != 'all'
+        company.products.find(params[:product1_id])
+      elsif params[:product_id] && params[:product_id] != 'all'
+        company.products.find(params[:product_id])
+      end
   end
 
   def product_family

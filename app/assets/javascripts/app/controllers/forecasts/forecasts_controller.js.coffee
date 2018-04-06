@@ -19,6 +19,8 @@
 			seller: emptyFilter
 			productFamily: emptyFilter
 			product: emptyFilter
+			product1: emptyFilter
+			product2: emptyFilter
 			timePeriod: emptyFilter
 			year: null
 		$scope.filter = angular.copy defaultFilter
@@ -64,6 +66,8 @@
 					time_period_id: $scope.filter.timePeriod.id,
 					quarter: row.quarter,
 					product_id: $scope.filter.product.id,
+					product1_id: $scope.filter.product1.id,
+					product2_id: $scope.filter.product2.id,
 					product_family_id: $scope.filter.productFamily.id,
 					is_net_forecast: $scope.isNetForecast,
 					year: row.year
@@ -161,8 +165,7 @@
 			products: Product.all({active: true})
 			timePeriods: TimePeriod.all()
 		).then (data) ->
-			$scope.hasForecastPermission = data.user.has_forecast_permission
-			$scope.hasNetPermission = data.user.company_net_forecast_enabled
+			setPermission(data.user)
 			shouldChooseTeamFilter = $scope.currentUserIsLeader || data.user.team_id != null || !$scope.hasForecastPermission
 			shouldChooseMemberFilter = !$scope.currentUserIsLeader && data.user.team_id != null || !$scope.hasForecastPermission
 			$scope.filterTeams = data.teams
@@ -179,6 +182,24 @@
 					period.period_type is 'month'
 				)
 			searchAndSetTimePeriod($scope.timePeriods)
+
+		setPermission = (user) ->
+			$scope.hasForecastPermission = user.has_forecast_permission
+			$scope.hasNetPermission = user.company_net_forecast_enabled
+			$scope.productOptionsEnabled = user.product_options_enabled
+			$scope.productOption1Enabled = user.product_option1_enabled
+			$scope.productOption2Enabled = user.product_option2_enabled
+			$scope.option1Field = user.product_option1_field || 'Option1'
+			$scope.option2Field = user.product_option2_field || 'Option2'
+
+		$scope.productsByLevel = (level) ->
+			_.filter $scope.products, (p) -> 
+				if level == 0
+					p.level == level
+				else if level == 1
+					p.level == 1 && p.parent_id == $scope.filter.product.id
+				else if level == 2
+					p.level == 2 && p.parent_id == $scope.filter.product1.id
 
 		searchAndSetTimePeriod = (timePeriods) ->
 			for period in timePeriods
@@ -215,6 +236,8 @@
 			query.user_id = f.seller.id || 'all'
 			query.product_family_id = f.productFamily.id || 'all'
 			query.product_id = f.product.id || 'all'
+			query.product1_id = f.product1.id || 'all'
+			query.product2_id = f.product2.id || 'all'
 			query.time_period_id = f.timePeriod.id if f.timePeriod.id
 			query.year = f.year if f.year
 			query.new_version = true

@@ -3,7 +3,7 @@ class Forecast::PmpRevenueDataService
     @company             = company
     @team_id             = params[:team_id]
     @product_family_id   = params[:product_family_id]
-    @product_id          = params[:product_id] || params[:product_ids]
+    @product_id          = params[:product2_id] || params[:product1_id] || params[:product_id] || params[:product_ids]
     @member_id           = params[:member_id] if params[:member_id]
     @member_id           = params[:user_id] if params[:user_id]
     @time_period_id      = params[:time_period_id]
@@ -115,10 +115,12 @@ class Forecast::PmpRevenueDataService
   end
 
   def products
-    @_products ||= if product.present?
-      Product.include_children(product)
-    elsif product_family
-      Product.include_children(product_family.products)
+    @_products ||= if product&.level == 2
+      [product]
+    elsif product.present?
+      product.include_children
+    elsif product_family.present?
+      product_family.products
     end
   end
 
