@@ -40,7 +40,7 @@
                             .td-info{'ng-switch-when': 'rejected'}
                                 {{lead.rejected_at && 'Rejected ' + (lead.rejected_at | date : 'shortDate')}}
                             .td-info{'ng-show': 'lead.untouched_days'}
-                                {{lead.untouched_days}} Day{{lead.untouched_days !== 1 ? 's' : ''}} Untouched
+                                {{lead.untouched_days}} Day{{lead.untouched_days !== '1' ? 's' : ''}} Untouched
                             .td-action{'ng-click': 'showReassignModal(lead)'} Reassign
 
                     .leads-td
