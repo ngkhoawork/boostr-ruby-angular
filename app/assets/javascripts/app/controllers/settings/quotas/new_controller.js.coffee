@@ -17,7 +17,7 @@
     $q.all({
       time_periods: TimePeriod.all()
       users: User.query().$promise
-      products: Product.all({active: true})
+      products: Product.all({active: true, level: 0})
       product_families: ProductFamily.all({active: true})
     }).then (data) ->
       $scope.timePeriods = data.time_periods
