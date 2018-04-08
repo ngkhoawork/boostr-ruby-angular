@@ -1,4 +1,4 @@
-class SetupEgnyteClientFoldersWorker < BaseWorker
+class Egnyte::SetupClientFoldersWorker < BaseWorker
   sidekiq_options retry: 3
 
   def perform(egnyte_integration_id, advertiser_id)

@@ -1,7 +1,7 @@
-class Egnyte::PrivateActions::BuildAccountFolderPath < Egnyte::PrivateActions::Base
+class Egnyte::PrivateActions::BuildAccountFolderPath < Egnyte::Actions::Base
   class << self
     def required_option_keys
-      @required_option_keys ||= %i(client_id)
+      @required_option_keys ||= %i()
     end
 
     def app_folder_path
@@ -10,12 +10,14 @@ class Egnyte::PrivateActions::BuildAccountFolderPath < Egnyte::PrivateActions::B
   end
 
   def perform
+    return app_folder_path unless @options[:client_id]
+
     recursive_build(@options[:client_id])
   end
 
   private
 
-  delegate :required_option_keys, :app_folder_path, :new, to: :class
+  delegate :app_folder_path, :new, to: :class
 
   def recursive_build(client_id)
     record = Client.find(client_id)

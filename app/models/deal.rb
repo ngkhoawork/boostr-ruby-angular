@@ -1787,7 +1787,7 @@ class Deal < ActiveRecord::Base
   end
 
   def setup_egnyte_folders
-    SetupEgnyteDealFoldersWorker.perform_async(company.egnyte_integration.id, id) if company.egnyte_integration
+    Egnyte::SetupDealFoldersWorker.perform_async(company.egnyte_integration.id, id) if company.egnyte_integration
   end
 
   def update_egnyte_folder_name
@@ -1795,6 +1795,6 @@ class Deal < ActiveRecord::Base
 
     advertiser_changed = previous_changes[:advertiser_id].present?
 
-    UpdateEgnyteDealFolderNameWorker.perform_async(company.egnyte_integration.id, id, advertiser_changed)
+    Egnyte::UpdateDealFolderWorker.perform_async(company.egnyte_integration.id, id, advertiser_changed)
   end
 end

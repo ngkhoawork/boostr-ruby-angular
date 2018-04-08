@@ -1,20 +1,4 @@
-class Egnyte::Actions::CreateFolderTree::Base
-  class << self
-    def required_option_keys
-      raise NotImplementedError, __method__
-    end
-
-    def folder_tree_attr_name
-      raise NotImplementedError, __method__
-    end
-  end
-
-  def initialize(options)
-    @options = options.deep_symbolize_keys
-
-    required_option_keys.each { |option_key| raise "#{option_key} is required" unless @options[option_key] }
-  end
-
+class Egnyte::Actions::CreateFolderTree::Base < Egnyte::Actions::Base
   def perform
     return false unless enabled_and_connected?
 
@@ -27,8 +11,7 @@ class Egnyte::Actions::CreateFolderTree::Base
 
   private
 
-  delegate :required_option_keys, :folder_tree_attr_name, to: :class
-  delegate :access_token, :app_domain, :deals_folder_name, :enabled_and_connected?, to: :egnyte_integration
+  delegate :folder_tree_attr_name, to: :class
 
   def traverse_folder_tree(node, &block)
     block.call(node)
@@ -52,37 +35,16 @@ class Egnyte::Actions::CreateFolderTree::Base
   end
 
   def save_root_folder
-    egnyte_folder.update(
-      uuid: get_root_folder_response.body[:folder_id],
-      path: get_root_folder_response.body[:path]
-    )
+    response = api_caller.get_folder_by_path(folder_path: root_folder[:path], access_token: access_token)
+
+    egnyte_folder.update(uuid: response.body[:folder_id], path: response.body[:path])
   end
 
   def create_uniq_folder(path)
     Egnyte::PrivateActions::CreateUniqFolder.new(egnyte_integration: egnyte_integration, path: path).perform
   end
 
-  def get_root_folder_response
-    @get_root_folder_response ||= Egnyte::Endpoints::GetFolderByPath.new(
-      app_domain,
-      folder_path: root_folder[:path],
-      access_token: access_token
-    ).perform
-  end
-
-  def egnyte_integration
-    @egnyte_integration ||= EgnyteIntegration.find(@options[:egnyte_integration_id])
-  end
-
   def egnyte_folder
     @egnyte_folder ||= record.egnyte_folder || record.build_egnyte_folder
-  end
-
-  def record
-    raise NotImplementedError, __method__
-  end
-
-  def root_folder_path
-    raise NotImplementedError, __method__
   end
 end

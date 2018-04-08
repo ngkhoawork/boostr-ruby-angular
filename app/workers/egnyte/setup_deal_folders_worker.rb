@@ -1,4 +1,4 @@
-class SetupEgnyteDealFoldersWorker < BaseWorker
+class Egnyte::SetupDealFoldersWorker < BaseWorker
   sidekiq_options retry: 3
 
   def perform(egnyte_integration_id, deal_id)

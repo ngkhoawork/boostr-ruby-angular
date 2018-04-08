@@ -1,4 +1,4 @@
-class Egnyte::Actions::UpdateFolderName::Deal < Egnyte::Actions::UpdateFolderName::Base
+class Egnyte::Actions::UpdateFolder::Deal < Egnyte::Actions::UpdateFolder::Base
   def self.required_option_keys
     @required_option_keys ||= %i(egnyte_integration_id deal_id)
   end

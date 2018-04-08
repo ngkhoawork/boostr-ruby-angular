@@ -18,8 +18,6 @@ class Egnyte::Actions::CreateFolderTree::Account < Egnyte::Actions::CreateFolder
   end
 
   def parent_folder_path
-    return Egnyte::PrivateActions::BuildAccountFolderPath.app_folder_path unless record.parent_client_id
-
     Egnyte::PrivateActions::BuildAccountFolderPath.new(client_id: record.parent_client_id, ensure_folders: true).perform
   end
 

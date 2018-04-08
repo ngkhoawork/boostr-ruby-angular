@@ -1,14 +1,7 @@
-class Egnyte::Actions::BuildAuthorizationUri
+class Egnyte::Actions::BuildAuthorizationUri < Egnyte::Actions::Base
   REQUESTED_ACCESS_TOKEN_MARKER = 'SHOULD_BE_REPLACED_WITH_ACCESS_TOKEN'.freeze
 
   class << self
-    def api_credentials
-      {
-        client_id: ENV['egnyte_client_id']         || (raise 'ENV[egnyte_client_id] has not been provided'),
-        client_secret: ENV['egnyte_client_secret'] || (raise 'ENV[egnyte_client_secret] has not been provided')
-      }
-    end
-
     def generate_state_token(salt)
       random_hash = Digest::MD5.hexdigest("#{DateTime.current}-#{salt}")
 
@@ -25,12 +18,8 @@ class Egnyte::Actions::BuildAuthorizationUri
         response_code: 'code'
       }
     end
-  end
 
-  def initialize(options)
-    @options = options.deep_symbolize_keys
-
-    required_option_keys.each { |option_name| raise "#{option_name} is required" unless @options[option_name] }
+    delegate :api_credentials, to: Egnyte::Endpoints::Request
   end
 
   def perform
@@ -39,7 +28,7 @@ class Egnyte::Actions::BuildAuthorizationUri
 
   private
 
-  delegate :api_credentials, :required_option_keys, :predefined_request_params, to: :class
+  delegate :api_credentials, :predefined_request_params, to: :class
 
   def url_embedded_request_params
     request_params.map { |key, value| "#{key}=#{value}" }.join('&')

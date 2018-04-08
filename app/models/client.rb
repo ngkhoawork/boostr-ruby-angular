@@ -606,7 +606,7 @@ class Client < ActiveRecord::Base
   end
 
   def setup_egnyte_folders
-    SetupEgnyteClientFoldersWorker.perform_async(company.egnyte_integration.id, id) if company.egnyte_integration
+    Egnyte::SetupClientFoldersWorker.perform_async(company.egnyte_integration.id, id) if company.egnyte_integration
   end
 
   def update_egnyte_folder_name
@@ -614,6 +614,6 @@ class Client < ActiveRecord::Base
 
     parent_changed = previous_changes[:parent_client_id].present?
 
-    UpdateEgnyteClientFolderNameWorker.perform_async(company.egnyte_integration.id, id, parent_changed)
+    Egnyte::UpdateClientFolderWorker.perform_async(company.egnyte_integration.id, id, parent_changed)
   end
 end

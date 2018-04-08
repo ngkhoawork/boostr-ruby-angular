@@ -1,4 +1,4 @@
-class Egnyte::Actions::UpdateFolderName::Account < Egnyte::Actions::UpdateFolderName::Base
+class Egnyte::Actions::UpdateFolder::Account < Egnyte::Actions::UpdateFolder::Base
   def self.required_option_keys
     @required_option_keys ||= %i(egnyte_integration_id client_id)
   end
@@ -16,8 +16,6 @@ class Egnyte::Actions::UpdateFolderName::Account < Egnyte::Actions::UpdateFolder
   end
 
   def build_parent_folder_path(ensure_folders)
-    return Egnyte::PrivateActions::BuildAccountFolderPath.app_folder_path unless record.parent_client_id
-
     Egnyte::PrivateActions::BuildAccountFolderPath.new(
       client_id: record.parent_client_id,
       ensure_folders: ensure_folders

@@ -19,10 +19,6 @@ class Egnyte::Endpoints::Request
         verify_mode: OpenSSL::SSL::VERIFY_NONE
       }
     end
-
-    def required_option_keys
-      raise NotImplementedError, __method__
-    end
   end
 
   def initialize(domain, options)
@@ -89,13 +85,5 @@ class Egnyte::Endpoints::Request
 
   def request_headers
     {}
-  end
-
-  def request_method
-    raise NotImplementedError, __method__
-  end
-
-  def path
-    raise NotImplementedError, __method__
   end
 end

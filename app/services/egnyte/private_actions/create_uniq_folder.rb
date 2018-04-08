@@ -1,20 +1,15 @@
-class Egnyte::PrivateActions::CreateUniqFolder < Egnyte::PrivateActions::Base
+class Egnyte::PrivateActions::CreateUniqFolder < Egnyte::Actions::Base
   def self.required_option_keys
     @required_option_keys ||= %i(path egnyte_integration)
   end
 
   def perform
-    if create_folder_response(@options[:path]).folder_already_exists?
-      parent_folder = get_folder_by_path_response(parent_path).body
+    response = api_caller.create_folder(folder_path: @options[:path], access_token: access_token)
 
-      related_folder_names =
-        parent_folder[:folders].map { |folder| folder[:name] }.grep(/#{Regexp.escape(folder_name)}/)
+    if response.folder_already_exists?
+      @options[:path] = build_uniq_path
 
-      last_version = extract_folders_versions(related_folder_names).max
-
-      @options[:path] = attach_version_to_path(@options[:path], last_version + 1)
-
-      create_folder_response(@options[:path])
+      api_caller.create_folder(folder_path: @options[:path], access_token: access_token)
     end
 
     @options[:path]
@@ -22,26 +17,19 @@ class Egnyte::PrivateActions::CreateUniqFolder < Egnyte::PrivateActions::Base
 
   private
 
-  delegate :access_token, :app_domain, to: :egnyte_integration
-
-  def create_folder_response(path)
-    Egnyte::Endpoints::CreateFolder.new(
-      app_domain,
-      folder_path: path,
-      access_token: access_token
-    ).perform
-  end
-
-  def get_folder_by_path_response(path)
-    Egnyte::Endpoints::GetFolderByPath.new(
-      app_domain,
-      folder_path: path,
-      access_token: access_token
-    ).perform
-  end
-
   def parent_path
     @options[:path].sub(/\/[\w ]+(?:\/)?\z/, '')
+  end
+
+  def build_uniq_path
+    response = api_caller.get_folder_by_path(folder_path: parent_path, access_token: access_token)
+
+    related_folder_names =
+      response.body[:folders].map { |folder| folder[:name] }.grep(/#{Regexp.escape(folder_name)}/)
+
+    latest_version = extract_folders_versions(related_folder_names).max
+
+    attach_version_to_path(@options[:path], latest_version + 1)
   end
 
   def folder_name
@@ -57,9 +45,5 @@ class Egnyte::PrivateActions::CreateUniqFolder < Egnyte::PrivateActions::Base
 
   def attach_version_to_path(path, version)
     path.sub(/(?<=\w)(?:~[\d]+)?\z/, "~#{version}")
-  end
-
-  def egnyte_integration
-    @options[:egnyte_integration]
   end
 end
