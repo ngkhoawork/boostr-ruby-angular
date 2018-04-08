@@ -9,8 +9,7 @@ class Leads::ReassignmentNotificationsWorker < BaseWorker
     records.each do |record|
       LeadsMailer.reassignment_notification(record).deliver_now
 
-      record.update(user_id: nil)
-      record.assign_reviewer
+      record.assign_reviewer(true)
 
       LeadsMailer.new_leads_assignment(record).deliver_now
 

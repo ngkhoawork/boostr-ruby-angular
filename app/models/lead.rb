@@ -48,8 +48,8 @@ class Lead < ActiveRecord::Base
     add_notifications_reassignment
   end
 
-  def assign_reviewer
-    if self.user_id.nil?
+  def assign_reviewer(allow_reassign = false)
+    if allow_reassign || self.user_id.nil?
       update_columns(user_id: next_available_user)
 
       update_rules_next_fields_value
