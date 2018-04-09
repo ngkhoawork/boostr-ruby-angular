@@ -50,7 +50,6 @@ class Lead < ActiveRecord::Base
 
   def assign_reviewer(allow_reassign = false)
     if allow_reassign || self.user_id.nil?
-      binding.pry
       update_column(:user_id, next_available_user)
 
       update_rules_next_fields_value
