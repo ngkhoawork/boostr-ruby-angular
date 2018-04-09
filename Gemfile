@@ -109,7 +109,6 @@ group :development, :test do
   gem 'libnotify', require: false
   gem 'fuubar'
   gem 'timecop'
-  gem 'pry-rails'
   gem 'byebug'
   # code smell detector
   gem 'reek'
@@ -125,3 +124,7 @@ group :development, :test do
   gem 'test_after_commit'
   gem 'dotenv-rails'
 end
+
+gem 'pry-rails'
+gem 'pry-rescue'
+gem 'pry-stack_explorer'
