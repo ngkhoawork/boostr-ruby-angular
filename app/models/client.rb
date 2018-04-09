@@ -66,6 +66,7 @@ class Client < ActiveRecord::Base
   delegate :street1, :street2, :city, :state, :zip, :phone, :country, to: :address, allow_nil: true
   delegate :name, to: :client_category, prefix: :category, allow_nil: true
   delegate :name, to: :parent_client, prefix: true, allow_nil: true
+  delegate :name, to: :client_type, prefix: true, allow_nil: true
 
   accepts_nested_attributes_for :address, :values
   accepts_nested_attributes_for :account_cf
@@ -220,7 +221,7 @@ class Client < ActiveRecord::Base
               activity_type: { only: [:id, :name, :css_class, :action] }
             }
           }},
-        methods: [:deals_count, :fields, :formatted_name]
+        methods: [:deals_count, :fields, :formatted_name, :client_type_name]
       ).except(:override))
     end
   end

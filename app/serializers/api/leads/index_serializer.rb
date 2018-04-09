@@ -19,7 +19,10 @@ class Api::Leads::IndexSerializer < ActiveModel::Serializer
 
   def clients
     if object.company_name.present? && object.client.blank?
-      company.clients.by_name_in_multiply_string(object.company_name).as_json(override: true, only: [:id, :name])
+      ActiveModel::ArraySerializer.new(
+        suggested_clients,
+        each_serializer: Api::Leads::ClientSerializer
+      )
     end
   end
 
@@ -31,5 +34,9 @@ class Api::Leads::IndexSerializer < ActiveModel::Serializer
 
   def date_for_untouched_calculation
     object.reassigned_at.present? ? object.reassigned_at : object.created_at
+  end
+
+  def suggested_clients
+    company.clients.by_name_in_multiply_string(object.company_name)
   end
 end

@@ -75,6 +75,7 @@
                     options: -> {lead}
 
             modal.result.then (account) ->
+                account.type = account.client_type_name
                 if account && account.id then lead.client = account
 
         $scope.showContactModal = (lead) ->
