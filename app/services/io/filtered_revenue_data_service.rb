@@ -1,10 +1,12 @@
 class Io::FilteredRevenueDataService
-  def initialize(io, start_date, end_date, member_ids, product_ids)
-    @io           = io
-    @member_ids   = member_ids
-    @product_ids  = product_ids
-    @start_date   = start_date
-    @end_date     = end_date
+  def initialize(io, start_date, end_date, member_ids, product_ids, is_net_forecast = false)
+    @io               = io
+    @company          = io.company
+    @member_ids       = member_ids
+    @product_ids      = product_ids
+    @start_date       = start_date
+    @end_date         = end_date
+    @is_net_forecast  = is_net_forecast
   end
 
   def perform
@@ -14,15 +16,26 @@ class Io::FilteredRevenueDataService
   private
 
   attr_reader :io,
+              :company,
               :member_ids,
               :product_ids,
               :start_date,
-              :end_date
+              :end_date,
+              :is_net_forecast
 
   def content_fees
     @_content_fees ||= io.content_fees.inject([]) do |result, content_fee|
       if product_ids.nil? || product_ids.include?(content_fee.product_id)
         result << content_fee
+      end
+      result
+    end
+  end
+
+  def costs
+    @_costs ||= io.costs.inject([]) do |result, cost|
+      if product_ids.nil? || product_ids.include?(cost.product_id)
+        result << cost
       end
       result
     end
@@ -43,7 +56,7 @@ class Io::FilteredRevenueDataService
   end
 
   def partial_amounts
-    @_partial_amounts ||= [content_fee_partial_amounts, display_partial_amounts]
+    @_partial_amounts ||= [content_fee_partial_amounts, display_partial_amounts, cost_partial_amounts]
       .inject([0, 0]) do |total, item|
         total[0] += item[0]
         total[1] += item[1]
@@ -68,27 +81,60 @@ class Io::FilteredRevenueDataService
     end
   end
 
+  def cost_partial_amounts
+    @_cost_partial_amounts ||= if is_net_forecast
+      io_users.inject([0, 0]) do |total, member|
+        item_data = costs.inject([0, 0]) do |item_total, item|
+          calc_cost_item_amounts(item_total, item, member)
+          item_total
+        end
+        total[0] += item_data[0] if total[0] == 0
+        total[1] += item_data[1]
+        total
+      end
+    else
+      [0, 0]
+    end
+  end
+
+  def calc_cost_item_amounts(item_total, item, member)
+    item.cost_monthly_amounts.each do |budget|
+      share = member.share
+      if (start_date <= budget.end_date && end_date >= budget.start_date)
+        deduct_cost_budget_data(item_total, item, budget, member)
+      end
+    end
+  end
+
   def display_partial_amounts
     @_display_partial_amounts ||= io_users.inject([0, 0]) do |total, member|
       item_data = display_line_items.inject([0, 0]) do |item_total, item|
-        share = member.share
-        budget_data = item.display_line_item_budgets.inject([0, 0, 0, 0]) do |budget_total, budget|
-          if (start_date <= budget.end_date && end_date >= budget.start_date)
-            sum_display_budget_data(budget_total, item, budget, member)
-          end
-          budget_total
-        end
-        if (start_date <= item.end_date && end_date >= item.start_date)
-          in_period_days = period_days(item, nil)
-          in_period_effective_days = period_effective_days(item, nil, member)
-          item_total[0] += budget_data[0] + item.ave_run_rate * (in_period_days - budget_data[2])
-          item_total[1] += budget_data[1] + item.ave_run_rate * (in_period_effective_days - budget_data[3]) * share / 100
-        end
+        budget_data = display_item_amounts(item, member)
+        sum_display_item_amount(item_total, budget_data, item, member)
         item_total
       end
       total[0] += item_data[0] if total[0] == 0
       total[1] += item_data[1]
       total
+    end
+  end
+
+  def display_item_amounts(item, member)
+    item.display_line_item_budgets.inject([0, 0, 0, 0]) do |budget_total, budget|
+      if (start_date <= budget.end_date && end_date >= budget.start_date)
+        sum_display_budget_data(budget_total, item, budget, member)
+      end
+      budget_total
+    end
+  end
+
+  def sum_display_item_amount(item_total, budget_data, item, member)
+    share = member.share
+    if (start_date <= item.end_date && end_date >= item.start_date)
+      in_period_days = period_days(item, nil)
+      in_period_effective_days = period_effective_days(item, nil, member)
+      item_total[0] += budget_data[0] + item.ave_run_rate * (in_period_days - budget_data[2])
+      item_total[1] += budget_data[1] + item.ave_run_rate * (in_period_effective_days - budget_data[3]) * share / 100
     end
   end
 
@@ -99,6 +145,15 @@ class Io::FilteredRevenueDataService
 
     total[0] += budget.corrected_daily_budget(start_date, end_date) * in_period_days
     total[1] += budget.corrected_daily_budget(start_date, end_date) * in_period_effective_days * share / 100
+  end
+
+  def deduct_cost_budget_data(total, item, budget, member)
+    share = member.share
+    in_period_days = period_days(io, budget)
+    in_period_effective_days = period_effective_days(io, budget, member)
+
+    total[0] -= budget.corrected_daily_budget(start_date, end_date) * in_period_days
+    total[1] -= budget.corrected_daily_budget(start_date, end_date) * in_period_effective_days * share / 100
   end
 
   def sum_display_budget_data(total, item, budget, member)

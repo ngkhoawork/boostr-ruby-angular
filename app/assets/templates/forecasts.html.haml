@@ -78,11 +78,19 @@
 						Run Report
 
 				.header-cell
-					%b Show UW
+					%b.mr20 Show UW
 					.show-hide-remainder-form.m0
 						.switch-remainder-form
 							%input#unweighted-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-checked': 'isUnweighted', 'ng-click': 'toggleUnweighted($event)'}
 							%label{for: 'unweighted-toggle'}
+								%span
+
+				.header-cell.mr-md{'ng-if': 'hasNetPermission'}
+					%b Show Net
+					.show-hide-remainder-form.m0
+						.switch-remainder-form
+							%input#net-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-checked': 'isNetForecast', 'ng-click': 'toggleNetForecast($event)'}
+							%label{for: 'net-toggle'}
 								%span
 
 		.row.mb20{'ng-show': 'forecast'}
@@ -105,18 +113,30 @@
 										%span.clickable{ ng: { click: 'sort.toggle("quota")' } }
 											Quota
 											%i{ ng: { class: "{ 'fa': sort.column == 'quota', 'fa-sort-asc': sort.column == 'quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'quota' && sort.direction == 'desc' }" } }
-									%th
+									%th{'ng-if': '!isNetForecast'}
 										%span.clickable{ ng: { click: 'sort.toggle("revenue")' } }
 											Revenue
 											%i{ ng: { class: "{ 'fa': sort.column == 'revenue', 'fa-sort-asc': sort.column == 'revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'revenue' && sort.direction == 'desc' }" } }
-									%th
+									%th{'ng-if': 'isNetForecast'}
+										%span.clickable{ ng: { click: 'sort.toggle("revenue_net")' } }
+											Revenue
+											%i{ ng: { class: "{ 'fa': sort.column == 'revenue_net', 'fa-sort-asc': sort.column == 'revenue_net' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'revenue_net' && sort.direction == 'desc' }" } }
+									%th{'ng-if': '!isNetForecast'}
 										%span.clickable{ ng: { click: 'sort.toggle("weighted_pipeline")' } }
 											Pipeline (W)
 											%i{ ng: { class: "{ 'fa': sort.column == 'weighted_pipeline', 'fa-sort-asc': sort.column == 'weighted_pipeline' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'weighted_pipeline' && sort.direction == 'desc' }" } }
-									%th
+									%th{'ng-if': 'isNetForecast'}
+										%span.clickable{ ng: { click: 'sort.toggle("weighted_pipeline_net")' } }
+											Pipeline (W)
+											%i{ ng: { class: "{ 'fa': sort.column == 'weighted_pipeline_net', 'fa-sort-asc': sort.column == 'weighted_pipeline_net' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'weighted_pipeline_net' && sort.direction == 'desc' }" } }
+									%th{'ng-if': '!isNetForecast'}
 										%span.clickable{ ng: { click: 'sort.toggle("amount")' } }
 											Forecast Amt
 											%i{ ng: { class: "{ 'fa': sort.column == 'amount', 'fa-sort-asc': sort.column == 'amount' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'amount' && sort.direction == 'desc' }" } }
+									%th{'ng-if': 'isNetForecast'}
+										%span.clickable{ ng: { click: 'sort.toggle("amount_net")' } }
+											Forecast Amt
+											%i{ ng: { class: "{ 'fa': sort.column == 'amount_net', 'fa-sort-asc': sort.column == 'amount_net' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'amount_net' && sort.direction == 'desc' }" } }
 									%th
 										%span.clickable{ ng: { click: 'sort.toggle("gap_to_quota")' } }
 											Gap to Quota

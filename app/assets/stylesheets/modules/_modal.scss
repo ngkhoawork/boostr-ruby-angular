@@ -342,6 +342,20 @@
         background-color: darken(#ebebeb, 10%);
       }
     }
+    .form-group {
+      margin-bottom: 0;
+      margin-top: 7px;
+    }
+    .form-control {
+      height: auto;
+      width: auto;
+      display: inline-block;
+      margin-left: 3px;
+      transform: translateY(2px);
+    }
+    label {
+      user-select: none;
+    }
   }
   .add-btn.plus-btn {
     height: 35px;

@@ -11,8 +11,10 @@ class User < ActiveRecord::Base
   has_many :revenues, -> (user) { where(company_id: user.company_id) }, through: :clients
   has_many :deal_members
   has_many :io_members
+  has_many :pmp_members
   has_many :deals, -> (user) { where(company_id: user.company_id) }, through: :deal_members
   has_many :ios, -> (user) { where(company_id: user.company_id) }, through: :io_members
+  has_many :pmps, -> (user) { where(company_id: user.company_id) }, through: :pmp_members
   has_many :quotas, -> (user) { where(company_id: user.company_id) }
   has_many :teams, -> (user) { where(company_id: user.company_id) }, foreign_key: :leader_id
   has_many :team_members, -> (user) { where(company_id: user.company_id) }, through: :teams, source: :members
@@ -111,6 +113,10 @@ class User < ActiveRecord::Base
     self.company.forecast_gap_to_quota_positive
   end
 
+  def company_net_forecast_enabled
+    self.company.enable_net_forecasting
+  end
+
   def is_admin
     is?(:admin)
   end
@@ -181,7 +187,9 @@ class User < ActiveRecord::Base
           :roles,
           :company_influencer_enabled,
           :company_forecast_gap_to_quota_positive,
-          :has_forecast_permission
+          :company_net_forecast_enabled,
+          :has_forecast_permission,
+          :has_multiple_sales_process
         ]
       ).except(:override))
     end
@@ -209,6 +217,10 @@ class User < ActiveRecord::Base
 
   def all_ios_for_time_period(start_date, end_date)
     ios.for_time_period(start_date, end_date)
+  end
+
+  def has_multiple_sales_process
+    company.sales_processes.by_active(true).count > 1
   end
 
   def set_alert(should_save=false)
@@ -461,5 +473,21 @@ class User < ActiveRecord::Base
 
   def self.current=(user)
     Thread.current[:user] = user
+  end
+
+  def current_team
+    if leader?
+      company.teams.find_by(leader: self)
+    else
+      team
+    end    
+  end
+
+  def total_gross_quotas(start_date, end_date, product_id = nil, product_type = nil, value_type = QUOTA_TYPES[:gross])
+    quotas.for_time_period(start_date, end_date)
+      .by_product_type(product_type)
+      .by_product_id(product_id)
+      .by_type(value_type)
+      .sum(:value)
   end
 end

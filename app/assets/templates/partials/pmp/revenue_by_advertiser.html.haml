@@ -1,0 +1,22 @@
+.block#pmp-revenue-by-advertiser
+  %div.mb20
+    %span.title Revenue by Advertiser
+  %div.custom-field-item{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0' }
+    %div.custom-field-item-label
+      %label{ for: 'type' } Deal-ID
+    %div.custom-field-item-field
+      .dropdown
+        %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+          %span.editable
+            {{ revenueChart.selectedItem.ssp_deal_id || revenueChart.selectedItem.id || (revenueChart.selectedItem | firstUppercase) || 'Select' }}
+          %span.caret
+        %ul.dropdown-menu
+          %li{'ng-class': '{active: revenueChart.selectedItem == "all"}'}
+            %a{'href': '', 'ng-click': 'revenueChart.update("all")'}
+              %span.text All
+          %li{'ng-repeat': 'pmpItem in currentPMP.pmp_items', 'ng-class': '{active: revenueChart.selectedItem.id == pmpItem.id}'}
+            %a{'href': '', 'ng-click': 'revenueChart.update(pmpItem)'}
+              %span.text {{ pmpItem.ssp_deal_id || pmpItem.id }}
+  %div#pmp-revenue-advertiser-chart-container.mb20{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0', 'd3-horizontal-bar-chart': '', 'data': 'revenueChart.data', 'settings': '{{revenueChart.settings()}}', 'tooltip-text': 'revenueChart.tooltipText(x,y)', 'y-axis-label-format': 'revenueChart.yAxisLabelFormat(v)'}
+  %div.center{ 'ng-if': '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' }
+    %span No data available

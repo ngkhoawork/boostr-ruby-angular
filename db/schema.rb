@@ -11,12 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180223124930) do
+ActiveRecord::Schema.define(version: 20180303003530) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "fuzzystrmatch"
+  enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
+  enable_extension "fuzzystrmatch"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -390,11 +391,11 @@ ActiveRecord::Schema.define(version: 20180223124930) do
     t.string   "api_email"
     t.string   "encrypted_password"
     t.string   "encrypted_password_iv"
+    t.boolean  "recurring",                  default: false
     t.text     "encrypted_json_api_key"
     t.text     "encrypted_json_api_key_iv"
     t.string   "network_code"
     t.string   "integration_provider"
-    t.boolean  "recurring",                  default: false
   end
 
   add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
@@ -575,7 +576,7 @@ ActiveRecord::Schema.define(version: 20180223124930) do
     t.integer  "client_segment_id"
     t.integer  "holding_company_id"
     t.text     "note"
-    t.string   "created_from",           default: "false"
+    t.string   "created_from"
   end
 
   add_index "clients", ["client_category_id"], name: "index_clients_on_client_category_id", using: :btree
@@ -603,11 +604,11 @@ ActiveRecord::Schema.define(version: 20180223124930) do
     t.integer  "red_threshold"
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
-    t.boolean  "requests_enabled",                  default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "enable_operative_extra_fields",     default: false
-    t.boolean  "influencer_enabled",                default: false
+    t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "influencer_enabled",                default: false
     t.boolean  "forecast_gap_to_quota_positive",    default: true
     t.boolean  "publishers_enabled",                default: false
     t.boolean  "gmail_enabled",                     default: false
@@ -780,7 +781,7 @@ ActiveRecord::Schema.define(version: 20180223124930) do
     t.datetime "activity_updated_at"
     t.text     "note"
     t.integer  "publisher_id"
-    t.string   "created_from",        default: "false"
+    t.string   "created_from"
   end
 
   add_index "contacts", ["client_id"], name: "index_contacts_on_client_id", using: :btree
@@ -1639,7 +1640,7 @@ ActiveRecord::Schema.define(version: 20180223124930) do
     t.datetime "next_steps_due"
     t.string   "ssp_deal_id"
     t.integer  "lead_id"
-    t.string   "created_from",                                 default: "false"
+    t.string   "created_from"
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree
@@ -1871,6 +1872,20 @@ ActiveRecord::Schema.define(version: 20180223124930) do
   end
 
   add_index "forecast_calculation_logs", ["company_id"], name: "index_forecast_calculation_logs_on_company_id", using: :btree
+
+  create_table "forecast_cost_facts", force: :cascade do |t|
+    t.integer  "forecast_time_dimension_id"
+    t.integer  "user_dimension_id"
+    t.integer  "product_dimension_id"
+    t.decimal  "amount",                     precision: 15, scale: 2
+    t.jsonb    "monthly_amount"
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+  end
+
+  add_index "forecast_cost_facts", ["forecast_time_dimension_id"], name: "index_forecast_cost_facts_on_forecast_time_dimension_id", using: :btree
+  add_index "forecast_cost_facts", ["product_dimension_id"], name: "index_forecast_cost_facts_on_product_dimension_id", using: :btree
+  add_index "forecast_cost_facts", ["user_dimension_id"], name: "index_forecast_cost_facts_on_user_dimension_id", using: :btree
 
   create_table "forecast_pipeline_facts", force: :cascade do |t|
     t.integer  "user_dimension_id"
@@ -2150,15 +2165,17 @@ ActiveRecord::Schema.define(version: 20180223124930) do
     t.integer "pmp_item_id"
     t.date    "date"
     t.string  "ad_unit"
-    t.decimal "price",                 precision: 15, scale: 2
-    t.decimal "revenue",               precision: 15, scale: 2
-    t.decimal "revenue_loc",           precision: 15, scale: 2
-    t.integer "impressions", limit: 8
+    t.decimal "price",                    precision: 15, scale: 2
+    t.decimal "revenue",                  precision: 15, scale: 2
+    t.decimal "revenue_loc",              precision: 15, scale: 2
+    t.integer "impressions",    limit: 8
     t.decimal "win_rate"
     t.integer "ad_requests"
-    t.string  "advertiser"
+    t.string  "ssp_advertiser"
+    t.integer "advertiser_id"
   end
 
+  add_index "pmp_item_daily_actuals", ["advertiser_id"], name: "index_pmp_item_daily_actuals_on_advertiser_id", using: :btree
   add_index "pmp_item_daily_actuals", ["pmp_item_id"], name: "index_pmp_item_daily_actuals_on_pmp_item_id", using: :btree
 
   create_table "pmp_item_monthly_actuals", force: :cascade do |t|
@@ -2542,12 +2559,15 @@ ActiveRecord::Schema.define(version: 20180223124930) do
   add_index "revenues", ["user_id"], name: "index_revenues_on_user_id", using: :btree
 
   create_table "sales_processes", force: :cascade do |t|
-    t.integer "company_id"
-    t.string  "name"
-    t.boolean "active",     default: true
+    t.integer  "company_id"
+    t.string   "name"
+    t.boolean  "active",     default: true
+    t.datetime "deleted_at"
   end
 
+  add_index "sales_processes", ["company_id", "name"], name: "index_sales_processes_on_company_id_and_name", unique: true, using: :btree
   add_index "sales_processes", ["company_id"], name: "index_sales_processes_on_company_id", using: :btree
+  add_index "sales_processes", ["deleted_at"], name: "index_sales_processes_on_deleted_at", using: :btree
 
   create_table "sales_stages", force: :cascade do |t|
     t.integer  "sales_stageable_id"
@@ -2594,6 +2614,23 @@ ActiveRecord::Schema.define(version: 20180223124930) do
   add_index "snapshots", ["user_id"], name: "index_snapshots_on_user_id", using: :btree
   add_index "snapshots", ["year", "quarter"], name: "index_snapshots_on_year_and_quarter", using: :btree
 
+  create_table "ssp_advertisers", force: :cascade do |t|
+    t.string   "name",       null: false
+    t.integer  "company_id"
+    t.integer  "ssp_id"
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "client_id"
+  end
+
+  add_index "ssp_advertisers", ["client_id"], name: "index_ssp_advertisers_on_client_id", using: :btree
+  add_index "ssp_advertisers", ["company_id"], name: "index_ssp_advertisers_on_company_id", using: :btree
+  add_index "ssp_advertisers", ["created_by"], name: "index_ssp_advertisers_on_created_by", using: :btree
+  add_index "ssp_advertisers", ["ssp_id"], name: "index_ssp_advertisers_on_ssp_id", using: :btree
+  add_index "ssp_advertisers", ["updated_by"], name: "index_ssp_advertisers_on_updated_by", using: :btree
+
   create_table "ssps", force: :cascade do |t|
     t.string "name"
   end
@@ -2610,18 +2647,18 @@ ActiveRecord::Schema.define(version: 20180223124930) do
   add_index "stage_dimensions", ["company_id"], name: "index_stage_dimensions_on_company_id", using: :btree
 
   create_table "stages", force: :cascade do |t|
-    t.string   "name"
     t.integer  "company_id"
-    t.integer  "probability"
-    t.boolean  "open"
-    t.boolean  "active"
     t.integer  "deals_count"
-    t.integer  "position"
     t.string   "color"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
     t.integer  "yellow_threshold"
     t.integer  "red_threshold"
+    t.string   "name"
+    t.integer  "probability"
+    t.boolean  "open"
+    t.boolean  "active"
+    t.integer  "position"
     t.integer  "sales_process_id"
   end
 
@@ -2791,9 +2828,9 @@ ActiveRecord::Schema.define(version: 20180223124930) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
-    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
+    t.boolean  "revenue_requests_access",             default: false
   end
 
   add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree
@@ -2975,6 +3012,9 @@ ActiveRecord::Schema.define(version: 20180223124930) do
   add_foreign_key "exchange_rates", "companies"
   add_foreign_key "exchange_rates", "currencies"
   add_foreign_key "forecast_calculation_logs", "companies"
+  add_foreign_key "forecast_cost_facts", "forecast_time_dimensions"
+  add_foreign_key "forecast_cost_facts", "product_dimensions"
+  add_foreign_key "forecast_cost_facts", "user_dimensions"
   add_foreign_key "forecast_pipeline_facts", "product_dimensions"
   add_foreign_key "forecast_pipeline_facts", "stage_dimensions"
   add_foreign_key "forecast_pipeline_facts", "user_dimensions"
@@ -3008,6 +3048,7 @@ ActiveRecord::Schema.define(version: 20180223124930) do
   add_foreign_key "requests", "users", column: "assignee_id"
   add_foreign_key "requests", "users", column: "requester_id"
   add_foreign_key "sales_processes", "companies"
+  add_foreign_key "ssp_advertisers", "clients"
   add_foreign_key "stage_dimensions", "companies"
   add_foreign_key "temp_ios", "companies"
   add_foreign_key "temp_ios", "ios"

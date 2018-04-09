@@ -133,9 +133,6 @@ GEM
       json
     chronic (0.10.2)
     clean_pagination (1.0.0)
-    clockwork (2.0.2)
-      activesupport
-      tzinfo
     codeclimate-engine-rb (0.4.0)
       virtus (~> 1.0)
     coderay (1.1.0)
@@ -182,6 +179,8 @@ GEM
     encryptor (3.0.0)
     equalizer (0.0.11)
     erubis (2.7.0)
+    et-orbi (1.0.9)
+      tzinfo
     execjs (2.5.2)
     factory_girl (4.8.1)
       activesupport (>= 3.0.0)
@@ -300,6 +299,7 @@ GEM
       activesupport (>= 4.1.9)
       loofah (>= 2.0)
       nokogiri (~> 1.6)
+    interception (0.5)
     jasmine-core (2.8.0)
     jasmine-rails (0.14.2)
       jasmine-core (>= 1.3, < 3.0)
@@ -408,6 +408,12 @@ GEM
       slop (~> 3.4)
     pry-rails (0.3.4)
       pry (>= 0.9.10)
+    pry-rescue (1.4.5)
+      interception (>= 0.5)
+      pry
+    pry-stack_explorer (0.4.9.2)
+      binding_of_caller (>= 0.7)
+      pry (>= 0.9.11)
     public_suffix (3.0.0)
     puma (3.10.0)
     rack (1.6.5)
@@ -539,6 +545,8 @@ GEM
     ruby_parser (3.7.0)
       sexp_processor (~> 4.1)
     rubyzip (1.1.7)
+    rufus-scheduler (3.4.2)
+      et-orbi (~> 1.0)
     safe_yaml (1.0.4)
     sass (3.4.15)
     sass-rails (5.0.3)
@@ -556,6 +564,11 @@ GEM
       connection_pool (~> 2.2, >= 2.2.0)
       rack-protection (>= 1.5.0)
       redis (~> 3.3, >= 3.3.3)
+    sidekiq-scheduler (2.2.1)
+      redis (>= 3, < 5)
+      rufus-scheduler (~> 3.2)
+      sidekiq (>= 3)
+      tilt (>= 1.4.0)
     signet (0.7.3)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -572,6 +585,8 @@ GEM
     socksify (1.7.1)
     spring (2.0.2)
       activesupport (>= 4.2)
+    spring-commands-rspec (1.0.4)
+      spring (>= 0.9.1)
     sprockets (2.12.4)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -640,7 +655,6 @@ DEPENDENCIES
   capybara-webkit
   chronic
   clean_pagination
-  clockwork
   coffee-rails (~> 4.1.0)
   countries
   daemons
@@ -654,7 +668,7 @@ DEPENDENCIES
   ffaker
   font-awesome-rails
   fuubar
-  geocoder
+  geocoder (>= 1.4.6)
   google-api-client
   google-dfp-api (= 0.20.0)
   griddler
@@ -680,6 +694,8 @@ DEPENDENCIES
   pg_search (= 2.1.1)
   pluck_to_hash
   pry-rails
+  pry-rescue
+  pry-stack_explorer
   puma
   rack-cors
   rails (= 4.2.3)
@@ -712,9 +728,11 @@ DEPENDENCIES
   sass-rails (~> 5.0)
   shoulda-matchers
   sidekiq
+  sidekiq-scheduler
   simplecov
   smarter_csv
   spring
+  spring-commands-rspec
   switch_user
   test_after_commit
   timecop
@@ -729,4 +747,4 @@ RUBY VERSION
    ruby 2.3.4p301
 
 BUNDLED WITH
-   1.16.0
+   1.16.1

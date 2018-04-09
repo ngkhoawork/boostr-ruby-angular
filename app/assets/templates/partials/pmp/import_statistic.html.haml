@@ -1,0 +1,21 @@
+.block#import_statistic
+  %div.mb20
+    %span.title Import Status
+    .table-wrapper
+  %table.table.table-hover
+    %thead
+      %tr
+        %th.left SSP
+        %th.left Time of Last Update
+        %th.left API/Import
+    %tbody
+      %tr{ ng: { repeat: "stat in importStatistics | orderBy: 'name'"} }
+        %td{{style:"text-transform: capitalize;"}}
+          %span.mr8 {{ stat.parser_type  }}
+        %td
+          %span.mr8 {{ stat.created_at | date: 'medium' : 'PDT' }}
+        %td{{style:"text-transform: uppercase;"}}
+          %span.mr8 {{ stat.source }}
+      %tr{ ng: { if: '!importStatistics || importStatistics.length == 0' } }
+        %td.center{ 'colspan': '4' }
+          No data available

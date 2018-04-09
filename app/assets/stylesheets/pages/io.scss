@@ -3,11 +3,22 @@
     }
     .detail-stats {
         .stats-col {
-            width: 20%;
+            width: 15%;
             &:last-child {
                 width: 40%;
             }
+            .show-hide-remainder-form {
+                margin: 0;
+                .switch-remainder-form {
+                    float: none;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+            }
         }
+    }
+    .right-link {
+        font-size: 14px;
     }
     .editable {
         &:hover {
@@ -28,7 +39,7 @@
             }
         }
     }
-    #line-content-fees {
+    #line-content-fees, #costs {
         .dropdown {
             position: static;
             display: inline-block;
@@ -49,6 +60,22 @@
             }
         }
         .table {
+            table-layout: fixed;
+            .column {
+                width: 140px;
+            }
+            .wide-product-column {
+                width: 390px;
+            }
+            .type-column {
+                width: 170px;
+            }
+            .product-column {
+                width: 220px;
+            }
+            thead > tr > th {
+                padding-right: 18px;
+            }
             tbody > tr {
                 .z-icon {
                     visibility: hidden;

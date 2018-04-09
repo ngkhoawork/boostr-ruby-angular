@@ -5,136 +5,14 @@
       %tabset{active: "active"}
         %tab{heading: "Data Import", index: "0"}
           .row
-            .col-sm-4
+            .col-sm-4{ 'ng-repeat': 'option in importOptions | orderBy : "title"' }
               .panel
                 .panel-body
-                  %h4 Accounts Import
+                  %h4 {{option.title}}
                   %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadClientModal()' } }
+                    %a.upload{ "ng-click": 'option.click()' }
                       = inline_svg 'icons/import.svg'
-                      Import Accounts
-
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Deals Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadDealsModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Deals
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Contacts Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadContactsModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Contacts
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Deal Products Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadDealProductModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Deal Products
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Deal Product Monthly Budget Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadDealProductBudgetModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Deal Product Monthly Budget
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 IO Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadDisplayIOModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import IOs
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 IO Monthly Product Budget Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadDisplayIOMonthlyBudgetModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import IO Monthly Budgets
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Activities Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadActivityModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Activities
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Integration ID Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadIntegrationIdModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Integration IDs
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Assets Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadAssetsModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Compressed Assets
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Asset Mapping Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadAssetMappingModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Asset Mapping or check unmapped
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Quotas Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadQuotasModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Quotas
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Influencers Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadInfluencersModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Influencers
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Users Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadUsersModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Users
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Influencer Content Fee Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadInfluencerContentFeesModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Import Content Fee
-
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Publishers Daily Actuals Import
-                  %li.import
-                    %a.upload{ href: '', ng: { click: 'showUploadPublisherModal()' } }
-                      = inline_svg 'icons/import.svg'
-                      Publishers Daily Actuals Import
+                      {{ option.linkText }}
 
             .col-sm-4
               .panel
@@ -147,68 +25,14 @@
 
         %tab{heading: "Data Export", index: "1"}
           .row
-            .col-sm-4
+            .col-sm-4{ 'ng-repeat': 'option in exportOptions | orderBy : "title"' }
               .panel
                 .panel-body
-                  %h4 Accounts Export
+                  %h4 {{option.title}}
                   %li.export
-                    %a{ href: '', ng: { click: 'exportClients()' } }
+                    %a.upload{ "ng-click": 'option.click()' }
                       = inline_svg 'icons/import.svg'
-                      Export Accounts
-
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Deals Export
-                  %li.export
-                    %a{ href: '', ng: { click: 'exportDeals()' } }
-                      = inline_svg 'icons/import.svg'
-                      Export Deals
-
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Contacts Export
-                  %li.export
-                    %a.upload{ href: '', ng: { click: 'exportContacts()' } }
-                      = inline_svg 'icons/import.svg'
-                      Export Contacts
-
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Deal Products Export
-                  %li.export
-                    %a{ href: '', ng: { click: 'exportDealProducts()' } }
-                      = inline_svg 'icons/import.svg'
-                      Export Deal Products
-
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Deal Product Monthly Budget Export
-                  %li.export
-                    %a{ href: '', ng: { click: 'exportDealProductMonhtlyBudget()' } }
-                      = inline_svg 'icons/import.svg'
-                      Export Deal Product Monthly Budget
-
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 IO Monthly Product Budget Export
-                  %li.export
-                    %a{ href: '', ng: { click: 'exportDisplayIOMonthlyBudgets()' } }
-                      = inline_svg 'icons/import.svg'
-                      Export IO Monthly Product Budgets
-
-            .col-sm-4
-              .panel
-                .panel-body
-                  %h4 Influencers Export
-                  %li.export
-                    %a{ href: '', ng: { click: 'exportInfluencers()' } }
-                      = inline_svg 'icons/import.svg'
-                      Export Influencers
+                      {{ option.linkText }}
 
         %tab{heading: "Import Status", index: "3", ng: { click: 'getLogs()' } }
           .table-report.pad

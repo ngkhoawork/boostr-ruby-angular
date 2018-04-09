@@ -214,7 +214,6 @@ class ProductForecast
     end
 
     @quarterly_quota
-    # teams.sum(&:quota)
   end
 
   def quarters

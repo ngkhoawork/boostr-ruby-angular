@@ -57,6 +57,8 @@
 					activity: ->
 						activity
 
+		$scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
+
 		$scope.showActivityEditModal = (activity) ->
 			$scope.modalInstance = $modal.open
 				templateUrl: 'modals/activity_new_form.html'

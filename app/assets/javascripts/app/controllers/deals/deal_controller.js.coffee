@@ -1,7 +1,8 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation', 'DealAttachment'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation, DealAttachment) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window, $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment, localStorageService) ->
 
+  $scope.agencyRequired = false
   $scope.showMeridian = true
   $scope.isAdmin = false
   $scope.feedName = 'Deal Updates'
@@ -17,18 +18,20 @@
   $scope.ealertReminder = false
   $scope.activitiesOrder = '-happened_at'
   $scope.activities = []
+  $scope.isPmpDeal = false
+  $scope.pmpColumns = 0
   $anchorScroll()
   $scope.operativeIntegration =
     isEnabled: false
     isLoading: false
     dealLog: null
+  $scope.PMPType = PMPType
 
   ###*
    * FileUpload
   ###
 
   $scope.fileToUploadTst = null
-  # $scope.progressBarMax = 0
   $scope.progressBarCur = 0
   $scope.uploadedFiles = []
   $scope.dealFiles = []
@@ -37,6 +40,15 @@
   $scope.activeDealProductCfLength = 0
 
   $scope._scope = -> this
+  $scope.showWarnings = true
+  roleIdWarningDisplayToShow = 1 # Role type = seller
+
+  $scope.checkAgencyRequiredError = (errors) ->
+    if errors.agency && errors.agency.length != 0
+      $scope.agencyRequired = true
+      $window.scrollTo 0, 0
+    else
+      $scope.agencyRequired = false
 
   $scope.isUrlValid = (url) ->
     regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
@@ -71,7 +83,7 @@
       if(err && err.status == 404)
         $location.url('/deals')
 
-    $scope.anchors = [{name: 'campaign', id: 'campaign'},
+        $scope.anchors = [{name: 'campaign', id: 'campaign'},
                       {name: 'activities', id: 'activities'},
                       {name: 'team & split', id: 'teamsplit'},
                       {name: 'attachments', id: 'attachments'},
@@ -82,7 +94,18 @@
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
+    getSsps()
 
+  checkPmpDeal = () ->
+    $scope.isPmpDeal = false
+    $scope.pmpColumns = 0
+    _.each $scope.currentDeal.products, (product) ->
+      if product.revenue_type == 'PMP'
+        $scope.isPmpDeal = true
+        $scope.pmpColumns = 3
+  getSsps = () ->
+    SSP.all().then (ssps) ->
+      $scope.ssps = ssps
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
@@ -95,6 +118,8 @@
   getValidations = () ->
     Validation.deal_base_fields().$promise.then (data) ->
       $scope.base_fields_validations = data
+    Validation.query(factor: 'Require Won Reason').$promise.then (data) ->
+      $scope.won_reason_required = data && data[0]
 
   $scope.sumDealProductBudget = (index) ->
     products = $scope.currentDeal.deal_products
@@ -189,6 +214,9 @@
       (deal) ->
         $scope.ealertReminder = true
       (resp) ->
+        if resp.data.errors
+          $scope.checkAgencyRequiredError resp.data.errors
+
         $timeout ->
           delete $scope.errors.curr_cd
         , 6000
@@ -225,16 +253,16 @@
       deal.close_reason = Field.field(deal, 'Close Reason')
       deal.contact_roles = Field.field(deal, 'Contact Role')
       deal.next_steps_expired = moment(deal.next_steps_due) < moment().startOf('day')
-      $scope.currentDeal = deal
-      $scope.selectedStageId = deal.stage_id
-      $scope.verifyMembersShare()
-      $scope.setBudgetPercent(deal)
+    $scope.currentDeal = deal
+    $scope.selectedStageId = deal.stage_id
+    $scope.verifyMembersShare()
+    $scope.setBudgetPercent(deal)
+    $scope.getStages()
+    checkPmpDeal()
 
   $scope.getStages = ->
-    Stage.query().$promise.then (stages) ->
-      $scope.stages = stages.filter (stage) ->
-        stage.active
-  $scope.getStages()
+    Stage.query({active: true, sales_process_id: $scope.currentDeal.stage.sales_process_id}).$promise.then (stages) ->
+      $scope.stages = stages
 
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()
@@ -365,9 +393,7 @@
           $scope.errors[key] = error && error[0]
     )
   $scope.$on 'deal_product_added', (e, deal) ->
-    $scope.currentDeal = deal
-    $scope.selectedStageId = deal.stage_id
-    $scope.setBudgetPercent(deal)
+    $scope.setCurrentDeal(deal)
 
   $scope.resetDealProduct = ->
     $scope.deal_product = {
@@ -510,12 +536,18 @@
       if $scope.currentDeal && (!$scope.currentDeal[validation.factor] && !validationValueFactorExists($scope.currentDeal, validation.factor))
         $scope.errors[validation.factor] = validation.name + ' is required'
 
+    if $scope.errors
+      $scope.checkAgencyRequiredError $scope.errors
+
     if Object.keys($scope.errors).length > 0 then return
 
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
       (deal) ->
         $scope.ealertReminder = true
       (resp) ->
+        if resp.data.errors
+          $scope.checkAgencyRequiredError resp.data.errors
+
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
     )
@@ -545,14 +577,31 @@
       $scope.prevStageId = currentDeal.stage_id
       currentDeal.stage_id = stageId
       Stage.get(id: stageId).$promise.then (stage) ->
+        # validation check for pmp products
+        if !stage.open && $scope.isPmpDeal
+          for deal_product in $scope.currentDeal.deal_products
+            if !deal_product.ssp_id
+              $scope.errors['ssp_id' + deal_product.id] = "can't be blank"
+            if !deal_product.ssp_deal_id
+              $scope.errors['ssp_deal_id' + deal_product.id] = "can't be blank"
+            if !deal_product.pmp_type
+              $scope.errors['pmp_type' + deal_product.id] = "can't be blank"
+        if !_.isEmpty($scope.errors)
+          $scope.showWarningModal('SSP, SSP Deal-ID and PMP Type fields are required for PMP products.')
+          return          
         if !stage.open && stage.probability == 0
-          $scope.showModal(currentDeal)
+          $scope.showWonLossModal(currentDeal, false)
+        else if !stage.open && stage.probability == 100 && $scope.won_reason_required && $scope.won_reason_required.criterion.value
+          $scope.showWonLossModal(currentDeal, true)
         else
           Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
             (deal) ->
               if currentDeal.close_reason.option then $scope.init()
               $scope.ealertReminder = true
             (resp) ->
+              if resp.data.errors
+                $scope.checkAgencyRequiredError resp.data.errors
+
               $timeout ->
                 delete $scope.errors.stage
               , 6000
@@ -567,6 +616,9 @@
         $scope.setCurrentDeal(deal)
         $scope.ealertReminder = true
       (resp) ->
+        if resp.data.errors
+          $scope.checkAgencyRequiredError resp.data.errors
+
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
     )
@@ -626,7 +678,6 @@
           deal_contact.id == deletedContact.id
 
   $scope.submitDealContact = (deal_contact, option) ->
-    console.log(option)
     if option == 'Billing'
       if !confirm("Confirm you want to assign an unrelated billing contact")
         return
@@ -676,7 +727,7 @@
   $scope.cancelAddProduct = ->
     $scope.showProductForm = !$scope.showProductForm
 
-  $scope.showModal = (currentDeal) ->
+  $scope.showWonLossModal = (currentDeal, hasWon) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_close_form.html'
       size: 'md'
@@ -686,8 +737,10 @@
       resolve:
         currentDeal: ->
           currentDeal
+        hasWon: ->
+          hasWon
 
-  $scope.showWarningModal = (message) ->
+  $scope.showWarningModal = (message, id) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_warning.html'
       size: 'md'
@@ -696,6 +749,7 @@
       keyboard: true
       resolve:
         message: -> message
+        id: -> id
 
   $scope.showNewProductModal = (currentDeal) ->
     $scope.modalInstance = $modal.open
@@ -707,6 +761,8 @@
       resolve:
         currentDeal: ->
           currentDeal
+        isPmpDeal: ->
+          $scope.isPmpDeal
 
   $scope.addContact = ->
     $scope.modalInstance = $modal.open
@@ -804,6 +860,8 @@
       resolve:
         activity: ->
           activity
+
+  $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
 
   $scope.showDealEditModal = (deal) ->
     $scope.modalInstance = $modal.open
@@ -967,12 +1025,20 @@
         Deal.latest_log(id: dealId).then (log) ->
           $scope.operativeIntegration.dealLog = log if log && log.id
 
+  $scope.getWarningSettings = () ->
+    dealsWithoutWarning = localStorageService.get('dealsWithoutWarning') || []
+    dealsWithoutWarning.forEach((deal) -> 
+      if deal.dealId == $scope.currentDeal.id
+        $scope.showWarnings = false
+    )
+
 
   checkCurrentUserDealShare = (members) ->
     CurrentUser.get().$promise.then (currentUser) ->
+      $scope.getWarningSettings()
       _.forEach members, (member) ->
-        if member.user_id == currentUser.id && !(member.share > 0)
-          $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.'
+        if member.user_id == currentUser.id && !(member.share > 0) && $scope.showWarnings && currentUser.user_type == roleIdWarningDisplayToShow
+          $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.', $scope.currentDeal.id
 
   $scope.$watch 'currentUser', (currentUser) ->
     $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser

@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Api::ClientsController, type: :controller do
 
-  let(:company) { Company.first }
-  let(:team) { create :parent_team, company: company }
+  let!(:company) { create :company }
+  let(:team) { create :parent_team }
   let(:user) { create :user, team: team }
   let(:address_params) { attributes_for :address }
   let(:client_params) { attributes_for(:client, address_attributes: address_params, client_type_id: client_type_id(company), company: company) }

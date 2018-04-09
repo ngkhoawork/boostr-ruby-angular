@@ -72,6 +72,6 @@ class Api::ActivityTypesController < ApplicationController
   end
 
   def position
-    activity_types.pluck(:position).max.next
+    activity_types.pluck(:position).max.to_i.next
   end
 end

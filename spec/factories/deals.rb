@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :deal do
     start_date Date.new(2015, 7, 29)
     end_date Date.new(2015, 8, 29)
-    sequence(:name) { |n| "Deal #{n}" }
+    sequence(:name) { |n| "Deal #{n} " + FFaker::NatoAlphabet.callsign }
     stage
     next_steps 'Call Somebody'
     association :advertiser, factory: :client
@@ -10,7 +10,6 @@ FactoryGirl.define do
 
     before(:create) do |item|
       item.company = Company.first if item.company.blank?
-      User.current = create :user
     end
 
     factory :deal_with_assets do

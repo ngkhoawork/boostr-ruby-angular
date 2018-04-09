@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe Report::ProductMonthlySummarySerializer do
   before do
+    create :billing_address_validation, company: company
     create :billing_deal_contact, deal: deal, contact: contact
     deal_product_cf_name
     deal_product_cf

@@ -54,6 +54,11 @@ class Api::ClientsController < ApplicationController
                   .pluck_to_struct(:id, :name, :client_type_id)
   end
 
+  def fuzzy_search
+    clients = company.clients.fuzzy_search(params[:search]).pluck_to_struct(:id, :name)
+    render json: clients
+  end
+
   def filter_options
     client_ids = clients.pluck(:id)
 
@@ -385,7 +390,12 @@ class Api::ClientsController < ApplicationController
   def suggest_clients
     return @suggest_clients if @suggest_clients
 
-    @suggest_clients = company.clients.by_name_and_type_with_limit(params[:name], params[:client_type_id])
+    @suggest_clients =
+      if params[:full_text_search]
+        company.clients.by_type_id(params[:client_type_id]).search_by_name(params[:name])
+      else
+        company.clients.by_name_and_type_with_limit(params[:name], params[:client_type_id])
+      end
 
     if params[:assoc] && client
       @suggest_clients = @suggest_clients.excepting_client_associations(client, params[:assoc])

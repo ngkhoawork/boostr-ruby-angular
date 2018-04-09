@@ -15,7 +15,7 @@
             {title: 'Data Import/Export', url: '/settings/data_import',        icon: 'arrow-circle-o-down', description: 'Import and Export data'}
             {title: 'Quotas',             url: '/settings/quotas',             icon: 'gamepad',             description: 'Setup quotas for users per time period'}
             {title: 'Stages',             url: '/settings/stages',             icon: 'bullseye',            description: 'Manage sales stages and %\'s'}
-            {title: 'Business Plans',     url: '/settings/bps',                icon: 'book',                description: 'Manage Business Plans'}
+            {title: 'Bottoms Up',     url: '/settings/bps',                icon: 'book',                description: 'Manage Bottoms Up'}
             {title: 'Integrations',       url: '/settings/api_configurations', icon: 'paper-plane-o',       description: 'Manage integration settings for external systems '}
             {title: 'Integration Logs',   url: '/settings/integration_logs',   icon: 'arrows-h',            description: 'View integration activities and error details'}
             {title: 'IO Feed Logs',       url: 'settings/io_feed_logs',        icon: 'arrows-v',            description: 'View DFP and Operative IO import jobs and error details'}

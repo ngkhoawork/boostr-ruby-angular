@@ -14,21 +14,23 @@ class ContentFee < ActiveRecord::Base
   default_scope { order(:created_at) }
   scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) if product_id.present? }
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
-  scope :for_time_period, -> (start_date, end_date) { where('content_fees.start_date <= ? AND content_fees.end_date >= ?', end_date, start_date) }
+  scope :for_time_period, -> (start_date, end_date) {
+    where('content_fees.start_date <= ? AND content_fees.end_date >= ?', end_date, start_date)
+  }
   
   after_update do
     if content_fee_product_budgets.sum(:budget) != budget || content_fee_product_budgets.sum(:budget_loc) != budget_loc
-      if budget_changed? || budget_loc_changed?
-        self.update_content_fee_product_budgets
+      if (budget_changed? || budget_loc_changed?) && !io.freezed?
+        ContentFee::UpdateBudgetsService.new(self).perform
       else
-        self.update_budget
+        update_budget
       end
       io.update_total_budget
     end
   end
 
   after_create do
-    create_content_fee_product_budgets if self.content_fee_product_budgets.count == 0
+    create_content_fee_product_budgets if content_fee_product_budgets.count == 0
     io.update_total_budget
   end
 
@@ -57,22 +59,19 @@ class ContentFee < ActiveRecord::Base
       time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
       time_periods.each do |time_period|
         io.users.each do |user|
-          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
-          forecast_revenue_fact_calculator.calculate()
+          ForecastRevenueFactCalculator::Calculator.new(time_period, user, product).calculate
         end
       end
     end
   end
 
   def update_revenue_pipeline_product(product)
-    io = self.io
     if io.present? && product.present?
       company = io.company
       time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
       time_periods.each do |time_period|
         io.users.each do |user|
-          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
-          forecast_revenue_fact_calculator.calculate()
+          ForecastRevenueFactCalculator::Calculator.new(time_period, user, product).calculate
         end
       end
     end
@@ -98,36 +97,7 @@ class ContentFee < ActiveRecord::Base
         )
       end
     else
-      generate_content_fee_product_budgets
-    end
-  end
-
-  def generate_content_fee_product_budgets
-    last_index = io.months.count - 1
-    total = 0
-    total_loc = 0
-
-    io_start_date = io.start_date
-    io_end_date = io.end_date
-    io.months.each_with_index do |month, index|
-      if last_index == index
-        monthly_budget = budget - total
-        monthly_budget_loc = budget_loc - total_loc
-      else
-        monthly_budget = (daily_budget * io.days_per_month[index]).round(0)
-        total += monthly_budget
-
-        monthly_budget_loc = (daily_budget_loc * io.days_per_month[index]).round(0)
-        total_loc += monthly_budget_loc
-      end
-
-      period = Date.new(*month)
-      content_fee_product_budgets.create(
-        start_date: [period, io_start_date].max,
-        end_date: [period.end_of_month, io_end_date].min,
-        budget: monthly_budget.round(2),
-        budget_loc: monthly_budget_loc.round(2)
-      )
+      ContentFee::ResetBudgetsService.new(self).perform
     end
   end
 
@@ -140,34 +110,11 @@ class ContentFee < ActiveRecord::Base
   end
 
   def daily_budget
-    budget / (io.end_date - io.start_date + 1)
+    budget.to_f / (io.end_date - io.start_date + 1)
   end
 
   def daily_budget_loc
-    budget_loc / (io.end_date - io.start_date + 1)
-  end
-
-  def update_content_fee_product_budgets
-    last_index = content_fee_product_budgets.count - 1
-    total = 0.0
-    total_loc = 0.0
-
-    content_fee_product_budgets.order("start_date asc").each_with_index do |content_fee_product_budget, index|
-      if last_index == index
-        monthly_budget = (budget) - total
-        monthly_budget_loc = budget_loc - total_loc
-      else
-        monthly_budget = (daily_budget * io.days_per_month[index]).round(2)
-        total += monthly_budget
-
-        monthly_budget_loc = (daily_budget_loc * io.days_per_month[index]).round(2)
-        total_loc += monthly_budget_loc
-      end
-      content_fee_product_budget.update(
-        budget: monthly_budget.round(2),
-        budget_loc: monthly_budget_loc.round(2)
-      )
-    end
+    budget_loc.to_f / (io.end_date - io.start_date + 1)
   end
 
   def update_periods
@@ -181,7 +128,10 @@ class ContentFee < ActiveRecord::Base
   def update_budget
     new_budget = content_fee_product_budgets.sum(:budget)
     new_budget_loc = content_fee_product_budgets.sum(:budget_loc)
-    self.update(budget: new_budget, budget_loc: new_budget_loc)
+    update(
+      budget: new_budget,
+      budget_loc: new_budget_loc
+    )
   end
 
   def as_json(options = {})

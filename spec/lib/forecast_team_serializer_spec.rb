@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe ForecastTeamSerializer do
-  let(:company) { create :company }
+  let!(:company) { create :company }
   let(:leader) { create :user, company: company }
   let(:time_period) { create :time_period, company: company, start_date: "2015-01-01", end_date: "2015-12-31" }
   let(:client) { create :client, company: company }
@@ -14,13 +14,12 @@ RSpec.describe ForecastTeamSerializer do
   let!(:member_quota) { create :quota, user: member, value: 2000, time_period: time_period, company: company }
 
   it "serializes something" do
-    json = ForecastTeamSerializer.new(forecast, root: false).to_json
-    json = JSON.parse(json)
+    object = ForecastTeamSerializer.new(forecast, root: false, cache: false).object
 
-    expect(json['name']).to be
-    expect(json['teams']).to eq([])
-    expect(json['parents'].length).to eq(2)
-    expect(json['members'].length).to eq(1)
-    expect(json['type']).to eq('team')
+    expect(object.name).to be
+    expect(object.teams).to eq([])
+    expect(object.parents.length).to eq(2)
+    expect(object.members.length).to eq(1)
+    expect(object.type).to eq('team')
   end
 end

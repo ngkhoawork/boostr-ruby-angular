@@ -1,39 +1,60 @@
 @app.controller "SettingsStagesNewController",
-['$scope', '$rootScope', 'Stage', '$modalInstance'
-($scope, $rootScope, Stage, $modalInstance) ->
+['$scope', '$rootScope', 'Stage', '$modalInstance', 'SalesProcess', 'deal_stage'
+($scope, $rootScope, Stage, $modalInstance, SalesProcess, deal_stage) ->
+  $scope.salesProcesses = []
 
-  $scope.formType = "New"
-  $scope.submitText = "Create"
-  $scope.stage = new Stage(
-    active: true
-    open: true
-  )
+  init = () ->
+    if _.isEmpty(deal_stage)
+      $scope.formType = 'New'
+      $scope.submitText = 'Create'
+      $scope.stage = new Stage(
+        active: true
+        open: true
+      )
+    else
+      $scope.formType = 'Edit'
+      $scope.submitText = 'Save'
+      $scope.stage = deal_stage
+
+    SalesProcess.all({active: true}).then (salesProcesses) ->
+      $scope.salesProcesses = salesProcesses
 
   $scope.submitForm = (form) ->
     $scope.errors = {}
+    fields = {'name': 'Name', 'probability': 'Probability', 'sales_process_id': 'Sales Process'}
 
-    fields = ['name', 'probability']
-
-    fields.forEach (key) ->
+    for key, value of fields
       field = $scope.stage[key]
       switch key
-        when 'name'
-          if !field then return $scope.errors[key] = 'Name is required'
+        when 'name', 'sales_process_id'
+          if !field then $scope.errors[key] = value + ' is required'
         when 'probability'
-          if !_.isNumber(field) then return $scope.errors[key] = 'Probability is required'
-          if field < 0 then return $scope.errors[key] = 'should be more than 0'
-          if field > 100 then return $scope.errors[key] = 'should be less then 100'
+          if !_.isNumber(field)
+            $scope.errors[key] = 'Probability is required'
+          else if field < 0 
+            $scope.errors[key] = 'should be more than 0'
+          else if field > 100
+            $scope.errors[key] = 'should be less then 100'
 
-    if Object.keys($scope.errors).length > 0 then return
+    if !_.isEmpty($scope.errors) then return
 
-    $scope.stage.$save(
-      ->
-        $rootScope.$broadcast 'updated_stages'
-        $modalInstance.close()
-      (response) ->
-        $scope.errors = response.data.errors
-    )
+    if $scope.formType == 'New'
+      $scope.stage.$save(
+        (stage)->
+          $modalInstance.close(stage)
+        (response) ->
+          $scope.errors = response.data.errors
+      )
+    else
+      $scope.stage.$update(
+        (stage)->
+          $modalInstance.close(stage)
+        (response) ->
+          $scope.errors = response.data.errors
+      )
 
   $scope.cancel = ->
     $modalInstance.dismiss()
+
+  init()
 ]

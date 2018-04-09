@@ -1,6 +1,6 @@
 @app.controller 'NavbarController',
-['$scope', '$location'
-( $scope,   $location ) ->
+['$scope', '$window', '$document', '$location', '$timeout'
+( $scope,   $window,   $document,   $location,   $timeout ) ->
 
     $scope.isActive = (viewLocation) ->
       $location.path().indexOf(viewLocation) == 0
@@ -16,6 +16,7 @@
         {name: 'INFLUENCERS', url: '/influencers'} if _isCompanyInfluencerEnabled
         {name: 'BUSINESS PLANS', url: '/bps'}
         {name: 'LEADS', url: '/leads'}
+        {name: 'BOTTOMS UP', url: '/bps'}
         {name: 'FINANCE', url: '/finance', dropdown: [
             {name: 'Billing', url: '/finance/billing'}
         ]}
@@ -33,7 +34,7 @@
             {name: 'Spend by Account', url: '/reports/spend_by_account'}
             {name: 'Spend by Category', url: '/reports/spend_by_category'}
             {name: 'Quota Attainment', url: '/reports/quota_attainment'}
-            {name: 'Publishers', url: '/reports/publishers'}
+            {name: 'Publishers', url: '/reports/publishers'} if _isPublisherEnabled
         ]}
         {name: 'SMART INSIGHTS', url: '/smart_reports', dropdown: [
             {name: 'Sales Execution Dashboard', url: '/smart_reports/sales_execution_dashboard'}
@@ -48,5 +49,30 @@
         {name: 'REQUESTS', url: '/requests'} if _isRequestsVisible
         {name: 'SETTINGS', url: '/settings'} if $scope.currentUserRoles.isAdmin() || $scope.currentUserRoles.isSuperAdmin()
     ]
+
+    windowEl = $($window)
+    header = $('#header')
+    headerOffset = 70
+
+    updateFixedHeaderHeight = -> window._fixedHeaderHeight = header.outerHeight() - headerOffset
+    $timeout -> updateFixedHeaderHeight()
+
+    $scope.scrollTop = ->
+        windowEl.scrollTop(0)
+        return
+
+    scroll = ->
+        if windowEl.scrollTop() > headerOffset
+            header.addClass 'fixed-header'
+            header.css 'top', windowEl.scrollTop() - headerOffset
+        else
+            header.removeClass 'fixed-header'
+            header.css 'top', 0
+
+    $document.on 'scroll', scroll
+    windowEl.on 'resize', updateFixedHeaderHeight
+    $scope.$on '$destroy', ->
+        $document.off 'scroll', scroll
+        windowEl.off 'resize', updateFixedHeaderHeight
 
 ]

@@ -33,8 +33,7 @@ class Csv::AccountsService < Csv::BaseService
     records.map do |record|
       Csv::AccountDecorator.new(
         record,
-        agency_type_id: company_agency_type_id,
-        advertiser_type_id: company_advertiser_type_id,
+        custom_types: custom_types,
         cf_names: cf_names
       )
     end
@@ -72,5 +71,9 @@ class Csv::AccountsService < Csv::BaseService
 
   def company_advertiser_type_id
     @company_advertiser_type_id ||= Client.advertiser_type_id(@company)
+  end
+
+  def custom_types
+    @custom_type ||= Client.custom_types(@company)
   end
 end

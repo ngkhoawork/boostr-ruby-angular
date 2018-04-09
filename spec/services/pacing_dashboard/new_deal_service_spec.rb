@@ -7,16 +7,16 @@ describe PacingDashboard::NewDealService do
   end
 
   it 'return proper count for new deal service' do
-    Timecop.freeze(2017, 2, 2)
+    Timecop.freeze(2017, 2, 2) do
+      result = new_deal_service.perform
+      current_quarter = result[:current_quarter]
+      previous_quarter = result[:previous_quarter]
+      previous_year_quarter = result[:previous_year_quarter]
 
-    result = new_deal_service.perform
-    current_quarter = result[:current_quarter]
-    previous_quarter = result[:previous_quarter]
-    previous_year_quarter = result[:previous_year_quarter]
-
-    expect(current_quarter).to eq [5, 2, 4, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0]
-    expect(previous_quarter).to eq [6, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0]
-    expect(previous_year_quarter).to eq [3, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 2, 0]
+      expect(current_quarter).to eq [5, 2, 4, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0]
+      expect(previous_quarter).to eq [6, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0]
+      expect(previous_year_quarter).to eq [3, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 2, 0]
+    end
   end
 
   private
@@ -38,47 +38,48 @@ describe PacingDashboard::NewDealService do
   end
 
   def create_deals_for_current_quarter
-    Timecop.freeze(2017, 1, 2)
-    create_list :deal, 5, company: company
+    Timecop.freeze(2017, 1, 2) do
+      create_list :deal, 5, company: company
+    end
 
-    Timecop.return
-    Timecop.freeze(2017, 1, 10)
-    create_list :deal, 2, company: company
+    Timecop.freeze(2017, 1, 10) do
+      create_list :deal, 2, company: company
+    end
 
-    Timecop.return
-    Timecop.freeze(2017, 1, 17)
-    create_list :deal, 4, company: company
+    Timecop.freeze(2017, 1, 17) do
+      create_list :deal, 4, company: company
+    end
 
-    Timecop.return
-    Timecop.freeze(2017, 2, 14)
-    create_list :deal, 2, company: company
+    Timecop.freeze(2017, 2, 14) do
+      create_list :deal, 2, company: company
+    end
   end
 
   def create_deals_for_previous_quarter
-    Timecop.return
-    Timecop.freeze(2016, 10, 2)
-    create_list :deal, 6, company: company
+    Timecop.freeze(2016, 10, 2) do
+      create_list :deal, 6, company: company
+    end
 
-    Timecop.return
-    Timecop.freeze(2016, 10, 11)
-    create_list :deal, 2, company: company
+    Timecop.freeze(2016, 10, 11) do
+      create_list :deal, 2, company: company
+    end
 
-    Timecop.return
-    Timecop.freeze(2016, 12, 22)
-    create_list :deal, 4, company: company
+    Timecop.freeze(2016, 12, 22) do
+      create_list :deal, 4, company: company
+    end
   end
 
   def create_deals_for_previous_year_quarter
-    Timecop.return
-    Timecop.freeze(2016, 1, 2)
-    create_list :deal, 3, company: company
+    Timecop.freeze(2016, 1, 2) do
+      create_list :deal, 3, company: company
+    end
 
-    Timecop.return
-    Timecop.freeze(2016, 2, 9)
-    create_list :deal, 5, company: company
+    Timecop.freeze(2016, 2, 9) do
+      create_list :deal, 5, company: company
+    end
 
-    Timecop.return
-    Timecop.freeze(2016, 3, 22)
-    create_list :deal, 2, company: company
+    Timecop.freeze(2016, 3, 22) do
+      create_list :deal, 2, company: company
+    end
   end
 end

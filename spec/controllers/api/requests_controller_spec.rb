@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::RequestsController, type: :controller do
+  let!(:company) { create :company }
   let(:user) { create :user }
 
   before do
@@ -66,7 +67,7 @@ RSpec.describe Api::RequestsController, type: :controller do
   def won_deal
     @_won_deal ||= create :deal, stage: closed_won_stage
     @_deal_product ||= create :deal_product, deal: @_won_deal
-    @_won_deal.generate_io unless @_won_deal.io.present?
+    Deal::IoGenerateService.new(@_won_deal).perform unless @_won_deal.io.present?
     @_won_deal
   end
 

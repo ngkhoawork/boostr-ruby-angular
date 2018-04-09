@@ -1,0 +1,37 @@
+.block#pmp-delivery
+  %div.mb20
+    %span.title PMP Delivery
+  %div.custom-field-item{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0' }
+    %div.custom-field-item-label
+      %label{ for: 'type' } Deal-ID
+    %div.custom-field-item-field
+      .dropdown
+        %button.btn.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+          %span.editable{'ng-class': '{"not-selected": !currentDeal.deal_type.option_id}'}
+            {{selectedDeliveryItem.ssp_deal_id || selectedDeliveryItem.id || (selectedDeliveryItem | firstUppercase) || 'Select'}}
+          %span.caret
+        %ul.dropdown-menu
+          %li{'ng-class': '{active: selectedDeliveryItem == "all"}'}
+            %a{'href': '', 'ng-click': 'updateDeliveryChart("all")'}
+              %span.text All
+          %li{'ng-repeat': 'pmpItem in currentPMP.pmp_items', 'ng-class': '{active: selectedDeliveryItem.id == pmpItem.id}'}
+            %a{'href': '', 'ng-click': 'updateDeliveryChart(pmpItem)'}
+              %span.text {{pmpItem.ssp_deal_id || pmpItem.id}}
+    %div.custom-field-item-field.ml20
+      %div.field-value
+        .date-picker-wrap
+          %div.date-picker{'date-range-picker': 'true',
+                     'ng-model': 'timeFilter.timePeriod',
+                     :options => "{locale: {format: 'MMMM D, YYYY'},
+                           eventHandlers: {'apply.daterangepicker': timeFilter.applyTimePeriod}}"}
+            %span.empty{'ng-hide': 'timeFilter.timePeriodString'}
+              %span.editable Time period
+              %span.caret
+            %span{'ng-show': 'timeFilter.timePeriodString'}
+              %span.editable {{timeFilter.timePeriodString}}
+              %i.fa.fa-times.close-btn{'ng-click': 'timeFilter.removeTimePeriod($event)'}
+              %span.caret
+  %div#pmp-delivery-chart-container.mb20{ 'ng-if': 'currentPMP.pmp_items && currentPMP.pmp_items.length > 0' }
+    %svg#pmp-delivery-chart
+  %div.center{ 'ng-if': '!currentPMP.pmp_items || currentPMP.pmp_items.length == 0' }
+    %span No data available

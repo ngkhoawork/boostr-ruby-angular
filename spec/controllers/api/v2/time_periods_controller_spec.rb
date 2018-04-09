@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V2::TimePeriodsController, type: :controller do
-  let(:company) { Company.first }
+  let!(:company) { create :company }
   let(:user) { create :user }
   let(:time_period_params) { attributes_for(:time_period) }
 

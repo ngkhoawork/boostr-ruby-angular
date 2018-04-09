@@ -6,9 +6,13 @@
   $scope.submitText = "Create"
   client.address = {}
   $scope.client = new Client(client) || {address: {}}
+  $scope.client.name = ""
   $scope.clients = []
   $scope.query = ""
   $scope.countries = []
+  $scope.isDuplicateShow = false
+  $scope.isLoaderShow = false
+  $scope.minSearchStringLength = 3 # the minimum search string length
 
   if options.lead
     client = $scope.client
@@ -136,4 +140,44 @@
 
   $scope.cancel = ->
     $modalInstance.dismiss()
+
+  $scope.closeDuplicateList = ->
+    $scope.isDuplicateShow = false
+
+  $scope.openDuplicateList = ->
+     $scope.isDuplicateShow = true
+
+  $scope.markDuplicateString = ->
+    $scope.duplicates.forEach((duplicate) ->
+      duplicateName = duplicate.name
+      name = $scope.client.name
+      index = duplicateName.toLowerCase().indexOf( name.toLowerCase() )
+
+      if index >= 0
+        re = new RegExp("(" + name + ")", "i");
+        duplicate.name =  duplicateName.replace(re, '<strong>$1</strong>');
+    )
+
+  $scope.onNameChanged = ->
+    if $scope.client.name.length < $scope.minSearchStringLength
+      $scope.closeDuplicateList()
+    else
+      $scope.openDuplicateList()
+      $scope.isLoaderShow = true
+      Client.search_duplicates({ name: $scope.client.name }).$promise.then (duplicates) ->
+        $scope.isLoaderShow = false
+        $scope.duplicates = duplicates
+        $scope.markDuplicateString()
+
+  $scope.onFocus = ->
+    if $scope.client.name.length < $scope.minSearchStringLength
+      $scope.closeDuplicateList()
+    else
+      $scope.openDuplicateList()
+
+  $scope.onBlur = ->
+    if  $scope.duplicates
+      if  $scope.duplicates.length == 0
+        $scope.closeDuplicateList()
+
 ]

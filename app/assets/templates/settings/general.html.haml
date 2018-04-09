@@ -27,4 +27,18 @@
                   %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'company.forecast_gap_to_quota_positive', 'ng-change': "updateCompany()", id: "rem-act-modal-toggle-forecast-gap-to-quota"}
                   %label{:for => "rem-act-modal-toggle-forecast-gap-to-quota"}
                     %span
+            %h5 Enable Net Forecasting
+            .form-group
+              .show-hide-remainder-form
+                .switch-remainder-form
+                  %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'company.enable_net_forecasting', 'ng-change': 'updateCompany()', id: 'rem-act-modal-toggle-enable-net-forecast'}
+                  %label{:for => 'rem-act-modal-toggle-enable-net-forecast'}
+                    %span
+            %h5 Default IO Freeze Budgets
+            .form-group
+              .show-hide-remainder-form
+                .switch-remainder-form
+                  %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'company.default_io_freeze_budgets', 'ng-change': 'updateCompany()', id: 'rem-act-modal-toggle-io-freeze-budgets'}
+                  %label{:for => 'rem-act-modal-toggle-io-freeze-budgets'}
+                    %span
 

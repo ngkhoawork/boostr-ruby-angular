@@ -23,7 +23,7 @@ gem 'paranoia', '~> 2.0'
 gem 'jbuilder'
 gem 'chronic'
 gem 'sidekiq'
-gem 'clockwork'
+gem 'sidekiq-scheduler'
 gem 'newrelic_rpm'
 gem 'awesome_print'
 gem 'active_model_serializers', '= 0.8.3'
@@ -49,7 +49,7 @@ gem 'upsert'
 gem 'hashie'
 gem 'active_record_union'
 gem 'user_agent_parser'
-gem 'geocoder'
+gem 'geocoder', '>= 1.4.6'
 gem 'rack-cors', :require => 'rack/cors'
 gem 'smarter_csv'
 gem 'daemons'
@@ -81,7 +81,7 @@ group :production, :staging do
 end
 
 group :test do
-  gem 'shoulda-matchers'
+  gem 'shoulda-matchers', require: false
   gem 'vcr'
   gem 'webmock'
   gem 'simplecov', require: false
@@ -120,6 +120,7 @@ group :development, :test do
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+  gem 'spring-commands-rspec'
 
   source 'https://rails-assets.org' do
     gem 'rails-assets-angular-mocks'

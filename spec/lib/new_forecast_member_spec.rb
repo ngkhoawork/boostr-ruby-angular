@@ -1,10 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe NewForecastMember do
+  let!(:company) { create :company }
+
   context 'as_json' do
     before do
       time_period
-      quotas
+      quota
     end
 
     it 'returns the revenue for a member that has no revenue' do
@@ -98,7 +100,7 @@ RSpec.describe NewForecastMember do
     end
 
     context 'quota' do
-      let!(:quotas) { create_list :quota, 4, user: user, value: 2500, time_period: time_period }
+      let!(:quota) { create :quota, user: user, value: 10000, time_period: time_period }
 
       it 'returns the quota value' do
         deal.reload
@@ -129,7 +131,7 @@ RSpec.describe NewForecastMember do
   end
 
   def company
-    @_company ||= Company.first
+    @_company ||= create :company
   end
 
   def user
@@ -144,8 +146,8 @@ RSpec.describe NewForecastMember do
     @_products ||= create_list :product, 2
   end
 
-  def quotas
-    @_quotas ||= create_list :quota, 5, user: user, value: 2500, time_period: time_period
+  def quota
+    @_quota ||= create :quota, user: user, value: 12500, time_period: time_period
   end
 
   def stage

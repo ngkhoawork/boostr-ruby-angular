@@ -156,6 +156,18 @@
         margin-left: 0
     }
     .detail-stats {
+        label {
+            position: relative;
+            &.danger {
+                color: $brand-danger;
+            }
+
+            .error-tooltip {
+                left: auto;
+                text-align: center;
+                bottom: calc(100% + 8px);
+            }
+        }
         .deal-won-indicator {
             position: absolute;
             top: 25px;
@@ -258,7 +270,7 @@
             }
         }
     }
-    #io-details {
+    #io-details, #pmp-details {
         .table-wrapper {
             overflow-y: hidden;
         }
@@ -287,6 +299,20 @@
             padding-right: 0;
             a {
                 color: $main-color;
+            }
+        }
+
+        .stats-col {
+            width: 14%;
+        }
+    }
+    #pmp-details .detail-stats {
+        .stats-col {
+            width: 14%;
+            padding-right: 5px;
+
+            .title {
+                word-wrap: break-word;
             }
         }
     }
@@ -354,6 +380,10 @@
                 font-weight: bold;
             }
         }
+        .star {
+            color: $error-color;
+            font-size: 16px;
+        }
 
         .custom-field-item-field {
             .text-area {
@@ -383,14 +413,14 @@
                     }
                 }
             }
+            
+        }
+        .dropdown {
+            position: static;
 
-            .dropdown {
-                position: static;
-
-                .dropdown-menu {
-                    top: auto;
-                    left: auto;
-                }
+            .dropdown-menu {
+                top: auto;
+                left: auto;
             }
         }
 
@@ -439,6 +469,10 @@
                 > th {
                     color: white !important;
                     //color:lighten($main-color, 5%) !important;
+
+                    &.vtop {
+                        vertical-align: top;
+                    }
                 }
             }
             > tbody {
@@ -459,6 +493,22 @@
                         .delete-product {
                             visibility: visible;
                         }
+                    }
+                }
+                .error-text {
+                  display: none;
+                  color: $error-color;
+                  float: right;
+                  margin: 0;
+                  width: 100%;
+                  text-align: right;
+                }
+                .error {                    
+                    .error-text {
+                        display: inline;
+                    }
+                    input, textarea, span.editable, .ui-select-container, .ui-select-toggle, button.dropdown-toggle {
+                        border-color: $error-color;
                     }
                 }
             }

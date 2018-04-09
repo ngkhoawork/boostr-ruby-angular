@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe BillingSummary::IosForApprovalSerializer do
   before do
+    create :billing_address_validation, company: company
     create :billing_deal_contact, deal: deal, contact: contact
     content_fee = create :content_fee, product: content_fee_product, budget: 50_000, io: io
     io.content_fees << content_fee
@@ -11,6 +12,7 @@ describe BillingSummary::IosForApprovalSerializer do
   end
 
   it 'has proper serialized data' do
+    expect(display_line_item_serializer_budget[:io_id]).to eql io.id
     expect(display_line_item_serializer_budget[:io_number]).to eql io.io_number
     expect(display_line_item_serializer_budget[:io_name]).to eql io.name
     expect(display_line_item_serializer_budget[:advertiser_name]).to eql advertiser.name
@@ -25,6 +27,7 @@ describe BillingSummary::IosForApprovalSerializer do
     expect(display_line_item_serializer_budget[:budget_loc]).to eql display_line_item_budget.budget_loc.to_f
     expect(display_line_item_serializer_budget[:billing_status]).to eql 'Pending'
 
+    expect(content_fee_product_budget_serializer[:io_id]).to eql io.id
     expect(content_fee_product_budget_serializer[:io_number]).to eql io.io_number
     expect(content_fee_product_budget_serializer[:io_name]).to eql io.name
     expect(content_fee_product_budget_serializer[:advertiser_name]).to eql advertiser.name

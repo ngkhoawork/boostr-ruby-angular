@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :client do
-    name { FFaker::Company.name }
+    sequence(:name) { |n| "Client#{n} " + FFaker::Company.name }
     website { FFaker::Internet.http_url }
     address
     association :parent_client, factory: :parent_client
@@ -9,7 +9,7 @@ FactoryGirl.define do
       item.company = Company.first if item.company.nil?
 
       if item.client_type_id.nil?
-        item.client_type_id = Company.first
+        item.client_type_id = item.company
                                      .fields
                                      .find_by(name: 'Client Type')
                                      .options.ids.sample

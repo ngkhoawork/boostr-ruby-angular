@@ -1,0 +1,49 @@
+.block#line-content-fees
+  %div.mb20
+    %span.title PMP Actuals
+
+  .table-wrapper
+    %table.table.table-hover
+      %thead
+        %tr
+          %th.left Date
+          %th.center Deal-ID
+          %th.center Advertiser
+          %th.center Ad Unit
+          %th.center Product
+          %th.right Requests
+          %th.right Impressions
+          %th.right Win Rate
+          %th.right eCPM
+          %th.right Revenue
+          %th
+      %tbody{infinite: {scroll: 'loadMoreData()', 'scroll-disabled': 'isLoading || allDataLoaded', 'scroll-distance': '0.5'}}
+        %tr{ ng: { repeat: "pmpItemDailyActual in pmpItemDailyActuals"} }
+          %td.left
+            {{ pmpItemDailyActual.date }}
+          %td.center
+            {{ pmpItemDailyActual.ssp_deal_id }}
+          %td.center
+            {{ pmpItemDailyActual.advertiser.name }}
+          %td.center
+            %strong
+              {{ pmpItemDailyActual.ad_unit }}
+          %td.center
+            %strong
+              {{ (pmpItemDailyActual.product && pmpItemDailyActual.product.name) || 'N/A' }}
+          %td.right
+            {{ pmpItemDailyActual.ad_requests | number:0 }}
+          %td.right
+            {{ pmpItemDailyActual.impressions | number:0 }}
+          %td.right
+            {{ pmpItemDailyActual.win_rate | percentage:0 }}
+          %td.right
+            {{ pmpItemDailyActual.price | currency:currencySymbol:2 }}
+          %td.right
+            {{ pmpItemDailyActual.revenue_loc | currency:currencySymbol:2 }}
+          %td.right.action-td
+            %i.fa.fa-pencil.z-icon{ ng: { click: 'showDailyActualEditModal(pmpItemDailyActual)' } }
+            %i.fa.fa-trash.z-icon{ ng: { click: 'deleteDailyActual(pmpItemDailyActual)' } }
+        %tr{ ng: { if: '!pmpItemDailyActuals || pmpItemDailyActuals.length == 0' } }
+          %td.center{ 'colspan': '11' }
+            No data available
