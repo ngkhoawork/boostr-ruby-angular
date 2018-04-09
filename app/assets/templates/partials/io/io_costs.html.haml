@@ -8,6 +8,7 @@
       %thead
         %tr
           %th.left.product-column Product
+          %th.left
           %th.left.column{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
             {{ company.product_option1_field }}
           %th.left.column{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
@@ -30,7 +31,8 @@
                 %li{'ng-repeat': 'product in productsByLevel(0, cost.product)', 'ng-class': '{active: cost.product.level0.id == product.id}'}
                   %a{'href': '', 'ng-click': 'onChangeProduct(product, cost); updateCost(cost);'}
                     %span.text {{product.name}}
-              %i.fa.fa-trash.z-icon{'ng-click': 'deleteCost(cost)'} 
+          %td
+            %i.fa.fa-trash.z-icon{'ng-click': 'deleteCost(cost)'} 
           %td.column{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
             .dropdown{'ng-if': 'productsByLevel(1, cost.product).length > 0'}
               %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
@@ -74,7 +76,7 @@
             %span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
               {{ monthly_amount.budget_loc | currency:currency_symbol:2 }}
         %tr.sum-budgets-row{ ng: { if: 'currentIO.costs && currentIO.costs.length > 0'} }
-          %td{colspan: 3}
+          %td{colspan: 4}
           %td{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
           %td{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
           %td.right

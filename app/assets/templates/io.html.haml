@@ -80,6 +80,7 @@
 							%thead
 								%tr
 									%th.left.product-column Product
+									%th.left  
 									%th.left.column{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled' } {{ company.product_option1_field || 'Option1' }}
 									%th.left.column{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled' } {{ company.product_option2_field || 'Option2' }}
 									%th.column.left Start Date
@@ -99,7 +100,8 @@
 												%li{'ng-repeat': 'product in productsByLevel(0, content_fee.product)', 'ng-class': '{active: content_fee.product.level0.id == product.id}'}
 													%a{'href': '', 'ng-click': 'onChangeProduct(product, content_fee); updateContentFee(content_fee);'}
 														%span.text {{product.name}}
-											%i.fa.fa-trash.z-icon{'ng-click': 'deleteContentFee(content_fee)'}
+									%td
+										%i.fa.fa-trash.z-icon{'ng-click': 'deleteContentFee(content_fee)'}
 									%td{ 'ng-if': 'company.product_options_enabled && company.product_option1_enabled' }
 										.dropdown{'ng-if': 'productsByLevel(1, content_fee.product).length > 0'}
 											%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
@@ -135,7 +137,7 @@
 								%tr.sum-budgets-row{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0'} }
 									%td{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled'}
 									%td{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled'}
-									%td{colspan: 2}
+									%td{colspan: 3}
 									%td.right
 										%b TOTAL
 									%td.right
@@ -143,7 +145,7 @@
 									%td.right{'ng-repeat': 'month in currentIO.months'}
 										%b {{sumContentFeeBudget($index) | currency: currency_symbol : 2}}
 								%tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
-									%td.center{ 'colspan': '{{5+currentIO.readable_months.length}}' }
+									%td.center.auto-colspan
 										No data available
 				%div{'ng-include': '"partials/io/io_costs.html"'}
 				.block#line-display
@@ -288,7 +290,7 @@
 									%td.left
 										{{ printItem.end_date | date: 'M/d/yyyy' }}
 								%tr{ ng: { if: '!currentIO.print_items || currentIO.print_items.length == 0' } }
-									%td.center{ 'colspan': '{{4+2}}' }
+									%td.center.auto-colspan
 										No data available
 				.block#influencer{'ng-show': 'currentUser.company_influencer_enabled'}
 					%div.mb20
