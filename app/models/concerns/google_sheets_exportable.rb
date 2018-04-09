@@ -11,4 +11,3 @@ module GoogleSheetsExportable
     GoogleSheetsWorker.perform_async(config.sheet_id, id) if config.switched_on?
   end
 end
-

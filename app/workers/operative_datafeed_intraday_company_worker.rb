@@ -2,9 +2,9 @@ class OperativeDatafeedIntradayCompanyWorker < BaseWorker
   include Sidekiq::Status::Worker
 
   def perform(id)
-    if api_config(id).present?
-      Operative::DatafeedService.new(api_config(id), Date.today, intraday: true).perform
-    end
+    return if api_config(id).blank?
+
+    Operative::DatafeedService.new(api_config(id), Date.today, intraday: true).perform
   end
 
   def api_config(id)

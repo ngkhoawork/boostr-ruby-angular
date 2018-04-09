@@ -1,12 +1,12 @@
 class TempIo < ActiveRecord::Base
+  include CurrencyExchangeble
+
   NO_MATCH_FILTER = 'no-match'.freeze
 
   belongs_to :company
   belongs_to :io
   has_many :display_line_items, dependent: :destroy
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
-
-  validate :active_exchange_rate
 
   after_update do
     redirect_display_line_items() if io_id_changed? && io.present?
@@ -20,18 +20,6 @@ class TempIo < ActiveRecord::Base
   scope :by_names, -> (name) do
     if name.present?
       where('name ilike :name OR advertiser ilike :name OR agency ilike :name', name: "%#{name}%")
-    end
-  end
-
-  def exchange_rate
-    super || company.exchange_rate_for(currency: self.curr_cd, at_date: (self.created_at || Date.today))
-  end
-
-  def active_exchange_rate
-    if curr_cd != 'USD'
-      unless exchange_rate
-        errors.add(:curr_cd, "does not have an exchange rate for #{self.curr_cd} at #{(self.created_at || Date.today).strftime("%m/%d/%Y")}")
-      end
     end
   end
 

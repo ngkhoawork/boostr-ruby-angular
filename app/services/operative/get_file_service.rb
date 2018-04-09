@@ -57,7 +57,7 @@ class Operative::GetFileService
   end
 
   def intraday_pattern
-    /#{date}_\d\d\d\d_v3_intraday.tar.gz/
+    /#{date}_\d{4}_v3_intraday.tar.gz/
   end
 
   def intraday?
@@ -69,7 +69,7 @@ class Operative::GetFileService
   end
 
   def latest_timestamp
-    return if !@intraday_candidates.present?
-    @intraday_candidates.sort.last&.match(/(_\d\d\d\d)_/)&.[](1)
+    return if @intraday_candidates.blank?
+    @intraday_candidates.sort.last&.match(/(_\d{4})_/)&.[](1)
   end
 end
