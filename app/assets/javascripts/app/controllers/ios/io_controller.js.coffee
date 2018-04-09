@@ -302,7 +302,7 @@
                         $scope.currentIO = io
             $scope.deleteContentFee = (content_fee) ->
                 $scope.errors = {}
-                if confirm('Are you sure you want to delete "' +  content_fee.product.name + '"?')
+                if confirm('Are you sure you want to delete "' +  content_fee.product.full_name + '"?')
                     ContentFee.delete(id: content_fee.id, io_id: $scope.currentIO.id).then(
                         (deal) ->
                             $scope.init()
@@ -312,7 +312,7 @@
                     )
             $scope.deleteCost = (cost) ->
                 $scope.errors = {}
-                if confirm('Are you sure you want to delete "' +  cost.product.name + '"?')
+                if confirm('Are you sure you want to delete "' +  cost.product.full_name + '"?')
                     Cost.delete(id: cost.id, io_id: $scope.currentIO.id).then(
                         (deal) ->
                             $scope.init()

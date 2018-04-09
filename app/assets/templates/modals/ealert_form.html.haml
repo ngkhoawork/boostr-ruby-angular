@@ -120,7 +120,7 @@
                 Products
               %div.mb10{'ng-repeat': 'deal_product in deal.deal_products'}
                 %strong
-                  {{deal_product.name}}:
+                  {{deal_product.product.full_name}}:
                 {{deal_product.budget_loc | currency: deal.currency.curr_symbol : 0}}
                 {{deal.currency.curr_cd}}
                 %span{'ng-if': 'deal.currency.curr_cd != "USD"'} 

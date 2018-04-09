@@ -14,7 +14,7 @@
 
   $scope.name = switch requestable_type
     when "Io" then "IO #{requestable.id}"
-    when "ContentFee" then "#{requestable.product.name}"
+    when "ContentFee" then "#{requestable.product.full_name}"
     when "DisplayLineItem" then "Line Number #{requestable.line_number}"
     else ''
 

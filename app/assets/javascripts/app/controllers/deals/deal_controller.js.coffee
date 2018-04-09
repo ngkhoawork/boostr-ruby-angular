@@ -711,7 +711,7 @@
 
   $scope.deleteDealProduct = (deal_product) ->
     $scope.errors = {}
-    if confirm('Are you sure you want to delete "' +  deal_product.name + '"?')
+    if confirm('Are you sure you want to delete "' +  deal_product.product.full_name + '"?')
       DealProduct.delete(id: deal_product.id, deal_id: $scope.currentDeal.id).then(
         (deal) ->
           $scope.setCurrentDeal(deal)
