@@ -141,7 +141,6 @@
 			angular.element('.subtable-wrap').removeClass('opened').height(0)
 			return
 
-
 		$scope.$watch 'filter.team', (team, prevTeam) ->
 			if team == prevTeam then return
 			if team.id then $scope.setFilter('seller', emptyFilter)
@@ -149,6 +148,22 @@
 			searchAndSetSeller(team.members, $scope.currentUser)
 			Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
 				$scope.sellers = sellers
+
+		$scope.$watch 'filter.product', (product, prevProduct) ->
+			if product == prevProduct then return
+			if product.id then $scope.setFilter('product', emptyFilter)
+			$scope.setFilter('product', product)
+			$scope.productsLevel1 = productsByLevel(1)
+			if !_.findWhere $scope.productsLevel1, { id: $scope.filter.product1.id }
+				$scope.setFilter('product1', emptyFilter)
+
+		$scope.$watch 'filter.product1', (product1, prevProduct1) ->
+			if product1 == prevProduct1 then return
+			if product1.id then $scope.setFilter('product1', emptyFilter)
+			$scope.setFilter('product1', product1)
+			$scope.productsLevel2 = productsByLevel(2)
+			if !_.findWhere $scope.productsLevel2, { id: $scope.filter.product2.id }
+				$scope.setFilter('product2', emptyFilter)
 
 		$scope.$watch 'filter.productFamily', (productFamily, prevProductFamily) ->
 			if productFamily == prevProductFamily then return
@@ -175,6 +190,8 @@
 			$scope.sellers = data.sellers
 			$scope.productFamilies= data.productFamilies
 			$scope.products = data.products
+			$scope.productsLevel0 = productsByLevel(0)
+
 			$scope.timePeriods = data.timePeriods.filter (period) ->
 				period.visible and (
 					period.period_type is 'quarter' or
@@ -186,13 +203,12 @@
 		setPermission = (user) ->
 			$scope.hasForecastPermission = user.has_forecast_permission
 			$scope.hasNetPermission = user.company_net_forecast_enabled
-			$scope.productOptionsEnabled = user.product_options_enabled
-			$scope.productOption1Enabled = user.product_option1_enabled
-			$scope.productOption2Enabled = user.product_option2_enabled
-			$scope.option1Field = user.product_option1_field || 'Option1'
-			$scope.option2Field = user.product_option2_field || 'Option2'
+			$scope.productOption1Enabled = user.product_options_enabled && user.product_option1_enabled
+			$scope.productOption2Enabled = user.product_options_enabled && user.product_option2_enabled
+			$scope.productOption1 = user.product_option1 || 'Option 1'
+			$scope.productOption2 = user.product_option2 || 'Option 2'
 
-		$scope.productsByLevel = (level) ->
+		productsByLevel = (level) ->
 			_.filter $scope.products, (p) -> 
 				if level == 0
 					p.level == level

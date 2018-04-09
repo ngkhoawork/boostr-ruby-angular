@@ -10,6 +10,8 @@
         $scope.forecast = {}
         $scope.isLoading = false
         $scope.isNetForecast = false
+        $scope.filter = {}
+        $scope.productsLevel1 = []
 
         $scope.scrollTo = (id) ->
             angular.element('html, body').animate {
@@ -22,17 +24,12 @@
             user: CurrentUser.get().$promise
             sellers: Seller.query({id: 'all'}).$promise
             timePeriods: TimePeriod.all()
-            products: Product.all({active: true, level: 0})
+            products: Product.all({active: true})
             stages: Stage.query().$promise
             productFamilies: ProductFamily.all(active: true)
         ).then (data) ->
+            setPermission(data.user)
             $scope.teams = data.teams
-            $scope.hasNetPermission = data.user.company_net_forecast_enabled
-            $scope.productOptionsEnabled = data.user.product_options_enabled
-            $scope.productOption1Enabled = data.user.product_option1_enabled
-            $scope.productOption2Enabled = data.user.product_option2_enabled
-            $scope.productOption1 = data.user.product_option1
-            $scope.productOption2 = data.user.product_option2
             data.timePeriods = data.timePeriods.filter (period) ->
                 period.visible and (
                     period.period_type is 'quarter' or
@@ -42,10 +39,36 @@
             $scope.timePeriods = data.timePeriods
             $scope.sellers = data.sellers
             $scope.products = data.products
+            $scope.productsLevel0 = productsByLevel(0)
             $scope.productFamilies = data.productFamilies
             $scope.stages = _.filter data.stages, (item) ->
                 if item.probability > 0
                     return true
+
+        setPermission = (user) ->
+            $scope.hasNetPermission = user.company_net_forecast_enabled
+            $scope.productOptionsEnabled = user.product_options_enabled
+            $scope.productOption1Enabled = user.product_options_enabled && user.product_option1_enabled
+            $scope.productOption2Enabled = user.product_options_enabled && user.product_option2_enabled
+            $scope.productOption1 = user.product_option1 || 'Option 1'
+            $scope.productOption2 = user.product_option2 || 'Option 2'
+
+        $scope.onProductChange = (product) ->
+            $scope.filter.product = product
+            $scope.productsLevel1 = productsByLevel(1)
+
+        $scope.onProduct1Change = (product) ->
+            $scope.filter.product1 = product
+            $scope.productsLevel2 = productsByLevel(2)
+
+        productsByLevel = (level) ->
+            _.filter $scope.products, (p) -> 
+                if level == 0
+                    p.level == level
+                else if level == 1
+                    p.level == 1 && $scope.filter.product && p.parent_id == $scope.filter.product.id
+                else if level == 2
+                    p.level == 2 && $scope.filter.product1 && p.parent_id == $scope.filter.product1.id
 
         ($scope.updateSellers = (team) ->
             Seller.query({id: (team && team.id) || 'all'}).$promise.then (sellers) ->
@@ -78,7 +101,9 @@
         $scope.onFilterApply = (query) ->
             query.id = query.id || 'all'
             query.user_id = query.user_id || 'all'
-            query['product_ids[]'] = ['all'] if !query['product_ids[]'] || !query['product_ids[]'].length
+            query.product_id = query.product_id
+            query.product1_id = query.product1_id
+            query.product2_id = query.product2_id
             query.product_family_id = query.product_family_id || 'all'
             getData(query)
 
@@ -141,6 +166,7 @@
                         $scope.totalForecastData.weighted_pipeline_by_stage_net[index] += parseFloat(val)
                 query.team_id = query.id
                 delete query.id
+                query.is_product = true
                 return Revenue.forecast_detail(query).$promise
             .then (data) ->
                 parseBudget data
@@ -149,6 +175,7 @@
                 return Forecast.pmp_product_data(query).$promise
             .then (data) ->
                 $scope.pmp_revenues = parsePmpData data
+                query.is_product = true
                 return Deal.forecast_detail(query)
             .then (data) ->
                 parseBudget data
