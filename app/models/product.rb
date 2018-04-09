@@ -33,7 +33,10 @@ class Product < ActiveRecord::Base
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
-  scope :active, -> { joins('LEFT JOIN product_families ON products.product_family_id = product_families.id').where('products.active IS true AND (product_families.active IS true OR products.product_family_id IS NULL)') }
+  scope :active, -> do 
+    joins('LEFT JOIN product_families ON products.product_family_id = product_families.id')
+    .where('products.active IS true AND (product_families.active IS true OR products.product_family_id IS NULL)')
+  end
   scope :by_revenue_type, -> (revenue_type) { where('revenue_type = ?', revenue_type) if revenue_type }
   scope :by_product_family, -> (product_family_id) { where('product_family_id = ?', product_family_id) if product_family_id }
   scope :by_level, -> (level) { where(level: level) unless level.nil? }
