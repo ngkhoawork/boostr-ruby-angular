@@ -93,7 +93,14 @@ class Api::ForecastsController < ApplicationController
 
   def product_detail
     if valid_time_period?
-      render json: NewProductForecast.new(company, product_family, product, teams, team, user, time_period).forecasts_data
+      render json: NewProductForecast.new(
+        company,
+        product_family,
+        product, teams,
+        team,
+        user,
+        time_period
+      ).forecasts_data
     else
       render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
     end

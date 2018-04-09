@@ -12,8 +12,6 @@ class Forecast::PmpRevenueDataService
 
   def perform
     if is_product
-      puts "============"
-      puts product_ids.to_json
       ActiveModel::ArraySerializer.new(
         data_for_serializer,
         each_serializer: Forecast::PmpRevenueProductDataSerializer,
