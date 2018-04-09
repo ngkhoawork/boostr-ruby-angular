@@ -20,4 +20,10 @@ class Egnyte::Actions::Connect < Egnyte::Actions::Base
       raise Egnyte::Errors::UnhandledRequest, response.body
     end
   end
+
+  private
+
+  def egnyte_integration
+    @egnyte_integration ||= EgnyteIntegration.find_by_state_token(@options[:state])
+  end
 end

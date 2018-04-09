@@ -1,9 +1,9 @@
 test:
-  client_id: 34zj7xbzdn3mqvku2n8y9bcm
-  client_secret: rARxqH5abJsXYT5kEHapTYn6cnz7pPdDXedNrUWwJgkPVbT7QZ
+  client_id: x9suupmx2sttrba49ncz6642
+  client_secret: yG7tvQCzDJCJnnbXg3fhRzU23fWpe46Hux8fbFjMSdjjKeVACx
 development:
-  client_id: 34zj7xbzdn3mqvku2n8y9bcm
-  client_secret: rARxqH5abJsXYT5kEHapTYn6cnz7pPdDXedNrUWwJgkPVbT7QZ
+  client_id: x9suupmx2sttrba49ncz6642
+  client_secret: yG7tvQCzDJCJnnbXg3fhRzU23fWpe46Hux8fbFjMSdjjKeVACx
 staging:
-  client_id: 34zj7xbzdn3mqvku2n8y9bcm
-  client_secret: rARxqH5abJsXYT5kEHapTYn6cnz7pPdDXedNrUWwJgkPVbT7QZ
+  client_id: x9suupmx2sttrba49ncz6642
+  client_secret: yG7tvQCzDJCJnnbXg3fhRzU23fWpe46Hux8fbFjMSdjjKeVACx

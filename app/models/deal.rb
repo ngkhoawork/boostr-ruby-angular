@@ -118,7 +118,7 @@ class Deal < ActiveRecord::Base
   end
 
   after_commit :setup_egnyte_folders, on: [:create]
-  after_commit :update_egnyte_folder_name, on: [:update]
+  after_commit :update_egnyte_folder, on: [:update]
 
   set_callback :save, :after, :update_pipeline_fact_callback
 
@@ -1790,7 +1790,7 @@ class Deal < ActiveRecord::Base
     Egnyte::SetupDealFoldersWorker.perform_async(company.egnyte_integration.id, id) if company.egnyte_integration
   end
 
-  def update_egnyte_folder_name
+  def update_egnyte_folder
     return unless company.egnyte_integration && (previous_changes[:name] || previous_changes[:advertiser_id])
 
     advertiser_changed = previous_changes[:advertiser_id].present?

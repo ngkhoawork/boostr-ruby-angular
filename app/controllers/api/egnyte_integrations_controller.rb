@@ -1,7 +1,15 @@
 class Api::EgnyteIntegrationsController < ApplicationController
   respond_to :json
 
+  class << self
+    def host
+      ENV['HOST'] || request.domain
+    end
+  end
+
   WEBSITE_EGNYTE_SETTINGS_URL = '/settings/egnyte'.freeze
+
+  delegate :host, to: :class
 
   def show
     render json: resource
@@ -82,7 +90,7 @@ class Api::EgnyteIntegrationsController < ApplicationController
   def build_user_authorization_uri(state_token)
     Egnyte::Actions::BuildAuthorizationUri.new(
       domain: resource.app_domain,
-      redirect_uri: oauth_callback_api_egnyte_integration_url(protocol: 'https'),
+      redirect_uri: oauth_callback_api_egnyte_integration_url(protocol: 'https', host: host),
       state: state_token
     ).perform
   end
@@ -90,7 +98,7 @@ class Api::EgnyteIntegrationsController < ApplicationController
   def connect_egnyte
     Egnyte::Actions::Connect.new(
       code: params.require(:code),
-      redirect_uri: oauth_callback_api_egnyte_integration_url,
+      redirect_uri: oauth_callback_api_egnyte_integration_url(protocol: 'https', host: host),
       state: params[:state]
     ).perform
   end

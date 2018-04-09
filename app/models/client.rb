@@ -77,7 +77,7 @@ class Client < ActiveRecord::Base
   after_commit :update_account_dimension, on: [:create, :update]
 
   after_commit :setup_egnyte_folders, on: [:create]
-  after_commit :update_egnyte_folder_name, on: [:update]
+  after_commit :update_egnyte_folder, on: [:update]
 
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
@@ -609,7 +609,7 @@ class Client < ActiveRecord::Base
     Egnyte::SetupClientFoldersWorker.perform_async(company.egnyte_integration.id, id) if company.egnyte_integration
   end
 
-  def update_egnyte_folder_name
+  def update_egnyte_folder
     return unless company.egnyte_integration && (previous_changes[:name] || previous_changes[:parent_client_id])
 
     parent_changed = previous_changes[:parent_client_id].present?
