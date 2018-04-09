@@ -199,8 +199,8 @@
                     backdrop: 'static'
                     keyboard: false
                     resolve:
-                        client: ->
-                            {}
+                        client: -> {}
+                        options: -> {}
 
             $scope.showNewActivityModal = ->
                 $scope.modalInstance = $modal.open
@@ -320,8 +320,8 @@
                     backdrop: 'static'
                     keyboard: false
                     resolve:
-                        contact: ->
-                            {}
+                        contact: -> {}
+                        options: -> {}
 
             $scope.cancelActivity = ->
                 $scope.init()

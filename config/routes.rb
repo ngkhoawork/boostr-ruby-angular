@@ -541,6 +541,30 @@ Rails.application.routes.draw do
 
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
+    resources :leads, only: [:index, :show] do
+      member do
+        get :accept
+        get :reject
+        get :reassign
+        get :map_with_client
+        get :reject_from_email
+      end
+
+      collection do
+        get :users
+        post :import
+        post :create_lead
+      end
+    end
+
+    resources :assignment_rules, only: [:index, :create, :update, :destroy], controller: 'settings/assignment_rules' do
+      member do
+        get :add_user
+        get :remove_user
+      end
+
+      put :update_positions, on: :collection
+    end
 
     resources :sales_processes, only: [:index, :create, :show, :update]
     resources :statistics, only: [:show]

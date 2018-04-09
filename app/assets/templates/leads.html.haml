@@ -1,0 +1,101 @@
+#leads.z-styles
+    .container-fluid.leads-inner
+        .row.leads-header.mb20
+            .header-item
+                .main-title Leads
+            .header-item
+                %z-toggle-list{list: 'teamFilters', selected: 'teamFilter', 'on-change': 'onFilterChange("teamFilter", $selected)', localstorage: 'leadsTeamFilter'}
+            .header-item.leads-search
+                %i.fa.fa-search
+                %input.form-control{placeholder: 'Search', ng: {model: 'search', 'model-options': '{debounce: 400}', change: 'getLeads()' }}
+        .row.mb30
+            %z-toggle-list{list: 'statusFilters', selected: 'statusFilter', 'on-change': 'onFilterChange("statusFilter", $selected)', localstorage: 'leadsStatusFilter'}
+
+        .row
+            .leads-table{'ng-if': '!leads.length && !isLoading'}
+                .leads-header-tr
+                    .leads-th NO LEADS
+            .leads-table{'ng-if': 'leads.length'}
+                .leads-header-tr
+                    .leads-th ID
+                    .leads-th STATUS
+                    .leads-th LEADS DETAILS
+                    .leads-th COMPANY
+                    .leads-th DEAL DETAILS
+                    .leads-th
+                .leads-tr{'ng-repeat': 'lead in leads', 'ng-switch': 'leads.status'}
+                    .leads-td
+                        .leads-td-inner
+                            .td-info
+                                %b {{lead.id}}
+                    .leads-td
+                        .leads-td-inner
+                            .td-title {{lead.user.name}}
+                            .td-info{'ng-switch-when': 'new_leads'}
+                                %div {{lead.created_at && 'Created ' + (lead.created_at | date : 'shortDate')}}
+                                %div {{lead.reassigned_at && 'Reassigned ' + (lead.reassigned_at | date : 'shortDate')}}
+                            .td-info{'ng-switch-when': 'accepted'}
+                                %div {{lead.created_at && 'Created ' + (lead.created_at | date : 'shortDate')}}
+                                %div {{lead.accepted_at && 'Accepted ' + (lead.accepted_at | date : 'shortDate')}}
+                            .td-info{'ng-switch-when': 'rejected'}
+                                {{lead.rejected_at && 'Rejected ' + (lead.rejected_at | date : 'shortDate')}}
+                            .td-info{'ng-show': 'lead.untouched_days'}
+                                {{lead.untouched_days}} Day{{lead.untouched_days !== '1' ? 's' : ''}} Untouched
+                            .td-action{'ng-click': 'showReassignModal(lead)'} Reassign
+
+                    .leads-td
+                        .leads-td-inner
+                            .td-title {{lead.name}}
+                            %div {{lead.email}}
+                            .td-info {{lead.title}}
+                            .td-list{'ng-if': 'lead.contact'}
+                                %div Contact Linked:
+                                %div
+                                    %div
+                                        %a{target: '_blank', 'ng-href': '/contacts/{{lead.contact.id}}'} {{lead.contact.name}}
+                            .td-list{'ng-if': '!lead.contact'}
+                                %div No Contact Exists
+                            .td-action{'ng-if': 'statusFilter.id !== "new_leads" && !lead.contact', 'ng-click': 'showContactModal(lead)'} Create Contact
+                    .leads-td
+                        .leads-td-inner
+                            .td-title {{lead.company_name || '-'}}
+                            .td-info {{lead.state}}{{lead.state && lead.country ? ', ' : ''}}{{lead.country}}
+                            .td-list{'ng-if': 'lead.client'}
+                                %div Account Linked:
+                                %div
+                                    %a{target: '_blank', 'ng-href': '/accounts/{{lead.client.id}}'} {{lead.client.name}}
+                            .td-list{'ng-if': '!lead.client && lead.clients.length'}
+                                %div
+                                    Suggested Accounts:
+                                %div.mr8{'dropdown': '', 'keyboard-nav': ''}
+                                    %div{'dropdown-toggle': ''}
+                                        {{lead._selectedClient.name || 'select'}}
+                                        %i.fa.fa-caret-down
+                                    .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                                        .dropdown-option{'ng-repeat': 'client in lead.clients'}
+                                            %a{href: '', 'ng-click': 'lead._selectedClient = client'} {{client.name}}
+                                %div{'ng-if': 'lead._selectedClient'}
+                                    .td-action{'ng-click': 'mapAccount(lead)'} Match
+                                -#%div
+                                    %a{target: '_blank', 'ng-repeat': 'client in lead.clients', 'ng-href': '/accounts/{{client.id}}'} {{client.name}}
+                            .td-list{'ng-if': '!lead.client && !lead.clients.length'}
+                                %div No Account Exists
+                            .td-action{'ng-if': 'leads.status !== "new_leads" && !lead.client', 'ng-click': 'showAccountModal(lead)'} Create Account
+                    .leads-td
+                        .leads-td-inner
+                            .td-title
+                                Budget: {{lead.budget | currency : '$' : 0}}
+                            %div{ng: {'text-truncate': 'lead.notes', 'tt-chars-threshold': '100'}}
+                            .td-action{'ng-if': 'statusFilter.id !== "new_leads"', 'ng-click': 'showDealModal(lead)'} Create Deal
+                    .leads-td
+                        .leads-td-inner.lead-buttons{'ng-switch-when': 'new_leads'}
+                            .leads-btn.hollow{'ng-click': 'reject(lead)'} Reject
+                            .leads-btn{'ng-click': 'accept(lead)'} Start Qualification
+                        .leads-td-inner{'ng-switch-when': 'accepted', 'ng-if': 'lead.deals.length'}
+                            .deal-row{'ng-repeat': 'deal in lead.deals'}
+                                %a{target: '_blank', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
+                                {{deal.budget | currency : '$' : 0}}
+                        .leads-td-inner.lead-buttons{'ng-switch-when': 'accepted', 'ng-if': '!lead.deals.length'}
+                            .leads-btn.hollow{'ng-click': 'reject(lead)'} Reject
+                        .leads-td-inner.lead-buttons{'ng-switch-when': 'rejected'}
+                            .leads-btn{'ng-click': 'reassign(lead)'} Take Ownership

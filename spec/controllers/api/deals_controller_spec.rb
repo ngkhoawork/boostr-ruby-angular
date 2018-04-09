@@ -53,24 +53,34 @@ describe Api::DealsController, type: :controller do
     it 'creates a new deal and returns success' do
       expect do
         post :create, deal: deal_params, format: :json
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json['created_by']).to eq(user.id)
-        expect(response_json['budget']).to eq('31000.0')
-        expect(response_json['advertiser_id']).to eq(advertiser.id)
-        expect(response_json['next_steps']).to eq(deal_params[:next_steps])
-        expect(response_json['stage_id']).to eq(stage.id)
+        expect(json_response['created_by']).to eq(user.id)
+        expect(json_response['budget']).to eq('31000.0')
+        expect(json_response['advertiser_id']).to eq(advertiser.id)
+        expect(json_response['next_steps']).to eq(deal_params[:next_steps])
+        expect(json_response['stage_id']).to eq(stage.id)
       end.to change(Deal, :count).by(1)
     end
 
     it 'returns errors if the deal is invalid' do
       expect do
         post :create, deal: attributes_for(:deal), format: :json
+
         expect(response.status).to eq(422)
-        response_json = JSON.parse(response.body)
-        expect(response_json['errors']['advertiser_id']).to eq(["can't be blank"])
-        expect(response_json['errors']['stage_id']).to eq(["can't be blank"])
+        expect(json_response['errors']['advertiser_id']).to eq(["can't be blank"])
+        expect(json_response['errors']['stage_id']).to eq(["can't be blank"])
       end.to_not change(Deal, :count)
+    end
+
+    it 'map lead to contact' do
+      assignment_rule = create :assignment_rule, company_id: company.id, countries: ['Usa'], states: ['Ny']
+      assignment_rule.users << user
+      valid_deal_params = deal_params.merge(lead_id: lead.id)
+
+      post :create, deal: valid_deal_params
+
+      expect(Deal.last.lead).to eq lead
     end
   end
 
@@ -140,5 +150,15 @@ describe Api::DealsController, type: :controller do
       expect(deal.reload.deleted_at).to be_nil
       expect(json_response['errors']['delete']).to eql(['Please delete IO for this deal before deleting'])
     end
+  end
+
+  private
+
+  def lead
+    @_lead ||= create :lead, company: company
+  end
+
+  def company
+    @_company ||= create :company
   end
 end

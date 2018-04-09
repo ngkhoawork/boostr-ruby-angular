@@ -134,9 +134,9 @@ RSpec.describe Api::ContactsController, type: :controller do
     it 'creates a new contact and returns success' do
       expect{
         post :create, contact: contact_params, format: :json
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json['created_by']).to eq(user.id)
+        expect(json_response['created_by']).to eq(user.id)
       }.to change(Contact, :count).by(1)
     end
 
@@ -144,10 +144,19 @@ RSpec.describe Api::ContactsController, type: :controller do
       expect{
         post :create, contact: { addresses_attributes: address_params }, format: :json
         expect(response.status).to eq(422)
-        response_json = JSON.parse(response.body)
 
-        expect(response_json['errors']['primary account']).to eq(["can't be blank"])
+        expect(json_response['errors']['primary account']).to eq(["can't be blank"])
       }.to_not change(Contact, :count)
+    end
+
+    it 'map lead to contact' do
+      user = create :user, company: company
+      assignment_rule = create :assignment_rule, company_id: company.id, countries: ['Usa'], states: ['Ny']
+      assignment_rule.users << user
+
+      post :create, contact: contact_params, lead_id: lead.id
+
+      expect(Contact.last.leads).to include lead
     end
   end
 
@@ -248,6 +257,8 @@ RSpec.describe Api::ContactsController, type: :controller do
     end
   end
 
+  private
+
   def prepare_contact_metadata
     field = user.company.fields.find_by(subject_type: 'Contact')
     ceo_option = create :option, name: 'CEO', field: field
@@ -266,5 +277,13 @@ RSpec.describe Api::ContactsController, type: :controller do
       values_attributes: [field: field, option: seller_option],
       address_attributes: (attributes_for :address, city: 'New York')
 
+  end
+
+  def lead
+    @_lead ||= create :lead, company: company
+  end
+
+  def company
+    @_company ||= create :company
   end
 end

@@ -1,0 +1,151 @@
+#leads-settings {
+    .container-fluid {
+        padding: 0 30px;
+    }
+    .rules-table {
+        display: flex;
+        .rules-column {
+            width: 25%;
+            &:not(:last-child) {
+                padding-right: 20px;
+            }
+            .rule-column-header {
+                display: flex;
+                align-items: center;
+                background: #2B3C49;
+                color: white;
+                padding: 10px 15px;
+                margin-bottom: 8px;
+                border-radius: 4px;
+                box-shadow: 0 1px 0 0 rgba(215,216,219,0.5);
+                .rule-add-btn {
+                    margin-left: auto;
+                    color: $main-color;
+                    font-weight: bold;
+                    cursor: pointer;
+                    &:hover {
+                        color: darken($main-color, 10%);
+                    }
+                }
+            }
+            .rule-row {
+                display: flex;
+                align-items: center;
+                background: white;
+                border: 1px solid #E5E8EB;
+                border-radius: 4px;
+                padding: 8px;
+                margin-bottom: 4px;
+                user-select: none;
+                &.rule-name {
+                    background: #fafafa;
+                    cursor: pointer;
+                    &:active {
+                        cursor: move;
+                    }
+                    &.active {
+                        background: white;
+                        border-color: $main-color;
+                        border-right-width: 4px;
+                        padding-right: 5px;
+                    }
+                }
+                &.default-rule {
+                    padding-left: 17px;
+                }
+                .z-icon {
+                    margin-left: auto;
+                    visibility: hidden;
+                    pointer-events: none;
+                }
+                &:hover {
+                    .z-icon {
+                        visibility: visible;
+                        pointer-events: auto;
+                    }
+                }
+                &.new-row {
+                    display: none;
+                    &.visible {
+                        display: flex;
+                    }
+                    form {
+                        flex: 1;
+                    }
+                    input {
+                        height: 36px;
+                        &:focus {
+                            box-shadow: 0 0 5px $main-font-color;
+                        }
+                    }
+                    .z-icon {
+                        margin-left: 8px;
+                    }
+                }
+                .editable-rule-field {
+                    border: none;
+                    border-bottom: 1px dashed $secondary-font-color;
+                    background: transparent;
+                    padding: 2px 5px;
+                    outline: none;
+                }
+            }
+            .rules-wrap {
+                list-style-type: none;
+            }
+            .dndPlaceholder {
+                height: 46px;
+                width: 100%;
+                background-color: #e1e1e1;
+                margin-bottom: 4px;
+                border-radius: 4px;
+            }
+            .users-dropdown {
+                min-width: 200px;
+                .users-search-wrap {
+                    position: relative;
+                    padding: 0 8px 10px;
+                    input {
+                        background-color: white;
+                        padding: 8px 26px 8px 12px;
+                        height: auto;
+                    }
+                    .users-search-icon {
+                        position: absolute;
+                        right: 16px;
+                        top: 10px;
+                        font-size: 16px;
+                        color: $secondary-font-color;
+                        opacity: 0.7;
+                        pointer-events: none;
+                    }
+                }
+                .users-list-wrap {
+                    max-height: 260px;
+                    overflow-y: auto;
+                }
+
+            }
+        }
+        .editable, .editable-input {
+            padding: 5px 8px;
+            border-radius: 4px;
+            border: 1px dashed transparent;
+            border-bottom-color: $secondary-font-color;
+            background-color: transparent;
+            height: 28px;
+            &:hover {
+                border-color: transparent;
+                border-bottom-color: $secondary-font-color;
+                background-color: $separate-line-color;
+            }
+            &:focus {
+                outline: none;
+                border: 1px dashed $secondary-font-color;
+                &:hover {
+                    background-color: inherit;
+                }
+            }
+        }
+    }
+}

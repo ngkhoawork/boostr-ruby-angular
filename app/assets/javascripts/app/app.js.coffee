@@ -358,6 +358,15 @@
       templateUrl: 'publishers/publisher.html'
       controller: 'PablisherController'
 
+    .when '/leads',
+      templateUrl: 'leads.html'
+      controller: 'LeadsController'
+      reloadOnSearch: false
+
+    .when '/settings/leads',
+      templateUrl: 'settings/leads.html'
+      controller: 'LeadsSettingsController'
+
     .when '/api_reference',
       templateUrl: 'api_reference.html'
       controller: 'ApiReferenceController'

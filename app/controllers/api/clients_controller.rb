@@ -87,7 +87,11 @@ class Api::ClientsController < ApplicationController
     else
       client = company.clients.new(client_params)
       client.created_by = current_user.id
+
       if client.save
+        map_lead_with client
+        map_with_contact_through_lead client
+
         render json: client, status: :created
       else
         render json: { errors: client.errors.messages }, status: :unprocessable_entity
@@ -223,7 +227,8 @@ class Api::ClientsController < ApplicationController
 
   def client_params
     params.require(:client).permit(
-      :name, :website, :note, :client_type_id, :client_category_id, :client_subcategory_id, :parent_client_id, :client_region_id, :client_segment_id, :holding_company_id,
+      :name, :website, :note, :client_type_id, :client_category_id, :client_subcategory_id, :parent_client_id,
+      :client_region_id, :client_segment_id, :holding_company_id, :created_from,
       { 
         address_attributes: [:country, :street1, :street2, :city, :state, :zip, :phone, :email],
         values_attributes: [:id, :field_id, :option_id, :value],
@@ -431,5 +436,19 @@ class Api::ClientsController < ApplicationController
 
   def category_options
     company.fields.client_category_fields.to_options
+  end
+
+  def lead
+   @_lead ||= Lead.find(params[:lead_id]) if params[:lead_id].present?
+  end
+
+  def map_lead_with(client)
+    client.leads << lead if lead&.present?
+  end
+
+  def map_with_contact_through_lead(client)
+    if lead&.contact.present?
+      client.client_contacts.create(contact: lead.contact, client: client)
+    end
   end
 end

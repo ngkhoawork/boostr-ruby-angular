@@ -269,6 +269,21 @@
         metadata: ->
           false
 
+  $scope.showUploadLeadsModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/leads_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/leads/import'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')
     return true

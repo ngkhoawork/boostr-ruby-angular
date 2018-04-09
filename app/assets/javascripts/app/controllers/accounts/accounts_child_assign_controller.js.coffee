@@ -35,6 +35,7 @@
       resolve:
         client: ->
           newClient
+        options: -> {}
     .result.then (created_client) ->
       if (created_client)
         $scope.assignClient(created_client)
@@ -45,7 +46,7 @@
     client.$update(
       (data) ->
         $modalInstance.close(data)
-        $scope.$parent.$broadcast 'updated_current_client',
+        $scope.$parent.$broadcast 'updated_current_client'
     )
 
   $scope.cancel = ->

@@ -1,0 +1,67 @@
+#leads-settings.z-styles
+    .container-fluid
+        %div.mb20
+            %span.main-title.mr8 Leads
+
+        .block
+            .title.mb20 Manage Coverage
+            .rules-table
+                .rules-column
+                    .rule-column-header
+                        %div ASSIGNMENT RULE
+                        .rule-add-btn{'ng-click': 'showForm($event)'} Add
+                    .rule-row.rule-name.new-row
+                        %form{'ng-submit': 'submitForm($event, "rule")'}
+                            %input.form-control{placeholder: 'Name', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "rule")'}
+                        %i.fa.fa-close.z-icon{'ng-mousedown': 'hideForm($event)'}
+                    .rules-wrap{'dnd-list': 'rules'}
+                        .rule-row.rule-name{ng: {repeat: 'rule in rules', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'}, dnd: {draggable: 'rule', moved: 'onRuleMoved($index)'}}
+                            %span{'editable-text': 'rule.name', blur: 'submit', onaftersave: 'updateField("rule", rule)'}
+                                {{rule.name}}
+                            %i.fa.fa-trash.z-icon{'ng-click': 'deleteRule($event, rule)'}
+                    %div{'ng-if': 'defaultRule'}
+                        .rule-row.rule-name.default-rule{ng: {click: 'selectRule(defaultRule)', class: '{active: defaultRule === selectedRule}'}}
+                            {{defaultRule.name}}
+                            %i.fa.fa-star.z-icon{style: 'visibility: hidden'}
+
+                .rules-column
+                    .rule-column-header
+                        %div CRITERIA 1
+                        .rule-add-btn{'ng-click': 'showForm($event)'} Add
+                    .rule-row.rule-name.new-row
+                        %form{'ng-submit': 'submitForm($event, "country")'}
+                            %input.form-control{placeholder: 'Country', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "country")'}
+                        %i.fa.fa-close.z-icon{'ng-mousedown': 'hideForm($event)'}
+                    .rule-row{'ng-repeat': 'country in selectedRule.countries track by $index'}
+                        %span{'editable-text': 'selectedRule.countries[$index]', blur: 'submit', onaftersave: 'updateField("country", selectedRule)'}
+                            {{selectedRule.countries[$index]}}
+                        %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("countries", country)'}
+
+                .rules-column
+                    .rule-column-header
+                        %div CRITERIA 2
+                        .rule-add-btn{'ng-click': 'showForm($event)'} Add
+                    .rule-row.rule-name.new-row
+                        %form{'ng-submit': 'submitForm($event, "state")'}
+                            %input.form-control{placeholder: 'State', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "state")'}
+                        %i.fa.fa-close.z-icon{'ng-mousedown': 'hideForm($event)'}
+                    .rule-row{'ng-repeat': 'state in selectedRule.states track by $index'}
+                        %span{'editable-text': 'selectedRule.states[$index]', blur: 'submit', onaftersave: 'updateField("state", selectedRule)'}
+                            {{selectedRule.states[$index]}}
+                        %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("states", state)'}
+
+                .rules-column
+                    .rule-column-header
+                        %div USERS
+                        .rule-add-btn.z-dropdown{dropdown: true}
+                            %div{'dropdown-toggle': true, 'ng-click': 'userSearch = ""'} Add
+                            %div.dropdown-menu.dropdown-menu-right.users-dropdown
+                                %div.users-search-wrap
+                                    %i.fa.fa-search.users-search-icon
+                                    %input.form-control{'placeholder': 'Search', 'ng-model': 'userSearch', 'ng-click': '$event.stopPropagation()'}
+                                %div.users-list-wrap
+                                    %div.dropdown-item{ng: {repeat: 'user in users | filter : userSearch', click: 'addUser(user)'}}
+                                        {{user.name}}
+                    .rule-row{'ng-repeat': 'user in selectedRule.users'}
+                        {{user.name}}
+                        %i.fa.fa-trash.z-icon{'ng-click': 'removeUser(user)'}
