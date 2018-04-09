@@ -32,7 +32,7 @@ class Csv::ProductMonthlySummaryDecorator
   def team_member
     row[:members].map do |member|
       "#{member[:name]} #{member[:share]}%"
-    end.join(', ')
+    end.join('; ')
   end
 
   def holding_co

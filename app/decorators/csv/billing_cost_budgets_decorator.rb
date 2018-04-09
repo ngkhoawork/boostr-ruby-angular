@@ -22,11 +22,11 @@ class Csv::BillingCostBudgetsDecorator
   end
 
   def seller
-    io.sellers&.map(&:name).join(',')
+    io.sellers&.map(&:name).join(';')
   end
 
   def account_manager
-    io.account_managers&.map(&:name).join(',')
+    io.account_managers&.map(&:name).join(';')
   end
 
   def actualization_status
