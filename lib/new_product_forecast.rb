@@ -123,9 +123,7 @@ class NewProductForecast
     if product.present?
       product.include_children
     elsif product_family.present?
-      Product.include_children(
-        product_family.products.active.by_level(0)
-      )
+      product_family.products.active
     else
       Product.include_children(
         company.products.active.by_level(0)
