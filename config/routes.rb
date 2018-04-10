@@ -361,6 +361,7 @@ Rails.application.routes.draw do
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
       collection do
         get :all_members
+        get :all_account_managers
       end
       get :members
       get :all_sales_reps
@@ -477,12 +478,17 @@ Rails.application.routes.draw do
     end
     resources :billing_summary, only: [:index] do
       member do
+        put :update_cost
+        put :update_cost_budget
         put :update_quantity
         put :update_content_fee_product_budget
         put :update_display_line_item_budget_billing_status
       end
 
+      get 'costs', on: :collection
+
       get :export, on: :collection
+      get :export_cost_budgets, on: :collection
     end
     resources :requests, only: [:index, :show, :create, :update, :destroy]
 
@@ -535,6 +541,30 @@ Rails.application.routes.draw do
 
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
+    resources :leads, only: [:index, :show] do
+      member do
+        get :accept
+        get :reject
+        get :reassign
+        get :map_with_client
+        get :reject_from_email
+      end
+
+      collection do
+        get :users
+        post :import
+        post :create_lead
+      end
+    end
+
+    resources :assignment_rules, only: [:index, :create, :update, :destroy], controller: 'settings/assignment_rules' do
+      member do
+        get :add_user
+        get :remove_user
+      end
+
+      put :update_positions, on: :collection
+    end
 
     resources :sales_processes, only: [:index, :create, :show, :update]
     resources :statistics, only: [:show]

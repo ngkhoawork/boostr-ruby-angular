@@ -253,8 +253,8 @@
       backdrop: 'static'
       keyboard: false
       resolve:
-        client: ->
-          {}
+        client: -> {}
+        options: -> {}
 
   $scope.deleteChildClient = (client) ->
     if confirm("Click Ok to remove the child account or Cancel")
@@ -355,6 +355,7 @@
       resolve:
         contact: ->
           client_id: $scope.currentClient.id
+        options: -> {}
 
   $scope.showNewDealModal = ->
     $scope.modalInstance = $modal.open
@@ -733,6 +734,7 @@
             client_id: $scope.currentClient.id,
             primary_client: $scope.currentClient
           }
+        options: -> {}
 
   $scope.showEditContactModal = (client_contact) ->
     $scope.populateContact = true

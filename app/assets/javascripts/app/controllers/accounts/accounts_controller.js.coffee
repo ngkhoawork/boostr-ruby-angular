@@ -185,8 +185,9 @@
       backdrop: 'static'
       keyboard: false
       resolve:
-        client: ->
-          {}
+        client: -> {}
+        options: -> {}
+
   $scope.go = (client_id) ->
     $location.path('/accounts/' + client_id)
   $scope.$on 'newClient', ->

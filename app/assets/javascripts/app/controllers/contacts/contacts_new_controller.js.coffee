@@ -1,6 +1,6 @@
 @app.controller "ContactsNewController",
-['$scope', '$rootScope', '$modal', '$modalInstance', 'Contact', 'Client', 'contact', 'CountriesList', 'ContactCfName'
-($scope, $rootScope, $modal, $modalInstance, Contact, Client, contact, CountriesList, ContactCfName) ->
+['$scope', '$rootScope', '$modal', '$modalInstance', 'Contact', 'Client', 'contact', 'CountriesList', 'ContactCfName', 'options'
+($scope, $rootScope, $modal, $modalInstance, Contact, Client, contact, CountriesList, ContactCfName, options) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
@@ -15,6 +15,19 @@
         contact.address.state or
         contact.address.zip))
 
+
+  if options.lead
+    contact = $scope.contact
+    lead = options.lead 
+    contact.name = lead.name
+    if contact.address
+      contact.address.email = lead.email
+    else
+      contact.address = email: lead.email
+    if lead.client
+      contact.client_id = lead.client.id
+      contact.primary_client_json = lead.client
+    contact.position = lead.title
 
   CountriesList.get (data) ->
     $scope.countries = data.countries
@@ -51,11 +64,14 @@
 
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true
+
+    $scope.contact.lead = options.lead if options.lead
+
     Contact.create(contact: $scope.contact).then(
       (contact) ->
         Contact.set(contact.id)
         $rootScope.$broadcast 'newContact', contact
-        $modalInstance.close()
+        $modalInstance.close(contact)
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
@@ -80,6 +96,7 @@
       keyboard: false
       resolve:
         client: -> {}
+        options: -> options
 
   # Prevent multiple extraneous calls to the server as user inputs search term
   searchTimeout = null;

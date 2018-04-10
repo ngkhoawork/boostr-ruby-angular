@@ -7,6 +7,7 @@ describe BillingSummary::IosMissingMonthlyActualSerializer do
   end
 
   it 'has proper serialized data' do
+    expect(serializer[:io_id]).to eql io.id
     expect(serializer[:io_number]).to eql io.io_number
     expect(serializer[:io_name]).to eql io.name
     expect(serializer[:line_number]).to eql display_line_item.line_number

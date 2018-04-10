@@ -274,7 +274,7 @@ class Api::DealsController < ApplicationController
         message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
       }, status: :ok
     else
-      @deal = company.deals.new(deal_params)
+      @deal = company.deals.new(deal_params.merge(manual_update: true))
 
       deal.created_by = current_user.id
       deal.updated_by = current_user.id
@@ -289,7 +289,7 @@ class Api::DealsController < ApplicationController
 
   def update
     deal.updated_by = current_user.id
-    deal.assign_attributes(deal_params)
+    deal.assign_attributes(deal_params.merge(manual_update: true))
 
     if deal.save(context: :manual_update)
       render deal
@@ -585,6 +585,8 @@ class Api::DealsController < ApplicationController
         :initiative_id,
         :closed_reason_text,
         :created_at,
+        :lead_id,
+        :created_from,
         {
             values_attributes: [
                 :id,

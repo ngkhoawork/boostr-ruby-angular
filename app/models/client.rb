@@ -43,6 +43,7 @@ class Client < ActiveRecord::Base
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
   has_many :integrations, as: :integratable
+  has_many :leads
 
   has_many :ssp_advertisers
 
@@ -68,6 +69,7 @@ class Client < ActiveRecord::Base
   delegate :street1, :street2, :city, :state, :zip, :phone, :country, to: :address, allow_nil: true
   delegate :name, to: :client_category, prefix: :category, allow_nil: true
   delegate :name, to: :parent_client, prefix: true, allow_nil: true
+  delegate :name, to: :client_type, prefix: true, allow_nil: true
 
   accepts_nested_attributes_for :address, :values
   accepts_nested_attributes_for :account_cf
@@ -101,6 +103,9 @@ class Client < ActiveRecord::Base
   scope :by_region, -> region_id { where(client_region_id: region_id) if region_id.present? }
   scope :by_segment, -> segment_id { where(client_segment_id: segment_id) if segment_id.present? }
   scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_name_in_multiply_string, -> name do
+    where('name ilike any ( array[?] )', name.split.map { |word| "%#{word}%" } ) if name.present?
+  end
   scope :by_name_and_type_with_limit, -> (name, type) { by_name(name).by_type_id(type).limit(20) }
   scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }
   scope :by_ids, -> ids { where(id: ids) if ids.present?}
@@ -251,7 +256,7 @@ class Client < ActiveRecord::Base
             }
           }
         },
-        methods: [:deals_count, :fields, :formatted_name]
+        methods: [:deals_count, :fields, :formatted_name, :client_type_name]
       ).except(:override))
     end
   end

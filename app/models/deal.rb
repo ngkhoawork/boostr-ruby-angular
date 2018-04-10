@@ -16,6 +16,7 @@ class Deal < ActiveRecord::Base
   belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
   belongs_to :initiative
+  belongs_to :lead
 
   # Restrict with exception is used to rollback any
   # other potential dependent: :destroy relations
@@ -42,6 +43,9 @@ class Deal < ActiveRecord::Base
   has_many :requests
   has_many :audit_logs, as: :auditable
 
+  has_one :billing_deal_contact, -> { where(role: 'Billing') }, class_name: 'DealContact'
+  has_one :billing_contact, through: :billing_deal_contact, source: :contact
+
   has_one :deal_custom_field, dependent: :destroy
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
     order('activities.deal_id', 'activities.happened_at DESC')
@@ -65,7 +69,7 @@ class Deal < ActiveRecord::Base
   delegate :open?, to: :stage, allow_nil: true, prefix: true
   delegate :active?, to: :stage, allow_nil: true, prefix: true
 
-  attr_accessor :modifying_user
+  attr_accessor :modifying_user, :manual_update
 
   before_update do
     if curr_cd_changed?
@@ -275,20 +279,20 @@ class Deal < ActiveRecord::Base
   def billing_contact_presence
     return unless stage.present?
     validation = company.validations.find_by(
-      object: 'Billing Contact', 
+      object: 'Billing Contact',
       factor: stage.sales_process_id
-    ) 
+    )
     stage_threshold = validation&.criterion&.value&.probability
 
     if stage_threshold && stage.probability >= stage_threshold && !self.has_billing_contact?
-      errors.add(:stage, "#{self.stage&.name} requires a valid Billing Contact with address") 
+      errors.add(:stage, "#{self.stage&.name} requires a valid Billing Contact with address")
     end
   end
 
   def account_manager_presence
     return unless stage.present?
     validation = company.validations.find_by(
-      object: 'Account Manager', 
+      object: 'Account Manager',
       factor: stage.sales_process_id
     )
     stage_threshold = validation&.criterion&.value&.probability
@@ -347,13 +351,7 @@ class Deal < ActiveRecord::Base
   end
 
   def has_billing_contact?
-    billing_contact = self.deal_contacts.find_by(role: 'Billing')
     !!(billing_contact) && billing_contact.valid?
-  end
-
-  def billing_contact
-    billing_contact = self.deal_contacts.find_by(role: 'Billing')
-    billing_contact.contact
   end
 
   def has_account_manager_member?

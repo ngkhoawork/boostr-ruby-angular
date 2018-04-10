@@ -30,6 +30,9 @@
       values_attributes: original.contact.values
       contact_cf_attributes: original.contact.contact_cf
     send.unassign = true if original.unassign
+    if original.contact.lead
+      send.lead_id = original.contact.lead.id
+      send.contact.created_from = 'Web-Form Lead'
     angular.toJson(send)
 
   resource = $resource '/api/contacts/:id', { id: '@id' },

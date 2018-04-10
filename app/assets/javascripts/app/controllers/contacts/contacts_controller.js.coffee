@@ -162,8 +162,8 @@
                     backdrop: 'static'
                     keyboard: false
                     resolve:
-                        contact: ->
-                            {}
+                        contact: -> {}
+                        options: -> {}
 
             $scope.showEditModal = ->
                 $scope.modalInstance = $modal.open

@@ -14,6 +14,8 @@
         {name: 'PUBLISHERS', url: '/publishers'} if _isPublisherEnabled
         {name: 'CONTACTS', url: '/contacts'}
         {name: 'INFLUENCERS', url: '/influencers'} if _isCompanyInfluencerEnabled
+        {name: 'BUSINESS PLANS', url: '/bps'}
+        {name: 'LEADS', url: '/leads'}
         {name: 'BOTTOMS UP', url: '/bps'}
         {name: 'FINANCE', url: '/finance', dropdown: [
             {name: 'Billing', url: '/finance/billing'}

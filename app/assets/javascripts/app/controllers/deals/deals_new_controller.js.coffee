@@ -1,6 +1,6 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation', 'SalesProcess'
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation, SalesProcess) ->
+['$scope', '$modal', '$modalInstance', '$q', '$filter', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation', 'SalesProcess'
+($scope, $modal, $modalInstance, $q, $filter, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation, SalesProcess) ->
 
   $scope.init = ->
     $scope.formType = 'New'
@@ -16,6 +16,25 @@
 
     if deal.agency
       $scope.agencies = [deal.agency]
+
+    if options.lead
+      lead = options.lead
+      nextSteps = ''
+      if lead.budget?
+        nextSteps += "Budget: #{$filter('currency')(lead.budget, undefined, 0)}; "
+      if lead.notes
+        nextSteps += lead.notes
+      deal.next_steps = nextSteps
+      if lead.client
+        switch lead.client.type
+          when 'Advertiser'
+            deal.advertiser = lead.client
+            deal.advertiser_id = lead.client.id
+            $scope.advertisers = [lead.client]
+          when 'Agency'
+            deal.agency = lead.client
+            deal.agency_id = lead.client.id
+            $scope.agencies = [lead.client]
 
     $q.all({
       user: CurrentUser.get().$promise,
@@ -119,10 +138,14 @@
 
     if Object.keys($scope.errors).length > 0 then return
 
+    if options.lead
+      $scope.deal.lead_id = options.lead.id
+      $scope.deal.created_from = 'Web-Form Lead'
+
     Deal.create(deal: $scope.deal).then(
       (deal) ->
         $modalInstance.close(deal)
-        if options.type != 'gmail'
+        if options.type != 'gmail' && !options.lead
           $location.path('/deals' + '/' + deal.id)
       (resp) ->
         for key, error of resp.data.errors
@@ -162,6 +185,7 @@
               option: option
             }
           }
+        options: -> options
     # This will clear out the populateClient field if the form is dismissed
     $scope.modalInstance.result.then(
       null
