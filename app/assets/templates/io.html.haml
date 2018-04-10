@@ -204,17 +204,17 @@
 									%td.right
 										{{ displayLineItem.quantity }}
 									%td.right
-										{{ displayLineItem.price | currency:currency_symbol:0 }}
+										{{ displayLineItem.price | currency:currency_symbol:2 }}
 									%td.left
 										{{ displayLineItem.pricing_type }}
 									%td.right.display-line-table-budget
 										%div
 											%a{href: '', 'ng-click': 'showBudgetRow(displayLineItem, $event)'}
-												{{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
+												{{ displayLineItem.budget_loc | currency:currency_symbol:2 }}
 										%div.budget-arrow{'ng-class': '{"active": displayLineItem == selectedIORow}'}
 											.fa.fa-caret-up
 									%td.right
-										{{ displayLineItem.budget_delivered_loc | currency:currency_symbol:0 }}
+										{{ displayLineItem.budget_delivered_loc | currency:currency_symbol:2 }}
 									%td.right
 										{{ displayLineItem.budget_remaining_loc | currency:currency_symbol:0 }}
 									%td.right
