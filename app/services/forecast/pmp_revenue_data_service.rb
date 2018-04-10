@@ -118,7 +118,7 @@ class Forecast::PmpRevenueDataService
     @_products ||= if product.present?
       Product.include_children(product)
     elsif product_family
-      Product.include_children(product_family.products)
+      product_family.products
     end
   end
 

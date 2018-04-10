@@ -191,7 +191,7 @@ class Api::BillingSummaryController < ApplicationController
     @_product_ids ||= if product
       product.include_children.map(&:id)
     elsif product_family
-      Product.include_children(product_family.products).map(&:id)
+      product_family.products.collect(&:id)
     end
   end
 

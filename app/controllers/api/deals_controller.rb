@@ -830,7 +830,7 @@ class Api::DealsController < ApplicationController
     @product_ids ||= if product_id
       Product.include_children(company.products.where(id: product_id)).collect(&:id)
     elsif product_family
-      Product.include_children(product_family.products).collect(&:id)
+      product_family.products.collect(&:id)
     elsif params[:product_ids].present? && params[:product_ids] != ['all']
       Product.include_children(company.products.where(id: params[:product_ids])).collect(&:id)
     else
