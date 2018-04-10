@@ -11,7 +11,12 @@
         $scope.isLoading = false
         $scope.isNetForecast = false
         $scope.filter = {}
+        $scope.productsLevel0 = []
         $scope.productsLevel1 = []
+        $scope.productsLevel2 = []
+
+        $scope.productsLevel1.$resolved = true
+        $scope.productsLevel2.$resolved = true
 
         $scope.scrollTo = (id) ->
             angular.element('html, body').animate {
@@ -40,6 +45,7 @@
             $scope.sellers = data.sellers
             $scope.products = data.products
             $scope.productsLevel0 = productsByLevel(0)
+            $scope.productsLevel0.$resolved = true
             $scope.productFamilies = data.productFamilies
             $scope.stages = _.filter data.stages, (item) ->
                 if item.probability > 0
@@ -56,10 +62,12 @@
         $scope.onProductChange = (product) ->
             $scope.filter.product = product
             $scope.productsLevel1 = productsByLevel(1)
+            $scope.productsLevel1.$resolved = true
 
         $scope.onProduct1Change = (product) ->
             $scope.filter.product1 = product
             $scope.productsLevel2 = productsByLevel(2)
+            $scope.productsLevel2.$resolved = true
 
         productsByLevel = (level) ->
             _.filter $scope.products, (p) -> 
