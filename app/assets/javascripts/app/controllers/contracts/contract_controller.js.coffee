@@ -24,7 +24,7 @@
         Contract.get(id: $routeParams.id).then (contract) ->
             $scope.contract = contract
             $scope.isContractLoaded = true
-            $scope.showEalertModal(contract)
+#            $scope.showEalertModal(contract)
         , (err) ->
             $scope.isRestricted = err.status is 403
             $scope.isContractLoaded = true
