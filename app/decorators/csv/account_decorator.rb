@@ -42,6 +42,10 @@ class Csv::AccountDecorator
     @record.address&.zip
   end
 
+  def country
+    @record.address&.country
+  end
+
   def phone
     @record.address&.phone
   end
