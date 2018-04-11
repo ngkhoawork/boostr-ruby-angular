@@ -13,6 +13,15 @@
                 }
             }
         }
+        .ealert-button {
+            .z-icon {
+                width: 31px;
+                vertical-align: middle;
+            }
+            span {
+                font-size: 14px;
+            }
+        }
     }
     .editable, .editable-field {
         &:focus {

@@ -24,6 +24,7 @@
         Contract.get(id: $routeParams.id).then (contract) ->
             $scope.contract = contract
             $scope.isContractLoaded = true
+            $scope.showEalertModal(contract)
         , (err) ->
             $scope.isRestricted = err.status is 403
             $scope.isContractLoaded = true
@@ -47,26 +48,26 @@
                     contract: -> contract
 
         $scope.showEditModal = (contract) ->
-            modalInstance = $modal.open
+            $modal.open
                 templateUrl: 'contracts/contract_form.html'
                 controller: 'ContractFormController'
                 size: 'md'
                 backdrop: 'static'
                 resolve:
                     contract: -> angular.copy contract
-            modalInstance.result.then (contract) ->
+            .result.then (contract) ->
                 _.extend $scope.contract, contract
 
         $scope.showContactEditModal = (contact) ->
             Contact.getContact(contact.contact_id).then (data) ->
-                modalInstance = $modal.open
+                $modal.open
                     templateUrl: 'modals/contact_form.html'
                     controller: 'ContactsEditController'
                     size: 'md'
                     backdrop: 'static'
                     resolve:
                         contact: -> data
-                modalInstance.result.then (data) ->
+                .result.then (data) ->
                     contact.contact_client_name = data.primary_client_json && data.primary_client_json.name
                     contact.contact_email = data.address && data.address.email
                     contact.contact_name = data.name
@@ -131,5 +132,17 @@
                 backdrop: 'static'
                 resolve:
                     contract: -> contract
+
+        $scope.showEalertModal = (contract) ->
+            $modal.open
+                templateUrl: 'contracts/contract_ealert_form.html'
+                controller: 'ContractsEalertController'
+                size: 'lg'
+                backdrop: 'static'
+                resolve:
+                    contract: ->
+                        angular.copy contract
+            .result.then ->
+                $scope.ealertReminder = false
 
 ]

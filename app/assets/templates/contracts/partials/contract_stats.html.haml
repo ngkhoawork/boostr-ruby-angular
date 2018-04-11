@@ -5,10 +5,10 @@
 				{{contract.name}}
 				%i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(contract)'}
 				%i.fa.fa-trash.delete-deal{'ng-click': 'deleteContract(contract)'}
-				.ealert-label.pull-right{'ng-class': '{danger: (ealertReminder && contract.company_ealert_reminder)}'}
-					eAlerts
-				%i.fa.fa-envelope.ealert.pull-right{ng: {click: 'showDealEalertModal(currentDeal)', class: '{danger: (ealertReminder && currentDeal.company_ealert_reminder)}'}}
-				
+				.ealert-button.pull-right
+					%i.fa.fa-envelope.z-icon{ng: {click: 'showEalertModal(contract)'}}
+					%span eAlerts
+
 			.detail-info
 				%a{'href': '', 'ng-href': '/accounts/{{contract.advertiser.id}}'} {{contract.advertiser.name || ''}}
 				{{contract.advertiser.name && contract.agency.name && '|'}}

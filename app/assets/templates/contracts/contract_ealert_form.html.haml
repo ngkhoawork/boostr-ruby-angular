@@ -1,0 +1,77 @@
+#ealerts.popup-modal
+    .popup-modal-header
+        Send eAlert
+        %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+        .form-group{'ng-class':'{error: errors.recipient}'}
+            %span.error-text {{errors.recipient}}
+            %label{ for: 'recipient' }
+                TO
+                %span.star *
+            .recipients-list
+                .recipient-item{'ng-repeat': 'recipient in recipient_list track by $index'}
+                    {{recipient}}
+                    %span.close-btn{'ng-click': 'removeRecipient($index)'}
+            %form{'ng-submit': 'addRecipient()'}
+                %input.form-control.recipient-field{type: 'text', placeholder: 'Add custom recipients', ng: {model: 'email', class: '{error: errors.email}'}}
+        .form-group
+            %label{ for: 'comment' } Comments to eAlert
+            %textarea.form-control{ 'msd-elastic': '', rows: 2, 'ng-model': "comment", name: "{{fieldName}}", placeholder: 'Enter comment' }
+
+        .form-group
+            .preview-container
+                .preview-header
+                    .logo-title
+                        boostr
+                    .subtitle
+                        eAlert
+                .preview-subheader
+                    %table{width: '100%'}
+                        %tr
+                            %td{ style: 'position: relative;' }
+                                .subtitle {{contract.name}}
+                                .advertiser-ballast
+                                    %strong Advertiser:
+                                    {{contract.advertiser.name}}
+                                .advertiser-ballast
+                                    %strong Agency:
+                                    {{contract.agency.name}}
+                                .advertiser-ballast
+                                    %strong Deal:
+                                    {{contract.deal.name}}
+                                .advertiser-ballast
+                                    %strong Agency Holding:
+                                    {{contract.holding_company.name}}
+                                .comment-section
+                                    %div
+                                        %strong
+                                            Comments:
+                                    %div
+                                        {{comment}}
+                            %td.action
+                                %button.add-btn{'ng-click': 'goContract()'}
+                                    Go to Contract
+                .preview-body
+                    %section.mb30
+                        %div
+                            %strong Start Date:
+                            {{(contract.start_date | date)}}
+                        %div
+                            %strong End Date:
+                            {{(contract.end_date | date)}}
+                        %div
+                            %strong Currency:
+                            {{contract.currency.curr_cd}}
+                        %div
+                            %strong Amount:
+                            {{contract.amount | currency}}
+                    %section.mb30
+                        .products.mb10
+                            Description
+                        %div.mb10
+                            %strong
+                                {{contract.description}}:
+
+    .popup-modal-footer
+        %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+        %button.btn.btn-primary{type: 'submit', ng: {click: 'submitForm()'}} Send
