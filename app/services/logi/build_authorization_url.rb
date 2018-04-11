@@ -39,7 +39,7 @@ class Logi::BuildAuthorizationUrl
   end
 
   def define_user_rights
-    @user.is?(:superadmin) ? 'SuperAdmin' : ''
+    @user.is?(:superadmin) || @user.is?(:admin) ? 'SuperAdmin' : ''
   end
 
 end
