@@ -1,8 +1,8 @@
 class Api::DataModelsController < ApplicationController
   def index
     render json: {
-        base_model: BaseModelDataMappingSerializer.new(data_model_service.base_klass_const),
-        data_model: ActiveModel::ArraySerializer.new(data_model_service.allowed_reflections, each_serializer: ModelDataMappingsSerializer)
+        base_model: BaseModelDataMappingSerializer.new(data_model_service.base_klass_const,{current_user: current_user}),
+        data_model: ActiveModel::ArraySerializer.new(data_model_service.allowed_reflections, each_serializer: ModelDataMappingsSerializer,current_user: current_user)
     }
   end
 
