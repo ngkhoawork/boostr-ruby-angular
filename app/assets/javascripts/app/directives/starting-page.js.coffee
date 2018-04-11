@@ -38,8 +38,6 @@
       else if id == 'gcalendar'
         _isGcalendarExtensionEnabled && _gcalendar_extension_url
 
-    console.log(_resourceLink)
-    console.log(_resourceLinkLabel)
     $scope.isResourceLinkEnabled = () ->
       !!_resourceLink
 
