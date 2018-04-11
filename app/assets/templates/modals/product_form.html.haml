@@ -33,7 +33,7 @@
           %ui-select-choices{ repeat: 'option.id as option in productFamilies | filter: { name: $select.search }' }
             %div{ ng: { bind: { html: 'option.name' } } }
 
-      .form-group{ 'ng-if': 'product_options_enabled' }
+      .form-group{ 'ng-if': 'product_options_enabled && product_option1_enabled' }
         %label{ for: 'parent_id' } Parent Product
         %ui-select{ name: 'parent_id', ng: { model: 'product.parent_id', change: 'onChangeAutoGenerate()' } }
           %ui-select-match{ placeholder: 'Parent Product', 'allow-clear': 'true' }
