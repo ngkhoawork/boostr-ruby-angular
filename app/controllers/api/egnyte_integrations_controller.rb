@@ -1,24 +1,14 @@
 class Api::EgnyteIntegrationsController < ApplicationController
   respond_to :json
 
-  class << self
-    def host
-      ENV['HOST'] || request.domain
-    end
-  end
-
   WEBSITE_EGNYTE_SETTINGS_URL = '/settings/egnyte'.freeze
-
-  delegate :host, to: :class
 
   def show
     render json: resource
   end
 
   def create
-    @resource = company.build_egnyte_integration(resource_params)
-
-    if resource.save
+    if build_resource.save
       render json: resource, status: :created
     else
       render json: { errors: resource.errors.messages }, status: :unprocessable_entity
@@ -73,7 +63,11 @@ class Api::EgnyteIntegrationsController < ApplicationController
 
   def resource
     @resource ||=
-      company.egnyte_integration || (raise ActiveRecord::RecordNotFound, 'egnyte integration does not exist')
+      company.egnyte_integration || (raise ActiveRecord::RecordNotFound, 'egnyte integration is not present')
+  end
+
+  def build_resource
+    @resource = company.build_egnyte_integration(resource_params)
   end
 
   def company
@@ -115,5 +109,9 @@ class Api::EgnyteIntegrationsController < ApplicationController
       egnyte_integration_id: resource.id,
       advertiser_id: params.require(:advertiser_id)
     ).perform
+  end
+
+  def host
+    ENV['HOST'] || request.domain
   end
 end

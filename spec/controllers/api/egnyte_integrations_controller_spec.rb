@@ -74,6 +74,10 @@ RSpec.describe Api::EgnyteIntegrationsController, type: :controller do
   end
 
   describe '#oauth_settings' do
+    before do
+      allow_any_instance_of(Egnyte::Actions::BuildAuthorizationUri).to receive(:perform).and_return('service.com/uri')
+    end
+
     subject { get :oauth_settings }
 
     context 'when resource is present' do
