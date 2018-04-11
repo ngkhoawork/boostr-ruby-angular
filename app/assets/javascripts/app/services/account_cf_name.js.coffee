@@ -21,6 +21,10 @@
           method: 'PUT'
           url: '/api/account_cf_names/:id'
           transformRequest: transformRequest
+        csv_headers:
+          method: 'GET'
+          url: '/api/account_cf_names/csv_headers'
+          isArray: true
 
       currentAccountCfName = undefined
 
@@ -67,7 +71,6 @@
         )
         deferred.promise
 
-
       @get = (account_cf_name_id) ->
         deferred = $q.defer()
         resource.get id: account_cf_name_id, (account_cf_name) ->
@@ -80,6 +83,8 @@
           deferred.resolve()
           $rootScope.$broadcast 'updated_account_cf_names'
         deferred.promise
+
+      @csv_headers = (params) -> resource.csv_headers(params).$promise
 
       return
   ]

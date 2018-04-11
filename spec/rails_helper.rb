@@ -61,6 +61,7 @@ RSpec.configure do |config|
   config.include WaitForAjax
   config.include UsesTempFiles
   config.include PacingDashboardHelper
+  config.include AutoCleanClassVariables
 
   config.before :suite do
     DatabaseCleaner.clean_with :deletion
