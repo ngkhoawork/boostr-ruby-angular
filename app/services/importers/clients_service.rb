@@ -17,7 +17,7 @@ class Importers::ClientsService < Importers::BaseService
   end
 
   def parser_options
-    { force_simple_split: true, strip_chars_from_headers: /[\-"]/ }
+    { strip_chars_from_headers: /[\-"]/ }
   end
 
   def company_fields
