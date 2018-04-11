@@ -16,7 +16,10 @@ class Api::CsvImportLogsController < ApplicationController
   private
 
   def import_logs
-    CsvImportLog.for_company(current_user.company_id).by_source(params[:source])
+    CsvImportLog
+      .for_company(current_user.company_id)
+      .by_source(params[:source])
+      .exclude_source(params[:exclude_source])
   end
 
   def import_log

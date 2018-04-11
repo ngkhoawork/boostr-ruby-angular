@@ -3,6 +3,9 @@
     ($scope, $routeParams, $modal, CsvImportLogs) ->
 
       $scope.requestUrl = "api/csv_import_logs"
+      $scope.requestUrlParams = {
+        exclude_source: 'ui'
+      }
 
       $scope.showBodyModal = (log) ->
         $scope.modalInstance = $modal.open
