@@ -3,15 +3,16 @@ class NewProductForecast
 
   delegate :id, to: :company
 
-  attr_accessor :company, :products, :teams, :team, :user, :time_period
+  attr_accessor :company, :product_family, :product, :teams, :team, :user, :time_period
 
   # If there is a year, the start_date and end_date are ignored
-  def initialize(company, products, teams, team, user, time_period)
+  def initialize(company, product_family, product, teams, team, user, time_period)
     self.company = company
     self.teams = teams
     self.team = team
     self.user = user
-    self.products = products
+    self.product_family = product_family
+    self.product = product
     self.time_period = time_period
   end
 
@@ -20,21 +21,26 @@ class NewProductForecast
 
     data = init_data
     revenue_data.each do |item|
-      data[item.product_id]['revenue'] = item.revenue_amount.to_f
-      data[item.product_id]['revenue_net'] = item.revenue_amount.to_f
+      product_id = item.product_id
+      revenue_amount = item.revenue_amount.to_f
+      data[product_id]['revenue'] = revenue_amount
+      data[product_id]['revenue_net'] = revenue_amount
     end
 
     pmp_revenue_data.each do |item|
-      data[item.product_id]['revenue'] ||= 0
-      data[item.product_id]['revenue'] += item.revenue_amount.to_f
-      data[item.product_id]['revenue_net'] ||= 0
-      data[item.product_id]['revenue_net'] += item.revenue_amount.to_f
+      product_id = item.product_id
+      revenue_amount = item.revenue_amount.to_f
+      data[product_id]['revenue'] ||= 0
+      data[product_id]['revenue'] += revenue_amount
+      data[product_id]['revenue_net'] ||= 0
+      data[product_id]['revenue_net'] += revenue_amount
     end
 
     if company.enable_net_forecasting
       cost_revenue_data.each do |item|
-        data[item.product_id]['revenue_net'] ||= 0
-        data[item.product_id]['revenue_net'] -= item.revenue_amount.to_f
+        product_id = item.product_id
+        data[product_id]['revenue_net'] ||= 0
+        data[product_id]['revenue_net'] -= item.revenue_amount.to_f
       end
     end
 
@@ -110,7 +116,19 @@ class NewProductForecast
   end
 
   def product_ids
-    @_product_ids ||= products.map(&:id)
+    @_product_ids ||= products.collect(&:id)
+  end
+
+  def products
+    if product.present?
+      product.include_children
+    elsif product_family.present?
+      product_family.products.active
+    else
+      Product.include_children(
+        company.products.active.by_level(0)
+      )
+    end
   end
 
   def user_ids

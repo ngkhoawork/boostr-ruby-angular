@@ -93,7 +93,14 @@ class Api::ForecastsController < ApplicationController
 
   def product_detail
     if valid_time_period?
-      render json: NewProductForecast.new(company, products, teams, team, user, time_period).forecasts_data
+      render json: NewProductForecast.new(
+        company,
+        product_family,
+        product, teams,
+        team,
+        user,
+        time_period
+      ).forecasts_data
     else
       render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
     end
@@ -246,11 +253,14 @@ class Api::ForecastsController < ApplicationController
   end
 
   def product
-    return @product if defined?(@product)
-    @product = nil
-    if params[:product_id] && params[:product_id] != 'all'
-      @product = company.products.find(params[:product_id])
-    end
+    @_product ||=
+      if params[:product2_id] && params[:product2_id] != 'all'
+        company.products.find(params[:product2_id])
+      elsif params[:product1_id] && params[:product1_id] != 'all'
+        company.products.find(params[:product1_id])
+      elsif params[:product_id] && params[:product_id] != 'all'
+        company.products.find(params[:product_id])
+      end
   end
 
   def product_family
@@ -267,7 +277,7 @@ class Api::ForecastsController < ApplicationController
     elsif params[:product_ids] && params[:product_ids] != ['all']
       Product.include_children(company.products.where('id in (?)', params[:product_ids]))
     elsif product_family
-      Product.include_children(product_family.products)
+      product_family.products
     else
       []
     end

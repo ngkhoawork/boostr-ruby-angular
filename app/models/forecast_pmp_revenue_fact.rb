@@ -16,4 +16,5 @@ class ForecastPmpRevenueFact < ActiveRecord::Base
       where('product_dimension_id in (?)', product_dimension_ids)
     end
   end
+  scope :zero_amount, ->{ where(amount: 0) }
 end

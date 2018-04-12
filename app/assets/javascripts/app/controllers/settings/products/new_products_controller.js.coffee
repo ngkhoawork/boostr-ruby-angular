@@ -7,7 +7,12 @@
   $scope.revenueTypes = Product.revenue_types
   $scope.productFamilies =  productFamilies
   $scope.product_options_enabled = company.product_options_enabled
-  $scope.products = _.filter products, (p) -> p.id != $scope.product.id && p.level != 2
+  $scope.product_option1_enabled = company.product_option1_enabled
+  $scope.products = _.filter products, (p) -> 
+    if !company.product_option2_enabled
+      p.id != $scope.product.id && p.level == 0
+    else
+      p.id != $scope.product.id && p.level != 2
 
   init = () ->
     if product

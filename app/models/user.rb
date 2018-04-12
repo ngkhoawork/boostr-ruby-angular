@@ -45,7 +45,6 @@ class User < ActiveRecord::Base
 
   after_create do
     create_dimension
-    update_forecast_fact_callback
   end
 
   after_destroy do |user_record|
@@ -65,19 +64,8 @@ class User < ActiveRecord::Base
     UserDimension.destroy(user_record.id)
     ForecastPipelineFact.destroy_all(user_dimension_id: user_record.id)
     ForecastRevenueFact.destroy_all(user_dimension_id: user_record.id)
-  end
-
-  def update_forecast_fact_callback
-    if company.present?
-      time_period_ids = company.time_periods.collect{|time_period| time_period.id}
-      user_ids = [self.id]
-      product_ids = company.products.collect{|product| product.id}
-      stage_ids = company.stages.collect{|stage| stage.id}
-      io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
-      deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
-      ForecastRevenueCalculatorWorker.perform_async(io_change)
-      ForecastPipelineCalculatorWorker.perform_async(deal_change)
-    end
+    ForecastPmpRevenueFact.destroy_all(user_dimension_id: user_record.id)
+    ForecastCostFact.destroy_all(user_dimension_id: user_record.id)
   end
 
   def roles=(roles)
