@@ -245,6 +245,10 @@ class Company < ActiveRecord::Base
     sales_processes.first
   end
 
+  def account_fields_data
+    @_account_fields_data ||= Models::AccountCompanyDataService.new(id).perform
+  end
+
   protected
 
   def setup_default_options(field, names)

@@ -75,32 +75,21 @@ class Api::ClientsController < ApplicationController
   end
 
   def create
-    if params[:file].present?
-      CsvImportWorker.perform_async(
-        params[:file][:s3_file_path],
-        'Client',
-        current_user.id,
-        params[:file][:original_filename]
-      )
+    client = company.clients.new(client_params.merge(created_by: current_user.id))
+    client.created_by = current_user.id
 
-      render json: { message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)" }, status: :ok
+    if client.save
+      map_lead_with client
+      map_with_contact_through_lead client
+
+      render json: client, status: :created
     else
-      client = company.clients.new(client_params)
-      client.created_by = current_user.id
-
-      if client.save
-        map_lead_with client
-        map_with_contact_through_lead client
-
-        render json: client, status: :created
-      else
-        render json: { errors: client.errors.messages }, status: :unprocessable_entity
-      end
+      render json: { errors: client.errors.messages }, status: :unprocessable_entity
     end
   end
 
   def update
-    if client.update_attributes(client_params)
+    if client.update_attributes(client_params.merge(created_by: current_user.id))
       render json: client, status: :accepted
     else
       render json: { errors: client.errors.messages }, status: :unprocessable_entity
@@ -140,6 +129,11 @@ class Api::ClientsController < ApplicationController
       client.destroy
       render nothing: true
     end
+  end
+
+  def csv_import
+    SmartCsvImportWorker.perform_async(*csv_import_params('Clients'))
+    render_csv_importer_response
   end
 
   def sellers
@@ -450,5 +444,21 @@ class Api::ClientsController < ApplicationController
     if lead&.contact.present?
       client.client_contacts.create(contact: lead.contact, client: client)
     end
+  end
+
+  def render_csv_importer_response
+    render json: { message: I18n.t('csv.importer.response') }, status: :ok
+  end
+
+  def csv_import_params(name)
+    [file_params[:s3_file_path],
+     "Importers::#{name}Service",
+     current_user.id,
+     current_user.company_id,
+     file_params[:original_filename]]
+  end
+
+  def file_params
+    params.require(:file).permit(:s3_file_path, :original_filename)
   end
 end

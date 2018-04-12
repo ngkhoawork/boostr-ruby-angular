@@ -605,6 +605,7 @@ describe Deal do
       expect(deal.deal_members.map(&:share)).to eq([data[:team].split('/')[1].to_i])
       expect(deal.created_at).to eq(DateTime.strptime(data[:created], '%m/%d/%Y') + 8.hours)
       expect(deal.closed_at).to eq(DateTime.strptime(data[:closed_date], '%m/%d/%Y') + 8.hours)
+      expect(deal.legacy_id).to eq(data[:legacy_id])
       expect(deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
     end
 
@@ -632,6 +633,7 @@ describe Deal do
       expect(existing_deal.start_date).to eq(Date.parse(data[:start_date]))
       expect(existing_deal.end_date).to eq(Date.parse(data[:end_date]))
       expect(existing_deal.stage.name).to eq(data[:stage])
+      expect(existing_deal.legacy_id).to eq(data[:legacy_id])
       expect(existing_deal.users.map(&:email)).to include(data[:team].split('/')[0])
       expect(existing_deal.deal_members.map(&:share)).to include(data[:team].split('/')[1].to_i)
       expect(existing_deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)

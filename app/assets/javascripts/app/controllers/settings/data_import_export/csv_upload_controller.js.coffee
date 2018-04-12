@@ -93,7 +93,7 @@
   getCustomFields = ->
     if custom_fields_api
       service = $injector.get(custom_fields_api)
-      service.all().then (custom_fields) ->
+      service.csv_headers().then (custom_fields) ->
         $scope.custom_fields = custom_fields
 
   getMetadata = ->

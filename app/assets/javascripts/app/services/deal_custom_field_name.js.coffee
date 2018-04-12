@@ -22,6 +22,10 @@
           method: 'PUT'
           url: '/api/deal_custom_field_names/:id'
           transformRequest: transformRequest
+        csv_headers:
+          method: 'GET'
+          url: '/api/deal_custom_field_names/csv_headers'
+          isArray: true
 
       currentDealCustomFieldName = undefined
 
@@ -70,7 +74,6 @@
         )
         deferred.promise
 
-
       @get = (deal_custom_field_name_id) ->
         deferred = $q.defer()
         resource.get id: deal_custom_field_name_id, (deal_custom_field_name) ->
@@ -83,6 +86,8 @@
           deferred.resolve()
           $rootScope.$broadcast 'updated_deal_custom_field_names'
         deferred.promise
+
+      @csv_headers = (params) -> resource.csv_headers(params).$promise
 
       return
   ]
