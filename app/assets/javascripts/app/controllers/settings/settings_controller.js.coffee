@@ -22,12 +22,13 @@
             {title: 'Notifications',      url: '/settings/notifications',      icon: 'envelope',            description: 'Setup simple email notifications'}
             {title: 'Initiatives',        url: '/settings/initiatives',        icon: 'list-ol',             description: 'Setup initiatives for tracking progress against goals'}
             {title: 'eAlerts',            url: '/settings/ealerts',            icon: 'envelope',            description: 'Manage eAlert HTML workflow emails'}
-            {title: 'Permissions',        url: '/settings/permissions',        icon: 'gear',                description: 'Manage permissions for data visibility or editibility on forecast and ios'}
-            {title: 'Validations',        url: '/settings/validations',        icon: 'check-square-o',      description: 'Configure required data for Accounts and Deals'}
-            {title: 'Activity Types',     url: '/settings/activity_types',     icon: 'users',               description: 'Create, edit and reorder Activity Types'}
+            {title: 'Tools',              url: '/settings/tools',              icon: 'asterisk',            description: 'Tools'} if $scope.currentUserRoles.isSuperAdmin()
+            {title: 'Permissions',        url: '/settings/permissions',        icon: 'gear',                description: 'Manage permissions for data visibility or editibility on forecast and ios.'}
+            {title: 'Validations',        url: '/settings/validations',        icon: 'check-square-o',      description: 'Configure required data for Accounts and Deals.'}
+            {title: 'Activity Types',     url: '/settings/activity_types',     icon: 'users',               description: 'Create, edit and reorder Activity Types.'}
+            {title: 'Egnyte',             url: '/settings/egnyte',             icon: 'gear',                description: 'Setup Egnyte'} if $scope.companyEgnyteEnabled
             {title: 'Leads',              url: '/settings/leads',              icon: 'flag-checkered',      description: 'Create and manage automatic assignments'}
             {title: 'Workflows',          url: '/settings/workflows',          icon: 'share-alt',           description: 'Configure Events and trigger integrations.', icon1: 'share-alt', icon2: 'reply-all', icon3: 'external-link-square', icon0: 'share'}
-
         ]
     ]
 

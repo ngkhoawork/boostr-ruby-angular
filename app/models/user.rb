@@ -94,6 +94,10 @@ class User < ActiveRecord::Base
     self.company.influencer_enabled
   end
 
+  def company_egnyte_enabled
+    company.egnyte_integration&.enabled
+  end
+
   def company_publisher_enabled
     self.company.publishers_enabled
   end
@@ -199,6 +203,7 @@ class User < ActiveRecord::Base
           :is_admin,
           :roles,
           :company_influencer_enabled,
+          :company_egnyte_enabled,
           :company_forecast_gap_to_quota_positive,
           :company_net_forecast_enabled,
           :has_forecast_permission,

@@ -72,14 +72,18 @@ class Company < ActiveRecord::Base
 
   has_one :billing_address, as: :addressable, class_name: 'Address'
   has_one :physical_address, as: :addressable, class_name: 'Address'
+  has_one :egnyte_integration, dependent: :destroy
 
   serialize :forecast_permission, HashSerializer
 
   accepts_nested_attributes_for :billing_address
   accepts_nested_attributes_for :physical_address
   accepts_nested_attributes_for :assets
+  accepts_nested_attributes_for :egnyte_integration
 
   before_create :setup_defaults
+
+  delegate :enabled, :app_domain, :deals_folder_name, to: :egnyte_integration, prefix: true, allow_nil: true
 
   def setup_defaults
     contact_role = fields.find_or_initialize_by(subject_type: 'Deal', name: 'Contact Role', value_type: 'Option', locked: true)

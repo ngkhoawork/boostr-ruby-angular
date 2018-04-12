@@ -900,6 +900,12 @@
             color: lighten($secondary-font-color, 15%);
         }
     }
+
+  .egnyte-section{
+    iframe {
+      border: 0;
+    }
+  }
 }
 @media screen and (min-width: 1921px) {
     #deal {

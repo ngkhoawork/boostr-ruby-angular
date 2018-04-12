@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company',
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window, $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment, localStorageService, Company) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company', 'Egnyte'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window, $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment, localStorageService, Company, Egnyte) ->
 
   $scope.agencyRequired = false
   $scope.showMeridian = true
@@ -38,8 +38,10 @@
   $scope.dealCustomFieldNames = []
   $scope.dealProductCfNames = []
   $scope.activeDealProductCfLength = 0
+  $scope.egnyteConnected = false
+  $scope.egnyteHealthy = true
+  $scope.egnyteIsLoading = true
   $scope.company = {}
-
   $scope._scope = -> this
   $scope.showWarnings = true
   roleIdWarningDisplayToShow = 1 # Role type = seller
@@ -50,6 +52,9 @@
       $window.scrollTo 0, 0
     else
       $scope.agencyRequired = false
+
+  CurrentUser.get().$promise.then (user) ->
+    $scope.currentUser = user
 
   $scope.isUrlValid = (url) ->
     regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
@@ -71,12 +76,50 @@
     Activity.all(deal_id: $routeParams.id).then (activities) ->
       $scope.activities = activities
 
+  $scope.getCurrentCompany = (deal) ->
+    Egnyte.show().then (egnyteSettings) ->
+      $scope.company = egnyteSettings
+      if(egnyteSettings.access_token && egnyteSettings.connected)
+        $scope.egnyteConnected = true
+        if($routeParams.isNew)
+          sendRequest(egnyteSettings.access_token, egnyteSettings.app_domain, deal)
+
+        else
+          Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
+            if !response.navigate_to_deal_uri
+              $scope.egnyteHealthy = false
+            else
+              $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
+              $scope.egnyteIsLoading = false
+              $scope.egnyteHealthy = true
+
+
+  sendRequest = (token, domain, deal) ->
+    $scope.egnyteUrlRequest = $timeout (->
+      Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
+        if response.navigate_to_deal_uri
+          $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
+          $scope.egnyteIsLoading = false
+          $scope.egnyteHealthy = true
+          $location.search({})
+
+        else
+          sendRequest(token, domain, deal)
+      return
+    ), 3000
+
+  $scope.$on '$destroy', ->
+    if $scope.egnyteUrlRequest
+      $timeout.cancel($scope.egnyteUrlRequest);
+
   $scope.init = (initialLoad) ->
     $scope.actRemColl = false
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal, true)
+      $scope.getCurrentCompany(deal)
+
       if initialLoad
         checkCurrentUserDealShare(deal.members)
         getOperativeIntegration(deal.id)

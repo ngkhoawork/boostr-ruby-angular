@@ -38,7 +38,8 @@ class Api::CompaniesController < ApplicationController
       :enable_net_forecasting,
       :default_io_freeze_budgets,
       forecast_permission: ["0", "1", "2", "3", "4", "5", "6", "7"],
-      io_permission: ["0", "1", "2", "3", "4", "5", "6", "7"]
+      io_permission: ["0", "1", "2", "3", "4", "5", "6", "7"],
+      egnyte_integration_attributes: [:id, :app_domain, :enabled]
     )
   end
 

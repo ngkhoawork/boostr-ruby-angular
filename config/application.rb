@@ -31,6 +31,7 @@ module Boostr
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+    config.active_support.escape_html_entities_in_json = false
 
     config.autoload_paths << Rails.root.join('lib')
     config.autoload_paths << Rails.root.join('validators')

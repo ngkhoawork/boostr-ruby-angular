@@ -32,6 +32,7 @@ class Deal < ActiveRecord::Base
   has_one :pmp, class_name: "Pmp", foreign_key: 'deal_id', dependent: :restrict_with_exception
 
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
+  has_one :egnyte_folder, as: :subject
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :deal_products, dependent: :destroy
@@ -132,6 +133,9 @@ class Deal < ActiveRecord::Base
   after_destroy do
     update_pipeline_fact(self)
   end
+
+  after_commit :setup_egnyte_folders, on: [:create]
+  after_commit :update_egnyte_folder, on: [:update]
 
   set_callback :save, :after, :update_pipeline_fact_callback
 
@@ -1659,6 +1663,18 @@ class Deal < ActiveRecord::Base
       old_value: previous_stage_id,
       new_value: stage_id
     ).perform
+  end
+
+  def setup_egnyte_folders
+    Egnyte::SetupDealFoldersWorker.perform_async(company.egnyte_integration.id, id) if company.egnyte_integration
+  end
+
+  def update_egnyte_folder
+    return unless company.egnyte_integration && (previous_changes[:name] || previous_changes[:advertiser_id])
+
+    advertiser_changed = previous_changes[:advertiser_id].present?
+
+    Egnyte::UpdateDealFolderWorker.perform_async(company.egnyte_integration.id, id, advertiser_changed)
   end
 
   def generate_io_or_pmp

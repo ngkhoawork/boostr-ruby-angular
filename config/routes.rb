@@ -572,6 +572,17 @@ Rails.application.routes.draw do
 
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
+
+    resource :egnyte_integration, only: [:show, :create, :update] do
+      collection do
+        get :oauth_settings
+        get :oauth_callback
+        get :navigate_to_deal
+        get :navigate_to_account_deals
+        put :disconnect_egnyte
+      end
+    end
+
     resources :leads, only: [:index, :show] do
       member do
         get :accept

@@ -3,7 +3,8 @@ ActiveAdmin.register Company do
   :cost, :start_date, :end_date, :requests_enabled, :publishers_enabled, :gmail_enabled, :gcalendar_enabled,
   :logi_enabled, :resource_link, :agreements_enabled, :leads_enabled, :contracts_enabled,
   billing_address_attributes: [ :street1, :street2, :city, :state, :zip, :website, :phone ],
-  physical_address_attributes: [ :street1, :street2, :city, :state, :zip ]
+  physical_address_attributes: [ :street1, :street2, :city, :state, :zip ],
+  egnyte_integration_attributes: [ :id, :app_domain, :deals_folder_name, :enabled ]
 
   index do
     selectable_column
@@ -17,6 +18,8 @@ ActiveAdmin.register Company do
     column :publishers_enabled
     column :gmail_enabled
     column :gcalendar_enabled
+    column :egnyte_integration_enabled
+    column :egnyte_integration_app_domain
     column :logi_enabled
     column :resource_link
     column :agreements_enabled
@@ -73,6 +76,14 @@ ActiveAdmin.register Company do
         row :end_date
       end
     end
+
+    panel "Egnyte Integration" do
+      attributes_table_for company do
+        row('Enabled') { |company| company.egnyte_integration&.enabled }
+        row('App Domain') { |company| company.egnyte_integration&.app_domain }
+        row('Deals Folder Name') { |company| company.egnyte_integration&.deals_folder_name }
+      end
+    end
   end
 
   filter :name
@@ -121,7 +132,14 @@ ActiveAdmin.register Company do
       f.input :end_date, as: :datepicker
     end
 
+    panel "Egnyte Integration" do
+      f.inputs for: [:egnyte_integration, f.object.egnyte_integration || EgnyteIntegration.new] do |ei|
+        ei.input :app_domain
+        ei.input :enabled
+        ei.input :deals_folder_name
+      end
+    end
+
     f.actions
   end
-
 end

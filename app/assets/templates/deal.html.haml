@@ -3,14 +3,16 @@
     .col-xs-9
       %div{'ng-include': '"partials/deal/deal_stats.html"'}
       %div{'ng-include': '"partials/deal/deal_products.html"'}
+      %div{'ng-if': 'company.enabled && egnyteHealthy', 'ng-include': '"partials/deal/deal_egnyte.html"'}
       %div{'ng-include': '"partials/deal/deal_io_details.html"', 'ng-if': '!isPmpDeal'}
       %div{'ng-include': '"partials/deal/deal_pmp_details.html"', 'ng-if': 'isPmpDeal'}
       %div{'ng-include': '"partials/deal/deal_contacts.html"'}
       .row
         .col-xs-6
           %div{'ng-include': '"partials/deal/deal_members.html"'}
-        .col-xs-6
-          %upload-file{'deal-files': 'dealFiles', type: "deal"}
+        .col-xs-6{'ng-if': '!egnyteHealthy || !company.enabled'}
+          .attachments.block
+            %upload-file{'deal-files': 'dealFiles', type: "deal"}
     .col-xs-3
       %div{'ng-include': '"partials/deal/deal_next_steps.html"'}
       %div{'ng-include': '"partials/deal/deal_insights.html"'}

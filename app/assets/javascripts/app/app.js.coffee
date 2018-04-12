@@ -330,6 +330,10 @@
       templateUrl: 'settings/validations.html'
       controller: 'SettingsValidationsController'
 
+    .when '/settings/egnyte',
+      templateUrl: 'settings/egnyte.html'
+      controller: 'SettingsEgnyteController'
+
     .when '/bps',
       templateUrl: 'bp.html'
       controller: 'BPController'
@@ -419,6 +423,10 @@
   $rootScope.transloaditTemplates = transloaditTemplates
   $rootScope.userType = userType
   $rootScope.currentUserRoles = currentUserRoles
+
+  if window.companyEgnyteSettings
+    $rootScope.companyEgnyteEnabled = window.companyEgnyteSettings.enabled
+
   currentUserRoles.isAdmin = -> _.contains this, 'admin'
   currentUserRoles.isSuperAdmin = -> _.contains this, 'superadmin'
 
