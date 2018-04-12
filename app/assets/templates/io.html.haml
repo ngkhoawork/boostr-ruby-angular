@@ -204,19 +204,19 @@
 									%td.right
 										{{ displayLineItem.quantity }}
 									%td.right
-										{{ displayLineItem.price | currency:currency_symbol:0 }}
+										{{ displayLineItem.price | currency:currency_symbol:2 }}
 									%td.left
 										{{ displayLineItem.pricing_type }}
 									%td.right.display-line-table-budget
 										%div
 											%a{href: '', 'ng-click': 'showBudgetRow(displayLineItem, $event)'}
-												{{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
+												{{ displayLineItem.budget_loc | currency:currency_symbol:2 }}
 										%div.budget-arrow{'ng-class': '{"active": displayLineItem == selectedIORow}'}
 											.fa.fa-caret-up
 									%td.right
-										{{ displayLineItem.budget_delivered_loc | currency:currency_symbol:0 }}
+										{{ displayLineItem.budget_delivered_loc | currency:currency_symbol:2 }}
 									%td.right
-										{{ displayLineItem.budget_remaining_loc | currency:currency_symbol:0 }}
+										{{ displayLineItem.budget_remaining_loc | currency:currency_symbol:2 }}
 									%td.right
 										{{ displayLineItem.quantity_delivered }}
 									%td.right
@@ -243,19 +243,19 @@
 											%div.budgets-inner
 												%div.title
 													Monthly Budgets
-													%span ( {{ budgets.rest | currency:currency_symbol:0 }} remaining )
+													%span ( {{ budgets.rest | currency:currency_symbol:2 }} remaining )
 												%div.line-budget{'ng-if': 'currentUser.is_admin || canEditIO', 'ng-repeat': 'budget in budgets'}
 													.month {{budget.month}}
 													.budget.hide-input-arrows
 														%span.editable-budget{'editable-number': 'budget.budget_loc', 'blur': 'submit', 'onbeforesave': 'createOrUpdateBudget(budget, $data, $index)'}
 															%span{'ng-if': '!isNaN(budget.budget_loc)'}
-																{{ budget.budget_loc | currency : currency_symbol : 0 }}
+																{{ budget.budget_loc | currency : currency_symbol : 2 }}
 																%i.fa.fa-close.budget-delete{'ng-click': 'deleteBudget(budget, $event)'}
 															%span{'ng-if': 'isNaN(budget.budget_loc)'}
 																%b.add-budget Add
 												%div.line-budget{'ng-if': '!currentUser.is_admin && !canEditIO', 'ng-repeat': 'budget in budgets'}
 													.month {{budget.month}}
-													.budget {{budget.budget_loc | currency : currency_symbol : 0}}
+													.budget {{budget.budget_loc | currency : currency_symbol : 2}}
 
 							%tbody{ ng: { if: '!currentIO.display_line_items || currentIO.display_line_items.length == 0' } }
 								%tr
