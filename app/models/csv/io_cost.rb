@@ -1,7 +1,17 @@
 class Csv::IoCost
   include ActiveModel::Validations
+  include Csv::ProductOptionable
 
-  attr_accessor :io_number, :cost_id, :product_name, :type, :month, :amount, :company_id, :imported_costs
+  attr_accessor :io_number, 
+                :cost_id, 
+                :product_name, 
+                :product_level1, 
+                :product_level2, 
+                :type, 
+                :month, 
+                :amount, 
+                :company_id, 
+                :imported_costs
 
   validates_presence_of :io_number, :product_name, :month, :amount, :company_id
   validates_numericality_of :amount
@@ -59,7 +69,7 @@ class Csv::IoCost
   end
 
   def product
-    @_product ||= company&.products&.find_by(name: product_name, active: true)
+    @_product ||= company&.products&.find_by(full_name: product_full_name, active: true)
   end
 
   def company
@@ -97,7 +107,7 @@ class Csv::IoCost
 
   def validate_product_existence
     if product.nil?
-      errors.add(:base, "Product with --#{product_name}-- name doesn't exist")
+      errors.add(:base, "Product with --#{product_full_name}-- name doesn't exist")
     end
   end
 

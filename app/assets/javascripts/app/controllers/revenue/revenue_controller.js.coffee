@@ -1,6 +1,6 @@
 @app.controller 'RevenueController',
-  ['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem', 'PMP', 'PMPItemDailyActual', 'RevenueFilter', 'Deal', 'TimePeriod'
-  ( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem,   PMP,   PMPItemDailyActual, RevenueFilter, Deal, TimePeriod) ->
+  ['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem', 'PMP', 'PMPItemDailyActual', 'RevenueFilter', 'Deal', 'TimePeriod', 'Company',
+  ( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem,   PMP,   PMPItemDailyActual, RevenueFilter, Deal, TimePeriod, Company) ->
     formatMoney = $filter('formatMoney')
     $scope.isLoading = false
     $scope.allItemsLoaded = false
@@ -20,6 +20,7 @@
       {name: 'All Lines', value: 'all'}
     ]
     itemsPerPage = 20
+    $scope.company = {}
     $scope.filter =
       page: 1
       revenue: $routeParams.filter || ''
@@ -305,6 +306,7 @@
         $scope.filter.timePeriods = filterData.timePeriods
         $scope.filter.slider.maxValue = $scope.filter.slider.options.ceil = filterData.filterData.max_budget
 
+    Company.get().$promise.then (company) -> $scope.company = company
     $scope.getFilters()
     $scope.applyFilter()	
   ]

@@ -1,0 +1,24 @@
+.row
+  #product-option-settings.col-xs-4
+    .panel
+      .panel-body
+        %h4 Product Options
+        .panel-item
+          .form-group
+            %label.control-label Enable/Disable Sub-Products
+            %br
+            %z-toggle{'ng-model': 'company.product_options_enabled', 'ng-change': 'updateSettings()',  id: "product_options_enabled"}
+          .form-group{'ng-if': 'company.product_options_enabled'}
+            %label.control-label Enable/Disable Level1
+            %br
+            %z-toggle{'ng-model': 'company.product_option1_enabled', 'ng-change': 'enableProductOption1()',  id: "product_option1_enabled"}
+          .form-group{'ng-if': 'company.product_options_enabled'}
+            %label.control-label Enable/Disable Level2
+            %br
+            %z-toggle{'ng-model': 'company.product_option2_enabled', 'ng-change': 'enableProductOption2()',  id: "product_option2_enabled", 'ng-disabled': '!company.product_options_enabled'}
+        .panel-item
+          %label Customize Sub-product Field Names
+          .form-group
+            %input.form-control{ type: 'text', 'ng-model': 'company.product_option1_field', placeholder: "Enter Level1 Name", 'ng-blur': 'updateSettings()', 'ng-disabled': '!company.product_options_enabled' }
+          .form-group
+            %input.form-control{ type: 'text', 'ng-model': 'company.product_option2_field', placeholder: "Enter Level2 Name", 'ng-blur': 'updateSettings()', 'ng-disabled': '!company.product_options_enabled' }

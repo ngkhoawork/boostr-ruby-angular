@@ -105,8 +105,8 @@ class Api::DealsController < ApplicationController
             ).distinct,
             each_serializer: DealIndexSerializer
           )
-      end
-    }
+        end
+      }
       format.csv {
         require 'timeout'
         begin
@@ -153,8 +153,8 @@ class Api::DealsController < ApplicationController
     monthly_budgets = DealProductBudget
     .joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
     .where("deal_products.deal_id in (?)", deal_ids)
-    .for_product_id(product_filter)
-    .order("start_date asc")
+    monthly_budgets = monthly_budgets.where("deal_products.product_id in (?)", product_filter) if product_filter
+    monthly_budgets = monthly_budgets.order("start_date asc")
     .group_by{|budget| budget.start_date.beginning_of_month}
     .collect{|key, value| {key => value.map(&:budget).compact.reduce(:+)} }
     .reduce(:merge)
@@ -552,7 +552,7 @@ class Api::DealsController < ApplicationController
 
   def product_filter
     if params[:product_id].presence && params[:product_id] != 'all'
-      params[:product_id].to_i
+      [params[:product_id].to_i] + (Product.find_by(id: params[:product_id].to_i)&.all_children&.map(&:id) || [])
     end
   end
 
@@ -826,9 +826,9 @@ class Api::DealsController < ApplicationController
 
   def product_ids
     @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
-      params[:product_ids]
+      Product.include_children(company.products.where(id: params[:product_ids])).collect(&:id)
     elsif product_family
-      product_family.products.collect(&:id)
+      Product.include_children(product_family.products).collect(&:id)
     else
       nil
     end

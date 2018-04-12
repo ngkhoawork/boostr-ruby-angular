@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window, $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment, localStorageService) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company',
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window, $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment, localStorageService, Company) ->
 
   $scope.agencyRequired = false
   $scope.showMeridian = true
@@ -38,6 +38,7 @@
   $scope.dealCustomFieldNames = []
   $scope.dealProductCfNames = []
   $scope.activeDealProductCfLength = 0
+  $scope.company = {}
 
   $scope._scope = -> this
   $scope.showWarnings = true
@@ -94,6 +95,7 @@
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
+    Company.get().$promise.then (company) -> $scope.company = company
     getSsps()
 
   checkPmpDeal = () ->
@@ -103,9 +105,11 @@
       if product.revenue_type == 'PMP'
         $scope.isPmpDeal = true
         $scope.pmpColumns = 3
+
   getSsps = () ->
     SSP.all().then (ssps) ->
       $scope.ssps = ssps
+
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
@@ -269,7 +273,7 @@
     for month in $scope.currentDeal.months
       $scope.deal_product.deal_product_budgets.push({ budget_loc: '' })
     $scope.showProductForm = !$scope.showProductForm
-    Product.all().then (products) ->
+    Product.all({active: true}).then (products) ->
       $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
 
 #==================add product form======================
@@ -707,7 +711,7 @@
 
   $scope.deleteDealProduct = (deal_product) ->
     $scope.errors = {}
-    if confirm('Are you sure you want to delete "' +  deal_product.name + '"?')
+    if confirm('Are you sure you want to delete "' +  deal_product.product.full_name + '"?')
       DealProduct.delete(id: deal_product.id, deal_id: $scope.currentDeal.id).then(
         (deal) ->
           $scope.setCurrentDeal(deal)
@@ -761,6 +765,8 @@
       resolve:
         currentDeal: ->
           currentDeal
+        company: ->
+          $scope.company
         isPmpDeal: ->
           $scope.isPmpDeal
 

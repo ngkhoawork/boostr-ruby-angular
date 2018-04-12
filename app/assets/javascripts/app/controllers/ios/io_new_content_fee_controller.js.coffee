@@ -1,6 +1,6 @@
 @app.controller "IONewContentFeeController",
-    ['$scope', '$rootScope', '$modalInstance', '$filter', 'Product', 'ContentFee', 'currentIO',
-        ($scope, $rootScope, $modalInstance, $filter, Product, ContentFee, currentIO) ->
+    ['$scope', '$rootScope', '$modalInstance', '$filter', 'Product', 'ContentFee', 'currentIO', 'company', 
+        ($scope, $rootScope, $modalInstance, $filter, Product, ContentFee, currentIO, company) ->
             $scope.currency_symbol = (->
                 if currentIO && currentIO.currency
                     if currentIO.currency.curr_symbol
@@ -15,6 +15,12 @@
                 content_fee_product_budgets: []
                 months: []
             }
+            content_fee_products = _.map currentIO.content_fees, (c) -> c.product
+            $scope.productOptionsEnabled = company.product_options_enabled
+            $scope.productOption1Enabled = company.product_option1_enabled
+            $scope.productOption2Enabled = company.product_option2_enabled
+            $scope.option1Field = company.product_option1_field || 'Option1'
+            $scope.option2Field = company.product_option2_field || 'Option2'
 
             for month in $scope.currentIO.months
                 month = moment().year(month[0]).month(month[1] - 1).format('MMM YYYY')
@@ -22,9 +28,36 @@
                 $scope.content_fee.months.push(month)
 
             Product.all({active: true, revenue_type: 'Content-Fee'}).then (products) ->
-                content_fee_products = _.map $scope.currentIO.content_fees, (content_fee_item) ->
-                    return content_fee_item.product
-                $scope.products = $filter('notIn')(products, content_fee_products)
+                $scope.products = products
+
+            $scope.productsByLevel = (level) ->
+                _.filter $scope.products, (p) -> 
+                  if level == 0
+                    p.level == level
+                  else if level == 1
+                    p.level == 1 && p.parent_id == $scope.content_fee.product0
+                  else if level == 2
+                    p.level == 2 && p.parent_id == $scope.content_fee.product1
+
+            $scope.onChangeProduct = (item, model) ->
+                if item
+                  $scope.content_fee.product_id = item.id
+                  if item.level == 0
+                    $scope.content_fee.product1 = null
+                    $scope.content_fee.product2 = null
+                  else if item.level == 1
+                    $scope.content_fee.product2 = null
+                else
+                  if !$scope.content_fee.product1
+                    $scope.content_fee.product_id = $scope.content_fee.product0
+                    $scope.content_fee.product2 = null
+                  else if !$scope.content_fee.product2
+                    $scope.content_fee.product_id = $scope.content_fee.product1
+
+            $scope.disableForm = () ->
+                $scope.content_fee.isIncorrectTotalBudgetPercent || 
+                !$scope.content_fee.product_id || 
+                _.find(content_fee_products, (p) -> p.id == $scope.content_fee.product_id)
 
             addProductBudgetCorrection = ->
                 budgetSum = 0
@@ -165,6 +198,7 @@
                         for key, error of resp.data.errors
                             $scope.errors[key] = error && error[0]
                 )
+
             $scope.resetContentFee = ->
                 $scope.content_fee = {
                     content_fee_product_budgets: []

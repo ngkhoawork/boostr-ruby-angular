@@ -24,7 +24,7 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
   end
 
   def product
-    product_row.product.serializable_hash(only: [:id, :name]) rescue nil
+    product_row.product.as_json rescue nil
   end
 
   def name

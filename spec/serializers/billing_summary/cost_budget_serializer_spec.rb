@@ -5,7 +5,7 @@ describe BillingSummary::CostBudgetSerializer do
 
   it 'serializes cost budget data' do
     expect(serializer.id).to eq(cost_budget.id)
-    expect(serializer.product).to eq(cost.product.name)
+    expect(serializer.product).to eq(cost.product)
     expect(serializer.amount).to eq(cost_budget.budget_loc)
     expect(serializer.cost_id).to eq(cost_budget.cost_id)
     expect(serializer.io_id).to eq(io.id)

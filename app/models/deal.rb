@@ -586,7 +586,7 @@ class Deal < ActiveRecord::Base
       csv << header
       deals.each do |deal|
         line = [
-            deal.deal_members_share_ordered.collect {|deal_member| deal_member.username.first_name + " " + deal_member.username.last_name + " (" + deal_member.share.to_s + "%)"}.join(";"),
+            deal.deal_members_share_ordered.collect {|deal_member| deal_member.username.first_name + " " + deal_member.username.last_name + " (" + deal_member.share.to_s + "%)"}.join(","),
             deal.advertiser ? deal.advertiser.name : nil,
             deal.name,
             deal.agency ? deal.agency.name : nil,
@@ -606,7 +606,7 @@ class Deal < ActiveRecord::Base
 
         selected_products = deal
           .deal_products
-          .reject{ |deal_product| deal_product.product_id != product_filter if product_filter }
+          .reject{ |deal_product| !product_filter.include?(deal_product.product_id) if product_filter }
           .map(&:id)
 
         deal_product_budgets = deal.deal_product_budgets

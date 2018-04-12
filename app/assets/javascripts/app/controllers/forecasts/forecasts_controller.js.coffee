@@ -158,7 +158,7 @@
 			teams: Team.all(all_teams: true)
 			sellers: Seller.query({id: 'all'}).$promise
 			productFamilies: ProductFamily.all(active: true)
-			products: Product.all()
+			products: Product.all({active: true})
 			timePeriods: TimePeriod.all()
 		).then (data) ->
 			$scope.hasForecastPermission = data.user.has_forecast_permission

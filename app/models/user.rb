@@ -117,6 +117,26 @@ class User < ActiveRecord::Base
     self.company.enable_net_forecasting
   end
 
+  def product_options_enabled
+    self.company.product_options_enabled
+  end
+
+  def product_option1
+    self.company.product_option1
+  end
+
+  def product_option2
+    self.company.product_option2
+  end
+
+  def product_option1_enabled
+    self.company.product_option1_enabled
+  end
+
+  def product_option2_enabled
+    self.company.product_option2_enabled
+  end
+
   def is_admin
     is?(:admin)
   end
@@ -189,7 +209,12 @@ class User < ActiveRecord::Base
           :company_forecast_gap_to_quota_positive,
           :company_net_forecast_enabled,
           :has_forecast_permission,
-          :has_multiple_sales_process
+          :has_multiple_sales_process,
+          :product_options_enabled,
+          :product_option1,
+          :product_option2,
+          :product_option1_enabled,
+          :product_option2_enabled
         ]
       ).except(:override))
     end

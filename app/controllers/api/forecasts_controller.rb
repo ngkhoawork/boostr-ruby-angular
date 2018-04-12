@@ -263,11 +263,11 @@ class Api::ForecastsController < ApplicationController
 
   def products
     @_products ||= if params[:product_ids] == ['all'] && params[:product_family_id] == 'all'
-      company.products
+      Product.include_children(company.products)
     elsif params[:product_ids] && params[:product_ids] != ['all']
-      company.products.where('id in (?)', params[:product_ids])
+      Product.include_children(company.products.where('id in (?)', params[:product_ids]))
     elsif product_family
-      product_family.products
+      Product.include_children(product_family.products)
     else
       []
     end

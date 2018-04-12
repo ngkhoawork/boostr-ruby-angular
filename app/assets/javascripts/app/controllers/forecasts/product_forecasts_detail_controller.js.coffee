@@ -22,12 +22,17 @@
             user: CurrentUser.get().$promise
             sellers: Seller.query({id: 'all'}).$promise
             timePeriods: TimePeriod.all()
-            products: Product.all()
+            products: Product.all({active: true, level: 0})
             stages: Stage.query().$promise
             productFamilies: ProductFamily.all(active: true)
         ).then (data) ->
             $scope.teams = data.teams
             $scope.hasNetPermission = data.user.company_net_forecast_enabled
+            $scope.productOptionsEnabled = data.user.product_options_enabled
+            $scope.productOption1Enabled = data.user.product_option1_enabled
+            $scope.productOption2Enabled = data.user.product_option2_enabled
+            $scope.productOption1 = data.user.product_option1
+            $scope.productOption2 = data.user.product_option2
             data.timePeriods = data.timePeriods.filter (period) ->
                 period.visible and (
                     period.period_type is 'quarter' or

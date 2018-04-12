@@ -28,7 +28,7 @@ class BillingSummary::CostBudgetSerializer < ActiveModel::Serializer
   end
 
   def product
-    cost.product&.name
+    cost.product
   end
 
   def io_number

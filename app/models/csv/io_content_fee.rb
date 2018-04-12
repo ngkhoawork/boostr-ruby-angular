@@ -1,7 +1,15 @@
 class Csv::IoContentFee
   include ActiveModel::Validations
+  include Csv::ProductOptionable
 
-  attr_accessor :io_number, :product_name, :budget, :start_date, :end_date, :company_id
+  attr_accessor :io_number, 
+                :product_name, 
+                :product_level1, 
+                :product_level2, 
+                :budget, 
+                :start_date, 
+                :end_date, 
+                :company_id
 
   validates_presence_of :io_number, :product_name, :budget, :start_date, :end_date, :company_id
   validates_numericality_of :budget
@@ -32,7 +40,7 @@ class Csv::IoContentFee
   private
 
   def product
-    @_product ||= company&.products&.find_by(name: product_name, revenue_type: 'Content-Fee', active: true)
+    @_product ||= company&.products&.find_by(full_name: product_full_name, revenue_type: 'Content-Fee', active: true)
   end
 
   def company
@@ -67,7 +75,7 @@ class Csv::IoContentFee
 
   def validate_product_existence
     if product.nil?
-      errors.add(:base, "Product with --#{product_name}-- name doesn't exist")
+      errors.add(:base, "Product with --#{product_full_name}-- name doesn't exist")
     end
   end
 

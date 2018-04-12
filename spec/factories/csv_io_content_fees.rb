@@ -8,6 +8,8 @@ FactoryGirl.define do
 
     io_number { io&.io_number }
     product_name { product&.name }
+    product_level1 nil
+    product_level2 nil
     budget { rand(1000..9999) }
     start_date '01/01/2018'
     end_date '01/31/2018'

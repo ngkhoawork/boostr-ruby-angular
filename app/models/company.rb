@@ -12,6 +12,7 @@ class Company < ActiveRecord::Base
   has_many :distinct_stages, -> {distinct}, class_name: 'Stage'
   has_many :products
   has_many :product_families
+  has_many :product_options
   has_many :teams
   has_many :time_periods
   has_many :quotas
@@ -230,6 +231,14 @@ class Company < ActiveRecord::Base
 
   def all_team_members_and_leaders_ids
     teams.pluck(:leader_id) + users.in_a_team.ids
+  end
+
+  def product_option1
+    product_option1_field || 'Option1'
+  end
+
+  def product_option2
+    product_option2_field || 'Option2'
   end
 
   def default_sales_process

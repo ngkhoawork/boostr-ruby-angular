@@ -210,7 +210,7 @@ class BpEstimate < ActiveRecord::Base
   end
 
   def generate_bp_estimate_products
-    bp.company.products.active.each do |product|
+    bp.company.products.active.by_level(0).each do |product|
       bp_estimate_product_param = {
           product_id: product.id,
           estimate_seller: nil,

@@ -18,7 +18,7 @@ class Csv::IoCostDecorator
   end
 
   def product_name
-    product.name
+    product&.level0&.[]('name')
   end
 
   def type
@@ -49,9 +49,29 @@ class Csv::IoCostDecorator
     account_managers&.second&.name
   end
 
+  def method_missing(name)
+    if company.product_options_enabled && company.product_option1_enabled && name.eql?(product_option1)
+      product&.level1&.[]('name')
+    elsif company.product_options_enabled && company.product_option2_enabled && name.eql?(product_option2)
+      product&.level2&.[]('name')
+    end
+  end
+
   private
 
   attr_reader :cost_monthly_amount, :company, :field
+
+  def parameterize(name)
+    Csv::BaseService.parameterize(name).to_sym
+  end
+
+  def product_option1
+    parameterize(company.product_option1)
+  end
+
+  def product_option2
+    parameterize(company.product_option2)
+  end
 
   def cost
     @_cost ||= cost_monthly_amount.cost

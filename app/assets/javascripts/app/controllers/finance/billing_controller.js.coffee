@@ -1,6 +1,6 @@
 @app.controller 'BillingController',
-    ['$scope', '$window', '$timeout', '$routeParams', '$location', 'Billing', 'Team', 'Product', 'ProductFamily', 'Field', 'Seller',
-        ($scope, $window, $timeout, $routeParams, $location, Billing, Team, Product, ProductFamily, Field, Seller) ->
+    ['$scope', '$window', '$timeout', '$routeParams', '$location', 'Billing', 'Team', 'Product', 'ProductFamily', 'Field', 'Seller', 'Company',
+        ($scope, $window, $timeout, $routeParams, $location, Billing, Team, Product, ProductFamily, Field, Seller, Company) ->
             defaultUser = {id: null, name: 'All', first_name: 'All'}
             $scope.years = [2016...moment().year() + 5]
             $scope.months = moment.months()
@@ -22,41 +22,39 @@
                 {name: 'Costs', value: 'costs'}
             ]
             $scope.currentTab = ''
+            $scope.company = {}
 
             emptyFilter = {id: null, name: 'All'}
+            $scope.emptyFilter = emptyFilter
+            defaultProduct = 
+                id: null
+                level0: emptyFilter
+                level1: emptyFilter
+                level2: emptyFilter
 
             $scope.filter =
                 team: emptyFilter
                 user: defaultUser
                 manager: defaultUser
                 productFamily: emptyFilter
-                product: emptyFilter
-
-            $scope.shouldUpdate = true
+                product: defaultProduct
 
             $scope.setTab = (tab) ->
                 $scope.currentTab = tab
-                if $scope.shouldUpdate
-                    getData()
-                    $scope.shouldUpdate = false
+                $scope.getData()
 
             $scope.selectMonth = (month) ->
                 $scope.selectedMonth = month
-                $scope.shouldUpdate = true
-                getData()
 
             $scope.selectYear = (year) ->
                 $scope.selectedYear = year
-                $scope.shouldUpdate = true
-                getData()
 
             $scope.setFilter = (key, value) ->
-                if $scope.filter[key]is value
+                if $scope.filter[key] is value
                     return
                 $scope.filter[key] = value
-                getData()
 
-            getData = () ->
+            $scope.getData = () ->
                 if $scope.currentTab == 'costs'
                     getCostsData()
                 else
@@ -99,7 +97,7 @@
                     year: $scope.selectedYear
 
                 Billing.getCosts(filters).then (data) ->
-                    $scope.costs = data;
+                    $scope.costs = data
                     Field.all(subject: 'Cost').then (fields) ->
                         Field.set('Cost', fields)
                         $scope.costs = _.map $scope.costs, (cost) ->
@@ -114,9 +112,7 @@
 
             getProducts = () ->
                 Product.all({active: true}).then (products) ->
-                    $scope.allProducts = products
                     $scope.products = products
-                    $scope.products.unshift emptyFilter
 
             getProductFamilies = () ->
                 ProductFamily.all(active: true).then (productFamilies) ->
@@ -137,11 +133,12 @@
                 getTeamUsers('all')
                 getProducts()
                 getProductFamilies()
+                Company.get().$promise.then (company) -> $scope.company = company
 
                 lastMonth = moment().subtract(1, 'month')
                 $scope.selectMonth lastMonth.format('MMMM')
                 $scope.selectYear lastMonth.format('YYYY')
-                getData()
+                $scope.getData()
 
             init()
 
@@ -149,15 +146,13 @@
                 if nextTeam.id then $scope.filter.user = defaultUser
                 $scope.setFilter('team', nextTeam)
                 getTeamUsers(nextTeam.id || 'all')
-                getData()
 
             $scope.$watch 'filter.productFamily', (productFamily, prevProductFamily) ->
                 if productFamily == prevProductFamily then return
-                if productFamily.id then $scope.setFilter('product', emptyFilter)
+                if productFamily.id then $scope.setFilter('product', defaultProduct)
                 $scope.setFilter('productFamily', productFamily)
                 Product.all(product_family_id: productFamily.id).then (products) ->
                     $scope.products = products
-                    $scope.products.unshift emptyFilter
 
             updateBillingStats = () ->
                 $scope.iosNeedingApproval = _.filter($scope.iosForApproval, (item) -> item.billing_status == 'Pending').length
@@ -269,4 +264,31 @@
                     exportCosts()
                 else
                     exportRevenue()
+
+            $scope.productsByLevel = (level, product)->
+                _.filter $scope.products, (p) -> 
+                    if level == 0
+                      p.level == level
+                    else if level == 1
+                      p.level == 1 && p.parent_id == product.level0.id
+                    else if level == 2
+                      p.level == 2 && p.parent_id == product.level1.id
+
+            $scope.onChangeProduct = (item, model) ->
+                if item && model
+                  model.product_id = item.id
+                  if item.level == 0
+                    model.product.level1 = {}
+                    model.product.level2 = {}
+                  else if item.level == 1
+                    model.product.level2 = {}
+
+            $scope.setProductFilter = (level, product) ->
+                $scope.filter.product.id = product.id
+                $scope.filter.product[level] = product
+                if level == 'level0'
+                  $scope.filter.product.level1 = emptyFilter
+                  $scope.filter.product.level2 = emptyFilter
+                else if level == 'level1'
+                  $scope.filter.product.level2 = emptyFilter
     ]

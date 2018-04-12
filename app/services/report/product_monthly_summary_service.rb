@@ -68,7 +68,7 @@ class Report::ProductMonthlySummaryService
 
   def data_for_io_content_fee(io)
     io.content_fees.inject([]) do |results, content_fee|
-      if !product_id || content_fee.product_id == product_id.to_i
+      if !product_id || product_ids.include?(content_fee.product_id)
         results += content_fee.content_fee_product_budgets
       end
       results
@@ -77,7 +77,7 @@ class Report::ProductMonthlySummaryService
 
   def data_for_io_display_line_item(io)
     io.display_line_items.inject([]) do |results, display_line_item|
-      if !product_id || display_line_item.product_id == product_id.to_i
+      if !product_id || product_ids.include?(display_line_item.product_id)
         results += display_line_item.display_line_item_budgets
       end
       results
@@ -86,12 +86,16 @@ class Report::ProductMonthlySummaryService
 
   def data_for_deal(deal, only_open = false)
     deal.deal_products.inject([]) do |results, deal_product|
-      if (!product_id || deal_product.product_id == product_id.to_i) &&
+      if (!product_id || product_ids.include?(deal_product.product_id)) &&
           (!only_open || deal_product.open)
         results += deal_product.deal_product_budgets
       end
       results
     end
+  end
+
+  def product_ids
+    @_product_ids ||= [product_id.to_i].compact + (Product.find_by(id: product_id)&.all_children&.map(&:id) || [])
   end
 
   def deal_product_cf_names

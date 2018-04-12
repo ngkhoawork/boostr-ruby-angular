@@ -85,7 +85,7 @@
             teams: Team.all(all_teams: true)
             sellers: Seller.query({id: 'all'}).$promise
             timePeriods: TimePeriod.all()
-            products: Product.all()
+            products: Product.all({active: true})
             stages: Stage.query().$promise
         ).then (data) ->
             $scope.teams = data.teams

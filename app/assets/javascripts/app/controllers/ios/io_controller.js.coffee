@@ -38,11 +38,8 @@
                         return '%'
                     )()
 
-                    Product.all({active: true}).then (products) ->
-                        $scope.products = _.filter products, (product) ->
-                            return product.revenue_type == 'Content-Fee'
-                        $scope.costProducts = angular.copy(products)
-                        resetProducts()
+                    Product.all({active: true, revenue_type: 'Content-Fee'}).then (products) ->
+                        $scope.products = products
                     
                     Field.all(subject: 'Cost').then (fields) ->
                         Field.set('Cost', fields)
@@ -51,10 +48,23 @@
                                 cost.type = Field.field(cost, 'Type')
                             return cost
 
-            resetProducts = ->
-                io_products = _.map $scope.currentIO.content_fees, (content_fee_item) ->
-                    return content_fee_item.product
-                $scope.products = $filter('notIn')($scope.products, io_products)
+            $scope.productsByLevel = (level, product)->
+                _.filter $scope.products, (p) -> 
+                    if level == 0
+                      p.level == level
+                    else if level == 1
+                      p.level == 1 && p.parent_id == product.level0.id
+                    else if level == 2
+                      p.level == 2 && p.parent_id == product.level1.id
+
+            $scope.onChangeProduct = (item, model) ->
+                if item && model
+                  model.product_id = item.id
+                  if item.level == 0
+                    model.product.level1 = {}
+                    model.product.level2 = {}
+                  else if item.level == 1
+                    model.product.level2 = {}
 
             $scope.showIOEditModal = (io) ->
                 $scope.modalInstance = $modal.open
@@ -128,6 +138,8 @@
                     resolve:
                         currentIO: ->
                             $scope.currentIO
+                        company: ->
+                            $scope.company
 
             $scope.showNewCostModal = () ->
                 $scope.modalInstance = $modal.open
@@ -139,6 +151,8 @@
                     resolve:
                         currentIO: ->
                             $scope.currentIO
+                        company: ->
+                            $scope.company
 
             $scope.deleteIo = (io) ->
                 if confirm('Are you sure you want to delete "' +  io.name + '"?')
@@ -288,7 +302,7 @@
                         $scope.currentIO = io
             $scope.deleteContentFee = (content_fee) ->
                 $scope.errors = {}
-                if confirm('Are you sure you want to delete "' +  content_fee.product.name + '"?')
+                if confirm('Are you sure you want to delete "' +  content_fee.product.full_name + '"?')
                     ContentFee.delete(id: content_fee.id, io_id: $scope.currentIO.id).then(
                         (deal) ->
                             $scope.init()
@@ -298,7 +312,7 @@
                     )
             $scope.deleteCost = (cost) ->
                 $scope.errors = {}
-                if confirm('Are you sure you want to delete "' +  cost.product.name + '"?')
+                if confirm('Are you sure you want to delete "' +  cost.product.full_name + '"?')
                     Cost.delete(id: cost.id, io_id: $scope.currentIO.id).then(
                         (deal) ->
                             $scope.init()
@@ -336,9 +350,9 @@
 
             $scope.$on 'content_fee_added', ->
                 $scope.init()
-            $scope.init()
 
             $scope.$on 'cost_added', ->
                 $scope.init()
+
             $scope.init()
     ]

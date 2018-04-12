@@ -154,7 +154,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
   def product_pipeline_data
     probabilities = current_user.company.distinct_stages.where("stages.probability > 0").order("stages.probability desc").collect { |stage| stage.probability }
     probabilities.reverse!
-    product_names = current_user.company.products.active.collect {|product| product.name}
+    products = current_user.company.products.by_level(0).active
 
     product_pipeline_data_weighted = []
     product_pipeline_data_unweighted = []
@@ -166,19 +166,15 @@ class Api::SalesExecutionDashboardController < ApplicationController
                  .where('products.active IS true')
                  .group("products.id")
                  .order("products.id asc")
-                 .select("products.name, sum(deal_products.budget) as total_budget")
-                 .collect {|deal| {label: deal.name, value: deal.total_budget.to_i}}
+                 .select("products.id, products.name, products.parent_id, products.top_parent_id, sum(deal_products.budget) as total_budget")
+                 .as_json
       final_data_weighted = []
       final_data_unweighted = []
-      product_names.each do |product_name|
-        row = data.select {|row| row[:label] == product_name }
-        if row.count > 0
-          final_data_weighted << {label: row[0][:label], value: row[0][:value] * probability / 100}
-          final_data_unweighted << row[0]
-        else
-          final_data_weighted << {label: product_name, value: 0}
-          final_data_unweighted << {label: product_name, value: 0}
-        end
+      products.each do |product|
+        total_budget = data.select {|row| row['id'] == product.id || row['parent_id'] == product.id || row['top_parent_id'] == product.id }
+                  .sum {|row| row['total_budget'] }.to_f
+        final_data_weighted << {label: product.name, value: total_budget*probability/100}
+        final_data_unweighted << {label: product.name, value: total_budget}
       end
       product_pipeline_data_unweighted << {key: probability.to_s + '%', color: stage_color(probability), values: final_data_unweighted}
       product_pipeline_data_weighted << {key: probability.to_s + '%', color: stage_color(probability), values: final_data_weighted}
