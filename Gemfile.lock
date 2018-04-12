@@ -727,6 +727,7 @@ DEPENDENCIES
   mustache (~> 1.0)
   net-sftp
   newrelic_rpm
+  nokogiri (= 1.6.8.1)
   oauth2
   paranoia (~> 2.0)
   pg (= 0.20)
