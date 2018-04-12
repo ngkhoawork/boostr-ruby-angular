@@ -17,6 +17,7 @@ FactoryGirl.define do
     region nil
     segment nil
     holding_company nil
+    legacy_id { FFaker::HipsterIpsum.word }
     company_id nil
 
     initialize_with { attributes }

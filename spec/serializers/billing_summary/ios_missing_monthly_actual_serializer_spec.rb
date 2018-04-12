@@ -1,9 +1,13 @@
 require 'rails_helper'
 
 describe BillingSummary::IosMissingMonthlyActualSerializer do
-  before { create :billing_deal_contact, deal: deal, contact: contact }
+  before do
+    create :billing_address_validation, company: company
+    create :billing_deal_contact, deal: deal, contact: contact
+  end
 
   it 'has proper serialized data' do
+    expect(serializer[:io_id]).to eql io.id
     expect(serializer[:io_number]).to eql io.io_number
     expect(serializer[:io_name]).to eql io.name
     expect(serializer[:line_number]).to eql display_line_item.line_number

@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe NewForecastTeam do
+  let!(:company) { create :company }
+
   context 'as_json' do
     before do
       time_period
@@ -120,10 +122,6 @@ RSpec.describe NewForecastTeam do
         end
       end
     end
-  end
-    
-  def company
-    @_company ||= Company.first
   end
 
   def leader

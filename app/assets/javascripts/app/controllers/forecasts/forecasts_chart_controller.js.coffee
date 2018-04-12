@@ -73,9 +73,10 @@
 				_.each sets, (set, j) ->
 					switch set.type
 						when 'revenue'
-							weighted = item.revenue || 0
-							unweighted = item.revenue || 0
-							tt.revenue = item.revenue
+							revenue_amt = if $scope.isNetForecast then item.revenue_net else item.revenue
+							weighted = revenue_amt || 0
+							unweighted = revenue_amt || 0
+							tt.revenue = revenue_amt
 							color = getColor(set.probability)
 						when 'quota'
 							weighted = item.quota || 0
@@ -86,8 +87,12 @@
 							unweighted = 0
 							color = 'transparent'
 						else
-							weighted = Number(item.weighted_pipeline_by_stage[set.id]) || 0
-							unweighted = Number(item.unweighted_pipeline_by_stage[set.id]) || 0
+							if $scope.isNetForecast
+								weighted = Number(item.weighted_pipeline_by_stage_net[set.id]) || 0
+								unweighted = Number(item.unweighted_pipeline_by_stage_net[set.id]) || 0
+							else
+								weighted = Number(item.weighted_pipeline_by_stage[set.id]) || 0
+								unweighted = Number(item.unweighted_pipeline_by_stage[set.id]) || 0
 							color = getColor(set.probability)
 					if !_.isArray dataset[j] then dataset[j] = []
 					if _.isNumber(set.probability)
@@ -295,8 +300,8 @@
 					.append('div')
 					.attr('class', 'legend')
 				goalLegend.append('svg')
-					.style 'width', '28'
-					.style 'height', '13'
+					.style 'width', '28' + 'px'
+					.style 'height', '13' + 'px'
 					.style 'margin-right', '8px'
 					.append('line')
 					.attr 'stroke-dasharray', '6, 4'
@@ -317,8 +322,8 @@
 					.append('div')
 					.attr('class', 'legend')
 				legend.append('svg')
-					.style 'width', '13'
-					.style 'height', '13'
+					.style 'width', '13' + 'px'
+					.style 'height', '13' + 'px'
 					.style 'margin-right', '4px'
 					.append('rect')
 					.attr 'x', 0

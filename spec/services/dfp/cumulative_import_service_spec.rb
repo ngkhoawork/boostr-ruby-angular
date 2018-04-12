@@ -104,8 +104,8 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
 
       import_log = CsvImportLog.last
       expect(import_log.rows_processed).to eq 3
-      expect(import_log.rows_imported).to eq 1
-      expect(import_log.rows_failed).to eq 2
+      expect(import_log.rows_imported).to eq 3
+      expect(import_log.rows_failed).to eq 0
       expect(import_log.rows_skipped).to eq 0
       expect(import_log.file_source).to eq 'report_file.csv'
       expect(import_log.object_name).to eq 'dfp_cumulative'

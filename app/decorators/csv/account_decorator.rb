@@ -1,5 +1,5 @@
 class Csv::AccountDecorator
-  REQUIRED_OPTIONS = %i(advertiser_type_id agency_type_id cf_names).freeze
+  REQUIRED_OPTIONS = %i(cf_names).freeze
 
   def initialize(record, opts = {})
     @record = record
@@ -42,6 +42,10 @@ class Csv::AccountDecorator
     @record.address&.zip
   end
 
+  def country
+    @record.address&.country
+  end
+
   def phone
     @record.address&.phone
   end
@@ -68,14 +72,7 @@ class Csv::AccountDecorator
   private
 
   def type_id
-    case @record.client_type_id
-    when @opts[:advertiser_type_id]
-      'Advertiser'
-    when @opts[:agency_type_id]
-      'Agency'
-    else
-      raise 'unknown client_type_id'
-    end
+    @opts[:custom_types][@record.client_type_id]
   end
 
   def method_missing(method_name, *args)

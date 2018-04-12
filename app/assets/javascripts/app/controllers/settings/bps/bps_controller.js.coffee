@@ -26,7 +26,7 @@
           keyboard: false
 
       $scope.$on 'newBP', ->
-        $scope.notification = "Business Plan data is being generated in a few seconds."
+        $scope.notification = "Bottoms Up data is being generated in a few seconds."
 
       $scope.go = ($event, bp) ->
         path = "/settings/bps/" + bp.id

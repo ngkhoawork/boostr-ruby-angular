@@ -1,7 +1,7 @@
 @app.controller 'AccountController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes', 'Egnyte'
-($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes, Egnyte) ->
-
+['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes', 'CurrentUser', 'Egnyte'
+($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes, CurrentUser, Egnyte) ->
+  
   $scope.showMeridian = true
   $scope.activitiesOrder = '-happened_at'
   $scope.types = []
@@ -18,6 +18,15 @@
   $scope.object = { userToLink: null }
   $scope.egnyteConnected = false
   $scope.egnyteHealthy = true
+  $scope.allow_edit = false;
+
+  $scope.checkPermissions = ->
+    if !$scope.currentUser.is_admin && $scope.currentClient.is_multibuyer
+      $scope.allow_edit = false
+    else if $scope.currentUser.is_admin && $scope.currentClient.is_multibuyer
+      $scope.allow_edit = true
+    else
+      $scope.allow_edit = true
 
   $scope.init = ->
     ActivityType.all().then (activityTypes) ->
@@ -150,6 +159,9 @@
   $scope.getClient = (clientId) ->
     Client.get({ id: clientId }).$promise.then (client) ->
       $scope.setClient(client)
+      CurrentUser.get().$promise.then (user) ->
+        $scope.currentUser = user
+        $scope.checkPermissions();
 
   $scope.getDeals = (client) ->
     Deal.all({client_id: client.id}).then (deals) ->
@@ -259,8 +271,8 @@
       backdrop: 'static'
       keyboard: false
       resolve:
-        client: ->
-          {}
+        client: -> {}
+        options: -> {}
 
   $scope.deleteChildClient = (client) ->
     if confirm("Click Ok to remove the child account or Cancel")
@@ -339,6 +351,8 @@
         activity: ->
           activity
 
+  $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
+
   $scope.searchContact = (searchText) ->
     if ($scope.contactSearchText != searchText)
       $scope.contactSearchText = searchText
@@ -359,6 +373,7 @@
       resolve:
         contact: ->
           client_id: $scope.currentClient.id
+        options: -> {}
 
   $scope.showNewDealModal = ->
     $scope.modalInstance = $modal.open
@@ -737,6 +752,7 @@
             client_id: $scope.currentClient.id,
             primary_client: $scope.currentClient
           }
+        options: -> {}
 
   $scope.showEditContactModal = (client_contact) ->
     $scope.populateContact = true

@@ -11,7 +11,7 @@ json.currency deal.currency
 json.company_ealert_reminder deal.company.ealert_reminder
 json.requests_enabled deal.company.requests_enabled
 
-json.stage deal.stage, :name, :probability, :color, :open, :active
+json.stage deal.stage, :name, :probability, :color, :open, :active, :sales_process_id
 if deal.previous_stage
   json.previous_stage deal.previous_stage, :name, :probability, :color, :open
 end
@@ -35,7 +35,12 @@ end
 
 json.deal_products deal.deal_products.order(:created_at) do |deal_product|
   json.id deal_product.id
-  json.name deal_product.product.name
+  json.name deal_product.product&.name
+  json.product deal_product.product
+  json.ssp deal_product.ssp
+  json.ssp_id deal_product.ssp_id
+  json.pmp_type deal_product.pmp_type
+  json.ssp_deal_id deal_product.ssp_deal_id
   json.deal_product_budgets deal_product.deal_product_budgets.order(:start_date) do |deal_product_budget|
     json.id deal_product_budget.id
     json.budget (deal_product_budget.budget || 0).to_i
@@ -110,6 +115,26 @@ if !deal.stage.open && deal.stage.probability == 100 && deal.io.present?
         :budget_remaining_3p_loc, :balance_loc, :daily_run_rate_loc
       json.product display_line_item.product
       json.request display_line_item.request
+    end
+  end
+end
+
+if !deal.stage.open && deal.stage.probability == 100 && deal.pmp.present?
+  json.pmp do
+    json.extract! deal.pmp, :id, :name, :budget, :budget_delivered, :budget_remaining, :budget_loc, :budget_delivered_loc, :budget_remaining_loc, :start_date, :end_date, :curr_cd
+    if deal.pmp.currency.present? 
+      json.currency_symbol deal.pmp.currency.curr_symbol
+    end
+    if deal.pmp.agency.present?
+      json.agency deal.pmp.agency, :id, :name
+    end
+    if deal.pmp.advertiser.present?
+      json.advertiser deal.pmp.advertiser, :id, :name
+    end
+    json.pmp_items deal.pmp.pmp_items do |pmp_item|
+      json.extract! pmp_item, :ssp_deal_id, :pmp_type, :budget, :budget_delivered, :budget_remaining_loc, :budget_loc, :budget_delivered_loc, :budget_remaining_loc 
+      json.ssp pmp_item.ssp
+      json.product pmp_item.product
     end
   end
 end

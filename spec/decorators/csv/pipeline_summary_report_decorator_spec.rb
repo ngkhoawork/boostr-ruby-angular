@@ -1,7 +1,10 @@
 require 'rails_helper'
 
 describe Csv::PipelineSummaryReportDecorator do
+  let!(:company) { create :company }
+
   before do
+    create :billing_address_validation, company: company
     create :billing_deal_contact, deal: deal, contact: contact
   end
 

@@ -9,6 +9,7 @@
 		$scope.products = []
 		$scope.timePeriods = []
 		$scope.isUnweighted = false
+		$scope.isNetForecast = false
 		$scope.years = [2016..moment().year()]
 		$scope.totals = {}
 
@@ -18,10 +19,12 @@
 			seller: emptyFilter
 			productFamily: emptyFilter
 			product: emptyFilter
+			product1: emptyFilter
+			product2: emptyFilter
 			timePeriod: emptyFilter
 			year: null
 		$scope.filter = angular.copy defaultFilter
-		appliedFilter = null
+		$scope.appliedFilter = null
 
 		$scope.setFilter = (key, val) ->
 			switch key
@@ -32,11 +35,11 @@
 			$scope.filter[key] = val
 
 		$scope.applyFilter = ->
-			appliedFilter = angular.copy $scope.filter
+			$scope.appliedFilter = angular.copy $scope.filter
 			getData getQuery()
 
 		$scope.isFilterApplied = ->
-			!angular.equals $scope.filter, appliedFilter
+			!angular.equals $scope.filter, $scope.appliedFilter
 
 		$scope.resetFilter = ->
 			$scope.filter = angular.copy defaultFilter
@@ -63,7 +66,10 @@
 					time_period_id: $scope.filter.timePeriod.id,
 					quarter: row.quarter,
 					product_id: $scope.filter.product.id,
+					product1_id: $scope.filter.product1.id,
+					product2_id: $scope.filter.product2.id,
 					product_family_id: $scope.filter.productFamily.id,
+					is_net_forecast: $scope.isNetForecast,
 					year: row.year
 				}
 				if row.type == 'member'
@@ -112,13 +118,28 @@
 							$timeout onSubtableLoad
 						, ->
 							link.removeClass('loading-subtable')
+
+						Forecast.pmp_data(params).$promise.then (pmp_revenues) ->
+							$scope.pmp_revenues = pmp_revenues
+							$scope.sort.pmp_revenues = new McSort(
+								column: "name",
+								compareFn: (column, a, b) ->
+									switch (column)
+										when "name", "agency", "advertiser"
+											a[column] && a[column].localeCompare(b[column])
+										else
+											a[column] - b[column]
+								dataset: $scope.pmp_revenues
+							)
+							$timeout onSubtableLoad
+						, ->
+							link.removeClass('loading-subtable')
 			return
 
 		$scope.hideSubtable = ->
 			angular.element('.subtable-arrow').hide()
 			angular.element('.subtable-wrap').removeClass('opened').height(0)
 			return
-
 
 		$scope.$watch 'filter.team', (team, prevTeam) ->
 			if team == prevTeam then return
@@ -127,6 +148,22 @@
 			searchAndSetSeller(team.members, $scope.currentUser)
 			Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
 				$scope.sellers = sellers
+
+		$scope.$watch 'filter.product', (product, prevProduct) ->
+			if product == prevProduct then return
+			if product.id then $scope.setFilter('product', emptyFilter)
+			$scope.setFilter('product', product)
+			$scope.productsLevel1 = productsByLevel(1)
+			if !_.findWhere $scope.productsLevel1, { id: $scope.filter.product1.id }
+				$scope.setFilter('product1', emptyFilter)
+
+		$scope.$watch 'filter.product1', (product1, prevProduct1) ->
+			if product1 == prevProduct1 then return
+			if product1.id then $scope.setFilter('product1', emptyFilter)
+			$scope.setFilter('product1', product1)
+			$scope.productsLevel2 = productsByLevel(2)
+			if !_.findWhere $scope.productsLevel2, { id: $scope.filter.product2.id }
+				$scope.setFilter('product2', emptyFilter)
 
 		$scope.$watch 'filter.productFamily', (productFamily, prevProductFamily) ->
 			if productFamily == prevProductFamily then return
@@ -140,10 +177,10 @@
 			teams: Team.all(all_teams: true)
 			sellers: Seller.query({id: 'all'}).$promise
 			productFamilies: ProductFamily.all(active: true)
-			products: Product.all()
+			products: Product.all({active: true})
 			timePeriods: TimePeriod.all()
 		).then (data) ->
-			$scope.hasForecastPermission = data.user.has_forecast_permission
+			setPermission(data.user)
 			shouldChooseTeamFilter = $scope.currentUserIsLeader || data.user.team_id != null || !$scope.hasForecastPermission
 			shouldChooseMemberFilter = !$scope.currentUserIsLeader && data.user.team_id != null || !$scope.hasForecastPermission
 			$scope.filterTeams = data.teams
@@ -153,13 +190,40 @@
 			$scope.sellers = data.sellers
 			$scope.productFamilies= data.productFamilies
 			$scope.products = data.products
+			$scope.productsLevel0 = productsByLevel(0)
+
 			$scope.timePeriods = data.timePeriods.filter (period) ->
-				period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
+				period.visible and (
+					period.period_type is 'quarter' or
+					period.period_type is 'year' or
+					period.period_type is 'month'
+				)
 			searchAndSetTimePeriod($scope.timePeriods)
+
+		setPermission = (user) ->
+			$scope.hasForecastPermission = user.has_forecast_permission
+			$scope.hasNetPermission = user.company_net_forecast_enabled
+			$scope.productOption1Enabled = user.product_options_enabled && user.product_option1_enabled
+			$scope.productOption2Enabled = user.product_options_enabled && user.product_option2_enabled
+			$scope.productOption1 = user.product_option1 || 'Option 1'
+			$scope.productOption2 = user.product_option2 || 'Option 2'
+
+		productsByLevel = (level) ->
+			_.filter $scope.products, (p) -> 
+				if level == 0
+					p.level == level
+				else if level == 1
+					p.level == 1 && p.parent_id == $scope.filter.product.id
+				else if level == 2
+					p.level == 2 && p.parent_id == $scope.filter.product1.id
 
 		searchAndSetTimePeriod = (timePeriods) ->
 			for period in timePeriods
 				if period.period_type is 'quarter' and
+				moment().isBetween(period.start_date, period.end_date, 'days', '[]')
+					return $scope.setFilter('timePeriod', period)
+			for period in timePeriods
+				if period.period_type is 'month' and
 				moment().isBetween(period.start_date, period.end_date, 'days', '[]')
 					return $scope.setFilter('timePeriod', period)
 			for period in timePeriods
@@ -188,6 +252,8 @@
 			query.user_id = f.seller.id || 'all'
 			query.product_family_id = f.productFamily.id || 'all'
 			query.product_id = f.product.id || 'all'
+			query.product1_id = f.product1.id || 'all'
+			query.product2_id = f.product2.id || 'all'
 			query.time_period_id = f.timePeriod.id if f.timePeriod.id
 			query.year = f.year if f.year
 			query.new_version = true
@@ -210,7 +276,7 @@
 						$scope.forecast = []
 						$scope.members = []
 						$scope.teams = []
-						if (appliedFilter.seller.id)
+						if ($scope.appliedFilter.seller.id)
 							$scope.forecast = forecast
 							$scope.members = forecast
 						else
@@ -250,10 +316,15 @@
 				name: 'TOTAL'
 				type: 'totals'
 				quota: 0
+				quota_net: 0
 				revenue: 0
 				weighted_pipeline: 0
 				amount: 0
+				revenue_net: 0
+				weighted_pipeline_net: 0
+				amount_net: 0
 				gap_to_quota: 0
+				gap_to_quota_net: 0
 				percent_booked: 0
 				percent_to_quota: 0
 				new_deals_needed: 0
@@ -262,10 +333,15 @@
 			_.each arr, (row) ->
 				if !row then return
 				totals.quota += if row.is_leader then 0 else Number(row.quota) || 0
+				totals.quota_net += if row.is_leader then 0 else Number(row.quota_net) || 0
 				totals.revenue += Number(row.revenue) || 0
 				totals.weighted_pipeline += Number(row.weighted_pipeline) || 0
 				totals.amount += Number(row.amount) || 0
+				totals.revenue_net += Number(row.revenue_net) || 0
+				totals.weighted_pipeline_net += Number(row.weighted_pipeline_net) || 0
+				totals.amount_net += Number(row.amount_net) || 0
 				totals.gap_to_quota += if row.is_leader then 0 else Number(row.gap_to_quota) || 0
+				totals.gap_to_quota_net += if row.is_leader then 0 else Number(row.gap_to_quota_net) || 0
 				totals.new_deals_needed += if row.is_leader then 0 else Number(row.new_deals_needed) || 0
 				totals.wow_weighted_pipeline += Number(row.wow_weighted_pipeline) || 0
 				totals.wow_revenue += Number(row.wow_revenue) || 0
@@ -282,6 +358,13 @@
 				return
 			$scope.isUnweighted = !$scope.isUnweighted
 			$scope.$broadcast 'updateForecastChart'
+
+		$scope.toggleNetForecast = (e) ->
+			if !$scope.isChartDrawn
+				e.preventDefault()
+				return
+			$scope.isNetForecast = !$scope.isNetForecast
+			$scope.$broadcast 'drawForecastChart', $scope.forecast
 
 		class McSort
 			constructor: (opts) ->

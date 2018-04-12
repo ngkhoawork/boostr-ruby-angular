@@ -261,22 +261,24 @@
           columnTo.splice(_.findIndex(columnTo, id: publisherId), 1)
           $scope.publishersPipeline[last.from.column].publishers.splice(last.from.publisher, 0, publisher)
           $scope.history.lock(publisherId, false)
+    onScroll = -> #
 
     addScrollEvent = ->
       table = angular.element('.publishers-table')
       headers = angular.element('.column-header')
       headers.each (i) -> angular.element(this).css 'zIndex', headers.length - i
-      offsetTop = table.offset().top
-      $document.unbind 'scroll'
-      $document.bind 'scroll', ->
+      offsetTop = ((table.offset() && table.offset().top) || 0) - _fixedHeaderHeight
+      $document.off 'scroll', onScroll
+      onScroll = ->
         if $document.scrollTop() > offsetTop
           table.addClass 'fixed'
           headers.css 'top', $document.scrollTop() - offsetTop + 'px'
         else
           table.removeClass 'fixed'
           headers.css 'top', 0
+      $document.on 'scroll', onScroll
       $scope.$on '$destroy', ->
-        $document.unbind 'scroll'
+        $document.off 'scroll', onScroll
 
     alignColumnsHeight = ->
       columns = angular.element('.column-body')

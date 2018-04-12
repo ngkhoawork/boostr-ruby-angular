@@ -133,8 +133,33 @@
         position: absolute;
         background-color: white;
         border-bottom: 1px solid #ddd;
+        height: auto !important;
+        min-height: 43px;
+        max-height: none !important;
         &.fixed {
             border-bottom: 2px solid #ddd;
         }
+    }
+    .z-dropdown {
+        .dropdown-menu {
+            padding: 10px 0;
+            color: $main-font-color;
+            .dropdown-item {
+                font-weight: normal;
+                padding: 5px 20px;
+                &:hover {
+                    background-color: #dfe1e3;
+                    cursor: pointer;
+                }
+                &.active {
+                    background-color: $main-color;
+                    color: white;
+                }
+            }
+        }
+    }
+    [z-fixed-header]:not(.z-fixed-header) {
+        opacity: 0;
+        pointer-events: none;
     }
 }

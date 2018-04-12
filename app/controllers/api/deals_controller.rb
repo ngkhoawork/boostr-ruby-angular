@@ -12,7 +12,7 @@ class Api::DealsController < ApplicationController
           render json: activity_deals
         elsif params[:time_period_id].present?
           if valid_time_period?
-            if params[:product_ids].present?
+            if params[:is_product].present?
               render json: product_forecast_deals
             else
               render json: forecast_deals
@@ -105,8 +105,8 @@ class Api::DealsController < ApplicationController
             ).distinct,
             each_serializer: DealIndexSerializer
           )
-      end
-    }
+        end
+      }
       format.csv {
         require 'timeout'
         begin
@@ -153,8 +153,8 @@ class Api::DealsController < ApplicationController
     monthly_budgets = DealProductBudget
     .joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
     .where("deal_products.deal_id in (?)", deal_ids)
-    .for_product_id(product_filter)
-    .order("start_date asc")
+    monthly_budgets = monthly_budgets.where("deal_products.product_id in (?)", product_filter) if product_filter
+    monthly_budgets = monthly_budgets.order("start_date asc")
     .group_by{|budget| budget.start_date.beginning_of_month}
     .collect{|key, value| {key => value.map(&:budget).compact.reduce(:+)} }
     .reduce(:merge)
@@ -174,7 +174,7 @@ class Api::DealsController < ApplicationController
         .select("distinct(start_date)")
         .where("deal_products.deal_id in (?)", deal_ids)
         .order("start_date asc")
-        .collect{|deal_product_budget| deal_product_budget.start_date.try(:beginning_of_month)}
+        .collect{|deal_product_budget| deal_product_budget.start_date&.beginning_of_month}
         .compact
         .uniq
 
@@ -210,7 +210,7 @@ class Api::DealsController < ApplicationController
   def pipeline_report_relation
     result = deals
       .by_stage_ids(params[:stage_ids])
-      .for_time_period(time_period.try(:start_date), time_period.try(:end_date))
+      .for_time_period(time_period&.start_date, time_period&.end_date)
       .with_all_options(deal_type_source_params)
       .limit(limit)
       .offset(offset)
@@ -274,11 +274,11 @@ class Api::DealsController < ApplicationController
         message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
       }, status: :ok
     else
-      @deal = company.deals.new(deal_params)
+      @deal = company.deals.new(deal_params.merge({deal_custom_field: DealCustomField.new, manual_update: true}))
 
       deal.created_by = current_user.id
       deal.updated_by = current_user.id
-      # deal.set_user_currency
+
       if deal.save(context: :manual_update)
         render json: deal, status: :created
       else
@@ -289,8 +289,12 @@ class Api::DealsController < ApplicationController
 
   def update
     deal.updated_by = current_user.id
-    deal.assign_attributes(deal_params)
-
+    deal.assign_attributes(deal_params.merge(manual_update: true))
+    if deal.deal_custom_field.present?
+      deal.deal_custom_field.update_attributes(deal_custom_field_attributes_params[:deal_custom_field_attributes])
+    else
+      deal.deal_custom_field = DealCustomField.new(deal_custom_field_attributes_params[:deal_custom_field_attributes])
+    end
     if deal.save(context: :manual_update)
       render deal
     else
@@ -304,7 +308,7 @@ class Api::DealsController < ApplicationController
     render nothing: true
 
   rescue ActiveRecord::DeleteRestrictionError => e
-    render json: { errors: { delete: ['Please delete IO for this deal before deleting'] } }, status: :unprocessable_entity
+    render json: { errors: { delete: ["Please delete #{deal.include_pmp_product? ? 'PMP' : 'IO'} for this deal before deleting"] } }, status: :unprocessable_entity
   end
 
   def send_to_operative
@@ -330,7 +334,10 @@ class Api::DealsController < ApplicationController
   end
 
   def all_deals_header
-    render json: deals_info_by_stage
+    render json: {
+      deals_info: deals_info_by_stage,
+      stages: team_stages
+    }
   end
 
   private
@@ -405,11 +412,11 @@ class Api::DealsController < ApplicationController
       deal['split_period_budget'] = split_period_budget
       deal['month_amounts'] = []
       monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
-                                 .select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue")
-                                 .for_time_period(time_period.start_date, time_period.end_date)
-                                 .where("deal_products.deal_id = ?", deal['id'])
-                                 .group("date_part('month', start_date)").order("date_part('month', start_date) asc")
-                                 .collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
+        .select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue")
+        .for_time_period(time_period.start_date, time_period.end_date)
+        .where("deal_products.deal_id = ? AND deal_products.open IS TRUE", deal['id'])
+        .group("date_part('month', start_date)").order("date_part('month', start_date) asc")
+        .collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
 
       index = 0
       monthly_revenues.each do |monthly_revenue|
@@ -435,12 +442,12 @@ class Api::DealsController < ApplicationController
 
       deal['quarter_amounts'] = []
       quarterly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
-                                   .select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue")
-                                   .for_time_period(time_period.start_date, time_period.end_date)
-                                   .where("deal_id = ?", deal['id'])
-                                   .group("date_part('quarter', start_date)")
-                                   .order("date_part('quarter', start_date) asc")
-                                   .collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
+        .select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue")
+        .for_time_period(time_period.start_date, time_period.end_date)
+        .where("deal_id = ? AND deal_products.open IS TRUE", deal['id'])
+        .group("date_part('quarter', start_date)")
+        .order("date_part('quarter', start_date) asc")
+        .collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
       index = 0
       quarterly_revenues.each do |quarterly_revenue|
         for i in index..(quarterly_revenue[:quarter]-2)
@@ -549,7 +556,7 @@ class Api::DealsController < ApplicationController
 
   def product_filter
     if params[:product_id].presence && params[:product_id] != 'all'
-      params[:product_id].to_i
+      [params[:product_id].to_i] + (Product.find_by(id: params[:product_id].to_i)&.all_children&.map(&:id) || [])
     end
   end
 
@@ -582,150 +589,159 @@ class Api::DealsController < ApplicationController
         :initiative_id,
         :closed_reason_text,
         :created_at,
+        :lead_id,
+        :created_from,
         {
             values_attributes: [
                 :id,
                 :field_id,
                 :option_id,
                 :value
-            ],
-            deal_custom_field_attributes: [
-                :id,
-                :company_id,
-                :deal_id,
-                :currency1,
-                :currency2,
-                :currency3,
-                :currency4,
-                :currency5,
-                :currency6,
-                :currency7,
-                :currency8,
-                :currency9,
-                :currency10,
-                :currency_code1,
-                :currency_code2,
-                :currency_code3,
-                :currency_code4,
-                :currency_code5,
-                :currency_code6,
-                :currency_code7,
-                :currency_code8,
-                :currency_code9,
-                :currency_code10,
-                :text1,
-                :text2,
-                :text3,
-                :text4,
-                :text5,
-                :text6,
-                :text7,
-                :text8,
-                :text9,
-                :text10,
-                :note1,
-                :note2,
-                :note3,
-                :note4,
-                :note5,
-                :note6,
-                :note7,
-                :note8,
-                :note9,
-                :note10,
-                :datetime1,
-                :datetime2,
-                :datetime3,
-                :datetime4,
-                :datetime5,
-                :datetime6,
-                :datetime7,
-                :datetime8,
-                :datetime9,
-                :datetime10,
-                :number1,
-                :number2,
-                :number3,
-                :number4,
-                :number5,
-                :number6,
-                :number7,
-                :number8,
-                :number9,
-                :number10,
-                :integer1,
-                :integer2,
-                :integer3,
-                :integer4,
-                :integer5,
-                :integer6,
-                :integer7,
-                :integer8,
-                :integer9,
-                :integer10,
-                :boolean1,
-                :boolean2,
-                :boolean3,
-                :boolean4,
-                :boolean5,
-                :boolean6,
-                :boolean7,
-                :boolean8,
-                :boolean9,
-                :boolean10,
-                :percentage1,
-                :percentage2,
-                :percentage3,
-                :percentage4,
-                :percentage5,
-                :percentage6,
-                :percentage7,
-                :percentage8,
-                :percentage9,
-                :percentage10,
-                :dropdown1,
-                :dropdown2,
-                :dropdown3,
-                :dropdown4,
-                :dropdown5,
-                :dropdown6,
-                :dropdown7,
-                :dropdown8,
-                :dropdown9,
-                :dropdown10,
-                :sum1,
-                :sum2,
-                :sum3,
-                :sum4,
-                :sum5,
-                :sum6,
-                :sum7,
-                :sum8,
-                :sum9,
-                :sum10,
-                :number_4_dec1,
-                :number_4_dec2,
-                :number_4_dec3,
-                :number_4_dec4,
-                :number_4_dec5,
-                :number_4_dec6,
-                :number_4_dec7,
-                :number_4_dec8,
-                :number_4_dec9,
-                :number_4_dec10,
-                :link1,
-                :link2,
-                :link3,
-                :link4,
-                :link5,
-                :link6,
-                :link7,
-                :link8,
-                :link9,
-                :link10
             ]
         }
     ).merge(modifying_user: current_user)
+  end
+
+  def deal_custom_field_attributes_params
+    params.require(:deal).permit(
+      {
+          deal_custom_field_attributes: [
+              :id,
+              :company_id,
+              :deal_id,
+              :currency1,
+              :currency2,
+              :currency3,
+              :currency4,
+              :currency5,
+              :currency6,
+              :currency7,
+              :currency8,
+              :currency9,
+              :currency10,
+              :currency_code1,
+              :currency_code2,
+              :currency_code3,
+              :currency_code4,
+              :currency_code5,
+              :currency_code6,
+              :currency_code7,
+              :currency_code8,
+              :currency_code9,
+              :currency_code10,
+              :text1,
+              :text2,
+              :text3,
+              :text4,
+              :text5,
+              :text6,
+              :text7,
+              :text8,
+              :text9,
+              :text10,
+              :note1,
+              :note2,
+              :note3,
+              :note4,
+              :note5,
+              :note6,
+              :note7,
+              :note8,
+              :note9,
+              :note10,
+              :datetime1,
+              :datetime2,
+              :datetime3,
+              :datetime4,
+              :datetime5,
+              :datetime6,
+              :datetime7,
+              :datetime8,
+              :datetime9,
+              :datetime10,
+              :number1,
+              :number2,
+              :number3,
+              :number4,
+              :number5,
+              :number6,
+              :number7,
+              :number8,
+              :number9,
+              :number10,
+              :integer1,
+              :integer2,
+              :integer3,
+              :integer4,
+              :integer5,
+              :integer6,
+              :integer7,
+              :integer8,
+              :integer9,
+              :integer10,
+              :boolean1,
+              :boolean2,
+              :boolean3,
+              :boolean4,
+              :boolean5,
+              :boolean6,
+              :boolean7,
+              :boolean8,
+              :boolean9,
+              :boolean10,
+              :percentage1,
+              :percentage2,
+              :percentage3,
+              :percentage4,
+              :percentage5,
+              :percentage6,
+              :percentage7,
+              :percentage8,
+              :percentage9,
+              :percentage10,
+              :dropdown1,
+              :dropdown2,
+              :dropdown3,
+              :dropdown4,
+              :dropdown5,
+              :dropdown6,
+              :dropdown7,
+              :dropdown8,
+              :dropdown9,
+              :dropdown10,
+              :sum1,
+              :sum2,
+              :sum3,
+              :sum4,
+              :sum5,
+              :sum6,
+              :sum7,
+              :sum8,
+              :sum9,
+              :sum10,
+              :number_4_dec1,
+              :number_4_dec2,
+              :number_4_dec3,
+              :number_4_dec4,
+              :number_4_dec5,
+              :number_4_dec6,
+              :number_4_dec7,
+              :number_4_dec8,
+              :number_4_dec9,
+              :number_4_dec10,
+              :link1,
+              :link2,
+              :link3,
+              :link4,
+              :link5,
+              :link6,
+              :link7,
+              :link8,
+              :link9,
+              :link10
+          ]
+      }
+    )
   end
 
   def deal_type_source_params
@@ -819,11 +835,17 @@ class Api::DealsController < ApplicationController
     end
   end
 
+  def product_id
+    @_product_id ||= params[:product2_id] || params[:product1_id] || params[:product_id]
+  end
+
   def product_ids
-    @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
-      params[:product_ids]
+    @product_ids ||= if product_id
+      Product.include_children(company.products.where(id: product_id)).collect(&:id)
     elsif product_family
       product_family.products.collect(&:id)
+    elsif params[:product_ids].present? && params[:product_ids] != ['all']
+      Product.include_children(company.products.where(id: params[:product_ids])).collect(&:id)
     else
       nil
     end
@@ -883,39 +905,35 @@ class Api::DealsController < ApplicationController
   end
 
   def serialized_deals
-    company.stages.reduce([]) do |arr, stage|
-
+    team_stages.reduce([]) do |arr, stage|
       ordered_deals = all_ordered_deals_by_stage(stage)
 
-      arr <<
-        ordered_deals.limit(limit).offset(offset).includes(
+      arr << ordered_deals.limit(limit).offset(offset).includes(
           :advertiser,
           :agency,
           :deal_custom_field,
           :users,
           :stage,
           :currency
-        ).distinct
+        )
     end.flatten
   end
 
   def deals_info_by_stage
-    deals_info_by_stage = {}
-
-    company.stages.reduce([]) do |arr, stage|
+    team_stages.reduce({}) do |res, stage|
       ordered_deals = all_ordered_deals_by_stage(stage)
 
-      unweighted_budget = ordered_deals.sum(:budget).to_i
+      unweighted_budget = ordered_deals.sum(:budget)
       weighted_budget = stage.probability.zero? ? 0 : unweighted_budget * (stage.probability.to_f / 100.to_f)
 
-      arr << deals_info_by_stage[stage.id] = {
-        count: ordered_deals.count,
-        unweighted: unweighted_budget,
-        weighted: weighted_budget.to_i
-      }
+      res.tap do |obj|
+        obj[stage.id] = {
+          count: ordered_deals.count,
+          unweighted: unweighted_budget.to_i,
+          weighted: weighted_budget.to_i
+        }
+      end
     end
-
-    deals_info_by_stage
   end
 
   def all_ordered_deals_by_stage(stage)
@@ -927,8 +945,9 @@ class Api::DealsController < ApplicationController
       .by_budget_range(params[:budget_from], params[:budget_to])
       .by_curr_cd(params[:curr_cd])
       .by_start_date(params[:start_start_date], params[:start_end_date])
-      .for_time_period(time_period.try(:start_date), time_period.try(:end_date))
+      .for_time_period(time_period&.start_date, time_period&.end_date)
       .by_created_date(params[:created_start_date], params[:created_end_date])
+      .distinct
 
     closed_year = Date.new(params[:closed_year].to_i) if params[:closed_year].present?
 
@@ -937,5 +956,9 @@ class Api::DealsController < ApplicationController
 
   def company_teams_data
     company.teams.pluck_to_struct(:id, :name, :leader_id)
+  end
+
+  def team_stages
+    @_team_stages ||= team&.sales_process&.stages&.active || company.default_sales_process&.stages&.active || []
   end
 end

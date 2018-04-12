@@ -93,7 +93,14 @@ class Api::ForecastsController < ApplicationController
 
   def product_detail
     if valid_time_period?
-      render json: NewProductForecast.new(company, products, teams, team, user, time_period).forecasts_data
+      render json: NewProductForecast.new(
+        company,
+        product_family,
+        product, teams,
+        team,
+        user,
+        time_period
+      ).forecasts_data
     else
       render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
     end
@@ -105,6 +112,14 @@ class Api::ForecastsController < ApplicationController
 
   def revenue_data
     render json: forecast_revenue_data_serializer
+  end
+
+  def pmp_product_data
+    render json: forecast_pmp_revenue_product_data_serializer
+  end
+
+  def pmp_data
+    render json: forecast_pmp_revenue_data_serializer
   end
 
   def show
@@ -125,6 +140,7 @@ class Api::ForecastsController < ApplicationController
 
       job = ForecastCalculationLog.create(company_id: current_user.company_id, start_date: DateTime.now, end_date: nil, finished: false)
       ForecastRevenueCalculatorWorker.perform_async(io_change)
+      ForecastPmpRevenueCalculatorWorker.perform_async(io_change)
       ForecastPipelineCalculatorWorker.perform_async(deal_change, current_user.company_id)
 
       render nothing: true
@@ -204,9 +220,14 @@ class Api::ForecastsController < ApplicationController
 
   def valid_time_period?
     if params[:time_period_id].present? && time_period.present?
-      if time_period.start_date == time_period.start_date.beginning_of_year && time_period.end_date == time_period.start_date.end_of_year
+      if time_period.start_date == time_period.start_date.beginning_of_year &&
+          time_period.end_date == time_period.start_date.end_of_year
         return true
-      elsif time_period.start_date == time_period.start_date.beginning_of_quarter && time_period.end_date == time_period.start_date.end_of_quarter
+      elsif time_period.start_date == time_period.start_date.beginning_of_quarter &&
+          time_period.end_date == time_period.start_date.end_of_quarter
+        return true
+      elsif time_period.start_date == time_period.start_date.beginning_of_month &&
+          time_period.end_date == time_period.start_date.end_of_month
         return true
       else
         return false
@@ -232,11 +253,14 @@ class Api::ForecastsController < ApplicationController
   end
 
   def product
-    return @product if defined?(@product)
-    @product = nil
-    if params[:product_id] && params[:product_id] != 'all'
-      @product = company.products.find(params[:product_id])
-    end
+    @_product ||=
+      if params[:product2_id] && params[:product2_id] != 'all'
+        company.products.find(params[:product2_id])
+      elsif params[:product1_id] && params[:product1_id] != 'all'
+        company.products.find(params[:product1_id])
+      elsif params[:product_id] && params[:product_id] != 'all'
+        company.products.find(params[:product_id])
+      end
   end
 
   def product_family
@@ -249,9 +273,9 @@ class Api::ForecastsController < ApplicationController
 
   def products
     @_products ||= if params[:product_ids] == ['all'] && params[:product_family_id] == 'all'
-      company.products
+      Product.include_children(company.products)
     elsif params[:product_ids] && params[:product_ids] != ['all']
-      company.products.where('id in (?)', params[:product_ids])
+      Product.include_children(company.products.where('id in (?)', params[:product_ids]))
     elsif product_family
       product_family.products
     else
@@ -278,6 +302,14 @@ class Api::ForecastsController < ApplicationController
 
   def forecast_revenue_data_serializer
     Forecast::RevenueDataService.new(company, params).perform
+  end
+
+  def forecast_pmp_revenue_data_serializer
+    Forecast::PmpRevenueDataService.new(company, params).perform
+  end
+
+  def forecast_pmp_revenue_product_data_serializer
+    Forecast::PmpRevenueDataService.new(company, params, true).perform
   end
 
   def forecast_pipeline_data_serializer

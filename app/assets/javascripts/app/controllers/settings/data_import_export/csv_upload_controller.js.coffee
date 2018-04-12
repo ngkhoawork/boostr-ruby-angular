@@ -1,6 +1,6 @@
 @app.controller "CsvUploadController",
-['$scope', '$rootScope', '$injector', '$modalInstance', '$timeout', 'Client', 'Upload', 'Transloadit', '$http', 'api_url', 'custom_fields_api', 'metadata'
-($scope, $rootScope, $injector, $modalInstance, $timeout, Client, Upload, Transloadit, $http, api_url, custom_fields_api, metadata) ->
+['$scope', '$rootScope', '$injector', '$modalInstance', '$timeout', 'Client', 'Upload', 'Transloadit', 'Company', '$http', 'api_url', 'custom_fields_api', 'metadata'
+($scope, $rootScope, $injector, $modalInstance, $timeout, Client, Upload, Transloadit, Company, $http, api_url, custom_fields_api, metadata) ->
 
   $scope.progressPercentage = 0
   $scope.files = []
@@ -13,6 +13,7 @@
   $scope.init = () ->
     getCustomFields()
     getMetadata()
+    Company.get().$promise.then (company) -> $scope.company = company
 
   $scope.upload = (file) ->
     $scope.progressPercentage = 0
@@ -92,7 +93,7 @@
   getCustomFields = ->
     if custom_fields_api
       service = $injector.get(custom_fields_api)
-      service.all().then (custom_fields) ->
+      service.csv_headers().then (custom_fields) ->
         $scope.custom_fields = custom_fields
 
   getMetadata = ->

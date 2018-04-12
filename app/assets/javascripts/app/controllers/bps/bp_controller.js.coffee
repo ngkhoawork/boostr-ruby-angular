@@ -70,6 +70,11 @@
         bp: {id: 0}
       $scope.selectedTeam = $scope.filter.team
 
+      $scope.searchText = ''
+      $scope.handleSearch = () ->
+        $scope.page = 1
+        loadBPData()
+
       setMcSort = ->
        $scope.sort = new McSort({
          column: "client_name",
@@ -118,7 +123,7 @@
           $scope.users = users
           $scope.users.unshift(defaultUser)
 
-      $document.bind 'scroll', (evt) ->
+      onScroll = (evt) ->
         scrollTop = evt.target.scrollingElement.scrollTop
         scrollLeft = evt.target.scrollingElement.scrollLeft
         targetTop = $('.bp-table-wrapper')[0].offsetTop
@@ -127,10 +132,10 @@
           $('.fixed')[0].style.display = "table";
         else
           $('.fixed')[0].style.display = "none"
-      
 
+      $document.on 'scroll', onScroll
       $scope.$on '$destroy', () ->
-        $document.unbind('scroll')
+        $document.off('scroll', onScroll)
 
       #init query
       init = () ->
@@ -266,7 +271,8 @@
             team_id: $scope.selectedTeam.id
             user_id: $scope.selectedUser.id
             page: $scope.page
-            per: 10
+            per: 15
+            client_name: $scope.searchText if $scope.searchText
           }
           $scope.isLoading = true
           BpEstimate.all(filters).then (data) ->

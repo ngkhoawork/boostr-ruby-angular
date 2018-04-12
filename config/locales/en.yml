@@ -32,3 +32,7 @@ en:
             client_type_id:
               blank: "Account Type can't be blank"
               invalid: "Please Specify a valid Client Type"
+
+  csv:
+    importer:
+      response: 'Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)'

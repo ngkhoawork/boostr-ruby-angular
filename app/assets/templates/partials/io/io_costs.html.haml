@@ -1,0 +1,90 @@
+.block#costs
+  %div.mb20
+    %span.title Costs
+    %add-button{'ng-click': 'showNewCostModal()'} Add
+
+  .table-wrapper
+    %table.table.table-hover
+      %thead
+        %tr
+          %th.left.product-column Product
+          %th.left
+          %th.left.column{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+            {{ company.product_option1_field }}
+          %th.left.column{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+            {{ company.product_option2_field }}
+          %th.left.type-column Type
+          %th.left.column Start Date
+          %th.left.column End Date
+          %th.right.column Total Cost
+          %th.right.column{ ng: { repeat: "range in currentIO.readable_months" } }
+            {{ range.name }}
+      %tbody
+        %tr{ ng: { if: 'currentIO.costs && currentIO.costs.length > 0', repeat: "cost in currentIO.costs | orderBy: 'created_at'"} }
+          %td.product-column
+            .dropdown
+              %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                %span.editable
+                  {{cost.product.level0.name || 'Select Product'}}
+                  %span.caret
+              %ul.dropdown-menu
+                %li{'ng-repeat': 'product in productsByLevel(0, cost.product)', 'ng-class': '{active: cost.product.level0.id == product.id}'}
+                  %a{'href': '', 'ng-click': 'onChangeProduct(product, cost); updateCost(cost);'}
+                    %span.text {{product.name}}
+          %td
+            %i.fa.fa-trash.z-icon{'ng-click': 'deleteCost(cost)'} 
+          %td.column{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+            .dropdown{'ng-if': 'productsByLevel(1, cost.product).length > 0'}
+              %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                %span.editable
+                  {{cost.product.level1.name || 'Select '+company.product_option1_field}}
+                  %span.caret
+              %ul.dropdown-menu
+                %li{'ng-repeat': 'product in productsByLevel(1, cost.product)', 'ng-class': '{active: cost.product.level1.id == product.id}'}
+                  %a{'href': '', 'ng-click': 'onChangeProduct(product, cost); updateCost(cost);'}
+                    %span.text {{product.name}}
+          %td.column{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+            .dropdown{'ng-if': 'productsByLevel(2, cost.product).length > 0'}
+              %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                %span.editable
+                  {{cost.product.level2.name || 'Select '+company.product_option2_field}}
+                  %span.caret
+              %ul.dropdown-menu
+                %li{'ng-repeat': 'product in productsByLevel(2, cost.product)', 'ng-class': '{active: cost.product.level2.id == product.id}'}
+                  %a{'href': '', 'ng-click': 'onChangeProduct(product, cost); updateCost(cost);'}
+                    %span.text {{product.name}}
+          %td.type-column
+            .dropdown
+              %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                %span.editable
+                  {{ cost.type.option.name }}
+                  %span.caret
+              %ul.dropdown-menu
+                %li{'ng-repeat': 'type in cost.type.options', 'ng-class': '{active: cost.type.option_id == type.id}'}
+                  %a{'href': '', 'ng-click': 'cost.type.option_id = type.id; updateCost(cost);'}
+                    %span.text {{type.name}}
+          %td.column
+            {{ currentIO.start_date | date: 'M/d/yyyy' }}
+          %td.column
+            {{ currentIO.end_date | date: 'M/d/yyyy' }}
+          %td.right.column
+            %span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "cost.budget_loc", 'on-after-save': 'updateCost(cost)', 'ng-if': "(currentUser.is_admin || canEditIO) && !currentIO.freezed" }
+            %span{ ng: { if: "(!currentUser.is_admin && !canEditIO) || currentIO.freezed" } }
+              {{ cost.budget_loc | currency:currency_symbol:2 }}
+          %td.right.column{ ng: { repeat: "monthly_amount in cost.cost_monthly_amounts | orderBy: 'start_date'" } }
+            %span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", decimal: '2', 'ng-model': "monthly_amount.budget_loc", 'on-after-save': 'updateCost(cost)', 'ng-if': "currentUser.is_admin || canEditIO" }
+            %span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
+              {{ monthly_amount.budget_loc | currency:currency_symbol:2 }}
+        %tr.sum-budgets-row{ ng: { if: 'currentIO.costs && currentIO.costs.length > 0'} }
+          %td{colspan: 4}
+          %td{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+          %td{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+          %td.right
+            %b TOTAL
+          %td.right
+            %b {{sumCostBudget() | currency: currency_symbol : 2}}
+          %td.right{'ng-repeat': 'month in currentIO.months'}
+            %b {{sumCostBudget($index) | currency: currency_symbol : 2}}
+        %tr{ ng: { if: '!currentIO.costs || currentIO.costs.length == 0' } }
+          %td.center.auto-colspan
+            No data available

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Api::V1::ClientsController do
-  let(:company) { create :company}
+  let!(:company) { create :company }
   let(:team) { create :parent_team }
   let(:user) { create :user, team: team }
   let(:address_params) { attributes_for :address }

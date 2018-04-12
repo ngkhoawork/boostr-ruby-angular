@@ -1,28 +1,24 @@
-.navbar#header.navbar-default{ ng: { controller: 'NavbarController' } }
-  .navbar-inner
-    .container-fluid
-      .row
-        .navbar-header
-          %a#logo.navbar-brand{:href => root_path}
-        %p.navbar-text.navbar-right
-          - if user_signed_in?
-            = link_to "Sign out", destroy_user_session_path, method: :delete, class: 'navbar-link'
-          - else
-            = link_to "Sign in", new_user_session_path, class: 'navbar-link'
-          %starting-page
-      .row
-        %ul.nav.navbar-nav
-          %li{ ng: { repeat: 'item in ::navbar | filter: ""', class: "{ active: isActive(item.url) }" }, dropdown: '{{::item.dropdown.length > 0}}' }
-            %a{href: '', 'ng-if': '::!item.dropdown.length', 'ng-href': '{{::item.url}}'}
-              {{::item.name}}
-            %a{href: '', 'ng-if': '::item.dropdown.length', 'dropdown-toggle': true }
-              {{::item.name}}
-              %span.caret
-            %ul.dropdown-menu{'ng-if': '::item.dropdown.length'}
-              %li{'ng-repeat': 'item in ::item.dropdown | filter: "" | orderBy: "::name"'}
-                %a{href: '', 'ng-href': '{{::item.url}}'}
-                  {{::item.name}}
-
+#header{'ng-controller': 'NavbarController'}
+  %div.logo-row
+    %a#logo{:href => root_path}
+    %div.auth-wrap
+      - if user_signed_in?
+        = link_to "Sign out", destroy_user_session_path, method: :delete, class: 'navbar-link'
+      - else
+        = link_to "Sign in", new_user_session_path, class: 'navbar-link'
+      %starting-page
+  %div.navbar-row
+    %div.navbar-item{ ng: { repeat: 'item in ::navbar | filter: ""', class: "{ active: isActive(item.url) }" }, dropdown: '{{::item.dropdown.length > 0}}' }
+      %a{href: '', 'ng-if': '::!item.dropdown.length', 'ng-href': '{{::item.url}}'}
+        {{::item.name}}
+      %a{href: '', 'ng-if': '::item.dropdown.length', 'dropdown-toggle': true }
+        {{::item.name}}
+        %span.caret
+      .dropdown-menu{'ng-if': '::item.dropdown.length'}
+        %a.item{'ng-repeat': 'item in ::item.dropdown | orderBy: "::name"', 'ng-href': '{{::item.url}}'}
+          {{::item.name}}
+  %span.scroll-top-link{'ng-click': 'scrollTop()'}
+    %i.fa.fa-arrow-up
 
 :javascript
   _isRequestsVisible = (#{current_user.company.requests_enabled && current_user.has_requests_access?});
@@ -30,5 +26,10 @@
   _isPublisherEnabled = (#{current_user.company_publisher_enabled});
   _isGmailExtensionEnabled = (#{current_user.company.gmail_enabled});
   _isGcalendarExtensionEnabled = (#{current_user.company.gcalendar_enabled});
+  _isLogiEnabled = (#{current_user.company_logi_enabled});
   _gmail_extension_url = ("#{Setting.get(:gmail_extension_url)}");
   _gcalendar_extension_url = ("#{Setting.get(:gcalendar_extension_url)}");
+  _resourceLink = ("#{current_user.company.resource_link}");
+  _isAgreementsEnabled = (#{!!current_user.agreements_enabled});
+  _isLeadsEnabled = (#{!!current_user.leads_enabled});
+  _isContractsEnabled = (#{!!current_user.contracts_enabled});

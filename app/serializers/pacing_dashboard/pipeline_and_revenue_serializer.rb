@@ -31,7 +31,7 @@ class PacingDashboard::PipelineAndRevenueSerializer < ActiveModel::Serializer
   end
 
   def quotas
-    company.quotas.where(time_period: time_period, user: leader_ids)
+    company.quotas.by_type('gross').where(time_period: time_period, user: leader_ids)
   end
 
   def leader_ids

@@ -7,6 +7,7 @@
         $scope.types = []
         $scope.contactCfNames = []
         $scope.relatedAccounts = []
+        $scope.activitiesOrder = '-happened_at'
 
         (loadActivities = ->
             Activity.all(contact_id: $routeParams.id).then (activities) ->
@@ -74,8 +75,8 @@
                 backdrop: 'static'
                 keyboard: false
                 resolve:
-                    contact: ->
-                        {}
+                    contact: -> {}
+                    options: -> {}
 
         $scope.showEditModal = (contact) ->
             $scope.modalInstance = $modal.open
@@ -130,6 +131,8 @@
                 resolve:
                     activity: ->
                         activity
+
+        $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
 
         $scope.showAssignModal = (contact) ->
             $scope.modalInstance = $modal.open

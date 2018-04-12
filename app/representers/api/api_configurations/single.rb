@@ -17,6 +17,8 @@ class API::ApiConfigurations::Single < API::Single
   property :asana_connect_details, exec_context: :decorator
   property :datafeed_configuration_details, exec_context: :decorator
   property :google_sheets_details, exec_context: :decorator
+  property :job_status, exec_context: :decorator
+  property :can_be_scheduled, exec_context: :decorator
 
   private
 
@@ -46,5 +48,13 @@ class API::ApiConfigurations::Single < API::Single
 
   def google_sheets_details
     represented.google_sheets_details if represented.integration_type == 'GoogleSheetsConfiguration'
+  end
+
+  def job_status
+    represented.job_status if represented.integration_type == 'OperativeDatafeedConfiguration'
+  end
+
+  def can_be_scheduled
+    represented.can_be_scheduled? if represented.integration_type == 'OperativeDatafeedConfiguration'
   end
 end

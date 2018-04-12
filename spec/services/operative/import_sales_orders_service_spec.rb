@@ -8,7 +8,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       {sales_order: sales_order_file, currency: currency_file}
     )
   }
-  let(:company)          { Company.first }
+  let!(:company) { create :company }
   let(:auto_close_deals) { true }
   let(:sales_order_file) { './spec/sales_order_file.csv' }
   let(:currency_file)    { './spec/currency_file.csv' }
@@ -18,7 +18,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
 
   it 'passes rows to IoCsv' do
     content_for_files([
-      sales_order_csv,
+      sales_order_csv(exchange_rate_at_close: 1.55),
       currency_csv
     ])
 
@@ -31,18 +31,19 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       io_agency: nil,
       io_budget: nil,
       io_budget_loc: nil,
-      io_curr_cd: nil,
+      io_curr_cd: 'USD',
       company_id: company.id,
-      auto_close_deals: true
+      auto_close_deals: true,
+      exchange_rate: "1.55"
     }).and_return(io_csv)
     expect(io_csv).to receive(:valid?).and_return(:true)
     expect(io_csv).to receive(:perform)
     subject.perform
   end
 
-  it 'skips a row when sales_stage_percent is not 100' do
+  it 'skips a row when order_status is not active_order' do
     content_for_files([
-      sales_order_csv(sales_stage_percent: 90),
+      sales_order_csv(order_status: 'final_order_creation'),
       currency_csv
     ])
 
@@ -101,7 +102,8 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       io_budget_loc: nil,
       io_curr_cd: 'USD',
       company_id: company.id,
-      auto_close_deals: true
+      auto_close_deals: true,
+      exchange_rate: nil
     }).and_return(io_csv)
     expect(io_csv).to receive(:valid?).and_return(:true)
     expect(io_csv).to receive(:perform)
@@ -129,11 +131,11 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       subject.perform
 
       import_log = CsvImportLog.last
-      expect(import_log.rows_processed).to eq 7
+      expect(import_log.rows_processed).to eq 8
       expect(import_log.rows_imported).to eq 4
       expect(import_log.rows_failed).to eq 2
       expect(import_log.rows_skipped).to eq 1
-      expect(import_log.error_messages).to eq [{"row"=>5, "message"=>["Io advertiser can't be blank"]}, {"row"=>6, "message"=>["Io name can't be blank"]}]
+      expect(import_log.error_messages).to eq [{"row"=>6, "message"=>["Io advertiser can't be blank"]}, {"row"=>7, "message"=>["Io name can't be blank"]}]
       expect(import_log.file_source).to eq 'sales_order_file.csv'
       expect(import_log.object_name).to eq 'io'
     end
@@ -151,10 +153,24 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       subject.perform
       import_log = CsvImportLog.last
       expect(import_log.error_messages).to eq [{
-        "row"=>1,
+        "row"=>2,
         "message"=>
-          ["Internal Server Error", "{:order_currency_id=>\"100\", :order_start_date=>\"#{Date.today - 1.month}\", :sales_stage_percent=>\"100\"}"]
+          ["Internal Server Error", "{:order_currency_id=>\"100\", :order_status=>\"active_order\", :order_start_date=>\"#{Date.today - 1.month}\"}"]
       }]
+    end
+
+    it 'catches and processes amendable csv rows' do
+      content_for_files([
+        amendable_malformed_csv,
+        currency_csv
+      ])
+
+      subject.perform
+      import_log = CsvImportLog.last
+      expect(import_log.error_messages).not_to be_present
+
+      expect(import_log.rows_processed).to eq 3
+      expect(import_log.rows_imported).to  eq 2
     end
 
     it 'catches and skips malformed csv rows' do
@@ -166,20 +182,42 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       subject.perform
       import_log = CsvImportLog.last
       expect(import_log.error_messages).to eq [{
-        "row"=>1,
+        "row"=>2,
         "message"=>
           ["Unclosed quoted field on line 1.",
-            ",\"To Be Malformed\"\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n"]
+            "\"(To Be Malformed\"\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n"]
       }]
-      expect(import_log.rows_processed).to eq 2
+      expect(import_log.rows_processed).to eq 3
       expect(import_log.rows_imported).to  eq 1
+    end
+  end
+
+  context 'intraday' do
+    subject(:subject) {
+      Operative::ImportSalesOrdersService.new(
+        company.id,
+        auto_close_deals,
+        {sales_order: sales_order_file}
+      )
+    }
+
+    it 'handles missing currency file' do
+      content_for_files([
+        sales_order_csv
+      ])
+
+      subject.perform
+      expect(CsvImportLog.last.error_messages).to eq [{
+        "row"=>2, "message"=>["Currency ID 100 not found in mappings"]
+      }]
     end
   end
 
   def sales_order_csv(opts={})
     defaults = {
-      sales_stage_percent: '100',
-      order_start_date: Date.today - 1.month
+      order_status: 'active_order',
+      order_start_date: Date.today - 1.month,
+      order_currency_id: 100
     }
 
     @_sales_order_csv_data ||= build :sales_order_csv_data, defaults.merge(opts)
@@ -197,7 +235,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
     list = (build_list :sales_order_csv_data, 4, valid_order_data)
 
     list << (build :sales_order_csv_data,
-      sales_stage_percent: 100,
+      order_status: 'active_order',
       sales_order_id: 101,
       sales_order_name: 'Order_name_4141',
       order_start_date: Date.today - 1.month,
@@ -207,7 +245,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
     )
 
     list << (build :sales_order_csv_data,
-      sales_stage_percent: 100,
+      order_status: 'active_order',
       sales_order_id: 101,
       order_start_date: Date.today - 1.month,
       order_end_date: Date.today,
@@ -216,21 +254,31 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       order_currency_id: 100
     )
 
-    list << (build :sales_order_csv_data, sales_stage_percent: 90)
+    list << (build :sales_order_csv_data, order_status: 'final_order_creation')
     @_multyline_order_csv ||= generate_multiline_csv(list.first.keys, list.map(&:values))
   end
 
   def malformed_csv
     list = []
-    list << (build :sales_order_csv_data, sales_order_name: 'To Be Malformed"')
+    list << (build :sales_order_csv_data, sales_order_id: '(To Be Malformed"')
     list << (build :sales_order_csv_data, valid_order_data)
     @_malformed_csv ||= generate_multiline_csv(list.first.keys, list.map(&:values)).gsub("\"\"", "\"")
     @_malformed_csv
   end
 
+  def amendable_malformed_csv
+    list = []
+    malformed = valid_order_data
+    malformed[:sales_order_name] = "Very \"Illegal\" Quoting"
+    list << (build :sales_order_csv_data, malformed)
+    list << (build :sales_order_csv_data, valid_order_data)
+    @_amendable_malformed_csv ||= generate_multiline_csv(list.first.keys, list.map(&:values)).gsub("\"\"", "\"")
+    @_amendable_malformed_csv
+  end
+
   def valid_order_data
     {
-      sales_stage_percent: 100,
+      order_status: 'active_order',
       sales_order_id: 101,
       sales_order_name: 'Order_name_4141',
       order_start_date: Date.today - 1.month,

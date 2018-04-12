@@ -39,21 +39,21 @@ RSpec.describe ForecastPipelineFact, type: :model do
     it 'deal product deletion update fact' do
       deal.reload
       deal_product.destroy
-      expect(forecast_pipeline_fact.reload.amount.to_f).to eq(0)
-      expect(forecast_pipeline_fact2.reload.amount.to_f).to eq(0)
+      expect(forecast_pipeline_fact).to be_nil
+      expect(forecast_pipeline_fact2).to be_nil
     end
 
     it 'deal deletion update fact' do
       deal.reload
       deal.destroy
-      expect(forecast_pipeline_fact.reload.amount.to_f).to eq(0)
-      expect(forecast_pipeline_fact2.reload.amount.to_f).to eq(0)
+      expect(forecast_pipeline_fact).to be_nil
+      expect(forecast_pipeline_fact2).to be_nil
     end
 
     it 'deal member deletion update fact' do
       deal.reload
       deal_member.destroy
-      expect(forecast_pipeline_fact.amount.to_f).to eq(0)
+      expect(forecast_pipeline_fact).to be_nil
       expect(forecast_pipeline_fact2.amount.to_f).to eq(4000.0)
     end
 
@@ -75,8 +75,8 @@ RSpec.describe ForecastPipelineFact, type: :model do
 
       expect(new_forecast_pipeline_fact.amount.to_f).to eq(6000)
       expect(new_forecast_pipeline_fact2.amount.to_f).to eq(4000)
-      expect(forecast_pipeline_fact.amount.to_f).to eq(0)
-      expect(forecast_pipeline_fact2.amount.to_f).to eq(0)
+      expect(forecast_pipeline_fact).to be_nil
+      expect(forecast_pipeline_fact2).to be_nil
     end
 
     it 'won deal update fact' do
@@ -85,10 +85,10 @@ RSpec.describe ForecastPipelineFact, type: :model do
       new_forecast_pipeline_fact = ForecastPipelineFact.find_by(user_dimension_id: user.id, product_dimension_id: product.id, stage_dimension_id: won_stage.id, forecast_time_dimension_id: time_period.id)
       new_forecast_pipeline_fact2 = ForecastPipelineFact.find_by(user_dimension_id: user2.id, product_dimension_id: product.id, stage_dimension_id: won_stage.id, forecast_time_dimension_id: time_period.id)
 
-      expect(new_forecast_pipeline_fact.amount.to_f).to eq(0)
-      expect(new_forecast_pipeline_fact2.amount.to_f).to eq(0)
-      expect(forecast_pipeline_fact.amount.to_f).to eq(0)
-      expect(forecast_pipeline_fact2.amount.to_f).to eq(0)
+      expect(new_forecast_pipeline_fact).to be_nil
+      expect(new_forecast_pipeline_fact2).to be_nil
+      expect(forecast_pipeline_fact).to be_nil
+      expect(forecast_pipeline_fact2).to be_nil
     end
 
     it 'lost deal update fact' do
@@ -97,10 +97,10 @@ RSpec.describe ForecastPipelineFact, type: :model do
       new_forecast_pipeline_fact = ForecastPipelineFact.find_by(user_dimension_id: user.id, product_dimension_id: product.id, stage_dimension_id: lost_stage.id, forecast_time_dimension_id: time_period.id)
       new_forecast_pipeline_fact2 = ForecastPipelineFact.find_by(user_dimension_id: user2.id, product_dimension_id: product.id, stage_dimension_id: lost_stage.id, forecast_time_dimension_id: time_period.id)
 
-      expect(new_forecast_pipeline_fact.amount.to_f).to eq(0)
-      expect(new_forecast_pipeline_fact2.amount.to_f).to eq(0)
-      expect(forecast_pipeline_fact.amount.to_f).to eq(0)
-      expect(forecast_pipeline_fact2.amount.to_f).to eq(0)
+      expect(new_forecast_pipeline_fact).to be_nil
+      expect(new_forecast_pipeline_fact2).to be_nil
+      expect(forecast_pipeline_fact).to be_nil
+      expect(forecast_pipeline_fact2).to be_nil
     end
   end
 

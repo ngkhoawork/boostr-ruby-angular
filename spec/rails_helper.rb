@@ -4,14 +4,15 @@ if ENV['RAILS_ENV'] == 'test'
   if ENV['CIRCLE_ARTIFACTS']
     dir = File.join(ENV['CIRCLE_ARTIFACTS'], "coverage")
     SimpleCov.coverage_dir(dir)
+
+    SimpleCov.start 'rails' do
+      add_group 'Decorators', 'app/decorators'
+      add_group 'Services', 'app/services'
+      add_group 'Serializers', 'app/serializers'
+      add_group 'Representers', 'app/representers'
+    end
   end
 
-  SimpleCov.start 'rails' do
-    add_group 'Decorators', 'app/decorators'
-    add_group 'Services', 'app/services'
-    add_group 'Serializers', 'app/serializers'
-    add_group 'Representers', 'app/representers'
-  end
 end
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
@@ -22,9 +23,6 @@ require 'spec_helper'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
 require 'shoulda/matchers'
-require 'capybara/rails'
-require 'capybara/rspec'
-require 'capybara/webkit'
 require 'helpers'
 
 # Sidekiq testing
@@ -63,9 +61,14 @@ RSpec.configure do |config|
   config.include WaitForAjax
   config.include UsesTempFiles
   config.include PacingDashboardHelper
+  config.include AutoCleanClassVariables
+
   config.before :suite do
+    DatabaseCleaner.clean_with :deletion
+    DatabaseCleaner.strategy = :transaction
     Warden.test_mode!
   end
+
   config.after :each do
     Warden.test_reset!
   end
@@ -73,19 +76,13 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = false
 
   config.before :each do
-    if Capybara.current_driver == :rack_test
-      DatabaseCleaner.strategy = :transaction
-    else
-      DatabaseCleaner.strategy = :truncation
-    end
-
     DatabaseCleaner.start
-    FactoryGirl.create(:company)
   end
 
-  config.after do
+    config.append_after :each do
     DatabaseCleaner.clean
   end
 
   config.infer_spec_type_from_file_location!
+  config.silence_filter_announcements = true
 end

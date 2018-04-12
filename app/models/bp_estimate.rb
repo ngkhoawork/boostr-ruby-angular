@@ -11,8 +11,10 @@ class BpEstimate < ActiveRecord::Base
   scope :unassigned, -> (value) { if value == true then where('bp_estimates.user_id IS NULL') end}
   scope :assigned, -> { where('bp_estimates.user_id IS NOT NULL') }
   scope :has_status, -> { where('bp_estimates.user_id IS NOT NULL AND bp_estimates.estimate_seller > 0 AND bp_estimates.client_id IS NOT NULL') }
-  scope :by_user_ids, -> (user_ids) { where(user_id: user_ids) if user_ids && user_ids.count > 0 }
+  scope :by_user_ids, -> (user_ids) { where(user_id: user_ids) if user_ids }
   scope :order_by_client_name, -> { order('clients.name') }
+  scope :find_by_client_name,
+    ->(client_name) { joins(:client).where('clients.name ilike ?', "%#{client_name}%") if client_name }
 
   after_update do
     total = bp_estimate_products.sum(:estimate_seller)
@@ -208,7 +210,7 @@ class BpEstimate < ActiveRecord::Base
   end
 
   def generate_bp_estimate_products
-    bp.company.products.active.each do |product|
+    bp.company.products.active.by_level(0).each do |product|
       bp_estimate_product_param = {
           product_id: product.id,
           estimate_seller: nil,

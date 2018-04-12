@@ -29,6 +29,9 @@
       address_attributes: address_attributes
       values_attributes: values_attributes
       account_cf_attributes: original.account_cf
+    if original.lead
+      send.lead_id = original.lead.id
+      send.client.created_from = 'Web-Form Lead'
     angular.toJson(send)
 
   resource = $resource '/api/clients/:id', { id: '@id' },
@@ -83,7 +86,18 @@
       isArray: true
       method: "GET"
       url: 'api/clients/search_clients'
+    },
+    fuzzy_search: {
+      isArray: true
+      method: "GET"
+      url: 'api/clients/fuzzy_search'
+    },
+    search_duplicates: {
+      isArray: true
+      method: 'GET'
+      url: '/api/clients/search_clients?name=:name&full_text_search=true'
     }
+
 
   resource.allClients = []
   resource.currentClient = {}

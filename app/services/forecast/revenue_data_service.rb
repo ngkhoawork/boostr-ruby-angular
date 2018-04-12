@@ -3,9 +3,10 @@ class Forecast::RevenueDataService
     @company             = company
     @team_id             = params[:team_id]
     @product_family_id   = params[:product_family_id]
-    @product_id          = params[:product_id]
+    @product_id          = params[:product2_id] || params[:product1_id] || params[:product_id]
     @member_id           = params[:member_id]
     @time_period_id      = params[:time_period_id]
+    @is_net_forecast     = (params[:is_net_forecast] && params[:is_net_forecast] == 'true')
   end
 
   def perform
@@ -16,6 +17,7 @@ class Forecast::RevenueDataService
       filter_end_date: end_date,
       product_ids: product_ids,
       member_ids: member_ids,
+      is_net_forecast: is_net_forecast,
     )
   end
 
@@ -26,6 +28,7 @@ class Forecast::RevenueDataService
               :product_family_id,
               :product_id,
               :member_id,
+              :is_net_forecast,
               :time_period_id
 
   def data_for_serializer
@@ -60,6 +63,9 @@ class Forecast::RevenueDataService
         },
         content_fees: {
           content_fee_product_budgets: {}
+        },
+        costs: {
+          cost_monthly_amounts: {}
         },
         display_line_items: {
           display_line_item_budgets: {}
@@ -109,9 +115,11 @@ class Forecast::RevenueDataService
   end
 
   def products
-    @_products ||= if product.present?
+    @_products ||= if product&.level == 2
       [product]
-    elsif product_family
+    elsif product.present?
+      product.include_children
+    elsif product_family.present?
       product_family.products
     end
   end

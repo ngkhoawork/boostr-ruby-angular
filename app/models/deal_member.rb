@@ -1,4 +1,6 @@
 class DealMember < ActiveRecord::Base
+  SAFE_COLUMNS = %i{share role created_at updated_at}
+
   belongs_to :deal, touch: true
   belongs_to :user
   belongs_to :username, -> { select(:id, :first_name, :last_name, :team_id) }, class_name: 'User', foreign_key: 'user_id'
@@ -16,7 +18,7 @@ class DealMember < ActiveRecord::Base
   scope :account_manager_users, -> { includes(:user).where(users: {user_type: ACCOUNT_MANAGER}) }
   scope :with_not_zero_share, -> { where('share > ?', 0) }
   scope :by_seller, -> (seller_id) { where(user_id: seller_id) if seller_id.present? }
-  scope :by_team, -> (team_id) { where(users: { team_id: team_id }) if team_id.present? }
+  scope :by_team, -> (team_id) { where(user_id: Team.find(team_id).all_members_and_leaders) if team_id.present? }
   scope :by_stage_ids, -> (stage_ids) { joins(:deal).where(deals: { stage_id: stage_ids }) if stage_ids.present? }
 
   after_update do

@@ -27,8 +27,13 @@ class Importers::BaseService < BaseService
 
     if csv_object.valid?
       begin
-        csv_object.perform
-        csv_import_log.count_imported
+        if csv_object.perform
+          csv_import_log.count_imported
+          after_import_row(csv_object) if method_defined?(:after_import_row)
+        else
+          csv_import_log.count_failed
+          csv_import_log.log_error csv_object.object_errors
+        end
       rescue Exception => e
         csv_import_log.count_failed
         csv_import_log.log_error ['Internal Server Error', row.compact.to_s, e.message]
@@ -68,5 +73,9 @@ class Importers::BaseService < BaseService
 
   def file_name
     @original_filename || file
+  end
+
+  def method_defined?(method_name)
+    self.class.method_defined?(method_name) || self.class.private_method_defined?(method_name)
   end
 end

@@ -415,7 +415,7 @@ class ProductForecastMember
   end
 
   def quota
-    @quota ||= member.quotas.for_time_period(start_date, end_date).sum(:value)
+    @quota ||= member.total_gross_quotas(start_date, end_date)
   end
 
   def quarterly_quota
@@ -423,7 +423,7 @@ class ProductForecastMember
 
     @quarterly_quota = {}
     quarters.each do |quarter_row|
-      @quarterly_quota['q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s] = member.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+      @quarterly_quota['q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s] = member.total_gross_quotas(quarter_row[:start_date], quarter_row[:end_date])
     end
 
     @quarterly_quota

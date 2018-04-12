@@ -18,6 +18,10 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   property :description, exec_context: :decorator
   property :name, exec_context: :decorator
 
+  property :external_po_reference, as: :externalPoRef, exec_context: :decorator,
+           if: -> (options) { options[:buzzfeed].eql?(true) }
+  property :currency, exec_context: :decorator
+
   property :accounts, decorator: Operative::AccountsRepresenter, exec_context: :decorator
   property :custom_fields, decorator: Operative::CustomFieldsRepresenter, exec_context: :decorator,
            if: -> (options) { options[:enable_operative_extra_fields].eql?(true) || options[:buzzfeed].eql?(true) }
@@ -35,6 +39,9 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
 
   property :xsi_type, attribute: true, exec_context: :decorator, as: 'xsi:type'
   property :xmlns_xsi, attribute: true, exec_context: :decorator, as: 'xmlns:xsi'
+
+  delegate :company, :deal_custom_field, to: :represented
+  delegate :deal_custom_field_names, to: :company
 
   def custom_fields
     represented
@@ -65,7 +72,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def mashable_sales_order_type
-    if order_type_cf.present? && represented.deal_custom_field.present? && account_cf_billable_client_id_value.present?
+    if order_type_cf.present? && deal_custom_field.present? && account_cf_billable_client_id_value.present?
       account_cf_billable_client_id_value
     end
   end
@@ -75,7 +82,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def alternate_id
-    "boostr_#{represented.id}_#{represented.company.name}_order"
+    "boostr_#{represented.id}_#{company.name}_order"
   end
 
   def sales_stage_name
@@ -127,14 +134,25 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def order_type_cf
-    @_order_type_cf ||= represented.company.deal_custom_field_names.find_by(field_label: 'Order Type')
+    @_order_type_cf ||= deal_custom_field_names.find_by(field_label: 'Order Type')
   end
 
   def account_cf_billable_client_id_value
-    represented.deal_custom_field.send(order_type_cf.field_name)
+    deal_custom_field.send(order_type_cf.field_name)
+  end
+
+  def currency
+    represented.curr_cd
   end
 
   def buzzfeed_order_type
     'Direct Sales'
+  end
+
+  def external_po_reference
+    if (field_name = deal_custom_field_names.find_by(field_label: 'External PO Reference')&.field_name)
+
+      deal_custom_field&.send(field_name)
+    end
   end
 end

@@ -1,0 +1,217 @@
+.row.mb20
+  .reports-header
+    .billing-header-col
+      %form.form-inline.filter-form
+        .form-group
+          %label
+            Year
+          .dropdown.form-control
+            .dropdown-toggle.year-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{selectedYear || 'Select'}}
+              %span.caret
+            %ul.dropdown-menu.year-dropdown
+              %li{'ng-repeat': 'year in years', 'ng-class': '{active: selectedYear == year}'}
+                %a{'href': '', 'ng-click': 'selectYear(year)'}
+                  %span {{year}}
+
+        .form-group
+          %label
+            Month
+          .dropdown.form-control
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{selectedMonth || 'Select'}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'month in months', 'ng-class': '{active: selectedMonth == month}'}
+                %a{'href': '', 'ng-click': 'selectMonth(month)'}
+                  %span {{month}}
+        .form-group
+          %label
+            Team
+          .team-filter
+            %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team'}
+        .form-group
+          %label
+            Seller
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.user.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'user in users | orderBy : "name"', 'ng-class': '{active: filter.user.name == user.name}'}
+                %a{'href': '', 'ng-click': 'setFilter("user", user)'}
+                  %span {{user.name}}
+        .form-group
+          %label
+            Account Manager
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.manager.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'manager in managers', 'ng-class': '{active: filter.manager.id == manager.id}'}
+                %a{'href': '', 'ng-click': 'setFilter("manager", manager)'}
+                  %span {{manager.name}}
+        .form-group
+          %label
+            Product Family
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.productFamily.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-repeat': 'productFamily in productFamilies', 'ng-class': '{active: filter.productFamily.id == productFamily.id}'}
+                %a{'href': '', 'ng-click': 'setFilter("productFamily", productFamily)'}
+                  %span {{productFamily.name}}
+        .form-group
+          %label
+            Product
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.product.level0.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-class': '{active: !filter.product.level0.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level0", emptyFilter)'}
+                  %span All
+              %li{'ng-repeat': 'product in productsByLevel(0, filter.product)', 'ng-class': '{active: filter.product.level0.id == product.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level0", product)'}
+                  %span {{product.name}}
+        .form-group{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+          %label
+            {{ company.product_option1_field }}
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.product.level1.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-class': '{active: !filter.product.level1.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level0", filter.product.level0)'}
+                  %span All
+              %li{'ng-repeat': 'product in productsByLevel(1, filter.product)', 'ng-class': '{active: filter.product.level1.id == product.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level1", product)'}
+                  %span {{product.name}}
+        .form-group{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+          %label
+            {{ company.product_option2_field }}
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.product.level2.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-class': '{active: !filter.product.level2.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level1", filter.product.level1)'}
+                  %span All
+              %li{'ng-repeat': 'product in productsByLevel(2, filter.product)', 'ng-class': '{active: filter.product.level2.id == product.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level2", product)'}
+                  %span {{product.name}}
+        .form-group
+          %button.btn-main.submit{'ng-click': 'getData()'} Apply filters
+
+%div
+  .row.mb20
+    .col-xs-12.block
+      %div.mb20
+        %span.title Costs
+      %div{'ng-show': '!costs.length && !dataIsLoading'}
+        %h4 No Data Available
+      %div.table-wrap{'ng-hide': '!costs.length && !dataIsLoading'}
+        %table.table.table-hover.ios-for-approval
+          %thead
+            %tr.z-sortable-prime
+              %th
+                %span.z-sortable{by: 'io_number'} IO #
+              %th
+                %span.z-sortable{by: 'io_name'} IO Name
+              %th
+                %span.z-sortable{by: 'advertiser'} advertiser
+              %th
+                %span.z-sortable{by: 'agency'} Agency
+              %th
+                %span.z-sortable{by: 'sellers[0].name'} Seller
+              %th
+                %span.z-sortable{by: 'account_managers[0].name'} Account Manger
+              %th
+                %span.z-sortable{by: 'product.level0.name'} Product
+              %th{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+                %span.z-sortable{by: 'product.level1.name'} {{ company.product_option1_field }}
+              %th{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+                %span.z-sortable{by: 'product.level2.name'} {{ company.product_option2_field }}
+              %th
+                %span.z-sortable{by: 'type.option.name'} Cost Type
+              %th.text-right
+                %span.z-sortable{by: 'amount'} Amount
+              %th.text-right
+                %span.z-sortable{by: 'actual_status'} Actualization Status
+          %tbody.hide-input-arrows
+            %tr{'ng-repeat': 'item in costs | orderBy : zSort.by : zSort.rev'}
+              %td
+                %b {{item.io_number}}
+              %td
+                %a{href: '', target: '_blank', 'ng-href': '/revenue/ios/{{item.io_id}}'} {{item.io_name}}
+              %td
+                {{item.advertiser}}
+              %td
+                {{item.agency}}
+              %td
+                %div{'ng-repeat': 'seller in item.sellers'}
+                  {{seller.name}}
+              %td
+                %div{'ng-repeat': 'account_manager in item.account_managers'}
+                  {{account_manager.name}}
+              %td
+                .dropdown{'ng-click': 'fixingDropdownPosition($event)'}
+                  %div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.text.editable
+                      {{item.product.level0.name || 'Select product'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{'ng-repeat': 'product in productsByLevel(0, item.product)'}
+                      %a{'href': '', 'ng-click': 'onChangeProduct(product, item); updateCost(item)'}
+                        %span.text {{product.name}}
+              %td{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+                .dropdown{'ng-click': 'fixingDropdownPosition($event)', 'ng-if': 'productsByLevel(1, item.product).length > 0'}
+                  %div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.text.editable
+                      {{item.product.level1.name || 'Select '+company.product_option1_field}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{'ng-repeat': 'product in productsByLevel(1, item.product)'}
+                      %a{'href': '', 'ng-click': 'onChangeProduct(product, item); updateCost(item)'}
+                        %span.text {{product.name}}
+              %td{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+                .dropdown{'ng-click': 'fixingDropdownPosition($event)', 'ng-if': 'productsByLevel(2, item.product).length > 0'}
+                  %div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.text.editable
+                      {{item.product.level2.name || 'Select '+company.product_option2_field}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{'ng-repeat': 'product in productsByLevel(2, item.product)'}
+                      %a{'href': '', 'ng-click': 'onChangeProduct(product, item); updateCost(item)'}
+                        %span.text {{product.name}}
+
+              %td
+                .dropdown{'ng-click': 'fixingDropdownPosition($event, "right")'}
+                  %div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.text.editable
+                      {{item.type.option.name || 'Select type'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{'ng-repeat': 'type in item.type.options'}
+                      %a{'href': '', 'ng-click': 'item.type.option_id = type.id; updateCost(item)'}
+                        %span.text {{type.name}}
+
+              %td.text-right
+                %span.display-fee-product-budget{'editable-number': 'item.amount', 'e-step': '0.01', blur: 'submit', onbeforesave: 'item.budget_loc = $data; updateCostBudget(item)'}
+                  {{ item.amount | currency : item.currency_symbol : 2 }}
+
+              %td{class: 'text-right {{item.actual_status.toLowerCase() + "-status"}}'}
+                .dropdown{'ng-click': 'fixingDropdownPosition($event)'}
+                  %div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.text.editable
+                      {{item.actual_status || 'Select status'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{'ng-repeat': 'status in statuses'}
+                      %a{'href': '', 'ng-click': 'item.actual_status = status; updateCostBudget(item)'}
+                        %span.text {{status}}

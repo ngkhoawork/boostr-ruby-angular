@@ -7,6 +7,8 @@
             %li.pull-left.dfp-import-buttons{ ng: { if: 'dfp_turned_on'} }
               %button.add-btn{ ng: { click: 'dfp_cumulative_import()'} } Run Cumulative DFP Report
               %button.add-btn{ ng: { click: 'dfp_monthly_import()'} } Run Monthly DFP Report
+            %li.pull-left.slack-button
+              %button.add-btn{ ng: { click: 'auth_slack()'} } Enable Slack
             %li.pull-right.last{ dropdown: true }
               %a.add-api-integration{ href: '', dropdown: { toggle: true } }
                 = inline_svg 'icons/add.svg'
@@ -25,27 +27,24 @@
             %tr
               %th.left Integration Provider
               %th.left Api link
+              %th.left Switched on?
               %th.left Network code
               %th.left Probability Threshold
-              %th.left Monthly report query id
-              %th.left Cumulative report query id
-              %th.left Cumulative Weekly recurrence day
-              %th.left Monthly report recurrence day
-              %th.left Cumulative report daily run
-              %th.left Switched on?
+              %th.left Job Status
+              %th.left Action
               %th.action-column
           %tbody
             %tr{ ng: { repeat: 'api_configuration in api_configurations' } }
               %td.left {{ api_configuration.integration_provider }}
               %td.left {{ api_configuration.base_link }}
+              %td.left {{ api_configuration.switched_on }}
               %td.left {{ api_configuration.network_code }}
               %td.left {{ api_configuration.trigger_on_deal_percentage }}
-              %td.left {{ api_configuration.monthly_dfp_report_query.report_id }}
-              %td.left {{ api_configuration.cumulative_dfp_report_query.report_id }}
-              %td.left {{ api_configuration.cumulative_dfp_report_query.weekly_recurrence_day }}
-              %td.left {{ api_configuration.monthly_dfp_report_query.monthly_recurrence_day}}
-              %td.left {{ api_configuration.cumulative_dfp_report_query.is_daily_recurrent }}
-              %td.left {{ api_configuration.switched_on }}
+              %td.left {{ api_configuration.job_status }}
+              %td.left
+                %div{ng: {if: 'api_configuration.integration_provider == "Operative Datafeed"'}}
+                  %button.btn.activity-email-btn{ ng: { click: 'runDatafeedIntraday(api_configuration)', disabled: '!api_configuration.can_be_scheduled'} } Run Intraday
+                  %button.btn.activity-email-btn{ ng: { click: 'runDatafeedImportAll(api_configuration)', disabled: '!api_configuration.can_be_scheduled'} } Import All
               %td.action-td
                 %a.edit-api-integration{ href: '', ng: { click: 'editModal(api_configuration)' } }
                   = inline_svg 'icons/pencil.svg'

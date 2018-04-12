@@ -13,6 +13,7 @@ FactoryGirl.define do
 
     factory :deal_product_csv_data_custom_fields do
       after(:build) do |item|
+        item[:company] = Company.first unless item[:company].present?
         setup_custom_fields(item)
       end
     end
@@ -21,11 +22,11 @@ end
 
 def setup_default_deal_product_csv_data(item)
   if item[:deal_name].nil?
-    item[:deal_name] = Company.first.deals.order(:id).first.name
+    item[:deal_name] = item[:company].deals.order(:id).first.name
   end
 
   if item[:product].nil?
-    item[:product] = Company.first.products.sample.name
+    item[:product] = item[:company].products.sample.name
   end
 end
 

@@ -1,7 +1,10 @@
 require 'rails_helper'
 
 describe 'Deals integration', operative: true do
-  before { create :billing_deal_contact, deal: deal, contact: contact }
+  before do
+    create :billing_address_validation, company: company
+    create :billing_deal_contact, deal: deal, contact: contact
+ end
 
   context 'create deal' do
     let(:response) { Operative::DealsService.new(deal, false, auth_details).perform }
@@ -49,14 +52,13 @@ describe 'Deals integration', operative: true do
   end
 
   def create_advertiser
-    @_advertiser ||= create :client, name: 'Joan Doe', id: 270, company: company
+    @_advertiser ||= create :client, name: 'Joan Doe', company: company
   end
 
   def create_agency
     @_agency ||= create :client,
                         values: [create_agency_value],
                         name: 'Joe Doe',
-                        id: 308,
                         company: agency_company
   end
 
@@ -68,7 +70,6 @@ describe 'Deals integration', operative: true do
     @_contact ||= create :contact,
                          clients: [deal.advertiser],
                          name: 'John Doe',
-                         id: 11,
                          company: contact_company
   end
 

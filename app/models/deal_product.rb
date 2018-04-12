@@ -1,14 +1,22 @@
 class DealProduct < ActiveRecord::Base
+  SAFE_COLUMNS = %i{budget created_at updated_at budget_loc ssp_deal_id pmp_type}
+
   belongs_to :deal, touch: true
   belongs_to :product
+  belongs_to :ssp
   has_many :deal_product_budgets, -> { order(:start_date) }, dependent: :destroy
   has_one :deal_product_cf, dependent: :destroy
 
+  enum pmp_type: PMP_TYPES
+
   validates :product, presence: true
+  validates :budget, :budget_loc, numericality: true
   validate :active_exchange_rate
 
   accepts_nested_attributes_for :deal_product_budgets
   accepts_nested_attributes_for :deal_product_cf
+
+  before_validation :ensure_budget_attributes_have_values
 
   after_create do
     if deal_product_budgets.empty?
@@ -42,6 +50,7 @@ class DealProduct < ActiveRecord::Base
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) if product_ids.present? }
   scope :open, ->  { where('deal_products.open IS true')  }
   scope :active, -> { DealProduct.joins('LEFT JOIN products ON deal_products.product_id = products.id').where('products.active IS true') }
+  scope :created_asc, -> { order(:created_at) }
 
   def update_pipeline_fact_callback
     update_forecast_pipeline_product(self) if budget_changed? || budget_loc_changed? || open_changed?
@@ -196,11 +205,23 @@ class DealProduct < ActiveRecord::Base
         next
       end
 
+      i = 0
       if row[2]
-        product = current_user.company.products.where('name ilike ?', row[2]).first
+        full_name = row[2].to_s
+        if current_user.company.product_options_enabled
+          if current_user.company.product_option1_enabled
+            i += 1
+            full_name += ' ' + row[3].to_s
+          end
+          if current_user.company.product_option2_enabled
+            i += 1
+            full_name += ' ' + row[4].to_s
+          end
+        end
+        product = current_user.company.products.where(full_name: full_name.strip).first
         unless product
           import_log.count_failed
-          import_log.log_error(["Product #{row[2]} could not be found"])
+          import_log.log_error(["Product #{full_name.strip} could not be found"])
           next
         end
       else
@@ -210,8 +231,8 @@ class DealProduct < ActiveRecord::Base
       end
 
       budget = nil
-      if row[3]
-        budget = Float(row[3].strip) rescue false
+      if row[3+i]
+        budget = Float(row[3+i].strip) rescue false
         budget_loc = budget
         unless budget
           import_log.count_failed
@@ -299,6 +320,11 @@ class DealProduct < ActiveRecord::Base
   end
 
   private
+
+  def ensure_budget_attributes_have_values
+    self.budget = 0 if budget.nil?
+    self.budget_loc = 0 if budget_loc.nil?
+  end
 
   def self.import_custom_field(obj, row)
     params = {}

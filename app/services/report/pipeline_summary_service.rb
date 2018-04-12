@@ -1,8 +1,8 @@
 class Report::PipelineSummaryService
   def initialize(company, params)
     @company             = company
-    @team_id             = params[:team_id]
     @seller_id           = params[:seller_id]
+    @team_id             = params[:team_id] if params[:seller_id].nil?
     @stage_ids           = params[:stage_ids]
     @type_id             = params[:type_id]
     @source_id           = params[:source_id]
@@ -28,42 +28,49 @@ class Report::PipelineSummaryService
               :created_date_end, :stage_ids, :closed_date_start, :closed_date_end
 
   def deals
-    @_deals ||= company.deals
-           .includes(
-             :stage,
-             :deal_custom_field,
-             :initiative,
-             :currency,
-             deal_members: [{ user: :team }],
-             values: [:option],
-             agency: [:holding_company],
-             advertiser: [:client_category]
-           )
-           .by_team_id(team_id)
-           .by_seller_id(seller_id)
-           .by_stage_ids(stage_ids)
-           .by_start_date(start_date, end_date)
-           .by_created_date(created_date_start, created_date_end)
-           .closed_at(closed_date_start, closed_date_end)
+    @_deals ||=
+      company.deals
+        .by_team_id(team_id)
+        .by_seller_id(seller_id)
+        .by_stage_ids(stage_ids)
+        .by_start_date(start_date, end_date)
+        .by_created_date(created_date_start, created_date_end)
+        .closed_at(closed_date_start, closed_date_end)
+        .includes(
+          stage: {},
+          deal_custom_field: {},
+          initiative: {},
+          currency: {},
+          billing_contact: {},
+          deal_members: {
+            user: {
+              team: {}
+            }
+          },
+          values: {
+            option: {}
+          },
+          agency: {
+            holding_company: {}
+          },
+          advertiser: {
+            client_category: {}
+          }
+        ).distinct
   end
 
   def data_for_serializer
-    if source_id.present? && type_id.present?
-      deals_with_source_and_type
-    elsif source_id.present? || type_id.present?
-      deals.by_options([type_id, source_id])
-    else
-      deals
-    end
+    @_data_for_serializer ||=
+      if source_id.present? && type_id.present?
+        deals.with_all_options([type_id, source_id])
+      elsif source_id.present? || type_id.present?
+        deals.by_options([type_id, source_id])
+      else
+        deals
+      end
   end
 
   def deal_custom_fields
     company.fields.where(subject_type: 'Deal').pluck(:id, :name)
-  end
-
-  def deals_with_source_and_type
-    deals.select do |deal|
-      deal.option_ids.include?(source_id.to_i) && deal.option_ids.include?(type_id.to_i)
-    end
   end
 end

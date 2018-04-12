@@ -1,9 +1,18 @@
 class Csv::Quota
   include ActiveModel::Validations
+  include Csv::ProductOptionable
 
-  attr_accessor :time_period_name, :user_email, :quota_value, :company
+  attr_accessor :time_period_name, 
+                :user_email, 
+                :quota_value, 
+                :company, 
+                :type, 
+                :product_name, 
+                :product_level1, 
+                :product_level2, 
+                :product_family_name
 
-  validates :time_period_name, :user_email, :quota_value, :company, presence: true
+  validates :time_period_name, :user_email, :quota_value, :company, :type, presence: true
 
   validate do |quota_csv|
     if time_period.nil?
@@ -20,6 +29,12 @@ class Csv::Quota
   validate do |quota_csv|
     if quota_value.match(/^\d+$/).blank?
       quota_csv.errors.add(:base, 'Quota should has numeric value.')
+    end
+  end
+
+  validate do |quota_csv|
+    if type != 'gross' && type != 'net'
+      quota_csv.errors.add(:base, 'Type with --#{type}-- is invalid.')
     end
   end
 
@@ -65,6 +80,11 @@ class Csv::Quota
       time_period_name: row[:time_period],
       user_email: row[:email],
       quota_value: row[:quota],
+      type: row[:type].try(:downcase),
+      product_name: row[:product],
+      product_level1: row[:product_level1],
+      product_level2: row[:product_level2],
+      product_family_name: row[:product_family],
       company: company
     )
   end
@@ -76,8 +96,39 @@ class Csv::Quota
       company.quotas.create(
         time_period_id: time_period.id,
         user_id: user.id,
+        value_type: type,
+        product_id: product_id,
+        product_type: product_type,
         value: quota_value
       )
+    end
+  end
+
+  def product
+    @_product ||= Product.find_by(full_name: product_full_name) if product_name.present?
+  end
+
+  def product_family
+    @_product_family ||= ProductFamily.find_by(name: product_family_name) if product_family_name.present?
+  end
+
+  def product_id
+    if product.present?
+      product.id
+    elsif product_family.present?
+      product_family.id
+    else
+      nil
+    end
+  end
+
+  def product_type
+    if product.present?
+      'Product'
+    elsif product_family.present?
+      'ProductFamily'
+    else
+      nil
     end
   end
 
@@ -90,7 +141,7 @@ class Csv::Quota
   end
 
   def quota
-    @_quota = company.quotas.find_by(time_period_id: time_period.id, user_id: user.id)
+    @_quota = company.quotas.find_by(time_period_id: time_period.id, user_id: user.id, value_type: Quota.value_types[type], product_id: product_id, product_type: product_type)
   end
 
   def persisted?

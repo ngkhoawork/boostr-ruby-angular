@@ -62,7 +62,6 @@ RSpec.describe Api::ProductFamiliesController, type: :controller do
         delete :destroy, id: product_family.id, format: :json
         expect(response).to be_success
       end.to change(ProductFamily, :count).by(-1)
-      pp ProductFamily.count
     end
   end
 

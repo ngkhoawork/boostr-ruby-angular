@@ -6,3 +6,7 @@
 %span.glyphicon.extension-icon
   %a{'ng-href': '{{extensionUrl("gcalendar")}}', 'ng-if': 'isExtensionEnabled("gcalendar")', target: '_blank'}
     = image_tag('icons/icon-gcalendar.png', alt: 'GCalendar extension')
+%span.glyphicon.extension-icon
+  %a{'ng-href': '{{resourceLink()}}', 'ng-if': 'isResourceLinkEnabled()', target: '_blank'}
+    .resource-icon
+      R

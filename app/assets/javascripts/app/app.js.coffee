@@ -84,6 +84,10 @@
       templateUrl: 'io.html'
       controller: 'IOController'
 
+    .when '/revenue/pmps/:id',
+      templateUrl: 'pmp.html'
+      controller: 'PMPController'
+
     .when '/activities',
       templateUrl: 'activities.html'
       controller: 'ActivitiesController'
@@ -294,6 +298,10 @@
       templateUrl: 'settings/stages/main_stages.html'
       controller: 'MainStageController'
 
+    .when '/settings/workflows/',
+      templateUrl: 'settings/workflows.html',
+      controller: 'SettingsWorkflowsController'
+
     .when '/settings/bps',
       templateUrl: 'settings/bps.html'
       controller: 'BPsController'
@@ -358,9 +366,22 @@
       templateUrl: 'publishers/publisher.html'
       controller: 'PablisherController'
 
+    .when '/leads',
+      templateUrl: 'leads.html'
+      controller: 'LeadsController'
+      reloadOnSearch: false
+
+    .when '/settings/leads',
+      templateUrl: 'settings/leads.html'
+      controller: 'LeadsSettingsController'
+
     .when '/api_reference',
       templateUrl: 'api_reference.html'
       controller: 'ApiReferenceController'
+
+    .when '/analytics',
+      templateUrl: 'logi.html'
+      controller: 'LogiConfigurationsController'
 
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
@@ -429,6 +450,7 @@
       email: user.email
     )
 ]
+window._fixedHeaderHeight = 0 #updating in NavbarController
 
 @service = angular.module 'services', ['ngResource']
 @directives = angular.module 'directives', []

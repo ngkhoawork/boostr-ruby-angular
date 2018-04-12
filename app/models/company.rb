@@ -12,6 +12,7 @@ class Company < ActiveRecord::Base
   has_many :distinct_stages, -> {distinct}, class_name: 'Stage'
   has_many :products
   has_many :product_families
+  has_many :product_options
   has_many :teams
   has_many :time_periods
   has_many :quotas
@@ -20,8 +21,13 @@ class Company < ActiveRecord::Base
   has_many :activities
   has_many :activity_types
   has_many :ios
+  has_many :costs, through: :ios
+  has_many :cost_monthly_amounts, through: :costs
   has_many :content_fees, through: :ios
   has_many :content_fee_product_budgets, through: :content_fees
+  has_many :pmps
+  has_many :pmp_items, through: :pmps
+  has_many :pmp_item_daily_actuals, through: :pmp_items
   has_many :display_line_items, through: :ios
   has_many :display_line_item_budgets, through: :display_line_items
   has_many :temp_ios
@@ -57,6 +63,9 @@ class Company < ActiveRecord::Base
   has_many :publishers, dependent: :destroy
   has_many :publisher_custom_field_names, dependent: :destroy
   has_many :publisher_custom_fields, through: :publishers
+  has_many :ssp_advertisers
+  has_many :sales_processes
+  has_many :ssp_credentials, dependent: :destroy
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -77,9 +86,6 @@ class Company < ActiveRecord::Base
   delegate :enabled, :app_domain, :deals_folder_name, to: :egnyte_integration, prefix: true, allow_nil: true
 
   def setup_defaults
-    client_type = fields.find_or_initialize_by(subject_type: 'Client', name: 'Client Type', value_type: 'Option', locked: true)
-    setup_default_options(client_type, %w(Advertiser Agency))
-
     contact_role = fields.find_or_initialize_by(subject_type: 'Deal', name: 'Contact Role', value_type: 'Option', locked: true)
     setup_default_options(contact_role, ['Billing'])
 
@@ -99,29 +105,46 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Publisher Type', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Renewal Terms', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Member Role', value_type: 'Option', locked: true)
+    cost_type = fields.find_or_initialize_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
+    setup_default_options(cost_type, ['General'])
 
     notifications.find_or_initialize_by(name: 'Closed Won', active: true)
     notifications.find_or_initialize_by(name: 'Stage Changed', active: true)
     notifications.find_or_initialize_by(name: 'New Deal', active: true)
     notifications.find_or_initialize_by(name: 'Lost Deal', active: true)
     notifications.find_or_initialize_by(name: 'Pipeline Changes Reports', active: true)
+    notifications.find_or_initialize_by(name: Notification::PMP_STOPPED_RUNNING, active: true)
+
+    setup_client_fields
 
     setup_default_activity_types
 
     ealerts.find_or_initialize_by(recipients: nil, automatic_send: false, same_all_stages: true)
 
     setup_default_validations
+
+    AssignmentRule.create(company_id: self.id, name: 'No Match', default: true, position: 100_000)
+  end
+
+  def setup_client_fields
+    fields.find_or_initialize_by(subject_type: 'Client', name: 'Member Role', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Client', name: 'Category', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Client', name: 'Region', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Client', name: 'Segment', value_type: 'Option', locked: true)
+    client_type = fields.find_or_initialize_by(subject_type: 'Client', name: 'Client Type', value_type: 'Option', locked: true)
+    setup_default_options(client_type, %w(Advertiser Agency))
   end
 
   def settings
     [
       { name: 'Deals', fields: fields.where(subject_type: 'Deal') },
-      { name: 'Clients', fields: fields.where(subject_type: 'Client') },
+      { name: 'Accounts', fields: fields.where(subject_type: 'Client') },
       { name: 'Products', fields: fields.where(subject_type: 'Product') },
       { name: 'Contacts', fields: fields.where(subject_type: 'Contact') },
       { name: 'Multiple', fields: fields.where(subject_type: 'Multiple') },
       { name: 'Influencers', fields: fields.where(subject_type: 'Influencer') },
-      { name: 'Publishers', fields: fields.where(subject_type: 'Publisher') }
+      { name: 'Publishers', fields: fields.where(subject_type: 'Publisher') },
+      { name: 'Costs', fields: fields.where(subject_type: 'Cost') }
     ]
   end
 
@@ -195,7 +218,7 @@ class Company < ActiveRecord::Base
         .where(currency: Currency.find_by(curr_cd: currency))
         .where('start_date <= ? AND end_date >= ?', at_date, at_date)
         .first
-        .try(:rate)
+        &.rate
   end
 
   def operative_api_config
@@ -214,6 +237,22 @@ class Company < ActiveRecord::Base
     teams.pluck(:leader_id) + users.in_a_team.ids
   end
 
+  def product_option1
+    product_option1_field || 'Option1'
+  end
+
+  def product_option2
+    product_option2_field || 'Option2'
+  end
+
+  def default_sales_process
+    sales_processes.first
+  end
+
+  def account_fields_data
+    @_account_fields_data ||= Models::AccountCompanyDataService.new(id).perform
+  end
+
   protected
 
   def setup_default_options(field, names)
@@ -223,11 +262,10 @@ class Company < ActiveRecord::Base
   end
 
   def setup_default_validations
-    validations.find_or_initialize_by(factor: 'Billing Contact', value_type: 'Number')
-    validations.find_or_initialize_by(factor: 'Account Manager', value_type: 'Number')
     validations.find_or_initialize_by(factor: 'Disable Deal Won', value_type: 'Boolean')
     validations.find_or_initialize_by(factor: 'Billing Contact Full Address', value_type: 'Boolean')
     validations.find_or_initialize_by(factor: 'Restrict Deal Reopen', value_type: 'Boolean')
+    validations.find_or_initialize_by(factor: 'Require Won Reason', value_type: 'Boolean')
 
     validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'client_category_id')
     validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'client_subcategory_id')

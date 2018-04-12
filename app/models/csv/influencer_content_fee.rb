@@ -2,6 +2,7 @@ require 'chronic'
 
 class Csv::InfluencerContentFee
   include ActiveModel::Validations
+  include Csv::ProductOptionable
 
   validates :io_number, :influencer_id, :product_name, :date, :gross_amount_loc, :company, :fee_type, presence: true
   validates :fee_amount, numericality: true
@@ -14,7 +15,17 @@ class Csv::InfluencerContentFee
   validate :validate_fee_type
   validate :validate_content_fee_presence
 
-  attr_accessor(:io_number, :influencer_id, :product_name, :date, :fee_type, :fee_amount, :gross_amount_loc, :asset, :company)
+  attr_accessor :io_number, 
+                :influencer_id, 
+                :product_name, 
+                :product_level1, 
+                :product_level2, 
+                :date, 
+                :fee_type, 
+                :fee_amount, 
+                :gross_amount_loc, 
+                :asset, 
+                :company
   
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -77,7 +88,7 @@ class Csv::InfluencerContentFee
   end
 
   def validate_product_presence
-    errors.add(:product, "with name #{product_name} could not be found") if product.blank?
+    errors.add(:product, "with name #{product_full_name} could not be found") if product.blank?
   end
 
   def validate_date_format
@@ -93,7 +104,7 @@ class Csv::InfluencerContentFee
   end
 
   def validate_content_fee_presence
-    errors.add(:content_fee, "for specified io #{io_number} and product #{product_name} could not be found") if content_fee.blank?
+    errors.add(:content_fee, "for specified io #{io_number} and product #{product_full_name} could not be found") if content_fee.blank?
   end
 
   def get_fee_type
@@ -130,7 +141,7 @@ class Csv::InfluencerContentFee
   end
 
   def product
-    @_product ||= io.content_fee_products.find_by(name: product_name) if io.present?
+    @_product ||= io.content_fee_products.find_by(full_name: product_full_name) if io.present?
   end
 
   def content_fee
@@ -162,6 +173,8 @@ class Csv::InfluencerContentFee
       io_number: row[:io_num],
       influencer_id: row[:influencer_id],
       product_name: row[:product],
+      product_level1: row[:product_level1],
+      product_level2: row[:product_level2],
       date: row[:date].try(:strip),
       fee_type: row[:fee_type],
       fee_amount: row[:fee_amt].to_f,

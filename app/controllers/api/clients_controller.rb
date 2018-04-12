@@ -54,6 +54,11 @@ class Api::ClientsController < ApplicationController
                   .pluck_to_struct(:id, :name, :client_type_id)
   end
 
+  def fuzzy_search
+    clients = company.clients.fuzzy_search(params[:search]).pluck_to_struct(:id, :name)
+    render json: clients
+  end
+
   def filter_options
     client_ids = clients.pluck(:id)
 
@@ -70,28 +75,21 @@ class Api::ClientsController < ApplicationController
   end
 
   def create
-    if params[:file].present?
-      CsvImportWorker.perform_async(
-        params[:file][:s3_file_path],
-        'Client',
-        current_user.id,
-        params[:file][:original_filename]
-      )
+    client = company.clients.new(client_params.merge(created_by: current_user.id))
+    client.created_by = current_user.id
 
-      render json: { message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)" }, status: :ok
+    if client.save
+      map_lead_with client
+      map_with_contact_through_lead client
+
+      render json: client, status: :created
     else
-      client = company.clients.new(client_params)
-      client.created_by = current_user.id
-      if client.save
-        render json: client, status: :created
-      else
-        render json: { errors: client.errors.messages }, status: :unprocessable_entity
-      end
+      render json: { errors: client.errors.messages }, status: :unprocessable_entity
     end
   end
 
   def update
-    if client.update_attributes(client_params)
+    if client.update_attributes(client_params.merge(created_by: current_user.id))
       render json: client, status: :accepted
     else
       render json: { errors: client.errors.messages }, status: :unprocessable_entity
@@ -131,6 +129,11 @@ class Api::ClientsController < ApplicationController
       client.destroy
       render nothing: true
     end
+  end
+
+  def csv_import
+    SmartCsvImportWorker.perform_async(*csv_import_params('Clients'))
+    render_csv_importer_response
   end
 
   def sellers
@@ -218,7 +221,8 @@ class Api::ClientsController < ApplicationController
 
   def client_params
     params.require(:client).permit(
-      :name, :website, :note, :client_type_id, :client_category_id, :client_subcategory_id, :parent_client_id, :client_region_id, :client_segment_id, :holding_company_id,
+      :name, :website, :note, :client_type_id, :client_category_id, :client_subcategory_id, :parent_client_id,
+      :client_region_id, :client_segment_id, :holding_company_id, :created_from,
       { 
         address_attributes: [:country, :street1, :street2, :city, :state, :zip, :phone, :email],
         values_attributes: [:id, :field_id, :option_id, :value],
@@ -380,7 +384,12 @@ class Api::ClientsController < ApplicationController
   def suggest_clients
     return @suggest_clients if @suggest_clients
 
-    @suggest_clients = company.clients.by_name_and_type_with_limit(params[:name], params[:client_type_id])
+    @suggest_clients =
+      if params[:full_text_search]
+        company.clients.by_type_id(params[:client_type_id]).search_by_name(params[:name])
+      else
+        company.clients.by_name_and_type_with_limit(params[:name], params[:client_type_id])
+      end
 
     if params[:assoc] && client
       @suggest_clients = @suggest_clients.excepting_client_associations(client, params[:assoc])
@@ -421,5 +430,35 @@ class Api::ClientsController < ApplicationController
 
   def category_options
     company.fields.client_category_fields.to_options
+  end
+
+  def lead
+   @_lead ||= Lead.find(params[:lead_id]) if params[:lead_id].present?
+  end
+
+  def map_lead_with(client)
+    client.leads << lead if lead&.present?
+  end
+
+  def map_with_contact_through_lead(client)
+    if lead&.contact.present?
+      client.client_contacts.create(contact: lead.contact, client: client)
+    end
+  end
+
+  def render_csv_importer_response
+    render json: { message: I18n.t('csv.importer.response') }, status: :ok
+  end
+
+  def csv_import_params(name)
+    [file_params[:s3_file_path],
+     "Importers::#{name}Service",
+     current_user.id,
+     current_user.company_id,
+     file_params[:original_filename]]
+  end
+
+  def file_params
+    params.require(:file).permit(:s3_file_path, :original_filename)
   end
 end

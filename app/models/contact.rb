@@ -1,5 +1,13 @@
 class Contact < ActiveRecord::Base
+  SAFE_COLUMNS = %i{name position created_at updated_at}
+
   acts_as_paranoid
+
+  WEB_FORM_LEAD = 'web-form lead'.freeze
+  MARKETING_LEAD = 'marketing lead'.freeze
+  TRADESHOW_LEAD = 'tradeshow lead'.freeze
+  OTHER_LEAD = 'other lead'.freeze
+  OTHER = 'other'.freeze
 
   belongs_to :company
   belongs_to :client
@@ -24,6 +32,7 @@ class Contact < ActiveRecord::Base
   has_one :address, as: :addressable
   has_many :integrations, as: :integratable
   has_many :values, as: :subject
+  has_many :leads
 
   has_and_belongs_to_many :latest_happened_activity, -> {
     order('activities.happened_at DESC').limit(1)

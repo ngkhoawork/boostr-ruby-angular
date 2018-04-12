@@ -9,13 +9,25 @@
             %z-filter-field{data: 'teams', type: 'team', 'save-as': '{id: "id"}', 'on-change': 'updateSellers', default: 'defaultTeam'} Team
             %z-filter-field{data: 'sellers', 'save-as': '{user_id: "id"}'} Seller
             %z-filter-field{data: 'productFamilies', 'save-as': '{product_family_id: "id"}'} Product Family
-            %z-filter-field{data: 'products', type: 'multiselect', 'save-as': '{"product_ids[]": "id"}'} Products
+            %z-filter-field{data: 'productsLevel0', 'save-as': '{"product_id": "id"}', 'on-change': 'onProductChange'} Products
+            %z-filter-field{'ng-if': 'productOption1Enabled', data: 'productsLevel1', 'save-as': '{"product1_id": "id"}', 'on-change': 'onProduct1Change'} {{ productOption1 }}
+            %z-filter-field{'ng-if': 'productOption2Enabled', data: 'productsLevel2', 'save-as': '{"product2_id": "id"}'} {{ productOption2 }}
             %z-filter-field{data: 'timePeriods', 'save-as': '{time_period_id: "id"}', 'is-all': 'false', 'order-by': '["period_type", "start_date"]', id: 'time-period-field'} Time period
             %div{style: 'order: 1; margin: 0 10px'}
               %span.mr8 Go to
               %a{href: '', 'ng-click': 'scrollTo("#revenue-section")'} Revenue
               |
+              %a{href: '', 'ng-click': 'scrollTo("#pmp-section")'} PMP
+              |
               %a{href: '', 'ng-click': 'scrollTo("#deals-section")'} Deals
+
+        .header-cell{'ng-if': 'hasNetPermission'}
+          %b.mr40 Show Net
+          .show-hide-remainder-form.m0
+            .switch-remainder-form
+              %input#net-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-checked': 'isNetForecast', 'ng-click': 'toggleNetForecast($event)'}
+              %label{for: 'net-toggle'}
+                %span
 
         .header-cell
           .pull-right
@@ -42,7 +54,11 @@
                     Total Forecast Amount
                 %tr.z-sortable-prime{'sort-name': 'forecast'}
                   %th
-                    .z-sortable{by: 'product.name', default: true} Product
+                    .z-sortable{by: 'product.level0.name', default: true} Product
+                  %th{'ng-if': 'productOption1Enabled'}
+                    .z-sortable{by: 'product.level1.name'} {{ productOption1 }}
+                  %th{'ng-if': 'productOption2Enabled'}
+                    .z-sortable{by: 'product.level2.name'} {{ productOption2 }}
                   %th
                     .z-sortable{by: 'product.product_family.name'} Product Family
                   %th{'ng-repeat': 'stage in stages'}
@@ -58,39 +74,45 @@
               %tbody
                 %tr{'ng-repeat': 'product_forecast in forecastData | orderBy : zSort.forecast.by : zSort.forecast.rev'}
                   %td
-                    {{product_forecast.product.name}}
+                    {{product_forecast.product.level0.name}}
+                  %td{'ng-if': 'productOption1Enabled'}
+                    {{product_forecast.product.level1.name}}
+                  %td{'ng-if': 'productOption2Enabled'}
+                    {{product_forecast.product.level2.name}}
                   %td
                     {{product_forecast.product.product_family.name}}
                   %td{'ng-repeat': 'stage in stages'}
-                    {{(product_forecast.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
+                    {{(isNetForecast ? product_forecast.weighted_pipeline_by_stage_net[stage.id] : product_forecast.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
                   %td
-                    {{product_forecast.weighted_pipeline | currency : '$' : 0}}
+                    {{isNetForecast ? product_forecast.weighted_pipeline_net : product_forecast.weighted_pipeline | currency : '$' : 0}}
                   %td
-                    {{product_forecast.revenue | currency : '$' : 0}}
+                    {{isNetForecast ? product_forecast.revenue_net : product_forecast.revenue | currency : '$' : 0}}
                   %td
-                    {{(product_forecast.weighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
+                    {{(isNetForecast ? product_forecast.weighted_pipeline_net + product_forecast.revenue_net : product_forecast.weighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
                   %td
-                    {{(product_forecast.unweighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
+                    {{(isNetForecast ? product_forecast.unweighted_pipeline_net + product_forecast.revenue_net : product_forecast.unweighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
                 %tr{'ng-if': 'totalForecastData'}
                   %td
                     %strong
                       Total
+                  %td{'ng-if': 'productOption1Enabled'}
+                  %td{'ng-if': 'productOption2Enabled'}
                   %td
                   %td{'ng-repeat': 'stage in stages'}
                     %strong
-                      {{(totalForecastData.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
+                      {{(isNetForecast ? totalForecastData.weighted_pipeline_by_stage_net[stage.id] : totalForecastData.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
                   %td
                     %strong
-                      {{(totalForecastData.weighted_pipeline || 0) | currency : '$' : 0}}
+                      {{(isNetForecast ? totalForecastData.weighted_pipeline_net : totalForecastData.weighted_pipeline || 0) | currency : '$' : 0}}
                   %td
                     %strong
-                      {{(totalForecastData.revenue || 0) | currency : '$' : 0}}
+                      {{(isNetForecast ? totalForecastData.revenue_net : totalForecastData.revenue || 0) | currency : '$' : 0}}
                   %td
                     %strong
-                      {{((totalForecastData.weighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
+                      {{(isNetForecast ? (totalForecastData.weighted_pipeline_net || 0) + (totalForecastData.revenue_net || 0) : (totalForecastData.weighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
                   %td
                     %strong
-                      {{((totalForecastData.unweighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
+                      {{(isNetForecast ? (totalForecastData.unweighted_pipeline_net || 0) + (totalForecastData.revenue_net || 0) : (totalForecastData.unweighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
       #revenue-section.row
         .col-xs-12
           .block
@@ -110,7 +132,11 @@
                     %th.right
                       .z-sortable{by: 'budget', default: true} Total Budget
                     %th
-                      .z-sortable{by: 'advertiser.name'} Product
+                      .z-sortable{by: 'product.level0.name'} Product
+                    %th{'ng-if': 'productOption1Enabled'}
+                      .z-sortable{by: 'product.level1.name'} {{productOption1}}
+                    %th{'ng-if': 'productOption2Enabled'}
+                      .z-sortable{by: 'product.level2.name'} {{productOption2}}
                     %th.right
                       .z-sortable{by: 'in_period_split_amt'} Product Budget
                     %th
@@ -125,13 +151,64 @@
                       %a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}'} {{revenue.name}}
                     %td {{revenue.advertiser.name}}
                     %td.right {{revenue.budget | currency : '$' : 2}}
-                    %td {{revenue.product.name}}
+                    %td {{revenue.product.level0.name}}
+                    %td{'ng-if': 'productOption1Enabled'} {{revenue.product.level1.name}}
+                    %td{'ng-if': 'productOption2Enabled'} {{revenue.product.level2.name}}
                     %td.right {{revenue.in_period_amt | currency : '$' : 2}}
                     %td {{revenue.start_date | date : 'MM/dd/yyyy'}}
                     %td {{revenue.end_date | date : 'MM/dd/yyyy'}}
                     %td
                       %div{'ng-repeat': 'member in revenue.members track by $index'} {{member.user.first_name + ' ' + member.user.last_name}} {{member.share}}%
                   %tr{ ng: { if: 'revenues.length == 0' }}
+                    %td.center.auto-colspan
+                      No Data for the Filters Selected
+      #pmp-section.row
+        .col-xs-12
+          .block
+            %div.mb20
+              %span.title PMP Details
+            %div.table-wrapper
+              %table.table.table-hover.exportable-table
+                %thead
+                  %tr.hide
+                    -#title for export
+                    %th PMP Details
+                  %tr.z-sortable-prime{'sort-name': 'pmp_revenues', 'z-fixed-header': true, watch: '["pmp_revenues", "teams"]'}
+                    %th
+                      .z-sortable{by: 'name'} PMP Name
+                    %th
+                      .z-sortable{by: 'advertiser'} Advertiser
+                    %th.right
+                      .z-sortable{by: 'budget', default: true} Total Budget
+                    %th
+                      .z-sortable{by: 'product.level0.name'} Product
+                    %th{'ng-if': 'productOption1Enabled'}
+                      .z-sortable{by: 'product.level1.name'} {{productOption1}}
+                    %th{'ng-if': 'productOption2Enabled'}
+                      .z-sortable{by: 'product.level2.name'} {{productOption2}}
+                    %th.right
+                      .z-sortable{by: 'in_period_split_amt'} Product Budget
+                    %th
+                      .z-sortable{by: 'start_date'} Start Date
+                    %th
+                      .z-sortable{by: 'end_date'} End Date
+                    %th
+                      .z-sortable{by: 'pmp_members'} Team
+                %tbody
+                  %tr{'ng-repeat': 'pmp_revenue in pmp_revenues | orderBy : zSort.pmp_revenues.by : zSort.pmp_revenues.rev'}
+                    %td
+                      %a{href: '', 'ng-href': '/revenue/pmps/{{pmp_revenue.id}}'} {{pmp_revenue.name}}
+                    %td {{pmp_revenue.advertiser}}
+                    %td.right {{pmp_revenue.budget | currency : '$' : 2}}
+                    %td {{pmp_revenue.product.level0.name}}
+                    %td{'ng-if': 'productOption1Enabled'} {{pmp_revenue.product.level1.name}}
+                    %td{'ng-if': 'productOption2Enabled'} {{pmp_revenue.product.level2.name}}
+                    %td.right {{pmp_revenue.in_period_amt | currency : '$' : 2}}
+                    %td {{pmp_revenue.start_date | date : 'MM/dd/yyyy'}}
+                    %td {{pmp_revenue.end_date | date : 'MM/dd/yyyy'}}
+                    %td
+                      %div{'ng-repeat': 'member in pmp_revenue.pmp_members track by $index'} {{member.name}} {{member.share}}%
+                  %tr{ ng: { if: 'pmp_revenues.length == 0' }}
                     %td.center.auto-colspan
                       No Data for the Filters Selected
 
@@ -156,7 +233,11 @@
                     %th.right
                       .z-sortable{by: 'budget', default: true} Total Budget
                     %th
-                      .z-sortable{by: 'product.name'} Product
+                      .z-sortable{by: 'product.level0.name'} Product
+                    %th{'ng-if': 'productOption1Enabled'}
+                      .z-sortable{by: 'product.level1.name'} {{productOption1}}
+                    %th{'ng-if': 'productOption2Enabled'}
+                      .z-sortable{by: 'product.level2.name'} {{productOption2}}
                     %th.right
                       .z-sortable{by: 'in_period_amt'} Product Budget
                     %th
@@ -172,7 +253,9 @@
                     %td {{deal.advertiser.name}}
                     %td {{deal.stage.probability}}%
                     %td.right {{deal.budget | currency : '$' : 0}}
-                    %td {{deal.product.name}}
+                    %td {{deal.product.level0.name}}
+                    %td{'ng-if': 'productOption1Enabled'} {{deal.product.level1.name}}
+                    %td{'ng-if': 'productOption2Enabled'} {{deal.product.level2.name}}
                     %td.right {{deal.in_period_amt | currency : '$' : 0}}
                     %td {{deal.start_date | date : 'MM/dd/yyyy'}}
                     %td {{deal.end_date | date : 'MM/dd/yyyy'}}

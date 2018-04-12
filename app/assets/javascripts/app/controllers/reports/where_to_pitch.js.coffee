@@ -108,7 +108,7 @@
                     query.seller = user.id
                     $scope.setFilter('seller', user)
 
-                Product.all().then (products) ->
+                Product.all({active: true, level: 0}).then (products) ->
                     $scope.productsList = products
                     $scope.productsList.unshift({name: 'All', id: null})
 

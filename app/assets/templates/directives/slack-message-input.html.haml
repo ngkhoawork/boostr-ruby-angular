@@ -1,0 +1,9 @@
+.search-mapping-wrapper{ ng: { show: 'showSearch' } }
+  %input.form-control.search-field{ type: 'search', placeholder: 'Search for Mapping', ng: { model: 'search' } }
+  %ul.dropdown-menu.mappings{ ng: { show: 'filteredSuggestions.length > 0' } }
+    %li{ ng: { repeat: 'suggestion in filteredSuggestions= (foundSuggestions | filter: search)', click: 'addSuggestionToText(suggestion)' } }
+      {{ suggestion.label_name }}
+%label Message
+%textarea.form-control{ cols: '30', name: 'message', rows: '3', placeholder: 'Type your message here *', ng: { model: 'messageText', keyup: 'checkCursorPosition()', click: 'checkCursorPosition()' } }
+%a.add-mapping{ title: 'Add Mapping', href: '', ng: { click: 'toogleSearch()' } }
+  %span.glyphicon.glyphicon-th-list{ 'aria-hidden': 'true' }

@@ -1,0 +1,224 @@
+#leads {
+    //padding-top: 20px;
+    .leads-inner {
+        margin: 0 25px;
+    }
+    .leads-header {
+        display: flex;
+        align-items: center;
+        .header-item {
+            margin-right: 30px;
+            white-space: nowrap;
+        }
+        .leads-search {
+            width: 30%;
+            position: relative;
+            margin-left: 30px;
+            i.fa {
+                position: absolute;
+                font-size: 20px;
+                color: lighten($secondary-font-color, 15%);
+                top: 13px;
+                left: 10px;
+            }
+            input {
+                width: 100%;
+                padding-left: 38px;
+                background-color: white;
+            }
+        }
+    }
+    .leads-table {
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+        margin-bottom: 20px;
+        .leads-tr, .leads-header-tr {
+            display: table-row;
+        }
+        .leads-tr {
+            &:last-child {
+                .leads-td {
+                    padding-bottom: 0;
+                }
+            }
+        }
+        .leads-th {
+            color: $secondary-font-color;
+            font-weight: bold;
+        }
+        .leads-td, .leads-th {
+            display: table-cell;
+            height: 1px;
+            vertical-align: top;
+            &:first-child {
+                width: 80px;
+            }
+            &:last-child {
+                width: 200px;
+                .leads-td-inner.lead-buttons {
+                    //display: flex;
+                    justify-content: center;
+                    //flex-direction: column;
+                    //align-items: center;
+                }
+            }
+        }
+        .leads-th, .leads-td-inner {
+            padding: 10px 15px;
+        }
+        .leads-td {
+            padding-bottom: 10px;
+            border-right: 1px solid #E0E0E0;
+            .leads-td-inner {
+                border-bottom: 1px solid #E0E0E0;
+            }
+            &:first-child .leads-td-inner {
+                border-bottom-left-radius: 4px;
+                border-top-left-radius: 4px;
+            }
+            &:last-child {
+                border-right: none;
+                .leads-td-inner {
+                    border-bottom-right-radius: 4px;
+                    border-top-right-radius: 4px;
+                }
+            }
+        }
+        .leads-td-inner {
+            background: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            .td-title {
+                font-size: 16px;
+                font-weight: bold;
+            }
+            .td-list {
+                //line-height: 20px;
+                margin-bottom: 10px;
+                display: flex;
+                & > div:first-child {
+                    margin-right: 10px;
+                    color: lighten($secondary-font-color, 25%);
+                }
+                & > div:nth-child(2) {
+                    a {
+                        display: block;
+                    }
+                }
+            }
+            .td-info {
+                margin-bottom: 10px;
+                color: lighten($secondary-font-color, 10%);
+                font-size: 13px;
+                padding: 2px 0;
+            }
+            .td-action {
+                margin-top: auto;
+                font-weight: bold;
+                color: $main-color;
+                cursor: pointer;
+            }
+            .deal-row {
+                &:not(:last-child) {
+                    border-bottom: 1px solid #eee;
+                }
+                padding: 5px 0;
+
+                a {
+                    margin-right: 12px;
+                }
+            }
+        }
+        .ngTruncateToggleText {
+            color: $secondary-color;
+        }
+        .leads-btn {
+            margin: 5px 0;
+        }
+        .dropdown {
+            //position: static;
+            border-bottom: 1px dashed lighten($secondary-font-color, 10%);
+            padding: 0 8px 3px;
+            cursor: pointer;
+            i.fa {
+                color: lighten($secondary-font-color, 10%);
+                padding-left: 15px;
+            }
+            .dropdown-menu {
+                padding: 10px 0;
+                .dropdown-option {
+                    a {
+                        display: block;
+                        cursor: pointer;
+                        padding: 6px 20px;
+                        color: $main-font-color;
+                        &:hover, &:focus {
+                            background-color: #EDEFF0;
+                            outline: none;
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+}
+
+#leads .leads-btn, #leads-reassign-modal .leads-btn {
+    border-radius: 4px;
+    border: 1px solid $main-color;
+    font-weight: bold;
+    text-align: center;
+    padding: 7px;
+    background: $main-color;
+    color: white;
+    user-select: none;
+    &:hover {
+        cursor: pointer;
+    }
+    &:active {
+        background: darken($main-color, 5%);
+    }
+    &.hollow {
+        background: white;
+        color: $main-color;
+        &:active {
+            background: darken(white, 5%);
+        }
+    }
+}
+
+#leads-reassign-modal {
+    .popup-modal-body {
+        margin-bottom: 0;
+    }
+    .delimiter {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 20px 0;
+        text-align: center;
+    }
+    .assign-row {
+        display: flex;
+        div:first-child {
+            flex: 1;
+        }
+        .form-control {
+            height: 36px;
+            padding: 7px 10px;
+            .dropdown-menu {
+                top: 43px !important;
+            }
+        }
+        .leads-btn {
+            width: 100px;
+            margin-left: 10px;
+        }
+    }
+    .leads-btn {
+        //padding: 7px 10px;
+    }
+
+}

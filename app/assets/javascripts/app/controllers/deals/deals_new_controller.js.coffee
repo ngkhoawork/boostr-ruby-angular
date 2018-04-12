@@ -1,6 +1,6 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation', 'Egnyte'
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation, Egnyte) ->
+['$scope', '$modal', '$modalInstance', '$q', '$filter', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation', 'SalesProcess', 'Egnyte'
+($scope, $modal, $modalInstance, $q, $filter, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation, SalesProcess, Egnyte) ->
 
   $scope.init = ->
     $scope.formType = 'New'
@@ -17,6 +17,25 @@
     if deal.agency
       $scope.agencies = [deal.agency]
 
+    if options.lead
+      lead = options.lead
+      nextSteps = ''
+      if lead.budget?
+        nextSteps += "Budget: #{$filter('currency')(lead.budget, undefined, 0)}; "
+      if lead.notes
+        nextSteps += lead.notes
+      deal.next_steps = nextSteps
+      if lead.client
+        switch lead.client.type
+          when 'Advertiser'
+            deal.advertiser = lead.client
+            deal.advertiser_id = lead.client.id
+            $scope.advertisers = [lead.client]
+          when 'Agency'
+            deal.agency = lead.client
+            deal.agency_id = lead.client.id
+            $scope.agencies = [lead.client]
+
     $q.all({
       user: CurrentUser.get().$promise,
       currencies: Currency.active_currencies(),
@@ -32,13 +51,21 @@
       $scope.deal = deal
       $scope.setDefaultCurrency()
 
+      # get user team and team stages
+      if data.user.teams && data.user.teams[0]
+        $scope.team = data.user.teams[0]
+      else if data.user.team
+        $scope.team = data.user.team
+      else
+        SalesProcess.all({active: true}).then (salesProcesses) ->
+          $scope.salesProcesses = salesProcesses
+      if $scope.team
+        Stage.query({active: true, open: true, team_id: $scope.team.id}).$promise.then (stages) ->
+          $scope.stages = stages
+
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
       $scope.setClientTypes(client_types)
-
-    Stage.query().$promise.then (stages) ->
-      $scope.stages = stages.filter (stage) ->
-        !(stage.active is false or stage.open is false)
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -80,7 +107,10 @@
   $scope.submitForm = () ->
     $scope.errors = {}
 
+    if moment(this.deal.start_date).isAfter(this.deal.end_date) then return $scope.errors['end_date'] = 'End Date can\'t be before Start Date';
+
     fields = ['name', 'stage_id', 'advertiser_id', 'agency_id', 'deal_type', 'source_type', 'start_date', 'end_date']
+    fields.push('sales_process_id') unless $scope.team
 
     fields.forEach (key) ->
       field = $scope.deal[key]
@@ -95,6 +125,8 @@
           if !field then return $scope.errors[key] = 'Start date is required'
         when 'end_date'
           if !field then return $scope.errors[key] = 'End date is required'
+        when 'sales_process_id'
+          if !field then return $scope.errors[key] = 'Sales process is required'
 
     $scope.dealCustomFieldNames.forEach (item) ->
       if item.show_on_modal == true && item.is_required == true && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
@@ -106,10 +138,14 @@
 
     if Object.keys($scope.errors).length > 0 then return
 
+    if options.lead
+      $scope.deal.lead_id = options.lead.id
+      $scope.deal.created_from = 'Web-Form Lead'
+
     Deal.create(deal: $scope.deal).then(
       (deal) ->
         $modalInstance.close(deal)
-        if options.type != 'gmail'
+        if options.type != 'gmail' && !options.lead
           Egnyte.show().then (egnyteSettings) ->
             if(egnyteSettings.access_token && egnyteSettings.connected)
               $location.path('/deals' + '/' + deal.id).search({isNew: 'true'});
@@ -153,6 +189,7 @@
               option: option
             }
           }
+        options: -> options
     # This will clear out the populateClient field if the form is dismissed
     $scope.modalInstance.result.then(
       null
@@ -168,6 +205,11 @@
         $scope.deal[$scope.populateClientTarget] = client.id
         $scope.populateClient = false
         $scope.populateClientTarget = false
+
+  $scope.onChangeSalesProcess = (sales_process_id) ->
+    Stage.query({active: true, open: true, sales_process_id: sales_process_id}).$promise.then (stages) ->
+      $scope.stages = stages
+      $scope.deal.stage_id = null
 
   $scope.init()
 

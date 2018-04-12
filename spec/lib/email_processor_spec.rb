@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe EmailProcessor do
+  let!(:email_activity) do
+    create :activity_type, name: 'Email', company: company
+  end
+
   it 'creates new activity from email' do
     expect {
       subject(html_email).process

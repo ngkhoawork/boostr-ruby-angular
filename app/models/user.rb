@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  SAFE_COLUMNS = %i{email first_name last_name title employee_id office}
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable and :omniauthable
   devise :invitable, :database_authenticatable, :registerable,
@@ -11,8 +12,10 @@ class User < ActiveRecord::Base
   has_many :revenues, -> (user) { where(company_id: user.company_id) }, through: :clients
   has_many :deal_members
   has_many :io_members
+  has_many :pmp_members
   has_many :deals, -> (user) { where(company_id: user.company_id) }, through: :deal_members
   has_many :ios, -> (user) { where(company_id: user.company_id) }, through: :io_members
+  has_many :pmps, -> (user) { where(company_id: user.company_id) }, through: :pmp_members
   has_many :quotas, -> (user) { where(company_id: user.company_id) }
   has_many :teams, -> (user) { where(company_id: user.company_id) }, foreign_key: :leader_id
   has_many :team_members, -> (user) { where(company_id: user.company_id) }, through: :teams, source: :members
@@ -26,6 +29,8 @@ class User < ActiveRecord::Base
   has_many :email_threads
   has_many :publisher_members, dependent: :destroy
   has_many :publishers, through: :publisher_members
+  has_many :assignment_rules_users
+  has_many :assignment_rules, through: :assignment_rules_users
 
   ROLES = %w(user admin superadmin supportadmin)
 
@@ -41,7 +46,6 @@ class User < ActiveRecord::Base
 
   after_create do
     create_dimension
-    update_forecast_fact_callback
   end
 
   after_destroy do |user_record|
@@ -61,19 +65,8 @@ class User < ActiveRecord::Base
     UserDimension.destroy(user_record.id)
     ForecastPipelineFact.destroy_all(user_dimension_id: user_record.id)
     ForecastRevenueFact.destroy_all(user_dimension_id: user_record.id)
-  end
-
-  def update_forecast_fact_callback
-    if company.present?
-      time_period_ids = company.time_periods.collect{|time_period| time_period.id}
-      user_ids = [self.id]
-      product_ids = company.products.collect{|product| product.id}
-      stage_ids = company.stages.collect{|stage| stage.id}
-      io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
-      deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
-      ForecastRevenueCalculatorWorker.perform_async(io_change)
-      ForecastPipelineCalculatorWorker.perform_async(deal_change)
-    end
+    ForecastPmpRevenueFact.destroy_all(user_dimension_id: user_record.id)
+    ForecastCostFact.destroy_all(user_dimension_id: user_record.id)
   end
 
   def roles=(roles)
@@ -109,8 +102,36 @@ class User < ActiveRecord::Base
     self.company.publishers_enabled
   end
 
+  def company_logi_enabled
+    self.company.logi_enabled
+  end
+
   def company_forecast_gap_to_quota_positive
     self.company.forecast_gap_to_quota_positive
+  end
+
+  def company_net_forecast_enabled
+    self.company.enable_net_forecasting
+  end
+
+  def product_options_enabled
+    self.company.product_options_enabled
+  end
+
+  def product_option1
+    self.company.product_option1
+  end
+
+  def product_option2
+    self.company.product_option2
+  end
+
+  def product_option1_enabled
+    self.company.product_option1_enabled
+  end
+
+  def product_option2_enabled
+    self.company.product_option2_enabled
   end
 
   def is_admin
@@ -184,7 +205,14 @@ class User < ActiveRecord::Base
           :company_influencer_enabled,
           :company_egnyte_enabled,
           :company_forecast_gap_to_quota_positive,
-          :has_forecast_permission
+          :company_net_forecast_enabled,
+          :has_forecast_permission,
+          :has_multiple_sales_process,
+          :product_options_enabled,
+          :product_option1,
+          :product_option2,
+          :product_option1_enabled,
+          :product_option2_enabled
         ]
       ).except(:override))
     end
@@ -212,6 +240,10 @@ class User < ActiveRecord::Base
 
   def all_ios_for_time_period(start_date, end_date)
     ios.for_time_period(start_date, end_date)
+  end
+
+  def has_multiple_sales_process
+    company.sales_processes.by_active(true).count > 1
   end
 
   def set_alert(should_save=false)
@@ -464,5 +496,21 @@ class User < ActiveRecord::Base
 
   def self.current=(user)
     Thread.current[:user] = user
+  end
+
+  def current_team
+    if leader?
+      company.teams.find_by(leader: self)
+    else
+      team
+    end    
+  end
+
+  def total_gross_quotas(start_date, end_date, product_id = nil, product_type = nil, value_type = QUOTA_TYPES[:gross])
+    quotas.for_time_period(start_date, end_date)
+      .by_product_type(product_type)
+      .by_product_id(product_id)
+      .by_type(value_type)
+      .sum(:value)
   end
 end

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Deal do
-  let(:company) { create :company }
+  let!(:company) { create :company }
   let(:user) { create :user }
 
   context 'associations' do
@@ -16,8 +16,6 @@ describe Deal do
 
       it 'restricts deleting deal with IO' do
         deal.update(stage: closed_won_stage)
-        deal.update_stage
-        deal.update_close
 
         expect{deal.destroy}.to raise_error(ActiveRecord::DeleteRestrictionError)
       end
@@ -74,9 +72,19 @@ describe Deal do
 
   context 'validations' do
     let!(:deal) { create :deal }
+    let!(:billing_contact_validation) do
+      create :validation, factor: 'Billing Contact Full Address',
+                          value_type: 'Boolean',
+                          company: company
+    end
 
     context 'billing contact' do
-      let(:validation) { deal.company.validation_for(:billing_contact) }
+      let(:stage) { create :stage, sales_process: deal.stage.sales_process }
+      let(:validation) do
+        create :validation, object: 'Billing Contact', 
+                            factor: stage.sales_process.id, 
+                            value_type: 'Object'
+      end
 
       it 'passes validation if company does not have it' do
         expect(deal).to be_valid
@@ -84,27 +92,26 @@ describe Deal do
 
       context 'validation active' do
         before do
-          validation.create_criterion
+          validation.criterion.update_attributes(value_object: stage)
         end
 
         it 'passes validation if stage is less then criterion' do
-          validation.criterion.update(value: 50)
+          stage.update(probability: 50)
           expect(deal).to be_valid
         end
 
         it 'passes validation if deal has a valid billing contact' do
-          validation.criterion.update(value: 10)
+          stage.update(probability: 10)
           create :billing_deal_contact, deal: deal
           expect(deal).to be_valid
         end
 
         it 'fails validation when deal does not have a billing contact' do
-          validation.criterion.update(value: 10)
+          stage.update(probability: 10)
           expect(deal).not_to be_valid
         end
 
         it 'fails validation when deal has more than one billing contact' do
-          validation.criterion.update(value: 10)
           create :billing_deal_contact, deal: deal
 
           expect{
@@ -115,8 +122,13 @@ describe Deal do
     end
 
     context 'account manager' do
-      let(:validation) { deal.company.validation_for(:account_manager) }
-      let!(:deal_member) { create :deal_member, deal: deal }
+      let(:stage) { create :stage, sales_process: deal.stage.sales_process }
+      let(:validation) do
+        create :validation, object: 'Account Manager', 
+                            factor: stage.sales_process.id, 
+                            value_type: 'Object'
+      end
+      let!(:deal_account_manager) { create :deal_account_manager, deal: deal }
 
       it 'passes validation if company does not have it' do
         expect(deal).to be_valid
@@ -124,35 +136,36 @@ describe Deal do
 
       context 'validation active' do
         before do
-          validation.create_criterion
+          validation.criterion.update_attributes(value_object: stage)
         end
 
         it 'passes validation if stage is less then criterion' do
-          validation.criterion.update(value: 50)
+          stage.update(probability: 50)
+          deal_account_manager.user.update(user_type: SELLER)
           expect(deal).to be_valid
         end
 
         it 'fails validation when deal does not have deal members' do
           deal.deal_members.destroy_all
-          validation.criterion.update(value: 10)
           expect(deal).not_to be_valid
         end
 
         it 'fails validation when deal member is not an account manager' do
-          validation.criterion.update(value: 10)
+          stage.update(probability: 10)
+          deal_account_manager.user.update(user_type: SELLER)
           expect(deal).not_to be_valid
         end
 
         it 'passes validation if deal has an account manager' do
-          validation.criterion.update(value: 10)
-          deal_member.user.update(user_type: ACCOUNT_MANAGER)
+          stage.update(probability: 50)
           expect(deal).to be_valid
         end
       end
     end
 
     context 'disable deal closed won' do
-      let(:validation) { deal.company.validation_for(:disable_deal_won) }
+      let(:validation) { deal.company.validations.find_or_create_by(factor: 'Disable Deal Won', value_type: 'Boolean') }
+
       let(:closed_won_stage) { create :closed_won_stage }
 
       it 'passes validation if company does not have it' do
@@ -210,7 +223,6 @@ describe Deal do
     end
 
     describe '"Restrict deal reopen" validation' do
-      let(:company) { deal.company }
       let(:validation) { company.validations.find_or_create_by(factor: 'Restrict Deal Reopen', value_type: 'Boolean') }
 
       before { deal.update_columns(stage_id: closed_won_stage.id) }
@@ -252,6 +264,12 @@ describe Deal do
   end
 
   describe '#has_billing_contact?' do
+    let!(:billing_contact_validation) do
+      create :validation, factor: 'Billing Contact Full Address',
+                          value_type: 'Boolean',
+                          company: company
+    end
+
     let!(:deal) { create :deal }
     let!(:deal_contact) { create :deal_contact, deal: deal }
 
@@ -266,6 +284,12 @@ describe Deal do
   end
 
   describe '#no_more_one_billing_contact?' do
+    let!(:billing_contact_validation) do
+      create :validation, factor: 'Billing Contact Full Address',
+                          value_type: 'Boolean',
+                          company: company
+    end
+
     let!(:deal) { create :deal }
 
     it 'is true if deal has no billing contacts' do
@@ -419,30 +443,6 @@ describe Deal do
     end
   end
 
-  describe '#in_period_amt' do
-    let(:deal) { create :deal }
-    let(:product) { create :product }
-    let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-01-31' }
-
-    it 'returns 0 when there are no deal products' do
-      expect(deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(0)
-    end
-
-    it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
-      single_month_deal = create :deal, start_date: '2015-01-01', end_date: '2015-01-31'
-      create :deal_product, deal: single_month_deal, product: product, budget: 1000
-
-      expect(single_month_deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(1000)
-    end
-
-    it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
-      two_month_deal = create :deal, start_date: '2015-01-27', end_date: '2015-02-05'
-      create :deal_product, deal: two_month_deal, product: product, budget: 1000
-
-      expect(two_month_deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(500)
-    end
-  end
-
   describe '#days' do
     let(:deal) { create :deal, start_date: Date.new(2015, 1, 1), end_date: Date.new(2015, 1, 31) }
 
@@ -527,6 +527,8 @@ describe Deal do
   end
 
   context 'to_zip' do
+    before { User.current = create :user }
+
     it 'returns the contents of deal zip' do
       deal.deal_products.create(product_id: product.id, budget: 10_000)
       deal_zip = Deal.to_zip
@@ -548,20 +550,38 @@ describe Deal do
   end
 
   describe '#import' do
+    let!(:billing_contact_validation) do
+      create :validation, factor: 'Billing Contact Full Address',
+                          value_type: 'Boolean',
+                          company: company
+    end
+
     let!(:user) { create :user }
     let!(:another_user) { create :user }
-    let!(:company) { user.company }
     let!(:stage_won) { create :stage, company: user.company, name: 'Won', probability: 100, open: false }
     let!(:stage_lost) { create :stage, company: user.company, name: 'Lost', probability: 0, open: false }
     let!(:advertiser) { create :client, created_by: user.id, client_type_id: advertiser_type_id(company) }
     let!(:agency) { create :client, created_by: user.id, client_type_id: agency_type_id(company) }
-    let!(:deal_type_field) { user.company.fields.find_by_name('Deal Type') }
+    let!(:deal_type_field) do
+      user.company.fields.find_or_initialize_by(
+        subject_type: 'Deal', name: 'Deal Type', value_type: 'Option', locked: true
+      )
+    end
+    let!(:deal_source_field) do
+      user.company.fields.find_or_initialize_by(
+        subject_type: 'Deal', name: 'Deal Source', value_type: 'Option', locked: true
+      )
+    end
+    let!(:close_reason_field) do
+      user.company.fields.find_or_initialize_by(
+        subject_type: 'Deal', name: 'Close Reason', value_type: 'Option', locked: true
+      )
+    end
+
     let!(:deal_type) { create :option, field: deal_type_field, company: user.company }
-    let!(:deal_source_field) { user.company.fields.find_by_name('Deal Source') }
     let!(:deal_source) { create :option, field: deal_source_field, company: user.company }
-    let!(:close_reason_field) { user.company.fields.find_by_name('Close Reason') }
     let!(:close_reason) { create :option, field: close_reason_field, company: user.company }
-    let!(:existing_deal) { create :deal, creator: another_user, updator: another_user }
+    let(:existing_deal) { create :deal, creator: another_user, updator: another_user }
     let!(:contacts) { create_list :contact, 4, company: company, client_id: advertiser.id }
     let(:import_log) { CsvImportLog.last }
 
@@ -585,6 +605,7 @@ describe Deal do
       expect(deal.deal_members.map(&:share)).to eq([data[:team].split('/')[1].to_i])
       expect(deal.created_at).to eq(DateTime.strptime(data[:created], '%m/%d/%Y') + 8.hours)
       expect(deal.closed_at).to eq(DateTime.strptime(data[:closed_date], '%m/%d/%Y') + 8.hours)
+      expect(deal.legacy_id).to eq(data[:legacy_id])
       expect(deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
     end
 
@@ -612,6 +633,7 @@ describe Deal do
       expect(existing_deal.start_date).to eq(Date.parse(data[:start_date]))
       expect(existing_deal.end_date).to eq(Date.parse(data[:end_date]))
       expect(existing_deal.stage.name).to eq(data[:stage])
+      expect(existing_deal.legacy_id).to eq(data[:legacy_id])
       expect(existing_deal.users.map(&:email)).to include(data[:team].split('/')[0])
       expect(existing_deal.deal_members.map(&:share)).to include(data[:team].split('/')[1].to_i)
       expect(existing_deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
@@ -1210,10 +1232,6 @@ describe Deal do
 
   def product
     @_product ||= create :product
-  end
-
-  def company
-    @_company ||= create :company
   end
 
   def advertiser(opts={})

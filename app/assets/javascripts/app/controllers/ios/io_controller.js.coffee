@@ -1,6 +1,6 @@
 @app.controller 'IOController',
-    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'Product', 'DisplayLineItem', 'Company', 'InfluencerContentFee'
-    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   Product,   DisplayLineItem,   Company,   InfluencerContentFee) ->
+    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'Product', 'DisplayLineItem', 'Company', 'InfluencerContentFee', 'Cost', 'Field'
+    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   Product,   DisplayLineItem,   Company,   InfluencerContentFee,   Cost,   Field) ->
             $scope.currentIO = {}
             $scope.activeTab = 'ios'
             $scope.currency_symbol = '$'
@@ -15,7 +15,6 @@
                 Company.get().$promise.then (company) ->
                     $scope.company = company
                     $scope.canEditIO = $scope.company.io_permission[$scope.currentUser.user_type]
-                    console.log('$scope.canEditIO', $scope.canEditIO)
                 IO.get($routeParams.id).then (io) ->
                     $scope.currentIO = io
                     if $scope.currentIO.influencer_content_fees
@@ -41,12 +40,31 @@
 
                     Product.all({active: true, revenue_type: 'Content-Fee'}).then (products) ->
                         $scope.products = products
-                        resetProducts()
+                    
+                    Field.all(subject: 'Cost').then (fields) ->
+                        Field.set('Cost', fields)
+                        $scope.currentIO.costs = _.map $scope.currentIO.costs, (cost) ->
+                            Field.defaults(cost, 'Cost').then (fields) ->
+                                cost.type = Field.field(cost, 'Type')
+                            return cost
 
-            resetProducts = ->
-                io_products = _.map $scope.currentIO.content_fees, (content_fee_item) ->
-                    return content_fee_item.product
-                $scope.products = $filter('notIn')($scope.products, io_products)
+            $scope.productsByLevel = (level, product)->
+                _.filter $scope.products, (p) -> 
+                    if level == 0
+                      p.level == level
+                    else if level == 1
+                      p.level == 1 && p.parent_id == product.level0.id
+                    else if level == 2
+                      p.level == 2 && p.parent_id == product.level1.id
+
+            $scope.onChangeProduct = (item, model) ->
+                if item && model
+                  model.product_id = item.id
+                  if item.level == 0
+                    model.product.level1 = {}
+                    model.product.level2 = {}
+                  else if item.level == 1
+                    model.product.level2 = {}
 
             $scope.showIOEditModal = (io) ->
                 $scope.modalInstance = $modal.open
@@ -71,6 +89,7 @@
                     keyboard: true
                     resolve:
                         message: -> message
+                        id: -> null
             $scope.showEditInfluencerContentFeeModal = (influencerContentFee)->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/influencer_content_fee_form.html'
@@ -119,6 +138,21 @@
                     resolve:
                         currentIO: ->
                             $scope.currentIO
+                        company: ->
+                            $scope.company
+
+            $scope.showNewCostModal = () ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/io_cost_form.html'
+                    size: 'lg'
+                    controller: 'IONewCostController'
+                    backdrop: 'static'
+                    keyboard: false
+                    resolve:
+                        currentIO: ->
+                            $scope.currentIO
+                        company: ->
+                            $scope.company
 
             $scope.deleteIo = (io) ->
                 if confirm('Are you sure you want to delete "' +  io.name + '"?')
@@ -183,7 +217,6 @@
                             calcRestBudget()
                             defer.resolve()
                         (err) ->
-                            console.log 'CREATE ERROR', err
                             budget.budget_loc = prevValue
                             defer.reject()
 #                        budget.budget_loc = budget.old_budget
@@ -201,7 +234,6 @@
                             calcRestBudget()
                             defer.resolve()
                         (err) ->
-                            console.log 'UPDATE ERROR', err
                             budget.budget_loc = prevValue
                             defer.reject()
                     )
@@ -237,16 +269,22 @@
 
             #TODO - set as ngChange in custom-editable directive
             $scope.updateContentFeeAndBudget = (content_fee) ->
-                # content_fee.budget_loc = 0
-                # console.log(angular.copy(content_fee))
-                # _.each content_fee.content_fee_product_budgets, (cfpb) ->
-                    # content_fee.budget_loc += Math.round(Number(cfpb.budget_loc), 2)
                 $scope.updateContentFee(content_fee)
 
             $scope.updateContentFee = (data) ->
-                console.log("content fee", data);
                 $scope.errors = {}
                 ContentFee.update(id: data.id, io_id: $scope.currentIO.id, content_fee: data).then(
+                    (io) ->
+                        $scope.currentIO = io
+                        $scope.init()
+                    (resp) ->
+                        for key, error of resp.data.errors
+                            $scope.errors[key] = error && error[0]
+                )
+
+            $scope.updateCost = (data) ->
+                $scope.errors = {}
+                Cost.update(id: data.id, io_id: $scope.currentIO.id, cost: data).then(
                     (io) ->
                         $scope.currentIO = io
                         $scope.init()
@@ -264,8 +302,18 @@
                         $scope.currentIO = io
             $scope.deleteContentFee = (content_fee) ->
                 $scope.errors = {}
-                if confirm('Are you sure you want to delete "' +  content_fee.product.name + '"?')
+                if confirm('Are you sure you want to delete "' +  content_fee.product.full_name + '"?')
                     ContentFee.delete(id: content_fee.id, io_id: $scope.currentIO.id).then(
+                        (deal) ->
+                            $scope.init()
+                        (resp) ->
+                            for key, error of resp.data.errors
+                                $scope.errors[key] = error && error[0]
+                    )
+            $scope.deleteCost = (cost) ->
+                $scope.errors = {}
+                if confirm('Are you sure you want to delete "' +  cost.product.full_name + '"?')
+                    Cost.delete(id: cost.id, io_id: $scope.currentIO.id).then(
                         (deal) ->
                             $scope.init()
                         (resp) ->
@@ -278,11 +326,18 @@
                 IO.update(id: $scope.currentIO.id, io: $scope.currentIO).then(
                     (io) ->
                         $scope.currentIO = io
+                        $scope.init()
                     (resp) ->
                         for key, error of resp.data.errors
                             $scope.errors[key] = error && error[0]
                 )
 
+            $scope.sumCostBudget = (index) ->
+                products = $scope.currentIO.costs
+                _.reduce products, (result, product) ->
+                    if !_.isUndefined index then product = product.cost_monthly_amounts[index]
+                    result += parseFloat if product then product.budget_loc else 0
+                , 0
             $scope.sumContentFeeBudget = (index) ->
                 products = $scope.currentIO.content_fees
                 _.reduce products, (result, product) ->
@@ -295,5 +350,9 @@
 
             $scope.$on 'content_fee_added', ->
                 $scope.init()
+
+            $scope.$on 'cost_added', ->
+                $scope.init()
+
             $scope.init()
     ]

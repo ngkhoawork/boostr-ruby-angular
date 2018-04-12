@@ -9,6 +9,8 @@
       url: 'api/fields/client_base_options'
     }
 
+  data = {}
+
   @all = (params) ->
     deferred = $q.defer()
     resource.query params, (fields) ->
@@ -27,9 +29,8 @@
       subject.fields = fields
       subject.values = subject.values || []
       _.each subject.fields, (field) ->
-        values = $filter('filter')(subject.values, { field_id: field.id })
-        if values.length > 0
-          value = values[0]
+        value = _.findWhere(subject.values, field_id: field.id)
+        if value?
           value.options = field.options
           value_option_ids = _.map(value.options, 'id')
           if value.option_id && value_option_ids.indexOf(value.option_id) < 0
@@ -43,8 +44,11 @@
 
     if subject && subject.fields
       finish(subject.fields)
+    else if (data[subject_type])
+      finish(data[subject_type])
     else
       @all({ subject: subject_type }).then (fields) ->
+        data[subject_type] = fields
         finish(fields)
 
     deferred.promise
@@ -53,7 +57,10 @@
     if subject.fields && subject.fields.length > 0
       subject_field = $filter('filter')(subject.fields, { name: field_name })[0]
       if subject_field
-        $filter('filter')(subject.values, { field_id: subject_field.id })[0]
+        _.findWhere(subject.values, field_id: subject_field.id)
+
+  @set = (subject_type, fields) ->
+    data[subject_type] = fields
 
   @getOption = (subject, field_name, option_id) ->
     if subject.fields && subject.fields.length > 0

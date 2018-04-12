@@ -1,64 +1,13 @@
-.z-styles
-	#product-families.container
-		.row.block
-			%div.mb20
-				%span.title Product Families
-				%add-button.add-family{'ng-click': 'showFamilyModal()'} Add
+#settings-products.z-styles
+  .container
+    .row.settings-product-header.mb20
+      .header-item
+        %span.menu-item{ ng: { repeat: 'menu in menus', class: '{active: selectedMenu == menu.value}', click: 'onSelectMenu(menu.value)'} }
+          {{ menu.name }}
+      .header-item
 
-			.table-wrapper
-				%table.table.table-hover
-					%thead
-						%tr
-							%th Family Name
-							%th Active
-					%tbody{ ng: { repeat: 'product_family in product_families' } }
-						%tr
-							%td
-								%span.mr8 {{ product_family.name }}
-								%i.fa.fa-pencil.z-icon.edit-family{'ng-click': 'editFamilyModal(product_family); $event.stopPropagation()'}
-								%i.fa.fa-trash.z-icon{ href: '', ng: { click: 'deleteFamily(product_family); $event.stopPropagation()' } }
-							%td {{ product_family.active ? 'Yes' : 'No' }}
-	#products.container
-		.row.block
-			%div.mb20
-				%download-button.pull-right{'ng-click': 'exportProducts()'} Export
-				%span.title Products
-				%add-button.add-product{'ng-click': 'showModal()'} Add
+  #product-families.container{ 'ng-if': 'selectedMenu == "product_families"', 'ng-include': "'settings/products/product_families.html'" }
 
-			.table-wrapper
-				%table.table.table-hover
-					%thead
-						%tr
-							%th Name
-							%th Family
-							%th Type
-							%th Revenue Type
-							%th Active
-							%th Is Influencer
-					%tbody{ ng: { repeat: 'product in products' } }
-						%tr.clickable{'ng-click': 'expendRow(product)'}
-							%td
-								%i{class: 'mr8 fa fa-chevron-{{expendedRow == product.id ? "right" : "down"}}'}
-								%span.mr8 {{ product.name }}
-								%i.fa.fa-pencil.z-icon.edit-product{'ng-click': 'editModal(product); $event.stopPropagation()'}
-							%td {{ product.product_family.name }}
-							%td {{ product.pricing_type.option.name }}
-							%td {{ product.revenue_type }}
-							%td {{ product.active ? 'Yes' : 'No' }}
-							%td {{ product.is_influencer_product ? 'Yes' : 'No' }}
-						%tr{'ng-show': 'expendedRow == product.id'}
-							%td.auto-colspan{style: 'padding: 0'}
-								%table.table.ad-unit-table
-									%thead
-										%tr
-											%th
-												%span.mr20 Ad units
-												%span.add-unit{'ng-click': 'showUnitModal(product)'}
-													%i.fa.fa-plus
-													Add new ad unit
-									%tbody
-										%tr{'ng-repeat': 'unit in productUnits[product.id]'}
-											%td
-												%span.mr8 {{unit.name}}
-												%i.fa.fa-pencil.z-icon{'ng-click': 'showUnitModal(product, unit)'}
-												%i.fa.fa-trash.z-icon{'ng-click': 'deleteUnit(product, unit)'}
+  #products.container{ 'ng-if': 'selectedMenu == "products"', 'ng-include': "'settings/products/products.html'" }
+
+  #product-options.container{ 'ng-if': 'selectedMenu == "settings"', 'ng-include': "'settings/products/product_settings.html'" }

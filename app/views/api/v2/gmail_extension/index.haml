@@ -23,4 +23,5 @@
       _isRequestsVisible = (#{current_user.company.requests_enabled && current_user.has_requests_access?});
       _isCompanyInfluencerEnabled = (#{current_user.company_influencer_enabled});
       _isPublisherEnabled = (#{current_user.company_publisher_enabled});
+      _isLogiEnabled = (#{current_user.company_logi_enabled});
     %div{'ng-view': true}

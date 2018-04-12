@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe Request do
+  let!(:company) { create :company }
+
   context 'validations' do
     it { should validate_length_of(:description).is_at_most(1000) }
     it { should validate_length_of(:resolution).is_at_most(1000) }
@@ -124,9 +126,9 @@ describe Request do
     @_recipient_email ||= [(create :user, revenue_requests_access: true).email]
   end
 
-  def company
-    @_company ||= Company.first
-  end
+  # def company
+  #   @_company ||= create :company
+  # end
 
   def request(opts = {})
     @_request ||= create :request, opts

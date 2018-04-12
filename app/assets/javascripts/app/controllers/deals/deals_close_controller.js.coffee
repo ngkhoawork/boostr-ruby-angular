@@ -1,32 +1,27 @@
 @app.controller 'DealsCloseController',
-['$scope', '$rootScope', '$routeParams', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Field', 'currentDeal',
-($scope, $rootScope, $routeParams, $modalInstance, $q, $location, Deal, Client, Field, currentDeal) ->
+['$scope', '$rootScope', '$routeParams', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Field', 'currentDeal', 'hasWon'
+($scope, $rootScope, $routeParams, $modalInstance, $q, $location, Deal, Client, Field, currentDeal, hasWon) ->
+  $scope.selectedReason = null
+  $scope.formType = "Closed Reason"
+  $scope.submitText = "Submit"
+  $scope.currentDeal = {}
+  $scope.hasWon = hasWon
+  $scope.reasonText = if hasWon then "Won Reason" else "Loss Reason"
+  $scope.commentText = if hasWon then "Won Comments" else "Loss Comments"
 
   $scope.init = ->
-    $scope.selectedReason = null
-    $scope.formType = "Closed Reason"
-    $scope.submitText = "Submit"
-    $scope.currentDeal = {}
-    $scope.resetDealProductBudget()
     Deal.get(currentDeal.id).then (deal) ->
       $scope.setCurrentDeal(deal)
 
   $scope.selectReason = (reason) ->
-    $scope.selectedReason = reason
+    $scope.selectedReason = reason.name
 
   $scope.setCurrentDeal = (deal) ->
-    _.each deal.members, (member) ->
-      Field.defaults(member, 'Client').then (fields) ->
-        member.role = Field.field(member, 'Member Role')
     Field.defaults(deal, 'Deal').then (fields) ->
       deal.close_reason = Field.field(deal, 'Close Reason')
+      if deal.close_reason.option_id
+        $scope.selectReason _.find(deal.close_reason.options, id: deal.close_reason.option_id)
       $scope.currentDeal = deal
-
-  $scope.resetDealProductBudget = ->
-    $scope.deal_product_budget = {
-      deal_id: $routeParams.id
-      months: []
-    }
 
   $scope.submitForm = () ->
     $scope.errors = {}

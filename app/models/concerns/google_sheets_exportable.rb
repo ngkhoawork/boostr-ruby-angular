@@ -6,9 +6,9 @@ module GoogleSheetsExportable
   end
 
   def schedule_google_sheets_export
+    return unless manual_update
     return unless (config = company.google_sheets_configurations.first)
 
     GoogleSheetsWorker.perform_async(config.sheet_id, id) if config.switched_on?
   end
 end
-

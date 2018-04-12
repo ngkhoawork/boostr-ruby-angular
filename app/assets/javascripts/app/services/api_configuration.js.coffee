@@ -13,6 +13,19 @@
         service_account_email:
           method: 'GET'
           url: 'api/api_configurations/service_account_email'
+        ssp:
+          method: 'GET'
+          url: 'api/api_configurations/ssp_credentials'
+        delete_ssp:
+          method: 'POST'
+          url: 'api/api_configurations/:id/delete_ssp'
+        update_ssp:
+          method: 'POST'
+          url: 'api/api_configurations/:id/update_ssp',
+        workflowable_actions:
+          method: 'GET'
+          url: 'api/api_configurations/workflowable_actions'
+          isArray: true
 
       @all = (params) ->
         deferred = $q.defer()
@@ -52,6 +65,29 @@
         resource.service_account_email params, (data) ->
           deferred.resolve(data)
         deferred.promise
+
+      @ssp_credentials = (params) ->
+        deferred = $q.defer()
+        resource.ssp params, (data) ->
+          deferred.resolve(data)
+        deferred.promise
+
+      @delete_ssp = (params) ->
+        deferred = $q.defer()
+        resource.delete_ssp params, (data) ->
+          deferred.resolve(data)
+          $rootScope.$broadcast 'updated_api_integrations'
+        deferred.promise
+
+      @update_ssp = (params) ->
+        deferred = $q.defer()
+        resource.update_ssp params, (data) ->
+          deferred.resolve(data)
+          $rootScope.$broadcast 'updated_api_integrations'
+        deferred.promise
+
+      @workflowable_actions = ->
+        resource.workflowable_actions().$promise
 
       return
   ]
