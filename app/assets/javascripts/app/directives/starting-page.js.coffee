@@ -37,4 +37,10 @@
         _isGmailExtensionEnabled && _gmail_extension_url
       else if id == 'gcalendar'
         _isGcalendarExtensionEnabled && _gcalendar_extension_url
+
+    $scope.isResourceLinkEnabled = () ->
+      !!_resourceLink
+
+    $scope.resourceLink = () ->
+      _resourceLink
  ]
