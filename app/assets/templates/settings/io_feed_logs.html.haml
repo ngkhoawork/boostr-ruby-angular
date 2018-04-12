@@ -33,7 +33,7 @@
           %td
             %button.btn.activity-email-btn{ng: { 'click': 'showBodyModal(log)', 'if': 'log.rows_failed > 0'} }
               Show Errors
-            %b{ng: {'if': 'log.rows_failed == 0'}}
+            %b{ng: {if: 'log.rows_failed == 0'}}
               No Errors
 
   .custom-pagination{'bgf-pagination': 'bgf-pagination',
@@ -41,4 +41,5 @@
     'per-page': '25',
     'link-group-size': "3",
     'client-limit': "25",
-    'url': 'requestUrl'}
+    'url': 'requestUrl',
+    'url-params': 'requestUrlParams'}
