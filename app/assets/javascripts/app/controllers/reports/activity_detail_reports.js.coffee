@@ -74,6 +74,26 @@
 		$scope.$on 'updated_activities', ->
 			getReport appliedFilter
 
+		$scope.$on 'openContactModal', ->
+			$modal.open
+				templateUrl: 'modals/contact_form.html'
+				controller: 'ContactsNewController'
+				size: 'md'
+				backdrop: 'static'
+				resolve:
+					contact: -> {}
+					options: -> {}
+
+		$scope.$on 'dashboard.openAccountModal', ->
+			$modal.open
+				templateUrl: 'modals/client_form.html'
+				controller: 'AccountsNewController'
+				size: 'md'
+				backdrop: 'static'
+				resolve:
+					client: -> {}
+					options: -> {}
+
 		$scope.exportReports = ->
 			url = '/api/activities.csv'
 			$window.open url + '?' + $httpParamSerializer appliedFilter
