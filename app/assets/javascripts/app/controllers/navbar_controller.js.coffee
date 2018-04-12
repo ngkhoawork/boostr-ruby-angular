@@ -35,6 +35,7 @@
             {name: 'Quota Attainment', url: '/reports/quota_attainment'}
             {name: 'Publishers', url: '/reports/publishers'} if _isPublisherEnabled
         ]}
+        {name: 'ANALYTICS', url: '/analytics'} if _isLogiEnabled && ($scope.currentUserRoles.isAdmin() || $scope.currentUserRoles.isSuperAdmin())
         {name: 'SMART INSIGHTS', url: '/smart_reports', dropdown: [
             {name: 'Sales Execution Dashboard', url: '/smart_reports/sales_execution_dashboard'}
             {name: 'Monthly Forecast', url: '/smart_reports/monthly_forecasts'}

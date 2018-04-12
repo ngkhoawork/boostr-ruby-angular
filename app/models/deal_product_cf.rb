@@ -2,6 +2,8 @@ class DealProductCf < ActiveRecord::Base
   belongs_to :company
   belongs_to :deal_product
 
+  before_save :fetch_company_id_from_deal, on: :create
+
   after_update do
     calculate_sum
   end
@@ -45,4 +47,7 @@ class DealProductCf < ActiveRecord::Base
     deal_custom_field.save
   end
 
+  def fetch_company_id_from_deal
+    self.company_id ||= deal_product.deal&.company_id
+  end
 end

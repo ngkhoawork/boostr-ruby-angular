@@ -589,6 +589,10 @@ Rails.application.routes.draw do
 
     resources :sales_processes, only: [:index, :create, :show, :update]
     resources :statistics, only: [:show]
+
+    resources :logi_configurations, only: [:index, :logi_callback] do
+      get :logi_callback, on: :collection
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'
