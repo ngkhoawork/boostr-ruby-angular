@@ -1,0 +1,134 @@
+#workflow-form-modal.popup-modal{ ng: { click: 'hideSearch($event)' } }
+  %form{'ng-submit': 'submitForm()'}
+    .popup-modal-header.text-center
+      {{headerPrefix}} Workflow Event
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+      .form-group{'ng-class':'{error: errors.name}'}
+        %span.error-text {{errors.name}}
+        %label
+          Event Name
+          %span.star *
+        %input.form-control{'placeholder': 'Workflow Event', 'ng-model': 'workflow.name'}
+      .form-group{'ng-class':'{error: errors.name}'}
+        %span.error-text {{errors.name}}
+        %label
+          Event Description
+        %textarea.form-control{:cols => "30", :name => "description", :rows => '3', placeholder: 'Workflow Description', ng: { model: 'workflow.description' } }
+      .form-group
+        .col-xs-3
+          %label
+            Enabled
+          %br
+          %z-toggle{'ng-model': 'workflow.switched_on'}
+        .col-xs-3
+          %label
+            Trigger on Create
+          %br
+          %z-toggle{'ng-model': 'workflow.fire_on_create'}
+        .col-xs-3
+          %label
+            Trigger on Update
+          %br
+          %z-toggle{'ng-model': 'workflow.fire_on_update'}
+        .col-xs-3
+          %label
+            Trigger on Destroy
+          %br
+          %z-toggle{'ng-model': 'workflow.fire_on_destroy'}
+      .clearfix
+      %span.title Criteria
+      .criteria-table
+        .criteria-header
+          %label Relation
+          %label Object
+          %label Field
+          %label Operator
+          %label Value
+        .criteria-row{ng: { repeat: 'criterion in workflow.workflow_criterions'}}
+          .form-group.center-label
+            %label
+              Criteria{{$index + 1}}
+              %span.glyphicon.glyphicon-remove{'ng-click': 'removeCriterion(criterion)', 'ng-class': '{hidden: $index == 0}'}
+          .form-group{'ng-class': '{hidden_select: $index == 0}'}
+            %ui-select{ name: 'relation', ng: { model: 'criterion.relation', required: true, disabled: '$index == 0'} }
+              %ui-select-match{ placeholder: 'AND' }
+                {{ $select.selected }}
+              %ui-select-choices{ repeat: 'relation in defaults.relations' }
+                %div{ ng: { bind: { html: 'relation' } } }
+          .form-group.capitalize
+            %ui-select{ name: 'base_object', ng: { model: 'criterion.base_object', required: true, change: 'setDataModel(criterion)' } }
+              %ui-select-match{ placeholder: 'User' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'data_model.name as data_model in data_models' }
+                %div{ ng: { bind: { html: 'data_model.name' } } }
+          .form-group
+            %ui-select{ name: 'field', ng: { model: 'criterion.field', required: true } }
+              %ui-select-match{ placeholder: 'budget' }
+                {{ $select.selected.field_label }}
+              %ui-select-choices{ repeat: 'model_attributes.field_name as model_attributes in criterion.data_model.model_attributes' }
+                %div{ ng: { click: 'setCurrentDataType(criterion, model_attributes.data_type)', bind: { html: 'model_attributes.field_label' } } }
+          .form-group
+            %ui-select{ name: 'math_operator', ng: { model: 'criterion.math_operator', required: true } }
+              %ui-select-match{ placeholder: '>=' }
+                {{ $select.selected }}
+              %ui-select-choices{ repeat: 'math_operator in defaults.math_operators' }
+                %div{ ng: { bind: { html: 'math_operator' } } }
+          .form-group
+            %div{ 'ng-switch': '', on: 'criterion.data_type' }
+              %div.date-input-block{ 'ng-switch-when': 'date' }
+                %input.form-control{ 'placeholder': 'Value', 'ng-model': 'criterion.value', datepicker: { popup: 'MMMM d, y', timezone: true }, 'ng-click': 'dateOpened = true', 'is-open': 'dateOpened' }
+              %div.date-input-block{ 'ng-switch-when': 'datetime' }
+                %input.form-control{ 'placeholder': 'Value', 'ng-model': 'criterion.value', datepicker: { popup: 'MMMM d, y', timezone: true }, 'ng-click': 'dateOpened = true', 'is-open': 'dateOpened' }
+              %div{ 'ng-switch-default': '' }
+                %input.form-control{ 'placeholder': 'Value', 'ng-model': 'criterion.value' }
+
+      %a.criteria-link{href: '', 'ng-click': 'oneMoreCriteria()'} + Add Critera
+
+      %span.title Action
+
+      .col-xs-6.pl0
+        .form-group{'ng-class':'{error: errors.reminderDate}'}
+          %span.error-text {{errors.reminderDate}}
+          %label Type
+          %ui-select{ name: 'workflow_type', ng: { model: 'workflow.workflow_action.workflow_type', required: true, change: 'setActionId(workflow, $select.selected)' } }
+            %ui-select-match{ placeholder: 'Action Type' }
+              {{ $select.selected.workflow_action_name }}
+            %ui-select-choices{ repeat: 'action.workflow_action as action in workflowable_actions' }
+              %div{ ng: { bind: { html: 'action.workflow_action_name' } } }
+      .col-xs-6.pr0
+        .form-group
+          %label Method
+          .input-group
+            %span.input-group-addon
+              Channel:
+            %input.form-control{'placeholder': 'Action Method', 'ng-model': 'workflow.workflow_action.workflow_method'}
+
+      .col-xs-12.pr0.pl0
+        .form-group
+          %z-slack-message-input{ 'message-text': 'workflow.workflow_action.template', 'field-mapping': 'data_mappings' }
+
+      .col-xs-12.pr0.pl0
+        .form-group
+          %label Configurable attachment
+          %div#slack-configurable-attachment
+            .search-mapping-wrapper{ ng: { show: 'showSearch' } }
+              %input.form-control.search-field{ type: 'search', placeholder: 'Search for Mapping', ng: { model: 'searchMapping' } }
+              %ul.dropdown-menu.mappings{ ng: { show: 'filteredSuggestions.length > 0' } }
+                %li{ ng: { repeat: 'suggestion in filteredSuggestions= (data_mappings | filter: searchMapping)', click: 'addSuggestion(suggestion)', show: 'dontShowSuggestion(suggestion)' } }
+                  {{ suggestion.label_name }}
+            %span{ ng: { if: 'workflow.workflow_action.slack_attachment_mappings == undefined || workflow.workflow_action.slack_attachment_mappings.length == 0' } } You don't have Configurable attachment yet
+            %a.add-mapping{ title: 'Add Mapping', href: '', ng: { click: 'toogleSearch()' } }
+              %span.glyphicon.glyphicon-th-list{ 'aria-hidden': 'true' }
+            .mappings-wrapper
+              %ul{'dnd-list': 'workflow.workflow_action.slack_attachment_mappings'}
+                %li{ ng: { repeat: 'mapping in workflow.workflow_action.slack_attachment_mappings as mappings'}, dnd: { draggable: 'mapping', moved: 'onMoved(mapping, $index)', 'effect-allowed': 'move' } }
+                  %span.glyphicon.glyphicon-menu-hamburger
+                  %span.label-name {{ mapping.label_name }}
+                  %span.glyphicon.glyphicon-remove{ ng: { click: 'removeSuggestion(mapping)' } }
+
+      .clearfix
+
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+      %button.btn.btn-warning{'type': 'submit'} {{ submitButtonText }}

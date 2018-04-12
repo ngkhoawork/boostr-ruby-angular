@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  SAFE_COLUMNS = %i{email first_name last_name title employee_id office}
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable and :omniauthable
   devise :invitable, :database_authenticatable, :registerable,
@@ -45,7 +46,6 @@ class User < ActiveRecord::Base
 
   after_create do
     create_dimension
-    update_forecast_fact_callback
   end
 
   after_destroy do |user_record|
@@ -65,19 +65,8 @@ class User < ActiveRecord::Base
     UserDimension.destroy(user_record.id)
     ForecastPipelineFact.destroy_all(user_dimension_id: user_record.id)
     ForecastRevenueFact.destroy_all(user_dimension_id: user_record.id)
-  end
-
-  def update_forecast_fact_callback
-    if company.present?
-      time_period_ids = company.time_periods.collect{|time_period| time_period.id}
-      user_ids = [self.id]
-      product_ids = company.products.collect{|product| product.id}
-      stage_ids = company.stages.collect{|stage| stage.id}
-      io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
-      deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
-      ForecastRevenueCalculatorWorker.perform_async(io_change)
-      ForecastPipelineCalculatorWorker.perform_async(deal_change)
-    end
+    ForecastPmpRevenueFact.destroy_all(user_dimension_id: user_record.id)
+    ForecastCostFact.destroy_all(user_dimension_id: user_record.id)
   end
 
   def roles=(roles)
@@ -105,8 +94,16 @@ class User < ActiveRecord::Base
     self.company.influencer_enabled
   end
 
+  def company_egnyte_enabled
+    company.egnyte_integration&.enabled
+  end
+
   def company_publisher_enabled
     self.company.publishers_enabled
+  end
+
+  def company_logi_enabled
+    self.company.logi_enabled
   end
 
   def company_forecast_gap_to_quota_positive
@@ -115,6 +112,26 @@ class User < ActiveRecord::Base
 
   def company_net_forecast_enabled
     self.company.enable_net_forecasting
+  end
+
+  def product_options_enabled
+    self.company.product_options_enabled
+  end
+
+  def product_option1
+    self.company.product_option1
+  end
+
+  def product_option2
+    self.company.product_option2
+  end
+
+  def product_option1_enabled
+    self.company.product_option1_enabled
+  end
+
+  def product_option2_enabled
+    self.company.product_option2_enabled
   end
 
   def is_admin
@@ -186,10 +203,16 @@ class User < ActiveRecord::Base
           :is_admin,
           :roles,
           :company_influencer_enabled,
+          :company_egnyte_enabled,
           :company_forecast_gap_to_quota_positive,
           :company_net_forecast_enabled,
           :has_forecast_permission,
-          :has_multiple_sales_process
+          :has_multiple_sales_process,
+          :product_options_enabled,
+          :product_option1,
+          :product_option2,
+          :product_option1_enabled,
+          :product_option2_enabled
         ]
       ).except(:override))
     end

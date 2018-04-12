@@ -35,6 +35,10 @@ class ContactCfName < ActiveRecord::Base
     "dropdown" => 10
   }
 
+  def underscored_field_label
+    field_label.parameterize.underscore
+  end
+
   private
 
   def assign_index

@@ -1,6 +1,6 @@
 @app.controller 'ProductMonthlySummaryController',
-    ['$scope', '$window', '$q', 'Team', 'Seller', 'TimePeriod', 'Product', 'Report', '$httpParamSerializer'
-    ( $scope,   $window,   $q,   Team,   Seller,   TimePeriod,   Product,   Report,   $httpParamSerializer) ->
+    ['$scope', '$window', '$q', 'Team', 'Seller', 'TimePeriod', 'Product', 'Report', '$httpParamSerializer', 'Company',
+    ( $scope,   $window,   $q,   Team,   Seller,   TimePeriod,   Product,   Report,   $httpParamSerializer,   Company) ->
 
         $scope.teams = []
         $scope.sellers = []
@@ -11,6 +11,7 @@
         $scope.page = 1
 
         appliedFilter = null
+        Company.get().$promise.then (company) -> $scope.company = company
 
         $scope.loadMoreData = ->
             if !$scope.allItemsLoaded then getData(appliedFilter)
@@ -44,7 +45,7 @@
 
         $q.all(
             teams: Team.all(all_teams: true)
-            products: Product.all()
+            products: Product.all({level: 0, active: true})
             sellers: Seller.query({id: 'all'}).$promise
         ).then (data) ->
             $scope.teams = data.teams

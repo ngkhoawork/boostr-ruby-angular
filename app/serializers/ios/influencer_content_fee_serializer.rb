@@ -22,7 +22,7 @@ class Ios::InfluencerContentFeeSerializer < ActiveModel::Serializer
   has_one :currency
 
   def content_fee
-    object.content_fee&.serializable_hash(only: [:id], include: { product: { only: [:id, :name] } })
+    object.content_fee&.serializable_hash(only: [:id], include: { product: { methods: [:level0, :level1, :level2] } })
   end
 
   def influencer

@@ -153,7 +153,7 @@ describe DisplayLineItemCsv do
   end
 
   it 'sets product' do
-    line_item_csv(external_io_number: io.external_io_number, product_name: product.name)
+    line_item_csv(external_io_number: io.external_io_number, product_name: product.full_name)
     line_item_csv.perform
     expect(DisplayLineItem.last.product).to eql product
   end
@@ -307,7 +307,7 @@ describe DisplayLineItemCsv do
   end
 
   def product
-    @_product ||= create :product, company: company
+    @_product ||= create :product, full_name: 'O&O Promotion', company: company
   end
 
   def currency(opts={})

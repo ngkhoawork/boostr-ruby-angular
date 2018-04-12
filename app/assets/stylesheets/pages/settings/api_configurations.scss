@@ -8,14 +8,19 @@
     float: none;
     margin: 0 auto;
   }
-  .dfp-import-buttons {
+  .dfp-import-buttons, .slack-button {
     margin-top: 15px;
   }
 }
 
 #dfp-info-modal {
   .info-text {
-    color: #1ABC9C;
+    .status_ok {
+      color: #1ABC9C;
+    }
+    .status_error {
+      color: $error-color;
+    }
   }
   .popup-modal-body {
     text-align: center;

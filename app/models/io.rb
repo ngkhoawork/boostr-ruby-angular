@@ -1,4 +1,9 @@
 class Io < ActiveRecord::Base
+  SAFE_COLUMNS = %i{budget start_date end_date external_io_number io_number
+                    created_at updated_at name budget_loc curr_cd}
+
+  include CurrencyExchangeble
+
   belongs_to :advertiser, class_name: 'Client', foreign_key: 'advertiser_id'
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id'
   belongs_to :deal
@@ -26,7 +31,6 @@ class Io < ActiveRecord::Base
   has_many :content_fee_products, dependent: :destroy, through: :content_fees, source: :product
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
-  validate :active_exchange_rate
 
   scope :for_company, -> (company_id) { where(company_id: company_id) }
   scope :for_io_members, -> (user_ids) { joins(:io_members).where('io_members.user_id in (?)', user_ids) }
@@ -167,18 +171,6 @@ class Io < ActiveRecord::Base
         array << (end_date - (end_date.beginning_of_month - 1)).to_i
     end
     array
-  end
-
-  def exchange_rate
-    company.exchange_rate_for(currency: self.curr_cd, at_date: (self.created_at || Date.today))
-  end
-
-  def active_exchange_rate
-    if curr_cd != 'USD'
-      unless self.exchange_rate
-        errors.add(:curr_cd, "does not have an exchange rate for #{self.curr_cd} at #{(self.created_at || Date.today).strftime("%m/%d/%Y")}")
-      end
-    end
   end
 
   def update_total_budget

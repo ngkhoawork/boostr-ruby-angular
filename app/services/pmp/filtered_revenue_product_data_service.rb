@@ -20,10 +20,7 @@ class Pmp::FilteredRevenueProductDataService
               :end_date
 
   def pmp_items
-    @_pmp_items ||= pmp.pmp_items.inject([]) do |result, pmp_item|
-      result << pmp_item if product_ids.nil? || product_ids.include?(pmp_item.product_id)
-      result
-    end
+    @_pmp_items ||= pmp.pmp_items.select {|i| product_ids.nil? || product_ids.include?(i.product_id)}
   end
 
   def pmp_users
@@ -51,8 +48,8 @@ class Pmp::FilteredRevenueProductDataService
     share = pmp_member.share
     pmp_actuals = pmp_item.pmp_item_daily_actuals.oldest
 
-    actual_start_date = pmp_actuals.first&.date || pmp_item.start_date
-    actual_end_date = pmp_actuals.last&.date || pmp_item.start_date
+    actual_start_date = pmp_actuals.minimum(:date) || pmp_item.start_date
+    actual_end_date = pmp_actuals.maximum(:date) || pmp_item.start_date
 
     range_start_date = [
       start_date,
@@ -68,11 +65,13 @@ class Pmp::FilteredRevenueProductDataService
     if range_start_date <= actual_end_date && range_end_date >= actual_start_date
       total = pmp_item_actuals_amount(pmp_item, range_start_date, range_end_date, share)
     end
+
     if product_ids.nil?
       projection_amount = pmp_item_projection_amount(pmp_item, range_start_date, range_end_date, actual_end_date, share)
       total[0] += projection_amount[0]
       total[1] += projection_amount[1]
     end
+    
     total
   end
 

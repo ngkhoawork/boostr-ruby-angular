@@ -26,5 +26,10 @@
   _isPublisherEnabled = (#{current_user.company_publisher_enabled});
   _isGmailExtensionEnabled = (#{current_user.company.gmail_enabled});
   _isGcalendarExtensionEnabled = (#{current_user.company.gcalendar_enabled});
+  _isLogiEnabled = (#{current_user.company_logi_enabled});
   _gmail_extension_url = ("#{Setting.get(:gmail_extension_url)}");
   _gcalendar_extension_url = ("#{Setting.get(:gcalendar_extension_url)}");
+  _resourceLink = ("#{current_user.company.resource_link}");
+  _isAgreementsEnabled = (#{!!current_user.agreements_enabled});
+  _isLeadsEnabled = (#{!!current_user.leads_enabled});
+  _isContractsEnabled = (#{!!current_user.contracts_enabled});

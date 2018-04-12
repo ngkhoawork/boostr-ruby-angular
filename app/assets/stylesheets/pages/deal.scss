@@ -519,6 +519,9 @@
                     text-align: left;
                     width: 200px;
                 }
+                &.text-left {
+                    text-align: left;
+                }
             }
         }
         .sum-budgets-row {
@@ -897,6 +900,12 @@
             color: lighten($secondary-font-color, 15%);
         }
     }
+
+  .egnyte-section{
+    iframe {
+      border: 0;
+    }
+  }
 }
 @media screen and (min-width: 1921px) {
     #deal {

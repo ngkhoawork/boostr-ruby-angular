@@ -1,7 +1,7 @@
 @app.controller 'AccountController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes', 'CurrentUser'
-($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes, CurrentUser) ->
-
+['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes', 'CurrentUser', 'Egnyte'
+($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes, CurrentUser, Egnyte) ->
+  
   $scope.showMeridian = true
   $scope.activitiesOrder = '-happened_at'
   $scope.types = []
@@ -16,6 +16,8 @@
   $scope.connectedClientContactUrl = 'api/clients/' + $routeParams.id + '/connected_client_contacts'
   $scope.url = 'api/resources'
   $scope.object = { userToLink: null }
+  $scope.egnyteConnected = false
+  $scope.egnyteHealthy = true
   $scope.allow_edit = false;
 
   $scope.checkPermissions = ->
@@ -39,9 +41,23 @@
       client_types = Field.findClientTypes(fields)
       $scope.setClientTypes(client_types)
 
+  getCurrentCompany = (deal) ->
+    Egnyte.show().then (egnyteSettings) ->
+      $scope.company = egnyteSettings
+      if(egnyteSettings.access_token && egnyteSettings.connected)
+        $scope.egnyteConnected = true
+        $scope.egnyte(egnyteSettings.access_token, egnyteSettings.app_domain, $scope.currentClient)
+
   getAccountCfNames = () ->
     AccountCfName.all().then (accountCfNames) ->
       $scope.accountCfNames = accountCfNames
+
+  $scope.egnyte = (token, domain, account) ->
+    Egnyte.navigateToAccount(advertiser_id: account.id).then (response) ->
+      if response.navigate_to_deal_uri
+        $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
+      else
+        $scope.egnyteHealthy = false
 
   $scope.setClientTypes = (client_types) ->
     client_types.options.forEach (option) ->
@@ -98,6 +114,8 @@
     $scope.segmentOptions = Field.findFieldOptions($scope.currentClient.fields, 'Segment')
     $scope.regionOptions = Field.findFieldOptions($scope.currentClient.fields, 'Region')
     $scope.$emit('updated_current_client')
+    # Get current company settigs for Egnyte iframe for current client
+    getCurrentCompany()
 
   $scope.getIOs = (type) ->
     if ($scope.currentClient && $scope.currentClient.id)

@@ -189,9 +189,9 @@ class Api::BillingSummaryController < ApplicationController
 
   def product_ids
     @_product_ids ||= if product
-      [product.id]
+      product.include_children.map(&:id)
     elsif product_family
-      product_family.products.map(&:id)
+      product_family.products.collect(&:id)
     end
   end
 
@@ -292,7 +292,16 @@ class Api::BillingSummaryController < ApplicationController
     headers = [
       'Io#', 'Line#', 'Name', 'Advertiser', 'Agency', 'Seller', 'Currency', 'Billing Contact Name', 'Billing Contact Email',
       'Billing Contact Address1', 'Billing Contact City', 'Billing Contact State', 'Billing Contact Country',
-      'Billing Contact Postal Code', 'Product', 'Ad Server Product', 'Revenue Type', 'Amount', 'Billing Status', 'VAT'
+      'Billing Contact Postal Code', 'Product'
+    ]
+    if company.product_options_enabled && company.product_option1_enabled
+      headers << company.product_option1
+    end
+    if company.product_options_enabled && company.product_option2_enabled
+      headers << company.product_option2
+    end    
+    headers += [
+      'Ad Server Product', 'Revenue Type', 'Amount', 'Billing Status', 'VAT'
     ]
 
     CSV.generate do |csv|
@@ -300,21 +309,32 @@ class Api::BillingSummaryController < ApplicationController
 
       csv_data.each do |obj|
         obj['content_fee_product_budgets'].each do |fee|
-          csv << fee.values_at('io_number', 'line', 'io_name', 'advertiser_name', 'agency_name', 'seller_name', 'currency',
+          row = fee.values_at('io_number', 'line', 'io_name', 'advertiser_name', 'agency_name', 'seller_name', 'currency',
                                'billing_contact_name', 'billing_contact_email', 'street1', 'city', 'state', 'country',
-                               'postal_code', 'product_name', 'ad_server', 'revenue_type', 'amount', 'billing_status',
+                               'postal_code')
+          row << fee['product']['level0']['name']
+          row << fee['product']['level1']['name'] if company.product_options_enabled && company.product_option1_enabled
+          row << fee['product']['level2']['name'] if company.product_options_enabled && company.product_option2_enabled
+          row += fee.values_at('ad_server', 'revenue_type', 'amount', 'billing_status',
                                'vat')
+          csv << row
         end
 
         obj['display_line_item_budgets'].each do |item|
-          csv << item.values_at('io_number', 'line', 'io_name', 'advertiser_name', 'agency_name', 'seller_name', 'currency',
+          row = item.values_at('io_number', 'line', 'io_name', 'advertiser_name', 'agency_name', 'seller_name', 'currency',
                                 'billing_contact_name', 'billing_contact_email', 'street1', 'city', 'state', 'country',
-                                'postal_code', 'product_name', 'ad_server', 'revenue_type', 'budget_loc',
+                                'postal_code')
+          row << item['product']['level0']['name']
+          row << item['product']['level1']['name'] if company.product_options_enabled && company.product_option1_enabled
+          row << item['product']['level2']['name'] if company.product_options_enabled && company.product_option2_enabled
+          row += item.values_at('ad_server', 'revenue_type', 'budget_loc',
                                 'billing_status', 'vat')
+          csv << row
         end
       end
     end
   end
+
   def converted_cost_budget_params
     ConvertCurrency.call(cost_budget.cost.io.exchange_rate, cost_budget_params)
   end

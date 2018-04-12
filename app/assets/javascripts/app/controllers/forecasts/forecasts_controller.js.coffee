@@ -19,6 +19,8 @@
 			seller: emptyFilter
 			productFamily: emptyFilter
 			product: emptyFilter
+			product1: emptyFilter
+			product2: emptyFilter
 			timePeriod: emptyFilter
 			year: null
 		$scope.filter = angular.copy defaultFilter
@@ -64,6 +66,8 @@
 					time_period_id: $scope.filter.timePeriod.id,
 					quarter: row.quarter,
 					product_id: $scope.filter.product.id,
+					product1_id: $scope.filter.product1.id,
+					product2_id: $scope.filter.product2.id,
 					product_family_id: $scope.filter.productFamily.id,
 					is_net_forecast: $scope.isNetForecast,
 					year: row.year
@@ -137,7 +141,6 @@
 			angular.element('.subtable-wrap').removeClass('opened').height(0)
 			return
 
-
 		$scope.$watch 'filter.team', (team, prevTeam) ->
 			if team == prevTeam then return
 			if team.id then $scope.setFilter('seller', emptyFilter)
@@ -145,6 +148,22 @@
 			searchAndSetSeller(team.members, $scope.currentUser)
 			Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
 				$scope.sellers = sellers
+
+		$scope.$watch 'filter.product', (product, prevProduct) ->
+			if product == prevProduct then return
+			if product.id then $scope.setFilter('product', emptyFilter)
+			$scope.setFilter('product', product)
+			$scope.productsLevel1 = productsByLevel(1)
+			if !_.findWhere $scope.productsLevel1, { id: $scope.filter.product1.id }
+				$scope.setFilter('product1', emptyFilter)
+
+		$scope.$watch 'filter.product1', (product1, prevProduct1) ->
+			if product1 == prevProduct1 then return
+			if product1.id then $scope.setFilter('product1', emptyFilter)
+			$scope.setFilter('product1', product1)
+			$scope.productsLevel2 = productsByLevel(2)
+			if !_.findWhere $scope.productsLevel2, { id: $scope.filter.product2.id }
+				$scope.setFilter('product2', emptyFilter)
 
 		$scope.$watch 'filter.productFamily', (productFamily, prevProductFamily) ->
 			if productFamily == prevProductFamily then return
@@ -158,11 +177,10 @@
 			teams: Team.all(all_teams: true)
 			sellers: Seller.query({id: 'all'}).$promise
 			productFamilies: ProductFamily.all(active: true)
-			products: Product.all()
+			products: Product.all({active: true})
 			timePeriods: TimePeriod.all()
 		).then (data) ->
-			$scope.hasForecastPermission = data.user.has_forecast_permission
-			$scope.hasNetPermission = data.user.company_net_forecast_enabled
+			setPermission(data.user)
 			shouldChooseTeamFilter = $scope.currentUserIsLeader || data.user.team_id != null || !$scope.hasForecastPermission
 			shouldChooseMemberFilter = !$scope.currentUserIsLeader && data.user.team_id != null || !$scope.hasForecastPermission
 			$scope.filterTeams = data.teams
@@ -172,6 +190,8 @@
 			$scope.sellers = data.sellers
 			$scope.productFamilies= data.productFamilies
 			$scope.products = data.products
+			$scope.productsLevel0 = productsByLevel(0)
+
 			$scope.timePeriods = data.timePeriods.filter (period) ->
 				period.visible and (
 					period.period_type is 'quarter' or
@@ -179,6 +199,23 @@
 					period.period_type is 'month'
 				)
 			searchAndSetTimePeriod($scope.timePeriods)
+
+		setPermission = (user) ->
+			$scope.hasForecastPermission = user.has_forecast_permission
+			$scope.hasNetPermission = user.company_net_forecast_enabled
+			$scope.productOption1Enabled = user.product_options_enabled && user.product_option1_enabled
+			$scope.productOption2Enabled = user.product_options_enabled && user.product_option2_enabled
+			$scope.productOption1 = user.product_option1 || 'Option 1'
+			$scope.productOption2 = user.product_option2 || 'Option 2'
+
+		productsByLevel = (level) ->
+			_.filter $scope.products, (p) -> 
+				if level == 0
+					p.level == level
+				else if level == 1
+					p.level == 1 && p.parent_id == $scope.filter.product.id
+				else if level == 2
+					p.level == 2 && p.parent_id == $scope.filter.product1.id
 
 		searchAndSetTimePeriod = (timePeriods) ->
 			for period in timePeriods
@@ -215,6 +252,8 @@
 			query.user_id = f.seller.id || 'all'
 			query.product_family_id = f.productFamily.id || 'all'
 			query.product_id = f.product.id || 'all'
+			query.product1_id = f.product1.id || 'all'
+			query.product2_id = f.product2.id || 'all'
 			query.time_period_id = f.timePeriod.id if f.timePeriod.id
 			query.year = f.year if f.year
 			query.new_version = true

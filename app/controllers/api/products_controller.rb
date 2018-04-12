@@ -2,21 +2,22 @@ class Api::ProductsController < ApplicationController
   respond_to :json, :csv
 
   def index
-    products = current_user.company.products
+    products = company.products
                     .by_revenue_type(params[:revenue_type])
                     .by_product_family(params[:product_family_id])
+                    .by_level(params[:level])
     if params[:active] == 'true'
       products = products.active
     end
 
     respond_to do |format|
       format.json { render json: products }
-      format.csv { send_data products.to_csv, filename: "products-#{Date.today}.csv" }
+      format.csv { send_data products.to_csv(company), filename: "products-#{Date.today}.csv" }
     end
   end
 
   def create
-    product = current_user.company.products.new(product_params)
+    product = company.products.new(product_params)
     if product.save
       render json: product, status: :created
     else
@@ -34,6 +35,10 @@ class Api::ProductsController < ApplicationController
 
   private
 
+  def company
+    @_company ||= current_user.company
+  end
+
   def product_params
     params.require(:product).permit(
       :name,
@@ -42,6 +47,9 @@ class Api::ProductsController < ApplicationController
       :margin,
       :is_influencer_product,
       :product_family_id,
+      :parent_id,
+      :full_name,
+      :auto_generated,
       {
         values_attributes: [
           :id,
@@ -53,6 +61,6 @@ class Api::ProductsController < ApplicationController
   end
 
   def product
-    @product ||= current_user.company.products.where(id: params[:id]).first
+    @product ||= company.products.where(id: params[:id]).first
   end
 end

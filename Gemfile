@@ -24,6 +24,7 @@ gem 'jbuilder'
 gem 'chronic'
 gem 'sidekiq'
 gem 'sidekiq-scheduler'
+gem 'sidekiq-status'
 gem 'newrelic_rpm'
 gem 'awesome_print'
 gem 'active_model_serializers', '= 0.8.3'
@@ -54,6 +55,13 @@ gem 'rack-cors', :require => 'rack/cors'
 gem 'smarter_csv'
 gem 'daemons'
 gem 'google-api-client'
+gem 'nokogiri', '1.6.8.1'
+
+gem 'slack-ruby-client'
+gem 'wisper'
+gem 'wisper-sidekiq', git: 'https://github.com/krisleech/wisper-sidekiq.git', branch: 'sidekiq5-compatibility'
+gem 'mustache', '~> 1.0'
+gem 'gli'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
@@ -75,6 +83,8 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-paginate-anything'
   gem 'rails-assets-angular-markdown-it'
 end
+gem 'wisper-rspec', require: false
+
 
 group :production, :staging do
   gem 'rails_12factor'
@@ -95,6 +105,7 @@ group :development do
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console'
+  gem 'guard-livereload'
 end
 
 group :development, :test do

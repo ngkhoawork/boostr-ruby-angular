@@ -8,6 +8,7 @@ class CsvImportLog < ActiveRecord::Base
 
   scope :for_company, -> (id) { where(company_id: id) }
   scope :by_source,   -> (source) { where(source: source) if source.present? }
+  scope :exclude_source,   -> (source) { where.not(source: source) if source.present? }
 
   def count_processed
     self.rows_processed += 1

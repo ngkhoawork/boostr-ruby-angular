@@ -7,6 +7,10 @@ class Csv::BaseService
     generate_csv
   end
 
+  def self.parameterize(name)
+    name.parameterize('_')
+  end
+
   private
 
   attr_reader :records
@@ -16,7 +20,7 @@ class Csv::BaseService
       csv << headers
 
       decorated_records.each do |record|
-        csv << headers.map { |attr| record.public_send(attr.parameterize('_')) }
+        csv << headers.map { |attr| record.public_send(Csv::BaseService.parameterize(attr)) }
       end
     end
   end

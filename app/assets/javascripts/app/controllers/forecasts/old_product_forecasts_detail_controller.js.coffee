@@ -85,7 +85,7 @@
             teams: Team.all(all_teams: true)
             sellers: Seller.query({id: 'all'}).$promise
             timePeriods: TimePeriod.all()
-            products: Product.all()
+            products: Product.all({active: true})
             stages: Stage.query().$promise
         ).then (data) ->
             $scope.teams = data.teams
@@ -177,10 +177,11 @@
                         $scope.totalForecastData.weighted_pipeline_by_stage[index] += parseFloat(val)
                 query.team_id = query.id
                 delete query.id
+                query.is_product = true
                 Revenue.forecast_detail(query).$promise.then (data) ->
                     parseBudget data
                     $scope.revenues = data
-
+                    query.is_product = true
                     Deal.forecast_detail(query).then (data) ->
                         parseBudget data
                         $scope.deals = data

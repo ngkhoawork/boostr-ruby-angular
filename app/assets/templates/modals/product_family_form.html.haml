@@ -8,17 +8,16 @@
         %span.error-text {{errors.name}}
         %label{ for: 'name' } Name
         %span.star *
-        %input.form-control{ placeholder: 'Name', ng: { model: 'product_family.name' }, name: 'name' }
+        %input.form-control{ placeholder: 'Name', ng: { model: 'productFamily.name' }, name: 'name' }
 
       .form-group
         %label{ for: 'active' } Active
         .show-hide-remainder-form
           .switch-remainder-form
-            %input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'product_family.active'}
+            %input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'productFamily.active'}
             %label{:for => "rem-act-modal-toggle"}
               %span
 
-
     .popup-modal-footer.text-center
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
-      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
+      %button.btn.btn-primary{ type: 'submit' } {{ submitText }}

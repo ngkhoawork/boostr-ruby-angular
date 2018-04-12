@@ -19,6 +19,8 @@ class Importers::IoContentFeesService < Importers::BaseService
     Csv::IoContentFee.new(
       io_number: row[:io_number],
       product_name: row[:product],
+      product_level1: row[:product_level1],
+      product_level2: row[:product_level2],
       budget: row[:budget],
       start_date: row[:start_date],
       end_date: row[:end_date],

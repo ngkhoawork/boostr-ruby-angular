@@ -44,9 +44,9 @@ describe Csv::Quota do
 
   def file
     @_file = CSV.generate do |csv|
-      csv << ['Time Period', 'Email', 'Quota', 'Type', 'Product', 'Product Family']
-      csv << ['Q3-2017', 'test@user.com', '500', 'Gross', product.name, '']
-      csv << ['Q3-2017', 'test@user.com', '1500', 'Net', '', product_family.name]
+      csv << ['Time Period', 'Email', 'Quota', 'Type', 'Product', 'Product Level1', 'Product Level2', 'Product Family']
+      csv << ['Q3-2017', 'test@user.com', '500', 'Gross', product.name, nil, nil, '']
+      csv << ['Q3-2017', 'test@user.com', '1500', 'Net', '', nil, nil, product_family.name]
     end
   end
 end

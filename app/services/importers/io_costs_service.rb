@@ -18,6 +18,8 @@ class Importers::IoCostsService < Importers::BaseService
       io_number: row[:io_number],
       cost_id: row[:cost_id],
       product_name: row[:product_name],
+      product_level1: row[:product_level1],
+      product_level2: row[:product_level2],
       type: row[:type],
       month: row[:month],
       amount: row[:amount],

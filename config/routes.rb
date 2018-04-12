@@ -165,6 +165,15 @@ Rails.application.routes.draw do
       resources :display_line_item_budgets, only: [:create]
     end # API V2 END
 
+    post '/slack/auth', to: 'slack_connect#auth'
+    get '/slack/callback', to: 'slack_connect#callback'
+
+    resources :data_models, only: [:index] do
+      get :data_mappings, on: :collection
+      get :reflections, on: :collection
+      get :reflections_labels, on: :collection
+    end
+
     namespace :dataexport, defaults: { format: :json }, constraints: ApiConstraints.new(dataexport: true) do
       resources :user_token, only: [:create]
 
@@ -183,6 +192,12 @@ Rails.application.routes.draw do
     end
 
     resources :dfp_imports do
+      collection do
+        post 'import'
+      end
+    end
+
+    resources :datafeed, only: [] do
       collection do
         post 'import'
       end
@@ -217,6 +232,7 @@ Rails.application.routes.draw do
         get :metadata
         get :service_account_email
         get :ssp_credentials
+        get :workflowable_actions
       end
       member do
         post :delete_ssp
@@ -229,7 +245,7 @@ Rails.application.routes.draw do
     end
 
     resources :integrations, only: [:create]
-    resources :csv_import_logs, only: [:index] do
+    resources :csv_import_logs, only: [:index, :show] do
       collection  do
         get :api_logs
       end
@@ -556,6 +572,17 @@ Rails.application.routes.draw do
 
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
+
+    resource :egnyte_integration, only: [:show, :create, :update] do
+      collection do
+        get :oauth_settings
+        get :oauth_callback
+        get :navigate_to_deal
+        get :navigate_to_account_deals
+        put :disconnect_egnyte
+      end
+    end
+
     resources :leads, only: [:index, :show] do
       member do
         get :accept
@@ -581,8 +608,16 @@ Rails.application.routes.draw do
       put :update_positions, on: :collection
     end
 
+    resources :workflows, only: [:index, :create, :update, :destroy] do
+      resources :workflow_criterions, only: [:destroy]
+    end
+
     resources :sales_processes, only: [:index, :create, :show, :update]
     resources :statistics, only: [:show]
+
+    resources :logi_configurations, only: [:index, :logi_callback] do
+      get :logi_callback, on: :collection
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'

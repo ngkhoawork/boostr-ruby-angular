@@ -11,6 +11,8 @@
 							%td{'ng-if': 'hasForecastPermission'} Seller
 							%td Product Family
 							%td Product
+							%td{'ng-if': 'productOption1Enabled'} {{ productOption1 }}
+							%td{'ng-if': 'productOption2Enabled'} {{ productOption2 }}
 							%td Time period
 							%td
 								%span.reset-filter{'ng-click': 'resetFilter()'}
@@ -56,8 +58,36 @@
 											%li{'ng-class': '{active: !filter.product.id}'}
 												%a{href: '', 'ng-click': 'setFilter("product", emptyFilter)'}
 													{{emptyFilter.name}}
-											%li{ ng: { repeat: 'product in products | orderBy : "name"', class: '{active: product.id === filter.product.id}' } }
+											%li{ ng: { repeat: 'product in productsLevel0 | orderBy : "name"', class: '{active: product.id === filter.product.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("product", product)' } }
+													{{product.name}}
+
+							%td{'ng-if': 'productOption1Enabled'}
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.product1.id}' }
+											{{filter.product1.name}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{'ng-class': '{active: !filter.product1.id}'}
+												%a{href: '', 'ng-click': 'setFilter("product1", emptyFilter)'}
+													{{emptyFilter.name}}
+											%li{ ng: { repeat: 'product in productsLevel1 | orderBy : "name"', class: '{active: product.id === filter.product1.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("product1", product)' } }
+													{{product.name}}
+
+							%td{'ng-if': 'productOption2Enabled'}
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.product2.id}' }
+											{{filter.product2.name}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{'ng-class': '{active: !filter.product2.id}'}
+												%a{href: '', 'ng-click': 'setFilter("product2", emptyFilter)'}
+													{{emptyFilter.name}}
+											%li{ ng: { repeat: 'product in productsLevel2 | orderBy : "name"', class: '{active: product.id === filter.product2.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("product2", product)' } }
 													{{product.name}}
 							%td
 								%ul.filter-item

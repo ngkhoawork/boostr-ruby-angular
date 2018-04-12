@@ -1,0 +1,23 @@
+#workflows.z-styles.settings-block-table
+  %div.mb40
+    %span.title Workflows
+    %add-button.plus-btn{ ng: { click: 'showWorkflowModal()'} }
+      Add
+
+  %table.table.table-hover
+    %thead
+      %tr
+        %th Name
+        %th Status
+        %th Created By
+        %th Parent Object
+        %th
+    %tbody
+      %tr{ ng: { repeat: 'workflow in workflows' } }
+        %td {{workflow.name}}
+        %td {{workflow.switched_on? 'On' : 'Off'}}
+        %td {{workflow.created_by}}
+        %td {{workflow.workflowable_type}}
+        %td{width: '100px'}
+          %i.fa.fa-pencil.edit-icon{'ng-click': 'showWorkflowModal(workflow)'}
+          %i.fa.fa-trash.delete-icon{'ng-click': 'deleteWorkflow(workflow)'}

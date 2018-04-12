@@ -38,4 +38,8 @@ class DealCustomFieldName < ActiveRecord::Base
   def to_csv_header
     CSV::HeaderConverters[:symbol].call(field_label)
   end
+
+  def underscored_field_label
+    field_label.parameterize.underscore
+  end
 end

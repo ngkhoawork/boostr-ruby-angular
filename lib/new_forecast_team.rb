@@ -689,8 +689,10 @@ class NewForecastTeam
   end
 
   def product_ids
-    @_product_ids ||= if product.present?
+    @_product_ids ||= if product&.level == 2
       [product.id]
+    elsif product.present?
+      product.include_children.collect(&:id)
     elsif product_family.present?
       product_family.products.collect(&:id)
     end

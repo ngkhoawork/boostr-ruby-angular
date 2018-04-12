@@ -298,6 +298,10 @@
       templateUrl: 'settings/stages/main_stages.html'
       controller: 'MainStageController'
 
+    .when '/settings/workflows/',
+      templateUrl: 'settings/workflows.html',
+      controller: 'SettingsWorkflowsController'
+
     .when '/settings/bps',
       templateUrl: 'settings/bps.html'
       controller: 'BPsController'
@@ -325,6 +329,10 @@
     .when '/settings/validations/',
       templateUrl: 'settings/validations.html'
       controller: 'SettingsValidationsController'
+
+    .when '/settings/egnyte',
+      templateUrl: 'settings/egnyte.html'
+      controller: 'SettingsEgnyteController'
 
     .when '/bps',
       templateUrl: 'bp.html'
@@ -371,6 +379,10 @@
       templateUrl: 'api_reference.html'
       controller: 'ApiReferenceController'
 
+    .when '/analytics',
+      templateUrl: 'logi.html'
+      controller: 'LogiConfigurationsController'
+
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
@@ -411,6 +423,10 @@
   $rootScope.transloaditTemplates = transloaditTemplates
   $rootScope.userType = userType
   $rootScope.currentUserRoles = currentUserRoles
+
+  if window.companyEgnyteSettings
+    $rootScope.companyEgnyteEnabled = window.companyEgnyteSettings.enabled
+
   currentUserRoles.isAdmin = -> _.contains this, 'admin'
   currentUserRoles.isSuperAdmin = -> _.contains this, 'superadmin'
 

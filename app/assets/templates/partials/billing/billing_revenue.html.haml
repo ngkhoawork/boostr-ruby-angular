@@ -44,12 +44,45 @@
             Product
           .dropdown.form-control.wide
             .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
-              %span {{filter.product.name}}
+              %span {{filter.product.level0.name}}
               %span.caret
             %ul.dropdown-menu.month-dropdown
-              %li{'ng-repeat': 'product in products', 'ng-class': '{active: filter.product.id == product.id}'}
-                %a{'href': '', 'ng-click': 'setFilter("product", product)'}
+              %li{'ng-class': '{active: !filter.product.level0.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level0", emptyFilter)'}
+                  %span All
+              %li{'ng-repeat': 'product in productsByLevel(0, filter.product)', 'ng-class': '{active: filter.product.level0.id == product.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level0", product)'}
                   %span {{product.name}}
+        .form-group{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+          %label
+            {{ company.product_option1_field }}
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.product.level1.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-class': '{active: !filter.product.level1.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level0", filter.product.level0)'}
+                  %span All
+              %li{'ng-repeat': 'product in productsByLevel(1, filter.product)', 'ng-class': '{active: filter.product.level1.id == product.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level1", product)'}
+                  %span {{product.name}}
+        .form-group{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+          %label
+            {{ company.product_option2_field }}
+          .dropdown.form-control.wide
+            .dropdown-toggle.month-toggle{'data-toggle': 'dropdown', type: 'button'}
+              %span {{filter.product.level2.name}}
+              %span.caret
+            %ul.dropdown-menu.month-dropdown
+              %li{'ng-class': '{active: !filter.product.level2.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level1", filter.product.level1)'}
+                  %span All
+              %li{'ng-repeat': 'product in productsByLevel(2, filter.product)', 'ng-class': '{active: filter.product.level2.id == product.id}'}
+                %a{'href': '', 'ng-click': 'setProductFilter("level2", product)'}
+                  %span {{product.name}}
+        .form-group
+          %button.btn-main.submit{'ng-click': 'getData()'} Apply filters
     %div.billing-header-col{'ng-show': 'selectedMonth && selectedYear'}
       .col-number
         {{iosNeedingApproval}}
@@ -94,7 +127,11 @@
             %th
               %span.z-sortable{by: 'billing_contact_name'} Billing Contact
             %th
-              %span.z-sortable{by: 'product_name'} Product
+              %span.z-sortable{by: 'product.level0.name'} Product
+            %th{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+              %span.z-sortable{by: 'product.level1.name'} {{ company.product_option1_field }}
+            %th{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+              %span.z-sortable{by: 'product.level2.name'} {{ company.product_option2_field }}
             %th
               %span.z-sortable{by: 'ad_server'} Ad Server Product
             %th.text-right
@@ -124,7 +161,9 @@
             %td {{item.seller_name}}
             %td {{item.currency}}
             %td {{item.billing_contact_name}}
-            %td {{item.product_name}}
+            %td {{item.product.level0.name}}
+            %td{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} {{item.product.level1.name}}
+            %td{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} {{item.product.level2.name}}
             %td {{item.ad_server}}
             %td.text-right {{item.ad_server_budget | currency : item.currency_symbol : 0}}
             %td.text-right {{item.ad_server_quantity | number : 0}}
@@ -197,6 +236,8 @@
             %th Currency
             %th Billing Contact
             %th Product
+            %th{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} {{ company.product_option1_field }}
+            %th{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} {{ company.product_option2_field }}
             %th Ad Server Product
         %tbody
           %tr{'ng-repeat': 'item in iosMissingMonthlyActual'}
@@ -211,5 +252,7 @@
             %td {{item.seller_name}}
             %td {{item.currency}}
             %td {{item.billing_contact_name}}
-            %td {{item.product_name}}
+            %td {{item.product.level0.name}}
+            %td{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} {{item.product.level1.name}}
+            %td{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} {{item.product.level2.name}}
             %td {{item.ad_server}}

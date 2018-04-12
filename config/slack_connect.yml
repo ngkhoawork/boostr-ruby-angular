@@ -1,0 +1,29 @@
+slack:
+  development:
+    client_id: '10391770882.304482918932'
+    client_secret: a92f619e23153bc96a3900f8838a2630
+    redirect_uri:  http://localhost:3000/api/slack/callback
+  testing:
+    client_id: '10391770882.306301838471'
+    client_secret: a83015b8e9e4551566ac75f374035d23
+    redirect_uri:  https://dev-win.boostr.com/api/slack/callback
+    rotocol: https
+    base_uri: https://stage-win.boostr.com
+  staging:
+    client_id: '10391770882.306301838471'
+    client_secret: a83015b8e9e4551566ac75f374035d23
+    redirect_uri:  https://stage-win.boostr.com/api/slack/callback
+    protocol: https
+    base_uri: https://stage-win.boostr.com
+  urazovm:
+    client_id: '10391770882.306301838471'
+    client_secret: a83015b8e9e4551566ac75f374035d23
+    redirect_uri:  https://urazovm-win.boostr.com/api/slack/callback
+    protocol: https
+    base_uri: https://urazovm-win.boostr.com
+  forecast:
+    client_id: '10391770882.304398587059'
+    client_secret: e909785f2ed93c1089337c69a87dd19b
+    redirect_uri:  https://boostr-forecast.herokuapp.com/api/slack/callback
+    protocol: https
+    base_uri: boostr-forecast.herokuapp.com

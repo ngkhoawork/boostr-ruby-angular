@@ -1,6 +1,6 @@
 @app.controller "DealNewProductController",
-    ['$scope', '$rootScope', '$modalInstance', '$modal', '$filter', 'Product', 'DealProduct', 'currentDeal', 'isPmpDeal',
-     ($scope,   $rootScope,   $modalInstance,   $modal,   $filter,   Product,   DealProduct,   currentDeal,   isPmpDeal) ->
+    ['$scope', '$rootScope', '$modalInstance', '$modal', '$filter', 'Product', 'DealProduct', 'currentDeal', 'isPmpDeal', 'company',
+     ($scope,   $rootScope,   $modalInstance,   $modal,   $filter,   Product,   DealProduct,   currentDeal,   isPmpDeal,   company) ->
             $scope.currency_symbol = (->
                 if currentDeal && currentDeal.currency
                     if currentDeal.currency.curr_symbol
@@ -14,6 +14,12 @@
                 deal_product_budgets: []
                 months: []
             }
+            $scope.products = []
+            $scope.productOptionsEnabled = company.product_options_enabled
+            $scope.productOption1Enabled = company.product_option1_enabled
+            $scope.productOption2Enabled = company.product_option2_enabled
+            $scope.option1Field = company.product_option1_field || 'Option1'
+            $scope.option2Field = company.product_option2_field || 'Option2'
 
             for month in $scope.currentDeal.months
                 month = moment().year(month[0]).month(month[1] - 1).format('MMM YYYY')
@@ -21,8 +27,36 @@
                 $scope.deal_product.months.push(month)
 
             Product.all({active: true}).then (products) ->
-                $scope.products = _.filter products, (p) ->
-                    isPmpDeal || !_.find($scope.currentDeal.products, { id: p.id })
+                $scope.products = products
+
+            $scope.productsByLevel = (level) ->
+                _.filter $scope.products, (p) -> 
+                  if level == 0
+                    p.level == level
+                  else if level == 1
+                    p.level == 1 && p.parent_id == $scope.deal_product.product0
+                  else if level == 2
+                    p.level == 2 && p.parent_id == $scope.deal_product.product1
+
+            $scope.onChangeProduct = (item, model) ->
+                if item
+                  $scope.deal_product.product_id = item.id
+                  if item.level == 0
+                    $scope.deal_product.product1 = null
+                    $scope.deal_product.product2 = null
+                  else if item.level == 1
+                    $scope.deal_product.product2 = null
+                else
+                  if !$scope.deal_product.product1
+                    $scope.deal_product.product_id = $scope.deal_product.product0
+                    $scope.deal_product.product2 = null
+                  else if !$scope.deal_product.product2
+                    $scope.deal_product.product_id = $scope.deal_product.product1
+
+            $scope.disableForm = () ->
+                $scope.deal_product.isIncorrectTotalBudgetPercent || 
+                !$scope.deal_product.product_id || 
+                (!isPmpDeal && _.find($scope.currentDeal.products, (p) -> p.id == $scope.deal_product.product_id))
 
             addProductBudgetCorrection = ->
                 budgetSum = 0

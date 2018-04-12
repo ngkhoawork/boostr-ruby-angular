@@ -1,4 +1,6 @@
 class Client < ActiveRecord::Base
+  SAFE_COLUMNS = %i{name}
+
   include PgSearch
   acts_as_paranoid
 
@@ -59,6 +61,7 @@ class Client < ActiveRecord::Base
   has_one :primary_user, through: :primary_client_member, source: :user
   has_one :address, as: :addressable
   has_one :publisher
+  has_one :egnyte_folder, as: :subject
 
   belongs_to :client_category, class_name: 'Option', foreign_key: 'client_category_id'
   belongs_to :client_subcategory, class_name: 'Option', foreign_key: 'client_subcategory_id'
@@ -79,6 +82,9 @@ class Client < ActiveRecord::Base
 
   before_create :ensure_client_member
   after_commit :update_account_dimension, on: [:create, :update]
+
+  after_commit :setup_egnyte_folders, on: [:create]
+  after_commit :update_egnyte_folder, on: [:update]
 
   pg_search_scope :search_by_name,
                   against: :name,
@@ -387,5 +393,17 @@ class Client < ActiveRecord::Base
     if params.compact.any?
       obj.upsert_custom_fields(params)
     end
+  end
+
+  def setup_egnyte_folders
+    Egnyte::SetupClientFoldersWorker.perform_async(company.egnyte_integration.id, id) if company.egnyte_integration
+  end
+
+  def update_egnyte_folder
+    return unless company.egnyte_integration && (previous_changes[:name] || previous_changes[:parent_client_id])
+
+    parent_changed = previous_changes[:parent_client_id].present?
+
+    Egnyte::UpdateClientFolderWorker.perform_async(company.egnyte_integration.id, id, parent_changed)
   end
 end

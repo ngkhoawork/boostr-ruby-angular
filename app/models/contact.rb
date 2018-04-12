@@ -1,4 +1,6 @@
 class Contact < ActiveRecord::Base
+  SAFE_COLUMNS = %i{name position created_at updated_at}
+
   acts_as_paranoid
 
   WEB_FORM_LEAD = 'web-form lead'.freeze

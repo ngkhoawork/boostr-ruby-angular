@@ -111,12 +111,18 @@ class Api::WhereToPitchController < ApplicationController
       .where('deal_members.user_id in (?)', deal_member_ids)
       .where(company_id: company.id)
       .by_advertisers(category_filtered_advertisers)
-      .by_product_id(params[:product_id])
+      .by_product_id(product_ids)
       .where('stage_id in (?)', closed_stages)
       .where("deals.#{date_criteria_filter} >= ? and deals.#{date_criteria_filter} <= ?", start_date, end_date)
       .distinct
       .includes(:stage)
       .pluck_to_struct(:id, :advertiser_id, :agency_id, 'stages.probability as probability')
+  end
+
+  def product_ids
+    @_product_ids ||= if params[:product_id].present?
+      Product.include_children(company.products.where(id: params[:product_id]))
+    end
   end
 
   def category_filtered_advertisers

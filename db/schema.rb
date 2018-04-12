@@ -617,6 +617,9 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.boolean  "product_options_enabled",           default: false
     t.string   "product_option1_field",             default: "Option1"
     t.string   "product_option2_field",             default: "Option2"
+    t.boolean  "product_option1_enabled",           default: false
+    t.boolean  "product_option2_enabled",           default: false
+    t.boolean  "logi_enabled",                      default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -1783,16 +1786,30 @@ ActiveRecord::Schema.define(version: 20180303003530) do
 
   add_index "ealerts", ["company_id"], name: "index_ealerts_on_company_id", using: :btree
 
+
+  create_table "egnyte_folders", force: :cascade do |t|
+    t.integer  "subject_id"
+    t.string   "subject_type"
+    t.string   "uuid"
+    t.string   "path"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "egnyte_folders", ["subject_type", "subject_id"], name: "index_egnyte_folders_on_subject_type_and_subject_id", unique: true, using: :btree
+
   create_table "egnyte_integrations", force: :cascade do |t|
     t.integer  "company_id"
     t.string   "app_domain"
     t.string   "access_token"
     t.boolean  "connected",           default: false
     t.boolean  "enabled",             default: false
+
     t.datetime "created_at",                                                                                                                                                        null: false
     t.datetime "updated_at",                                                                                                                                                        null: false
     t.jsonb    "deal_folder_tree",    default: {"nodes"=>[{"nodes"=>[], "title"=>"RFP"}, {"nodes"=>[], "title"=>"Proposal"}, {"nodes"=>[], "title"=>"Creative"}], "title"=>"Deal"}, null: false
     t.jsonb    "account_folder_tree", default: {"nodes"=>[{"nodes"=>[], "title"=>"Contract"}, {"nodes"=>[], "title"=>"Templates"}], "title"=>"Account"},                            null: false
+    t.string   "deals_folder_name"
   end
 
   add_index "egnyte_integrations", ["company_id"], name: "index_egnyte_integrations_on_company_id", using: :btree

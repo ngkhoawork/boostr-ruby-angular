@@ -1,7 +1,8 @@
 class Operative::DatafeedService
-  def initialize(api_config, date)
+  def initialize(api_config, date, intraday: false)
     @api_config = api_config
     @date = date
+    @intraday = intraday
   end
 
   def perform
@@ -13,10 +14,10 @@ class Operative::DatafeedService
   end
 
   private
-  attr_reader :api_config, :datafeed_archive, :extracted_files, :date
+
+  attr_reader :api_config, :datafeed_archive, :extracted_files, :date, :intraday
 
   def get_files
-    file_service = Operative::GetFileService.new(api_config, timestamp)
     file_service.perform
     if file_service.error.present?
       log_general_error(file_service)
@@ -27,7 +28,9 @@ class Operative::DatafeedService
 
   def extract_and_verify
     return unless datafeed_archive
-    @extracted_files = Operative::ExtractVerifyService.new(datafeed_archive, timestamp).perform
+    @extracted_files = Operative::ExtractVerifyService.new(
+      datafeed_archive, timestamp, intraday: intraday, hhmm: file_service.hhmm
+    ).perform
   end
 
   def import_sales_orders
@@ -69,5 +72,9 @@ class Operative::DatafeedService
     import_log.log_error(file_service.error)
     import_log.set_file_source(file_service.data_filename_local)
     import_log.save
+  end
+
+  def file_service
+    @file_service ||= Operative::GetFileService.new(api_config, timestamp, intraday: intraday)
   end
 end

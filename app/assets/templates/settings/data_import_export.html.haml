@@ -46,9 +46,9 @@
                   %th.center{width: '90px'} Imported
                   %th.center{width: '90px'} Failed
                   %th.center{width: '90px'} Skipped
-                  %th.left{width: '150px'} Error Messages
                   %th.left File Source
                   %th.left Object Name
+                  %th.left{width: '150px'} Error Messages
 
               %tbody
                 %tr{'ng-repeat': 'log in csv_import_logs' }
@@ -62,12 +62,14 @@
                   %td.center
                     %b {{log.rows_skipped}}
                   %td
-                    %button.btn.activity-email-btn{'ng-click': 'showBodyModal(log.error_messages)'}
-                      Show Errors
-                  %td
                     %b {{ log.file_source }}
                   %td
                     %b {{ log.object_name }}
+                  %td
+                    %button.btn.activity-email-btn{'ng-click': 'showBodyModal(log)', 'ng-if': 'log.rows_failed > 0'}
+                      Show Errors
+                    %b{ng: {if: 'log.rows_failed == 0'}}
+                      No Errors
 
           .custom-pagination{'bgf-pagination': 'bgf-pagination',
             'collection': 'csv_import_logs',

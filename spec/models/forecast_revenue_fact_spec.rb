@@ -36,19 +36,19 @@ RSpec.describe ForecastRevenueFact, type: :model do
 
     it 'content fee deletion update fact' do
       content_fee.destroy
-      expect(forecast_revenue_fact.reload.amount).to eq(0)
-      expect(forecast_revenue_fact2.reload.amount).to eq(0)
+      expect(forecast_revenue_fact).to be_nil
+      expect(forecast_revenue_fact2).to be_nil
     end
 
     it 'io deletion update fact' do
       io.destroy
-      expect(forecast_revenue_fact.reload.amount).to eq(0)
-      expect(forecast_revenue_fact2.reload.amount).to eq(0)
+      expect(forecast_revenue_fact).to be_nil
+      expect(forecast_revenue_fact2).to be_nil
     end
 
     it 'io member deletion update fact' do
       io_member.destroy
-      expect(forecast_revenue_fact.amount).to eq(0)
+      expect(forecast_revenue_fact).to be_nil
       expect(forecast_revenue_fact2.amount).to eq(4000.0)
     end
 

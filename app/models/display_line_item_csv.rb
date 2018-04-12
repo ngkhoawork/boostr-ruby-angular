@@ -13,7 +13,7 @@ class DisplayLineItemCsv
                 :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
                 :quantity_delivered, :quantity_delivered_3p, :company_id, :ctr, :clicks,
                 :io_name, :io_start_date, :io_end_date, :io_advertiser, :io_agency, :ad_unit_name,
-                :product, :product_id
+                :product, :product_id, :ad_server_product
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -36,7 +36,7 @@ class DisplayLineItemCsv
         start_date: parsed_start_date,
         end_date: parsed_end_date,
         product: product,
-        ad_server_product: product_name,
+        ad_server_product: get_ad_server_product,
         quantity: quantity,
         price: price,
         pricing_type: pricing_type,
@@ -136,7 +136,7 @@ class DisplayLineItemCsv
     if ad_server == 'DFP'
       @_product ||= ad_unit_product
     else
-      @_product ||= Product.find_by(company_id: company_id, name: product_name)
+      @_product ||= Product.find_by(company_id: company_id, full_name: product_name)
       @_product ||= revenue_product
     end
   end
@@ -221,5 +221,9 @@ class DisplayLineItemCsv
 
   def io_can_be_updated?
     io && io.content_fees.count.zero? && parsed_start_date && parsed_end_date
+  end
+
+  def get_ad_server_product
+    ad_server_product || product_name
   end
 end

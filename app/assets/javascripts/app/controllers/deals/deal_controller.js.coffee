@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window, $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment, localStorageService) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company', 'Egnyte'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window, $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment, localStorageService, Company, Egnyte) ->
 
   $scope.agencyRequired = false
   $scope.showMeridian = true
@@ -38,7 +38,10 @@
   $scope.dealCustomFieldNames = []
   $scope.dealProductCfNames = []
   $scope.activeDealProductCfLength = 0
-
+  $scope.egnyteConnected = false
+  $scope.egnyteHealthy = true
+  $scope.egnyteIsLoading = true
+  $scope.company = {}
   $scope._scope = -> this
   $scope.showWarnings = true
   roleIdWarningDisplayToShow = 1 # Role type = seller
@@ -49,6 +52,9 @@
       $window.scrollTo 0, 0
     else
       $scope.agencyRequired = false
+
+  CurrentUser.get().$promise.then (user) ->
+    $scope.currentUser = user
 
   $scope.isUrlValid = (url) ->
     regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
@@ -70,12 +76,50 @@
     Activity.all(deal_id: $routeParams.id).then (activities) ->
       $scope.activities = activities
 
+  $scope.getCurrentCompany = (deal) ->
+    Egnyte.show().then (egnyteSettings) ->
+      $scope.companyEgnyteIntegration = egnyteSettings
+      if(egnyteSettings.access_token && egnyteSettings.connected)
+        $scope.egnyteConnected = true
+        if($routeParams.isNew)
+          sendRequest(egnyteSettings.access_token, egnyteSettings.app_domain, deal)
+
+        else
+          Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
+            if !response.navigate_to_deal_uri
+              $scope.egnyteHealthy = false
+            else
+              $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
+              $scope.egnyteIsLoading = false
+              $scope.egnyteHealthy = true
+
+
+  sendRequest = (token, domain, deal) ->
+    $scope.egnyteUrlRequest = $timeout (->
+      Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
+        if response.navigate_to_deal_uri
+          $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
+          $scope.egnyteIsLoading = false
+          $scope.egnyteHealthy = true
+          $location.search({})
+
+        else
+          sendRequest(token, domain, deal)
+      return
+    ), 3000
+
+  $scope.$on '$destroy', ->
+    if $scope.egnyteUrlRequest
+      $timeout.cancel($scope.egnyteUrlRequest);
+
   $scope.init = (initialLoad) ->
     $scope.actRemColl = false
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal, true)
+      $scope.getCurrentCompany(deal)
+
       if initialLoad
         checkCurrentUserDealShare(deal.members)
         getOperativeIntegration(deal.id)
@@ -94,6 +138,8 @@
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
+    Company.get().$promise.then (company) ->
+      $scope.company = company
     getSsps()
 
   checkPmpDeal = () ->
@@ -103,9 +149,11 @@
       if product.revenue_type == 'PMP'
         $scope.isPmpDeal = true
         $scope.pmpColumns = 3
+
   getSsps = () ->
     SSP.all().then (ssps) ->
       $scope.ssps = ssps
+
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
@@ -269,7 +317,7 @@
     for month in $scope.currentDeal.months
       $scope.deal_product.deal_product_budgets.push({ budget_loc: '' })
     $scope.showProductForm = !$scope.showProductForm
-    Product.all().then (products) ->
+    Product.all({active: true}).then (products) ->
       $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
 
 #==================add product form======================
@@ -707,7 +755,7 @@
 
   $scope.deleteDealProduct = (deal_product) ->
     $scope.errors = {}
-    if confirm('Are you sure you want to delete "' +  deal_product.name + '"?')
+    if confirm('Are you sure you want to delete "' +  deal_product.product.full_name + '"?')
       DealProduct.delete(id: deal_product.id, deal_id: $scope.currentDeal.id).then(
         (deal) ->
           $scope.setCurrentDeal(deal)
@@ -761,6 +809,8 @@
       resolve:
         currentDeal: ->
           currentDeal
+        company: ->
+          $scope.company
         isPmpDeal: ->
           $scope.isPmpDeal
 
