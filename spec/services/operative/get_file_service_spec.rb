@@ -56,6 +56,24 @@ describe Operative::GetFileService, datafeed: :true do
     end
   end
 
+  context 'intraday' do
+    subject(:subject) { Operative::GetFileService.new(api_config, timestamp, intraday: true) }
+
+    it 'downloads latest intraday file' do
+      allow(Net::SFTP).to receive(:start).and_return(:success)
+      subject.instance_variable_set(:@hhmm, '_1130')
+      subject.perform
+      expect(subject.data_filename_local).to eql ".#{Dir.tmpdir}/KING_DataFeed_#{timestamp}_1130_v3_intraday.tar.gz"
+    end
+
+    it 'picks latest intraday file' do
+      set_intraday_candidates(subject)
+
+      expect(subject.data_filename_remote).to eql "./datafeed/KING_DataFeed_#{timestamp}_2130_v3_intraday.tar.gz"
+      expect(subject.data_filename_local).to eql ".#{Dir.tmpdir}/KING_DataFeed_#{timestamp}_2130_v3_intraday.tar.gz"
+    end
+  end
+
   def company
     @_company ||= create :company, name: 'King'
   end
@@ -70,5 +88,16 @@ describe Operative::GetFileService, datafeed: :true do
 
   def timestamp
     Date.today.strftime('%m%d%Y')
+  end
+
+  def set_intraday_candidates(subject)
+    arr = [
+      "KING_DataFeed_03272018_1509_v3_intraday.tar.gz",
+      "KING_DataFeed_03272018_2130_v3_intraday.tar.gz",
+      "KING_DataFeed_03272018_1212_v3_intraday.tar.gz",
+      "KING_DataFeed_03272018_0912_v3_intraday.tar.gz"
+    ]
+
+    subject.instance_variable_set(:@intraday_candidates, arr)
   end
 end

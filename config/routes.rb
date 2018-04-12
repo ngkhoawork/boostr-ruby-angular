@@ -188,6 +188,12 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :datafeed, only: [] do
+      collection do
+        post 'import'
+      end
+    end
+
     resources :asana_connect, only: [:index] do
       collection do
         get :callback
@@ -229,7 +235,7 @@ Rails.application.routes.draw do
     end
 
     resources :integrations, only: [:create]
-    resources :csv_import_logs, only: [:index] do
+    resources :csv_import_logs, only: [:index, :show] do
       collection  do
         get :api_logs
       end

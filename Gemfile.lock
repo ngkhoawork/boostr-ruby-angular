@@ -132,6 +132,8 @@ GEM
       capybara (~> 2.0, >= 2.0.2)
       json
     chronic (0.10.2)
+    chronic_duration (0.10.6)
+      numerizer (~> 0.1.1)
     clean_pagination (1.0.0)
     codeclimate-engine-rb (0.4.0)
       virtus (~> 1.0)
@@ -206,7 +208,6 @@ GEM
       rspec (~> 3.0)
       ruby-progressbar (~> 1.4)
     geocoder (1.4.6)
-    gli (2.17.1)
     globalid (0.3.5)
       activesupport (>= 4.1.0)
     google-ads-common (0.12.6)
@@ -379,6 +380,7 @@ GEM
     notiffany (0.1.1)
       nenv (~> 0.1)
       shellany (~> 0.0)
+    numerizer (0.1.1)
     oauth2 (1.4.0)
       faraday (>= 0.8, < 0.13)
       jwt (~> 1.0)
@@ -569,6 +571,9 @@ GEM
       rufus-scheduler (~> 3.2)
       sidekiq (>= 3)
       tilt (>= 1.4.0)
+    sidekiq-status (1.0.1)
+      chronic_duration
+      sidekiq (>= 3.0)
     signet (0.7.3)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -729,6 +734,7 @@ DEPENDENCIES
   shoulda-matchers
   sidekiq
   sidekiq-scheduler
+  sidekiq-status
   simplecov
   smarter_csv
   spring

@@ -1,6 +1,6 @@
 @app.controller 'ApiConfigurationsController',
-  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType', 'DfpImportService'
-    ($window, $scope, $modal, ApiConfiguration, IntegrationType, DfpImportService) ->
+  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType', 'DfpImportService', 'DatafeedService'
+    ($window, $scope, $modal, ApiConfiguration, IntegrationType, DfpImportService, DatafeedService) ->
       mappings = {
         providers: {
           dfp: {
@@ -88,11 +88,21 @@
 
       $scope.dfp_monthly_import = ->
         DfpImportService.import(api_configuration_id: $scope.dfp_config_id, report_type: 'monthly').then (resp) ->
-          $scope.showInfoModal(resp.message)
+          $scope.showInfoModal(resp)
 
       $scope.dfp_cumulative_import = ->
         DfpImportService.import(api_configuration_id: $scope.dfp_config_id, report_type: 'cumulative').then (resp) ->
-          $scope.showInfoModal(resp.message)
+          $scope.showInfoModal(resp)
+
+      $scope.runDatafeedIntraday = (api_configuration) ->
+        DatafeedService.import(api_configuration_id: api_configuration.id, job_type: 'intraday').then (resp) ->
+          $scope.showInfoModal(resp)
+          init()
+
+      $scope.runDatafeedImportAll = (api_configuration) ->
+        DatafeedService.import(api_configuration_id: api_configuration.id, job_type: 'fullday').then (resp) ->
+          $scope.showInfoModal(resp)
+          init()
 
       $scope.editModal = (api_configuration) ->
         selectControllerTemplate = selectMapping(api_configuration.integration_provider)
@@ -106,7 +116,7 @@
             api_configuration: ->
               api_configuration
 
-      $scope.showInfoModal = (message) ->
+      $scope.showInfoModal = (resp) ->
         $scope.modalInstance = $modal.open
           templateUrl: 'modals/dfp_info.html'
           size: 'md'
@@ -114,7 +124,7 @@
           backdrop: 'static'
           keyboard: true
           resolve:
-            message: -> message
+            resp: -> resp
 
       $scope.createModal = ->
         selectControllerTemplate = selectMapping($scope.current_integration)

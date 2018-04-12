@@ -364,7 +364,7 @@
     $window.open('/api/ios/export_costs.csv')
     return true
 
-  $scope.showBodyModal = (body) ->
+  $scope.showBodyModal = (log) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/csv_logs_body.html'
       size: 'lg'
@@ -372,8 +372,8 @@
       backdrop: 'static'
       keyboard: false
       resolve:
-        body: ->
-          body
+        log: ->
+          log
 
   $scope.importOptions = [
     { title: 'Accounts Import', click: $scope.showUploadClientModal, linkText: 'Import Accounts' },

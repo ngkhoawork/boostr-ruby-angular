@@ -1,8 +1,8 @@
 @app.controller 'DfpImportInfoController',
-  ['$scope', '$modalInstance', 'message'
-    ($scope, $modalInstance, message) ->
+  ['$scope', '$modalInstance', 'resp'
+    ($scope, $modalInstance, resp) ->
 
-      $scope.message = message
+      $scope.resp = resp
 
       $scope.cancel = ->
         $modalInstance.close()
