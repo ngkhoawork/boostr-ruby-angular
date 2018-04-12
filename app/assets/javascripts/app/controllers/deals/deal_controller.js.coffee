@@ -78,7 +78,7 @@
 
   $scope.getCurrentCompany = (deal) ->
     Egnyte.show().then (egnyteSettings) ->
-      $scope.company = egnyteSettings
+      $scope.companyEgnyteIntegration = egnyteSettings
       if(egnyteSettings.access_token && egnyteSettings.connected)
         $scope.egnyteConnected = true
         if($routeParams.isNew)
@@ -138,7 +138,8 @@
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
-    Company.get().$promise.then (company) -> $scope.company = company
+    Company.get().$promise.then (company) ->
+      $scope.company = company
     getSsps()
 
   checkPmpDeal = () ->
