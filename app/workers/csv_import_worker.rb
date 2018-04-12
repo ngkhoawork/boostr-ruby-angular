@@ -5,7 +5,7 @@ class CsvImportWorker < BaseWorker
       tempfile_path = Tempfile.new(original_filename, Dir.tmpdir).path
       obj.download_file(tempfile_path, mode: 'auto')
 
-      csv_file = File.open(tempfile_path, "r:ISO-8859-1")
+      csv_file = File.open(tempfile_path, "r:UTF-8")
 
       begin
         klass.constantize.import(csv_file, id_object, original_filename)
