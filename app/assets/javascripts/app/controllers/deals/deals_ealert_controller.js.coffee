@@ -20,8 +20,9 @@
     $scope.buttonDisabled = !$scope.deal.validDeal
 
   validateEmail = (email) ->
+    email = email.trim()
     re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    return re.test(email)
+    re.test(email)
 
   $scope.removeRecipient = (index) ->
     $scope.recipient_list.splice(index, 1)
@@ -29,21 +30,35 @@
   $scope.onKeypress = (e) ->
     if $scope.errors && $scope.errors['recipient']
       delete $scope.errors['recipient']
-    e.target.className = 'form-control recipient-field';
-    email = e.target.value
+    
     if e.which == 13
-      if email
-        if validateEmail(email) == false
-          e.target.className = 'form-control recipient-field error'
-          return
-        else
-          e.target.className = 'form-control recipient-field'
+      input = angular.element(e.target)
+      $scope.addRecipient(input)
 
-        index = _.find $scope.recipient_list, (recipient) ->
-          return recipient == email
-        if index == undefined
-          $scope.recipient_list.push(email)
-      e.target.value = ''
+  $scope.addRecipient = (input) ->
+    if input.length > 0 and input.val()
+      $scope.notValid = false
+      emails = input.val().split(',')
+
+      emails.forEach (email) ->
+        if not validateEmail email
+          $scope.notValid = true
+          return
+      
+      if $scope.notValid
+        input.addClass('error')
+        input.focus()
+        return
+      else
+        input.removeClass('error')
+        emails.forEach (email) ->
+          index = _.find $scope.recipient_list, (recipient) ->
+            return recipient == email
+          if index == undefined
+            $scope.recipient_list.push(email)
+        
+        input.val('')
+        return
 
   $scope.dealCustomFieldFilter = (item) ->
     return item.subject_type == 'DealCustomFieldName' || item.subject_type == 'Deal'
@@ -150,13 +165,17 @@
     $scope.selected_fields = _.sortBy $scope.selected_fields, (field) ->
       return field.position
 
+  $scope.onBlur = (event) ->
+    input = angular.element(event.target)
+    $scope.addRecipient(input)
+
   $scope.submitForm = () ->
     $scope.errors = {}
 
     if $scope.recipient_list.length == 0
       $scope.errors['recipient'] = 'Recipient is required'
   
-    if Object.keys($scope.errors).length > 0 then return
+    if Object.keys($scope.errors).length > 0 || $scope.notValid then return
 
     data = {
       recipients: $scope.recipient_list.join(),
