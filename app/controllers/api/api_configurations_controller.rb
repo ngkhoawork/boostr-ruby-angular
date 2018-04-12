@@ -46,6 +46,14 @@ class Api::ApiConfigurationsController < ApplicationController
     end
   end
 
+  def workflowable_actions
+    render json: workflowable_actions_service.perform, each_serializer: Workflows::WorkflowableIntegrationsSerializer
+  end
+
+  def workflowable_actions_service
+    WorkflowableActionsService.new(company_id: current_user.company_id)
+  end
+
   def update_ssp
     api_configuration = SspCredential.find(params[:id])
 

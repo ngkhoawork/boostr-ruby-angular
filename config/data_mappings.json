@@ -1,0 +1,717 @@
+{
+  "deal": {
+    "mappings": [
+      {
+        "name": "deal.name",
+        "base_table_name": "deals",
+        "is_base_mapping": true,
+        "related_db_table_name": null,
+        "join_statements": [],
+        "target_field": "name",
+        "select_collection": false
+      },
+      {
+        "name": "deal.type",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": null,
+        "join_statements": ["JOIN options ON options.id = deals.type_id"],
+        "target_field": "options.name",
+        "select_collection": false
+      },
+      {
+        "name": "deal.source",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": null,
+        "join_statements": ["JOIN options ON options.id = deals.source_id"],
+        "target_field": "options.name",
+        "select_collection": false
+      },
+      {
+        "name": "deal.budget_USD",
+        "base_table_name": "deals",
+        "is_base_mapping": true,
+        "related_db_table_name": null,
+        "join_statements": [],
+        "target_field": "budget",
+        "select_collection": false
+      },
+      {
+        "name": "deal.budget_NON_USD",
+        "base_table_name": "deals",
+        "is_base_mapping": true,
+        "related_db_table_name": null,
+        "join_statements": [],
+        "target_field": "budget_loc",
+        "select_collection": false
+      },
+      {
+        "name": "deal.update_date",
+        "base_table_name": "deals",
+        "is_base_mapping": true,
+        "related_db_table_name": null,
+        "join_statements": [],
+        "target_field": "updated_at",
+        "select_collection": false
+      },
+      {
+        "name": "deal.create_date",
+        "base_table_name": "deals",
+        "is_base_mapping": true,
+        "related_db_table_name": null,
+        "join_statements": [],
+        "target_field": "created_at",
+        "select_collection": false
+      },
+      {
+        "name": "deal.closed_date",
+        "base_table_name": "deals",
+        "is_base_mapping": true,
+        "related_db_table_name": null,
+        "join_statements": [],
+        "target_field": "closed_at",
+        "select_collection": false
+      },
+      {
+        "name": "deal.start_date",
+        "base_table_name": "deals",
+        "is_base_mapping": true,
+        "related_db_table_name": null,
+        "join_statements": [],
+        "target_field": "start_date",
+        "select_collection": false
+      },
+      {
+        "name": "deal.end_date",
+        "base_table_name": "deals",
+        "is_base_mapping": true,
+        "related_db_table_name": null,
+        "join_statements": [],
+        "target_field": "end_date",
+        "select_collection": false
+      },
+      {
+        "name": "deal.currency",
+        "base_table_name": "deals",
+        "is_base_mapping": true,
+        "related_db_table_name": null,
+        "join_statements": [],
+        "target_field": "curr_cd",
+        "select_collection": false
+      },
+      {
+        "name": "deal.closed_reason",
+        "base_table_name": "deals",
+        "is_base_mapping": true,
+        "related_db_table_name": null,
+        "join_statements": [],
+        "target_field": "closed_reason_text",
+        "select_collection": false
+      },
+      {
+        "name": "deal.stage_name",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "stages",
+        "join_statements": [
+          "JOIN stages ON deals.stage_id = stages.id"
+        ],
+        "target_field": "stages.name as stage_name",
+        "select_collection": false
+      },
+      {
+        "name": "deal.stage_probability",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "stages",
+        "join_statements": [
+          "JOIN stages ON deals.stage_id = stages.id"
+        ],
+        "target_field": "stages.probability as stage_probability",
+        "select_collection": false
+      },
+      {
+        "name": "deal.initiative",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "initiatives",
+        "join_statements": [
+          "JOIN initiatives ON deals.initiative_id = initiatives.id"
+        ],
+        "target_field": "initiatives.name as initiative",
+        "select_collection": false
+      },
+      {
+        "name": "deal.creator_team",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.created_by = users.id",
+          "JOIN teams ON users.team_id = teams.id"
+        ],
+        "target_field": "teams.name as creator_team",
+        "select_collection": false
+      },
+      {
+        "name": "deal.creator_name",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.created_by = users.id"
+        ],
+        "target_field": "CONCAT(users.first_name, ' ', users.last_name) as creator_name",
+        "select_collection": false
+      },
+      {
+        "name": "creator.first_name",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.created_by = users.id"
+        ],
+        "target_field": "users.first_name as first_name",
+        "select_collection": false
+      },
+      {
+        "name": "creator.last_name",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.created_by = users.id"
+        ],
+        "target_field": "users.last_name as last_name",
+        "select_collection": false
+      },
+      {
+        "name": "creator.title",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.created_by = users.id"
+        ],
+        "target_field": "users.title as title",
+        "select_collection": false
+      },
+      {
+        "name": "creator.email",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.created_by = users.id"
+        ],
+        "target_field": "users.email as email",
+        "select_collection": false
+      },
+      {
+        "name": "creator.employee_id",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.created_by = users.id"
+        ],
+        "target_field": "users.employee_id as employee_id",
+        "select_collection": false
+      },
+      {
+        "name": "creator.office",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.created_by = users.id"
+        ],
+        "target_field": "users.office as office",
+        "select_collection": false
+      },
+      {
+        "name": "creator.team",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.created_by = users.id",
+          "JOIN teams ON teams.id = users.team_id"
+        ],
+        "target_field": "teams.name as team",
+        "select_collection": false
+      },
+      {
+        "name": "updater.first_name",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.updated_by = users.id"
+        ],
+        "target_field": "users.first_name as first_name",
+        "select_collection": false
+      },
+      {
+        "name": "updater.last_name",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.updated_by = users.id"
+        ],
+        "target_field": "users.last_name as last_name",
+        "select_collection": false
+      },
+      {
+        "name": "updater.title",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.updated_by = users.id"
+        ],
+        "target_field": "users.title as title",
+        "select_collection": false
+      },
+      {
+        "name": "updater.email",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.updated_by = users.id"
+        ],
+        "target_field": "users.email as email",
+        "select_collection": false
+      },
+      {
+        "name": "updater.employee_id",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.updated_by = users.id"
+        ],
+        "target_field": "users.employee_id as employee_id",
+        "select_collection": false
+      },
+      {
+        "name": "updater.office",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN users ON deals.updated_by = users.id"
+        ],
+        "target_field": "users.office as office",
+        "select_collection": false
+      },
+      {
+        "name": "products.name",
+        "base_table_name": "deal_products",
+        "is_base_mapping": false,
+        "related_db_table_name": "products",
+        "join_statements": [
+          "JOIN deal_products ON deal_products.deal_id = deals.id",
+          "JOIN products ON deal_products.product_id = products.id"
+        ],
+        "target_field": "products.name as name",
+        "select_collection": true
+      },
+      {
+        "name": "products.full_name",
+        "base_table_name": "deal_products",
+        "is_base_mapping": false,
+        "related_db_table_name": "products",
+        "join_statements": [
+          "JOIN deal_products ON deal_products.deal_id = deals.id",
+          "JOIN products ON deal_products.product_id = products.id"
+        ],
+        "target_field": "products.full_name as full_name",
+        "select_collection": true
+      },
+      {
+        "name": "products.product_line",
+        "base_table_name": "deal_products",
+        "is_base_mapping": false,
+        "related_db_table_name": "products",
+        "join_statements": [
+          "JOIN deal_products ON deal_products.deal_id = deals.id",
+          "JOIN products ON deal_products.product_id = products.id"
+        ],
+        "target_field": "products.product_line as product_line",
+        "select_collection": true
+      },
+      {
+        "name": "products.revenue_type",
+        "base_table_name": "deal_products",
+        "is_base_mapping": false,
+        "related_db_table_name": "products",
+        "join_statements": [
+          "JOIN deal_products ON deal_products.deal_id = deals.id",
+          "JOIN products ON deal_products.product_id = products.id"
+        ],
+        "target_field": "products.revenue_type as revenue_type",
+        "select_collection": true
+      },
+      {
+        "name": "deal_products.budget_NON_USD",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "deal_products",
+        "join_statements": [
+          "JOIN deal_products ON deal_products.deal_id = deals.id"
+        ],
+        "target_field": "deal_products.budget_loc as budget_NON_USD",
+        "select_collection": true
+      },
+      {
+        "name": "deal_products.budget_USD",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "deal_products",
+        "join_statements": [
+          "JOIN deal_products ON deal_products.deal_id = deals.id"
+        ],
+        "target_field": "deal_products.budget as budget_USD",
+        "select_collection": true
+      },
+      {
+        "name": "deal_products.created_date",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "deal_products",
+        "join_statements": [
+          "JOIN deal_products ON deal_products.deal_id = deals.id"
+        ],
+        "target_field": "deal_products.created_at as created_date",
+        "select_collection": true
+      },
+      {
+        "name": "deal_products.updated_date",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "deal_products",
+        "join_statements": [
+          "JOIN deal_products ON deal_products.deal_id = deals.id"
+        ],
+        "target_field": "deal_products.updated_at as updated_date",
+        "select_collection": true
+      },
+      {
+        "name": "deal_members.name",
+        "base_table_name": "deal_members",
+        "is_base_mapping": false,
+        "related_db_table_name": "users",
+        "join_statements": [
+          "JOIN deal_members ON deal_members.deal_id = deals.id",
+          "JOIN users ON users.id = deal_members.user_id"
+        ],
+        "target_field": "users.first_name::text || ' ' || users.last_name::text as name",
+        "select_collection": true
+      },
+      {
+        "name": "deal_members.share",
+        "base_table_name": "deal_members",
+        "is_base_mapping": false,
+        "related_db_table_name": null,
+        "join_statements": [
+          "JOIN deal_members ON deal_members.deal_id = deals.id"
+        ],
+        "target_field": "deal_members.share as share",
+        "select_collection": true
+      },
+      {
+        "name": "advertiser.name",
+        "base_table_name": "clients",
+        "is_base_mapping": false,
+        "related_db_table_name": null,
+        "join_statements": [
+          "JOIN clients ON clients.id = deals.advertiser_id"
+        ],
+        "target_field": "clients.name as name",
+        "select_collection": false
+      },
+      {
+        "name": "advertiser.category",
+        "base_table_name": "clients",
+        "is_base_mapping": false,
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN clients ON clients.id = deals.advertiser_id",
+          "JOIN options ON clients.client_category_id = options.id"
+        ],
+        "target_field": "options.name as category",
+        "select_collection": false
+      },
+      {
+        "name": "advertiser.subcategory",
+        "base_table_name": "clients",
+        "is_base_mapping": false,
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN clients ON clients.id = deals.advertiser_id",
+          "JOIN options ON clients.client_subcategory_id = options.id"
+        ],
+        "target_field": "options.name as subcategory",
+        "select_collection": false
+      },
+      {
+        "name": "advertiser.region",
+        "base_table_name": "clients",
+        "is_base_mapping": false,
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN clients ON clients.id = deals.advertiser_id",
+          "JOIN options ON clients.client_region_id = options.id"
+        ],
+        "target_field": "options.name as region",
+        "select_collection": false
+      },
+      {
+        "name": "advertiser.segment",
+        "base_table_name": "clients",
+        "is_base_mapping": false,
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN clients ON clients.id = deals.advertiser_id",
+          "JOIN options ON clients.client_segment_id = options.id"
+        ],
+        "target_field": "options.name as segment",
+        "select_collection": false
+      },
+      {
+        "name": "advertiser.parent_client",
+        "base_table_name": "clients",
+        "is_base_mapping": false,
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN clients ON clients.id = deals.advertiser_id",
+          "JOIN clients as parent ON clients.parent_client_id = parent.id"
+        ],
+        "target_field": "parent.name as parent_client",
+        "select_collection": false
+      },
+      {
+        "name": "agency.name",
+        "base_table_name": "clients",
+        "is_base_mapping": false,
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN clients ON clients.id = deals.agency_id"
+        ],
+        "target_field": "clients.name as name",
+        "select_collection": false
+      },
+      {
+        "name": "agency.category",
+        "base_table_name": "clients",
+        "is_base_mapping": false,
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN clients ON clients.id = deals.agency_id",
+          "JOIN options ON clients.client_category_id = options.id"
+        ],
+        "target_field": "options.name as category",
+        "select_collection": false
+      },
+      {
+        "name": "agency.region",
+        "base_table_name": "clients",
+        "is_base_mapping": false,
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN clients ON clients.id = deals.agency_id",
+          "JOIN options ON clients.client_region_id = options.id"
+        ],
+        "target_field": "options.name as region",
+        "select_collection": false
+      },
+      {
+        "name": "agency.segment",
+        "base_table_name": "clients",
+        "is_base_mapping": false,
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN clients ON clients.id = deals.agency_id",
+          "JOIN options ON clients.client_segment_id = options.id"
+        ],
+        "target_field": "options.name as segment",
+        "select_collection": false
+      },
+      {
+        "name": "agency.holding_company",
+        "base_table_name": "clients",
+        "is_base_mapping": false,
+        "related_db_table_name": "holding_companies",
+        "join_statements": [
+          "JOIN clients ON clients.id = deals.agency_id",
+          "JOIN holding_companies ON clients.holding_company_id = holding_companies.id"
+        ],
+        "target_field": "holding_companies.name as holding_company",
+        "select_collection": false
+      },
+      {
+        "name": "io.budget_USD",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "ios",
+        "join_statements": [
+          "JOIN ios ON deals.id = io.deal_id"
+        ],
+        "target_field": "ios.budget as budget",
+        "select_collection": false
+      },
+      {
+        "name": "io.start_date",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "ios",
+        "join_statements": [
+          "JOIN ios ON deals.id = io.deal_id"
+        ],
+        "target_field": "ios.start_date as start_date",
+        "select_collection": false
+      },
+      {
+        "name": "io.end_date",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "ios",
+        "join_statements": [
+          "JOIN ios ON deals.id = io.deal_id"
+        ],
+        "target_field": "ios.end_date as end_date",
+        "select_collection": false
+      },
+      {
+        "name": "io.external_io_number",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "ios",
+        "join_statements": [
+          "JOIN ios ON deals.id = io.deal_id"
+        ],
+        "target_field": "ios.external_io_number as external_io_number",
+        "select_collection": false
+      },
+      {
+        "name": "io.io_number",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "ios",
+        "join_statements": [
+          "JOIN ios ON deals.id = io.deal_id"
+        ],
+        "target_field": "ios.io_number as io_number",
+        "select_collection": false
+      },
+      {
+        "name": "io.created_date",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "ios",
+        "join_statements": [
+          "JOIN ios ON deals.id = io.deal_id"
+        ],
+        "target_field": "ios.created_at as created_date",
+        "select_collection": false
+      },
+      {
+        "name": "io.updated_date",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "ios",
+        "join_statements": [
+          "JOIN ios ON deals.id = io.deal_id"
+        ],
+        "target_field": "ios.created_at as updated_date",
+        "select_collection": false
+      },
+      {
+        "name": "io.name",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "ios",
+        "join_statements": [
+          "JOIN ios ON deals.id = io.deal_id"
+        ],
+        "target_field": "ios.name as name",
+        "select_collection": false
+      },
+      {
+        "name": "io.budget_NON_USD",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "ios",
+        "join_statements": [
+          "JOIN ios ON deals.id = io.deal_id"
+        ],
+        "target_field": "ios.budget_loc as budget_loc",
+        "select_collection": false
+      },
+      {
+        "name": "io.currency",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "ios",
+        "join_statements": [
+          "JOIN ios ON deals.id = io.deal_id"
+        ],
+        "target_field": "ios.curr_cd as currency",
+        "select_collection": false
+      },
+      {
+        "name": "contacts.name",
+        "base_table_name": "deal_contacts",
+        "is_base_mapping": false,
+        "related_db_table_name": "contacts",
+        "join_statements": [
+          "JOIN deal_contacts ON deals.id = deal_contacts.deal_id",
+          "JOIN contacts ON deal_contacts.contact_id = contacts.id"
+        ],
+        "target_field": "contacts.name as name",
+        "select_collection": true
+      },
+      {
+        "name": "contacts.position",
+        "base_table_name": "deal_contacts",
+        "is_base_mapping": false,
+        "related_db_table_name": "contacts",
+        "join_statements": [
+          "JOIN deal_contacts ON deals.id = deal_contacts.deal_id",
+          "JOIN contacts ON deal_contacts.contact_id = contacts.id"
+        ],
+        "target_field": "contacts.position as position",
+        "select_collection": true
+      },
+      {
+        "name": "contacts.created_date",
+        "base_table_name": "deal_contacts",
+        "is_base_mapping": false,
+        "related_db_table_name": "contacts",
+        "join_statements": [
+          "JOIN deal_contacts ON deals.id = deal_contacts.deal_id",
+          "JOIN contacts ON deal_contacts.contact_id = contacts.id"
+        ],
+        "target_field": "contacts.created_at as created_date",
+        "select_collection": true
+      },
+      {
+        "name": "contacts.updated_date",
+        "base_table_name": "deal_contacts",
+        "is_base_mapping": false,
+        "related_db_table_name": "contacts",
+        "join_statements": [
+          "JOIN deal_contacts ON deals.id = deal_contacts.deal_id",
+          "JOIN contacts ON deal_contacts.contact_id = contacts.id"
+        ],
+        "target_field": "contacts.updated_at as updated_date",
+        "select_collection": true
+      }
+    ]
+  }
+}

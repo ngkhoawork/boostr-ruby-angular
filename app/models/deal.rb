@@ -2,7 +2,12 @@ require 'rubygems'
 require 'zip'
 
 class Deal < ActiveRecord::Base
+  SAFE_COLUMNS = %i{start_date end_date name budget created_at updated_at
+                    closed_at budget_loc web_lead type source initiative}
+  SAFE_REFLECTIONS = %i{currency teams}
+
   include GoogleSheetsExportable
+  include WorkflowCallbacks
 
   acts_as_paranoid
 
@@ -17,6 +22,9 @@ class Deal < ActiveRecord::Base
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
   belongs_to :initiative
   belongs_to :lead
+  belongs_to :type, class_name: 'Option'
+  belongs_to :source, class_name: 'Option'
+  belongs_to :close_reason, class_name: 'Option'
 
   # Restrict with exception is used to rollback any
   # other potential dependent: :destroy relations
@@ -42,6 +50,7 @@ class Deal < ActiveRecord::Base
   has_many :integrations, as: :integratable
   has_many :requests
   has_many :audit_logs, as: :auditable
+  has_many :teams, through: :users, source: 'team'
 
   has_one :billing_deal_contact, -> { where(role: 'Billing') }, class_name: 'DealContact'
   has_one :billing_contact, through: :billing_deal_contact, source: :contact
@@ -50,6 +59,9 @@ class Deal < ActiveRecord::Base
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
     order('activities.deal_id', 'activities.happened_at DESC')
   }, class_name: 'Activity'
+  has_one :type_field, -> { where(subject_type: 'Deal', name: 'Deal Type') }, through: :company, source: :fields
+  has_one :deal_source_field, -> { where(subject_type: 'Deal', name: 'Deal Source') }, through: :company, source: :fields
+  has_one :close_reason_field, -> { where(subject_type: 'Deal', name: 'Close Reason') }, through: :company, source: :fields
 
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
   validate :active_exchange_rate
@@ -513,6 +525,14 @@ class Deal < ActiveRecord::Base
       end
     end
     return option
+  end
+
+  def self.workflowable_reflections
+    %i{
+        advertiser agency stage creator updator
+        io contacts deal_product_budgets products
+        users teams deal_custom_field deal_products deal_members
+    }
   end
 
   def deal_source_value

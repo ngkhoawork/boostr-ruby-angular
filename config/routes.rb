@@ -165,6 +165,15 @@ Rails.application.routes.draw do
       resources :display_line_item_budgets, only: [:create]
     end # API V2 END
 
+    post '/slack/auth', to: 'slack_connect#auth'
+    get '/slack/callback', to: 'slack_connect#callback'
+
+    resources :data_models, only: [:index] do
+      get :data_mappings, on: :collection
+      get :reflections, on: :collection
+      get :reflections_labels, on: :collection
+    end
+
     namespace :dataexport, defaults: { format: :json }, constraints: ApiConstraints.new(dataexport: true) do
       resources :user_token, only: [:create]
 
@@ -223,6 +232,7 @@ Rails.application.routes.draw do
         get :metadata
         get :service_account_email
         get :ssp_credentials
+        get :workflowable_actions
       end
       member do
         post :delete_ssp
@@ -585,6 +595,10 @@ Rails.application.routes.draw do
       end
 
       put :update_positions, on: :collection
+    end
+
+    resources :workflows, only: [:index, :create, :update, :destroy] do
+      resources :workflow_criterions, only: [:destroy]
     end
 
     resources :sales_processes, only: [:index, :create, :show, :update]

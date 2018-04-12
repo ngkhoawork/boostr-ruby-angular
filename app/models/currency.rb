@@ -1,4 +1,6 @@
 class Currency < ActiveRecord::Base
+  SAFE_COLUMNS = %i{curr_cd curr_symbol name}
+
   validates :curr_cd, uniqueness: true, length: { is: 3 }, presence: true
   validates :curr_symbol, presence: true
 

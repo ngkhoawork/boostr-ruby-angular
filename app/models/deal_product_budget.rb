@@ -1,4 +1,6 @@
 class DealProductBudget < ActiveRecord::Base
+  SAFE_COLUMNS = %i{budget start_date end_date created_at updated_at budget_loc}
+
   belongs_to :deal_product
   delegate :deal, to: :deal_product
 

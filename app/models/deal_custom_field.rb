@@ -1,4 +1,6 @@
 class DealCustomField < ActiveRecord::Base
+  SAFE_COLUMNS = columns.map(&:name).map(&:to_sym)
+
   belongs_to :company
   belongs_to :deal
 

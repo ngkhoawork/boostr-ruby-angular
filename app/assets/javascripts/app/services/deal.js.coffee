@@ -7,6 +7,8 @@
     original.deal.values_attributes = original.deal.values if original.deal.values
     original.deal.values_attributes << original.deal.deal_type if original.deal.deal_type
     original.deal.values_attributes << original.deal.source_type if original.deal.source_type
+    original.deal.type_id = original.deal.deal_type.option_id if original.deal.deal_type
+    original.deal.source_id = original.deal.source_type.option_id if original.deal.source_type
 
     original.deal.deal_custom_field_attributes = original.deal.deal_custom_field if original.deal.deal_custom_field
     angular.toJson(original)

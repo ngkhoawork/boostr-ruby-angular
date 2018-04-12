@@ -1,4 +1,6 @@
 class Product < ActiveRecord::Base
+  SAFE_COLUMNS = %i{full_name name product_line revenue_type}
+
   belongs_to :company
   belongs_to :product_family
   belongs_to :parent, class_name: 'Product', inverse_of: :children
@@ -33,7 +35,7 @@ class Product < ActiveRecord::Base
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
-  scope :active, -> do 
+  scope :active, -> do
     joins('LEFT JOIN product_families ON products.product_family_id = product_families.id')
     .where('products.active IS true AND (product_families.active IS true OR products.product_family_id IS NULL)')
   end

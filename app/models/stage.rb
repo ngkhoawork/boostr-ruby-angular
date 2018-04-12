@@ -1,4 +1,6 @@
 class Stage < ActiveRecord::Base
+  SAFE_COLUMNS = %i{name probability}
+
   belongs_to :company
   belongs_to :sales_process
   has_many :deals
@@ -21,6 +23,12 @@ class Stage < ActiveRecord::Base
 
   after_destroy do |stage_record|
     delete_dimension(stage_record)
+  end
+
+  def self.workflowable_columns
+    columns.select do |column|
+      SAFE_COLUMNS.include? column.name.to_sym
+    end
   end
 
   def closed?
