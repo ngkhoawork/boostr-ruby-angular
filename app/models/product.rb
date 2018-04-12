@@ -70,7 +70,9 @@ class Product < ActiveRecord::Base
       id: self.id,
       company_id: self.company_id,
       name: self.name,
-      revenue_type: self.revenue_type
+      revenue_type: self.revenue_type,
+      parent_id: parent_id,
+      top_parent_id: top_parent_id
     )
   end
 
