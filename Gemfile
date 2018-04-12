@@ -61,6 +61,7 @@ gem 'slack-ruby-client'
 gem 'wisper'
 gem 'wisper-sidekiq', git: 'https://github.com/krisleech/wisper-sidekiq.git', branch: 'sidekiq5-compatibility'
 gem 'mustache', '~> 1.0'
+gem 'gli'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
