@@ -124,6 +124,7 @@ class Company < ActiveRecord::Base
     setup_default_validations
 
     AssignmentRule.create(company_id: self.id, name: 'No Match', default: true, position: 100_000)
+    build_egnyte_integration(enabled: false)
   end
 
   def setup_client_fields
