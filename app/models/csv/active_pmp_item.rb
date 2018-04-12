@@ -1,15 +1,12 @@
 class Csv::ActivePmpItem
   include ActiveModel::Validations
   include Csv::Pmp
-  include Csv::ProductOptionable
 
   attr_accessor :deal_id,
                 :name,
                 :ssp,
                 :pmp_type,
                 :product,
-                :product_level1,
-                :product_level2,
                 :start_date,
                 :end_date,
                 :budget,
@@ -53,7 +50,7 @@ class Csv::ActivePmpItem
   end
 
   def check_product
-    ::Product.find_by(full_name: product_full_name).id
+    ::Product.find_by(name: product).id
   rescue
     raise_error("Product")
   end
