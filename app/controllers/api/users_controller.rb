@@ -58,6 +58,9 @@ class Api::UsersController < ApplicationController
       :default_currency,
       :employee_id,
       :office,
+      :agreements_enabled,
+      :leads_enabled,
+      :contracts_enabled,
       :revenue_requests_access
     )
 

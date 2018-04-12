@@ -30,3 +30,6 @@
   _gmail_extension_url = ("#{Setting.get(:gmail_extension_url)}");
   _gcalendar_extension_url = ("#{Setting.get(:gcalendar_extension_url)}");
   _resourceLink = ("#{current_user.company.resource_link}");
+  _isAgreementsEnabled = (#{!!current_user.agreements_enabled});
+  _isLeadsEnabled = (#{!!current_user.leads_enabled});
+  _isContractsEnabled = (#{!!current_user.contracts_enabled});

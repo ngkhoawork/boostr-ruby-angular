@@ -42,6 +42,12 @@
                     .z-sortable{by: 'employee_id'} Employee Id
                   %th.left
                     .z-sortable{by: 'office'} Office
+                  %th.left{'ng-if': 'company.agreements_enabled'}
+                    .z-sortable{by: 'agreements_enabled'} Agreements Enabled
+                  %th.left{'ng-if': 'company.contracts_enabled'}
+                    .z-sortable{by: 'contracts_enabled'} Contracts Enabled
+                  %th.left{'ng-if': 'company.leads_enabled'}
+                    .z-sortable{by: 'leads_enabled'} Leads Enabled
               %tbody
                 %tr{ ng: { repeat: 'user in users | orderBy : zSort.by : zSort.rev | filter : {name: searchText}' } }
                   %td.left{ ng: { click: 'editModal(user)' } }
@@ -88,3 +94,22 @@
                     {{ user.employee_id }}
                   %td.left{ ng: { click: 'editModal(user)' } }
                     {{ user.office }}
+                  %td.left{'ng-if': 'company.agreements_enabled'}
+                    .show-hide-remainder-form
+                      .switch-remainder-form
+                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'user.agreements_enabled', 'ng-change': "submitUser(user)", id: "rem-agreements-permission-toggle{{user.id}}"}
+                        %label{:for => "rem-agreements-permission-toggle{{user.id}}"}
+                          %span
+                  %td.left{'ng-if': 'company.contracts_enabled'}
+                    .show-hide-remainder-form
+                      .switch-remainder-form
+                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'user.contracts_enabled', 'ng-change': "submitUser(user)", id: "rem-contracts-permission-toggle{{user.id}}"}
+                        %label{:for => "rem-contracts-permission-toggle{{user.id}}"}
+                          %span
+                  %td.left{'ng-if': 'company.leads_enabled'}
+                    .show-hide-remainder-form
+                      .switch-remainder-form
+                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'user.leads_enabled', 'ng-change': "submitUser(user)", id: "rem-leads-permission-toggle{{user.id}}"}
+                        %label{:for => "rem-leads-permission-toggle{{user.id}}"}
+                          %span
+

@@ -1,7 +1,7 @@
 ActiveAdmin.register Company do
   permit_params :name, :ealert_reminder, :influencer_enabled, :primary_contact_id, :billing_contact_id, :quantity,
   :cost, :start_date, :end_date, :requests_enabled, :publishers_enabled, :gmail_enabled, :gcalendar_enabled,
-  :logi_enabled, :resource_link,
+  :logi_enabled, :resource_link, :agreements_enabled, :leads_enabled, :contracts_enabled,
   billing_address_attributes: [ :street1, :street2, :city, :state, :zip, :website, :phone ],
   physical_address_attributes: [ :street1, :street2, :city, :state, :zip ]
 
@@ -19,6 +19,9 @@ ActiveAdmin.register Company do
     column :gcalendar_enabled
     column :logi_enabled
     column :resource_link
+    column :agreements_enabled
+    column :contracts_enabled
+    column :leads_enabled
     actions
   end
 
@@ -35,6 +38,9 @@ ActiveAdmin.register Company do
       row :gcalendar_enabled
       row :logi_enabled
       row :resource_link
+      row :agreements_enabled
+      row :contracts_enabled
+      row :leads_enabled
     end
 
     panel "Billing Address" do
@@ -84,6 +90,9 @@ ActiveAdmin.register Company do
       f.input :gcalendar_enabled
       f.input :logi_enabled
       f.input :resource_link
+      f.input :agreements_enabled
+      f.input :contracts_enabled
+      f.input :leads_enabled
     end
 
     f.inputs "Billing Address", for: [:billing_address, f.object.billing_address || Address.new] do |ba|
