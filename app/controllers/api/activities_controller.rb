@@ -14,12 +14,7 @@ class Api::ActivitiesController < ApplicationController
 
   def create
     if params[:file].present?
-      CsvImportWorker.perform_async(
-        params[:file][:s3_file_path],
-        'Activity',
-        current_user.id,
-        params[:file][:original_filename]
-      )
+      SmartCsvImportWorker.perform_async(*csv_import_params)
 
       render json: {
         message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
@@ -263,5 +258,15 @@ class Api::ActivitiesController < ApplicationController
 
   def activity_happened_at
     @_activity_happened_at ||= activity.happened_at
+  end
+
+  def csv_import_params
+    [
+      params[:file][:s3_file_path],
+      'Importers::ActivitiesService',
+      current_user.id,
+      current_user.company_id,
+      params[:file][:original_filename]
+    ]
   end
 end

@@ -9,8 +9,13 @@ class CustomFieldNames::Serializer < ActiveModel::Serializer
              :position,
              :show_on_modal,
              :disabled,
-             :created_at,
-             :updated_at
+             :csv_header
 
   has_many :custom_field_options, serializer: CustomFieldOptions::Serializer
+
+  private
+
+  def csv_header
+    object.to_csv_header
+  end
 end

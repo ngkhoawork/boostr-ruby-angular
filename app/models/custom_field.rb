@@ -5,6 +5,8 @@ class CustomField < ActiveRecord::Base
   before_validation :set_company_id_by_subject
 
   def self.allowed_attr_names(company, subject_type)
+    return [] unless company
+
     company.custom_field_names.for_model(subject_type).map(&:field_name)
   end
 
