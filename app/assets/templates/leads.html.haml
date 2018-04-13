@@ -84,7 +84,7 @@
                     .leads-td
                         .leads-td-inner
                             .td-title
-                                Budget: {{lead.budget | currency : '$' : 0}}
+                                Budget: {{lead.budget}}
                             %div{ng: {'text-truncate': 'lead.notes', 'tt-chars-threshold': '100'}}
                             .td-action{'ng-if': 'statusFilter.id !== "new_leads"', 'ng-click': 'showDealModal(lead)'} Create Deal
                     .leads-td
