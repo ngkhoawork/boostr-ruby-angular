@@ -15,4 +15,4 @@
       %div{'ng-include': '"partials/deal/deal_next_steps.html"'}
       %div{'ng-include': '"partials/deal/deal_insights.html"'}
       %div{'ng-include': '"partials/deal/deal_campaign_details.html"'}
-      %div{'ng-include': '"partials/dashboard/activity.html"'}
+      %activity-feed{object: 'currentDeal', type: 'deal'}
