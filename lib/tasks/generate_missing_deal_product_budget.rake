@@ -1,16 +1,16 @@
 namespace :generate_missing_deal_product_budget do
   desc "TODO"
   task :process_task, [:company_id] => [:environment] do |t, args|
-    if args[:company_id]
-      company = Company.find(args[:company_id])
-      if company.present?
-        deal_products = company.deal_products.includes({
-          deal: {},
-          deal_product_budgets: {}
-        })
-        deal_products.each do |deal_product|
-          create_budgets_for_product(deal_product)
-        end
+    return unless args[:company_id]
+
+    company = Company.find(args[:company_id])
+    if company.present?
+      deal_products = company.deal_products.includes({
+        deal: {},
+        deal_product_budgets: {}
+      })
+      deal_products.each do |deal_product|
+        create_budgets_for_product(deal_product)
       end
     end
   end
@@ -34,6 +34,7 @@ namespace :generate_missing_deal_product_budget do
         end
       end
     end
+
   end
 
 end
