@@ -1,10 +1,10 @@
 namespace :generate_missing_deal_product_budget do
   desc "TODO"
   task :process_task, [:company_id] => [:environment] do |t, args|
-    return unless args[:company_id]
+    exit unless args[:company_id]
 
     company = Company.find(args[:company_id])
-    return unless company
+    exit unless company
     
     deal_products = company.deal_products.includes({
       deal: {},
