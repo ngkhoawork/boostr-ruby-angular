@@ -5,6 +5,13 @@ class DealProductBudget < ActiveRecord::Base
   delegate :deal, to: :deal_product
 
   scope :for_time_period, -> (start_date, end_date) { where('deal_product_budgets.start_date <= ? AND deal_product_budgets.end_date >= ?', end_date, start_date) }
+  scope :for_year_month, -> (effect_date) do
+    where(
+      "DATE_PART('year', start_date) = ? AND DATE_PART('month', start_date) = ?",
+      effect_date.year,
+      effect_date.month
+    )
+  end
   scope :for_product_id, -> (product_id) { where('deal_products.product_id = ?', product_id) if product_id.present? }
   scope :by_seller_id, -> (seller_id) do
     joins(deal_product: { deal: :deal_members })
