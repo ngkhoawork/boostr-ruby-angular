@@ -17,10 +17,10 @@ class Logi::BuildAuthorizationUrl
   end
 
   def logi_env
-    if Rails.env.development? || Rails.env.jorzh?
-      'BoostrQA'
-    else
+    if Rails.env.production?
       'BoostrAnalytics'
+    else
+      'BoostrQA'
     end
   end
 
@@ -39,7 +39,7 @@ class Logi::BuildAuthorizationUrl
   end
 
   def define_user_rights
-    @user.is?(:superadmin) || @user.is?(:admin) ? 'SuperAdmin' : ''
+    @user.is?(:superadmin) ? 'SuperAdmin' : ''
   end
 
 end
