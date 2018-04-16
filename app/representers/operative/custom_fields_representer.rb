@@ -5,8 +5,8 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
 
   self.representation_wrap = 'v2:customFields'
 
-  property :location_id_1, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
-  property :location_id_2, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
+  property :location_id_1, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator, if: !:buzzfeed?
+  property :location_id_2, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator, if: !:buzzfeed?
   property :primary_sales_rep_id, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
   property :opportunity_created_date, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator, if: !:buzzfeed?
   property :sfdc_type, decorator: Operative::DropdownCustomFieldRepresenter, exec_context: :decorator, if: !:buzzfeed?

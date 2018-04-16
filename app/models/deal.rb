@@ -103,11 +103,12 @@ class Deal < ActiveRecord::Base
       log_stage_changes
     end
     reset_products if (start_date_changed? || end_date_changed?)
-    integrate_with_operative
     send_lost_deal_notification
     connect_deal_clients
     log_start_date_changes if start_date_changed?
   end
+
+  after_commit :integrate_with_operative, on: :update
 
   before_create do
     update_stage
@@ -231,7 +232,7 @@ class Deal < ActiveRecord::Base
   end
 
   def integrate_with_operative
-    if stage_id_changed? && operative_integration_allowed?
+    if previous_changes[:stage_id].present? && operative_integration_allowed?
       OperativeIntegrationWorker.perform_async(self.id)
     end
   end
