@@ -32,7 +32,7 @@
             {name: 'Product Monthly Summary', url: '/reports/product_monthly_summary'}
             {name: 'Spend by Account', url: '/reports/spend_by_account'}
             {name: 'Spend by Category', url: '/reports/spend_by_category'}
-            {name: 'Quota Attainment', url: '/reports/quota_attainment'} if _isExec && _isAdmin
+            {name: 'Quota Attainment', url: '/reports/quota_attainment'} if _isExec || _isAdmin
             {name: 'Publishers', url: '/reports/publishers'} if _isPublisherEnabled
         ]}
         {name: 'ANALYTICS', url: '/analytics'} if _isLogiEnabled
