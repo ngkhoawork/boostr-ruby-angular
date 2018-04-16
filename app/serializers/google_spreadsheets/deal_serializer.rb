@@ -84,7 +84,7 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def product
-    object.products.pluck(:name).join(', ')
+    object.products.pluck(:full_name).join(', ')
   end
 
   def opportunity_url
@@ -106,7 +106,9 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
     value.strftime('%d-%m-%Y')
   end
 
-  alias_method :demo, :empty
+  def demo
+    find_custom_field_value('Initial Strategy Considerations')
+  end
 
   private
 
