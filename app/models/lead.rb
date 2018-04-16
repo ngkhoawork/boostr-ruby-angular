@@ -39,6 +39,13 @@ class Lead < ActiveRecord::Base
   after_save :create_notification_reminders, if: :reassigned_at_changed?
   after_save :remove_notifications_reminders, if: :accepted_or_rejected?
 
+  validate :remove_html_tags_from_first_name
+  validate :remove_html_tags_from_last_name
+  validate :remove_html_tags_from_title
+  validate :remove_html_tags_from_email
+  validate :remove_html_tags_from_company_name
+  validate :remove_html_tags_from_notes
+
   def name
     "#{first_name} #{last_name}" rescue first_name || last_name
   end
@@ -146,5 +153,29 @@ class Lead < ActiveRecord::Base
 
   def default_rule
     order_rules_by_position.default
+  end
+
+  def remove_html_tags_from_first_name
+    self.first_name = ActionView::Base.full_sanitizer.sanitize(self.first_name)
+  end
+
+  def remove_html_tags_from_last_name
+    self.last_name = ActionView::Base.full_sanitizer.sanitize(self.last_name)
+  end
+
+  def remove_html_tags_from_title
+    self.title = ActionView::Base.full_sanitizer.sanitize(self.title)
+  end
+
+  def remove_html_tags_from_email
+    self.email = ActionView::Base.full_sanitizer.sanitize(self.email)
+  end
+
+  def remove_html_tags_from_company_name
+    self.company_name = ActionView::Base.full_sanitizer.sanitize(self.company_name)
+  end
+
+  def remove_html_tags_from_notes
+    self.notes = ActionView::Base.full_sanitizer.sanitize(self.notes)
   end
 end

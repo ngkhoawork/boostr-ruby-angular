@@ -37,6 +37,6 @@ class Api::Leads::IndexSerializer < ActiveModel::Serializer
   end
 
   def suggested_clients
-    company.clients.by_name_in_multiply_string(object.company_name)
+    company.clients.fuzzy_name_string_search(object.company_name)
   end
 end
