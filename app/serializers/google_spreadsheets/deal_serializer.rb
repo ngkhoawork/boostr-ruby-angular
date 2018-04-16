@@ -92,7 +92,7 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def operative_id
-    object.integrations&.find_by(external_type: Integration::OPERATIVE)
+    object.integrations&.find_by(external_type: Integration::OPERATIVE)&.external_id
   end
 
   def probability
