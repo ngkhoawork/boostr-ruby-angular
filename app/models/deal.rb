@@ -1626,6 +1626,14 @@ class Deal < ActiveRecord::Base
     ).perform
   end
 
+  def generate_io_or_pmp
+    if include_pmp_product?
+      Deal::PmpGenerateService.new(self).perform
+    else
+      Deal::IoGenerateService.new(self).perform
+    end
+  end
+
   private
 
   def self.import_deal_custom_field(deal, row)
@@ -1675,13 +1683,5 @@ class Deal < ActiveRecord::Base
     advertiser_changed = previous_changes[:advertiser_id].present?
 
     Egnyte::UpdateDealFolderWorker.perform_async(company.egnyte_integration.id, id, advertiser_changed)
-  end
-
-  def generate_io_or_pmp
-    if include_pmp_product?
-      Deal::PmpGenerateService.new(self).perform
-    else
-      Deal::IoGenerateService.new(self).perform
-    end
   end
 end

@@ -5,7 +5,7 @@ namespace :generate_missing_ios do
       company = Company.find(args[:company_id])
       if company.present?
         deals = company.deals.at_percent(100).joins("LEFT JOIN ios ON deals.id = ios.io_number").where("ios.id IS NULL")
-        deals.each { |deal| deal.generate_io }
+        deals.each { |deal| deal.generate_io_or_pmp }
       end
     end
   end
