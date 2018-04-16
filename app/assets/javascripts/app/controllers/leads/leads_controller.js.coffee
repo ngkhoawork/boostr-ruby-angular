@@ -1,10 +1,14 @@
 @app.controller 'LeadsController', [
-    '$scope', '$modal', '$routeParams', '$location', 'Leads'
-    ($scope,   $modal,   $routeParams,   $location,   Leads) ->
+    '$scope', '$timeout', '$modal', '$routeParams', '$location', 'Leads'
+    ($scope,   $timeout,   $modal,   $routeParams,   $location,   Leads) ->
 
         $scope.isLoading = false
         $scope.leads = []
         $scope.search = ''
+        page = 1
+        leadsPerPage = 10
+        $scope.allLeadsLoaded = false
+        $scope.leadsStatus = null
         $scope.teamFilters = [
             {id: 'my', name: 'My Leads'}
             {id: 'team', name: 'My Team\'s Leads'}
@@ -24,24 +28,36 @@
 
         $scope.onFilterChange = (key, item) ->
             $scope[key] = item
-            $scope.getLeads()
+            $scope.getLeads(true)
 
-        $scope.getLeads = ->
+        $scope.getLeads = (resetPagination)->
             if !$scope.teamFilter || !$scope.statusFilter || $scope.isLoading then return
+            if resetPagination then page = 1
             $scope.isLoading = true
             params =
+                per: leadsPerPage
+                page: page
                 relation: $scope.teamFilter.id
                 status: $scope.statusFilter.id
                 search: $scope.search if $scope.search
             Leads.get(params).then (data) ->
-                data.status = params.status
-                $scope.leads = data
+                $scope.allLeadsLoaded = !data || data.length < leadsPerPage
+                if page++ > 1 then $scope.leads = $scope.leads.concat(data)
+                else $scope.leads = data
+                $scope.leadsStatus = params.status
                 $scope.isLoading = false
+                $timeout -> $scope.$emit 'leads:scroll'
             , (err) ->
                 $scope.isLoading = false
 
+        $scope.loadMoreLeads = ->
+            if !$scope.allLeadsLoaded then $scope.getLeads()
+
         replaceLead = (lead) ->
             _.extend(_.findWhere($scope.leads, {id: lead.id}), lead)
+
+        removeLead = (lead) ->
+            $scope.leads = _.reject $scope.leads, (item) -> item.id is lead.id
 
         $scope.showReassignModal = (lead) ->
             $modal.open
@@ -93,7 +109,7 @@
         $scope.reassign = (lead) ->
             params = {id: lead.id}
             params.user_id = $scope.currentUser.id if $scope.currentUser
-            Leads.reassign(params)
+            Leads.reassign(params).then -> removeLead(lead)
 
         $scope.mapAccount = (lead) ->
             clientId = lead._selectedClient.id if lead._selectedClient
@@ -101,12 +117,9 @@
                 lead.client = lead._selectedClient
 
         $scope.accept = (lead) ->
-            Leads.accept(id: lead.id)
+            Leads.accept(id: lead.id).then -> removeLead(lead)
 
         $scope.reject = (lead) ->
-            Leads.reject(id: lead.id)
-
-        $scope.$on 'updated_leads', $scope.getLeads
-#        $scope.$on 'updated_lead', getLeads
+            Leads.reject(id: lead.id).then -> removeLead(lead)
 
 ]

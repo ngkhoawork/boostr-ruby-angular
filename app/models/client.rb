@@ -86,6 +86,28 @@ class Client < ActiveRecord::Base
   after_commit :setup_egnyte_folders, on: [:create]
   after_commit :update_egnyte_folder, on: [:update]
 
+  scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
+  scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
+  scope :exclude_ids, -> ids { where.not(id: ids) }
+  scope :by_contact_ids, -> ids { Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id").where("client_contacts.contact_id in (:q)", {q: ids}).order(:name).distinct }
+  scope :by_category, -> category_id { where(client_category_id: category_id) if category_id.present? }
+  scope :by_subcategory, -> subcategory_id { where(client_subcategory_id: subcategory_id) if subcategory_id.present? }
+  scope :by_region, -> region_id { where(client_region_id: region_id) if region_id.present? }
+  scope :by_segment, -> segment_id { where(client_segment_id: segment_id) if segment_id.present? }
+  scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_name_and_type_with_limit, -> (name, type) { by_name(name).by_type_id(type).limit(20) }
+  scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }
+  scope :by_ids, -> ids { where(id: ids) if ids.present?}
+  scope :by_last_touch, -> (start_date, end_date) { Client.joins("INNER JOIN (select client_id, max(happened_at) as last_touch from activities group by client_id) as tb1 ON clients.id = tb1.client_id").where("tb1.last_touch >= ? and tb1.last_touch <= ?", start_date, end_date) if start_date.present? && end_date.present? }
+  scope :excepting_client_associations, ->(client, assoc_name) do
+    send("without_#{assoc_name}_for", client) if %i(child_clients connections).include?(assoc_name.to_sym)
+  end
+  scope :without_child_clients_for, ->(client) { where.not(id: client.child_client_ids) }
+  scope :without_connections_for, ->(client) { where.not(id: client.connection_entry_ids) }
+  scope :without_related_clients, -> contact_id do
+    where.not(id: ClientContact.where(contact_id: contact_id).pluck(:client_id))
+  end
+
   pg_search_scope :search_by_name,
                   against: :name,
                   using: {
@@ -100,31 +122,6 @@ class Client < ActiveRecord::Base
                   },
                   ranked_by: ':trigram'
 
-  scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
-  scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
-  scope :exclude_ids, -> ids { where.not(id: ids) }
-  scope :by_contact_ids, -> ids { Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id").where("client_contacts.contact_id in (:q)", {q: ids}).order(:name).distinct }
-  scope :by_category, -> category_id { where(client_category_id: category_id) if category_id.present? }
-  scope :by_subcategory, -> subcategory_id { where(client_subcategory_id: subcategory_id) if subcategory_id.present? }
-  scope :by_region, -> region_id { where(client_region_id: region_id) if region_id.present? }
-  scope :by_segment, -> segment_id { where(client_segment_id: segment_id) if segment_id.present? }
-  scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
-  scope :by_name_in_multiply_string, -> name do
-    where('name ilike any ( array[?] )', name.split.map { |word| "%#{word}%" } ) if name.present?
-  end
-  scope :by_name_and_type_with_limit, -> (name, type) { by_name(name).by_type_id(type).limit(20) }
-  scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }
-  scope :by_ids, -> ids { where(id: ids) if ids.present?}
-  scope :by_last_touch, -> (start_date, end_date) { Client.joins("INNER JOIN (select client_id, max(happened_at) as last_touch from activities group by client_id) as tb1 ON clients.id = tb1.client_id").where("tb1.last_touch >= ? and tb1.last_touch <= ?", start_date, end_date) if start_date.present? && end_date.present? }
-  scope :excepting_client_associations, ->(client, assoc_name) do
-    send("without_#{assoc_name}_for", client) if %i(child_clients connections).include?(assoc_name.to_sym)
-  end
-  scope :without_child_clients_for, ->(client) { where.not(id: client.child_client_ids) }
-  scope :without_connections_for, ->(client) { where.not(id: client.connection_entry_ids) }
-  scope :without_related_clients, -> contact_id do
-    where.not(id: ClientContact.where(contact_id: contact_id).pluck(:client_id))
-  end
-  
   pg_search_scope :fuzzy_search,
                   against: :name,
                   using: {
@@ -137,6 +134,10 @@ class Client < ActiveRecord::Base
                     }
                   },
                   ranked_by: ':trigram'
+
+  pg_search_scope :fuzzy_name_string_search,
+                  against: :name,
+                  using: :trigram
 
   ADVERTISER = 10
   AGENCY = 11
