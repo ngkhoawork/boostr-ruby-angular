@@ -220,6 +220,9 @@
                     display: block;
                 }
             }
+            label {
+                font-weight: normal;
+            }
             p:nth-child(4) {
                 color: $error-color;
             }
