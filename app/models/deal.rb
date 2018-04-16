@@ -1626,15 +1626,23 @@ class Deal < ActiveRecord::Base
     ).perform
   end
 
-  def generate_io_or_pmp
-    if include_pmp_product?
-      Deal::PmpGenerateService.new(self).perform
-    else
-      Deal::IoGenerateService.new(self).perform
-    end
+  def generate_pmp
+    Deal::PmpGenerateService.new(self).perform
+  end
+
+  def generate_io
+    Deal::IoGenerateService.new(self).perform
   end
 
   private
+
+  def generate_io_or_pmp
+    if include_pmp_product?
+      generate_pmp
+    else
+      generate_io
+    end
+  end
 
   def self.import_deal_custom_field(deal, row)
     params = {}
