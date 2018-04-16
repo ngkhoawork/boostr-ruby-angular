@@ -5,7 +5,7 @@ class Api::LeadsController < ApplicationController
   respond_to :json
 
   def index
-    render json: filtered_leads, each_serializer: Api::Leads::IndexSerializer
+    render json: by_pages(filtered_leads), each_serializer: Api::Leads::IndexSerializer
   end
 
   def create_lead
