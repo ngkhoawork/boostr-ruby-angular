@@ -10,13 +10,16 @@ module WorkflowCallbacks
   end
 
   def check_chains_for_workflows(workflows, model_instance, options = {})
-    return unless model_instance.belongs_to_company?
+    begin
+      return unless model_instance.belongs_to_company?
 
-    workflows.each do |workflow|
-      next unless workflow.switched_on?
+      workflows.each do |workflow|
+        next unless workflow.switched_on?
 
 
-      WorkflowChainChecker.check(workflow.id, model_instance.id, options)
+        WorkflowChainChecker.check(workflow.id, model_instance.id, options)
+      end
+    rescue => error
     end
   end
 
