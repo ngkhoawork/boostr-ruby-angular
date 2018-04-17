@@ -1,5 +1,5 @@
 class EgnyteIntegration < ActiveRecord::Base
-  belongs_to :company, required: true
+  belongs_to :company
 
   validates :company_id, uniqueness: true
   validate :app_domain_is_required_for_enabled
