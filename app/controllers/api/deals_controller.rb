@@ -274,7 +274,12 @@ class Api::DealsController < ApplicationController
         message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
       }, status: :ok
     else
-      @deal = company.deals.new(deal_params.merge({deal_custom_field: DealCustomField.new, manual_update: true}))
+      @deal = company.deals.new(
+        deal_params.merge(
+          deal_custom_field: DealCustomField.new(deal_cf_params),
+          manual_update: true
+        )
+      )
 
       deal.created_by = current_user.id
       deal.updated_by = current_user.id
@@ -291,9 +296,9 @@ class Api::DealsController < ApplicationController
     deal.updated_by = current_user.id
     deal.assign_attributes(deal_params.merge(manual_update: true))
     if deal.deal_custom_field.present?
-      deal.deal_custom_field.update_attributes(deal_custom_field_attributes_params[:deal_custom_field_attributes])
+      deal.deal_custom_field.update_attributes(deal_cf_params)
     else
-      deal.deal_custom_field = DealCustomField.new(deal_custom_field_attributes_params[:deal_custom_field_attributes])
+      deal.deal_custom_field = DealCustomField.new(deal_cf_params)
     end
     if deal.save(context: :manual_update)
       render deal
@@ -602,7 +607,7 @@ class Api::DealsController < ApplicationController
     ).merge(modifying_user: current_user)
   end
 
-  def deal_custom_field_attributes_params
+  def deal_cf_params
     params.require(:deal).permit(
       {
           deal_custom_field_attributes: [
@@ -741,7 +746,7 @@ class Api::DealsController < ApplicationController
               :link10
           ]
       }
-    )
+    )[:deal_custom_field_attributes]
   end
 
   def deal_type_source_params
