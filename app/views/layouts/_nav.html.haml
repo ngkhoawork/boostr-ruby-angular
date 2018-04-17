@@ -15,7 +15,7 @@
         {{::item.name}}
         %span.caret
       .dropdown-menu{'ng-if': '::item.dropdown.length'}
-        %a.item{'ng-repeat': 'item in ::item.dropdown | orderBy: "::name"', 'ng-href': '{{::item.url}}'}
+        %a.item{'ng-repeat': 'item in ::item.dropdown | filter: "" | orderBy: "::name"', 'ng-href': '{{::item.url}}'}
           {{::item.name}}
   %span.scroll-top-link{'ng-click': 'scrollTop()'}
     %i.fa.fa-arrow-up
