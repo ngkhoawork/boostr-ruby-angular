@@ -27,10 +27,11 @@ app.directive 'activityFeed', [
                 switch $scope.type
                     when 'deal'
                         resource = -> Activity.all(deal_id: $routeParams.id)
-#                   when 'contact'
-#                   when 'account'
+                    when 'account'
+                        resource = -> Activity.getAccountActivity(id: $scope.object.id)
                     when 'publisher'
                         resource = -> Activity.getPublishersActivity(id: $scope.object.id)
+#                   when 'contact'
 
                 formOptions =
                     type: $scope.type

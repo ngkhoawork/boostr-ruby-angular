@@ -13,4 +13,4 @@
 			%div{'ng-include': '"partials/account/ssp_mapping.html"'}
 		.col-xs-3
 			%div{'ng-include': '"partials/account/account_details.html"'}
-			%div{'ng-include': '"partials/dashboard/activity.html"'}
+			%activity-feed{object: 'currentClient', type: 'account'}

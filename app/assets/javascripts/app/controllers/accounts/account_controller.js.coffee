@@ -1,6 +1,6 @@
 @app.controller 'AccountController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes', 'CurrentUser'
-($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes, CurrentUser) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes', 'CurrentUser'
+($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes, CurrentUser) ->
 
   $scope.showMeridian = true
   $scope.activitiesOrder = '-happened_at'
@@ -27,8 +27,6 @@
       $scope.allow_edit = true
 
   $scope.init = ->
-    ActivityType.all().then (activityTypes) ->
-      $scope.types = activityTypes
     $scope.getClient($routeParams.id)
     $scope.showContactList = false
     getAccountCfNames()
@@ -78,7 +76,6 @@
 
   $scope.setClient = (client) ->
     $scope.currentClient = client
-    $scope.activities = client.activities.concat(client.agency_activities)
     $scope.getDeals($scope.currentClient)
     $scope.getClientConnections()
     $scope.initReminder()
@@ -178,18 +175,6 @@
         return ""
     else
       return ""
-
-  $scope.getActivitiesCount = (client) ->
-    if client
-      activities = client.activities
-      if $scope.getClientType(client) == 'Agency'
-        activities = client.agency_activities
-      if activities.length > 0
-        return activities.length
-      else
-        return 0
-    else
-      return 0
 
   $scope.getClientType = (client) ->
     clientType = Field.field(client, 'Client Type')
@@ -292,49 +277,6 @@
         client: ->
           angular.copy(client)
 
-  $scope.showNewActivityModal = ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_new_form.html'
-      size: 'md'
-      controller: 'ActivityNewController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        activity: ->
-          null
-        options: ->
-          type: 'account'
-          data: $scope.currentClient
-          isAdvertiser: $scope.currentClient.client_type_id == $scope.Advertiser
-
-  $scope.showActivityEditModal = (activity) ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_new_form.html'
-      size: 'md'
-      controller: 'ActivityNewController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        activity: ->
-          activity
-        options: ->
-          type: 'account'
-          data: $scope.currentClient
-          isAdvertiser: $scope.currentClient.client_type_id == $scope.Advertiser
-
-  $scope.showEmailsModal = (activity) ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_emails.html'
-      size: 'email'
-      controller: 'ActivityEmailsController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        activity: ->
-          activity
-
-  $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
-
   $scope.searchContact = (searchText) ->
     if ($scope.contactSearchText != searchText)
       $scope.contactSearchText = searchText
@@ -345,6 +287,7 @@
         Contact.all1(per: 10, page: 1).then (contacts) ->
           $scope.contacts = contacts
     return searchText
+
   $scope.showNewPersonModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
@@ -523,11 +466,6 @@
         else
           $location.path('/accounts')
 
-  $scope.deleteActivity = (activity) ->
-    if confirm('Are you sure you want to delete the activity?')
-      Activity.delete activity, ->
-        $scope.$emit('updated_activities')
-
   $scope.deleteAccountConnection = (clientConnection) ->
     if confirm('Are you sure you want to delete the account connection?')
       ClientConnection.delete clientConnection
@@ -548,19 +486,12 @@
         $scope.currentClient.client_region = Field.getOption($scope.currentClient, 'Region', $scope.currentClient.client_region_id)
         $scope.currentClient.client_segment = Field.getOption($scope.currentClient, 'Segment', $scope.currentClient.client_segment_id)
 
-
-  $scope.$on 'openContactModal', ->
-    $scope.createNewContactModal()
-
   $scope.$on 'updated_clients', ->
     $scope.init()
 
   $scope.$on 'updated_contacts', ->
 #    $scope.getContacts()
     $scope.$broadcast('pagination:reload');
-
-  $scope.$on 'updated_activities', ->
-    $scope.init()
 
   $scope.$on 'updated_client_connections', ->
     $scope.getClientConnections()
@@ -629,95 +560,11 @@
 
   $scope.init()
 
-  $scope.activityReminderInit = ->
-    $scope.activityReminder = {
-      name: '',
-      comment: '',
-      completed: false,
-      remind_on: '',
-      remindable_id: 0,
-      remindable_type: 'Activity' # "Activity", "Client", "Contact", "Deal"
-      _date: new Date(),
-      _time: new Date()
-    }
-
-    $scope.activityReminderOptions = {
-      errors: {},
-      showMeridian: true
-    }
-
-
-  $scope.initActivity = () ->
-    $scope.activity = new Activity.$resource
-    $scope.activity.date = new Date
-    $scope.activity.contacts = []
-    $scope.activity.activity_type_id = $scope.types[0].id
-    $scope.activity.activity_type_name = $scope.types[0].name
-    $scope.currentClient.showExtendedActivityForm = false
-    $scope.populateContact = false
-    $scope.activityReminderInit()
-
   $scope.setActiveTab = (client, tab) ->
     client.activeTab = tab
 
   $scope.setActiveType = (client, type) ->
     client.activeType = type
-
-  $scope.submitForm = () ->
-    $scope.errors = {}
-    $scope.buttonDisabled = true
-
-    if !$scope.activity.comment
-      $scope.buttonDisabled = false
-      $scope.errors['Comment'] = ["can't be blank."]
-    if !($scope.activity && $scope.activity.activity_type_id)
-      $scope.buttonDisabled = false
-      $scope.errors['Activity Type'] = ["can't be blank."]
-    if $scope.activity.contacts.length == 0
-      $scope.buttonDisabled = false
-      $scope.errors['Contacts'] = ["can't be blank."]
-    if $scope.actRemColl
-      if !($scope.activityReminder && $scope.activityReminder.name)
-        $scope.buttonDisabled = false
-        $scope.errors['Activity Reminder Name'] = ["can't be blank."]
-      if !($scope.activityReminder && $scope.activityReminder._date)
-        $scope.buttonDisabled = false
-        $scope.errors['Activity Reminder Date'] = ["can't be blank."]
-      if !($scope.activityReminder && $scope.activityReminder._time)
-        $scope.buttonDisabled = false
-        $scope.errors['Activity Reminder Time'] = ["can't be blank."]
-    if !$scope.buttonDisabled
-      return
-
-    if $scope.currentClient.client_type_id == $scope.Advertiser
-      $scope.activity.client_id = $scope.currentClient.id
-      $scope.activity.agency_id = null
-    else
-      $scope.activity.client_id = null
-      $scope.activity.agency_id = $scope.currentClient.id
-
-    contactDate = new Date($scope.activity.date)
-    if $scope.activity.time != undefined
-      contactTime = new Date($scope.activity.time)
-      contactDate.setHours(contactTime.getHours(), contactTime.getMinutes(), 0, 0)
-      $scope.activity.timed = true
-    $scope.activity.happened_at = contactDate
-    Activity.create({ activity: $scope.activity, contacts: $scope.activity.contacts }, (response) ->
-      $scope.buttonDisabled = false
-    ).then (activity) ->
-      if (activity && activity.id && $scope.actRemColl)
-        reminder_date = new Date($scope.activityReminder._date)
-        $scope.activityReminder.remindable_id = activity.id
-        if $scope.activityReminder._time != undefined
-          reminder_time = new Date($scope.activityReminder._time)
-          reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
-        $scope.activityReminder.remind_on = reminder_date
-        Reminder.create(reminder: $scope.activityReminder)
-#        .then (reminder) ->
-#        , (err) ->
-
-      $scope.buttonDisabled = false
-      $scope.init()
 
   $scope.createNewContactModal = ->
     $scope.populateContact = true
@@ -750,9 +597,6 @@
           contact.client_id = client_contact.client_id
           contact.primary_client_json = contact.primary_client_contact.client
           contact
-
-  $scope.cancelActivity = () ->
-    $scope.initActivity()
 
   $scope.$on 'newContact', (event, contact) ->
     $scope.$broadcast('pagination:reload');
