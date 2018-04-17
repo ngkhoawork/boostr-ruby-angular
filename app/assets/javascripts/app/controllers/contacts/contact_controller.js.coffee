@@ -1,19 +1,12 @@
 @app.controller 'ContactController',
-    ['$scope', '$modal', '$location', '$routeParams', '$http', '$sce', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'ContactCfName', 'ClientContact'
-    ( $scope,   $modal,   $location,   $routeParams,   $http,   $sce,   Contact,   Activity,   ActivityType,   Reminder,   ContactCfName,   ClientContact ) ->
+    ['$scope', '$modal', '$location', '$routeParams', '$http', '$sce', 'Contact', 'Reminder', 'ContactCfName', 'ClientContact'
+    ( $scope,   $modal,   $location,   $routeParams,   $http,   $sce,   Contact,   Reminder,   ContactCfName,   ClientContact ) ->
 
         $scope.currentContact = null
-        $scope.activities = []
         $scope.types = []
         $scope.contactCfNames = []
         $scope.relatedAccounts = []
         $scope.activitiesOrder = '-happened_at'
-
-        (loadActivities = ->
-            Activity.all(contact_id: $routeParams.id).then (activities) ->
-                $scope.currentActivities = activities
-                $scope.activities = activities
-        )()
 
         (getContact = ->
             Contact.getContact($routeParams.id).then (contact) ->
@@ -27,13 +20,6 @@
 
         ContactCfName.all().then (contactCfNames) ->
             $scope.contactCfNames = contactCfNames
-
-        ActivityType.all().then (activityTypes) ->
-            $scope.types = activityTypes
-
-        # Activity comment
-        $scope.getHtml = (html) ->
-            $sce.trustAsHtml(html)
 
         $scope.concatAddress = (address) ->
             row = []
@@ -89,51 +75,6 @@
                     contact: ->
                         angular.copy contact
 
-        $scope.showNewActivityModal = ->
-            $scope.modalInstance = $modal.open
-                templateUrl: 'modals/activity_new_form.html'
-                size: 'md'
-                controller: 'ActivityNewController'
-                backdrop: 'static'
-                keyboard: false
-                resolve:
-                    activity: ->
-                        null
-                    options: ->
-                        type: 'contact'
-                        data: $scope.currentContact
-                        isAdvertiser: $scope.currentContact.primary_client_json &&
-                            $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
-
-        $scope.showActivityEditModal = (activity) ->
-            $scope.modalInstance = $modal.open
-                templateUrl: 'modals/activity_new_form.html'
-                size: 'md'
-                controller: 'ActivityNewController'
-                backdrop: 'static'
-                keyboard: false
-                resolve:
-                    activity: ->
-                        activity
-                    options: ->
-                        type: 'contact'
-                        data: $scope.currentContact
-                        isAdvertiser: $scope.currentContact.primary_client_json &&
-                            $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
-
-        $scope.showEmailsModal = (activity) ->
-            $scope.modalInstance = $modal.open
-                templateUrl: 'modals/activity_emails.html'
-                size: 'email'
-                controller: 'ActivityEmailsController'
-                backdrop: 'static'
-                keyboard: false
-                resolve:
-                    activity: ->
-                        activity
-
-        $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
-
         $scope.showAssignModal = (contact) ->
             $scope.modalInstance = $modal.open
                 templateUrl: 'modals/contact_assign_form.html'
@@ -152,11 +93,6 @@
                     console.log (err)
                 )
 
-        $scope.deleteActivity = (activity) ->
-            if confirm('Are you sure you want to delete the activity?')
-                Activity.delete activity, ->
-                    $scope.$emit('updated_current_contact')
-
         $scope.updateClientContactStatus = (clientContact, bool) ->
             ClientContact.update_status(
                 id: clientContact.id
@@ -167,7 +103,6 @@
 
 
         (initReminder = ->
-
             $scope.reminder = {
                 name: '',
                 comment: '',
@@ -245,7 +180,6 @@
                 , (err) ->
                     $scope.reminderOptions.buttonDisabled = false
 
-        $scope.$on 'updated_activities', loadActivities
         $scope.$on 'updated_contacts', getContact
         $scope.$on 'contact_client_assigned', getRelated
         $scope.$on 'updated_reminders', initReminder
