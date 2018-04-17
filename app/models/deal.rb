@@ -1637,11 +1637,7 @@ class Deal < ActiveRecord::Base
   private
 
   def generate_io_or_pmp
-    if include_pmp_product?
-      generate_pmp
-    else
-      generate_io
-    end
+    include_pmp_product? ? generate_pmp : generate_io
   end
 
   def self.import_deal_custom_field(deal, row)
