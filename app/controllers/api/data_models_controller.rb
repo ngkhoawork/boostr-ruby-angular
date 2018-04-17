@@ -2,8 +2,16 @@ class Api::DataModelsController < ApplicationController
   def index
     render json: {
         base_model: BaseModelDataMappingSerializer.new(data_model_service.base_klass_const,{current_user: current_user}),
-        data_model: ActiveModel::ArraySerializer.new(data_model_service.allowed_reflections, each_serializer: ModelDataMappingsSerializer,current_user: current_user)
+        data_model: ActiveModel::ArraySerializer.new(data_model + custom_model, each_serializer: ModelDataMappingsSerializer,current_user: current_user)
     }
+  end
+
+  def data_model
+    data_model_service.allowed_reflections
+  end
+
+  def custom_model
+    WorkflowDataMapping.new("Client").allowed_reflections
   end
 
   def data_mappings
@@ -35,7 +43,11 @@ class Api::DataModelsController < ApplicationController
   end
 
   def data_model_service
-    @_service ||= WorkflowDataMapping.new(object_name)
+    WorkflowDataMapping.new(object_name)
+  end
+
+  def client_model_service
+    WorkflowDataMapping.new("Client")
   end
 
   def object_name

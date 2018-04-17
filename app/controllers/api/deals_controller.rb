@@ -274,12 +274,7 @@ class Api::DealsController < ApplicationController
         message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
       }, status: :ok
     else
-      @deal = company.deals.new(
-        deal_params.merge(
-          deal_custom_field: DealCustomField.new(deal_cf_params),
-          manual_update: true
-        )
-      )
+      @deal = company.deals.new(deal_params.merge(deal_custom_field: DealCustomField.new, manual_update: true, custom_trigger: true))
 
       deal.created_by = current_user.id
       deal.updated_by = current_user.id

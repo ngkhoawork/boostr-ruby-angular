@@ -52,6 +52,7 @@ class Workflow::AttachmentHashBuilder
   end
 
   def format_number(data)
+    return data.to_i if options[:attachment_mappings][0]["name"].eql?('deal.stage_probability')
     '%.2f' % data
   end
 
@@ -62,6 +63,7 @@ class Workflow::AttachmentHashBuilder
 
   def detect_format(val)
     return (val.to_f) if val.is_a?(BigDecimal)
+    return (val.map{|c|number_with_delimiter(c.to_f)}) if val.is_a?(Array)
     val
   end
 

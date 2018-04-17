@@ -56,12 +56,12 @@
             criterion.data_model.model_attributes.push({field_name: "teams", field_label: "Creator Team", data_type: "relation", sql_type: "custom"})
             criterion.data_model.model_attributes.push({field_name: "deal_type", field_label: "Type", data_type: "relation", sql_type: "custom"})
             criterion.data_model.model_attributes.push({field_name: "deal_initiative", field_label: "Initiative", data_type: "relation", sql_type: "custom"})
-          if criterion.base_object == 'advertiser'
+          if criterion.base_object == 'Advertiser'
             criterion.data_model.model_attributes.push({field_name: "client_segments", field_label: "Segment", data_type: "relation", sql_type: "custom"})
             criterion.data_model.model_attributes.push({field_name: "client_regions", field_label: "Region", data_type: "relation", sql_type: "custom"})
             criterion.data_model.model_attributes.push({field_name: "client_categories", field_label: "Category", data_type: "relation", sql_type: "custom"})
             criterion.data_model.model_attributes.push({field_name: "client_subcategories", field_label: "Sub Category", data_type: "relation", sql_type: "custom"})
-          if criterion.base_object == 'products'
+          if criterion.base_object == 'Products'
             arr = [];
             if $scope.currentUser.product_options_enabled
               name = 'name'
@@ -85,12 +85,12 @@
               criterion.data_model.model_attributes.push({field_name: "teams", field_label: "Creator Team", data_type: "relation", sql_type: "custom"})
               criterion.data_model.model_attributes.push({field_name: "deal_type", field_label: "Type", data_type: "relation", sql_type: "custom"})
               criterion.data_model.model_attributes.push({field_name: "deal_initiative", field_label: "Initiative", data_type: "relation", sql_type: "custom"})
-            if criterion.base_object == 'advertiser'
+            if criterion.base_object == 'Advertiser'
               criterion.data_model.model_attributes.push({field_name: "client_segments", field_label: "Segment", data_type: "relation", sql_type: "custom"})
               criterion.data_model.model_attributes.push({field_name: "client_regions", field_label: "Region", data_type: "relation", sql_type: "custom"})
               criterion.data_model.model_attributes.push({field_name: "client_categories", field_label: "Category", data_type: "relation", sql_type: "custom"})
               criterion.data_model.model_attributes.push({field_name: "client_subcategories", field_label: "Sub Category", data_type: "relation", sql_type: "custom"})
-            if criterion.base_object == 'products'
+            if criterion.base_object == 'Products'
               arr = [];
               if $scope.currentUser.product_options_enabled
                 name = 'name'
