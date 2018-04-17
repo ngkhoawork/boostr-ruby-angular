@@ -1,6 +1,6 @@
 class Egnyte::Actions::CreateFolderTree::Base < Egnyte::Actions::Base
   def perform
-    return false unless enabled_and_connected?
+    return false unless enabled?
 
     traverse_folder_tree(root_folder) do |node|
       node[:path] = create_uniq_folder(node[:path])
@@ -37,14 +37,14 @@ class Egnyte::Actions::CreateFolderTree::Base < Egnyte::Actions::Base
   def save_root_folder
     response = api_caller.get_folder_by_path(folder_path: root_folder[:path], access_token: access_token)
 
-    egnyte_folder.update(uuid: response.body[:folder_id], path: response.body[:path])
+    folder.update(uuid: response.body[:folder_id], path: response.body[:path])
   end
 
   def create_uniq_folder(path)
     Egnyte::PrivateActions::CreateUniqFolder.new(egnyte_integration: egnyte_integration, path: path).perform
   end
 
-  def egnyte_folder
-    @egnyte_folder ||= record.egnyte_folder || record.build_egnyte_folder
+  def folder
+    @folder ||= record.egnyte_folder || record.build_egnyte_folder
   end
 end

@@ -1786,6 +1786,15 @@ ActiveRecord::Schema.define(version: 20180303003530) do
 
   add_index "ealerts", ["company_id"], name: "index_ealerts_on_company_id", using: :btree
 
+  create_table "egnyte_authentications", force: :cascade do |t|
+    t.integer  "user_id"
+    t.string   "state_token"
+    t.string   "access_token"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "egnyte_authentications", ["user_id"], name: "index_egnyte_authentications_on_user_id", using: :btree
 
   create_table "egnyte_folders", force: :cascade do |t|
     t.integer  "subject_id"
@@ -1802,14 +1811,13 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.integer  "company_id"
     t.string   "app_domain"
     t.string   "access_token"
-    t.boolean  "connected",           default: false
     t.boolean  "enabled",             default: false
-
-    t.datetime "created_at",                                                                                                                                                        null: false
-    t.datetime "updated_at",                                                                                                                                                        null: false
-    t.jsonb    "deal_folder_tree",    default: {"nodes"=>[{"nodes"=>[], "title"=>"RFP"}, {"nodes"=>[], "title"=>"Proposal"}, {"nodes"=>[], "title"=>"Creative"}], "title"=>"Deal"}, null: false
-    t.jsonb    "account_folder_tree", default: {"nodes"=>[{"nodes"=>[], "title"=>"Contract"}, {"nodes"=>[], "title"=>"Templates"}], "title"=>"Account"},                            null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.jsonb    "deal_folder_tree"
+    t.jsonb    "account_folder_tree"
     t.string   "deals_folder_name"
+    t.string   "state_token"
   end
 
   add_index "egnyte_integrations", ["company_id"], name: "index_egnyte_integrations_on_company_id", using: :btree

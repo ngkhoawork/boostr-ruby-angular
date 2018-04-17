@@ -577,7 +577,8 @@ Rails.application.routes.draw do
     resource :egnyte_integration, only: [:show, :create, :update] do
       collection do
         get :oauth_settings
-        get :oauth_callback
+        get :company_oauth_callback
+        get :user_oauth_callback
         get :navigate_to_deal
         get :navigate_to_account_deals
         put :disconnect_egnyte

@@ -10,7 +10,7 @@ class Egnyte::Actions::UpdateFolder::Account < Egnyte::Actions::UpdateFolder::Ba
   end
 
   def parent_folder_path
-    ensure_folders = @options[:parent_changed] || egnyte_folder&.path.nil?
+    ensure_folders = @options[:parent_changed] || folder&.path.nil?
 
     build_parent_folder_path(ensure_folders)
   end

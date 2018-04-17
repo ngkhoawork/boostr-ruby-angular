@@ -1,15 +1,7 @@
 class Egnyte::Actions::BuildAuthorizationUri < Egnyte::Actions::Base
-  REQUESTED_ACCESS_TOKEN_MARKER = 'SHOULD_BE_REPLACED_WITH_ACCESS_TOKEN'.freeze
-
   class << self
-    def generate_state_token(salt)
-      random_hash = Digest::MD5.hexdigest("#{DateTime.current}-#{salt}")
-
-      "#{REQUESTED_ACCESS_TOKEN_MARKER}_#{random_hash}"
-    end
-
     def required_option_keys
-      @required_option_keys ||= %i(domain redirect_uri state)
+      @required_option_keys ||= %i(domain redirect_uri auth_record)
     end
 
     def predefined_request_params
@@ -23,6 +15,8 @@ class Egnyte::Actions::BuildAuthorizationUri < Egnyte::Actions::Base
   end
 
   def perform
+    @options[:auth_record].update(access_token: nil, state_token: state_token)
+
     "https://#{@options[:domain]}/puboauth/token?#{url_embedded_request_params}"
   end
 
@@ -36,12 +30,16 @@ class Egnyte::Actions::BuildAuthorizationUri < Egnyte::Actions::Base
 
   def request_params
     {
+      state: state_token,
       redirect_uri: @options[:redirect_uri],
-      state: @options[:state],
-      client_id: api_credentials[:client_id],
-      client_secret: api_credentials[:client_secret],
       scope: predefined_request_params[:scope],
-      response_type: predefined_request_params[:response_code]
+      response_type: predefined_request_params[:response_code],
+      client_id: api_credentials[:client_id],
+      client_secret: api_credentials[:client_secret]
     }
+  end
+
+  def state_token
+    @state_token ||= Digest::MD5.hexdigest("#{DateTime.current}-#{@options[:domain]}")
   end
 end
