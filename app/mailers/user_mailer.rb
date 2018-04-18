@@ -58,7 +58,7 @@ class UserMailer < ApplicationMailer
         },
         deal_product_cf: {},
         product: {
-          only: [:id, :name]
+          only: [:id, :name, :full_name]
         }
       }
     }).map do |deal_product|
