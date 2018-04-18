@@ -20,7 +20,6 @@
       $scope.stages = data.stages
       $scope.ealert = data.ealert
       transformEalert()
-      console.log($scope.availableFields)
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
