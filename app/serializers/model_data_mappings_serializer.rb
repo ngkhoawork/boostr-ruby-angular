@@ -42,11 +42,11 @@ class ModelDataMappingsSerializer < ActiveModel::Serializer
 
   def model_attributes
     hash = {}
-    case object.klass
-      when DealCustomField
+    case object.klass.name
+      when "DealCustomField"
         current_company.deal_custom_field_names.map{|c| hash.merge!(c.field_name=> c.field_label)}
         ActiveModel::ArraySerializer.new(custom_model_attributes, each_serializer: FieldDataTypesSerializer, obj_name: object.name, fields: hash).as_json
-      when AccountCf
+      when "AccountCf"
         current_company.account_cf_names.map{|c| hash.merge!(c.field_name=> c.field_label)}
         ActiveModel::ArraySerializer.new(custom_account_cf_attributes, each_serializer: FieldDataTypesSerializer, obj_name: object.name, fields: hash).as_json
       else
