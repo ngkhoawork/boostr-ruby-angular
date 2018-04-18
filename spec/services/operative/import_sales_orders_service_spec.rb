@@ -34,7 +34,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       io_curr_cd: 'USD',
       company_id: company.id,
       auto_close_deals: true,
-      exchange_rate: "1.55"
+      exchange_rate_at_close: "1.55"
     }).and_return(io_csv)
     expect(io_csv).to receive(:valid?).and_return(:true)
     expect(io_csv).to receive(:perform)
@@ -103,7 +103,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       io_curr_cd: 'USD',
       company_id: company.id,
       auto_close_deals: true,
-      exchange_rate: nil
+      exchange_rate_at_close: nil
     }).and_return(io_csv)
     expect(io_csv).to receive(:valid?).and_return(:true)
     expect(io_csv).to receive(:perform)
