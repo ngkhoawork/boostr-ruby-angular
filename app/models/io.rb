@@ -31,6 +31,7 @@ class Io < ActiveRecord::Base
   has_many :content_fee_products, dependent: :destroy, through: :content_fees, source: :product
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
+  validates :deal_id, uniqueness: true, allow_nil: true
 
   scope :for_company, -> (company_id) { where(company_id: company_id) }
   scope :for_io_members, -> (user_ids) { joins(:io_members).where('io_members.user_id in (?)', user_ids) }
@@ -228,7 +229,7 @@ class Io < ActiveRecord::Base
       in_budget_days = 0
       in_budget_total = 0
       display_line_item.display_line_item_budgets.each do |display_line_item_budget|
-        
+
         in_days = effective_days(start_date, end_date, io_member, [display_line_item, display_line_item_budget])
         in_budget_days += in_days
         in_budget_total += display_line_item_budget.daily_budget * in_days * (share/100.0)
