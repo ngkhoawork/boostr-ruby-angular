@@ -96,9 +96,9 @@ RSpec.describe IoCsv, type: :model do
 
     it 'sets exchange rate' do
       io(start_date: '2017-02-01', end_date: '2017-03-01')
-      io_csv(io_external_number: io.external_io_number, io_start_date: '2017-01-26', exchange_rate: '1.55').perform
+      io_csv(io_external_number: io.external_io_number, io_start_date: '2017-01-26', exchange_rate_at_close: '1.55').perform
 
-      expect(io.reload.exchange_rate).to eql 1.55
+      expect(io.reload.exchange_rate_at_close).to eql 1.55
     end
   end
 
@@ -116,9 +116,9 @@ RSpec.describe IoCsv, type: :model do
       end
 
       it 'sets exchange rate' do
-        io_csv(io_external_number: 123, exchange_rate: '1.55').perform
+        io_csv(io_external_number: 123, exchange_rate_at_close: '1.55').perform
 
-        expect(TempIo.last.exchange_rate).to eql 1.55
+        expect(TempIo.last.exchange_rate_at_close).to eql 1.55
       end
     end
 
@@ -194,9 +194,20 @@ RSpec.describe IoCsv, type: :model do
     end
 
     it 'sets exchange rate' do
-      io_csv(io_external_number: temp_io.external_io_number, exchange_rate: '1.55').perform
+      io_csv(io_external_number: temp_io.external_io_number, exchange_rate_at_close: '1.55').perform
 
-      expect(TempIo.last.exchange_rate).to eql 1.55
+      expect(TempIo.last.exchange_rate_at_close).to eql 1.55
+    end
+
+    it 'exchanges budget using exchange_rate_at_close' do
+      io_csv(
+        io_external_number: temp_io.external_io_number,
+        io_curr_cd: 'GBP',
+        io_budget: 40_000_000,
+        exchange_rate_at_close: 1.163
+      ).perform
+
+      expect(TempIo.last.budget).to eql 46520000
     end
   end
 

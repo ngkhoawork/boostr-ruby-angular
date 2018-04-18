@@ -46,6 +46,12 @@ describe DisplayLineItemCsv do
         expect(line_item_csv).to be_valid
       end
 
+      it 'is valid if io has exchange_rate_at_close' do
+        io(curr_cd: 'BRL', exchange_rate_at_close: 0.888)
+        line_item_csv(external_io_number: io.external_io_number)
+        expect(line_item_csv).to be_valid
+      end
+
       it 'fails if io has no exchange rate' do
         exchange_rate(currency: currency(curr_cd: 'BRL'), rate: 1.5)
         io(curr_cd: 'BRL')
@@ -283,6 +289,23 @@ describe DisplayLineItemCsv do
       expect(dli.budget_delivered).to eql 6000
       expect(dli.budget_delivered_loc).to eql 9000
       expect(dli.budget_remaining).to eql 666.67
+      expect(dli.budget_remaining_loc).to eql 1000
+    end
+
+    it 'uses exchange_rate_at_close when available' do
+      exchange_rate(currency: currency(curr_cd: 'BRL'), rate: 1.5)
+      io(curr_cd: 'BRL', exchange_rate_at_close: 0.8)
+      line_item_csv(
+        external_io_number: io.external_io_number,
+        budget: '10000',
+        budget_delivered: '9000'
+      ).perform
+      dli = DisplayLineItem.last
+      expect(dli.budget).to eql 8000
+      expect(dli.budget_loc).to eql 10000
+      expect(dli.budget_delivered).to eql 7200
+      expect(dli.budget_delivered_loc).to eql 9000
+      expect(dli.budget_remaining).to eql 800
       expect(dli.budget_remaining_loc).to eql 1000
     end
   end

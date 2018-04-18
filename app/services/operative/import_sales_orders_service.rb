@@ -138,7 +138,7 @@ class Operative::ImportSalesOrdersService
       io_curr_cd: get_curr_cd(row[:order_currency_id]),
       company_id: company_id,
       auto_close_deals: auto_close_deals,
-      exchange_rate: row[:exchange_rate_at_close]
+      exchange_rate_at_close: row[:exchange_rate_at_close]
     )
   end
 
