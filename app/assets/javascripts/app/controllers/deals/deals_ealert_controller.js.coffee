@@ -115,6 +115,11 @@
       {
         name: 'closed_reason',
         label: 'Closed Reason',
+        value: (if deal.close_reason && deal.close_reason.option then deal.close_reason.option.name else '')
+      },
+      {
+        name: 'closed_reason_text',
+        label: 'Closed Comments',
         value: deal.closed_reason_text
       },
       {
