@@ -105,6 +105,11 @@ class UserMailer < ApplicationMailer
         'value' => @deal.get_option_value_from_raw_fields(deal_settings_fields, 'Close Reason')
       },
       {
+        'name' => 'closed_reason_text',
+        'label' => 'Closed Comments',
+        'value' => @deal.closed_reason_text
+      },
+      {
         'name' => 'intiative',
         'label' => 'Initiative',
         'value' => (@deal.initiative ? @deal.initiative.name : '')
