@@ -259,7 +259,7 @@ class Api::BillingSummaryController < ApplicationController
     display_line_item_budget.update(
       {
         budget_loc: calculate_budget,
-        budget: (display_line_item.io.convert_to_usd(calculate_budget)),
+        budget: (calculate_budget / display_line_item.io.exchange_rate),
         manual_override: true
       }
     )
@@ -267,7 +267,7 @@ class Api::BillingSummaryController < ApplicationController
 
   def update_io_budget
     content_fee_product_budget.update(
-      { budget: (content_fee.io.convert_to_usd(content_fee_product_budget.budget_loc)).to_i }
+      { budget: (content_fee_product_budget.budget_loc / content_fee.io.exchange_rate).to_i }
     )
 
     content_fee.update(
@@ -336,6 +336,6 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def converted_cost_budget_params
-    ConvertCurrency.call(cost_budget.cost.io.exchange_rate, cost_budget_params, cost_budget.cost.io.exchange_rate_at_close)
+    ConvertCurrency.call(cost_budget.cost.io.exchange_rate, cost_budget_params)
   end
 end

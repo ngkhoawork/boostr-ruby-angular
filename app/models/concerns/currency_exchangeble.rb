@@ -18,16 +18,6 @@ module CurrencyExchangeble
     end
   end
 
-  def convert_to_local_currency(value)
-    if exchange_rate_at_close
-      value.to_f / exchange_rate_at_close
-    elsif exchange_rate
-      value.to_f * exchange_rate
-    else
-      value
-    end
-  end
-
   def active_exchange_rate
     if curr_cd != 'USD'
       unless exchange_rate_at_close || exchange_rate

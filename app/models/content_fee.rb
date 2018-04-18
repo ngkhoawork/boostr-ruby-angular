@@ -79,7 +79,7 @@ class ContentFee < ActiveRecord::Base
 
   def active_exchange_rate
     if io.curr_cd != 'USD'
-      unless io.exchange_rate_at_close || io.exchange_rate
+      unless io.exchange_rate
         errors.add(:curr_cd, "does not have an exchange rate for #{io.curr_cd} at #{io.created_at.strftime("%m/%d/%Y")}")
       end
     end

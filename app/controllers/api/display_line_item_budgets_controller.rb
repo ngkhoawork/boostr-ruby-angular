@@ -61,7 +61,7 @@ class Api::DisplayLineItemBudgetsController < ApplicationController
     return unless display_line_item_budget.budget_loc.present?
 
     display_line_item_budget.update(
-      budget: display_line_item_budget.display_line_item.io.convert_to_usd(display_line_item_budget.budget_loc),
+      budget: (display_line_item_budget.budget_loc / display_line_item_budget.display_line_item.io.exchange_rate),
       manual_override: true
     )
   end

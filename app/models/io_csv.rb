@@ -113,7 +113,7 @@ class IoCsv
   end
 
   def record_has_exchange_rate
-    if (io || temp_io).present? && (io || temp_io).company.present? && !item_exchange_rate.present?
+    if (io || temp_io).present? && (io || temp_io).company.present? && !(exchange_rate_at_close || item_exchange_rate).present?
       errors.add(:io_curr_cd, "#{io_curr_cd} does not have an exchange rate available at the moment")
     end
   end
@@ -139,6 +139,6 @@ class IoCsv
   end
 
   def item_exchange_rate
-    @_exchange_rate ||= (exchange_rate_at_close || (io || temp_io).exchange_rate)
+    @_exchange_rate ||= (io || temp_io).exchange_rate
   end
 end

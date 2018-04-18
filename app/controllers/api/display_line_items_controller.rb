@@ -80,7 +80,7 @@ class Api::DisplayLineItemsController < ApplicationController
 
   def budget_attributes
     {
-      budget: display_line_item.io.convert_to_usd(display_line_item_budget_params['budget_loc']),
+      budget: (display_line_item_budget_params['budget_loc'] / display_line_item.io.exchange_rate),
       budget_loc: display_line_item_budget_params['budget_loc'],
       start_date: display_line_item_budget_params['month'].to_date.beginning_of_month,
       end_date: display_line_item_budget_params['month'].to_date.end_of_month,
