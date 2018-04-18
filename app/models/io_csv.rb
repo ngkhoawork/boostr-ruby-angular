@@ -65,9 +65,12 @@ class IoCsv
       io.end_date = end_date
     end
 
-    io.external_io_number = io_external_number
-    io.exchange_rate_at_close = exchange_rate_at_close
-    io.save
+    io.update(
+      external_io_number: io_external_number,
+      exchange_rate_at_close: exchange_rate_at_close,
+      budget: convert_currency(io_budget),
+      budget_loc: io_budget_loc
+    )
   end
 
   def upsert_temp_io
