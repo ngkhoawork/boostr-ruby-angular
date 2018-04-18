@@ -6,7 +6,7 @@ class ModelDataMappingsSerializer < ActiveModel::Serializer
              :model_attributes
 
   def name
-    object.name
+    DataModels::BaseLabels.parsed_json[object.name.to_sym]
   end
 
   def class_name
@@ -42,11 +42,15 @@ class ModelDataMappingsSerializer < ActiveModel::Serializer
 
   def model_attributes
     hash = {}
-    current_company.deal_custom_field_names.map{|c| hash.merge!(c.field_name=> c.field_label)}
-    if object.klass.name.eql?("DealCustomField")
-      ActiveModel::ArraySerializer.new(custom_model_attributes, each_serializer: FieldDataTypesSerializer, obj_name: object.name, fields: hash).as_json
-    else
-      ActiveModel::ArraySerializer.new(allowed_columns, each_serializer: FieldDataTypesSerializer, obj_name: object.name, fields: hash).as_json
+    case object.klass
+      when DealCustomField
+        current_company.deal_custom_field_names.map{|c| hash.merge!(c.field_name=> c.field_label)}
+        ActiveModel::ArraySerializer.new(custom_model_attributes, each_serializer: FieldDataTypesSerializer, obj_name: object.name, fields: hash).as_json
+      when AccountCf
+        current_company.account_cf_names.map{|c| hash.merge!(c.field_name=> c.field_label)}
+        ActiveModel::ArraySerializer.new(custom_account_cf_attributes, each_serializer: FieldDataTypesSerializer, obj_name: object.name, fields: hash).as_json
+      else
+        ActiveModel::ArraySerializer.new(allowed_columns, each_serializer: FieldDataTypesSerializer, obj_name: object.name, fields: hash).as_json
     end
   end
 
@@ -62,6 +66,12 @@ class ModelDataMappingsSerializer < ActiveModel::Serializer
     return [] unless defined? object.klass::SAFE_COLUMNS
     object.klass.columns.select do |column|
       current_company.deal_custom_field_names.map{|c|c.field_name}.include? column.name
+    end
+  end
+
+  def custom_account_cf_attributes
+    object.klass.columns.select do |column|
+      current_company.account_cf_names.map{|c|c.field_name}.include? column.name
     end
   end
 

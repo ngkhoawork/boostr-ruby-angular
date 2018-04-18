@@ -15,7 +15,7 @@ class Pmp < ActiveRecord::Base
   has_many :pmp_item_daily_actuals, through: :pmp_items, dependent: :destroy
   has_many :products, through: :pmp_items
 
-  validates :name, presence: true, uniqueness: true
+  validates :name, presence: true, uniqueness: { scope: [:company_id], message: 'should be unique in scope of company.' }
   validates :start_date, :end_date, :curr_cd, presence: true
 
   scope :for_pmp_members, -> (user_ids) { joins(:pmp_members).where('pmp_members.user_id in (?)', user_ids) if user_ids}

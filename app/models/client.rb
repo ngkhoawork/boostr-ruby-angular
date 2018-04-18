@@ -382,6 +382,10 @@ class Client < ActiveRecord::Base
       &.to_i
   end
 
+  def self.workflowable_reflections
+    %i{ account_cf }
+  end
+
   private
 
   def self.import_custom_field(obj, row)
