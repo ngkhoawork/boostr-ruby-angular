@@ -118,8 +118,8 @@ class Csv::InfluencerContentFee
     if influencer.agreement.present? && fee_amount.blank?
       self.fee_amount = influencer.agreement.amount
     end
-    if fee_type == 'flat' && io.exchange_rate.present?
-      self.fee_amount = (fee_amount.to_f * io.exchange_rate).round(2)
+    if fee_type == 'flat' && (io.exchange_rate_at_close || io.exchange_rate).present?
+      self.fee_amount = io.convert_to_local_currency(fee_amount.to_f).round(2)
     end
     self.fee_amount
   end

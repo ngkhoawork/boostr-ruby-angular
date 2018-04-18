@@ -65,6 +65,6 @@ class Api::CostsController < ApplicationController
   end
 
   def converted_params
-    ConvertCurrency.call(io.exchange_rate, cost_params)
+    ConvertCurrency.call(io.exchange_rate, cost_params, io.exchange_rate_at_close)
   end
 end

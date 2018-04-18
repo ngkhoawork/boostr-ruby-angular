@@ -2,8 +2,7 @@ class Api::ContentFeesController < ApplicationController
   respond_to :json
 
   def create
-    exchange_rate = io.exchange_rate
-    converted_params = ConvertCurrency.call(exchange_rate, content_fee_params)
+    converted_params = ConvertCurrency.call(io.exchange_rate, content_fee_params, io.exchange_rate_at_close)
     content_fee_obj = io.content_fees.new(converted_params)
     content_fee_obj.update_periods if params[:content_fee][:content_fee_product_budgets_attributes]
     if content_fee_obj.save
@@ -14,8 +13,7 @@ class Api::ContentFeesController < ApplicationController
   end
 
   def update
-    exchange_rate = io.exchange_rate
-    converted_params = ConvertCurrency.call(exchange_rate, content_fee_params)
+    converted_params = ConvertCurrency.call(io.exchange_rate, content_fee_params, io.exchange_rate_at_close)
 
     if content_fee.update_attributes(converted_params)
       content_fee.io.update_total_budget

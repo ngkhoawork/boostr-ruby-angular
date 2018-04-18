@@ -32,7 +32,7 @@ class Csv::IoCost
     cost.imported = true
     cost.save!
 
-    cost_monthly_amount.budget = amount / io.exchange_rate
+    cost_monthly_amount.budget = io.convert_to_usd(amount)
     cost_monthly_amount.budget_loc = amount
     cost_monthly_amount.save!
 

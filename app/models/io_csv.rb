@@ -12,7 +12,7 @@ class IoCsv
   attr_accessor(
     :io_external_number, :io_name, :io_start_date, :io_end_date, :io_advertiser,
     :io_agency, :io_budget, :io_budget_loc, :io_curr_cd, :company_id,
-    :auto_close_deals, :exchange_rate
+    :auto_close_deals, :exchange_rate_at_close
   )
 
   def initialize(attributes = {})
@@ -66,7 +66,7 @@ class IoCsv
     end
 
     io.external_io_number = io_external_number
-    io.exchange_rate = exchange_rate
+    io.exchange_rate_at_close = exchange_rate_at_close
     io.save
   end
 
@@ -81,7 +81,7 @@ class IoCsv
       budget: convert_currency(io_budget),
       budget_loc: io_budget_loc,
       curr_cd: io_curr_cd,
-      exchange_rate: exchange_rate
+      exchange_rate_at_close: exchange_rate_at_close
     }
 
     temp_io.update(
@@ -131,10 +131,14 @@ class IoCsv
   end
 
   def convert_currency(value)
-    value.to_f / item_exchange_rate.to_f
+    if exchange_rate_at_close
+      value.to_f * exchange_rate_at_close.to_f
+    else
+      value.to_f / item_exchange_rate.to_f
+    end
   end
 
   def item_exchange_rate
-    @_exchange_rate ||= (exchange_rate || (io || temp_io).exchange_rate)
+    @_exchange_rate ||= (exchange_rate_at_close || (io || temp_io).exchange_rate)
   end
 end

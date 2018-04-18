@@ -280,7 +280,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
         io_change[:product_ids] += io.products.collect{|item| item.id}
       end
 
-      display_line_item_budget_params = self.convert_params_currency(io.exchange_rate, display_line_item_budget_params)
+      display_line_item_budget_params = self.convert_params_currency(io, display_line_item_budget_params)
 
       display_line_item_budgets = display_line_item.display_line_item_budgets.where("date_part('year', start_date) = ? and date_part('month', start_date) = ?", start_date.year, start_date.month)
       if display_line_item_budgets.count > 0
@@ -313,8 +313,8 @@ class DisplayLineItemBudget < ActiveRecord::Base
     @effective_days ||= ([display_line_item.end_date, end_date].min - [display_line_item.start_date, start_date].max + 1).to_i
   end
 
-  def self.convert_params_currency(exchange_rate, params)
-    params[:budget] = params[:budget_loc] / exchange_rate
+  def self.convert_params_currency(io, params)
+    params[:budget] = io.convert_to_usd(params[:budget_loc])
     params
   end
 
