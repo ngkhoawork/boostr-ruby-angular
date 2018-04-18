@@ -8,7 +8,6 @@
     controller: ($scope, $routeParams) ->
       $scope.fileToUpload = null
       $scope.progressBarCur = 0
-      $scope.uploadedFiles = []
       $scope.dealFiles = []
       $scope.uploadError = 'Connection lost'
       $scope.uploadShow = false;
