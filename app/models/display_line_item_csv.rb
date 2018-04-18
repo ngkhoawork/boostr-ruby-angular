@@ -51,7 +51,8 @@ class DisplayLineItemCsv
         quantity_delivered_3p: quantity_delivered_3p,
         ctr: ctr,
         clicks: clicks,
-        ad_unit: ad_unit_name
+        ad_unit: ad_unit_name,
+        dont_update_parent_budget: true
       )
 
       update_io if io_can_be_updated?

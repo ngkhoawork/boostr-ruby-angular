@@ -57,6 +57,8 @@ class DisplayLineItem < ActiveRecord::Base
     joins(io: :advertiser).where('clients.name ilike ?', "%#{name}%") if name.present?
   end
 
+  attr_accessor :dont_update_parent_budget
+
   before_create :set_alert
   before_update :set_alert
 
@@ -137,6 +139,8 @@ class DisplayLineItem < ActiveRecord::Base
   end
   
   def update_io_budget
+    return if dont_update_parent_budget
+
     if io.present?
       io.update_total_budget
       if io.deal.present?
@@ -153,6 +157,8 @@ class DisplayLineItem < ActiveRecord::Base
   end
 
   def update_temp_io_budget
+    return if dont_update_parent_budget
+
     if temp_io
       budget = temp_io.display_line_items.sum(:budget)
       budget_loc = budget / temp_io.exchange_rate
