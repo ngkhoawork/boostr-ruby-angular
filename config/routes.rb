@@ -581,7 +581,7 @@ Rails.application.routes.draw do
         get :user_oauth_callback
         get :navigate_to_deal
         get :navigate_to_account_deals
-        put :disconnect_egnyte
+        put :disconnect_user
       end
     end
 

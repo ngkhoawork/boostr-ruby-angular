@@ -69,8 +69,6 @@
     if url && url.search('//') == -1 then return '//' + url else url
 
   $scope.getCurrentCompany = (deal) ->
-    console.log($scope.currentUser)
-
     if($scope.currentUser.egnyte_authenticated)
       $scope.egnyteConnected = true
 

@@ -29,10 +29,9 @@ class Api::EgnyteIntegrationsController < ApplicationController
     end
   end
 
-  def disconnect_egnyte
+  def disconnect_user
     if egnyte_user_auth.update(access_token: nil)
-      render json: egnyte_user_auth,
-             serializer: Api::EgnyteIntegrations::BaseSerializer
+      render nothing: true
     else
       render json: { errors: egnyte_user_auth.errors.messages },
              status: :unprocessable_entity
