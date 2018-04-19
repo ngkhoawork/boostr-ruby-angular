@@ -13,7 +13,6 @@ class DealsWorkflowQueryBuilder
   end
 
   def build_query
-    # relation = deals.join(currencies).on(deals[:curr_cd].eq(currencies[:curr_cd])).where(deals[:id].eq deal_id)
     relation = joins_on.where(deals[:id].eq deal_id)
                    .where(without_deleted)
                    .distinct
@@ -24,10 +23,10 @@ class DealsWorkflowQueryBuilder
 
     return relation unless workflow_criterions.present?
 
-
     relation = relation.where(
         values_relation
     )
+
   end
 
   def deals
@@ -66,43 +65,91 @@ class DealsWorkflowQueryBuilder
     Arel::Table.new(:values)
   end
 
+  def client_segments
+    options.alias(:client_segments)
+  end
+
+  def client_regions
+    options.alias(:client_regions)
+  end
+
+  def client_categories
+    options.alias(:client_categories)
+  end
+
+  def client_subcategories
+    options.alias(:client_subcategories)
+  end
+
+  def account_cfs
+    Arel::Table.new(:account_cfs)
+  end
+
+  def deal_custom_fields
+    Arel::Table.new(:deal_custom_fields)
+  end
+
   # INFO: Return Join Relations with On Conditions
   def joins_on
     # join(relations).on(conditions)
-    condition = deals
-    workflow_criterions.each do |wc|
-      case wc.field
-        when 'currencies'
-          condition = condition.join(currencies)
-                          .on(deals[:curr_cd].eq(currencies[:curr_cd]))
-        when 'deal_type'
-          condition = condition.join(values).on(deals[:id].eq(values[:subject_id]))
-                          .join(options).on(values[:option_id].eq(options[:id]))
-        when 'deal_initiative'
-          condition = condition.join(initiatives).on(deals[:initiative_id].eq(initiatives[:id]))
-        when 'teams'
-          condition = condition
-                          .join(deal_members).on(deals[:id].eq(deal_members[:deal_id]))
-                          .join(users).on(users[:id].eq(deal_members[:user_id]))
-                          .join(teams).on(users[:team_id].eq(teams[:id]))
-        when 'client_segments'
-          condition = condition
-                          .join(clients).on(deals[:advertiser_id].eq(clients[:id]))
-                          .join(options).on(clients[:client_segment_id].eq(options[:id]))
-        when 'client_regions'
-          condition = condition
-                          .join(clients).on(deals[:advertiser_id].eq(clients[:id]))
-                          .join(options).on(clients[:client_region_id].eq(options[:id]))
-        when 'client_categories'
-          condition = condition
-                          .join(clients).on(deals[:advertiser_id].eq(clients[:id]))
-                          .join(options).on(clients[:client_category_id].eq(options[:id]))
-        when 'client_subcategories'
-          condition = condition
-                          .join(clients).on(deals[:advertiser_id].eq(clients[:id]))
-                          .join(options).on(clients[:client_subcategory_id].eq(options[:id]))
+    condition = deals.join(clients)
+                    .on(deals[:advertiser_id].eq(clients[:id]))
+      workflow_criterions.each do |wc|
+        case wc.field
+          when 'currencies'
+            condition = condition
+                            .join(currencies)
+                            .on(deals[:curr_cd].eq(currencies[:curr_cd]))
+          when 'deal_type'
+            condition = condition
+                            .join(values)
+                            .on(deals[:id].eq(values[:subject_id]))
+                            .join(options)
+                            .on(values[:option_id].eq(options[:id]))
+          when 'deal_initiative'
+            condition = condition
+                            .join(initiatives)
+                            .on(deals[:initiative_id].eq(initiatives[:id]))
+          when 'teams'
+            condition = condition
+                            .join(deal_members)
+                            .on(deals[:id].eq(deal_members[:deal_id]))
+                            .join(users)
+                            .on(deal_members[:user_id].eq(users[:id]))
+                            .join(teams)
+                            .on(users[:id].eq(teams[:leader_id]))
+          when 'client_segments'
+            condition = condition
+                            .join(client_segments)
+                            .on(clients[:client_segment_id].eq(client_segments[:id]))
+          when 'client_regions'
+            condition = condition
+                            .join(client_regions)
+                            .on(clients[:client_region_id].eq(client_regions[:id]))
+          when 'client_categories'
+            condition = condition
+                            .join(client_categories)
+                            .on(clients[:client_category_id].eq(client_categories[:id]))
+          when 'client_subcategories'
+            condition = condition
+                            .join(client_subcategories)
+                            .on(clients[:client_subcategory_id].eq(client_subcategories[:id]))
+        end
+        case wc.base_object
+          when 'Account Custom Fields'
+            unless condition.to_sql.include?("INNER JOIN \"account_cfs\"")
+            condition = condition
+                            .join(account_cfs)
+                            .on(clients[:id].eq(account_cfs[:client_id]))
+            end
+          when 'Deal Custom Fields'
+            unless condition.to_sql.include?("INNER JOIN \"deal_custom_fields\"")
+            condition = condition
+                            .join(deal_custom_fields)
+                            .on(deals[:id].eq(deal_custom_fields[:deal_id]))
+            end
+        end
       end
-    end
     condition
   end
 

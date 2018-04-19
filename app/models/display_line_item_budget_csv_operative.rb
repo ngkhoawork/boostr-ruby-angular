@@ -54,7 +54,7 @@ class DisplayLineItemBudgetCsvOperative < DisplayLineItemBudgetCsv
   end
 
   def calculate_budget
-    calculate_budget_loc / io_or_tempio.exchange_rate
+    io_or_tempio.convert_to_usd(calculate_budget_loc)
   end
 
   def calculate_budget_loc

@@ -236,6 +236,7 @@
       {name: 'source_type', label: 'Source Type', value: 'RPF from Client'},
       {name: 'next_steps', label: 'Next Steps', value: 'Follow up meeting request to review branded content submission'},
       {name: 'closed_reason', label: 'Closed Reason', value: 'Won'},
+      {name: 'closed_reason_text', label: 'Closed Comments', value: 'Closed it because it is won'},
       {name: 'intiative', label: 'Initiative', value: 'Super Bowl'}
     ]
     _.forEach $scope.ealert, (value, index) ->

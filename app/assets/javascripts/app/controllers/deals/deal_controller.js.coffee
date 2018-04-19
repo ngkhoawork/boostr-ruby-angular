@@ -33,8 +33,6 @@
 
   $scope.fileToUploadTst = null
   $scope.progressBarCur = 0
-  $scope.uploadedFiles = []
-  $scope.dealFiles = []
   $scope.dealCustomFieldNames = []
   $scope.dealProductCfNames = []
   $scope.activeDealProductCfLength = 0
@@ -67,10 +65,6 @@
 
   $scope.fixUrl = (url) ->
     if url && url.search('//') == -1 then return '//' + url else url
-
-  $scope.getDealFiles = () ->
-    DealAttachment.list(deal_id: $routeParams.id, type: "deal").then (res) ->
-      $scope.dealFiles = res
 
   loadActivities = ->
     Activity.all(deal_id: $routeParams.id).then (activities) ->
@@ -133,7 +127,6 @@
                       {name: 'attachments', id: 'attachments'},
                       {name: 'additional info', id: 'info'}]
 
-    $scope.getDealFiles()
     $scope.initActivity()
     getDealCustomFieldNames()
     getDealProductCfNames()
@@ -141,6 +134,7 @@
     Company.get().$promise.then (company) ->
       $scope.company = company
     getSsps()
+    getDealFiles()
 
   checkPmpDeal = () ->
     $scope.isPmpDeal = false
@@ -149,6 +143,10 @@
       if product.revenue_type == 'PMP'
         $scope.isPmpDeal = true
         $scope.pmpColumns = 3
+
+  getDealFiles = () ->
+    DealAttachment.list(deal_id: $routeParams.id, type: "deal").then (res) ->
+      $scope.dealFiles = res
 
   getSsps = () ->
     SSP.all().then (ssps) ->

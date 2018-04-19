@@ -6,12 +6,17 @@ class FieldDataTypesSerializer < ActiveModel::Serializer
   end
 
   def field_label
-    if options[:obj_name].eql?(:deal_custom_field)
+    case options[:obj_name]
+    when :deal_custom_field
+      options[:fields][object.name]
+    when :account_cf
       options[:fields][object.name]
     else
       DataModels::LabelMappings.parsed_json[object.name.to_sym]
     end
   end
+
+
 
   def data_type
     object.type

@@ -1,0 +1,17 @@
+{
+  "advertiser": "Advertiser",
+  "agency": "Agency",
+  "stage": "Stage",
+  "creator": "Creator",
+  "updator": "Updator",
+  "io": "Io",
+  "contacts": "Contacts",
+  "deal_products": "Deal Products",
+  "deal_product_budgets": "Deal Product Budgets",
+  "products": "Products",
+  "deal_members": "Deal Members",
+  "users": "Users",
+  "teams": "Teams",
+  "deal_custom_field": "Deal Custom Fields",
+  "account_cf": "Account Custom Fields"
+}

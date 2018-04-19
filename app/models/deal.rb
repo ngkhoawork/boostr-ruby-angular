@@ -82,7 +82,7 @@ class Deal < ActiveRecord::Base
   delegate :open?, to: :stage, allow_nil: true, prefix: true
   delegate :active?, to: :stage, allow_nil: true, prefix: true
 
-  attr_accessor :modifying_user, :manual_update
+  attr_accessor :modifying_user, :manual_update, :custom_trigger
 
   before_update do
     if curr_cd_changed?

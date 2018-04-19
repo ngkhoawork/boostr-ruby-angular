@@ -12,7 +12,7 @@ class IoCsv
   attr_accessor(
     :io_external_number, :io_name, :io_start_date, :io_end_date, :io_advertiser,
     :io_agency, :io_budget, :io_budget_loc, :io_curr_cd, :company_id,
-    :auto_close_deals, :exchange_rate
+    :auto_close_deals, :exchange_rate_at_close
   )
 
   def initialize(attributes = {})
@@ -65,9 +65,12 @@ class IoCsv
       io.end_date = end_date
     end
 
-    io.external_io_number = io_external_number
-    io.exchange_rate = exchange_rate
-    io.save
+    io.update(
+      external_io_number: io_external_number,
+      exchange_rate_at_close: exchange_rate_at_close,
+      budget: convert_currency(io_budget),
+      budget_loc: io_budget_loc
+    )
   end
 
   def upsert_temp_io
@@ -81,7 +84,7 @@ class IoCsv
       budget: convert_currency(io_budget),
       budget_loc: io_budget_loc,
       curr_cd: io_curr_cd,
-      exchange_rate: exchange_rate
+      exchange_rate_at_close: exchange_rate_at_close
     }
 
     temp_io.update(
@@ -113,7 +116,7 @@ class IoCsv
   end
 
   def record_has_exchange_rate
-    if (io || temp_io).present? && (io || temp_io).company.present? && !item_exchange_rate.present?
+    if (io || temp_io).present? && (io || temp_io).company.present? && !(exchange_rate_at_close || item_exchange_rate).present?
       errors.add(:io_curr_cd, "#{io_curr_cd} does not have an exchange rate available at the moment")
     end
   end
@@ -131,10 +134,14 @@ class IoCsv
   end
 
   def convert_currency(value)
-    value.to_f / item_exchange_rate.to_f
+    if exchange_rate_at_close
+      value.to_f * exchange_rate_at_close.to_f
+    else
+      value.to_f / item_exchange_rate.to_f
+    end
   end
 
   def item_exchange_rate
-    @_exchange_rate ||= (exchange_rate || (io || temp_io).exchange_rate)
+    @_exchange_rate ||= (io || temp_io).exchange_rate
   end
 end

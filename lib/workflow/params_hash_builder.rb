@@ -30,6 +30,7 @@ class Workflow::ParamsHashBuilder
 
     return rounded(data.to_f) + "; " if data.is_a?(BigDecimal)
     return format_arr(data) if data.is_a?(Array)
+    return format_arr(data) if data.is_a?(Hash)
     data
   end
 
@@ -43,12 +44,18 @@ class Workflow::ParamsHashBuilder
 
   def detect_format(val)
     return (val.to_f) if val.is_a?(BigDecimal)
-    return val if val.is_a?(Hash)
+    return handle_hash(val) if val.is_a?(Hash)
     val
   end
 
   def rounded(val)
     number_with_delimiter(val.round)
+  end
+
+  def handle_hash(val)
+    val.each do |k,v|
+      val[k] = number_with_delimiter(val[k].to_f) if val[k].is_a?(BigDecimal)
+    end
   end
 
   def number_with_delimiter(number, delimiter=",")

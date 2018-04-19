@@ -40,18 +40,19 @@ class DisplayLineItemCsv
         quantity: quantity,
         price: price,
         pricing_type: pricing_type,
-        budget: convert_currency(budget),
+        budget: io_or_tempio.convert_to_usd(budget),
         budget_loc: budget_loc,
-        budget_delivered: convert_currency(budget_delivered),
+        budget_delivered: io_or_tempio.convert_to_usd(budget_delivered),
         budget_delivered_loc: budget_delivered_loc,
-        budget_remaining: convert_currency(budget_remaining),
+        budget_remaining: io_or_tempio.convert_to_usd(budget_remaining),
         budget_remaining_loc: budget_remaining_loc,
         quantity_delivered: quantity_delivered,
         quantity_remaining: quantity_remaining,
         quantity_delivered_3p: quantity_delivered_3p,
         ctr: ctr,
         clicks: clicks,
-        ad_unit: ad_unit_name
+        ad_unit: ad_unit_name,
+        dont_update_parent_budget: true
       )
 
       update_io if io_can_be_updated?
@@ -65,10 +66,6 @@ class DisplayLineItemCsv
   def display_line_item
     @_display_line_item ||= io_or_tempio.display_line_items.find_by_line_number(line_number)
     @_display_line_item ||= io_or_tempio.display_line_items.new
-  end
-
-  def convert_currency(value)
-    value.to_f / exchange_rate
   end
 
   def io_or_tempio
@@ -173,8 +170,12 @@ class DisplayLineItemCsv
     @_exchange_rate ||= io_or_tempio.exchange_rate
   end
 
+  def exchange_rate_at_close
+    @_exchange_rate_at_close ||= io_or_tempio.exchange_rate_at_close
+  end
+
   def io_exchange_rate_presence
-    if io_or_tempio && !(io_or_tempio.exchange_rate)
+    if io_or_tempio && !(exchange_rate_at_close || exchange_rate)
       errors.add(:budget, "has no exchange rate for #{io_or_tempio.curr_cd} found at #{io_or_tempio.created_at.strftime("%m/%d/%Y")}")
     end
   end

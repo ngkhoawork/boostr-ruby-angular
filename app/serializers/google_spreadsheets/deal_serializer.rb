@@ -88,7 +88,7 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def opportunity_url
-    "#{ENV['HOST']}#{Rails.application.routes.url_helpers.api_deal_path(object)}"
+    "#{ENV['HOST']}/deals/#{object.id}"
   end
 
   def operative_id
