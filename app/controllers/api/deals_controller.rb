@@ -832,7 +832,7 @@ class Api::DealsController < ApplicationController
   end
 
   def team
-    if params[:team_id].present?
+    @_team ||= if params[:team_id].present?
       company.teams.find(params[:team_id])
     elsif current_user.leader?
       company.teams.where(leader: current_user).first
@@ -961,17 +961,10 @@ class Api::DealsController < ApplicationController
 
   def member_ids
     @_member_ids ||=
-      if team
-        team.all_members_and_leaders
-      elsif params[:member_id]
+      if params[:member_id]
         [params[:member_id]]
-      end
-  end
-
-  def team
-    @_team ||=
-      if params[:team_id]
-        company.teams.find(params[:team_id])
+      elsif params[:team_id]
+        team.all_members_and_leaders
       end
   end
 
