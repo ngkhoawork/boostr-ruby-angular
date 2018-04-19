@@ -54,6 +54,7 @@
 
   CurrentUser.get().$promise.then (user) ->
     $scope.currentUser = user
+    $scope.egnyte_authenticated = $scope.currentUser.egnyte_authenticated
 
   $scope.isUrlValid = (url) ->
     regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
@@ -68,24 +69,24 @@
     if url && url.search('//') == -1 then return '//' + url else url
 
   $scope.getCurrentCompany = (deal) ->
-    Egnyte.show().then (egnyteSettings) ->
-      $scope.companyEgnyteIntegration = egnyteSettings
-      if(egnyteSettings.access_token && egnyteSettings.connected)
-        $scope.egnyteConnected = true
-        if($routeParams.isNew)
-          sendRequest(egnyteSettings.access_token, egnyteSettings.app_domain, deal)
+    console.log($scope.currentUser)
 
-        else
-          Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
-            if !response.navigate_to_deal_uri
-              $scope.egnyteHealthy = false
-            else
-              $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
-              $scope.egnyteIsLoading = false
-              $scope.egnyteHealthy = true
+    if($scope.currentUser.egnyte_authenticated)
+      $scope.egnyteConnected = true
 
+      if($routeParams.isNew)
+        sendRequest(deal)
+      else
+        Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
+          console.log(response)
+          if !response.navigate_to_deal_uri
+            $scope.egnyteHealthy = false
+          else
+            $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
+            $scope.egnyteIsLoading = false
+            $scope.egnyteHealthy = true
 
-  sendRequest = (token, domain, deal) ->
+  sendRequest = (deal) ->
     $scope.egnyteUrlRequest = $timeout (->
       Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
         if response.navigate_to_deal_uri
@@ -95,7 +96,7 @@
           $location.search({})
 
         else
-          sendRequest(token, domain, deal)
+          sendRequest(deal)
       return
     ), 3000
 

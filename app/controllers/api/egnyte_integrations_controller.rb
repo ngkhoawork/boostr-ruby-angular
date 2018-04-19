@@ -30,17 +30,17 @@ class Api::EgnyteIntegrationsController < ApplicationController
   end
 
   def disconnect_egnyte
-    if resource.update(access_token: nil)
-      render json: resource,
+    if egnyte_user_auth.update(access_token: nil)
+      render json: egnyte_user_auth,
              serializer: Api::EgnyteIntegrations::BaseSerializer
     else
-      render json: { errors: resource.errors.messages },
+      render json: { errors: egnyte_user_auth.errors.messages },
              status: :unprocessable_entity
     end
   end
 
   def oauth_settings
-    raise 'oauth settings can not be provided for an authenticated user' if current_user.egnyte_authenticated?
+    raise 'oauth settings can not be provided for an authenticated user' if current_user.egnyte_authenticated
 
     if resource.enabled?
       render json: { egnyte_login_uri: build_user_authorization_uri }

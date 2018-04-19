@@ -7,18 +7,16 @@
             .main-title
               Egnyte
         .block
-          %div{'ng-if': '!egnyteSettings.access_token'}
+          %div{'ng-if': '!egnyte_authenticated'}
             %form{ ng: { submit: 'submitForm()' } }
               %button.btn.btn-primary.btn-lg{ type: 'submit' }
                 Connect Account
-          %div.connected-block{'ng-if': 'egnyteSettings.access_token'}
+          %div.connected-block{'ng-if': 'egnyte_authenticated'}
             .row
-              .col-xs-2
-                %z-toggle{'ng-model': 'egnyteSettings.connected', 'ng-change': 'disconnectEgnyte(egnyteSettings)'}
-              .col-xs-10
+              .col-xs-12
                 %p.disconnect.right{'ng-click': 'removeEgnyte(egnyteSettings)'}
                   Disconnect Account
-  %div{'ng-if': 'egnyteSettings.access_token'}
+  %div{'ng-if': 'egnyte_authenticated'}
     .container-fluid{"ng-controller": "EgnyteFolderController"}
       .row
         .col-xs-6

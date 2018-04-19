@@ -139,7 +139,7 @@ class User < ActiveRecord::Base
     is?(:admin)
   end
 
-  def egnyte_authenticated?
+  def egnyte_authenticated
     !!egnyte_auth&.passed?
   end
 
@@ -218,7 +218,7 @@ class User < ActiveRecord::Base
           :product_option2,
           :product_option1_enabled,
           :product_option2_enabled,
-          :egnyte_authenticated?
+          :egnyte_authenticated
         ]
       ).except(:override))
     end

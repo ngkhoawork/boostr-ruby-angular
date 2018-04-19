@@ -1,7 +1,6 @@
 @app.controller 'SettingsEgnyteController',
-  ['$scope', '$modal', 'Egnyte', '$window', '$location', 'Company', ( $scope, $modal, Egnyte, $window, $location, Company) ->
+  ['$scope', '$modal', 'Egnyte', '$window', '$location', 'Company', 'CurrentUser', ( $scope, $modal, Egnyte, $window, $location, Company, CurrentUser) ->
     $scope.egnyte = {}
-    $scope.currentEgnyteUser = {}
 
     currentParams = (aURL) ->
       aURL = aURL or window.location.href
@@ -18,11 +17,8 @@
       vars
 
     $scope.init = () ->
-      Egnyte.show().then (egnyteSettings) ->
-        $scope.egnyteSettings = egnyteSettings
-
-    $scope.disconnectEgnyte = (egnyte) ->
-      Egnyte.updateConfiguration(connected: egnyte.connected)
+      CurrentUser.get().$promise.then (currentUser) ->
+        $scope.egnyte_authenticated = currentUser.egnyte_authenticated
 
     $scope.removeEgnyte = (egnyteSettings) ->
       if confirm('Are you sure?')
