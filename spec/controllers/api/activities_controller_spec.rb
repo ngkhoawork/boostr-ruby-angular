@@ -8,6 +8,7 @@ describe Api::ActivitiesController, type: :controller do
   let(:client) { create :client, company: company }
   let(:deal) { create :deal, advertiser: client, company: company }
   let(:contacts) { create_list :contact, 10, clients: [client], company: company }
+  let(:activity_params) { attributes_for(:activity) }
   let(:activity_with_custom_field_params) do
     activity_params.merge(custom_field_attributes: { text1: FFaker::HipsterIpsum.word })
   end

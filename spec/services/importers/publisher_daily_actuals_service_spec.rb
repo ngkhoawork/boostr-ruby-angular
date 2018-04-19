@@ -150,6 +150,11 @@ describe Importers::PublisherDailyActualsService do
   end
 
   def file_path
-    @file_path ||= 'tmp/PublisherDailyActualsImport.csv'
+    @file_path ||= File.join(ensure_tmp_folder, 'PublisherDailyActualsImport.csv')
+  end
+
+  def ensure_tmp_folder
+    FileUtils.mkdir_p('tmp') unless File.directory?('tmp')
+    'tmp'
   end
 end
