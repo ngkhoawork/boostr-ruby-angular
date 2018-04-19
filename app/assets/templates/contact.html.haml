@@ -161,4 +161,4 @@
 							.currency-field{ ng: { 'switch-when': 'sum' } }
 								{{ (currentContact.contact_cf[fieldName] || 0) | number : 0 }}
 
-				%div{'ng-include': '"partials/dashboard/activity.html"'}
+				%activity-feed{object: 'currentContact', type: 'contact'}

@@ -82,6 +82,18 @@ describe Api::DealsController, type: :controller do
 
       expect(Deal.last.lead).to eq lead
     end
+
+    it 'creates deal cusotm field' do
+      post :create, deal: deal_params, format: :json
+
+      expect(Deal.last.deal_custom_field).to be_present
+    end
+
+    it 'saves deal cusotm field values' do
+      post :create, deal: deal_with_cf_params, format: :json
+
+      expect(Deal.last.deal_custom_field.boolean1).to be true
+    end
   end
 
   describe 'GET #show' do
@@ -127,6 +139,14 @@ describe Api::DealsController, type: :controller do
         put :update, id: deal.id, deal: { end_date: Date.new(2017, 8, 10) }, format: :json
       }.to_not change(AuditLog, :count)
     end
+
+    it 'saves deal cusotm field values' do
+      deal = create :deal, company: company
+
+      put :update, id: deal.id, deal: deal_with_cf_params, format: :json
+
+      expect(Deal.last.deal_custom_field.boolean1).to be true
+    end
   end
 
   describe 'DELETE #destroy' do
@@ -160,5 +180,13 @@ describe Api::DealsController, type: :controller do
 
   def company
     @_company ||= create :company
+  end
+
+  def deal_with_cf_params
+    cf = attributes_for :deal_custom_field, boolean1: true
+
+    deal_params[:deal_custom_field_attributes] = cf
+
+    deal_params
   end
 end

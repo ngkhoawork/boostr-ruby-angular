@@ -70,8 +70,8 @@
 			backdrop: 'static'
 			keyboard: false
 			resolve:
-                contact: -> {}
-                options: -> {}
+				contact: -> {}
+				options: -> {}
 
 	$scope.openAccountModal = ->
 		$scope.modalInstance = $modal.open
