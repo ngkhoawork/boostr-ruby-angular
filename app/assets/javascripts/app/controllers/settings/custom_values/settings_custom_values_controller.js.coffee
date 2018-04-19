@@ -110,10 +110,7 @@
       deleted_suboption.id == suboption.id
 
   $scope.isDisabled = (option) ->
-    if $scope.current.object.name == 'Accounts' && $scope.current.field.name == 'Client Type' && option.name == 'Agency' || option.name == 'Advertiser'
-      true
-    else
-      false 
+    $scope.current.object.name == 'Accounts' && $scope.current.field.name == 'Client Type' && ( option.name == 'Agency' || option.name == 'Advertiser' )
 
   $scope.createNewValue = () ->
     $scope.newest = { name: '' }
