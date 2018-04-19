@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company', 'Egnyte'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window, $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment, localStorageService, Company, Egnyte) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Contact', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company', 'Egnyte'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,  Contact,    Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment,   localStorageService,   Company, Egnyte) ->
 
   $scope.agencyRequired = false
   $scope.showMeridian = true
@@ -17,7 +17,6 @@
   $scope.currency_symbol = '$'
   $scope.ealertReminder = false
   $scope.activitiesOrder = '-happened_at'
-  $scope.activities = []
   $scope.isPmpDeal = false
   $scope.pmpColumns = 0
   $anchorScroll()
@@ -65,10 +64,6 @@
 
   $scope.fixUrl = (url) ->
     if url && url.search('//') == -1 then return '//' + url else url
-
-  loadActivities = ->
-    Activity.all(deal_id: $routeParams.id).then (activities) ->
-      $scope.activities = activities
 
   $scope.getCurrentCompany = (deal) ->
     Egnyte.show().then (egnyteSettings) ->
@@ -127,7 +122,6 @@
                       {name: 'attachments', id: 'attachments'},
                       {name: 'additional info', id: 'info'}]
 
-    $scope.initActivity()
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
@@ -213,41 +207,6 @@
 
   $scope.initReminder()
 
-  $scope.activityReminderInit = ->
-    $scope.activityReminder = {
-      name: '',
-      comment: '',
-      completed: false,
-      remind_on: '',
-      remindable_id: 0,
-      remindable_type: 'Activity' # "Activity", "Client", "Contact", "Deal"
-      _date: new Date(),
-      _time: new Date()
-    }
-
-    $scope.activityReminderOptions = {
-      errors: {},
-      showMeridian: true
-    }
-
-  $scope.initActivity = ->
-    $scope.activity = {}
-    $scope.activeTab = {}
-    $scope.selectedObj = {}
-    $scope.selectedObj.deal = true
-    $scope.selected = {}
-    $scope.populateContact = false
-    now = new Date
-    ActivityType.all().then (activityTypes) ->
-      $scope.types = activityTypes
-      $scope.activeType = activityTypes[0]
-      _.each activityTypes, (type) ->
-        $scope.selected[type.name] = {}
-        $scope.selected[type.name].date = now
-        $scope.selected[type.name].contacts = []
-
-    $scope.activityReminderInit()
-
   $scope.getCompanyCurrencies = ->
     Currency.active_currencies().then (currencies) ->
       $scope.currencies = currencies
@@ -292,7 +251,6 @@
         Field.defaults(member, 'Client').then (fields) ->
           member.role = Field.field(member, 'Member Role')
 
-    loadActivities()
     Field.defaults(deal, 'Deal').then (fields) ->
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
@@ -832,9 +790,6 @@
 
   $scope.$on 'closeDealCanceled', $scope.backToPrevStage
 
-  $scope.$on 'openContactModal', ->
-    $scope.createNewContactModal()
-
   $scope.$on 'updated_deals', (event, deal, action) ->
     if deal && action != 'delete' then $scope.setCurrentDeal(deal)
 
@@ -846,9 +801,6 @@
     for key, error of errors
       $scope.errors[key] = error && error[0]
 
-  $scope.$on 'updated_activities', ->
-    loadActivities()
-
   $scope.init(true)
 
   $scope.setActiveTab = (tab) ->
@@ -856,60 +808,6 @@
 
   $scope.setActiveType = (type) ->
     $scope.activeType = type
-
-
-  $scope.createNewContactModal = ->
-    $scope.populateContact = true
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/contact_form.html'
-      size: 'md'
-      controller: 'ContactsNewController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        contact: -> {}
-        options: -> {}
-
-  $scope.showNewActivityModal = ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_new_form.html'
-      size: 'md'
-      controller: 'ActivityNewController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        activity: ->
-          null
-        options: ->
-          type: 'deal'
-          data: $scope.currentDeal
-
-  $scope.showActivityEditModal = (activity) ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_new_form.html'
-      size: 'md'
-      controller: 'ActivityNewController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        activity: ->
-          activity
-        options: ->
-          type: 'deal'
-          data: $scope.currentDeal
-
-  $scope.showEmailsModal = (activity) ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_emails.html'
-      size: 'email'
-      controller: 'ActivityEmailsController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        activity: ->
-          activity
-
-  $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
 
   $scope.showDealEditModal = (deal) ->
     $scope.modalInstance = $modal.open
@@ -964,19 +862,11 @@
       Contact.all1(per: 10, page: 1).then (contacts) ->
         $scope.contacts = contacts
 
-  $scope.cancelActivity = ->
-    $scope.initActivity()
-
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
       $scope.contacts.push contact
       $scope.selected[$scope.activeType.name].contacts.push(contact.id)
       $scope.populateContact = false
-
-  $scope.deleteActivity = (activity) ->
-    if confirm('Are you sure you want to delete the activity?')
-      Activity.delete activity, ->
-        $scope.$emit('updated_activities')
 
   $scope.baseFieldRequired = (factor) ->
     if $scope.currentDeal && $scope.base_fields_validations
