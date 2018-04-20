@@ -8,6 +8,7 @@
       content_fee_product_budgets_attributes: original.content_fee.content_fee_product_budgets
       io_id: original.content_fee.io_id
       product_id: original.content_fee.product_id
+      custom_field_attributes: original.content_fee.custom_field
     angular.toJson(send)
 
   resource = $resource '/api/ios/:io_id/content_fees/:id', { io_id: '@io_id', id: '@id' },
