@@ -89,6 +89,10 @@ class DealsWorkflowQueryBuilder
     Arel::Table.new(:deal_custom_fields)
   end
 
+  def members
+    Arel::Table.new(:members)
+  end
+
   # INFO: Return Join Relations with On Conditions
   def joins_on
     # join(relations).on(conditions)
@@ -117,7 +121,7 @@ class DealsWorkflowQueryBuilder
                             .join(users)
                             .on(deal_members[:user_id].eq(users[:id]))
                             .join(teams)
-                            .on(users[:id].eq(teams[:leader_id]))
+                            .on(deals[:company_id].eq(teams[:company_id]))
           when 'client_segments'
             condition = condition
                             .join(client_segments)
