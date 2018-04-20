@@ -2,11 +2,9 @@ require 'rails_helper'
 
 RSpec.describe DisplayLineItem, type: :model do
   it 'closes deal display product when line item comes from datafeed' do
-    deal_product = create :deal_product, deal: deal, product: display_product
+    deal_product
 
     deal.update(stage: closed_won_stage, updated_by: 0)
-
-    expect(deal.reload.io).to be_present
 
     expect(deal_product.reload.open).to be true
 
@@ -29,5 +27,9 @@ RSpec.describe DisplayLineItem, type: :model do
 
   def display_product
     @display_product ||= create(:product, revenue_type: 'Display', company: company)
+  end
+
+  def deal_product
+    @deal_product ||= create :deal_product, deal: deal, product: display_product
   end
 end
