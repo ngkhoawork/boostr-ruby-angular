@@ -154,7 +154,7 @@
                 {{operativeIntegration.dealLog ? (operativeIntegration.dealLog.is_error ? 'Error' : 'Success') : 'Not sent'}}
             |
             %a{href: '', 'ng-click': 'sendToOperative(currentDeal.id)'} Send to Operative
-    %div.custom-field-item{ 'ng-if': 'googleSheetsIntegration.isEnabled' }
+    %div.custom-field-item{ 'ng-if': 'googleSheetsIntegration.isEnabled && isAdmin' }
         %div.custom-field-item-label
             %label Google Sheet
         %div.custom-field-item-field
