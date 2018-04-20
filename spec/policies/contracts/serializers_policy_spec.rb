@@ -60,7 +60,7 @@ RSpec.describe Contracts::SerializersPolicy do
   end
 
   def type_field
-    @_type_field ||= company.fields.find_by!(subject_type: 'Contract', name: 'Type')
+    @_type_field ||= create(:field, company: company, subject_type: 'Contract', name: 'Type')
   end
 
   def type_option
