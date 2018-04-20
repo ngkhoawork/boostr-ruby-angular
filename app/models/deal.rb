@@ -108,7 +108,7 @@ class Deal < ActiveRecord::Base
     log_start_date_changes if start_date_changed?
   end
 
-  after_commit :integrate_with_operative, on: :update
+  after_commit :integrate_with_operative
 
   before_create do
     update_stage
