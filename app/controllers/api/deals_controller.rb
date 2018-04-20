@@ -286,6 +286,7 @@ class Api::DealsController < ApplicationController
       deal.updated_by = current_user.id
 
       if deal.save(context: :manual_update)
+        deal.custom_workflow_update("create")
         render json: deal, status: :created
       else
         render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -302,6 +303,7 @@ class Api::DealsController < ApplicationController
       deal.deal_custom_field = DealCustomField.new(deal_cf_params)
     end
     if deal.save(context: :manual_update)
+      deal.custom_workflow_update("update")
       render deal
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity

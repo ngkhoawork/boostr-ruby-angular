@@ -6,6 +6,7 @@ class Workflow::ParamsHashBuilder
   end
 
   def build
+    result =
     parsed_params.each_with_object({}) do |param, hsh|
       mapped_prefix, mapped_suffix = param.split('.')
 
@@ -22,6 +23,10 @@ class Workflow::ParamsHashBuilder
         hsh.merge!(nested_hash)
       end
     end
+    result.keys.each do |key|
+      result[key].uniq! if result[key].is_a?(Array)
+    end
+    result
   end
 
   def format_data(data)
