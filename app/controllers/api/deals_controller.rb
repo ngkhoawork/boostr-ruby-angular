@@ -327,6 +327,18 @@ class Api::DealsController < ApplicationController
     end
   end
 
+  def send_to_google_sheet
+    config = company.google_sheets_configurations.first
+
+    if config.switched_on?
+      GoogleSheetsWorker.perform_async(config.sheet_id, deal.id)
+      render json: { message: 'deal was sent to google sheet' }
+    else
+      render json: { errors: 'cannot send this deal to google sheet please recheck a deal and try again later' },
+             status: :unprocessable_entity
+    end
+  end
+
   def won_deals
     render json: company_won_deals.as_json(override: true, options: { only: [:id, :name] })
   end

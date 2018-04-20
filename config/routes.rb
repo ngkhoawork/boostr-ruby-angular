@@ -371,6 +371,7 @@ Rails.application.routes.draw do
       end
       member do
         post :send_to_operative
+        post :send_to_google_sheet
       end
       resources :deal_members, only: [:index, :create, :update, :destroy]
       resources :deal_contacts, only: [:index, :create, :update, :destroy]
