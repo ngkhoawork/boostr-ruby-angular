@@ -5,7 +5,6 @@ FactoryGirl.define do
 
     before(:create) do |item|
       item.full_name ||= item.name
-      item.auto_generated = true
       item.company = Company.first if item.company.blank?
     end
   end
