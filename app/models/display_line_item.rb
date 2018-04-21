@@ -139,10 +139,8 @@ class DisplayLineItem < ActiveRecord::Base
   end
   
   def update_io_budget
-    return if dont_update_parent_budget
-
     if io.present?
-      io.update_total_budget
+      io.update_total_budget unless dont_update_parent_budget
       if io.deal.present?
         io.deal.close_display_product()
       end
