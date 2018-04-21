@@ -117,11 +117,11 @@ class DealsWorkflowQueryBuilder
           when 'teams'
             condition = condition
                             .join(deal_members)
-                            .on(deals[:id].eq(deal_members[:deal_id]))
+                            .on(deal_members[:deal_id].eq(deals[:id]))
                             .join(users)
-                            .on(deal_members[:user_id].eq(users[:id]))
+                            .on(users[:id].eq(deal_members[:user_id]))
                             .join(teams)
-                            .on(deals[:company_id].eq(teams[:company_id]))
+                            .on(teams[:id].eq(users[:team_id]).or(teams[:leader_id].eq(users[:id])))
           when 'client_segments'
             condition = condition
                             .join(client_segments)
