@@ -24,6 +24,8 @@
     isEnabled: false
     isLoading: false
     dealLog: null
+  $scope.googleSheetsIntegration =
+    isEnabled: false
   $scope.PMPType = PMPType
 
   ###*
@@ -112,6 +114,7 @@
       if initialLoad
         checkCurrentUserDealShare(deal.members)
         getOperativeIntegration(deal.id)
+        getGoogleSheetsIntegration(deal.id)
     , (err) ->
       if(err && err.status == 404)
         $location.url('/deals')
@@ -592,7 +595,7 @@
               $scope.errors['pmp_type' + deal_product.id] = "can't be blank"
         if !_.isEmpty($scope.errors)
           $scope.showWarningModal('SSP, SSP Deal-ID and PMP Type fields are required for PMP products.')
-          return          
+          return
         if !stage.open && stage.probability == 0
           $scope.showWonLossModal(currentDeal, false)
         else if !stage.open && stage.probability == 100 && $scope.won_reason_required && $scope.won_reason_required.criterion.value
@@ -685,7 +688,7 @@
     if option == 'Billing'
       if !confirm("Confirm you want to assign an unrelated billing contact")
         return
-    deal_contact.role = option; 
+    deal_contact.role = option;
     deal_contact.errors = {}
 
     DealContact.update(
@@ -949,6 +952,9 @@
             $scope.operativeIntegration.isLoading = false
       , 2000
 
+  $scope.sendToGoogleSheet = (dealId)->
+    Deal.send_to_google_sheet(id: dealId)
+
   calcRestBudget = () ->
     sum = _.reduce($scope.budgets, (res, budget) ->
       res += Number(budget.budget_loc) || 0
@@ -963,9 +969,15 @@
         Deal.latest_log(id: dealId).then (log) ->
           $scope.operativeIntegration.dealLog = log if log && log.id
 
+  getGoogleSheetsIntegration = (dealId) ->
+    ApiConfiguration.all().then (data) ->
+      google_sheets = _.findWhere data.api_configurations, integration_type: 'GoogleSheetsConfiguration'
+      if google_sheets && google_sheets.switched_on
+        $scope.googleSheetsIntegration.isEnabled = google_sheets.switched_on
+
   $scope.getWarningSettings = () ->
     dealsWithoutWarning = localStorageService.get('dealsWithoutWarning') || []
-    dealsWithoutWarning.forEach((deal) -> 
+    dealsWithoutWarning.forEach((deal) ->
       if deal.dealId == $scope.currentDeal.id
         $scope.showWarnings = false
     )

@@ -26,7 +26,7 @@ class Workflow::MessageNormalizer
   end
 
   def iterative_mustache_string(object, param)
-    "\n{{##{object}}}{{#{param}}}; {{/#{object}}}"
+    "\n{{##{object}}}{{#{param}}} {{/#{object}}}"
   end
 
   def replace_regex(pluralized_mapping)

@@ -14,8 +14,12 @@
         "name": "deal.type",
         "base_table_name": "deals",
         "is_base_mapping": false,
-        "related_db_table_name": null,
-        "join_statements": ["JOIN options ON options.id = deals.type_id"],
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN fields ON 'Deal' = fields.subject_type AND 'Deal Type' = fields.name",
+          "JOIN values ON deals.id = values.subject_id",
+          "JOIN options ON values.option_id = options.id AND values.field_id = fields.id"
+        ],
         "target_field": "options.name",
         "select_collection": false
       },
@@ -23,8 +27,12 @@
         "name": "deal.source",
         "base_table_name": "deals",
         "is_base_mapping": false,
-        "related_db_table_name": null,
-        "join_statements": ["JOIN options ON options.id = deals.source_id"],
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN fields ON 'Deal' = fields.subject_type AND 'Deal Source' = fields.name",
+          "JOIN values ON deals.id = values.subject_id",
+          "JOIN options ON values.option_id = options.id AND values.field_id = fields.id"
+        ],
         "target_field": "options.name",
         "select_collection": false
       },
@@ -101,7 +109,20 @@
         "select_collection": false
       },
       {
-        "name": "deal.closed_reason",
+        "name": "deal.close_reason",
+        "base_table_name": "deals",
+        "is_base_mapping": false,
+        "related_db_table_name": "options",
+        "join_statements": [
+          "JOIN fields ON 'Deal' = fields.subject_type AND 'Close Reason' = fields.name",
+          "JOIN values ON deals.id = values.subject_id",
+          "JOIN options ON values.option_id = options.id AND values.field_id = fields.id"
+        ],
+        "target_field": "options.name as reason",
+        "select_collection": false
+      },
+      {
+        "name": "deal.close_reason_comment",
         "base_table_name": "deals",
         "is_base_mapping": true,
         "related_db_table_name": null,
@@ -555,111 +576,111 @@
         "select_collection": false
       },
       {
-        "name": "io.budget_USD",
+        "name": "ios.budget_USD",
         "base_table_name": "deals",
         "is_base_mapping": false,
         "related_db_table_name": "ios",
         "join_statements": [
-          "JOIN ios ON deals.id = io.deal_id"
+          "JOIN ios ON deals.id = ios.deal_id"
         ],
         "target_field": "ios.budget as budget",
         "select_collection": false
       },
       {
-        "name": "io.start_date",
+        "name": "ios.start_date",
         "base_table_name": "deals",
         "is_base_mapping": false,
         "related_db_table_name": "ios",
         "join_statements": [
-          "JOIN ios ON deals.id = io.deal_id"
+          "JOIN ios ON deals.id = ios.deal_id"
         ],
         "target_field": "ios.start_date as start_date",
         "select_collection": false
       },
       {
-        "name": "io.end_date",
+        "name": "ios.end_date",
         "base_table_name": "deals",
         "is_base_mapping": false,
         "related_db_table_name": "ios",
         "join_statements": [
-          "JOIN ios ON deals.id = io.deal_id"
+          "JOIN ios ON deals.id = ios.deal_id"
         ],
         "target_field": "ios.end_date as end_date",
         "select_collection": false
       },
       {
-        "name": "io.external_io_number",
+        "name": "ios.external_io_number",
         "base_table_name": "deals",
         "is_base_mapping": false,
         "related_db_table_name": "ios",
         "join_statements": [
-          "JOIN ios ON deals.id = io.deal_id"
+          "JOIN ios ON deals.id = ios.deal_id"
         ],
         "target_field": "ios.external_io_number as external_io_number",
         "select_collection": false
       },
       {
-        "name": "io.io_number",
+        "name": "ios.io_number",
         "base_table_name": "deals",
         "is_base_mapping": false,
         "related_db_table_name": "ios",
         "join_statements": [
-          "JOIN ios ON deals.id = io.deal_id"
+          "JOIN ios ON deals.id = ios.deal_id"
         ],
         "target_field": "ios.io_number as io_number",
         "select_collection": false
       },
       {
-        "name": "io.created_date",
+        "name": "ios.created_date",
         "base_table_name": "deals",
         "is_base_mapping": false,
         "related_db_table_name": "ios",
         "join_statements": [
-          "JOIN ios ON deals.id = io.deal_id"
+          "JOIN ios ON deals.id = ios.deal_id"
         ],
         "target_field": "ios.created_at as created_date",
         "select_collection": false
       },
       {
-        "name": "io.updated_date",
+        "name": "ios.updated_date",
         "base_table_name": "deals",
         "is_base_mapping": false,
         "related_db_table_name": "ios",
         "join_statements": [
-          "JOIN ios ON deals.id = io.deal_id"
+          "JOIN ios ON deals.id = ios.deal_id"
         ],
         "target_field": "ios.created_at as updated_date",
         "select_collection": false
       },
       {
-        "name": "io.name",
+        "name": "ios.name",
         "base_table_name": "deals",
         "is_base_mapping": false,
         "related_db_table_name": "ios",
         "join_statements": [
-          "JOIN ios ON deals.id = io.deal_id"
+          "JOIN ios ON deals.id = ios.deal_id"
         ],
         "target_field": "ios.name as name",
         "select_collection": false
       },
       {
-        "name": "io.budget_NON_USD",
+        "name": "ios.budget_NON_USD",
         "base_table_name": "deals",
         "is_base_mapping": false,
         "related_db_table_name": "ios",
         "join_statements": [
-          "JOIN ios ON deals.id = io.deal_id"
+          "JOIN ios ON deals.id = ios.deal_id"
         ],
         "target_field": "ios.budget_loc as budget_loc",
         "select_collection": false
       },
       {
-        "name": "io.currency",
+        "name": "ios.currency",
         "base_table_name": "deals",
         "is_base_mapping": false,
         "related_db_table_name": "ios",
         "join_statements": [
-          "JOIN ios ON deals.id = io.deal_id"
+          "JOIN ios ON deals.id = ios.deal_id"
         ],
         "target_field": "ios.curr_cd as currency",
         "select_collection": false

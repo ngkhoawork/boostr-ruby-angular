@@ -286,6 +286,7 @@ class Api::DealsController < ApplicationController
       deal.updated_by = current_user.id
 
       if deal.save(context: :manual_update)
+        deal.custom_workflow_update("create")
         render json: deal, status: :created
       else
         render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -302,6 +303,7 @@ class Api::DealsController < ApplicationController
       deal.deal_custom_field = DealCustomField.new(deal_cf_params)
     end
     if deal.save(context: :manual_update)
+      deal.custom_workflow_update("update")
       render deal
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -323,6 +325,18 @@ class Api::DealsController < ApplicationController
       render json: { message: 'deal was sent to operative' }
     else
       render json: { errors: 'cannot send this deal to operative please recheck a deal and try again later' },
+             status: :unprocessable_entity
+    end
+  end
+
+  def send_to_google_sheet
+    config = company.google_sheets_configurations.first
+
+    if config.switched_on?
+      GoogleSheetsWorker.perform_async(config.sheet_id, deal.id)
+      render json: { message: 'deal was sent to google sheet' }
+    else
+      render json: { errors: 'cannot send this deal to google sheet please recheck a deal and try again later' },
              status: :unprocessable_entity
     end
   end
