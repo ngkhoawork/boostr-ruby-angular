@@ -4,7 +4,7 @@ class OperativeDatafeedFulldayCompanyWorker < BaseWorker
   def perform(id)
     return if api_config(id).blank?
 
-    Operative::DatafeedService.new(api_config(id), Date.today - 1.day).perform
+    Operative::DatafeedService.new(api_config(id), Date.today).perform
   end
 
   def api_config(id)
@@ -16,6 +16,6 @@ class OperativeDatafeedFulldayCompanyWorker < BaseWorker
   end
 
   def expiration
-    @expiration ||= 60 * 60 * 2 # 2 hours
+    @expiration ||= 60 * 60 * 4 # 4 hours
   end
 end
