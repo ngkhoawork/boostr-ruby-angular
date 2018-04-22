@@ -131,8 +131,8 @@ class Api::ForecastsController < ApplicationController
     if current_job.present?
       render json: { error: "There is currently running forecast calculation job now." }, status: :unprocessable_entity
     else
-      time_period_ids = company.time_periods.collect{|item| item.id},
-      product_ids = company.products.collect{|item| item.id},
+      time_period_ids = company.time_periods.collect{|item| item.id}
+      product_ids = company.products.collect{|item| item.id}
       user_ids = company.users.collect{|item| item.id}
       stage_ids = company.stages.collect{|item| item.id}
       deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, stage_ids: stage_ids, user_ids: user_ids}
