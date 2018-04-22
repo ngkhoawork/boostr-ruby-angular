@@ -6,7 +6,7 @@ class Egnyte::Actions::UpdateFolder::Account < Egnyte::Actions::UpdateFolder::Ba
   private
 
   def root_folder_path
-    @root_folder_path ||= File.join(parent_folder_path, 'Accounts', record.name)
+    @root_folder_path ||= File.join(parent_folder_path, 'Accounts', sanitize_folder_name(record.name))
   end
 
   def parent_folder_path

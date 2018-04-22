@@ -29,7 +29,7 @@ class Egnyte::PrivateActions::BuildAccountFolderPath < Egnyte::Actions::Base
         app_folder_path
       end
 
-    folder_path = File.join(parent_folder_path, 'Accounts', record.name)
+    folder_path = File.join(parent_folder_path, 'Accounts', sanitize_folder_name(record.name))
 
     @options[:ensure_folders] ? ensure_account_folder(record.id, folder_path) : folder_path
   end

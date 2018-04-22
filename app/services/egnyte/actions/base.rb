@@ -17,4 +17,8 @@ class Egnyte::Actions::Base
   def egnyte_integration
     @egnyte_integration ||= @options[:egnyte_integration] || EgnyteIntegration.find(@options[:egnyte_integration_id])
   end
+
+  def sanitize_folder_name(folder_name)
+    Egnyte::PrivateActions::SanitizeFolderName.perform(folder_name)
+  end
 end
