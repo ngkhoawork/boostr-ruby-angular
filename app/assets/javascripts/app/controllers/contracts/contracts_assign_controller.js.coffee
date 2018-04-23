@@ -1,7 +1,7 @@
 @app.controller "ContractAssignContactController", [
     '$scope', '$rootScope', '$modal', '$modalInstance', '$filter', 'Contact', 'Contract', 'contract'
     ($scope,   $rootScope,   $modal,   $modalInstance,   $filter,   Contact,   Contract,   contract) ->
-        console.log contract
+
         $scope.formType = "Edit"
         $scope.submitText = "Update"
         $scope.searchText = ""

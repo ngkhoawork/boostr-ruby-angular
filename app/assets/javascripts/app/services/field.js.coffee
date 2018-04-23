@@ -44,8 +44,6 @@
 
     if subject && subject.fields
       finish(subject.fields)
-#    else if (data[subject_type])
-#      finish(data[subject_type])
     else
       @all({ subject: subject_type }).then (fields) ->
         data[subject_type] = fields
