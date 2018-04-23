@@ -20,6 +20,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
 
   property :external_po_reference, as: :externalPoRef, exec_context: :decorator,
            if: -> (options) { options[:buzzfeed].eql?(true) }
+  property :currency, exec_context: :decorator
 
   property :accounts, decorator: Operative::AccountsRepresenter, exec_context: :decorator
   property :custom_fields, decorator: Operative::CustomFieldsRepresenter, exec_context: :decorator,
@@ -138,6 +139,10 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
 
   def account_cf_billable_client_id_value
     deal_custom_field.send(order_type_cf.field_name)
+  end
+
+  def currency
+    represented.curr_cd
   end
 
   def buzzfeed_order_type

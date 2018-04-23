@@ -41,8 +41,9 @@ class Api::KpisDashboardController < ApplicationController
 
         win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
 
-        if params[:product_id] && params[:product_id] != 'all'
-          total_deal_size = complete_deals.map{|d| d.deal_products.find_by(product_id: params[:product_id])}.compact.map(&:budget).compact.reduce(:+)
+        if product_ids.present?
+          total_deal_size = complete_deals.map{|d| d.deal_products.where(product_id: product_ids)}
+                              .flatten.map(&:budget).compact.reduce(:+)
         else
           total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
         end
@@ -82,13 +83,19 @@ class Api::KpisDashboardController < ApplicationController
 
   private
 
+  def product_ids
+    @_product_ids ||= if params[:product_id] && params[:product_id] != 'all'
+      Product.include_children(company.products.where(id: params[:product_id])).collect(&:id)
+    end
+  end
+
   def complete_deals_list(deal_member_ids, time_period)
     deals_by_time_period.select do |deal|
-      (if params[:product_id] && params[:product_id] != 'all'
-          deal.products.map(&:id).include?(params[:product_id].to_i)
-       else
+      (if product_ids.present?
+          (product_ids & deal.products.map(&:id)).present?
+        else
           true
-       end) &&
+        end) &&
       (deal.deal_members.map(&:user_id) & deal_member_ids).length > 0 &&
       (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
       (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true) &&
@@ -100,11 +107,11 @@ class Api::KpisDashboardController < ApplicationController
 
   def incomplete_deals_list(deal_member_ids, time_period)
     deals_by_time_period.select do |deal|
-      (if params[:product_id] && params[:product_id] != 'all'
-          deal.products.map(&:id).include?(params[:product_id])
-       else
+      (if product_ids.present?
+          (product_ids & deal.products.map(&:id)).present?
+        else
           true
-       end) &&
+        end) &&
       (deal.deal_members.map(&:user_id) & deal_member_ids).length > 0 &&
       (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
       (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true) &&
@@ -192,8 +199,8 @@ class Api::KpisDashboardController < ApplicationController
     incomplete_deals = incomplete_deals_list(ids, full_time_period)
 
     average_deal_size = 0
-    if params[:product_id] && params[:product_id] != 'all'
-      total_deal_size = complete_deals.map{|d| d.deal_products.find_by(product_id: params[:product_id])}.compact.map(&:budget).compact.reduce(:+)
+    if product_ids.present?
+      total_deal_size = complete_deals.map{|d| d.deal_products.where(product_id: product_ids)}.flatten.map(&:budget).compact.reduce(:+)
     else
       total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
     end
@@ -267,8 +274,8 @@ class Api::KpisDashboardController < ApplicationController
 
       average_deal_size = 0
 
-      if params[:product_id] && params[:product_id] != 'all'
-        total_deal_size = complete_deals.map{|d| d.deal_products.find_by(product_id: params[:product_id])}.compact.map(&:budget).compact.reduce(:+)
+      if product_ids.present?
+        total_deal_size = complete_deals.map{|d| d.deal_products.where(product_id: product_ids)}.flatten.map(&:budget).compact.reduce(:+)
       else
         total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
       end
@@ -283,8 +290,8 @@ class Api::KpisDashboardController < ApplicationController
 
     total_grand_average_size = 0
 
-    if params[:product_id] && params[:product_id] != 'all'
-      total_deal_size = all_complete_deals.map{|d| d.deal_products.find_by(product_id: params[:product_id])}.compact.map(&:budget).compact.reduce(:+)
+    if product_ids.present?
+      total_deal_size = all_complete_deals.map{|d| d.deal_products.where(product_id: product_ids)}.flatten.map(&:budget).compact.reduce(:+)
     else
       total_deal_size = all_complete_deals.map(&:budget).compact.reduce(:+)
     end

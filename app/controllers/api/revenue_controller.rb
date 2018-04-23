@@ -3,7 +3,7 @@ class Api::RevenueController < ApplicationController
 
   def forecast_detail
     if valid_time_period?
-      if params[:product_ids].present?
+      if params[:is_product]
         render json: quarterly_product_ios
       else
         render json: quarterly_ios
@@ -263,11 +263,17 @@ class Api::RevenueController < ApplicationController
     end
   end
 
+  def product_id
+    @_product_id ||= params[:product2_id] || params[:product1_id] || params[:product_id]
+  end
+
   def product_ids
-    @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
-      params[:product_ids]
+    @product_ids ||= if product_id
+      Product.include_children(company.products.where(id: product_id)).collect(&:id)
     elsif product_family
       product_family.products.collect(&:id)
+    elsif params[:product_ids].present? && params[:product_ids] != ['all']
+      Product.include_children(company.products.where(id: params[:product_ids])).collect(&:id)
     else
       nil
     end

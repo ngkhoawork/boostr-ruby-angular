@@ -10,9 +10,9 @@
 								%i.fa.fa-pencil.z-icon{'ng-if': 'canEditIO', 'ng-click': 'showIOEditModal(currentIO)'}
 								%i.fa.fa-trash.z-icon{'ng-if': 'canEditIO', 'ng-click': 'deleteIo(currentIO)'}
 								.right-link.pull-right{'ng-if': 'currentIO.deal_id'}
-									Go to
+									Go to 
 									%a{'href': '', 'ng-href': '/deals/{{currentIO.deal_id}}'}
-										{{currentIO.deal.name}}
+										Deal
 							.detail-info
 								%a{'href': '', 'ng-href': '/accounts/{{currentIO.advertiser.id}}'} {{currentIO.advertiser.name || ''}}
 								{{currentIO.advertiser.name && currentIO.agency.name && '|'}}
@@ -80,27 +80,48 @@
 							%thead
 								%tr
 									%th.left.product-column Product
-									%th.type-column
+									%th.left  
+									%th.left.column{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled' } {{ company.product_option1_field || 'Option1' }}
+									%th.left.column{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled' } {{ company.product_option2_field || 'Option2' }}
 									%th.column.left Start Date
 									%th.column.left End Date
 									%th.column.right Total Budget
 									%th.column.right{ ng: { repeat: "range in currentIO.readable_months" } }
 										{{ range.name }}
 							%tbody
-								%tr{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0', repeat: "content_fee in currentIO.content_fees"} }
+								%tr{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0', repeat: "content_fee in currentIO.content_fees | orderBy: 'created_at'"} }
 									%td.product-column
 										.dropdown
 											%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
 												%span.editable
-													{{content_fee.product.name}}
+													{{content_fee.product.level0.name || 'Select Product'}}
 													%span.caret
 											%ul.dropdown-menu
-												%li{'ng-repeat': 'product in products', 'ng-class': '{active: content_fee.product.name == product.name}'}
-													%a{'href': '', 'ng-click': 'content_fee.product_id = product.id; updateContentFee(content_fee);'}
+												%li{'ng-repeat': 'product in productsByLevel(0, content_fee.product)', 'ng-class': '{active: content_fee.product.level0.id == product.id}'}
+													%a{'href': '', 'ng-click': 'onChangeProduct(product, content_fee); updateContentFee(content_fee);'}
 														%span.text {{product.name}}
-											%i.fa.fa-trash.z-icon{'ng-click': 'deleteContentFee(content_fee)'}
-									%td.type-column
-										&nbsp;
+									%td
+										%i.fa.fa-trash.z-icon{'ng-click': 'deleteContentFee(content_fee)'}
+									%td{ 'ng-if': 'company.product_options_enabled && company.product_option1_enabled' }
+										.dropdown{'ng-if': 'productsByLevel(1, content_fee.product).length > 0'}
+											%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+												%span.editable
+													{{content_fee.product.level1.name || 'Select '+company.product_option1_field}}
+													%span.caret
+											%ul.dropdown-menu
+												%li{'ng-repeat': 'product in productsByLevel(1, content_fee.product)', 'ng-class': '{active: content_fee.product.level1.id == product.id}'}
+													%a{'href': '', 'ng-click': 'onChangeProduct(product, content_fee); updateContentFee(content_fee);'}
+														%span.text {{product.name}}
+									%td{ 'ng-if': 'company.product_options_enabled && company.product_option2_enabled' }
+										.dropdown{'ng-if': 'productsByLevel(2, content_fee.product).length > 0'}
+											%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+												%span.editable
+													{{content_fee.product.level2.name || 'Select '+company.product_option2_field}}
+													%span.caret
+											%ul.dropdown-menu
+												%li{'ng-repeat': 'product in productsByLevel(2, content_fee.product)', 'ng-class': '{active: content_fee.product.level2.id == product.id}'}
+													%a{'href': '', 'ng-click': 'onChangeProduct(product, content_fee); updateContentFee(content_fee);'}
+														%span.text {{product.name}}
 									%td
 										{{ currentIO.start_date | date: 'M/d/yyyy' }}
 									%td
@@ -114,6 +135,8 @@
 										%span{ ng: { if: "!currentUser.is_admin && !canEditIO" } }
 											{{ product_budget.budget_loc | currency:currency_symbol:2 }}
 								%tr.sum-budgets-row{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0'} }
+									%td{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled'}
+									%td{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled'}
 									%td{colspan: 3}
 									%td.right
 										%b TOTAL
@@ -122,7 +145,7 @@
 									%td.right{'ng-repeat': 'month in currentIO.months'}
 										%b {{sumContentFeeBudget($index) | currency: currency_symbol : 2}}
 								%tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
-									%td.center{ 'colspan': '{{5+currentIO.readable_months.length}}' }
+									%td.center.auto-colspan
 										No data available
 				%div{'ng-include': '"partials/io/io_costs.html"'}
 				.block#line-display
@@ -138,6 +161,8 @@
 									%th.left End Date
 									%th.left
 										.product Product
+									%th.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} {{ company.product_option1_field }}
+									%th.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} {{ company.product_option2_field }}
 									%th.left Ad Unit
 									%th.left Ad Server Product
 									%th.right Qty
@@ -167,7 +192,11 @@
 									%td.left
 										{{ displayLineItem.end_date | date: 'M/d/yyyy' }}
 									%td.left
-										{{ displayLineItem.product.name }}
+										{{ displayLineItem.product.level0.name }}
+									%td.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+										{{ displayLineItem.product.level1.name }}
+									%td.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+										{{ displayLineItem.product.level2.name}}
 									%td.left
 										{{ displayLineItem.ad_unit }}
 									%td.left
@@ -175,19 +204,19 @@
 									%td.right
 										{{ displayLineItem.quantity }}
 									%td.right
-										{{ displayLineItem.price | currency:currency_symbol:0 }}
+										{{ displayLineItem.price | currency:currency_symbol:2 }}
 									%td.left
 										{{ displayLineItem.pricing_type }}
 									%td.right.display-line-table-budget
 										%div
 											%a{href: '', 'ng-click': 'showBudgetRow(displayLineItem, $event)'}
-												{{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
+												{{ displayLineItem.budget_loc | currency:currency_symbol:2 }}
 										%div.budget-arrow{'ng-class': '{"active": displayLineItem == selectedIORow}'}
 											.fa.fa-caret-up
 									%td.right
-										{{ displayLineItem.budget_delivered_loc | currency:currency_symbol:0 }}
+										{{ displayLineItem.budget_delivered_loc | currency:currency_symbol:2 }}
 									%td.right
-										{{ displayLineItem.budget_remaining_loc | currency:currency_symbol:0 }}
+										{{ displayLineItem.budget_remaining_loc | currency:currency_symbol:2 }}
 									%td.right
 										{{ displayLineItem.quantity_delivered }}
 									%td.right
@@ -214,19 +243,19 @@
 											%div.budgets-inner
 												%div.title
 													Monthly Budgets
-													%span ( {{ budgets.rest | currency:currency_symbol:0 }} remaining )
+													%span ( {{ budgets.rest | currency:currency_symbol:2 }} remaining )
 												%div.line-budget{'ng-if': 'currentUser.is_admin || canEditIO', 'ng-repeat': 'budget in budgets'}
 													.month {{budget.month}}
 													.budget.hide-input-arrows
 														%span.editable-budget{'editable-number': 'budget.budget_loc', 'blur': 'submit', 'onbeforesave': 'createOrUpdateBudget(budget, $data, $index)'}
 															%span{'ng-if': '!isNaN(budget.budget_loc)'}
-																{{ budget.budget_loc | currency : currency_symbol : 0 }}
+																{{ budget.budget_loc | currency : currency_symbol : 2 }}
 																%i.fa.fa-close.budget-delete{'ng-click': 'deleteBudget(budget, $event)'}
 															%span{'ng-if': 'isNaN(budget.budget_loc)'}
 																%b.add-budget Add
 												%div.line-budget{'ng-if': '!currentUser.is_admin && !canEditIO', 'ng-repeat': 'budget in budgets'}
 													.month {{budget.month}}
-													.budget {{budget.budget_loc | currency : currency_symbol : 0}}
+													.budget {{budget.budget_loc | currency : currency_symbol : 2}}
 
 							%tbody{ ng: { if: '!currentIO.display_line_items || currentIO.display_line_items.length == 0' } }
 								%tr
@@ -261,7 +290,7 @@
 									%td.left
 										{{ printItem.end_date | date: 'M/d/yyyy' }}
 								%tr{ ng: { if: '!currentIO.print_items || currentIO.print_items.length == 0' } }
-									%td.center{ 'colspan': '{{4+2}}' }
+									%td.center.auto-colspan
 										No data available
 				.block#influencer{'ng-show': 'currentUser.company_influencer_enabled'}
 					%div.mb20
@@ -275,6 +304,8 @@
 								%tr
 									%th.left{width: '200'} Influencer
 									%th.left Product
+									%th.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} {{ company.product_option1_field }}
+									%th.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} {{ company.product_option2_field }}
 									%th.left Date
 									%th.left Fee Type
 									%th.right Fee Amount
@@ -288,7 +319,11 @@
 										%i.fa.fa-pencil.edit-deal.action-button{'ng-click': 'showEditInfluencerContentFeeModal(influencerContentFee)'}
 										%i.fa.fa-trash.delete-deal.action-button{'ng-click': 'deleteInfluencerContentFee(influencerContentFee)'}
 									%td.left
-										{{ influencerContentFee.content_fee.product.name }}
+										{{ influencerContentFee.content_fee.product.level0.name }}
+									%td.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+										{{ influencerContentFee.content_fee.product.level1.name }}
+									%td.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+										{{ influencerContentFee.content_fee.product.level2.name }}
 									%td.left
 										{{ influencerContentFee.effect_date | date: 'M/d/yyyy'	}}
 									%td.left
@@ -308,6 +343,8 @@
 									%td.left
 										Total
 									%td.left
+									%td.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+									%td.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
 									%td.left
 									%td.left
 									%td.right
@@ -317,7 +354,7 @@
 										{{ currentIO.total_influencer_net | currency:currentIO.currency.curr_symbol:0 }}
 									%td.left
 								%tr{ ng: { if: '!currentIO.influencer_content_fees || currentIO.influencer_content_fees.length == 0' } }
-									%td.center{ 'colspan': '{{10}}' }
+									%td.center.auto-colspan
 										No data available
 			.col-xs-4
 				.block#team-split

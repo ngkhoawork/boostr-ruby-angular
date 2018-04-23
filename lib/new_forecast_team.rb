@@ -57,7 +57,7 @@ class NewForecastTeam
   def stages
     return @stages if defined?(@stages)
     ids = weighted_pipeline_by_stage.keys
-    @stages = team.company.stages.where(id: ids).order(:probability).all
+    @stages = team.company.stages.active.by_ids(ids).order_by_probability
   end
 
   def members
@@ -689,8 +689,10 @@ class NewForecastTeam
   end
 
   def product_ids
-    @_product_ids ||= if product.present?
+    @_product_ids ||= if product&.level == 2
       [product.id]
+    elsif product.present?
+      product.include_children.collect(&:id)
     elsif product_family.present?
       product_family.products.collect(&:id)
     end

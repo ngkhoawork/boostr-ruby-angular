@@ -48,14 +48,17 @@
 
       .form-group
         .row
-          .col-xs-6{ ng: {if: 'Advertiser && client.client_type.option_id === Advertiser'} }
-            %label{ for: 'parent-client' }
-              Global Parent
-            %ui-select{ parent_client: 'parent-client', ng: { model: 'client.parent_client_id', disabled: 'client.client_type.option_id === undefined', keyup: 'searchClients($select.search)'} }
-              %ui-select-match{ placeholder: 'Pick from list or search', "allow-clear": 'true' }
-                {{ $select.selected.name || client.parent_client.name }}
-              %ui-select-choices{ repeat: 'parent.id as parent in clients | filter: { name: $select.search }' }
-                %div{ ng: { bind: { html: 'parent.name' } } }
+          .col-xs-6{ ng: {class: '{error: errors.client_region_id}'} }
+            %span.error-text {{errors.client_region_id}}
+            %label{ for: 'client-region' }
+              Region
+              %span.star{ 'ng-if': "baseFieldRequired('client_region_id')" }
+                *
+            %ui-select{ region: 'client-region', ng: { model: 'client.client_region_id', disabled: true } }
+              %ui-select-match{ placeholder: 'Region' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'region.id as region in client.fields[3].options | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'region.name' } } }       
           .col-xs-6{ ng: {if: 'Agency && client.client_type.option_id === Agency'} }
             %label{ for: 'holding-company' }
               Holding Company
@@ -90,18 +93,15 @@
                 %div{ ng: { bind: { html: 'subcategory.name' } } }
       .form-group
         .row
-          .col-xs-6{ ng: {class: '{error: errors.client_region_id}'} }
-            %span.error-text {{errors.client_region_id}}
-            %label{ for: 'client-region' }
-              Region
-              %span.star{ 'ng-if': "baseFieldRequired('client_region_id')" }
-                *
-            %ui-select{ region: 'client-region', ng: { model: 'client.client_region_id', disabled: true } }
-              %ui-select-match{ placeholder: 'Region' }
-                {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'region.id as region in client.fields[3].options | filter: { name: $select.search }' }
-                %div{ ng: { bind: { html: 'region.name' } } }
-          .col-xs-6{ ng: {class: '{error: errors.client_segment_id}'} }
+          .col-xs-6{ ng: {if: 'Advertiser && client.client_type.option_id === Advertiser'} }
+            %label{ for: 'parent-client' }
+              Global Parent
+            %ui-select{ parent_client: 'parent-client', ng: { model: 'client.parent_client_id', disabled: 'client.client_type.option_id === undefined', keyup: 'searchClients($select.search)'} }
+              %ui-select-match{ placeholder: 'Pick from list or search', "allow-clear": 'true' }
+                {{ $select.selected.name || client.parent_client.name }}
+              %ui-select-choices{ repeat: 'parent.id as parent in clients | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'parent.name' } } }
+          .col-xs-6{ ng: {class: '{error: errors.client_segment_id}', if: 'Advertiser && client.client_type.option_id === Advertiser'} }
             %span.error-text {{errors.client_segment_id}}
             %label{ for: 'client-segment' }
               Segment

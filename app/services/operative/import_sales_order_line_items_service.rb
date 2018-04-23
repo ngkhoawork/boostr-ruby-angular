@@ -114,6 +114,7 @@ class Operative::ImportSalesOrderLineItemsService
       ad_server: 'O1',
       start_date: row[:sales_order_line_item_start_date],
       end_date: row[:sales_order_line_item_end_date],
+      ad_server_product: row[:product_name],
       product_name: product_mapping(row),
       quantity: row[:quantity],
       price: row[:net_unit_cost],

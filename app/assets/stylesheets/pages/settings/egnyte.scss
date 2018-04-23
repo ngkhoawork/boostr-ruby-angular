@@ -1,0 +1,172 @@
+#egnyte {
+  .form-group {
+    label {
+      display: inline-block;
+      max-width: 100%;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #818689;
+    }
+
+    .star {
+      color: #ed5063;
+    }
+
+    input {
+      background-color: white;
+      font-weight: bold;
+    }
+
+    input::placeholder {
+      font-weight: 100;
+    }
+
+    .error-text {
+      float: right;
+      color: #ed5063;
+    }
+  }
+
+  .error {
+    input {
+      border-color: #ed5063;
+    }
+  }
+
+  .btn-lg {
+    padding: 10px 25px;
+  }
+
+  .title {
+    font-weight: 100;
+  }
+
+  .connected-block {
+    .disconnect {
+      color: red;
+      cursor: pointer;
+      width: 135px;
+      float: right;
+      padding-top: 4px;
+    }
+  }
+
+  .tree {
+    ul {
+      list-style-type: none;
+      padding-left:20px;
+    }
+
+    .collapsed ul {
+       display: none;
+     }
+
+    li a:hover {
+      cursor: pointer;
+    }
+  }
+
+  .egnyte-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 25px;
+
+    .header-item {
+      margin-right: 30px;
+      white-space: nowrap;
+    }
+  }
+
+  .folders {
+    padding-left: 0;
+
+    .folder-title {
+      display: inline-flex;
+      width: 100%;
+
+      .triangle-left {
+        margin: 15px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 5px 0 6px 10px;
+        border-color: transparent transparent transparent #96A2AC;
+      }
+
+      .triangle-down {
+        margin: 15px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 9px 6px 0 6px;
+        border-color: #96A2AC transparent transparent transparent;
+      }
+
+      .fa-folder-open, .fa-folder {
+        font-size: 3em;
+        color: #ff7200;
+      }
+
+      p {
+        padding: 0 10px;
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .folder-info {
+        ul {
+          padding-left: 0;
+        }
+
+        .additional-info {
+          font-size: 14px;
+          color: #818689;
+        }
+
+        .content-info {
+          position: absolute;
+        }
+      }
+
+      .folder-actions {
+        text-align: right;
+        width: 100%;
+        visibility: hidden;
+
+        .folder-delete-icon, .folder-edit-icon {
+          color: $secondary-font-color;
+          cursor: pointer;
+          width: 28px;
+          height: 28px;
+          padding: 4px 6px;
+          font-size: 20px;
+          border-radius: 5px;
+
+          &:hover {
+            background-color: $secondary-font-color;
+            color: white;
+          }
+        }
+      }
+    }
+
+    .active {
+      background-color: rgba(255, 115, 0, 0.15) !important;
+      border: 1px solid #ff7200 !important;
+    }
+
+    .show {
+      visibility: visible !important;
+    }
+
+    .block {
+      margin-bottom: 5px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    li {
+      list-style: none;
+    }
+  }
+}

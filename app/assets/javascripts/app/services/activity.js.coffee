@@ -13,10 +13,11 @@
       method: 'GET'
       url: '/api/publisher_details/:id/activities'
       isArray: true
+    getAccountActivity:
+      method: 'GET'
+      url: '/api/clients/:id/'
 
   @$resource = resource
-
-  @getPublishersActivity = (params) -> resource.getPublishersActivity(params).$promise
 
   @all = (params) ->
     deferred = $q.defer()
@@ -49,6 +50,15 @@
     resource.get id: activity_id, (activity) ->
       deferred.resolve(activity)
     deferred.promise
-  
+
+  @getPublishersActivity = (params) -> resource.getPublishersActivity(params).$promise
+
+  @getAccountActivity = (params) ->
+    deferred = $q.defer()
+    resource.getAccountActivity params, (client) ->
+      activities = (client && client.activities.concat(client.agency_activities)) || []
+      deferred.resolve(activities)
+    deferred.promise
+
   return
 ]

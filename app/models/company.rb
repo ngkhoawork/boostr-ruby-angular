@@ -13,6 +13,7 @@ class Company < ActiveRecord::Base
   has_many :distinct_stages, -> {distinct}, class_name: 'Stage'
   has_many :products
   has_many :product_families
+  has_many :product_options
   has_many :teams
   has_many :time_periods
   has_many :quotas
@@ -66,20 +67,25 @@ class Company < ActiveRecord::Base
   has_many :publisher_custom_fields, through: :publishers
   has_many :ssp_advertisers
   has_many :sales_processes
+  has_many :ssp_credentials, dependent: :destroy
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
 
   has_one :billing_address, as: :addressable, class_name: 'Address'
   has_one :physical_address, as: :addressable, class_name: 'Address'
+  has_one :egnyte_integration, dependent: :destroy
 
   serialize :forecast_permission, HashSerializer
 
   accepts_nested_attributes_for :billing_address
   accepts_nested_attributes_for :physical_address
   accepts_nested_attributes_for :assets
+  accepts_nested_attributes_for :egnyte_integration
 
   before_create :setup_defaults
+
+  delegate :enabled, :app_domain, :deals_folder_name, to: :egnyte_integration, prefix: true, allow_nil: true
 
   def setup_defaults
     contact_role = fields.find_or_initialize_by(subject_type: 'Deal', name: 'Contact Role', value_type: 'Option', locked: true)
@@ -124,6 +130,9 @@ class Company < ActiveRecord::Base
     ealerts.find_or_initialize_by(recipients: nil, automatic_send: false, same_all_stages: true)
 
     setup_default_validations
+
+    AssignmentRule.create(company_id: self.id, name: 'No Match', default: true, position: 100_000)
+    build_egnyte_integration(enabled: false)
   end
 
   def setup_client_fields
@@ -238,8 +247,20 @@ class Company < ActiveRecord::Base
     teams.pluck(:leader_id) + users.in_a_team.ids
   end
 
+  def product_option1
+    product_option1_field || 'Option1'
+  end
+
+  def product_option2
+    product_option2_field || 'Option2'
+  end
+
   def default_sales_process
     sales_processes.first
+  end
+
+  def account_fields_data
+    @_account_fields_data ||= Models::AccountCompanyDataService.new(id).perform
   end
 
   protected

@@ -19,6 +19,7 @@ FactoryGirl.define do
     loss_comments nil
     next_step nil
     created_by nil
+    legacy_id { FFaker::HipsterIpsum.word }
 
     initialize_with { attributes }
 

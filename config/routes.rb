@@ -165,6 +165,15 @@ Rails.application.routes.draw do
       resources :display_line_item_budgets, only: [:create]
     end # API V2 END
 
+    post '/slack/auth', to: 'slack_connect#auth'
+    get '/slack/callback', to: 'slack_connect#callback'
+
+    resources :data_models, only: [:index] do
+      get :data_mappings, on: :collection
+      get :reflections, on: :collection
+      get :reflections_labels, on: :collection
+    end
+
     namespace :dataexport, defaults: { format: :json }, constraints: ApiConstraints.new(dataexport: true) do
       resources :user_token, only: [:create]
 
@@ -183,6 +192,12 @@ Rails.application.routes.draw do
     end
 
     resources :dfp_imports do
+      collection do
+        post 'import'
+      end
+    end
+
+    resources :datafeed, only: [] do
       collection do
         post 'import'
       end
@@ -216,6 +231,12 @@ Rails.application.routes.draw do
       collection do
         get :metadata
         get :service_account_email
+        get :ssp_credentials
+        get :workflowable_actions
+      end
+      member do
+        post :delete_ssp
+        post :update_ssp
       end
     end
     resources :integration_types, only: [:index]
@@ -224,7 +245,7 @@ Rails.application.routes.draw do
     end
 
     resources :integrations, only: [:create]
-    resources :csv_import_logs, only: [:index] do
+    resources :csv_import_logs, only: [:index, :show] do
       collection  do
         get :api_logs
       end
@@ -248,6 +269,7 @@ Rails.application.routes.draw do
         get :filter_options
         get :category_options
         get :fuzzy_search
+        post :csv_import
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index, :create, :update, :destroy] do
@@ -257,9 +279,23 @@ Rails.application.routes.draw do
       end
     end
     resources :client_connections, only: [:index, :create, :update, :destroy]
-    resources :deal_custom_field_names, only: [:index, :show, :create, :update, :destroy]
-    resources :deal_product_cf_names, only: [:index, :show, :create, :update, :destroy]
-    resources :account_cf_names, only: [:index, :show, :create, :update, :destroy]
+    resources :deal_custom_field_names, only: [:index, :show, :create, :update, :destroy] do
+      collection do
+        get :csv_headers
+      end
+    end
+
+    resources :deal_product_cf_names, only: [:index, :show, :create, :update, :destroy] do
+      collection do
+        get :csv_headers
+      end
+    end
+
+    resources :account_cf_names, only: [:index, :show, :create, :update, :destroy] do
+      collection do
+        get :csv_headers
+      end
+    end
     resources :contact_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_reports, only: [:index]
 
@@ -310,6 +346,9 @@ Rails.application.routes.draw do
     resources :pmps, only: [:index, :show, :create, :update, :destroy] do
       resources :pmp_members, only: [:create, :update, :destroy]
       resources :pmp_items, only: [:create, :update, :destroy]
+      get :no_match_advertisers, on: :collection
+      post :bulk_assign_advertiser, on: :collection
+      post :assign_advertiser, on: :member
     end
     resources :pmp_item_daily_actuals, only: [:index, :update, :destroy] do
       post :import, on: :collection
@@ -332,6 +371,7 @@ Rails.application.routes.draw do
       end
       member do
         post :send_to_operative
+        post :send_to_google_sheet
       end
       resources :deal_members, only: [:index, :create, :update, :destroy]
       resources :deal_contacts, only: [:index, :create, :update, :destroy]
@@ -353,6 +393,7 @@ Rails.application.routes.draw do
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
       collection do
         get :all_members
+        get :all_account_managers
       end
       get :members
       get :all_sales_reps
@@ -469,12 +510,17 @@ Rails.application.routes.draw do
     end
     resources :billing_summary, only: [:index] do
       member do
+        put :update_cost
+        put :update_cost_budget
         put :update_quantity
         put :update_content_fee_product_budget
         put :update_display_line_item_budget_billing_status
       end
 
+      get 'costs', on: :collection
+
       get :export, on: :collection
+      get :export_cost_budgets, on: :collection
     end
     resources :requests, only: [:index, :show, :create, :update, :destroy]
 
@@ -528,7 +574,51 @@ Rails.application.routes.draw do
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
 
+    resource :egnyte_integration, only: [:show, :create, :update] do
+      collection do
+        get :oauth_settings
+        get :oauth_callback
+        get :navigate_to_deal
+        get :navigate_to_account_deals
+        put :disconnect_egnyte
+      end
+    end
+
+    resources :leads, only: [:index, :show] do
+      member do
+        get :accept
+        get :reject
+        get :reassign
+        get :map_with_client
+        get :reject_from_email
+      end
+
+      collection do
+        get :users
+        post :import
+        post :create_lead
+      end
+    end
+
+    resources :assignment_rules, only: [:index, :create, :update, :destroy], controller: 'settings/assignment_rules' do
+      member do
+        get :add_user
+        get :remove_user
+      end
+
+      put :update_positions, on: :collection
+    end
+
+    resources :workflows, only: [:index, :create, :update, :destroy] do
+      resources :workflow_criterions, only: [:destroy]
+    end
+
     resources :sales_processes, only: [:index, :create, :show, :update]
+    resources :statistics, only: [:show]
+
+    resources :logi_configurations, only: [:index, :logi_callback] do
+      get :logi_callback, on: :collection
+    end
 
     resources :contracts, except: [:new, :edit] do
       resources :attachments, only: [:index, :update, :create, :destroy]

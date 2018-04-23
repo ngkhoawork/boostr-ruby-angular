@@ -1,6 +1,6 @@
 @app.controller 'RevenueController',
-  ['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem', 'PMP', 'PMPItemDailyActual', 'RevenueFilter', 'Deal', 'TimePeriod'
-  ( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem,   PMP,   PMPItemDailyActual, RevenueFilter, Deal, TimePeriod) ->
+  ['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem', 'PMP', 'PMPItemDailyActual', 'RevenueFilter', 'Deal', 'TimePeriod', 'Company',
+  ( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem,   PMP,   PMPItemDailyActual, RevenueFilter, Deal, TimePeriod, Company) ->
     formatMoney = $filter('formatMoney')
     $scope.isLoading = false
     $scope.allItemsLoaded = false
@@ -10,7 +10,7 @@
       {name: 'IOs', value: ''}
       {name: 'No-Match IOs', value: 'no-match'}
       {name: 'PMPs', value: 'pmp'}
-      {name: 'No-Match Advertisers', value: 'no-match-adv'}
+      {name: 'No-Match Advertisers', value: 'no-match-adv' || 'no-match-adv-ssp-advertisers'}
       {name: 'Upside Revenues', value: 'upside'}
       {name: 'At Risk Revenues', value: 'risk'}
     ]
@@ -20,6 +20,7 @@
       {name: 'All Lines', value: 'all'}
     ]
     itemsPerPage = 20
+    $scope.company = {}
     $scope.filter =
       page: 1
       revenue: $routeParams.filter || ''
@@ -183,8 +184,11 @@
           PMP.query query, (pmps) -> revenueRequest.resolve pmps
         when 'no-match-adv'
           query.with_advertiser = false
-          PMPItemDailyActual.query query, (pmpItemDailyActuals) -> 
+          PMPItemDailyActual.query query, (pmpItemDailyActuals) ->
             revenueRequest.resolve pmpItemDailyActuals
+        when 'no-match-adv-ssp-advertisers'
+          PMP.custom_query query, (pmps) ->
+            revenueRequest.resolve pmps
         else
           IO.query query, (ios) -> revenueRequest.resolve ios
       revenueRequest.promise.then (data) ->
@@ -192,6 +196,12 @@
 
     $scope.loadMoreRevenues = ->
       if !$scope.allItemsLoaded then getData(getQuery())
+
+    $scope.setCurrentTab = (val) ->
+      $scope.filter.revenue = val
+      $scope.applyFilter()
+
+
 
     parseBudget = (data) ->
       data = _.map data, (item) ->
@@ -238,7 +248,20 @@
           pmpItemDailyActual: ->
             pmpItemDailyActual
       modalInstance.result.then (ids) ->
-        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id) 
+        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id)
+
+    $scope.showAssignPmpAdvertiserModal = (pmpObject) ->
+      modalInstance = $modal.open
+        templateUrl: 'modals/pmp_ssp_advertiser_assign_form.html'
+        size: 'lg'
+        controller: 'AdvertiserAssignPmpController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          object: ->
+            pmpObject
+      modalInstance.result.then (ids) ->
+        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id)
 
     $scope.deleteIo = (io, $event) ->
       $event.stopPropagation();
@@ -256,6 +279,23 @@
         resolve:
           pmp: null
 
+    $scope.showAssignPmpAdvertiserModal = (pmpObject) ->
+      modalInstance = $modal.open
+        templateUrl: 'modals/pmp_ssp_advertiser_assign_form.html'
+        size: 'lg'
+        controller: 'AdvertiserAssignPmpController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          object: ->
+            pmpObject
+      modalInstance.result.then (ids) ->
+        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id)
+
+    $scope.setCurrentTab = (val) ->
+      $scope.filter.revenue = val
+      $scope.applyFilter()
+
     $scope.getFilters = ->
       $q.all({
         filterData: Deal.filter_data(),
@@ -266,6 +306,7 @@
         $scope.filter.timePeriods = filterData.timePeriods
         $scope.filter.slider.maxValue = $scope.filter.slider.options.ceil = filterData.filterData.max_budget
 
+    Company.get().$promise.then (company) -> $scope.company = company
     $scope.getFilters()
     $scope.applyFilter()	
   ]

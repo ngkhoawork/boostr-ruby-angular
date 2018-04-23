@@ -24,9 +24,19 @@ class Forecast::PmpRevenueCalcService
       end
       pmp_total
     end
-    forecast_pmp_revenue_fact.amount = total
-    forecast_pmp_revenue_fact.monthly_amount = monthly_value
-    forecast_pmp_revenue_fact.save
+
+    create_forecast_pmp_revenue_fact(total, monthly_value)
+  end
+
+  def create_forecast_pmp_revenue_fact(total, monthly_value)
+    if total > 0
+      forecast_pmp_revenue_fact.update(
+        amount: total,
+        monthly_amount: monthly_value
+      )
+    elsif forecast_pmp_revenue_fact.id.present?
+      forecast_pmp_revenue_fact.destroy
+    end
   end
 
   private
@@ -39,7 +49,7 @@ class Forecast::PmpRevenueCalcService
               :product
 
   def forecast_pmp_revenue_fact
-    @_forecast_pmp_revenue_fact ||= ForecastPmpRevenueFact.find_or_initialize_by(
+    ForecastPmpRevenueFact.find_or_initialize_by(
       forecast_time_dimension_id: forecast_time_dimension.id,
       user_dimension_id: user.id,
       product_dimension_id: product&.id
@@ -48,7 +58,7 @@ class Forecast::PmpRevenueCalcService
 
   def pmp_item_budgets(monthly_value, pmp_item, pmp_member, pmp)
     share = pmp_member.share
-    pmp_actuals = pmp_item.pmp_item_daily_actuals
+    pmp_actuals = pmp_item.pmp_item_daily_actuals.oldest
 
     actual_start_date = pmp_actuals.first&.date || pmp_item.start_date
     actual_end_date = pmp_actuals.last&.date || pmp_item.start_date
@@ -106,7 +116,7 @@ class Forecast::PmpRevenueCalcService
   def pmp_item_run_rate(pmp_item)
     case pmp_item.pmp_type 
       when 'guaranteed'
-        actual_end_date = pmp_item.pmp_item_daily_actuals.last&.date || pmp_item.start_date
+        actual_end_date = pmp_item.pmp_item_daily_actuals.oldest.last&.date || pmp_item.start_date
         remaining_days = [pmp_item.end_date - actual_end_date, 0].max
         remaining_budget = pmp_item.budget - pmp_item.pmp_item_daily_actuals.sum(:revenue)
         if remaining_days == 0

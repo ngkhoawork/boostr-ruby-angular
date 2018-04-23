@@ -1,11 +1,14 @@
 @app.controller 'DataImportExportController',
-['$scope', '$modal', '$window', 'CsvImportLogs'
+['$scope', '$modal', '$window', 'CsvImportLogs',
 ($scope, $modal, $window, CsvImportLogs) ->
 
   $scope.csvImportLogsUrl = 'api/csv_import_logs'
   $scope.csvImportLogsUrlParams = {
     source: 'ui'
   }
+
+  $scope.getLogs = ->
+    $scope.$broadcast('pagination:reload')
 
   $scope.showUploadClientModal = () ->
     $scope.modalInstance = $modal.open
@@ -16,7 +19,7 @@
       keyboard: false
       resolve:
         api_url: ->
-          '/api/clients'
+          '/api/clients/csv_import'
         custom_fields_api: ->
           'AccountCfName'
         metadata: ->
@@ -269,6 +272,21 @@
         metadata: ->
           false
 
+  $scope.showUploadLeadsModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/leads_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/leads/import'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')
     return true
@@ -346,7 +364,7 @@
     $window.open('/api/ios/export_costs.csv')
     return true
 
-  $scope.showBodyModal = (body) ->
+  $scope.showBodyModal = (log) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/csv_logs_body.html'
       size: 'lg'
@@ -354,8 +372,8 @@
       backdrop: 'static'
       keyboard: false
       resolve:
-        body: ->
-          body
+        log: ->
+          log
 
   $scope.importOptions = [
     { title: 'Accounts Import', click: $scope.showUploadClientModal, linkText: 'Import Accounts' },

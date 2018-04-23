@@ -25,11 +25,21 @@ class Api::CompaniesController < ApplicationController
       :ealert_reminder,
       :influencer_enabled,
       :publishers_enabled,
+      :logi_enabled,
+      :agreements_enabled,
+      :leads_enabled,
+      :contracts_enabled,
       :forecast_gap_to_quota_positive,
+      :product_options_enabled,
+      :product_option1_field,
+      :product_option2_field,
+      :product_option1_enabled,
+      :product_option2_enabled,
       :enable_net_forecasting,
       :default_io_freeze_budgets,
       forecast_permission: ["0", "1", "2", "3", "4", "5", "6", "7"],
-      io_permission: ["0", "1", "2", "3", "4", "5", "6", "7"]
+      io_permission: ["0", "1", "2", "3", "4", "5", "6", "7"],
+      egnyte_integration_attributes: [:id, :app_domain, :enabled]
     )
   end
 

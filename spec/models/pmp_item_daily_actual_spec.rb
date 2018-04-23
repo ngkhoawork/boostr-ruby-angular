@@ -11,6 +11,8 @@ RSpec.describe PmpItemDailyActual, 'validations' do
   it { should validate_numericality_of(:impressions) }
   it { should validate_numericality_of(:revenue_loc) }
   it { should validate_numericality_of(:price) }
+  it { should validate_numericality_of(:win_rate) }
+  it { should allow_value(nil).for(:win_rate) }
 end
 
 RSpec.describe PmpItemDailyActual, 'associations' do

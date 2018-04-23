@@ -28,9 +28,9 @@
             %span.star *
             %ui-select{ name: 'content_fee', ng: { model: 'influencerContentFee.content_fee_id', disabled: true } }
               %ui-select-match{ placeholder: 'Product' }
-                {{ $select.selected.product.name }}
+                {{ $select.selected.product.full_name }}
               %ui-select-choices{ repeat: 'contentFee.id as contentFee in contentFees' }
-                %div{ ng: { bind: { html: 'contentFee.product.name' } } }
+                %div{ ng: { bind: { html: 'contentFee.product.full_name' } } }
       .form-group
         .row
           .col-md-12.bs-datepicker{'ng-class':'{error: errors.effect_date}'}

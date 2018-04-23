@@ -17,22 +17,22 @@
         Make sure your CSV file includes these EXACT headers and columns:
 
       %ol.row.center-block
-        %li.col-xs-3.col-xs-offset-2 Ext IO Num *
+        %li.col-xs-3 Ext IO Num *
         %li.col-xs-3 IO Name *
         %li.col-xs-3
           IO Start Date *
           %br
           (MM/DD/YYYY)
-        %li.col-xs-3.col-xs-offset-2
+        %li.col-xs-3
           IO End Date *
           %br
           (MM/DD/YYYY)
         %li.col-xs-3 Budget *
         %li.col-xs-3 ISO Currency Code *
-        %li.col-xs-3.col-xs-offset-2 Advertiser *
+        %li.col-xs-3 Advertiser *
         %li.col-xs-3 Agency
         %li.col-xs-3 Line Num *
-        %li.col-xs-3.col-xs-offset-2 AdServer
+        %li.col-xs-3 AdServer
         %li.col-xs-3
           Start Date *
           %br
@@ -41,19 +41,21 @@
           End Date *
           %br
           (MM/DD/YYYY)
-        %li.col-xs-3.col-xs-offset-2 Product *
+        %li.col-xs-3 Product *
+        %li.col-xs-3{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} Product Level1
+        %li.col-xs-3{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} Product Level2
         %li.col-xs-3 Qty *
         %li.col-xs-3 Price
-        %li.col-xs-3.col-xs-offset-2 Price Type
+        %li.col-xs-3 Price Type
         %li.col-xs-3 Budget *
         %li.col-xs-3 Budget Delivered
-        %li.col-xs-3.col-xs-offset-2 Budget Remaining
+        %li.col-xs-3 Budget Remaining
         %li.col-xs-3 Qty Delivered
         %li.col-xs-3 Qty Remaining
-        %li.col-xs-3.col-xs-offset-2 3PQtyDelivered
+        %li.col-xs-3 3PQtyDelivered
         %li.col-xs-3 3PQtyRemaining
         %li.col-xs-3 3PBud Delivered
-        %li.col-xs-3.col-xs-offset-2 3P Bud Remaining
+        %li.col-xs-3 3P Bud Remaining
 
     .well.well-lg.dark
       .row

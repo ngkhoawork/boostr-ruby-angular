@@ -1,7 +1,13 @@
 class Csv::Quota
   include ActiveModel::Validations
 
-  attr_accessor :time_period_name, :user_email, :quota_value, :company, :type, :product_name, :product_family_name
+  attr_accessor :time_period_name, 
+                :user_email, 
+                :quota_value, 
+                :company, 
+                :type, 
+                :product_name, 
+                :product_family_name
 
   validates :time_period_name, :user_email, :quota_value, :company, :type, presence: true
 

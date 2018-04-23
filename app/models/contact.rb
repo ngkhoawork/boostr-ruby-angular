@@ -1,5 +1,13 @@
 class Contact < ActiveRecord::Base
+  SAFE_COLUMNS = %i{name position created_at updated_at}
+
   acts_as_paranoid
+
+  WEB_FORM_LEAD = 'web-form lead'.freeze
+  MARKETING_LEAD = 'marketing lead'.freeze
+  TRADESHOW_LEAD = 'tradeshow lead'.freeze
+  OTHER_LEAD = 'other lead'.freeze
+  OTHER = 'other'.freeze
 
   belongs_to :company
   belongs_to :client
@@ -24,6 +32,7 @@ class Contact < ActiveRecord::Base
   has_one :address, as: :addressable
   has_many :integrations, as: :integratable
   has_many :values, as: :subject
+  has_many :leads
 
   has_and_belongs_to_many :latest_happened_activity, -> {
     order('activities.happened_at DESC').limit(1)
@@ -165,8 +174,8 @@ class Contact < ActiveRecord::Base
       end
       agency_data_list = []
 
-      if row[11].present?
-        agency_list = row[11].split(";")
+      if row[12].present?
+        agency_list = row[12].split(";")
 
         agency_list_error = false
         agency_list.each do |agency_name|
@@ -206,9 +215,10 @@ class Contact < ActiveRecord::Base
         street2: row[5].nil? ? nil : row[5].strip,
         city: row[6].nil? ? nil : row[6].strip,
         state: row[7].nil? ? nil : row[7].strip,
-        zip: row[8].nil? ? nil : row[8].strip,
-        phone: row[9].nil? ? nil : row[9].strip,
-        mobile: row[10].nil? ? nil : row[10].strip,
+        country: row[8]&.strip,
+        zip: row[9].nil? ? nil : row[9].strip,
+        phone: row[10].nil? ? nil : row[10].strip,
+        mobile: row[11].nil? ? nil : row[11].strip,
       }
       contact_params = {
           name: row[0].nil? ? nil : row[0].strip,

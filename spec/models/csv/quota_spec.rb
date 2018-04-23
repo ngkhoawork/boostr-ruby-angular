@@ -35,7 +35,7 @@ describe Csv::Quota do
   end
 
   def product
-    @_product ||= create :product, name: 'quota', company: company
+    @_product ||= create :product, name: 'PMP - Video', company: company
   end
 
   def product_family

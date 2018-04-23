@@ -17,8 +17,8 @@
 			backdrop: 'static'
 			keyboard: false
 			resolve:
-				contact: ->
-					{}
+				contact: -> {}
+				options: -> {}
 
 		modalInstance.result.then (contact) ->
 			closeExtensionModal({type: 'Contact', id: contact && contact.id})

@@ -4,12 +4,22 @@ class Integration < ActiveRecord::Base
   DFP = 'DFP'.freeze
   ASANA_CONNECT = 'Asana Connect'.freeze
   GOOGLE_SHEETS = 'Google Sheets'.freeze
+  SSP = 'SSP'.freeze
+  SLACK = 'Slack'.freeze
 
   validates :external_id, :external_type, presence: true
 
   belongs_to :integratable, polymorphic: true
 
   scope :operative, -> { find_by(external_type: OPERATIVE) }
+
+  def self.get_types(current_user)
+    integration_types = [
+      OPERATIVE, OPERATIVE_DATAFEED, DFP, ASANA_CONNECT, SSP
+    ]
+    integration_types << GOOGLE_SHEETS if current_user.company.buzzfeed?
+    integration_types
+  end
 
   def self.import(file, current_user_id, file_path)
     current_user = User.find current_user_id

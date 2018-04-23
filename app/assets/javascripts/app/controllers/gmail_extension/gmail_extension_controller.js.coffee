@@ -70,8 +70,8 @@
 			backdrop: 'static'
 			keyboard: false
 			resolve:
-				contact: ->
-					{}
+				contact: -> {}
+				options: -> {}
 
 	$scope.openAccountModal = ->
 		$scope.modalInstance = $modal.open
@@ -81,8 +81,8 @@
 			backdrop: 'static'
 			keyboard: false
 			resolve:
-				client: ->
-					{}
+                client: -> {}
+                options: -> {}
 
 	$scope.$on 'openContactModal', ->
 		$scope.openContactModal()

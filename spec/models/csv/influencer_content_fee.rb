@@ -51,9 +51,9 @@ RSpec.describe Csv::InfluencerContentFee, type: :model do
 
   def file
     @_file = CSV.generate do |csv|
-      csv << ['IO Num', 'Influencer ID', 'Product', 'Date', 'Fee Type', 'Fee Amt', 'Gross', 'Asset']
-      csv << [io.io_number, influencer.id, product.name, '9/28/2016', 'percentage', 50, 10000, 'www.google.com']
-      csv << [io.io_number, influencer.id, 'fake', '1/8/2017', 'percentage', 50, 10000, 'www.google.com']
+      csv << ['IO Num', 'Influencer ID', 'Product', 'Product Level1', 'Product Level2', 'Date', 'Fee Type', 'Fee Amt', 'Gross', 'Asset']
+      csv << [io.io_number, influencer.id, product.name, nil, nil, '9/28/2016', 'percentage', 50, 10000, 'www.google.com']
+      csv << [io.io_number, influencer.id, 'fake', nil, nil, '1/8/2017', 'percentage', 50, 10000, 'www.google.com']
     end
   end	
 end

@@ -27,7 +27,6 @@ class TimePeriod < ActiveRecord::Base
 
   after_create do
     create_forecast_dimension
-    update_forecast_fact_callback
   end
 
   after_destroy do |time_period_record|
@@ -59,6 +58,8 @@ class TimePeriod < ActiveRecord::Base
       ForecastTimeDimension.destroy(time_period_record.id)
       ForecastPipelineFact.destroy_all(forecast_time_dimension_id: time_period_record.id)
       ForecastRevenueFact.destroy_all(forecast_time_dimension_id: time_period_record.id)
+      ForecastPmpRevenueFact.destroy_all(forecast_time_dimension_id: time_period_record.id)
+      ForecastCostFact.destroy_all(forecast_time_dimension_id: time_period_record.id)
     end
   end
 
@@ -74,6 +75,8 @@ class TimePeriod < ActiveRecord::Base
     io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
     deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
     ForecastRevenueCalculatorWorker.perform_async(io_change)
+    ForecastPmpRevenueCalculatorWorker.perform_async(io_change)
+    ForecastCostCalculatorWorker.perform_async(io_change)
     ForecastPipelineCalculatorWorker.perform_async(deal_change)
   end
 

@@ -6,7 +6,8 @@ class ApiConfiguration < ActiveRecord::Base
     'operative': 'OperativeApiConfiguration',
     'Operative Datafeed': 'OperativeDatafeedConfiguration',
     'Asana Connect': 'AsanaConnectConfiguration',
-    'Google Sheets': 'GoogleSheetsConfiguration'
+    'Google Sheets': 'GoogleSheetsConfiguration',
+    'SSP': 'SspCredential'
   }
 
   belongs_to :company
@@ -18,5 +19,9 @@ class ApiConfiguration < ActiveRecord::Base
   def self.metadata(routing_param)
     klass = self::INTEGRATION_PROVIDERS[routing_param.to_sym]
     klass.constantize.metadata
+  end
+
+  def workflowable?
+    false
   end
 end

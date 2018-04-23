@@ -31,7 +31,7 @@ class NewForecast
       ids << team.weighted_pipeline_by_stage.keys
     end
     ids = ids.flatten.uniq
-    @stages = company.stages.where(id: ids).order(:probability).all
+    @stages = company.stages.active.by_ids(ids).order_by_probability
   end
 
   def weighted_pipeline_by_stage

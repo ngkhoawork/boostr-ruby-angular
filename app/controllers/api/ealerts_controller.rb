@@ -121,6 +121,7 @@ class Api::EalertsController < ApplicationController
       :source_type,
       :next_steps,
       :closed_reason,
+      :closed_reason_text,
       :intiative,
       :product_name,
       :product_budget,

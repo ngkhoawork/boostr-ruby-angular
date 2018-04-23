@@ -1,0 +1,20 @@
+.row.block
+  %div.mb20
+    %span.title Product Families
+    %add-button.add-family{'ng-click': 'showNewFamilyModal()'} Add
+
+  .table-wrapper
+    %table.table.table-hover
+      %thead
+        %tr.z-sortable-prime
+          %th
+            %span.z-sortable{by: 'name'} Family Name
+          %th 
+            %span.z-sortable{by: 'active'} Active
+      %tbody{ ng: { repeat: 'productFamily in productFamilies | orderBy : zSort.by : zSort.rev' } }
+        %tr
+          %td
+            %span.mr8 {{ productFamily.name }}
+            %i.fa.fa-pencil.z-icon.edit-family{'ng-click': 'showNewFamilyModal(productFamily); $event.stopPropagation()'}
+            %i.fa.fa-trash.z-icon{ href: '', ng: { click: 'deleteFamily(productFamily); $event.stopPropagation()' } }
+          %td {{ productFamily.active ? 'Yes' : 'No' }}

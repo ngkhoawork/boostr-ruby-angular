@@ -58,7 +58,7 @@ class UserMailer < ApplicationMailer
         },
         deal_product_cf: {},
         product: {
-          only: [:id, :name]
+          only: [:id, :name, :full_name]
         }
       }
     }).map do |deal_product|
@@ -103,6 +103,11 @@ class UserMailer < ApplicationMailer
         'name' => 'closed_reason',
         'label' => 'Closed Reason',
         'value' => @deal.get_option_value_from_raw_fields(deal_settings_fields, 'Close Reason')
+      },
+      {
+        'name' => 'closed_reason_text',
+        'label' => 'Closed Comments',
+        'value' => @deal.closed_reason_text
       },
       {
         'name' => 'intiative',

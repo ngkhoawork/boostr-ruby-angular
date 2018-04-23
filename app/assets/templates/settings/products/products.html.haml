@@ -1,0 +1,58 @@
+.row.block
+  %div.mb20
+    %download-button.pull-right{'ng-click': 'exportProducts()'} Export
+    %span.title Products
+    %add-button.add-product{'ng-click': 'showNewProductModal()'} Add
+
+  .table-wrapper
+    %table.table.table-hover
+      %thead
+        %tr.z-sortable-prime
+          %th
+            %span.z-sortable{by: 'name'} Name
+          %th
+            %span.z-sortable{by: 'product_family.name'} Family
+          %th{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled' } 
+            %span.z-sortable{by: 'parent.name'} Parent Product
+          %th{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled' } 
+            %span.z-sortable{by: 'level'} Level
+          %th 
+            %span.z-sortable{by: 'pricing_type.option.name'} Type
+          %th 
+            %span.z-sortable{by: 'revenue_type'} Revenue Type
+          %th 
+            %span.z-sortable{by: 'margin'} Margin
+          %th 
+            %span.z-sortable{by: 'active'} Active
+          %th 
+            %span.z-sortable{by: 'is_influencer_product'} Is Influencer
+      %tbody{ ng: { repeat: 'product in products | orderBy : zSort.by : zSort.rev' } }
+        %tr.clickable{'ng-click': 'expendRow(product)'}
+          %td
+            %i{class: 'mr8 fa fa-chevron-{{expendedRow == product.id ? "right" : "down"}}'}
+            %span.mr8 {{ product.name }}
+            %i.fa.fa-pencil.z-icon.edit-product{'ng-click': 'showNewProductModal(product); $event.stopPropagation()'}
+          %td {{ product.product_family.name }}
+          %td{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled' } {{ product.parent.name }}
+          %td{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled' } {{ product.level }}
+          %td {{ product.pricing_type.option.name }}
+          %td {{ product.revenue_type }}
+          %td {{ product.margin }}
+          %td {{ product.active ? 'Yes' : 'No' }}
+          %td {{ product.is_influencer_product ? 'Yes' : 'No' }}
+        %tr{'ng-show': 'expendedRow == product.id'}
+          %td.auto-colspan{style: 'padding: 0'}
+            %table.table.ad-unit-table
+              %thead
+                %tr
+                  %th
+                    %span.mr20 Ad units
+                    %span.add-unit{'ng-click': 'showUnitModal(product)'}
+                      %i.fa.fa-plus
+                      Add new ad unit
+              %tbody
+                %tr{'ng-repeat': 'unit in productUnits[product.id]'}
+                  %td
+                    %span.mr8 {{unit.name}}
+                    %i.fa.fa-pencil.z-icon{'ng-click': 'showUnitModal(product, unit)'}
+                    %i.fa.fa-trash.z-icon{'ng-click': 'deleteUnit(product, unit)'}

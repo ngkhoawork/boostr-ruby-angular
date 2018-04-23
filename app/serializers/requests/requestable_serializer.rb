@@ -5,7 +5,7 @@ class Requests::RequestableSerializer < ActiveModel::Serializer
 
   def name
     if object.is_a?(ContentFee)
-      "#{object.product.name}"
+      "#{object.product.full_name}"
     elsif object.is_a?(DisplayLineItem)
       "Line Number #{object.line_number}"
     else

@@ -18,7 +18,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
 
   it 'passes rows to IoCsv' do
     content_for_files([
-      sales_order_csv,
+      sales_order_csv(exchange_rate_at_close: 1.55),
       currency_csv
     ])
 
@@ -31,18 +31,19 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       io_agency: nil,
       io_budget: nil,
       io_budget_loc: nil,
-      io_curr_cd: nil,
+      io_curr_cd: 'USD',
       company_id: company.id,
-      auto_close_deals: true
+      auto_close_deals: true,
+      exchange_rate_at_close: "1.55"
     }).and_return(io_csv)
     expect(io_csv).to receive(:valid?).and_return(:true)
     expect(io_csv).to receive(:perform)
     subject.perform
   end
 
-  it 'skips a row when sales_stage_percent is not 100' do
+  it 'skips a row when order_status is not active_order' do
     content_for_files([
-      sales_order_csv(sales_stage_percent: 90),
+      sales_order_csv(order_status: 'final_order_creation'),
       currency_csv
     ])
 
@@ -101,7 +102,8 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       io_budget_loc: nil,
       io_curr_cd: 'USD',
       company_id: company.id,
-      auto_close_deals: true
+      auto_close_deals: true,
+      exchange_rate_at_close: nil
     }).and_return(io_csv)
     expect(io_csv).to receive(:valid?).and_return(:true)
     expect(io_csv).to receive(:perform)
@@ -153,7 +155,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       expect(import_log.error_messages).to eq [{
         "row"=>2,
         "message"=>
-          ["Internal Server Error", "{:order_currency_id=>\"100\", :order_start_date=>\"#{Date.today - 1.month}\", :sales_stage_percent=>\"100\"}"]
+          ["Internal Server Error", "{:order_currency_id=>\"100\", :order_status=>\"active_order\", :order_start_date=>\"#{Date.today - 1.month}\"}"]
       }]
     end
 
@@ -190,10 +192,32 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
     end
   end
 
+  context 'intraday' do
+    subject(:subject) {
+      Operative::ImportSalesOrdersService.new(
+        company.id,
+        auto_close_deals,
+        {sales_order: sales_order_file}
+      )
+    }
+
+    it 'handles missing currency file' do
+      content_for_files([
+        sales_order_csv
+      ])
+
+      subject.perform
+      expect(CsvImportLog.last.error_messages).to eq [{
+        "row"=>2, "message"=>["Currency ID 100 not found in mappings"]
+      }]
+    end
+  end
+
   def sales_order_csv(opts={})
     defaults = {
-      sales_stage_percent: '100',
-      order_start_date: Date.today - 1.month
+      order_status: 'active_order',
+      order_start_date: Date.today - 1.month,
+      order_currency_id: 100
     }
 
     @_sales_order_csv_data ||= build :sales_order_csv_data, defaults.merge(opts)
@@ -211,7 +235,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
     list = (build_list :sales_order_csv_data, 4, valid_order_data)
 
     list << (build :sales_order_csv_data,
-      sales_stage_percent: 100,
+      order_status: 'active_order',
       sales_order_id: 101,
       sales_order_name: 'Order_name_4141',
       order_start_date: Date.today - 1.month,
@@ -221,7 +245,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
     )
 
     list << (build :sales_order_csv_data,
-      sales_stage_percent: 100,
+      order_status: 'active_order',
       sales_order_id: 101,
       order_start_date: Date.today - 1.month,
       order_end_date: Date.today,
@@ -230,7 +254,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       order_currency_id: 100
     )
 
-    list << (build :sales_order_csv_data, sales_stage_percent: 90)
+    list << (build :sales_order_csv_data, order_status: 'final_order_creation')
     @_multyline_order_csv ||= generate_multiline_csv(list.first.keys, list.map(&:values))
   end
 
@@ -254,7 +278,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
 
   def valid_order_data
     {
-      sales_stage_percent: 100,
+      order_status: 'active_order',
       sales_order_id: 101,
       sales_order_name: 'Order_name_4141',
       order_start_date: Date.today - 1.month,

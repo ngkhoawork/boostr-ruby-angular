@@ -1,17 +1,17 @@
 #account.z-styles
-	.container-fluid.pad
-		.col-xs-9
-			%div{ng: { include: '"partials/account/account_stats.html"'}}
-			%div{ng: { include: '"partials/account/account_contacts.html"'}}
-			%div{ng: { if: 'currentClient.client_type.option.name == "Advertiser"' , include: '"partials/account/account_child_clients.html"'}}
-			%div{ng: { include: '"partials/account/account_connections.html"'}}
-			%div{ng: { include: '"partials/account/account_connected_contacts.html"'}}
-			%div{'ng-include': '"partials/account/account_members.html"'}
-			%div{ng: { if: 'currentClient.client_type.option.name == "Advertiser"' , include: '"partials/account/account_bp_estimates.html"'}}
-			%div{'ng-include': '"partials/account/account_deals.html"'}
-			%div{'ng-include': '"partials/account/account_ios.html"'}
-			%div{'ng-include': '"partials/account/ssp_mapping.html"'}
-			%related-contracts{type: 'account'}
-		.col-xs-3
-			%div{'ng-include': '"partials/account/account_details.html"'}
-			%div{'ng-include': '"partials/dashboard/activity.html"'}
+  .container-fluid.pad
+    .col-xs-9
+      %div{ng: { include: '"partials/account/account_stats.html"'}}
+      %div{ng: { include: '"partials/account/account_contacts.html"'}}
+      %div{ng: { if: 'currentClient.client_type.option.name == "Advertiser"' , include: '"partials/account/account_child_clients.html"'}}
+      %div{ng: { include: '"partials/account/account_connections.html"'}}
+      %div{ng: { include: '"partials/account/account_connected_contacts.html"'}}
+      %div{'ng-include': '"partials/account/account_members.html"'}
+      %div{ng: { if: 'currentClient.client_type.option.name == "Advertiser"' , include: '"partials/account/account_bp_estimates.html"'}}
+      %div{'ng-include': '"partials/account/account_deals.html"'}
+      %div{'ng-include': '"partials/account/account_ios.html"'}
+      %div{'ng-include': '"partials/account/ssp_mapping.html"'}
+      %related-contracts{type: 'account'}
+    .col-xs-3
+      %div{'ng-include': '"partials/account/account_details.html"'}
+      %activity-feed{object: 'currentClient', type: 'account'}

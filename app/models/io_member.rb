@@ -5,6 +5,7 @@ class IoMember < ActiveRecord::Base
   validates :user_id, :io_id, :share, presence: true
 
   scope :ordered_by_share, -> { order("share desc") }
+  scope :by_user_ids, -> (user_ids) { where(user_id: user_ids) if user_ids.present? }
 
   after_save do
     update_revenue_fact_user(self) if share_changed? || from_date_changed? || to_date_changed?

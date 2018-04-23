@@ -1,0 +1,18 @@
+#leads-reassign-modal.popup-modal
+    .popup-modal-header
+        Lead Reassign
+        %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+        %div
+            .form-group
+                %label{ for: 'user' }
+                    Seller
+                .assign-row
+                    %ui-select{'ng-model': 'form.selectedUser'}
+                        %ui-select-match{ placeholder: 'Pick from list or search' }
+                            {{$select.selected.name}}
+                        %ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }
+                            %div {{user.name}}
+                    .leads-btn{'ng-click': 'assign(form.selectedUser)'} Assign
+        .delimiter OR
+        .leads-btn{'ng-click': 'assign()'} Reassign to Next Available

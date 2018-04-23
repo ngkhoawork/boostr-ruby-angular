@@ -1,6 +1,6 @@
 @app.controller 'ApiConfigurationsController',
-  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType', 'DfpImportService'
-    ($window, $scope, $modal, ApiConfiguration, IntegrationType, DfpImportService) ->
+  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType', 'DfpImportService', 'SlackConnectService', 'DatafeedService'
+    ($window, $scope, $modal, ApiConfiguration, IntegrationType, DfpImportService, SlackConnectService, DatafeedService) ->
       mappings = {
         providers: {
           dfp: {
@@ -32,6 +32,12 @@
               create: { templateUrl: 'modals/google_sheets_configuration_form.html', controller: 'GoogleSheetsConfigurationsCreateController' },
               update: { templateUrl: 'modals/google_sheets_configuration_form.html', controller: 'GoogleSheetsConfigurationsEditController' }
             }
+          },
+          ssps: {
+            actions: {
+              create: { templateUrl: 'modals/ssp_credentials.html', controller: 'SspCredentialsCreateController' },
+              update: { templateUrl: 'modals/ssp_credentials.html', controller: 'SspCredentialsEditController' }
+            }
           }
         }
       }
@@ -56,9 +62,15 @@
             mappings.providers.asana_connect
           when 'Google Sheets'
             mappings.providers.google_sheets
+          when 'SSP Rubicon'
+            mappings.providers.ssps
+          when 'SSP SpotX'
+            mappings.providers.ssps
+          when 'SSP'
+            mappings.providers.ssps
 
       init = () ->
-        $scope.api_configurations = {}
+        $scope.api_configurations = []
         ApiConfiguration.all().then (api_configurations) ->
           $scope.api_configurations = api_configurations.api_configurations
           $scope.dfp_turned_on = false
@@ -68,16 +80,33 @@
           if dfp_config and dfp_config.switched_on
             $scope.dfp_turned_on = true
             $scope.dfp_config_id = dfp_config.id
+        ApiConfiguration.ssp_credentials().then (api_configurations) ->
+          angular.forEach api_configurations.ssp, (val) ->
+            $scope.api_configurations.push(val)
         IntegrationType.all().then (types) ->
           $scope.integration_types = types
 
       $scope.dfp_monthly_import = ->
         DfpImportService.import(api_configuration_id: $scope.dfp_config_id, report_type: 'monthly').then (resp) ->
-          $scope.showInfoModal(resp.message)
+          $scope.showInfoModal(resp)
 
       $scope.dfp_cumulative_import = ->
         DfpImportService.import(api_configuration_id: $scope.dfp_config_id, report_type: 'cumulative').then (resp) ->
-          $scope.showInfoModal(resp.message)
+          $scope.showInfoModal(resp)
+
+      $scope.runDatafeedIntraday = (api_configuration) ->
+        DatafeedService.import(api_configuration_id: api_configuration.id, job_type: 'intraday').then (resp) ->
+          $scope.showInfoModal(resp)
+          init()
+
+      $scope.runDatafeedImportAll = (api_configuration) ->
+        DatafeedService.import(api_configuration_id: api_configuration.id, job_type: 'fullday').then (resp) ->
+          $scope.showInfoModal(resp)
+          init()
+
+      $scope.auth_slack = ->
+        SlackConnectService.auth().then (resp) ->
+          $window.location.href = resp.url
 
       $scope.editModal = (api_configuration) ->
         selectControllerTemplate = selectMapping(api_configuration.integration_provider)
@@ -91,7 +120,7 @@
             api_configuration: ->
               api_configuration
 
-      $scope.showInfoModal = (message) ->
+      $scope.showInfoModal = (resp) ->
         $scope.modalInstance = $modal.open
           templateUrl: 'modals/dfp_info.html'
           size: 'md'
@@ -99,7 +128,7 @@
           backdrop: 'static'
           keyboard: true
           resolve:
-            message: -> message
+            resp: -> resp
 
       $scope.createModal = ->
         selectControllerTemplate = selectMapping($scope.current_integration)
@@ -112,8 +141,16 @@
 
       $scope.delete = (api_configuration) ->
         if confirm('Are you sure you want to delete "' +  api_configuration.integration_type + '"?')
-          ApiConfiguration.delete api_configuration, ->
-            $location.path('/settings/api_configurations')
+          switch api_configuration.integration_provider
+            when "SSP Rubicon"
+              ApiConfiguration.delete_ssp api_configuration, ->
+                $location.path('/settings/api_configurations')
+            when "SSP SpotX"
+              ApiConfiguration.delete_ssp api_configuration, ->
+                $location.path('/settings/api_configurations')
+            else
+              ApiConfiguration.delete api_configuration, ->
+                $location.path('/settings/api_configurations')
 
       $scope.$on 'updated_api_integrations', ->
         init()

@@ -72,7 +72,7 @@
         - @deal_products.each do |deal_product|
           %div.mb10{style: 'margin-bottom: 10px;font-size: 13px;'}
             %strong
-              #{deal_product['product']['name']}:
+              #{deal_product['product']['full_name']}:
             #{@deal.currency.curr_symbol}#{number_with_precision(deal_product['budget_loc'], :precision => 0, :delimiter => ',')}
             &nbsp;#{@deal.currency.curr_cd}
             - if @deal.currency.curr_cd != 'USD'

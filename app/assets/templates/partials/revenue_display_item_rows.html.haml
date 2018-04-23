@@ -22,7 +22,11 @@
   %td.left
     {{ displayLineItem.end_date | date: 'M/d/yyyy' }}
   %td.left
-    {{ displayLineItem.product.name }}
+    {{ displayLineItem.product.level0.name }}
+  %td.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+    {{ displayLineItem.product.level1.name }}
+  %td.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+    {{ displayLineItem.product.level2.name }}
   %td.right
     {{ displayLineItem.quantity }}
   %td.right

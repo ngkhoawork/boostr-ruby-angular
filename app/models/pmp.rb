@@ -3,6 +3,7 @@ class Pmp < ActiveRecord::Base
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id'
   belongs_to :company
   belongs_to :deal
+  belongs_to :ssp_advertiser
 
   attr_accessor :skip_callback
 
@@ -14,16 +15,19 @@ class Pmp < ActiveRecord::Base
   has_many :pmp_item_daily_actuals, through: :pmp_items, dependent: :destroy
   has_many :products, through: :pmp_items
 
-  validates :name, presence: true, uniqueness: true
+  validates :name, presence: true, uniqueness: { scope: [:company_id], message: 'should be unique in scope of company.' }
   validates :start_date, :end_date, :curr_cd, presence: true
 
   scope :for_pmp_members, -> (user_ids) { joins(:pmp_members).where('pmp_members.user_id in (?)', user_ids) if user_ids}
   scope :by_name, -> (name) { where('pmps.name ilike ?', "%#{name}%") if name.present? }
   scope :by_advertiser_name, -> (name) { joins(:advertiser).where('clients.name ilike ?', "%#{name}%") if name.present? }
+  scope :without_advertiser, -> { where(advertiser_id: nil) }
   scope :by_agency_name, -> (name) { joins(:agency).where('clients.name ilike ?', "%#{name}%") if name.present? }
   scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) if (start_date && end_date).present? }
   scope :for_time_period, -> (start_date, end_date) { where('pmps.start_date <= ? AND pmps.end_date >= ?', end_date, start_date) }
   scope :by_user, -> (user) { includes(:pmp_members).where('pmp_members.user_id = ?', user.id) }
+  scope :without_advertiser, -> { where(advertiser_id: nil) }
+  scope :no_match_advertiser, -> (ssp_advertiser_id) { where(ssp_advertiser_id: ssp_advertiser_id, advertiser_id: nil) }
 
   before_create :set_budget_remaining_and_delivered
 
@@ -96,6 +100,11 @@ class Pmp < ActiveRecord::Base
     Time.now.in_time_zone('Pacific Time (US & Canada)').to_date
   end
 
+  def assign_advertiser!(client)
+    ssp_advertiser.update_attribute(:client_id, client.id) if ssp_advertiser.present?
+    update_attribute(:advertiser_id, client.id)
+  end
+
   private
 
   def set_budget_remaining_and_delivered
@@ -109,7 +118,10 @@ class Pmp < ActiveRecord::Base
 
   def update_pmp_members_date
     if end_date_changed? && !pmp_members.empty?
-      pmp_members.update_all(to_date: end_date) 
+      pmp_members.where(to_date: end_date_was).update_all(to_date: end_date)
+    end
+    if start_date_changed? && !pmp_members.empty?
+      pmp_members.where(from_date: start_date_was).update_all(from_date: start_date)
     end
   end
 end

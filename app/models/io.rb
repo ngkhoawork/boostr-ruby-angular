@@ -1,4 +1,9 @@
 class Io < ActiveRecord::Base
+  SAFE_COLUMNS = %i{budget start_date end_date external_io_number io_number
+                    created_at updated_at name budget_loc curr_cd}
+
+  include CurrencyExchangeble
+
   belongs_to :advertiser, class_name: 'Client', foreign_key: 'advertiser_id'
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id'
   belongs_to :deal
@@ -10,6 +15,10 @@ class Io < ActiveRecord::Base
 
   has_many :io_members, dependent: :destroy
   has_many :users, dependent: :destroy, through: :io_members
+
+  has_many :sellers, -> { where(users: { user_type: [SELLER, SALES_MANAGER] }) }, through: :io_members, source: :user
+  has_many :account_managers, -> { where(users: { user_type: [ACCOUNT_MANAGER, MANAGER_ACCOUNT_MANAGER] }) }, through: :io_members, source: :user
+
   has_many :content_fees, dependent: :destroy
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
   has_many :costs, dependent: :destroy
@@ -22,7 +31,7 @@ class Io < ActiveRecord::Base
   has_many :content_fee_products, dependent: :destroy, through: :content_fees, source: :product
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
-  validate :active_exchange_rate
+  validates :deal_id, uniqueness: true, allow_nil: true
 
   scope :for_company, -> (company_id) { where(company_id: company_id) }
   scope :for_io_members, -> (user_ids) { joins(:io_members).where('io_members.user_id in (?)', user_ids) }
@@ -165,18 +174,6 @@ class Io < ActiveRecord::Base
     array
   end
 
-  def exchange_rate
-    company.exchange_rate_for(currency: self.curr_cd, at_date: (self.created_at || Date.today))
-  end
-
-  def active_exchange_rate
-    if curr_cd != 'USD'
-      unless self.exchange_rate
-        errors.add(:curr_cd, "does not have an exchange rate for #{self.curr_cd} at #{(self.created_at || Date.today).strftime("%m/%d/%Y")}")
-      end
-    end
-  end
-
   def update_total_budget
     new_budget = (content_fees.sum(:budget) + display_line_items.sum(:budget))
     new_budget_loc = (content_fees.sum(:budget_loc) + display_line_items.sum(:budget_loc))
@@ -232,7 +229,7 @@ class Io < ActiveRecord::Base
       in_budget_days = 0
       in_budget_total = 0
       display_line_item.display_line_item_budgets.each do |display_line_item_budget|
-        
+
         in_days = effective_days(start_date, end_date, io_member, [display_line_item, display_line_item_budget])
         in_budget_days += in_days
         in_budget_total += display_line_item_budget.daily_budget * in_days * (share/100.0)

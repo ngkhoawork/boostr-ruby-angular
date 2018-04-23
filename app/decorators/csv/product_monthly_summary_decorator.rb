@@ -6,7 +6,7 @@ class Csv::ProductMonthlySummaryDecorator
   end
 
   def product
-    row[:product]['name'] rescue nil
+    row[:product]['level0']['name'] rescue nil
   end
 
   def record_type
@@ -88,7 +88,23 @@ class Csv::ProductMonthlySummaryDecorator
   end
 
   def method_missing(name)
-    deal_custom_field = deal_product_custom_fields.find{ |u| u['field_label'].downcase == name.to_s.gsub('_', ' ') }
+    check_product_options(name) || check_custom_fields(name)
+  end
+
+  private
+
+  attr_reader :row, :company, :custom_field_names
+
+  def check_product_options(name)
+    if company.product_options_enabled && company.product_option1_enabled && name.eql?(product_option1)
+      row[:product]&.[]('level1')&.[]('name')
+    elsif company.product_options_enabled && company.product_option2_enabled && name.eql?(product_option2)
+      row[:product]&.[]('level2')&.[]('name')
+    end
+  end
+
+  def check_custom_fields(name)
+    deal_custom_field = deal_product_custom_fields.find{ |u| name.eql?(parameterize(u['field_label'])) }
     
     if deal_custom_field
       field_name = deal_custom_field['field_type'].to_s + deal_custom_field['field_index'].to_s
@@ -96,9 +112,17 @@ class Csv::ProductMonthlySummaryDecorator
     end
   end
 
-  private
+  def parameterize(name)
+    Csv::BaseService.parameterize(name).to_sym
+  end
 
-  attr_reader :row, :company, :custom_field_names
+  def product_option1
+    parameterize(company.product_option1)
+  end
+
+  def product_option2
+    parameterize(company.product_option2)
+  end
 
   def deal_product_custom_fields
     @_deal_product_custom_fields ||= custom_field_names

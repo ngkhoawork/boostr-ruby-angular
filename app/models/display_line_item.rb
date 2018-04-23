@@ -57,6 +57,8 @@ class DisplayLineItem < ActiveRecord::Base
     joins(io: :advertiser).where('clients.name ilike ?', "%#{name}%") if name.present?
   end
 
+  attr_accessor :dont_update_parent_budget
+
   before_create :set_alert
   before_update :set_alert
 
@@ -138,7 +140,7 @@ class DisplayLineItem < ActiveRecord::Base
   
   def update_io_budget
     if io.present?
-      io.update_total_budget
+      io.update_total_budget unless dont_update_parent_budget
       if io.deal.present?
         io.deal.close_display_product()
       end
@@ -153,6 +155,8 @@ class DisplayLineItem < ActiveRecord::Base
   end
 
   def update_temp_io_budget
+    return if dont_update_parent_budget
+
     if temp_io
       budget = temp_io.display_line_items.sum(:budget)
       budget_loc = budget / temp_io.exchange_rate
@@ -417,12 +421,22 @@ class DisplayLineItem < ActiveRecord::Base
       product_id = nil
       ad_server_product = nil
 
+      i = 0
       if row[12]
+        product_full_name = row[12].strip
+        if current_user.company.product_options_enabled && current_user.company.product_option1_enabled
+          i += 1
+          product_full_name += ' ' + row[13].strip
+        end
+        if current_user.company.product_options_enabled && current_user.company.product_option2_enabled
+          i += 1
+          product_full_name += ' ' + row[14].strip
+        end
         products = current_user
                        .company
                        .products
                        .joins(:ad_units)
-                       .where('products.name ilike :product_name OR ad_units.name ilike :product_name', product_name: row[12].strip)
+                       .where('products.full_name ilike :product_full_name OR ad_units.name ilike :product_name', product_name: row[12].strip, product_full_name: product_full_name)
         if products.count > 0
           product_id = products.first.id
           ad_server_product = row[12].strip
@@ -438,8 +452,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty = nil
-      if row[13]
-        qty = Integer(row[13].strip) rescue false
+      if row[13+i]
+        qty = Integer(row[13+i].strip) rescue false
         unless qty
           import_log.count_failed
           import_log.log_error(["Qty must be a numeric value"])
@@ -451,13 +465,13 @@ class DisplayLineItem < ActiveRecord::Base
         next
       end
 
-      price = row[14]
-      pricing_type = row[15]
+      price = row[14+i]
+      pricing_type = row[15+i]
 
       budget = nil
       budget_loc = nil
-      if row[16]
-        budget = Float(row[16].strip) rescue false
+      if row[16+i]
+        budget = Float(row[16+i].strip) rescue false
         budget_loc = budget
         unless budget
           import_log.count_failed
@@ -472,8 +486,8 @@ class DisplayLineItem < ActiveRecord::Base
 
       budget_delivered = nil
       budget_delivered_loc = nil
-      if row[17]
-        budget_delivered = Float(row[17].strip) rescue false
+      if row[17+i]
+        budget_delivered = Float(row[17+i].strip) rescue false
         budget_delivered_loc = budget_delivered
         unless budget_delivered
           import_log.count_failed
@@ -484,8 +498,8 @@ class DisplayLineItem < ActiveRecord::Base
 
       budget_remaining = nil
       budget_remaining_loc = nil
-      if row[18]
-        budget_remaining = Float(row[18].strip) rescue false
+      if row[18+i]
+        budget_remaining = Float(row[18+i].strip) rescue false
         budget_remaining_loc = budget_remaining
         unless budget_remaining
           import_log.count_failed
@@ -495,8 +509,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_delivered = nil
-      if row[19]
-        qty_delivered = Float(row[19].strip) rescue false
+      if row[19+i]
+        qty_delivered = Float(row[19+i].strip) rescue false
         unless qty_delivered
           import_log.count_failed
           import_log.log_error(["Qty Delivered must be a numeric value"])
@@ -505,8 +519,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_remaining = nil
-      if row[20]
-        qty_remaining = Float(row[20].strip) rescue false
+      if row[20+i]
+        qty_remaining = Float(row[20+i].strip) rescue false
         unless qty_remaining
           import_log.count_failed
           import_log.log_error(["Qty Remaining must be a numeric value"])
@@ -515,8 +529,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_delivered_3p = nil
-      if row[21]
-        qty_delivered_3p = Float(row[21].strip) rescue false
+      if row[21+i]
+        qty_delivered_3p = Float(row[21+i].strip) rescue false
         unless qty_delivered_3p
           import_log.count_failed
           import_log.log_error(["3P Qty Delivered must be a numeric value"])
@@ -525,8 +539,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_remaining_3p = nil
-      if row[22]
-        qty_remaining_3p = Float(row[22].strip) rescue false
+      if row[22+i]
+        qty_remaining_3p = Float(row[22+i].strip) rescue false
         unless qty_remaining_3p
           import_log.count_failed
           import_log.log_error(["3P Qty Remaining must be a numeric value"])
@@ -536,8 +550,8 @@ class DisplayLineItem < ActiveRecord::Base
 
       budget_delivered_3p = nil
       budget_delivered_3p_loc = nil
-      if row[23]
-        budget_delivered_3p = Float(row[23].strip) rescue false
+      if row[23+i]
+        budget_delivered_3p = Float(row[23+i].strip) rescue false
         budget_delivered_3p_loc = budget_delivered_3p
         unless budget_delivered_3p
           import_log.count_failed
@@ -548,8 +562,8 @@ class DisplayLineItem < ActiveRecord::Base
 
       budget_remaining_3p = nil
       budget_remaining_3p_loc = nil
-      if row[24]
-        budget_remaining_3p = Float(row[24].strip) rescue false
+      if row[24+i]
+        budget_remaining_3p = Float(row[24+i].strip) rescue false
         budget_remaining_3p_loc = budget_remaining_3p
         unless budget_remaining_3p
           import_log.count_failed
@@ -721,7 +735,13 @@ class DisplayLineItem < ActiveRecord::Base
   def as_json(options = {})
     super(merge_recursively(options,
         include: {
-          product: {}
+          product: {
+            methods: [
+              :level0,
+              :level1,
+              :level2
+            ]
+          }
         }
       )
     )

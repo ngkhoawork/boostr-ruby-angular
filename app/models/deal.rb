@@ -2,7 +2,12 @@ require 'rubygems'
 require 'zip'
 
 class Deal < ActiveRecord::Base
+  SAFE_COLUMNS = %i{start_date end_date name budget created_at updated_at
+                    closed_at budget_loc web_lead type source initiative}
+  SAFE_REFLECTIONS = %i{currency teams}
+
   include GoogleSheetsExportable
+  include WorkflowCallbacks
 
   acts_as_paranoid
 
@@ -16,6 +21,10 @@ class Deal < ActiveRecord::Base
   belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
   belongs_to :initiative
+  belongs_to :lead
+  belongs_to :type, class_name: 'Option'
+  belongs_to :source, class_name: 'Option'
+  belongs_to :close_reason, class_name: 'Option'
 
   # Restrict with exception is used to rollback any
   # other potential dependent: :destroy relations
@@ -23,6 +32,7 @@ class Deal < ActiveRecord::Base
   has_one :pmp, class_name: "Pmp", foreign_key: 'deal_id', dependent: :restrict_with_exception
 
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
+  has_one :egnyte_folder, as: :subject
   has_many :contracts, dependent: :nullify
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
@@ -42,11 +52,18 @@ class Deal < ActiveRecord::Base
   has_many :integrations, as: :integratable
   has_many :requests
   has_many :audit_logs, as: :auditable
+  has_many :teams, through: :users, source: 'team'
+
+  has_one :billing_deal_contact, -> { where(role: 'Billing') }, class_name: 'DealContact'
+  has_one :billing_contact, through: :billing_deal_contact, source: :contact
 
   has_one :deal_custom_field, dependent: :destroy
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
     order('activities.deal_id', 'activities.happened_at DESC')
   }, class_name: 'Activity'
+  has_one :type_field, -> { where(subject_type: 'Deal', name: 'Deal Type') }, through: :company, source: :fields
+  has_one :deal_source_field, -> { where(subject_type: 'Deal', name: 'Deal Source') }, through: :company, source: :fields
+  has_one :close_reason_field, -> { where(subject_type: 'Deal', name: 'Close Reason') }, through: :company, source: :fields
 
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
   validate :active_exchange_rate
@@ -66,7 +83,7 @@ class Deal < ActiveRecord::Base
   delegate :open?, to: :stage, allow_nil: true, prefix: true
   delegate :active?, to: :stage, allow_nil: true, prefix: true
 
-  attr_accessor :modifying_user
+  attr_accessor :modifying_user, :manual_update, :custom_trigger
 
   before_update do
     if curr_cd_changed?
@@ -87,11 +104,12 @@ class Deal < ActiveRecord::Base
       log_stage_changes
     end
     reset_products if (start_date_changed? || end_date_changed?)
-    integrate_with_operative
     send_lost_deal_notification
     connect_deal_clients
     log_start_date_changes if start_date_changed?
   end
+
+  after_commit :integrate_with_operative
 
   before_create do
     update_stage
@@ -117,6 +135,9 @@ class Deal < ActiveRecord::Base
   after_destroy do
     update_pipeline_fact(self)
   end
+
+  after_commit :setup_egnyte_folders, on: [:create]
+  after_commit :update_egnyte_folder, on: [:update]
 
   set_callback :save, :after, :update_pipeline_fact_callback
 
@@ -212,7 +233,7 @@ class Deal < ActiveRecord::Base
   end
 
   def integrate_with_operative
-    if stage_id_changed? && operative_integration_allowed?
+    if previous_changes[:stage_id].present? && operative_integration_allowed?
       OperativeIntegrationWorker.perform_async(self.id)
     end
   end
@@ -276,20 +297,20 @@ class Deal < ActiveRecord::Base
   def billing_contact_presence
     return unless stage.present?
     validation = company.validations.find_by(
-      object: 'Billing Contact', 
+      object: 'Billing Contact',
       factor: stage.sales_process_id
-    ) 
+    )
     stage_threshold = validation&.criterion&.value&.probability
 
     if stage_threshold && stage.probability >= stage_threshold && !self.has_billing_contact?
-      errors.add(:stage, "#{self.stage&.name} requires a valid Billing Contact with address") 
+      errors.add(:stage, "#{self.stage&.name} requires a valid Billing Contact with address")
     end
   end
 
   def account_manager_presence
     return unless stage.present?
     validation = company.validations.find_by(
-      object: 'Account Manager', 
+      object: 'Account Manager',
       factor: stage.sales_process_id
     )
     stage_threshold = validation&.criterion&.value&.probability
@@ -306,7 +327,9 @@ class Deal < ActiveRecord::Base
   def base_fields_presence
     if self.company_id.present?
       factors = base_field_validations.joins(:criterion).where('values.value_boolean = ?', true).pluck(:factor)
-      factors.each { |factor| errors.add(factor, 'must be present') }
+      factors.each do |factor|
+        errors.add(factor, 'must be present') if public_send(factor).blank?
+      end
     end
   end
 
@@ -346,13 +369,7 @@ class Deal < ActiveRecord::Base
   end
 
   def has_billing_contact?
-    billing_contact = self.deal_contacts.find_by(role: 'Billing')
     !!(billing_contact) && billing_contact.valid?
-  end
-
-  def billing_contact
-    billing_contact = self.deal_contacts.find_by(role: 'Billing')
-    billing_contact.contact
   end
 
   def has_account_manager_member?
@@ -516,6 +533,14 @@ class Deal < ActiveRecord::Base
     return option
   end
 
+  def self.workflowable_reflections
+    %i{
+        advertiser agency stage creator updator
+        io contacts deal_product_budgets products
+        users teams deal_custom_field deal_products deal_members
+    }
+  end
+
   def deal_source_value
     field_id = self.fields.find_by_name('Deal Source').id
 
@@ -587,7 +612,7 @@ class Deal < ActiveRecord::Base
       csv << header
       deals.each do |deal|
         line = [
-            deal.deal_members_share_ordered.collect {|deal_member| deal_member.username.first_name + " " + deal_member.username.last_name + " (" + deal_member.share.to_s + "%)"}.join(";"),
+            deal.deal_members_share_ordered.collect {|deal_member| deal_member.username.first_name + " " + deal_member.username.last_name + " (" + deal_member.share.to_s + "%)"}.join(","),
             deal.advertiser ? deal.advertiser.name : nil,
             deal.name,
             deal.agency ? deal.agency.name : nil,
@@ -607,7 +632,7 @@ class Deal < ActiveRecord::Base
 
         selected_products = deal
           .deal_products
-          .reject{ |deal_product| deal_product.product_id != product_filter if product_filter }
+          .reject{ |deal_product| !product_filter.include?(deal_product.product_id) if product_filter }
           .map(&:id)
 
         deal_product_budgets = deal.deal_product_budgets
@@ -1249,7 +1274,8 @@ class Deal < ActiveRecord::Base
         updated_by: current_user.id,
         closed_at: closed_date,
         closed_reason_text: closed_reason_text,
-        next_steps: next_steps
+        next_steps: next_steps,
+        legacy_id: row[19].strip
       }
 
       deal_params[:created_by] = created_by if created_by
@@ -1602,7 +1628,19 @@ class Deal < ActiveRecord::Base
     ).perform
   end
 
+  def generate_pmp
+    Deal::PmpGenerateService.new(self).perform
+  end
+
+  def generate_io
+    Deal::IoGenerateService.new(self).perform
+  end
+
   private
+
+  def generate_io_or_pmp
+    include_pmp_product? ? generate_pmp : generate_io
+  end
 
   def self.import_deal_custom_field(deal, row)
     params = {}
@@ -1641,11 +1679,15 @@ class Deal < ActiveRecord::Base
     ).perform
   end
 
-  def generate_io_or_pmp
-    if include_pmp_product?
-      Deal::PmpGenerateService.new(self).perform
-    else
-      Deal::IoGenerateService.new(self).perform
-    end
+  def setup_egnyte_folders
+    Egnyte::SetupDealFoldersWorker.perform_async(company.egnyte_integration.id, id) if company.egnyte_integration
+  end
+
+  def update_egnyte_folder
+    return unless company.egnyte_integration && (previous_changes[:name] || previous_changes[:advertiser_id])
+
+    advertiser_changed = previous_changes[:advertiser_id].present?
+
+    Egnyte::UpdateDealFolderWorker.perform_async(company.egnyte_integration.id, id, advertiser_changed)
   end
 end

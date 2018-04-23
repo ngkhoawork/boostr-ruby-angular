@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window, $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment, localStorageService) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Contact', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company', 'Egnyte'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,  Contact,    Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment,   localStorageService,   Company, Egnyte) ->
 
   $scope.agencyRequired = false
   $scope.showMeridian = true
@@ -17,7 +17,6 @@
   $scope.currency_symbol = '$'
   $scope.ealertReminder = false
   $scope.activitiesOrder = '-happened_at'
-  $scope.activities = []
   $scope.isPmpDeal = false
   $scope.pmpColumns = 0
   $anchorScroll()
@@ -25,6 +24,8 @@
     isEnabled: false
     isLoading: false
     dealLog: null
+  $scope.googleSheetsIntegration =
+    isEnabled: false
   $scope.PMPType = PMPType
 
   ###*
@@ -33,12 +34,13 @@
 
   $scope.fileToUploadTst = null
   $scope.progressBarCur = 0
-  $scope.uploadedFiles = []
-  $scope.dealFiles = []
   $scope.dealCustomFieldNames = []
   $scope.dealProductCfNames = []
   $scope.activeDealProductCfLength = 0
-
+  $scope.egnyteConnected = false
+  $scope.egnyteHealthy = true
+  $scope.egnyteIsLoading = true
+  $scope.company = {}
   $scope._scope = -> this
   $scope.showWarnings = true
   roleIdWarningDisplayToShow = 1 # Role type = seller
@@ -49,6 +51,9 @@
       $window.scrollTo 0, 0
     else
       $scope.agencyRequired = false
+
+  CurrentUser.get().$promise.then (user) ->
+    $scope.currentUser = user
 
   $scope.isUrlValid = (url) ->
     regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
@@ -62,13 +67,41 @@
   $scope.fixUrl = (url) ->
     if url && url.search('//') == -1 then return '//' + url else url
 
-  $scope.getDealFiles = () ->
-    DealAttachment.list(deal_id: $routeParams.id, type: "deal").then (res) ->
-      $scope.dealFiles = res
+  $scope.getCurrentCompany = (deal) ->
+    Egnyte.show().then (egnyteSettings) ->
+      $scope.companyEgnyteIntegration = egnyteSettings
+      if(egnyteSettings.access_token && egnyteSettings.connected)
+        $scope.egnyteConnected = true
+        if($routeParams.isNew)
+          sendRequest(egnyteSettings.access_token, egnyteSettings.app_domain, deal)
 
-  loadActivities = ->
-    Activity.all(deal_id: $routeParams.id).then (activities) ->
-      $scope.activities = activities
+        else
+          Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
+            if !response.navigate_to_deal_uri
+              $scope.egnyteHealthy = false
+            else
+              $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
+              $scope.egnyteIsLoading = false
+              $scope.egnyteHealthy = true
+
+
+  sendRequest = (token, domain, deal) ->
+    $scope.egnyteUrlRequest = $timeout (->
+      Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
+        if response.navigate_to_deal_uri
+          $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
+          $scope.egnyteIsLoading = false
+          $scope.egnyteHealthy = true
+          $location.search({})
+
+        else
+          sendRequest(token, domain, deal)
+      return
+    ), 3000
+
+  $scope.$on '$destroy', ->
+    if $scope.egnyteUrlRequest
+      $timeout.cancel($scope.egnyteUrlRequest);
 
   $scope.init = (initialLoad) ->
     $scope.actRemColl = false
@@ -76,9 +109,12 @@
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal, true)
+      $scope.getCurrentCompany(deal)
+
       if initialLoad
         checkCurrentUserDealShare(deal.members)
         getOperativeIntegration(deal.id)
+        getGoogleSheetsIntegration(deal.id)
     , (err) ->
       if(err && err.status == 404)
         $location.url('/deals')
@@ -89,12 +125,13 @@
                       {name: 'attachments', id: 'attachments'},
                       {name: 'additional info', id: 'info'}]
 
-    $scope.getDealFiles()
-    $scope.initActivity()
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
+    Company.get().$promise.then (company) ->
+      $scope.company = company
     getSsps()
+    getDealFiles()
 
   checkPmpDeal = () ->
     $scope.isPmpDeal = false
@@ -103,9 +140,15 @@
       if product.revenue_type == 'PMP'
         $scope.isPmpDeal = true
         $scope.pmpColumns = 3
+
+  getDealFiles = () ->
+    DealAttachment.list(deal_id: $routeParams.id, type: "deal").then (res) ->
+      $scope.dealFiles = res
+
   getSsps = () ->
     SSP.all().then (ssps) ->
       $scope.ssps = ssps
+
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
@@ -167,41 +210,6 @@
 
   $scope.initReminder()
 
-  $scope.activityReminderInit = ->
-    $scope.activityReminder = {
-      name: '',
-      comment: '',
-      completed: false,
-      remind_on: '',
-      remindable_id: 0,
-      remindable_type: 'Activity' # "Activity", "Client", "Contact", "Deal"
-      _date: new Date(),
-      _time: new Date()
-    }
-
-    $scope.activityReminderOptions = {
-      errors: {},
-      showMeridian: true
-    }
-
-  $scope.initActivity = ->
-    $scope.activity = {}
-    $scope.activeTab = {}
-    $scope.selectedObj = {}
-    $scope.selectedObj.deal = true
-    $scope.selected = {}
-    $scope.populateContact = false
-    now = new Date
-    ActivityType.all().then (activityTypes) ->
-      $scope.types = activityTypes
-      $scope.activeType = activityTypes[0]
-      _.each activityTypes, (type) ->
-        $scope.selected[type.name] = {}
-        $scope.selected[type.name].date = now
-        $scope.selected[type.name].contacts = []
-
-    $scope.activityReminderInit()
-
   $scope.getCompanyCurrencies = ->
     Currency.active_currencies().then (currencies) ->
       $scope.currencies = currencies
@@ -246,7 +254,6 @@
         Field.defaults(member, 'Client').then (fields) ->
           member.role = Field.field(member, 'Member Role')
 
-    loadActivities()
     Field.defaults(deal, 'Deal').then (fields) ->
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
@@ -269,7 +276,7 @@
     for month in $scope.currentDeal.months
       $scope.deal_product.deal_product_budgets.push({ budget_loc: '' })
     $scope.showProductForm = !$scope.showProductForm
-    Product.all().then (products) ->
+    Product.all({active: true}).then (products) ->
       $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
 
 #==================add product form======================
@@ -588,7 +595,7 @@
               $scope.errors['pmp_type' + deal_product.id] = "can't be blank"
         if !_.isEmpty($scope.errors)
           $scope.showWarningModal('SSP, SSP Deal-ID and PMP Type fields are required for PMP products.')
-          return          
+          return
         if !stage.open && stage.probability == 0
           $scope.showWonLossModal(currentDeal, false)
         else if !stage.open && stage.probability == 100 && $scope.won_reason_required && $scope.won_reason_required.criterion.value
@@ -682,7 +689,7 @@
     if option == 'Billing'
       if !confirm("Confirm you want to assign an unrelated billing contact")
         return
-    deal_contact.role = option; 
+    deal_contact.role = option;
     deal_contact.errors = {}
 
     DealContact.update(
@@ -708,7 +715,7 @@
 
   $scope.deleteDealProduct = (deal_product) ->
     $scope.errors = {}
-    if confirm('Are you sure you want to delete "' +  deal_product.name + '"?')
+    if confirm('Are you sure you want to delete "' +  deal_product.product.full_name + '"?')
       DealProduct.delete(id: deal_product.id, deal_id: $scope.currentDeal.id).then(
         (deal) ->
           $scope.setCurrentDeal(deal)
@@ -762,6 +769,8 @@
       resolve:
         currentDeal: ->
           currentDeal
+        company: ->
+          $scope.company
         isPmpDeal: ->
           $scope.isPmpDeal
 
@@ -785,9 +794,6 @@
 
   $scope.$on 'closeDealCanceled', $scope.backToPrevStage
 
-  $scope.$on 'openContactModal', ->
-    $scope.createNewContactModal()
-
   $scope.$on 'updated_deals', (event, deal, action) ->
     if deal && action != 'delete' then $scope.setCurrentDeal(deal)
 
@@ -799,9 +805,6 @@
     for key, error of errors
       $scope.errors[key] = error && error[0]
 
-  $scope.$on 'updated_activities', ->
-    loadActivities()
-
   $scope.init(true)
 
   $scope.setActiveTab = (tab) ->
@@ -809,60 +812,6 @@
 
   $scope.setActiveType = (type) ->
     $scope.activeType = type
-
-
-  $scope.createNewContactModal = ->
-    $scope.populateContact = true
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/contact_form.html'
-      size: 'md'
-      controller: 'ContactsNewController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        contact: ->
-          {}
-
-  $scope.showNewActivityModal = ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_new_form.html'
-      size: 'md'
-      controller: 'ActivityNewController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        activity: ->
-          null
-        options: ->
-          type: 'deal'
-          data: $scope.currentDeal
-
-  $scope.showActivityEditModal = (activity) ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_new_form.html'
-      size: 'md'
-      controller: 'ActivityNewController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        activity: ->
-          activity
-        options: ->
-          type: 'deal'
-          data: $scope.currentDeal
-
-  $scope.showEmailsModal = (activity) ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_emails.html'
-      size: 'email'
-      controller: 'ActivityEmailsController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        activity: ->
-          activity
-
-  $scope.isTextHasTags = (str) -> /<[a-z][\s\S]*>/i.test(str)
 
   $scope.showDealEditModal = (deal) ->
     $scope.modalInstance = $modal.open
@@ -917,19 +866,11 @@
       Contact.all1(per: 10, page: 1).then (contacts) ->
         $scope.contacts = contacts
 
-  $scope.cancelActivity = ->
-    $scope.initActivity()
-
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
       $scope.contacts.push contact
       $scope.selected[$scope.activeType.name].contacts.push(contact.id)
       $scope.populateContact = false
-
-  $scope.deleteActivity = (activity) ->
-    if confirm('Are you sure you want to delete the activity?')
-      Activity.delete activity, ->
-        $scope.$emit('updated_activities')
 
   $scope.baseFieldRequired = (factor) ->
     if $scope.currentDeal && $scope.base_fields_validations
@@ -1012,6 +953,9 @@
             $scope.operativeIntegration.isLoading = false
       , 2000
 
+  $scope.sendToGoogleSheet = (dealId)->
+    Deal.send_to_google_sheet(id: dealId)
+
   calcRestBudget = () ->
     sum = _.reduce($scope.budgets, (res, budget) ->
       res += Number(budget.budget_loc) || 0
@@ -1026,9 +970,15 @@
         Deal.latest_log(id: dealId).then (log) ->
           $scope.operativeIntegration.dealLog = log if log && log.id
 
+  getGoogleSheetsIntegration = (dealId) ->
+    ApiConfiguration.all().then (data) ->
+      google_sheets = _.findWhere data.api_configurations, integration_type: 'GoogleSheetsConfiguration'
+      if google_sheets && google_sheets.switched_on
+        $scope.googleSheetsIntegration.isEnabled = google_sheets.switched_on
+
   $scope.getWarningSettings = () ->
     dealsWithoutWarning = localStorageService.get('dealsWithoutWarning') || []
-    dealsWithoutWarning.forEach((deal) -> 
+    dealsWithoutWarning.forEach((deal) ->
       if deal.dealId == $scope.currentDeal.id
         $scope.showWarnings = false
     )

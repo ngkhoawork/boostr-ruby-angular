@@ -1,6 +1,6 @@
 @app.controller "AccountsNewController",
-['$scope', '$rootScope', '$modalInstance', 'Client', 'HoldingCompany', 'Field', 'AccountCfName', 'client', 'CountriesList', 'Validation'
-($scope, $rootScope, $modalInstance, Client, HoldingCompany, Field, AccountCfName, client, CountriesList, Validation) ->
+['$scope', '$rootScope', '$modalInstance', 'Client', 'HoldingCompany', 'Field', 'AccountCfName', 'client', 'CountriesList', 'Validation', 'options'
+($scope, $rootScope, $modalInstance, Client, HoldingCompany, Field, AccountCfName, client, CountriesList, Validation, options) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
@@ -13,6 +13,14 @@
   $scope.isDuplicateShow = false
   $scope.isLoaderShow = false
   $scope.minSearchStringLength = 3 # the minimum search string length
+
+  if options.lead
+    client = $scope.client
+    lead = options.lead
+    client.name = lead.company_name
+    if lead.country
+      $scope.showAddressFields = true
+      client.address.country = lead.country
 
   CountriesList.get (data) ->
     $scope.countries = data.countries
@@ -92,6 +100,9 @@
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true
     $scope.removeCategoriesFromAgency()
+
+    $scope.client.lead = options.lead if options.lead
+
     $scope.client.$save(
       (client)->
         $rootScope.$broadcast 'newClient', $scope.client

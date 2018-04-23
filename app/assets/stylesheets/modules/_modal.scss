@@ -140,6 +140,14 @@
   font-family: "Avenir Next", Arial, serif;
   padding: 30px;
   color: $main-font-color;
+  span.title {
+    font-size: 18px;
+    display: block;
+    font-weight: 700;
+    line-height: 27px;
+    margin-bottom: 6px;
+    margin-top: 30px;
+  }
   input, textarea {
     &::-webkit-input-placeholder {
       font-weight: normal;
@@ -677,5 +685,11 @@
   }
   .z-toggle {
     vertical-align: middle;
+  }
+}
+#deal_modal {
+  .dropdown-menu {
+    max-height: 250px;
+    overflow-y: auto;
   }
 }

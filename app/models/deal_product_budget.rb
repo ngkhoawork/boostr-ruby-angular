@@ -1,8 +1,17 @@
 class DealProductBudget < ActiveRecord::Base
+  SAFE_COLUMNS = %i{budget start_date end_date created_at updated_at budget_loc}
+
   belongs_to :deal_product
   delegate :deal, to: :deal_product
 
   scope :for_time_period, -> (start_date, end_date) { where('deal_product_budgets.start_date <= ? AND deal_product_budgets.end_date >= ?', end_date, start_date) }
+  scope :for_year_month, -> (effect_date) do
+    where(
+      "DATE_PART('year', start_date) = ? AND DATE_PART('month', start_date) = ?",
+      effect_date.year,
+      effect_date.month
+    )
+  end
   scope :for_product_id, -> (product_id) { where('deal_products.product_id = ?', product_id) if product_id.present? }
   scope :by_seller_id, -> (seller_id) do
     joins(deal_product: { deal: :deal_members })
@@ -36,18 +45,25 @@ class DealProductBudget < ActiveRecord::Base
   end
 
   def self.to_csv(company_id)
+    company = Company.find(company_id)
     header = [
       :Deal_Id,
       :Deal_Name,
       :Deal_Percentage,
       :Advertiser,
-      :Product,
+      :Product
+    ]
+    if company.product_options_enabled
+      header << company.product_option1.to_sym if company.product_option1_enabled
+      header << company.product_option2.to_sym if company.product_option2_enabled
+    end
+    header += [
       :Budget,
       :Start_Date,
       :End_Date,
       :Budget_USD
     ]
-    deal_product_cf_names = Company.find(company_id).deal_product_cf_names.where("disabled IS NOT TRUE").order("position asc")
+    deal_product_cf_names = company.deal_product_cf_names.where("disabled IS NOT TRUE").order("position asc")
     deal_product_cf_names.each do |deal_product_cf_name|
       header << deal_product_cf_name.field_label
     end
@@ -90,7 +106,11 @@ class DealProductBudget < ActiveRecord::Base
             line << deal.name
             line << (deal.stage.present? ? deal.stage.probability : nil)
             line << deal.advertiser.try(:name)
-            line << deal_product.product.name
+            line << deal_product.product&.level0&.[]('name')
+            if company.product_options_enabled
+              line << deal_product.product&.level1&.[]('name') if company.product_option1_enabled
+              line << deal_product.product&.level2&.[]('name') if company.product_option2_enabled
+            end
             line << (dpb.budget_loc.try(:round) || 0)
             line << dpb.start_date
             line << dpb.end_date
@@ -148,11 +168,21 @@ class DealProductBudget < ActiveRecord::Base
         next
       end
 
+      i = 0
       if row[2]
-        product = current_user.company.products.where(name: row[2]).first
+        full_name = row[2].to_s
+        if current_user.company.product_options_enabled && current_user.company.product_option1_enabled
+          i += 1
+          full_name += ' ' + row[3].to_s
+        end
+        if current_user.company.product_options_enabled && current_user.company.product_option2_enabled
+          i += 1
+          full_name += ' ' + row[4].to_s
+        end
+        product = current_user.company.products.where(full_name: full_name.strip).first
         unless product
           import_log.count_failed
-          import_log.log_error(["Product #{row[2]} could not be found"])
+          import_log.log_error(["Product #{full_name.strip} could not be found"])
           next
         end
       else
@@ -162,8 +192,8 @@ class DealProductBudget < ActiveRecord::Base
       end
 
       budget = nil
-      if row[3]
-        budget = Float(row[3].strip) rescue false
+      if row[3+i]
+        budget = Float(row[3+i].strip) rescue false
         budget_loc = budget
         unless budget
           import_log.count_failed
@@ -184,9 +214,9 @@ class DealProductBudget < ActiveRecord::Base
         next
       end
 
-      if row[4]
+      if row[4+i]
         begin
-          period = Date.strptime(row[4].strip, '%b-%y')
+          period = Date.strptime(row[4+i].strip, '%b-%y')
         rescue ArgumentError
           import_log.count_failed
           import_log.log_error(['Period must be in valid format: Mon-YY'])
@@ -195,7 +225,7 @@ class DealProductBudget < ActiveRecord::Base
 
         unless period.between?(deal.start_date.beginning_of_month, deal.end_date.end_of_month)
           import_log.count_failed
-          import_log.log_error(["Period #{row[4]} must be within Deal Period"])
+          import_log.log_error(["Period #{row[4+i]} must be within Deal Period"])
           next
         end
       else

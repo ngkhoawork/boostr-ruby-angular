@@ -32,9 +32,9 @@
                 Publisher
                 %a{href: '', 'ng-href': '/publishers/{{activity.publisher.id}}'}
                     {{activity.publisher.name}}
-            %p{'ng-if': '!isTextHasTags(activity.comment) || activity.activity_type.name != "Email"','ng-bind-html': 'getHtml(activity.comment)'}
+            %p{'ng-if': '!isTextHasTags(activity.comment) && activity.activity_type.name != "Email"', 'ng-bind-html': 'getHtml(activity.comment)'}
             %div{'ng-if': 'isTextHasTags(activity.comment) || activity.activity_type.name == "Email"'}
-                %p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
+                %p{'ng-if': 'activity.comment.length <= 250', 'ng-bind-html': 'getHtml(activity.comment)'}
                 %button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity)'}
                     Show email
             %p{'ng-repeat': 'asset in activity.assets'}

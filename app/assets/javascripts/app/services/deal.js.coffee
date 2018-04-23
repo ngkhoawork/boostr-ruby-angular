@@ -7,6 +7,8 @@
     original.deal.values_attributes = original.deal.values if original.deal.values
     original.deal.values_attributes << original.deal.deal_type if original.deal.deal_type
     original.deal.values_attributes << original.deal.source_type if original.deal.source_type
+    original.deal.type_id = original.deal.deal_type.option_id if original.deal.deal_type
+    original.deal.source_id = original.deal.source_type.option_id if original.deal.source_type
 
     original.deal.deal_custom_field_attributes = original.deal.deal_custom_field if original.deal.deal_custom_field
     angular.toJson(original)
@@ -30,6 +32,9 @@
     send_to_operative:
       method: 'POST'
       url: '/api/deals/:id/send_to_operative'
+    send_to_google_sheet:
+      method: 'POST'
+      url: '/api/deals/:id/send_to_google_sheet'
     get_latest_operative_log:
       method: 'GET'
       url: 'api/deals/:id/latest_log'
@@ -105,6 +110,15 @@
   @send_to_operative = (params) ->
     deferred = $q.defer()
     resource.send_to_operative params,
+      (resp) ->
+        deferred.resolve(resp)
+      (err) ->
+        deferred.reject(err)
+    deferred.promise
+
+  @send_to_google_sheet = (params) ->
+    deferred = $q.defer()
+    resource.send_to_google_sheet params,
       (resp) ->
         deferred.resolve(resp)
       (err) ->

@@ -5,13 +5,37 @@
             %span.close-btn{'ng-click': 'cancel()'}
         .popup-modal-body
             .row
-                .col-xs-6
+                .col-xs-6{ 'ng-if': '!productOptionsEnabled' }
                     .form-group
                         %label Product
                         %ui-select{ name: 'product', ng: { model: 'deal_product.product_id', disabled: true, required: true } }
                             %ui-select-match{ placeholder: 'Product' }
                                 {{ $select.selected.name }}
-                            %ui-select-choices{ repeat: 'product.id as product in products | orderBy: "name" | filter: { name: $select.search }' }
+                            %ui-select-choices{ repeat: 'product.id as product in productsByLevel(0) | orderBy: "name" | filter: { name: $select.search }' }
+                                %div{ ng: { bind: { html: 'product.name' } } }
+                .col-xs-4{ 'ng-if': 'productOptionsEnabled' }
+                    .form-group
+                        %label Product
+                        %ui-select{ name: 'product_level_0', ng: { model: 'deal_product.product0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
+                            %ui-select-match{ placeholder: 'Product' }
+                                {{ $select.selected.name }}
+                            %ui-select-choices{ repeat: 'product.id as product in productsByLevel(0) | orderBy: "name" | filter: { name: $select.search }' }
+                                %div{ ng: { bind: { html: 'product.name' } } }
+                .col-xs-4{ 'ng-if': 'productOptionsEnabled && productOption1Enabled' }
+                    .form-group
+                        %label {{ option1Field }}
+                        %ui-select{ name: 'product_level_1', ng: { model: 'deal_product.product1', disabled: '!deal_product.product0 || productsByLevel(1).length == 0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
+                            %ui-select-match{ placeholder: '{{ option1Field }}', 'allow-clear': 'true' }
+                                {{ $select.selected.name }}
+                            %ui-select-choices{ repeat: 'product.id as product in productsByLevel(1) | orderBy: "name" | filter: { name: $select.search }' }
+                                %div{ ng: { bind: { html: 'product.name' } } }
+                .col-xs-4{ 'ng-if': 'productOptionsEnabled && productOption2Enabled' }
+                    .form-group
+                        %label {{ option2Field }}
+                        %ui-select{ name: 'product_level_2', ng: { model: 'deal_product.product2', disabled: '!deal_product.product1 || productsByLevel(2).length == 0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
+                            %ui-select-match{ placeholder: '{{ option1Field }}', 'allow-clear': 'true' }
+                                {{ $select.selected.name }}
+                            %ui-select-choices{ repeat: 'product.id as product in productsByLevel(2) | orderBy: "name" | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'product.name' } } }
                 .col-xs-6
                     .form-group.product-budget{'ng-class': "{'with-add-btn': deal_product.isIncorrectTotalBudgetPercent}"}
@@ -21,6 +45,8 @@
                             %span.total-percent{'ng-class': "{'has-error': deal_product.isIncorrectTotalBudgetPercent}"}
                                 {{(deal_product.budget_percent || 0 )+ '%'}}
                             %span.reset-budget.glyphicon.glyphicon-remove-circle{'ng-class': "{'has-error': deal_product.isIncorrectTotalBudgetPercent}", 'ng-click': 'resetAddProduct()'}
+
+            .row
                 .col-xs-12
                     .row.months.new-product-form
                         .col-xs-2{ ng: { repeat: 'month in deal_product.deal_product_budgets' } }
@@ -40,4 +66,4 @@
                                     'numbers-only':''}
         .popup-modal-footer
             %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
-            %button.btn.btn-warning{'type': 'submit', 'ng-disabled': 'deal_product.isIncorrectTotalBudgetPercent || !deal_product.product_id'} Add Product
+            %button.btn.btn-warning{'type': 'submit', 'ng-disabled': 'disableForm()'} Add Product

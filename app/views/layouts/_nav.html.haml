@@ -15,7 +15,7 @@
         {{::item.name}}
         %span.caret
       .dropdown-menu{'ng-if': '::item.dropdown.length'}
-        %a.item{'ng-repeat': 'item in ::item.dropdown | orderBy: "::name"', 'ng-href': '{{::item.url}}'}
+        %a.item{'ng-repeat': 'item in ::item.dropdown | filter: "" | orderBy: "::name"', 'ng-href': '{{::item.url}}'}
           {{::item.name}}
   %span.scroll-top-link{'ng-click': 'scrollTop()'}
     %i.fa.fa-arrow-up
@@ -26,5 +26,12 @@
   _isPublisherEnabled = (#{current_user.company_publisher_enabled});
   _isGmailExtensionEnabled = (#{current_user.company.gmail_enabled});
   _isGcalendarExtensionEnabled = (#{current_user.company.gcalendar_enabled});
+  _isLogiEnabled = (#{current_user.company_logi_enabled});
   _gmail_extension_url = ("#{Setting.get(:gmail_extension_url)}");
   _gcalendar_extension_url = ("#{Setting.get(:gcalendar_extension_url)}");
+  _resourceLink = ("#{current_user.company.resource_link}");
+  _isAgreementsEnabled = (#{!!current_user.agreements_enabled});
+  _isLeadsEnabled = (#{!!current_user.leads_enabled});
+  _isContractsEnabled = (#{!!current_user.contracts_enabled});
+  _isExec = (#{current_user.user_type == 6});
+  _isAdmin = (#{!!current_user.is_admin});
