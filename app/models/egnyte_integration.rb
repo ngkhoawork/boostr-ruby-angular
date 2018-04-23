@@ -61,7 +61,18 @@ class EgnyteIntegration < ActiveRecord::Base
 
   private
 
-  delegate :deal_folder_tree_default, :account_folder_tree_default, :deals_folder_name_default, to: :class
+  delegate :deal_folder_tree_default, :deals_folder_name_default, to: :class
+
+  def account_folder_tree_default
+    self.class.account_folder_tree_default.tap do |account_folder_tree|
+      title = deals_folder_name || deals_folder_name_default
+
+      account_folder_tree[:nodes] << {
+        title: title,
+        nodes: []
+      } unless account_folder_tree[:nodes].map { |node| node[:title] }.include?(title)
+    end
+  end
 
   def connected_is_required_for_enabled
     errors.add(:base, 'can not be enabled before connected') if enabled? && non_connected?

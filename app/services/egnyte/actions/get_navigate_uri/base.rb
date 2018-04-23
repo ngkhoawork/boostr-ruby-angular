@@ -25,7 +25,7 @@ class Egnyte::Actions::GetNavigateUri::Base < Egnyte::Actions::Base
     elsif response.bad_request?
       nil
     else
-      raise Egnyte::Errors::UnhandledRequest
+      raise Egnyte::Errors::UnhandledRequest, response.body
     end
   end
 

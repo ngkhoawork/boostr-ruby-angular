@@ -14,6 +14,8 @@ class Egnyte::PrivateActions::SanitizeFolderName
     replace_all_str_forbidden_signs
     replace_start_str_forbidden_signs
     replace_end_str_forbidden_signs
+
+    @folder_name
   end
 
   private
