@@ -16,10 +16,13 @@
       if (index > -1)
         $scope.user.roles.splice(index, 1)
     $scope.buttonDisabled = true
-    User.invite(user: $scope.user).$promise.then (user) ->
-      if onInvite
-        onInvite(user)
-      $modalInstance.close()
+    User.invite(user: $scope.user).$promise.then(
+      (user) ->
+        if onInvite
+          onInvite(user)
+        $modalInstance.close()
+      (reject) -> $scope.buttonDisabled = false
+    )
 
   $scope.cancel = ->
     $modalInstance.dismiss()
