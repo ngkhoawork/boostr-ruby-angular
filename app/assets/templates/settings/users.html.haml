@@ -89,7 +89,7 @@
                         %label{:for => "revenue_requests_access{{user.id}}"}
                           %span
                   %td.left
-                    %a{href: '/switch_user?scope_identifier=user_{{user.id}}', target: '_blank'} Login As
+                    %a{href: '/switch_user?scope_identifier=user_{{user.id}}', target: '_blank', ng: {if: 'user.is_active'}} Login As
                   %td.left{ ng: { click: 'editModal(user)' } }
                     {{ user.employee_id }}
                   %td.left{ ng: { click: 'editModal(user)' } }
