@@ -1,5 +1,6 @@
 class Csv::Quota
   include ActiveModel::Validations
+  include Csv::ProductOptionable
 
   attr_accessor :time_period_name, 
                 :user_email, 
@@ -7,6 +8,8 @@ class Csv::Quota
                 :company, 
                 :type, 
                 :product_name, 
+                :product_level1, 
+                :product_level2, 
                 :product_family_name
 
   validates :time_period_name, :user_email, :quota_value, :company, :type, presence: true
@@ -79,6 +82,8 @@ class Csv::Quota
       quota_value: row[:quota],
       type: row[:type].try(:downcase),
       product_name: row[:product],
+      product_level1: row[:product_level1],
+      product_level2: row[:product_level2],
       product_family_name: row[:product_family],
       company: company
     )
@@ -100,7 +105,7 @@ class Csv::Quota
   end
 
   def product
-    @_product ||= Product.find_by(name: product_name) if product_name.present?
+    @_product ||= Product.find_by(full_name: product_full_name) if product_name.present?
   end
 
   def product_family
