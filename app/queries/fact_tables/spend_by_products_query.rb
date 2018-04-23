@@ -6,9 +6,9 @@ class FactTables::SpendByProductsQuery
 
   def perform
     AccountProductRevenueFact
-        .select('start_date, name, sum(sum)')
+        .select('start_date, top_parent_id, sum(sum)')
         .from(unified_data)
-        .group('start_date, name')
+        .group('start_date, top_parent_id')
   end
 
   private

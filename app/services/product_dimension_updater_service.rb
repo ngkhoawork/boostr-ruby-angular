@@ -4,13 +4,14 @@ class ProductDimensionUpdaterService < BaseService
       products.each do |product|
         selector = { id: product[:id], company_id: product[:company_id] }
         setter = product.attributes.except('id', 'company_id')
+        setter['top_parent_id'] ||= product[:id]
         upsert.row(selector, setter)
       end
     end
   end
 
   def products
-    @_products ||= Product.select(:id, :name, :revenue_type, :company_id, :created_at, :updated_at)
+    @_products ||= Product.select(:id, :name, :revenue_type, :company_id, :created_at, :updated_at, :parent_id, :top_parent_id)
   end
 
   def connection
