@@ -649,7 +649,7 @@ class DisplayLineItem < ActiveRecord::Base
 
         display_line_item_params = self.convert_params_currency(io.exchange_rate, display_line_item_params)
 
-        io_change[:time_period_ids] += current_user.company.time_periods.for_time_period(io.start_date, io.end_date).collect(&:id)
+        io_change[:time_period_ids] += current_user.company.time_period_ids(io.start_date, io.end_date)
 
         if io.content_fees.count == 0
           if io_start_date < io.start_date
@@ -660,13 +660,13 @@ class DisplayLineItem < ActiveRecord::Base
           end
         end
 
-        io_change[:time_period_ids] += current_user.company.time_periods.for_time_period(io.start_date, io.end_date).collect(&:id)
+        io_change[:time_period_ids] += current_user.company.time_period_ids(io.start_date, io.end_date)
         io_change[:user_ids] += io.users.collect{|item| item.id}
         io_change[:product_ids] += io.products.collect{|item| item.id}
         io_change[:product_ids] += [product_id] if product_id.present?
         io.external_io_number = external_io_number
         io.save
-        deal_change[:time_period_ids] += current_user.company.time_periods.for_time_period(io.deal.start_date, io.deal.end_date).collect(&:id)
+        deal_change[:time_period_ids] += current_user.company.time_period_ids(io.deal.start_date, io.deal.end_date)
         deal_change[:stage_ids] += [io.deal.stage_id] if io.deal.stage_id.present?
         deal_change[:user_ids] += io.deal.deal_members.collect{|item| item.user_id}
         deal_change[:product_ids] += io.deal.deal_products.collect{|item| item.product_id}

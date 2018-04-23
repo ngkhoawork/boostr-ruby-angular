@@ -1326,7 +1326,7 @@ class Deal < ActiveRecord::Base
           source_value_params[:id] = deal_source_value.id
         end
 
-        deal_change[:time_period_ids] += current_user.company.time_periods.for_time_period(deal.start_date, deal.end_date).collect(&:id)
+        deal_change[:time_period_ids] += current_user.company.time_period_ids(deal.start_date, deal.end_date)
         deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
         deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
         deal_change[:product_ids] += deal.deal_products.collect{|item| item.product_id}
@@ -1353,7 +1353,7 @@ class Deal < ActiveRecord::Base
           deal_change[:user_ids] += [user.id]
         end
 
-        deal_change[:time_period_ids] += current_user.company.time_periods.for_time_period(start_date, end_date).collect(&:id)
+        deal_change[:time_period_ids] += current_user.company.time_period_ids(start_date, end_date)
         deal_change[:stage_ids] += [stage.id] if stage.present?
         deal_contact_list.each do |contact|
           deal.deal_contacts.find_or_create_by(contact: contact)
