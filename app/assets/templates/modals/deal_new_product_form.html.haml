@@ -53,7 +53,7 @@
                             .form-group
                                 %label {{deal_product.months[$index]}}
                                 %input.form-control.offset-bottom{style: 'margin-bottom: 5px', 'ng-model': 'month.budget_loc',
-                                    'ng-disabled': '!deal_product.budget_loc',
+                                    'ng-disabled': 'isUndefined(deal_product.budget_loc)',
                                     'ng-change': 'changeMonthValue(month.budget_loc, $index)',
                                     'ng-focus': 'cutCurrencySymbol(month.budget_loc, $index)',
                                     'ng-blur': 'setCurrencySymbol(month.budget_loc, $index)',
