@@ -275,7 +275,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
       }
 
       if io.present?
-        io_change[:time_period_ids] += company.time_periods.where("end_date >= ? and start_date <= ?", [io.start_date, start_date].min, [io.end_date, end_date].max).collect{|item| item.id}
+        io_change[:time_period_ids] += current_user.company.time_periods.where("end_date >= ? and start_date <= ?", [io.start_date, start_date].min, [io.end_date, end_date].max).collect{|item| item.id}
         io_change[:user_ids] += io.users.collect{|item| item.id}
         io_change[:product_ids] += io.products.collect{|item| item.id}
       end
