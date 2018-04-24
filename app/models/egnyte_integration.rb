@@ -83,8 +83,8 @@ class EgnyteIntegration < ActiveRecord::Base
   end
 
   def ensure_defaults
+    self.deals_folder_name = deals_folder_name_default if deals_folder_name.blank?
     self.account_folder_tree = account_folder_tree_default if account_folder_tree.blank?
     self.deal_folder_tree = deal_folder_tree_default if deal_folder_tree.blank?
-    self.deals_folder_name = deals_folder_name_default if deals_folder_name.blank?
   end
 end
