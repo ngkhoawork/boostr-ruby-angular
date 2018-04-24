@@ -89,3 +89,11 @@
                   %td {{ base_field.name }}
                   %td
                     %z-toggle{'ng-model': 'base_field.criterion.value', 'ng-change': 'updateValidation(base_field)'}
+
+      .col-sm-3
+        .panel
+          .panel-body
+            %h4 Lead Validations
+            %h5 Require Rejection Explanation
+            .form-group
+              %z-toggle{'ng-model': 'require_lead_rejection_explanation.criterion.value', 'ng-change': 'updateValidation(require_lead_rejection_explanation)',  id: "require_lead_rejection_explanation"}

@@ -212,6 +212,16 @@ describe Api::LeadsController do
     end
   end
 
+  describe 'PUT #update' do
+    it 'update lead successfully' do
+      expect(lead.closed_reason).to be_nil
+
+      put :update, id: lead.id, lead: { closed_reason: 'Does not fit our criteria' }
+
+      expect(lead.reload.closed_reason).to eq 'Does not fit our criteria'
+    end
+  end
+
   private
 
   def company
