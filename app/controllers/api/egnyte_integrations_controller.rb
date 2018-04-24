@@ -59,13 +59,13 @@ class Api::EgnyteIntegrationsController < ApplicationController
   end
 
   def company_oauth_callback
-    connect_company
+    connect_company unless params[:error]
 
     redirect_to root_path
   end
 
   def user_oauth_callback
-    connect_user
+    connect_user unless params[:error]
 
     redirect_to WEBSITE_EGNYTE_SETTINGS_URL
   end
