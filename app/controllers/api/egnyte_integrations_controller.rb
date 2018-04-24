@@ -1,6 +1,8 @@
 class Api::EgnyteIntegrationsController < ApplicationController
   respond_to :json
 
+  skip_before_filter :authenticate_user!, only: [:company_oauth_callback, :user_oauth_callback]
+
   WEBSITE_EGNYTE_SETTINGS_URL = '/settings/egnyte'.freeze
 
   def show
@@ -57,19 +59,13 @@ class Api::EgnyteIntegrationsController < ApplicationController
   end
 
   def company_oauth_callback
-    connect_egnyte(
-      'EgnyteIntegration',
-      company_oauth_callback_api_egnyte_integration_url(protocol: 'https', host: host)
-    )
+    connect_company
 
     redirect_to root_path
   end
 
   def user_oauth_callback
-    connect_egnyte(
-      'EgnyteAuthentication',
-      user_oauth_callback_api_egnyte_integration_url(protocol: 'https', host: host)
-    )
+    connect_user
 
     redirect_to WEBSITE_EGNYTE_SETTINGS_URL
   end
@@ -104,13 +100,19 @@ class Api::EgnyteIntegrationsController < ApplicationController
     ).perform
   end
 
-  def connect_egnyte(auth_record_type, redirect_uri)
-    Egnyte::Actions::Connect.new(
-      egnyte_integration_id: resource.id,
+  def connect_company
+    Egnyte::Actions::Connect::Company.new(
       state: params.require(:state),
       code: params.require(:code),
-      auth_record_type: auth_record_type,
-      redirect_uri: redirect_uri
+      redirect_uri: company_oauth_callback_api_egnyte_integration_url(protocol: 'https', host: host)
+    ).perform
+  end
+
+  def connect_user
+    Egnyte::Actions::Connect::User.new(
+      state: params.require(:state),
+      code: params.require(:code),
+      redirect_uri: user_oauth_callback_api_egnyte_integration_url(protocol: 'https', host: host)
     ).perform
   end
 

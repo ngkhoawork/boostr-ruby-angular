@@ -1,12 +1,12 @@
-class Egnyte::Actions::Connect < Egnyte::Actions::Base
+class Egnyte::Actions::Connect::Base < Egnyte::Actions::Base
   APP_FOLDER_PATH = '/Shared/Boostr'.freeze
 
   def self.required_option_keys
-    @required_option_keys ||= %i(egnyte_integration_id state code auth_record_type redirect_uri)
+    @required_option_keys ||= %i(state code redirect_uri)
   end
 
   def perform
-    raise Egnyte::Errors::InvalidAuthState unless auth_record
+    raise Egnyte::Errors::InvalidAuthState, "can not match #{@options[:state]}" unless auth_record
 
     response = api_caller.oauth(code: @options[:code], redirect_uri: @options[:redirect_uri])
 
@@ -24,6 +24,6 @@ class Egnyte::Actions::Connect < Egnyte::Actions::Base
   delegate :access_token, to: :auth_record
 
   def auth_record
-    @auth_record ||= @options[:auth_record_type].constantize.find_by(state_token: @options[:state])
+    @auth_record ||= auth_class.find_by(state_token: @options[:state])
   end
 end
