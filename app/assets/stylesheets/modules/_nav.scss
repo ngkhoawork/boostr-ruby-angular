@@ -5,7 +5,7 @@
   z-index: 200;
   .logo-row {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 60px;
     #logo {
       display: inline-block;
       width: 123px;
@@ -19,6 +19,17 @@
       right: 0;
       top: 0;
       text-align: right;
+
+      .user-info {
+        display: grid;
+        & > a {
+          color: #636F7A;
+          &:hover {
+            color: white;
+          }
+        }
+      }
+
       & > a {
         color: #636F7A;
         &:hover {

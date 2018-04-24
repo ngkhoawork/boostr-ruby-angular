@@ -1,7 +1,7 @@
 class Api::EgnyteIntegrationsController < ApplicationController
   respond_to :json
 
-  WEBSITE_EGNYTE_SETTINGS_URL = '/settings/egnyte'.freeze
+  WEBSITE_EGNYTE_SETTINGS_URL = '/profile'.freeze
 
   def show
     render json: resource,

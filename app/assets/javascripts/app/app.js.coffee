@@ -383,6 +383,11 @@
       templateUrl: 'logi.html'
       controller: 'LogiConfigurationsController'
 
+    .when '/profile',
+      templateUrl: 'users/profile.html'
+      controller: 'ProfileController'
+
+
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
