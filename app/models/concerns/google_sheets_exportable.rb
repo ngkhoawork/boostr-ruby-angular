@@ -6,6 +6,7 @@ module GoogleSheetsExportable
   end
 
   def schedule_google_sheets_export
+    return if legacy_id
     return unless manual_update
     return unless (config = company.google_sheets_configurations.first)
 

@@ -259,7 +259,7 @@ class DealProductBudget < ActiveRecord::Base
         end
       end
 
-      deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date).collect{|item| item.id}
+      deal_change[:time_period_ids] += current_user.company.time_period_ids(deal.start_date, deal.end_date)
       deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
       deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
       deal_change[:product_ids] += [deal_product.product_id]

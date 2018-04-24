@@ -250,6 +250,10 @@ class Company < ActiveRecord::Base
     sales_processes.first
   end
 
+  def time_period_ids(start_date, end_date)
+    time_periods.for_time_period(start_date, end_date).collect(&:id)
+  end
+
   def account_fields_data
     @_account_fields_data ||= Models::AccountCompanyDataService.new(id).perform
   end

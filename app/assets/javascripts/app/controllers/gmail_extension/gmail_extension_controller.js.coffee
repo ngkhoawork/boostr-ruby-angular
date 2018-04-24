@@ -81,8 +81,8 @@
 			backdrop: 'static'
 			keyboard: false
 			resolve:
-                client: -> {}
-                options: -> {}
+				client: -> {}
+				options: -> {}
 
 	$scope.$on 'openContactModal', ->
 		$scope.openContactModal()

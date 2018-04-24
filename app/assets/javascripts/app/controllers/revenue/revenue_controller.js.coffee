@@ -279,23 +279,6 @@
         resolve:
           pmp: null
 
-    $scope.showAssignPmpAdvertiserModal = (pmpObject) ->
-      modalInstance = $modal.open
-        templateUrl: 'modals/pmp_ssp_advertiser_assign_form.html'
-        size: 'lg'
-        controller: 'AdvertiserAssignPmpController'
-        backdrop: 'static'
-        keyboard: false
-        resolve:
-          object: ->
-            pmpObject
-      modalInstance.result.then (ids) ->
-        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id)
-
-    $scope.setCurrentTab = (val) ->
-      $scope.filter.revenue = val
-      $scope.applyFilter()
-
     $scope.getFilters = ->
       $q.all({
         filterData: Deal.filter_data(),
