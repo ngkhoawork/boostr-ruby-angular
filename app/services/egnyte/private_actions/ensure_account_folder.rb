@@ -24,9 +24,13 @@ class Egnyte::PrivateActions::EnsureAccountFolder < Egnyte::Actions::Base
   end
 
   def create_folder
-    api_caller.create_folder(folder_path: @options[:pattern_path], access_token: access_token)
+    uniq_path =
+      Egnyte::PrivateActions::CreateUniqFolder.new(
+        path: @options[:pattern_path],
+        egnyte_integration: egnyte_integration
+      ).perform
 
-    response = api_caller.get_folder_by_path(folder_path: @options[:pattern_path], access_token: access_token)
+    response = api_caller.get_folder_by_path(folder_path: uniq_path, access_token: access_token)
 
     record.create_egnyte_folder!(uuid: response.body[:folder_id], path: response.body[:path])
   end

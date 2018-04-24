@@ -2,46 +2,48 @@ class Egnyte::Actions::CreateFolderTree::Base < Egnyte::Actions::Base
   def perform
     return false unless enabled?
 
-    traverse_folder_tree(root_folder) do |node|
+    root_folder_struct[:path] = create_uniq_folder(root_folder_struct[:path])
+
+    traverse_folder_nodes(root_folder_struct) do |node|
       node[:path] = create_uniq_folder(node[:path])
     end
 
-    save_root_folder
+    save_root_folder(root_folder_struct[:path])
   end
 
   private
 
   delegate :folder_tree_attr_name, to: :class
 
-  def traverse_folder_tree(node, &block)
-    block.call(node)
-
+  def traverse_folder_nodes(node, &block)
     node[:nodes].each do |child|
       child[:path] = File.join(node[:path], child[:title])
 
-      traverse_folder_tree(child, &block)
+      block.call(child)
+
+      traverse_folder_nodes(child, &block)
     end
   end
 
-  def root_folder
-    folder_tree_pattern.tap { |folder_tree| folder_tree[:path] = root_folder_path }
+  def root_folder_struct
+    @root_folder_struct ||= default_folder_struct.tap { |folder_tree| folder_tree[:path] = root_folder_path }
   end
 
-  def folder_tree_pattern
+  def default_folder_struct
     egnyte_integration
       .public_send(folder_tree_attr_name)
       .deep_dup
       .deep_symbolize_keys!
   end
 
-  def save_root_folder
-    response = api_caller.get_folder_by_path(folder_path: root_folder[:path], access_token: access_token)
+  def save_root_folder(path)
+    response = api_caller.get_folder_by_path(folder_path: path, access_token: access_token)
 
     folder.update(uuid: response.body[:folder_id], path: response.body[:path])
   end
 
-  def create_uniq_folder(path)
-    Egnyte::PrivateActions::CreateUniqFolder.new(egnyte_integration: egnyte_integration, path: path).perform
+  def create_uniq_folder(path_template)
+    Egnyte::PrivateActions::CreateUniqFolder.new(egnyte_integration: egnyte_integration, path: path_template).perform
   end
 
   def folder
