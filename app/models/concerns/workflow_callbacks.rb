@@ -23,7 +23,7 @@ module WorkflowCallbacks
   def custom_workflow_update(type)
     workflows.each do |workflow|
       next unless workflow.switched_on?
-      WorkflowChainChecker.check(workflow.id, id, {}) if workflow.send("fire_on_#{type}")
+      WorkflowChainChecker.check(workflow.id, id, {type:type}) if workflow.send("fire_on_#{type}")
     end
   end
 
