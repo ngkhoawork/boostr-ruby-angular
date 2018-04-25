@@ -9,6 +9,6 @@ class ConfigsDataMappingsSerializer < ActiveModel::Serializer
   end
 
   def label_name
-    DataModels::BaseAttachmentLabels.parsed_json[object]
+    DataModels::BaseAttachmentLabels.parsed_json[object.to_sym]
   end
 end
