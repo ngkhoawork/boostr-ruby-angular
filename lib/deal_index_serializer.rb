@@ -46,7 +46,12 @@ class DealIndexSerializer < ActiveModel::Serializer
   end
 
   def share_members
-    object.deal_members.with_not_zero_share.map { |deal_member| deal_member.serializable_hash(only: [:id, :user_id, :share], methods: :name) }
+    object
+      .deal_members
+      .with_not_zero_share
+      .map do |deal_member| 
+        deal_member.serializable_hash(only: [:id, :user_id, :share], methods: :name)
+      end
   end
 
   def curr_symbol

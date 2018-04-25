@@ -20,7 +20,7 @@
 								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
 							%span.dropdown-title Select from list
 							.dropdown-block
-								.dropdown-option{'ng-repeat': "member in filter.members | filter: filtering	| orderBy: 'name'", role: 'menuitem'}
+								.dropdown-option{'ng-repeat': "member in filter.members | filter: filtering | orderBy: 'name'", role: 'menuitem'}
 									%a{href: '', 'ng-click': 'filter.select("member", member)'} {{member.name}}
 			.filter-row
 				.filter-name
@@ -38,7 +38,7 @@
 								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
 							%span.dropdown-title Select from list
 							.dropdown-block
-								.dropdown-option{'ng-repeat': "team in filter.teams | filter: filtering	| orderBy: 'name'", role: 'menuitem'}
+								.dropdown-option{'ng-repeat': "team in filter.teams | filter: filtering | orderBy: 'name'", role: 'menuitem'}
 									%a{href: '', 'ng-click': 'filter.select("team", team)'} {{team.name}}
 
 
@@ -94,8 +94,8 @@
 									to
 									%input.form-control{'ng-model': 'filter.maxBudget', 'ng-change': 'filter.slider.onChangeNumber("max")'}
 								%rzslider{'rz-slider-model': 'filter.slider.minValue',
-											'rz-slider-high': 'filter.slider.maxValue',
-											'rz-slider-options': 'filter.slider.options'}
+									'rz-slider-high': 'filter.slider.maxValue',
+									'rz-slider-options': 'filter.slider.options'}
 			.filter-row
 				.filter-name
 					%div
@@ -133,8 +133,8 @@
 					%span.bs-datepicker
 						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.startDate.startDate && filter.selected.startDate.endDate}'}
 							%div.date-picker{'date-range-picker': true,
-																								 'ng-model': 'filter.datePicker.startDate',
-																								 options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyStartDate}}'}
+								'ng-model': 'filter.datePicker.startDate',
+								options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyStartDate}}'}
 								%span.filter-date {{filter.getDateValue('startDate')}}
 							%span.caret
 			.filter-row
@@ -146,8 +146,8 @@
 					%span.bs-datepicker
 						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.createdDate.startDate && filter.selected.createdDate.endDate}'}
 							%div.date-picker{'date-range-picker': true,
-																								 'ng-model': 'filter.datePicker.createdDate',
-																								 options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyCreatedDate}}'}
+								'ng-model': 'filter.datePicker.createdDate',
+								options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyCreatedDate}}'}
 								%span.filter-date {{filter.getDateValue('createdDate')}}
 							%span.caret
 			.filter-row
