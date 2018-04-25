@@ -17,8 +17,7 @@
       formValidation()
       if Object.keys($scope.errors).length > 0 then return
 
-      User.update($scope.profile).$promise.then (err, res) ->
-        console.log(err)
+      User.update($scope.profile).$promise.then()
 
 
     $scope.connectEgnyte = ->

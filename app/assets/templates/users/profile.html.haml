@@ -8,34 +8,30 @@
             .main-title
               User Settings
           .block
-            %form{ ng: { submit: 'submitForm()' } }
-              .form-group{'ng-class':'{error: errors.first_name}'}
-                .row
-                  .col-xs-6
-                    %span.error-text {{errors.first_name}}
-                    %label{ for: 'first_name' }
-                      First Name
+            .form-group{'ng-class':'{error: errors.first_name}'}
+              .row
+                .col-xs-6
+                  %span.error-text {{errors.first_name}}
+                  %label{ for: 'first_name' }
+                    First Name
+                  %span.star *
+                  %input.form-control{ placeholder: 'First Name', ng: { model: 'profile.first_name', change: 'submitForm()', 'model-options': '{debounce: 500}' }, name: 'first_name' }
+
+                .col-xs-6
+                  .form-group{'ng-class':'{error: errors.last_name}'}
+                    %span.error-text {{errors.last_name}}
+                    %label{ for: 'last_name' }
+                      Last Name
                     %span.star *
-                    %input.form-control{ placeholder: 'First Name', ng: { model: 'profile.first_name' }, name: 'first_name' }
+                    %input.form-control{ placeholder: 'Last Name', ng: { model: 'profile.last_name', change: 'submitForm()', 'model-options': '{debounce: 500}' }, name: 'last_name' }
 
-                  .col-xs-6
-                    .form-group{'ng-class':'{error: errors.last_name}'}
-                      %span.error-text {{errors.last_name}}
-                      %label{ for: 'last_name' }
-                        Last Name
-                      %span.star *
-                      %input.form-control{ placeholder: 'Last Name', ng: { model: 'profile.last_name' }, name: 'last_name' }
+            .form-group{'ng-class':'{error: errors.email}'}
+              %span.error-text {{errors.email}}
+              %label{ for: 'email' }
+                Email
+              %span.star *
+              %input.form-control{ placeholder: 'Email Name', ng: { model: 'profile.email', change: 'submitForm()', 'model-options': '{debounce: 500}' }, name: 'email' }
 
-              .form-group{'ng-class':'{error: errors.email}'}
-                %span.error-text {{errors.email}}
-                %label{ for: 'email' }
-                  Email
-                %span.star *
-                %input.form-control{ placeholder: 'Email Name', ng: { model: 'profile.email' }, name: 'email' }
-
-              .save-button
-                %button.btn.btn-primary.btn-lg{ type: 'submit' }
-                  Save
           %div{'ng-if': 'egnyteEnabled'}
             %h6.egnyte-header-title
               Egnyte Account
