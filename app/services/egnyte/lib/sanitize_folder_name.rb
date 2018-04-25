@@ -1,4 +1,4 @@
-class Egnyte::PrivateActions::SanitizeFolderName
+class Egnyte::Lib::SanitizeFolderName
   ALL_REPLACEMENT_SIGN = ' '.freeze
   EDGE_REPLACEMENT_SIGN = ''.freeze
 

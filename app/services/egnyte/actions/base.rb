@@ -19,6 +19,6 @@ class Egnyte::Actions::Base
   end
 
   def sanitize_folder_name(folder_name)
-    Egnyte::PrivateActions::SanitizeFolderName.perform(folder_name)
+    Egnyte::Lib::SanitizeFolderName.perform(folder_name)
   end
 end
