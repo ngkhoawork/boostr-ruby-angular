@@ -65,12 +65,10 @@ class EgnyteIntegration < ActiveRecord::Base
 
   def account_folder_tree_default
     self.class.account_folder_tree_default.tap do |account_folder_tree|
-      title = deals_folder_name || deals_folder_name_default
-
       account_folder_tree[:nodes] << {
-        title: title,
+        title: deals_folder_name,
         nodes: []
-      } unless account_folder_tree[:nodes].map { |node| node[:title] }.include?(title)
+      } unless account_folder_tree[:nodes].map { |node| node[:title] }.include?(deals_folder_name)
     end
   end
 
