@@ -124,7 +124,7 @@ class Api::LeadsController < ApplicationController
     params
       .require(:lead)
       .permit(:first_name, :last_name, :title, :email, :company_name, :country, :state, :budget, :notes, :company_id,
-              :closed_reason)
+              :rejected_reason)
       .merge(status: Lead::NEW, created_from: Lead::WEB_FORM)
   end
 

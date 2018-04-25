@@ -214,11 +214,11 @@ describe Api::LeadsController do
 
   describe 'PUT #update' do
     it 'update lead successfully' do
-      expect(lead.closed_reason).to be_nil
+      expect(lead.rejected_reason).to be_nil
 
-      put :update, id: lead.id, lead: { closed_reason: 'Does not fit our criteria' }
+      put :update, id: lead.id, lead: { rejected_reason: 'Does not fit our criteria' }
 
-      expect(lead.reload.closed_reason).to eq 'Does not fit our criteria'
+      expect(lead.reload.rejected_reason).to eq 'Does not fit our criteria'
     end
   end
 
