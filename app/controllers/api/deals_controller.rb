@@ -10,16 +10,6 @@ class Api::DealsController < ApplicationController
           render json: suggest_deals
         elsif params[:activity].present?
           render json: activity_deals
-        elsif params[:time_period_id].present?
-          if valid_time_period?
-            if params[:is_product].present?
-              render json: product_forecast_deals
-            else
-              render json: forecast_deals
-            end
-          else
-            render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
-          end
         elsif params[:year].present?
           response_deals = company.deals
             .includes(
@@ -123,6 +113,18 @@ class Api::DealsController < ApplicationController
           return
         end
       }
+    end
+  end
+
+  def pipeline_deals
+    if valid_time_period?
+      if params[:is_product].present?
+        render json: product_forecast_deals
+      else
+        render json: forecast_deals
+      end
+    else
+      render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
     end
   end
 
@@ -960,6 +962,7 @@ class Api::DealsController < ApplicationController
     deals_with_stage = deals.where(stage: stage)
       .by_seller_id(params[:member_id])
       .by_team_id(params[:team_id])
+      .by_name(params[:q])
       .for_client(params[:advertiser_id])
       .for_client(params[:agency_id])
       .by_budget_range(params[:budget_from], params[:budget_to])

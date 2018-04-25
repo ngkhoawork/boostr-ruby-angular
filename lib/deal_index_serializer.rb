@@ -10,6 +10,7 @@ class DealIndexSerializer < ActiveModel::Serializer
     :agency_id,
     :company_id,
     :deal_members,
+    :share_members,
     :start_date,
     :end_date,
     :name,
@@ -42,6 +43,10 @@ class DealIndexSerializer < ActiveModel::Serializer
 
   def deal_members
     object.users.as_json(override: true, only: [:id], methods: :name)
+  end
+
+  def share_members
+    object.deal_members.with_not_zero_share.map { |deal_member| deal_member.serializable_hash(only: [:id, :user_id, :share], methods: :name) }
   end
 
   def curr_symbol

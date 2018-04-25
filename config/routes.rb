@@ -360,6 +360,7 @@ Rails.application.routes.draw do
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
       resources :deal_products, only: [:create, :update, :destroy]
       collection do
+        get :pipeline_deals
         get :pipeline_report
         get :pipeline_report_totals
         get :pipeline_report_monthly_budgets
