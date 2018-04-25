@@ -119,7 +119,15 @@
         $scope.accept = (lead) ->
             Leads.accept(id: lead.id).then -> removeLead(lead)
 
-        $scope.reject = (lead) ->
-            Leads.reject(id: lead.id).then -> removeLead(lead)
+        $scope.reject = (currentLead) ->
+            $scope.modalInstance = $modal.open
+                templateUrl: 'modals/leads_rejection_modal.html'
+                size: 'md'
+                controller: 'LeadsRejectionController'
+                backdrop: 'static'
+                keyboard: false
+                resolve:
+                    lead: -> currentLead
+            .result.then (lead) -> if lead then Leads.reject(id: lead.id).then -> removeLead(lead)
 
 ]
