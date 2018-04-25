@@ -118,11 +118,7 @@ class Api::DealsController < ApplicationController
 
   def pipeline_deals
     if valid_time_period?
-      if params[:is_product].present?
-        render json: product_forecast_deals
-      else
-        render json: forecast_deals
-      end
+      render json: params[:is_product] ? product_forecast_deals : forecast_deals
     else
       render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
     end
