@@ -97,7 +97,7 @@ class PublishersQuery < BaseQuery
     def publisher_custom_field_options(opts)
       opts.inject({}) do |acc, (key, value)|
         custom_field_name = PublisherCustomFieldName.find_by(id: key.to_s.split('_')[-1])
-        acc[custom_field_name.fetch_attr_name_for_publisher_custom_field] = value if custom_field_name
+        acc[custom_field_name.field_name] = value if custom_field_name
         acc
       end
     end

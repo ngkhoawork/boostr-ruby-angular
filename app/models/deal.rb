@@ -56,7 +56,7 @@ class Deal < ActiveRecord::Base
   has_one :billing_deal_contact, -> { where(role: 'Billing') }, class_name: 'DealContact'
   has_one :billing_contact, through: :billing_deal_contact, source: :contact
 
-  has_one :deal_custom_field, dependent: :destroy
+  has_one :deal_custom_field, dependent: :destroy, inverse_of: :deal
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
     order('activities.deal_id', 'activities.happened_at DESC')
   }, class_name: 'Activity'
