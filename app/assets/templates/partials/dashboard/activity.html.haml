@@ -13,12 +13,16 @@
       %span
         %b {{activity.activity_type.name}}
       %span {{activity.happened_at | date: 'mediumDate'}}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8dcc5a970... fix activity templates;
     %div.activity-body
       %p
         %strong {{activity.creator.first_name}} {{activity.creator.last_name}}
         {{activity.activity_type.action}}
         %span{'ng-repeat': 'contact in activity.contacts'}
+<<<<<<< HEAD
           %a{href: '', 'ng-href': '/contacts/{{contact.id}}'}> {{contact.name}}
           {{$last ? '' : ', '}}
       %p{'ng-if': 'activity.client'}
@@ -27,6 +31,16 @@
       %p{'ng-if': 'activity.deal'}
         Deal
         %a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}
+=======
+          %a{href: '', 'ng-href': '/contacts/{{contact.id}}', target: '_blank'}> {{contact.name}}
+          {{$last ? '' : ', '}}
+      %p{'ng-if': 'activity.client'}
+        Account
+        %a{href: '', 'ng-href': '/accounts/{{activity.client.id}}', target: '_blank'} {{activity.client.name}}
+      %p{'ng-if': 'activity.deal'}
+        Deal
+        %a{href: '', 'ng-href': '/deals/{{activity.deal.id}}', target: '_blank'}
+>>>>>>> 8dcc5a970... fix activity templates;
           {{activity.deal.name}}
       %div{ng: {if: '!isTextHasTags(activity.comment) && activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250'}}
       %div{'ng-if': 'isTextHasTags(activity.comment) || activity.activity_type.name == "Email"'}
