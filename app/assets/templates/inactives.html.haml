@@ -11,6 +11,8 @@
 					-#%td Product
 					%td Category
 					%td Sub-Category
+					%td Team
+					%td Seller
 					%td
 						%span.reset-filter{'ng-click': 'inactive.resetFilter()'}
 							Reset
@@ -46,6 +48,28 @@
 									%li{ ng: { repeat: 'subcategory in inactive.subcategories', class: '{active: subcategory.id === inactive.filter.subcategory_id}' } }
 										%a{ href: '', ng: { click: 'inactive.setFilter("subcategory", subcategory)' } }
 											{{ subcategory.name }}
+
+					%td
+						%ul.kpi-block__filter
+							%li{ dropdown: true }
+								%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !inactive.selected.team.id}' }
+									{{inactive.selected.team ? inactive.selected.team.name : 'All'}}
+									%span.caret
+								%ul.dropdown-menu
+									%li{ ng: { repeat: 'team in teams', class: '{active: team.id === inactive.filter.team_id}' } }
+										%a{ href: '', ng: { click: 'inactive.setFilter("team", team)' } }
+											{{ team.name }}
+
+					%td
+						%ul.kpi-block__filter
+							%li{ dropdown: true }
+								%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !inactive.selected.seller.id}' }
+									{{inactive.selected.seller ? inactive.selected.seller.name : 'All'}}
+									%span.caret
+								%ul.dropdown-menu
+									%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === inactive.filter.seller_id}' } }
+										%a{ href: '', ng: { click: 'inactive.setFilter("seller", seller)' } }
+											{{ seller.name }}
 			%h4.chart-title Inactive
 			%span.chart-subtitle No spend this quarter with spend last {{inactive.selected.qtrs.name}}
 			%div{'ng-show': 'inactive.data.length == 0'}
@@ -80,6 +104,8 @@
 					%td Comparison Time Period
 					%td Category
 					%td Sub-Category
+					%td Team
+					%td Seller
 					%td
 						%span.reset-filter{'ng-click': 'seasonalInactive.resetFilter()'}
 							Reset
@@ -125,6 +151,28 @@
 									%li{ ng: { repeat: 'subcategory in seasonalInactive.subcategories', class: '{active: subcategory.id === seasonalInactive.filter.subcategory_id}' } }
 										%a{ href: '', ng: { click: 'seasonalInactive.setFilter("subcategory", subcategory)' } }
 											{{ subcategory.name }}
+
+					%td
+						%ul.kpi-block__filter
+							%li{ dropdown: true }
+								%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !seasonalInactive.selected.team.id}' }
+									{{seasonalInactive.selected.team ? seasonalInactive.selected.team.name : 'All'}}
+									%span.caret
+								%ul.dropdown-menu
+									%li{ ng: { repeat: 'team in teams', class: '{active: team.id === seasonalInactive.filter.team_id}' } }
+										%a{ href: '', ng: { click: 'seasonalInactive.setFilter("team", team)' } }
+											{{ team.name }}
+
+					%td
+						%ul.kpi-block__filter
+							%li{ dropdown: true }
+								%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !seasonalInactive.selected.seller.id}' }
+									{{seasonalInactive.selected.seller ? seasonalInactive.selected.seller.name : 'All'}}
+									%span.caret
+								%ul.dropdown-menu
+									%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === seasonalInactive.filter.seller_id}' } }
+										%a{ href: '', ng: { click: 'seasonalInactive.setFilter("seller", seller)' } }
+											{{ seller.name }}
 			%h4.chart-title Seasonal Inactive
 			%span.chart-subtitle {{seasonalInactive.getSeasonalDescription()}}
 			%div{'ng-show': 'seasonalInactive.data.length == 0'}
