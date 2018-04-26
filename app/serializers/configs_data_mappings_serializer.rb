@@ -9,6 +9,8 @@ class ConfigsDataMappingsSerializer < ActiveModel::Serializer
   end
 
   def label_name
-    DataModels::BaseAttachmentLabels.parsed_json[object.to_sym]
+    label = DataModels::BaseAttachmentLabels.parsed_json[object.to_sym]
+    return label if label.present?
+    object.split('.').map(&:humanize).map(&:titleize).join(' ')
   end
 end

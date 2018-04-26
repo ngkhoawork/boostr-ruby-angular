@@ -10,7 +10,7 @@ class WorkflowChainChecker
     deal = Deal.find(model_id)
     workflowable_object_class = deal.class
 
-    should_integrate = workflow.should_integrate?(model_id,options)
+    should_integrate = workflow.should_integrate?(model_id, options)
     ap '============================================'
     ap should_integrate
     ap '============================================'
@@ -21,5 +21,12 @@ class WorkflowChainChecker
     else
       publish('chain_did_not_met_requirements', workflow_id, deal)
     end
+  end
+
+  def self.tracking(workflow_id, model_id, options = {})
+    workflow = Workflow.find(workflow_id)
+    deal = Deal.find(model_id)
+
+    workflow.should_integrate_tracking?(model_id, options)
   end
 end

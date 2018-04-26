@@ -8,7 +8,7 @@ class DealsWorkflowQueryBuilder
   end
 
   def get_query
-    return build_query.project(deals[Arel.star]) unless query
+    return build_query.project(Arel.star) unless query
     build_query.project(query)
   end
 
