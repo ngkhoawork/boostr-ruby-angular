@@ -134,7 +134,7 @@
         %ui-select{ name: '{{fieldName}}', ng: { if: "activityCustomField.field_type == 'dropdown'", model: 'form.activity_custom_field_obj[fieldName]', disabled: true } }
           %ui-select-match{ placeholder: 'Select value' }
             {{ $select.selected.value }}
-          %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in activityCustomField.publisher_custom_field_options | filter: { value: $select.search }' }
+          %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in activityCustomField.custom_field_options | filter: { value: $select.search }' }
             %div{ ng: { bind: { html: 'customFieldOption.value' } } }
 
 

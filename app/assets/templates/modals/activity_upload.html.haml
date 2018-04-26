@@ -16,7 +16,7 @@
       %p.text-center
         Make sure your CSV file includes these EXACT headers and columns:
 
-      %ol.row.center-block
+      %ol.row.center-block.grid-block
         %li.col-xs-3.col-xs-offset-2 Activity Id
         %li.col-xs-3 Date* (MM/DD/YYYY)
         %li.col-xs-3 Creator*
@@ -27,13 +27,13 @@
         %li.col-xs-3 Comments
         %li.col-xs-3 Contacts (email1;email2)
 
-    .custom_fields{ng: { show: 'custom_fields && custom_fields.length > 0' }}
-      %h6.text-center
-        Optional Activity Fields. Please use these EXACT headers to allow system to recognize Custom Fields:
+      .custom_fields{ng: { show: 'custom_fields && custom_fields.length > 0' }}
+        %h6.text-center
+          Optional Activity Fields. Please use these EXACT headers to allow system to recognize Custom Fields:
 
-      %ol.row.center-block.grid-block
-        %li{ng: { repeat: 'custom_field in custom_fields' }}
-          {{custom_field.field_label}}
+        %ol.row.center-block.grid-block
+          %li.col-xs-3{ng: { repeat: 'custom_field in custom_fields' }}
+            {{custom_field.field_label}}
 
     .well.well-lg.dark
       .row
