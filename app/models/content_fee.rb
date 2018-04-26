@@ -32,7 +32,7 @@ class ContentFee < ActiveRecord::Base
   end
 
   after_create do
-    create_content_fee_product_budgets if content_fee_product_budgets.count == 0
+    ContentFee::ResetBudgetsService.new(self).perform if content_fee_product_budgets.empty?
     io.update_total_budget
   end
 
@@ -84,30 +84,6 @@ class ContentFee < ActiveRecord::Base
       unless io.exchange_rate
         errors.add(:curr_cd, "does not have an exchange rate for #{io.curr_cd} at #{io.created_at.strftime("%m/%d/%Y")}")
       end
-    end
-  end
-
-  def create_content_fee_product_budgets
-    deal_product = content_fee_deal_product
-    if deal_product && deal_product.deal_product_budgets.length == io.months.length
-      deal_product.deal_product_budgets.order("start_date asc").each_with_index do |monthly_budget, index|
-        content_fee_product_budgets.create(
-          start_date: monthly_budget.start_date,
-          end_date: monthly_budget.end_date,
-          budget: monthly_budget.budget,
-          budget_loc: monthly_budget.budget_loc
-        )
-      end
-    else
-      ContentFee::ResetBudgetsService.new(self).perform
-    end
-  end
-
-  def content_fee_deal_product
-    if io && product
-      io.deal.deal_products.find_by(product: product)
-    else
-      nil
     end
   end
 

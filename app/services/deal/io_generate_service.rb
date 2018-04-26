@@ -45,7 +45,8 @@ class Deal::IoGenerateService
         io_id: io.id,
         product_id: deal_product.product.id,
         budget: deal_product.budget,
-        budget_loc: deal_product.budget_loc
+        budget_loc: deal_product.budget_loc,
+        content_fee_product_budgets_attributes: content_fee_product_budgets(deal_product)
       }
       if deal_product.deal_product_cf.present?
         content_fee_cf_names = company.custom_field_names.active.to_a
@@ -84,6 +85,17 @@ class Deal::IoGenerateService
 
   def company
     @_company ||= deal.company
+  end
+
+  def content_fee_product_budgets(deal_product)
+    deal_product.deal_product_budgets.order("start_date asc").map do |monthly_budget|
+      {
+        start_date: monthly_budget.start_date,
+        end_date: monthly_budget.end_date,
+        budget: monthly_budget.budget,
+        budget_loc: monthly_budget.budget_loc
+      }
+    end
   end
 
   def cost_amounts_param(deal_product, margin)
