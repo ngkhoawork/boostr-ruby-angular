@@ -18,14 +18,14 @@
 			.detail-info
 				%div
 					%label Advertiser Name:
-					%a{'href': '', 'ng-href': '/accounts/{{currentDeal.advertiser.id}}', target: '_blank'} {{currentDeal.advertiser.name || ''}}
+					%a{'href': '', 'ng-href': '/accounts/{{currentDeal.advertiser.id}}'} {{currentDeal.advertiser.name || ''}}
 	
 				%div
 					%label{ ng: { class: '{ danger: agencyRequired }' } }
 						%div.error-tooltip{ ng: { show: 'agencyRequired' } }
 							Agency is required
 						Agency Name:
-					%a{'href': '', 'ng-href': '/accounts/{{currentDeal.agency.id}}', target: '_blank'} {{currentDeal.agency.name || ''}}
+					%a{'href': '', 'ng-href': '/accounts/{{currentDeal.agency.id}}'} {{currentDeal.agency.name || ''}}
 
 		.clearfix
 		%div.stats-numbers.mb30

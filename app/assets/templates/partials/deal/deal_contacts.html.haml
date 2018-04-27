@@ -14,7 +14,7 @@
 		%tbody
 			%tr{ ng: { repeat: 'deal_contact in currentDeal.deal_contacts'} }
 				%td
-					%a{'href': '', 'ng-href': '/contacts/{{deal_contact.contact.id}}', target: '_blank'} {{ deal_contact.contact.name }}
+					%a{'href': '', 'ng-href': '/contacts/{{deal_contact.contact.id}}'} {{ deal_contact.contact.name }}
 					%i.fa.fa-pencil.edit-deal{'ng-click': 'showContactEditModal(deal_contact)'}
 					%i.fa.fa-trash.delete-deal{'ng-click': 'deleteContact(deal_contact)'}
 				%td
