@@ -39,6 +39,9 @@
                                 %div {{lead.accepted_at && 'Accepted ' + (lead.accepted_at | date : 'shortDate')}}
                             .td-info{'ng-switch-when': 'rejected'}
                                 {{lead.rejected_at && 'Rejected ' + (lead.rejected_at | date : 'shortDate')}}
+                            .td-info{'ng-switch-when': 'rejected'}
+                                %div Rejected Reason:
+                                %div{ng: {'text-truncate': 'lead.rejected_reason', 'tt-chars-threshold': '60'}}
                             .td-info{'ng-show': 'lead.untouched_days'}
                                 {{lead.untouched_days}} Day{{lead.untouched_days !== '1' ? 's' : ''}} Untouched
                             .td-action{'ng-click': 'showReassignModal(lead)'} Reassign
