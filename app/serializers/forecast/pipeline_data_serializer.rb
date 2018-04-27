@@ -30,11 +30,8 @@ class Forecast::PipelineDataSerializer < ActiveModel::Serializer
   end
 
   def in_period_split_weighted_amt
-    if probability && partial_amounts[:split_period_amt]
-      probability * partial_amounts[:split_period_amt] / 100.0
-    else
-      nil
-    end
+    return nil unless probability && partial_amounts[:split_period_amt]
+    probability * partial_amounts[:split_period_amt] / 100.0
   end
 
   def wday_in_stage
