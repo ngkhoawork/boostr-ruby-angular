@@ -66,7 +66,7 @@
 						%tbody
 							%tr{'ng-repeat': 'item in inactive.data'}
 								%td
-									%a{'ng-href': '/accounts/{{item.id}}'}
+									%a{'ng-href': '/accounts/{{item.id}}', target: '_blank'}
 										{{item.name}}
 								%td {{item.average_quarterly_spend | currency : $ : 0}}
 								%td {{item.open_pipeline | currency : $ : 0}}
@@ -145,7 +145,7 @@
 						%tbody
 							%tr{'ng-repeat': 'item in seasonalInactive.data'}
 								%td
-									%a{'ng-href': '/accounts/{{item.id}}'}
+									%a{'ng-href': '/accounts/{{item.id}}', target: '_blank'}
 										{{item.name}}
 								%td {{item.average_quarterly_spend | currency : $ : 0}}
 								%td {{item.open_pipeline | currency : $ : 0}}
