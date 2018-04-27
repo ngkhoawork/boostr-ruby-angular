@@ -152,6 +152,7 @@
                     query.budget_from = f.budget.min if f.budget
                     query.budget_to = f.budget.max if f.budget
                     query.curr_cd = f.currency.curr_cd if f.currency
+                    query.external_id = f.external_id if f.external_id
                     query.time_period_id = f.timePeriod.id if f.timePeriod
                     query.start_start_date = f.startDate.startDate if f.startDate.startDate
                     query.start_end_date = f.startDate.endDate if f.startDate.endDate
@@ -175,8 +176,15 @@
                 else
                     getListDeals(params)
 
+            parseBudget = (data) ->
+                data = _.map data, (item) ->
+                    item.budget = parseInt item.budget if item.budget
+                    item.budget_loc = parseInt item.budget_loc if item.budget_loc
+                    item
+
             getListDeals = (params) ->
                 Deal.list(params).then (deals) ->
+                    parseBudget deals
                     $scope.deals = deals
                     $scope.filter.isOpen = false
                     $scope.allDealsLoaded = false
@@ -187,6 +195,7 @@
                     deals: Deal.list(params)
                     deals_info: Deal.deals_info_by_stage(params)
                 }).then (data) ->
+                    parseBudget data.deals
                     $scope.deals = data.deals
                     $scope.dealsInfo = data.deals_info.deals_info
                     $scope.stages = data.deals_info.stages
@@ -262,6 +271,7 @@
 
             loadMoreDealsList = (params) ->
                 Deal.list(params).then (data) ->
+                    parseBudget data
                     $scope.allDealsLoaded = !data.length
                     $scope.deals = $scope.deals.concat data
                     updateDealsTable()
@@ -269,6 +279,7 @@
 
             loadMoreDealsColumns = (params) ->
                 Deal.list(params).then (data) ->
+                    parseBudget data
                     $scope.allDealsLoaded = !data.length
                     $scope.deals = $scope.deals.concat data
                     $timeout -> $scope.isLoading = false

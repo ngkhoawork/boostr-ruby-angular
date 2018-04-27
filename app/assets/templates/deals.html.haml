@@ -79,6 +79,12 @@
 			.filter-row
 				.filter-name
 					%div
+						External IO Number
+				.filter-textbox
+					%input{ ng: { model: 'filter.selected.external_id' }, placeholder: 'Put an External IO Number' }
+			.filter-row
+				.filter-name
+					%div
 						Budget
 				.filter-dropdown
 					%i.fa.fa-close{'ng-show': 'filter.selected.budget.min || filter.selected.budget.max', 'ng-click': 'filter.reset("budget")'}
@@ -185,10 +191,8 @@
 					%div.view-toggle-inner
 						%div{'ng-click': 'changeView("list")', 'ng-class': '{active: view == "list"}'}
 							%i.fa.fa-list
-							List View
 						%div{'ng-click': 'changeView("columns")', 'ng-class': '{active: view == "columns"}'}
 							%i.fa.fa-columns
-							Column View
 				%button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
 					Add filter
@@ -198,6 +202,9 @@
 					%table.table.table-hover
 						%thead
 							%tr.z-sortable-prime
+								%th
+									.z-sortable{by: 'integration.external_id'}
+										External #
 								%th
 									.z-sortable{by: 'name', default: true}
 										Name
@@ -230,6 +237,8 @@
 										End Date
 						%tbody{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5'}}
 							%tr{ ng: { repeat: 'deal in deals | orderBy : zSort.by : zSort.rev'} }
+								%td
+									{{deal.integration.external_id}}
 								%td
 									%a{'ng-href': '/deals/{{deal.id}}'}
 										{{deal.name}}

@@ -208,6 +208,14 @@ class Deal < ActiveRecord::Base
         .joins('LEFT JOIN clients agencies ON agencies.id = deals.agency_id AND agencies.deleted_at IS NULL')
         .where('deals.name ilike :name OR advertisers.name ilike :name OR agencies.name ilike :name', name: "%#{name}%") if name
   end
+  scope :by_external_id, -> (external_id) do
+    joins(:integrations)
+        .where(
+          'integrations.external_type = ? AND integrations.external_id = ?',
+          'operative',
+          external_id
+        ) if external_id.present?
+  end
 
   def update_pipeline_fact_callback
     if stage_id_changed?

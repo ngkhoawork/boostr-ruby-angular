@@ -10,6 +10,7 @@ class DealIndexSerializer < ActiveModel::Serializer
     :agency_id,
     :company_id,
     :deal_members,
+    :integration,
     :share_members,
     :start_date,
     :end_date,
@@ -35,6 +36,10 @@ class DealIndexSerializer < ActiveModel::Serializer
 
   def agency
     object.agency
+  end
+
+  def integration
+    object.integrations.operative.as_json(override: true, only: [:id, :external_id, :external_type])
   end
 
   def deal_custom_field

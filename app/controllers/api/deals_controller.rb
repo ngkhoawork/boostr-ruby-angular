@@ -958,6 +958,7 @@ class Api::DealsController < ApplicationController
     deals_with_stage = deals.where(stage: stage)
       .by_seller_id(params[:member_id])
       .by_team_id(params[:team_id])
+      .by_external_id(params[:external_id])
       .by_name_or_advertiser_name_or_agency_name(params[:q])
       .for_client(params[:advertiser_id])
       .for_client(params[:agency_id])
