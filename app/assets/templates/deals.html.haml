@@ -180,15 +180,15 @@
 							{{type.name}}
 				.header-item.deal-search
 					%i.fa.fa-search
-					%input.form-control{ ng: { model: 'searchText', change: 'getDeals()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Name" }
+					%input.form-control{ ng: { model: 'searchText', change: 'getDeals()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
 				.header-item.view-toggle
 					%div.view-toggle-inner
 						%div{'ng-click': 'changeView("list")', 'ng-class': '{active: view == "list"}'}
 							%i.fa.fa-list
-							List
+							List View
 						%div{'ng-click': 'changeView("columns")', 'ng-class': '{active: view == "columns"}'}
 							%i.fa.fa-columns
-							Columns
+							Column View
 				%button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
 					Add filter
@@ -213,9 +213,12 @@
 								%th
 									.z-sortable{by: 'stage.probability'}
 										\%
-								%th
+								%th.right
 									.z-sortable{by: 'budget_loc'}
 										Budget
+								%th.right
+									.z-sortable{by: 'budget'}
+										Budget USD
 								%th
 									.z-sortable{by: 'share_members[0].name'}
 										Seller
@@ -238,8 +241,10 @@
 									{{deal.stage.name}}
 								%td
 									{{deal.stage.probability}}
-								%td
+								%td.right
 									{{deal.budget_loc | currency:deal.curr_symbol:0 }}
+								%td.right
+									{{deal.budget | currency:'$':0 }}
 								%td
 									%div{'ng-repeat': 'member in deal.share_members'}
 										{{member.name}} {{member.share || 0}}%

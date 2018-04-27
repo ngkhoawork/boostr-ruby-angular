@@ -200,6 +200,14 @@ class Deal < ActiveRecord::Base
   scope :has_io, -> {
     joins(:io).where('ios.id IS NOT NULL')
   }
+  scope :by_sales_process, -> (sales_process_id) do
+    joins(:stage).where('stages.sales_process_id = ?', sales_process_id) if sales_process_id.present?
+  end
+  scope :by_name_or_advertiser_name_or_agency_name, -> (name) do
+    joins('LEFT JOIN clients advertisers ON advertisers.id = deals.advertiser_id AND advertisers.deleted_at IS NULL')
+        .joins('LEFT JOIN clients agencies ON agencies.id = deals.agency_id AND agencies.deleted_at IS NULL')
+        .where('deals.name ilike :name OR advertisers.name ilike :name OR agencies.name ilike :name', name: "%#{name}%") if name
+  end
 
   def update_pipeline_fact_callback
     if stage_id_changed?
