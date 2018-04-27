@@ -35,7 +35,7 @@
       input = angular.element(e.target)
       $scope.addRecipient(input)
 
-  $scope.addRecipient = (input) ->
+  $scope.addRecipient = (input, sumbitAfter) ->
     if input.length > 0 and input.val()
       $scope.notValid = false
       emails = input.val().split(',')
@@ -58,6 +58,7 @@
             $scope.recipient_list.push(email)
         
         input.val('')
+        if sumbitAfter then $scope.submitForm()
         return
 
   $scope.dealCustomFieldFilter = (item) ->
@@ -166,8 +167,11 @@
       return field.position
 
   $scope.onBlur = (event) ->
+    sumbitAfter = false
+    if event.originalEvent.relatedTarget.type == 'submit'
+       sumbitAfter = true
     input = angular.element(event.target)
-    $scope.addRecipient(input)
+    $scope.addRecipient(input, sumbitAfter)
 
   $scope.submitForm = () ->
     $scope.errors = {}
