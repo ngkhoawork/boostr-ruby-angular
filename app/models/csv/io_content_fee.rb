@@ -26,7 +26,11 @@ class Csv::IoContentFee
   end
 
   def perform
-    content_fee_product_budget.update_budget!(budget)
+    content_fee_product_budget.start_date = formatted_start_date
+    content_fee_product_budget.end_date = formatted_end_date
+    content_fee_product_budget.budget = budget
+    content_fee_product_budget.budget_loc = budget / io.exchange_rate
+    content_fee_product_budget.save!
   end
 
   def io
@@ -48,11 +52,33 @@ class Csv::IoContentFee
   end
 
   def content_fee_product_budget
-    @_content_fee_product_budget ||= ContentFeeProductBudget.find_or_initialize_by(
-      content_fee: content_fee,
-      start_date: formatted_date(start_date),
-      end_date: formatted_date(end_date)
-    )
+    @_content_fee_product_budget ||= find_content_fee_product_budget() || ContentFeeProductBudget.new(
+        content_fee: content_fee,
+        start_date: formatted_date(start_date),
+        end_date: formatted_date(end_date)
+      )
+  end
+
+  def find_content_fee_product_budget
+    ContentFeeProductBudget.where(
+      content_fee: content_fee
+    ).where(
+      "date_part('year', start_date) = ? and date_part('month', start_date) = ?",
+      formatted_start_date.year,
+      formatted_start_date.month
+    ).where(
+      "date_part('year', end_date) = ? and date_part('month', end_date) = ?",
+      formatted_end_date.year,
+      formatted_end_date.month
+    ).first
+  end
+
+  def formatted_start_date
+    @_formatted_start_date ||= formatted_date(start_date)
+  end
+
+  def formatted_end_date
+    @_formatted_end_date ||= formatted_date(end_date)
   end
 
   def formatted_date(date)
