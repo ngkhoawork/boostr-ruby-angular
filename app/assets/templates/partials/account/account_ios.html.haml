@@ -14,7 +14,7 @@
         %tbody
             %tr{ ng: { repeat: 'io in ios'} }
                 %td
-                    %a{'ng-href': 'revenue/ios/{{io.id}}', target: '_blank'} {{ io.name }}
+                    %a{'ng-href': 'revenue/ios/{{io.id}}'} {{ io.name }}
                 %td
                     {{ io.advertiser.name }}
                 %td.right.budget-field
