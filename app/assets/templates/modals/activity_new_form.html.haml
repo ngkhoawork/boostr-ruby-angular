@@ -117,11 +117,11 @@
 
       .form-group{ng: {repeat: 'activityCustomField in customFieldNames | orderBy: "position"', init: "fieldName = activityCustomField.field_name", if: "!activityCustomField.disabled", class:'{error: errors[fieldName]}'}}
         %span.error-text {{errors[fieldName]}}
-        %label{ for: '{{fieldName}}', ng: { if: "activityCustomField.field_type != 'sum'" } }
+        %label{ for: '{{fieldName}}' }
           {{activityCustomField.field_label}}
           %span.star{ 'ng-if': "activityCustomField.is_required == true" }
             *
-        %input.form-control{ 'ng-if': "activityCustomField.field_type != 'number' && activityCustomField.field_type != 'note' && activityCustomField.field_type != 'datetime' && activityCustomField.field_type != 'boolean' && activityCustomField.field_type != 'dropdown' && activityCustomField.field_type != 'sum'", placeholder: 'Enter {{activityCustomField.field_label}}', ng: { model: 'form.activity_custom_field_obj[fieldName]' }, name: '{{fieldName}}' }
+        %input.form-control{ 'ng-if': "activityCustomField.field_type != 'number' && activityCustomField.field_type != 'note' && activityCustomField.field_type != 'datetime' && activityCustomField.field_type != 'boolean' && activityCustomField.field_type != 'dropdown'", placeholder: 'Enter {{activityCustomField.field_label}}', ng: { model: 'form.activity_custom_field_obj[fieldName]' }, name: '{{fieldName}}' }
         %input.form-control{'ng-if': "activityCustomField.field_type == 'number'", 'msd-elastic': '', 'ng-model': "form.activity_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{activityCustomField.field_label}}', 'numbers-with-commas': true}
         %textarea.form-control{ 'ng-if': "activityCustomField.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "form.activity_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{activityCustomField.field_label}}' }
         .bs-datepicker
