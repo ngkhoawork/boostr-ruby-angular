@@ -68,19 +68,31 @@ RSpec.describe Csv::IoContentFee, 'validations' do
   it 'validates start date format mm/dd/yyyy' do
     csv_io_content_fee = build :csv_io_content_fee, start_date: '31/01/2019', io: io, product: product, company: company
     expect(csv_io_content_fee).not_to be_valid
-    expect(csv_io_content_fee.errors.full_messages).to include('Start date does not match mm/dd/yyyy format')
+    expect(csv_io_content_fee.errors.full_messages).to include('Start date --31/01/2019-- does not match mm/dd/yyyy format')
   end
 
   it 'validates end date format mm/dd/yyyy' do
     csv_io_content_fee = build :csv_io_content_fee, end_date: '31/01/2019', io: io, product: product, company: company
     expect(csv_io_content_fee).not_to be_valid
-    expect(csv_io_content_fee.errors.full_messages).to include('End date does not match mm/dd/yyyy format')
+    expect(csv_io_content_fee.errors.full_messages).to include('End date --31/01/2019-- does not match mm/dd/yyyy format')
   end
 
   it 'validates end date before io end date' do
     csv_io_content_fee = build :csv_io_content_fee, end_date: '04/02/2018', io: io, product: product, company: company
     expect(csv_io_content_fee).not_to be_valid
-    expect(csv_io_content_fee.errors.full_messages).to include('Monthly budget end date --04/02/2018-- is greater than IO end date')
+    expect(csv_io_content_fee.errors.full_messages).to include('Monthly budget end date --04/02/2018-- is not in between io start date and end date')
+  end
+
+  it 'validates start date before io start date' do
+    csv_io_content_fee = build :csv_io_content_fee, start_date: '01/01/2016', io: io, product: product, company: company
+    expect(csv_io_content_fee).not_to be_valid
+    expect(csv_io_content_fee.errors.full_messages).to include('Monthly budget start date --01/01/2016-- is not in between io start date and end date')
+  end
+
+  it 'validates start date before end date' do
+    csv_io_content_fee = build :csv_io_content_fee, start_date: '01/01/2018', end_date: '01/01/2017', io: io, product: product, company: company
+    expect(csv_io_content_fee).not_to be_valid
+    expect(csv_io_content_fee.errors.full_messages).to include('Start date --01/01/2018-- is greater than end date --01/01/2017--')
   end
 
   private

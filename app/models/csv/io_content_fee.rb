@@ -15,9 +15,9 @@ class Csv::IoContentFee
   validates_numericality_of :budget
   validate :validate_product_existence
   validate :validate_io_existence
-  validate :validate_start_date_format
-  validate :validate_end_date_format
+  validate :validate_start_date
   validate :validate_end_date
+  validate :validate_start_date_before_end_date
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -26,11 +26,13 @@ class Csv::IoContentFee
   end
 
   def perform
-    content_fee_product_budget.start_date = formatted_start_date
-    content_fee_product_budget.end_date = formatted_end_date
-    content_fee_product_budget.budget = budget
-    content_fee_product_budget.budget_loc = budget / io.exchange_rate
-    content_fee_product_budget.save!
+    content_fee_product_budget.tap do |p|
+      p.start_date = formatted_start_date
+      p.end_date = formatted_end_date
+      p.budget = budget
+      p.budget_loc = budget / io.exchange_rate
+      p.save!
+    end
   end
 
   def io
@@ -54,8 +56,8 @@ class Csv::IoContentFee
   def content_fee_product_budget
     @_content_fee_product_budget ||= find_content_fee_product_budget() || ContentFeeProductBudget.new(
         content_fee: content_fee,
-        start_date: formatted_date(start_date),
-        end_date: formatted_date(end_date)
+        start_date: formatted_start_date,
+        end_date: formatted_end_date
       )
   end
 
@@ -87,18 +89,6 @@ class Csv::IoContentFee
     raise 'Date format does not match mm/dd/yyyy pattern'
   end
 
-  def validate_start_date_format
-    formatted_date(start_date)
-  rescue
-    errors.add(:base, "Start date does not match mm/dd/yyyy format")
-  end
-
-  def validate_end_date_format
-    formatted_date(end_date)
-  rescue
-    errors.add(:base, "End date does not match mm/dd/yyyy format")
-  end
-
   def validate_product_existence
     if product.nil?
       errors.add(:base, "Product with --#{product_full_name}-- name doesn't exist")
@@ -112,9 +102,26 @@ class Csv::IoContentFee
   end
 
   def validate_end_date
-    date = formatted_date(end_date) rescue nil
-    if io.present? && date.present? && date > io.end_date
-      errors.add(:base, "Monthly budget end date --#{end_date}-- is greater than IO end date")
+    if io.present? && end_date.present? && !formatted_end_date.between?(io.start_date, io.end_date)
+      errors.add(:base, "Monthly budget end date --#{end_date}-- is not in between io start date and end date")
     end
+  rescue
+    errors.add(:base, "End date --#{end_date}-- does not match mm/dd/yyyy format")
+  end
+
+  def validate_start_date
+    if io.present? && start_date.present? && !formatted_start_date.between?(io.start_date, io.end_date)
+      errors.add(:base, "Monthly budget start date --#{start_date}-- is not in between io start date and end date")
+    end
+  rescue
+    errors.add(:base, "Start date --#{start_date}-- does not match mm/dd/yyyy format")
+  end
+
+  def validate_start_date_before_end_date
+    if start_date.present? && end_date.present? && formatted_end_date < formatted_start_date
+      errors.add(:base, "Start date --#{start_date}-- is greater than end date --#{end_date}--")
+    end
+  rescue 
+    nil
   end
 end
