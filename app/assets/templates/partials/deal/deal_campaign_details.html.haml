@@ -152,8 +152,9 @@
         %div.custom-field-item-field{'ng-hide': 'operativeIntegration.isLoading'}
             %b{'ng-class': '{"status-error": operativeIntegration.dealLog.is_error == true, "status-success": operativeIntegration.dealLog.is_error == false}'}
                 {{operativeIntegration.dealLog ? (operativeIntegration.dealLog.is_error ? 'Error' : 'Success') : 'Not sent'}}
-            |
-            %a{href: '', 'ng-click': 'sendToOperative(currentDeal.id)'} Send to Operative
+            %span{'ng-if': 'isAdmin'} 
+                | 
+            %a{href: '', 'ng-if': 'isAdmin', 'ng-click': 'sendToOperative(currentDeal.id)'} Send to Operative
     %div.custom-field-item{ 'ng-if': 'googleSheetsIntegration.isEnabled && isAdmin' }
         %div.custom-field-item-label
             %label Google Sheet
