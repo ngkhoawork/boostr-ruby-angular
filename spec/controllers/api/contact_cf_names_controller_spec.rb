@@ -58,7 +58,7 @@ RSpec.describe Api::ContactCfNamesController, type: :controller do
       put :update, id: contact_cf_name.id,
       contact_cf_name: {
         position: 5,
-        contact_cf_options_attributes: [{id: option.id.to_i, value: 'Updaterino'}]
+        contact_cf_options_attributes: [{id: option.id, value: 'Updaterino'}]
       }
 
       expect(contact_cf_name.reload.position).to be 5
