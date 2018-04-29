@@ -39,9 +39,10 @@ class Api::ContactCfNamesController < ApplicationController
 
   def update_field_options
     field_option = contact_cf_name_params[:contact_cf_options_attributes]
-    if !field_option.nil? && field_option.count > 0
-      option_ids = field_option.map{ |option| option[:id] }
-      contact_cf_name.contact_cf_options.where('id NOT IN (?)', option_ids).destroy_all
+
+    if field_option.present? && field_option.count > 0
+      option_ids = field_option.map { |option| option[:id] }
+      contact_cf_name.contact_cf_options.by_options(option_ids).destroy_all
     else
       contact_cf_name.contact_cf_options.destroy_all
     end

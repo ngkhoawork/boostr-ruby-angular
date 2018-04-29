@@ -35,9 +35,10 @@ class Api::PublisherCustomFieldNamesController < ApplicationController
 
   def update_field_options
     field_option = publisher_custom_field_name_params[:publisher_custom_field_options_attributes]
-    if !field_option.nil? && field_option.count > 0
-      option_ids = field_option.map{ |option| option[:id] }
-      publisher_custom_field_name.publisher_custom_field_options.where('id NOT IN (?)', option_ids).destroy_all
+
+    if field_option.present? && field_option.count > 0
+      option_ids = field_option.map { |option| option[:id] }
+      publisher_custom_field_name.publisher_custom_field_options.by_options(option_ids).destroy_all
     else
       publisher_custom_field_name.publisher_custom_field_options.destroy_all
     end
