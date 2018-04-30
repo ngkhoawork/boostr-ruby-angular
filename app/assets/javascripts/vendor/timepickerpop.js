@@ -104,9 +104,12 @@ angular.module('timepickerPop', [ 'ui.bootstrap' ])
           var picker = {
         		  open : function () {
                 timepickerState.closeAll();
-                scope.$apply(function() {
-                  scope.isOpen = true;
-               });
+                if (scope.disabledInt && !inTimepicker) 
+                  scope.$apply(function() {
+                    scope.isOpen = true;
+                  });
+                else
+                  scope.isOpen = true; 
         		  },
         		  close: function () {
                 scope.isOpen = false;
