@@ -233,6 +233,7 @@ Rails.application.routes.draw do
         get :service_account_email
         get :ssp_credentials
         get :workflowable_actions
+        get :ssp_providers
       end
       member do
         post :delete_ssp

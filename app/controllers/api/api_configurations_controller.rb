@@ -36,6 +36,10 @@ class Api::ApiConfigurationsController < ApplicationController
     render nothing: true
   end
 
+  def ssp_providers
+    render json: Ssp.all
+  end
+
   def delete_ssp
     ssp = SspCredential.find(params[:id])
 
@@ -100,7 +104,7 @@ class Api::ApiConfigurationsController < ApplicationController
                                               :key,
                                               :secret,
                                               :create_objects,
-                                              :type_id,
+                                              :ssp_id,
                                               cpm_budget_adjustment_attributes: [:id,
                                                                                  :percentage,
                                                                                  :created_at,

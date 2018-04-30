@@ -16,6 +16,10 @@
         ssp:
           method: 'GET'
           url: 'api/api_configurations/ssp_credentials'
+        ssp_providers:
+          method: 'GET'
+          url: 'api/api_configurations/ssp_providers'
+          isArray: true
         delete_ssp:
           method: 'POST'
           url: 'api/api_configurations/:id/delete_ssp'
@@ -31,6 +35,12 @@
         deferred = $q.defer()
         resource.get params, (api_integrations) ->
           deferred.resolve(api_integrations)
+        deferred.promise
+
+      @ssp_providers = (params) ->
+        deferred = $q.defer()
+        resource.ssp_providers params, (ssp_providers) ->
+          deferred.resolve(ssp_providers)
         deferred.promise
 
       @create = (params) ->
