@@ -233,6 +233,8 @@
             csv = '"'
             formatRows = (rows) ->
                 rows.get().join(tmpRowDelim).split(tmpRowDelim).join(rowDelim).split(tmpColDelim).join colDelim
+            replaceQuotes = (text) ->
+                text.replace(/"/g, '""')
             grabRow = (i, row) ->
                 row = angular.element(row)
                 cols = row.find('td')
@@ -248,7 +250,9 @@
                   col.find('span').text("")
 
                 text = col.text().trim()
-                text.replace '"', '""'
+                if text.indexOf('"') >= 0
+                    text = replaceQuotes(text)
+                text
             csv += formatRows(headers.map(grabRow))
             csv += rowDelim
             csv += formatRows(rows.map(grabRow)) + '"'
