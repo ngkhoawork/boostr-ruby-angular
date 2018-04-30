@@ -57,6 +57,7 @@
           .then (respond) ->
             $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
               return dealFile.id != file.id
+            angular.element('#file-uploader').val('') 
 
       $scope.saveOnServer = (file, subtype) ->
         if $scope.type == "publisher"
