@@ -97,10 +97,10 @@
         %textarea.form-control{ 'ng-if': "activityCustomField.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "form.activity_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{activityCustomField.field_label}}' }
         .bs-datepicker
           %input.form-control{ 'ng-if': "activityCustomField.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'form.activity_custom_field_obj[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{activityCustomField.field_label}}' }
-        .show-hide-remainder-form{ ng: { if: "activityCustomField.field_type == 'boolean' " } }
+        .show-hide-remainder-form{ ng: { if: "activityCustomField.field_type == 'boolean'" } }
           .switch-remainder-form
-            %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}", type: 'checkbox', 'ng-model': 'form.activity_custom_field_obj[fieldName]'}
-            %label{:for => "{{fieldName}}"}
+            %input.cmn-toggle.cmn-toggle-round-flat{id: "act-{{fieldName}}", type: 'checkbox', 'ng-model': 'form.activity_custom_field_obj[fieldName]'}
+            %label{for: "act-{{fieldName}}"}
               %span
         %ui-select{ name: '{{fieldName}}', ng: { if: "activityCustomField.field_type == 'dropdown'", model: 'form.activity_custom_field_obj[fieldName]', disabled: true } }
           %ui-select-match{ placeholder: 'Select value' }
