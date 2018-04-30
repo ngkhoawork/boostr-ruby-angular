@@ -77,43 +77,14 @@
       .col-xs-6.time
         .form-group
           %label Time
-<<<<<<< HEAD
-          %timepicker-pop.wrap-select-time.form-control-time{'input-time': 'form.time', 'show-meridian': 'showMeridian'}
-=======
           %timepicker-pop.wrap-select-time.form-control-time{'input-time': 'form.time', 'show-meridian': 'showMeridian', disabled: 'true'}
->>>>>>> 8dcc5a970... fix activity templates;
+
       .form-group{'ng-class':'{error: errors.comment}'}
         %span.error-text {{errors.comment}}
         %label
           Comment
           %span.star *
         %textarea.form-control{'msd-elastic': '', 'placeholder': 'Type your update here', 'ng-model': 'form.comment'}
-<<<<<<< HEAD
-
-      .form-group{ng: {repeat: 'activityCustomField in customFieldNames | orderBy: "position"', init: "fieldName = activityCustomField.field_name", if: "!activityCustomField.disabled", class:'{error: errors[fieldName]}'}}
-        %span.error-text {{errors[fieldName]}}
-        %label{ for: '{{fieldName}}', ng: { if: "activityCustomField.field_type != 'sum'" } }
-          {{activityCustomField.field_label}}
-          %span.star{ 'ng-if': "activityCustomField.is_required == true" }
-            *
-        %input.form-control{ 'ng-if': "activityCustomField.field_type != 'number' && activityCustomField.field_type != 'note' && activityCustomField.field_type != 'datetime' && activityCustomField.field_type != 'boolean' && activityCustomField.field_type != 'dropdown' && activityCustomField.field_type != 'sum'", placeholder: 'Enter {{activityCustomField.field_label}}', ng: { model: 'form.activity_custom_field_obj[fieldName]' }, name: '{{fieldName}}' }
-        %input.form-control{'ng-if': "activityCustomField.field_type == 'number'", 'msd-elastic': '', 'ng-model': "form.activity_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{activityCustomField.field_label}}', 'numbers-with-commas': true}
-        %textarea.form-control{ 'ng-if': "activityCustomField.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "form.activity_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{activityCustomField.field_label}}' }
-        .bs-datepicker
-          %input.form-control{ 'ng-if': "activityCustomField.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'form.activity_custom_field_obj[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{activityCustomField.field_label}}' }
-        .show-hide-remainder-form{ ng: { if: "activityCustomField.field_type == 'boolean' " } }
-          .switch-remainder-form
-            %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}", type: 'checkbox', 'ng-model': 'form.activity_custom_field_obj[fieldName]'}
-            %label{:for => "{{fieldName}}"}
-              %span
-        %ui-select{ name: '{{fieldName}}', ng: { if: "activityCustomField.field_type == 'dropdown'", model: 'form.activity_custom_field_obj[fieldName]', disabled: true } }
-          %ui-select-match{ placeholder: 'Select value' }
-            {{ $select.selected.value }}
-          %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in activityCustomField.custom_field_options | filter: { value: $select.search }' }
-            %div{ ng: { bind: { html: 'customFieldOption.value' } } }
-
-=======
->>>>>>> 8dcc5a970... fix activity templates;
 
       .form-group{ng: {repeat: 'activityCustomField in customFieldNames | orderBy: "position"', init: "fieldName = activityCustomField.field_name", if: "!activityCustomField.disabled", class:'{error: errors[fieldName]}'}}
         %span.error-text {{errors[fieldName]}}
