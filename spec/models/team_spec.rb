@@ -34,7 +34,7 @@ RSpec.describe Team, type: :model do
     end
   end
 
-  describe '#all_members_and_leaders' do
+  describe '#all_members_and_leaders_ids' do
     it 'selects all members and leards from root team and all nested teams' do
       root_team
       child_team(root_team)
@@ -47,7 +47,7 @@ RSpec.describe Team, type: :model do
       user_ids = root_team.members.ids + child_team.members.ids + child_team2.members.ids
       user_ids += [root_team, child_team, child_team2].map(&:leader_id)
 
-      expect(root_team.reload.all_members_and_leaders.sort).to eq user_ids.sort
+      expect(root_team.reload.all_members_and_leaders_ids.sort).to eq user_ids.sort
     end
   end
 
