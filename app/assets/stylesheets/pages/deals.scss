@@ -40,15 +40,13 @@
         }
         .view-toggle {
             margin: 0 30px 0 auto;
-            height: 40px;
             .view-toggle-inner {
-                height: 56px;
-                margin-top: -8px;
                 font-size: 20px;
                 i.fa {
                     margin-right: 8px;
                 }
-                div {
+                .view-toggle-item {
+                    display: inline-block;
                     border-radius: 4px;
                     padding: 0 10px;
                     &.active {

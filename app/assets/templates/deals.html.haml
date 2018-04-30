@@ -189,9 +189,9 @@
 					%input.form-control{ ng: { model: 'searchText', change: 'getDeals()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
 				.header-item.view-toggle
 					%div.view-toggle-inner
-						%div{'ng-click': 'changeView("list")', 'ng-class': '{active: view == "list"}'}
+						.view-toggle-item{'ng-click': 'changeView("list")', 'ng-class': '{active: view == "list"}', tooltip: 'List View'}
 							%i.fa.fa-list
-						%div{'ng-click': 'changeView("columns")', 'ng-class': '{active: view == "columns"}'}
+						.view-toggle-item{'ng-click': 'changeView("columns")', 'ng-class': '{active: view == "columns"}',  tooltip: 'Column View'}
 							%i.fa.fa-columns
 				%button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
