@@ -9,7 +9,7 @@ class CustomFieldName < ActiveRecord::Base
     link: :string,
     integer: :integer,
     sum: :integer,
-    note: :text,
+    note: :note,
     datetime: :datetime,
     number_4_dec: :number_4_dec,
     boolean: :boolean
