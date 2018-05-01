@@ -6,6 +6,7 @@
         @agency = ''
         @budget = ''
         @currency = ''
+        @external_id = ''
         @yearClosed = currentYear
         @timePeriod = ''
         @startDate =
