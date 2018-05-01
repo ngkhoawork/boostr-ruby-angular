@@ -1,5 +1,6 @@
 @app.controller 'SpendByAccountController',
   ['$scope', 'SpendByAccount', 'zError', '$window', '$httpParamSerializer', 'Field', '$q', 'TimeDimension', '$timeout', ($scope, SpendByAccount, zError, $window, $httpParamSerializer, Field, $q, TimeDimension, $timeout) ->
+    $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
     appliedFilter = {}
     $scope.category = []
     $scope.type = [
@@ -32,9 +33,9 @@
     $scope.onFilterApply = (query) ->
       $scope.page = 1
       appliedFilter = query
-      getReport query
+      getReport query, $scope.scrollCallback
 
-    getReport = (query) ->
+    getReport = (query, callback) ->
       $scope.months = getMonths(query.start_date, query.end_date)
       if !query.start_date || !query.end_date
         if !query.start_date
@@ -43,7 +44,7 @@
           zError '#end-date-field', 'Add an End Date'
         return
         
-      getAccounts(query)
+      getAccounts(query, callback)
 
 
     $scope.loadMoreClients = ->
@@ -51,7 +52,7 @@
         if !$scope.allClientsLoaded then getReport(appliedFilter)
 
 
-    getAccounts = (query) ->
+    getAccounts = (query, callback) ->
       $scope.isLoading = true
       query.page = $scope.page
 
@@ -63,6 +64,7 @@
         else
           $scope.spend_by_account = data
         $scope.isLoading = false
+        callback() if _.isFunction callback
 
 
     $scope.export = ->

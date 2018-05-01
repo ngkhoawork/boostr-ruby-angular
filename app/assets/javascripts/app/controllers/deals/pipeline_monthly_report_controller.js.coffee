@@ -1,6 +1,7 @@
 @app.controller 'PipelineMonthlyReportController', [
-    '$scope', '$modal', '$window', '$sce', 'Deal', 'Field', 'Product', 'Seller', 'Team', 'TimePeriod', 'DealCustomFieldName', 'Stage', '$httpParamSerializer'
-    ($scope,   $modal,   $window,   $sce,   Deal,   Field,   Product,   Seller,   Team,   TimePeriod,   DealCustomFieldName,   Stage,   $httpParamSerializer) ->
+    '$scope', '$timeout', '$modal', '$window', '$sce', 'Deal', 'Field', 'Product', 'Seller', 'Team', 'TimePeriod', 'DealCustomFieldName', 'Stage', '$httpParamSerializer'
+    ($scope, $timeout,  $modal,   $window,   $sce,   Deal,   Field,   Product,   Seller,   Team,   TimePeriod,   DealCustomFieldName,   Stage,   $httpParamSerializer) ->
+      $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
       $scope.page = 1
       $scope.teams = []
       $scope.types = []
@@ -62,9 +63,9 @@
         appliedFilter = query
         getTotals(query)
         getMonthlyBudgets(query)
-        getData(query)
+        getData(query, $scope.scrollCallback)
 
-      getData = (query) ->
+      getData = (query, callback) ->
         $scope.isLoading = true
         query.page = $scope.page
 
@@ -76,6 +77,7 @@
             $scope.productRange = data[0].range
 
           $scope.isLoading = false
+          callback() if _.isFunction callback
 
       getTotals = (query) ->
         Deal.pipeline_report_totals(query).then (data) ->

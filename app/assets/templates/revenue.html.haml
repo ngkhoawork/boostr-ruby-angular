@@ -118,7 +118,7 @@
           .input-group
             .input-group-addon
               %i.glyphicon.glyphicon-search
-            %input.form-control{ ng: { model: 'filter.name', 'model-options': '{debounce: 400}', change: 'applyFilter()' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
+            %input.form-control{ ng: { model: 'filter.name', 'model-options': '{debounce: 400}', change: 'applyFilter(scrollCallback)' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
       .header-item{ ng: { show: 'showExpandableFilter' } }
         %button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
           %i.fa.fa-filter
@@ -126,7 +126,7 @@
 
     .row
       .block
-        .table-wrapper{infinite: {scroll: 'loadMoreRevenues()', 'scroll-disabled': 'isLoading || allItemsLoaded', 'scroll-distance': '0.5'}}
+        .table-wrapper{infinite: {scroll: 'loadMoreRevenues()', 'scroll-disabled': 'isLoading || allItemsLoaded', 'scroll-distance': '0.5', 'scroll-listen-for-event': 'lazy:scroll'}}
           %table.table.table-hover{ng: {if: "filter.revenue == ''"}}
             %thead
               %tr.z-sortable-prime

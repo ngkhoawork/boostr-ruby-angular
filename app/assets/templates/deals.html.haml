@@ -165,7 +165,7 @@
 								%a{href: '', 'ng-click': 'filter.select("yearClosed", year)'} {{year}}
 		.footer
 			%span.reset{'ng-click': 'filter.resetAll()'} Reset
-			%button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters
+			%button.btn-main.submit{'ng-click': 'filter.apply(null, scrollCallback)'} Apply filters
 
 	.container-fluid
 		.row
@@ -178,7 +178,7 @@
 				%button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
 					Add filter
-		.row.deals-container{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5'}}
+		.row.deals-container{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5', 'scroll-listen-for-event': 'lazy:scroll'}}
 			.deals-table
 				.deal-column{'ng-repeat': 'stage in stages', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
 					.column-header

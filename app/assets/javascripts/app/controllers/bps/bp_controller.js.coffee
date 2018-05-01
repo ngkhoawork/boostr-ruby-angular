@@ -1,7 +1,7 @@
 @app.controller 'BPController',
-  ['$scope', '$rootScope', '$window', '$document', '$modal', 'BP', 'BpEstimate', 'Team', 'Seller'
-    ($scope, $rootScope, $window, $document, $modal, BP, BpEstimate, Team, Seller) ->
-
+  ['$scope', '$rootScope', '$timeout', '$window', '$document', '$modal', 'BP', 'BpEstimate', 'Team', 'Seller'
+    ($scope, $rootScope, $timeout, $window, $document, $modal, BP, BpEstimate, Team, Seller) ->
+      $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
       class McSort
         constructor: (opts) ->
           @column = opts.column
@@ -109,7 +109,7 @@
           $scope.page = 1
           $scope.bpEstimates = []
           $scope.hasMoreBps = true
-          loadBPData()
+          loadBPData($scope.scrollCallback)
 
       $scope.setFilter = (key, value) ->
         if $scope.filter[key]is value
@@ -204,7 +204,7 @@
           $scope.hasMoreBps = true
           $scope.page = 1
           loadStatus()
-          loadBPData()
+          loadBPData($scope.scrollCallback)
 
       $scope.loadMoreBps = ->
         if !$scope.isLoading && $scope.hasMoreBps == true
@@ -263,7 +263,7 @@
 
         return data
 
-      loadBPData = () ->
+      loadBPData = (callback) ->
         if $scope.selectedBP.id
           filters = {
             bp_id: $scope.selectedBP.id,
@@ -294,6 +294,7 @@
             
             setMcSort()
             $scope.isLoading = false
+            callback() if _.isFunction callback
             if data.bp_estimates.length == 0
               $scope.hasMoreBps = false
 
