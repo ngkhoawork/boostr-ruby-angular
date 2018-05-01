@@ -203,9 +203,6 @@
 						%thead
 							%tr.z-sortable-prime
 								%th
-									.z-sortable{by: 'integration.external_id'}
-										External #
-								%th
 									.z-sortable{by: 'name', default: true}
 										Name
 								%th
@@ -235,10 +232,11 @@
 								%th
 									.z-sortable{by: 'end_date'}
 										End Date
+								%th
+									.z-sortable{by: 'integration.external_id'}
+										External #
 						%tbody{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5'}}
 							%tr{ ng: { repeat: 'deal in deals | orderBy : zSort.by : zSort.rev'} }
-								%td
-									{{deal.integration.external_id}}
 								%td
 									%a{'ng-href': '/deals/{{deal.id}}'}
 										{{deal.name}}
@@ -249,7 +247,7 @@
 								%td
 									{{deal.stage.name}}
 								%td
-									{{deal.stage.probability}}
+									{{deal.stage.probability}}%
 								%td.right
 									{{deal.budget_loc | currency:deal.curr_symbol:0 }}
 								%td.right
@@ -261,6 +259,8 @@
 									{{deal.start_date | date: 'M/d/yyyy'}}
 								%td
 									{{deal.end_date | date: 'M/d/yyyy'}}
+								%td
+									{{deal.integration.external_id}}
 		.row.deals-container{'ng-if': 'view == "columns"'}
 			.deals-table{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5'}}
 				.deal-column{'ng-repeat': 'stage in stages', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
