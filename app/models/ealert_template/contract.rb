@@ -13,6 +13,7 @@ class EalertTemplate::Contract < EalertTemplate::Base
         start_date
         end_date
         amount
+        days_notice_required
         restricted
         currency
       )

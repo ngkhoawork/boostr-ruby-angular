@@ -3,6 +3,7 @@ class Api::Contracts::BaseSerializer < ActiveModel::Serializer
     :id,
     :company_id,
     :name,
+    :days_notice_required,
     :restricted,
     :type,
     :status,

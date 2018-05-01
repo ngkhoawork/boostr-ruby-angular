@@ -14,7 +14,7 @@ class Email::EalertTemplateService
   delegate :subject_decorator_class, :fields_with_position, to: :@ealert_template
 
   def perform
-    ContractMailer.ealert(@recipients, @record.id, @record.name, fields_hash, assets_hash, @comment).deliver_later
+    ContractMailer.ealert(@recipients, @record.id, @record.name, fields_hash, assets_hash, @comment).deliver_now
   end
 
   def fields_hash

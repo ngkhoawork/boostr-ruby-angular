@@ -86,6 +86,7 @@ class Api::ContractsController < ApplicationController
       :start_date,
       :end_date,
       :amount,
+      :days_notice_required,
       :restricted,
       :auto_renew,
       :auto_notifications,

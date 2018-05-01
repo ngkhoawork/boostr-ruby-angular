@@ -10,7 +10,7 @@ class Emails::ContractDecorator
   end
 
   delegate :field_names, to: :class
-  delegate :name, :description, :start_date, :end_date, :amount, :restricted, to: :@record
+  delegate :name, :description, :start_date, :end_date, :amount, :days_notice_required, :restricted, to: :@record
 
   def collect
     field_names.each.with_object({}) { |field_name, acc| acc[field_name] = public_send(field_name) }
