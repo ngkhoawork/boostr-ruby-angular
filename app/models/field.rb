@@ -3,8 +3,8 @@ class Field < ActiveRecord::Base
 
   belongs_to :company
 
-  has_many :options
-  has_many :values
+  has_many :options, dependent: :destroy
+  has_many :values, dependent: :destroy
 
   default_scope { order(:name) }
 
