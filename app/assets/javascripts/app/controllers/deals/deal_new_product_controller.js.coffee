@@ -53,10 +53,14 @@
                   else if !$scope.deal_product.product2
                     $scope.deal_product.product_id = $scope.deal_product.product1
 
+            hasSubProduct = () ->
+                _.find $scope.products, (p) -> p.parent_id == $scope.deal_product.product_id
+
             $scope.disableForm = () ->
                 $scope.deal_product.isIncorrectTotalBudgetPercent || 
                 !$scope.deal_product.product_id || 
-                (!isPmpDeal && _.find($scope.currentDeal.products, (p) -> p.id == $scope.deal_product.product_id))
+                (!isPmpDeal && _.find($scope.currentDeal.products, (p) -> p.id == $scope.deal_product.product_id)) ||
+                hasSubProduct()
 
             addProductBudgetCorrection = ->
                 budgetSum = 0

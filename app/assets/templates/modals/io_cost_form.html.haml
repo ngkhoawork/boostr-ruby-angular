@@ -74,4 +74,4 @@
                                     'float-only':''}
         .popup-modal-footer
             %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
-            %button.btn.btn-warning{'type': 'submit', 'ng-disabled': 'cost.isIncorrectTotalBudgetPercent || !cost.product_id'} Add Cost
+            %button.btn.btn-warning{'type': 'submit', 'ng-disabled': 'cost.isIncorrectTotalBudgetPercent || !cost.product_id || hasSubProduct()'} Add Cost
