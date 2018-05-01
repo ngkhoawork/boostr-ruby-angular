@@ -30,7 +30,7 @@
               %label{ for: 'email' }
                 Email
               %span.star *
-              %input.form-control{ placeholder: 'Email Name', ng: { model: 'profile.email', change: 'submitForm()', 'model-options': '{debounce: 500}' }, name: 'email' }
+              %input.form-control{ placeholder: 'Email Name', ng: { model: 'profile.email', change: 'submitForm()', 'model-options': '{debounce: 500}' }, name: 'email', disabled: 'disabled' }
 
           %div{'ng-if': 'egnyteEnabled'}
             %h6.egnyte-header-title
