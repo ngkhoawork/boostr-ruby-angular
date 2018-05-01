@@ -1,7 +1,7 @@
 @app.controller 'InfluencersController',
-  ['$scope', '$rootScope', '$window', '$modal', '$location', '$sce', '$httpParamSerializer', 'Field', 'Influencer'
-  ( $scope,   $rootScope,   $window,   $modal,   $location,   $sce,   $httpParamSerializer,   Field,   Influencer) ->
-
+  ['$scope', '$rootScope', '$timeout', '$window', '$modal', '$location', '$sce', '$httpParamSerializer', 'Field', 'Influencer'
+  ( $scope,   $rootScope, $timeout,  $window,   $modal,   $location,   $sce,   $httpParamSerializer,   Field,   Influencer) ->
+      $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
       $scope.influencers = []
       $scope.feedName = 'Updates'
       $scope.page = 1
@@ -26,9 +26,9 @@
       $scope.$watch 'query', (oldValue, newValue) ->
         if oldValue != newValue
           $scope.page = 1
-          $scope.getInfluencers()
+          $scope.getInfluencers($scope.scrollCallback)
 
-      $scope.getInfluencers = ->
+      $scope.getInfluencers = (callback) ->
         $scope.isLoading = true
         params = {
           page: $scope.page,
@@ -42,6 +42,7 @@
           else
             $scope.influencers = influencers
           $scope.isLoading = false
+          callback() if _.isFunction callback
 
       $scope.isLoading = false
 

@@ -124,7 +124,7 @@
 							%th.z-sortable{by: 'address.email'} Email
 							%th.z-sortable{by: 'address.mobile'} Mobile
 							%th.z-sortable{by: 'last_touched'} Last Touch
-					%tbody{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading || allContactsLoaded'}}
+					%tbody{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading || allContactsLoaded', 'scroll-listen-for-event': 'lazy:scroll'}}
 						%tr{'ng-repeat': 'contact in contacts | orderBy : zSort.by : zSort.rev'}
 							%td
 								%a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}

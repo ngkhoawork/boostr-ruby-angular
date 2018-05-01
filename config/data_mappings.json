@@ -423,6 +423,15 @@
         "select_collection": true
       },
       {
+        "name": "deal_products.pmp_type",
+        "base_table_name": "deals",
+        "is_base_mapping": true,
+        "related_db_table_name": null,
+        "join_statements": [],
+        "target_field": "pmp_type",
+        "select_collection": false
+      },
+      {
         "name": "deal_members.name",
         "base_table_name": "deal_members",
         "is_base_mapping": false,

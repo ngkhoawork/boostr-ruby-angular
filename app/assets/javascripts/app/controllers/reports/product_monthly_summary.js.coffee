@@ -1,7 +1,7 @@
 @app.controller 'ProductMonthlySummaryController',
-    ['$scope', '$window', '$q', 'Team', 'Seller', 'TimePeriod', 'Product', 'Report', '$httpParamSerializer', 'Company',
-    ( $scope,   $window,   $q,   Team,   Seller,   TimePeriod,   Product,   Report,   $httpParamSerializer,   Company) ->
-
+    ['$scope', '$timeout', '$window', '$q', 'Team', 'Seller', 'TimePeriod', 'Product', 'Report', '$httpParamSerializer', 'Company'
+    ( $scope, $timeout,  $window,   $q,   Team,   Seller,   TimePeriod,   Product,   Report,   $httpParamSerializer, Company) ->
+        $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
         $scope.teams = []
         $scope.sellers = []
         $scope.data = []
@@ -25,9 +25,9 @@
             resetPagination()
             query.per_page = 50
             appliedFilter = query
-            getData(query)
+            getData(query, $scope.scrollCallback)
 
-        getData = (query) ->
+        getData = (query, callback) ->
             $scope.isLoading = true
             query.page = $scope.page
             Report.product_monthly_summary(query).$promise.then (data) ->
@@ -37,6 +37,7 @@
                 $scope.customFieldNames = data.deal_product_cf_names
                 $scope.isLoading = false
                 $scope.shouldRenderList = true
+                callback() if _.isFunction callback
 
         ($scope.updateSellers = (team) ->
             Seller.query({id: (team && team.id) || 'all'}).$promise.then (sellers) ->

@@ -1,6 +1,9 @@
 class DealProductCf < ActiveRecord::Base
+  include HasValidationsOnPercentageCfs
+
   belongs_to :company
   belongs_to :deal_product
+
 
   before_save :fetch_company_id_from_deal, on: :create
 
@@ -14,6 +17,10 @@ class DealProductCf < ActiveRecord::Base
 
   after_destroy do
     calculate_sum
+  end
+
+  def deal_product_cf_names
+    @deal_product_cf_names ||= deal_product&.deal&.company&.deal_product_cf_names || DealProductCfName.none
   end
 
   def calculate_sum
@@ -45,6 +52,12 @@ class DealProductCf < ActiveRecord::Base
     deal_custom_field.sum6 = total6
     deal_custom_field.sum7 = total7
     deal_custom_field.save
+  end
+
+  private
+
+  def self.custom_field_names_assoc
+    :deal_product_cf_names
   end
 
   def fetch_company_id_from_deal

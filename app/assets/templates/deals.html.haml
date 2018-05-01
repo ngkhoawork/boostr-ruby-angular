@@ -171,7 +171,7 @@
 								%a{href: '', 'ng-click': 'filter.select("yearClosed", year)'} {{year}}
 		.footer
 			%span.reset{'ng-click': 'filter.resetAll()'} Reset
-			%button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters
+			%button.btn-main.submit{'ng-click': 'filter.apply(null, scrollCallback)'} Apply filters
 
 	.container-fluid
 		.row
@@ -262,7 +262,7 @@
 								%td
 									{{deal.integration.external_id}}
 		.row.deals-container{'ng-if': 'view == "columns"'}
-			.deals-table{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5'}}
+			.deals-table{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5', 'scroll-listen-for-event': 'lazy:scroll'}}
 				.deal-column{'ng-repeat': 'stage in stages', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
 					.column-header
 						%span

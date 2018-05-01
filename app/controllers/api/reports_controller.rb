@@ -170,7 +170,7 @@ class Api::ReportsController < ApplicationController
     if params[:team_id] == 'all'
       company.all_team_members_and_leaders_ids
     else
-      team.all_members_and_leaders
+      team.all_members_and_leaders_ids
     end
   end
 
