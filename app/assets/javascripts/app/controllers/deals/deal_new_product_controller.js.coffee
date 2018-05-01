@@ -54,7 +54,7 @@
                     $scope.deal_product.product_id = $scope.deal_product.product1
 
             hasSubProduct = () ->
-                _.find $scope.products, (p) -> p.parent_id == $scope.deal_product.product_id
+                $scope.productOptionsEnabled && _.find($scope.products, (p) -> p.parent_id == $scope.deal_product.product_id)
 
             $scope.disableForm = () ->
                 $scope.deal_product.isIncorrectTotalBudgetPercent || 

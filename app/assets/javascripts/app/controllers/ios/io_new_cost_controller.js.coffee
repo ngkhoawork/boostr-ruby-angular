@@ -57,7 +57,7 @@
                     $scope.cost.product_id = $scope.cost.product1
 
             $scope.hasSubProduct = () ->
-                _.find $scope.products, (p) -> p.parent_id == $scope.cost.product_id
+                $scope.productOptionsEnabled && _.find($scope.products, (p) -> p.parent_id == $scope.cost.product_id)
 
             addProductBudgetCorrection = ->
                 budgetSum = 0

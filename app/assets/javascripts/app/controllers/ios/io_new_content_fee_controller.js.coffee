@@ -55,7 +55,7 @@
                     $scope.content_fee.product_id = $scope.content_fee.product1
 
             hasSubProduct = () ->
-                _.find $scope.products, (p) -> p.parent_id == $scope.content_fee.product_id
+                $scope.productOptionsEnabled && _.find($scope.products, (p) -> p.parent_id == $scope.content_fee.product_id)
 
             $scope.disableForm = () ->
                 $scope.content_fee.isIncorrectTotalBudgetPercent || 
