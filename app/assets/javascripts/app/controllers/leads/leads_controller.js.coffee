@@ -1,12 +1,13 @@
 @app.controller 'LeadsController', [
-    '$scope', '$timeout', '$modal', '$routeParams', '$location', 'Leads'
-    ($scope,   $timeout,   $modal,   $routeParams,   $location,   Leads) ->
+    '$scope', '$timeout', '$modal', '$routeParams', '$location', 'Leads', 'Validation'
+    ($scope,   $timeout,   $modal,   $routeParams,   $location,   Leads,   Validation) ->
 
         $scope.isLoading = false
         $scope.leads = []
         $scope.search = ''
         page = 1
         leadsPerPage = 10
+        rejection_explanation = false
         $scope.allLeadsLoaded = false
         $scope.leadsStatus = null
         $scope.teamFilters = [
@@ -29,6 +30,10 @@
         $scope.onFilterChange = (key, item) ->
             $scope[key] = item
             $scope.getLeads(true)
+
+        do getValidations = ->
+            Validation.query(factor: 'Require Rejection Explanation').$promise.then (data) ->
+                rejection_explanation = data && data[0]
 
         $scope.getLeads = (resetPagination)->
             if !$scope.teamFilter || !$scope.statusFilter || $scope.isLoading then return
@@ -120,14 +125,19 @@
             Leads.accept(id: lead.id).then -> removeLead(lead)
 
         $scope.reject = (currentLead) ->
-            $scope.modalInstance = $modal.open
+            if rejection_explanation && rejection_explanation.criterion.value
+                $scope.showRejectionExplanationModal(currentLead)
+                .result.then -> Leads.reject(id: currentLead.id).then -> removeLead(currentLead)
+            else
+                Leads.reject(id: currentLead.id).then -> removeLead(currentLead)
+
+        $scope.showRejectionExplanationModal = (lead) ->
+            $modal.open
                 templateUrl: 'modals/leads_rejection_modal.html'
                 size: 'md'
                 controller: 'LeadsRejectionController'
                 backdrop: 'static'
                 keyboard: false
                 resolve:
-                    lead: -> currentLead
-            .result.then (lead) -> if lead then Leads.reject(id: lead.id).then -> removeLead(lead)
-
+                    lead: -> lead
 ]
