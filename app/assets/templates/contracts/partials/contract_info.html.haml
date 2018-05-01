@@ -33,5 +33,11 @@
             %label Amount
         %div.custom-field-item-field
             .currency-field
-                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "contract.amount", 'on-after-save': 'updateContract()'}
+                %div{'click-to-edit':'click-to-edit', 'numbers-with-commas': true, type: "number", decimal: '2', 'ng-model': "contract.amount", 'on-after-save': 'updateContract()'}
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label Days Notice Required
+        %div.custom-field-item-field
+            .currency-field
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "contract.days_notice_required", 'on-after-save': 'updateContract()'}
     .mb20

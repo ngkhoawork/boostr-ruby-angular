@@ -55,6 +55,4 @@
             $scope.params.page = 1
             $scope.getContracts()
 
-
-
 ]
