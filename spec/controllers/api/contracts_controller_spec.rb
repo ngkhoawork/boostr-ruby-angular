@@ -374,6 +374,7 @@ RSpec.describe Api::ContractsController, type: :controller do
           :type_options,
           :status_options,
           :member_role_options,
+          :contact_role_options,
           :special_term_name_options,
           :special_term_type_options,
           :linked_deals,

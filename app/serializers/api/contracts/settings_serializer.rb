@@ -8,6 +8,7 @@ class Api::Contracts::SettingsSerializer
       type_options: options_for(type_field),
       status_options: options_for(status_field),
       member_role_options: options_for(member_role_field),
+      contact_role_options: options_for(contact_role_field),
       special_term_name_options: options_for(special_term_name_field),
       special_term_type_options: options_for(special_term_type_field),
       linked_deals: linked_deals,
@@ -21,23 +22,27 @@ class Api::Contracts::SettingsSerializer
   private
 
   def type_field
-    field_by_name('Type')
+    @company.fields.find_by(subject_type: 'Contract', name: 'Type')
   end
 
   def status_field
-    field_by_name('Status')
+    @company.fields.find_by(subject_type: 'Contract', name: 'Status')
   end
 
   def member_role_field
-    field_by_name('Member Role')
+    @company.fields.find_by(subject_type: 'Contract', name: 'Member Role')
+  end
+
+  def contact_role_field
+    @company.fields.find_by(subject_type: 'Contract', name: 'Contact Role')
   end
 
   def special_term_name_field
-    field_by_name('Special Term Name')
+    @company.fields.find_by(subject_type: 'Contract', name: 'Special Term Name')
   end
 
   def special_term_type_field
-    field_by_name('Special Term Type')
+    @company.fields.find_by(subject_type: 'Contract', name: 'Special Term Type')
   end
 
   def linked_deals
@@ -62,10 +67,6 @@ class Api::Contracts::SettingsSerializer
 
   def linked_users
     @company.users.joins(:contract_members).distinct.map { |user| user.serializable_hash(only: :id, methods: :name) }
-  end
-
-  def field_by_name(name)
-    @company.fields.find_by(subject_type: 'Contract', name: name)
   end
 
   def options_for(field)

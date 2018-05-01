@@ -114,6 +114,9 @@ class Company < ActiveRecord::Base
     member_role =
       fields.find_or_initialize_by(subject_type: 'Contract', name: 'Member Role', value_type: 'Option', locked: true)
     setup_default_options(member_role, ['Active', 'Expired'])
+    contact_role =
+      fields.find_or_initialize_by(subject_type: 'Contract', name: 'Contact Role', value_type: 'Option', locked: true)
+    setup_default_options(contact_role, ['Active', 'Expired'])
     cost_type = fields.find_or_initialize_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
     setup_default_options(cost_type, ['General'])
 
