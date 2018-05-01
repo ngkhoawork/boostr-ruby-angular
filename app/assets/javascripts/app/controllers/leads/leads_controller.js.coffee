@@ -127,7 +127,7 @@
         $scope.reject = (currentLead) ->
             if rejection_explanation && rejection_explanation.criterion.value
                 $scope.showRejectionExplanationModal(currentLead)
-                .result.then -> Leads.reject(id: currentLead.id).then -> removeLead(currentLead)
+                .result.then (lead) -> if lead then Leads.reject(id: lead.id).then -> removeLead(lead)
             else
                 Leads.reject(id: currentLead.id).then -> removeLead(currentLead)
 
