@@ -162,6 +162,10 @@
 									Start Date
 									%i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'start_date', 'fa-sort-asc': sort.weighted_pipeline.column == 'start_date' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'start_date' && sort.weighted_pipeline.direction == 'desc' }" } }
 							%th
+								%span.clickable{ ng: { click: 'sort.weighted_pipeline.toggle("end_date")' } }
+									End Date
+									%i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'end_date', 'fa-sort-asc': sort.weighted_pipeline.column == 'end_date' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'end_date' && sort.weighted_pipeline.direction == 'desc' }" } }
+							%th
 								%span.clickable{ ng: { click: 'sort.weighted_pipeline.toggle("wday_in_stage")' } }
 									Stage (d)
 									%i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'wday_in_stage', 'fa-sort-asc': sort.weighted_pipeline.column == 'wday_in_stage' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'wday_in_stage' && sort.weighted_pipeline.direction == 'desc' }" } }
@@ -176,15 +180,16 @@
 									{{ subrow.name.length > 35 ? subrow.name.substr(0, 35) + '...' : subrow.name }}
 							%td
 								%span{tooltip: '{{subrow.client_name}}'}
-									{{ subrow.client_name.length > 25 ? subrow.client_name.substr(0, 25) + '...' : subrow.client_name }}
+									{{ subrow.client_name.length > 20 ? subrow.client_name.substr(0, 20) + '...' : subrow.client_name }}
 							%td
 								%span{tooltip: '{{subrow.agency_name}}'}
-									{{ subrow.agency_name.length > 25 ? subrow.agency_name.substr(0, 25) + '...' : subrow.agency_name }}
+									{{ subrow.agency_name.length > 20 ? subrow.agency_name.substr(0, 20) + '...' : subrow.agency_name }}
 							%td {{ subrow.probability }}%
 							%td {{ (subrow.budget || 0) | currency: '$': 0 }}
 							%td {{ subrow.in_period_amt | currency: '$': 0 }}
 							%td {{ subrow.in_period_split_amt | currency: '$': 0 }}
 							%td {{ subrow.in_period_split_weighted_amt | currency: '$': 0 }}
-							%td {{ subrow.start_date | date: 'MM/dd/yyyy' }}
+							%td {{ subrow.start_date | date: 'MM/dd/yy' }}
+							%td {{ subrow.end_date | date: 'MM/dd/yy' }}
 							%td{ 'ng-class': '{ "success": subrow.wday_in_stage_color == "green", "warning": subrow.wday_in_stage_color == "yellow", "danger": subrow.wday_in_stage_color == "red" }' } {{ subrow.wday_in_stage }}
 							%td{ 'ng-class': '{ "success": subrow.wday_since_opened_color == "green", "warning": subrow.wday_since_opened_color == "yellow", "danger": subrow.wday_since_opened_color == "red" }' } {{ subrow.wday_since_opened }}
