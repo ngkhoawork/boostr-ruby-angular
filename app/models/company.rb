@@ -109,9 +109,11 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Member Role', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contract', name: 'Type', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contract', name: 'Status', value_type: 'Option', locked: true)
-    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Member Role', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contract', name: 'Special Term Name', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contract', name: 'Special Term Type', value_type: 'Option', locked: true)
+    member_role =
+      fields.find_or_initialize_by(subject_type: 'Contract', name: 'Member Role', value_type: 'Option', locked: true)
+    setup_default_options(member_role, ['Active', 'Expired'])
     cost_type = fields.find_or_initialize_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
     setup_default_options(cost_type, ['General'])
 
@@ -131,7 +133,7 @@ class Company < ActiveRecord::Base
     setup_default_validations
 
     AssignmentRule.create(company_id: self.id, name: 'No Match', default: true, position: 100_000)
-    build_egnyte_integration(enabled: false)
+    build_egnyte_integration(enabled: false) unless egnyte_integration
   end
 
   def setup_client_fields
