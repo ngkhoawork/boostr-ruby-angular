@@ -91,7 +91,7 @@ class Api::ContractsController < ApplicationController
       :auto_notifications,
       :curr_cd,
       contract_members_attributes: [:id, :user_id, :role_id, :_destroy],
-      contract_contacts_attributes: [:id, :contact_id, :role_id, :_destroy],
+      contract_contacts_attributes: [:id, :contact_id, :_destroy],
       special_terms_attributes: [:id, :name_id, :type_id, :comment, :_destroy]
     ).merge!(company_id: current_user.company_id)
   end

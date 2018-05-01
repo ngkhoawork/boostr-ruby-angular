@@ -5,9 +5,7 @@ class Api::Contracts::ContractContacts::BaseSerializer < ActiveModel::Serializer
     :contact_name,
     :contact_position,
     :contact_client_name,
-    :contact_email,
-    :role_id,
-    :role_name
+    :contact_email
   )
 
   private
@@ -26,9 +24,5 @@ class Api::Contracts::ContractContacts::BaseSerializer < ActiveModel::Serializer
 
   def contact_email
     object.contact&.email
-  end
-
-  def role_name
-    object.role&.name
   end
 end

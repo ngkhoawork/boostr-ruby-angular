@@ -818,6 +818,59 @@ ActiveRecord::Schema.define(version: 20180412033456) do
   add_index "content_fees", ["io_id"], name: "index_content_fees_on_io_id", using: :btree
   add_index "content_fees", ["product_id"], name: "index_content_fees_on_product_id", using: :btree
 
+  create_table "contract_contacts", force: :cascade do |t|
+    t.integer  "contract_id", null: false
+    t.integer  "contact_id",  null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "contract_contacts", ["contract_id", "contact_id"], name: "index_contract_contacts_on_contract_id_and_contact_id", unique: true, using: :btree
+
+  create_table "contract_members", force: :cascade do |t|
+    t.integer  "contract_id", null: false
+    t.integer  "user_id",     null: false
+    t.integer  "role_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "contract_members", ["contract_id", "user_id"], name: "index_contract_members_on_contract_id_and_user_id", unique: true, using: :btree
+  add_index "contract_members", ["role_id"], name: "index_contract_members_on_role_id", using: :btree
+
+  create_table "contracts", force: :cascade do |t|
+    t.integer  "company_id",                                                  null: false
+    t.integer  "deal_id"
+    t.integer  "publisher_id"
+    t.integer  "advertiser_id"
+    t.integer  "agency_id"
+    t.integer  "type_id"
+    t.integer  "status_id"
+    t.string   "name"
+    t.text     "description"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.decimal  "amount",             precision: 15, scale: 2
+    t.boolean  "restricted",                                  default: false, null: false
+    t.boolean  "auto_renew",                                  default: false, null: false
+    t.boolean  "auto_notifications",                          default: false, null: false
+    t.string   "curr_cd",                                     default: "USD"
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
+    t.integer  "holding_company_id"
+    t.datetime "deleted_at"
+  end
+
+  add_index "contracts", ["advertiser_id"], name: "index_contracts_on_advertiser_id", using: :btree
+  add_index "contracts", ["agency_id"], name: "index_contracts_on_agency_id", using: :btree
+  add_index "contracts", ["company_id"], name: "index_contracts_on_company_id", using: :btree
+  add_index "contracts", ["deal_id"], name: "index_contracts_on_deal_id", using: :btree
+  add_index "contracts", ["deleted_at"], name: "index_contracts_on_deleted_at", using: :btree
+  add_index "contracts", ["holding_company_id"], name: "index_contracts_on_holding_company_id", using: :btree
+  add_index "contracts", ["publisher_id"], name: "index_contracts_on_publisher_id", using: :btree
+  add_index "contracts", ["status_id"], name: "index_contracts_on_status_id", using: :btree
+  add_index "contracts", ["type_id"], name: "index_contracts_on_type_id", using: :btree
+
   create_table "cost_monthly_amounts", force: :cascade do |t|
     t.integer  "cost_id"
     t.date     "start_date"
