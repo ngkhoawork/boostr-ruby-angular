@@ -21,18 +21,6 @@ describe Api::DisplayLineItemBudgetsController, type: :controller do
         expect(display_line_item_budget.budget.to_i).to eq 5_000
         expect(display_line_item_budget.budget_loc.to_i).to eq 5_000
       end
-
-      it 'failed to update display line item budget with invalid params' do
-        expect(display_line_item_budget.budget.to_i).to eq 10_000
-        expect(display_line_item_budget.budget_loc.to_i).to eq 10_000
-
-        put :update, id: display_line_item_budget.id, display_line_item_budget: invalid_budget_params, format: :json
-
-        display_line_item_budget.reload
-
-        expect(display_line_item_budget.budget.to_i).to eq 10_000
-        expect(display_line_item_budget.budget_loc.to_i).to eq 10_000
-      end
     end
 
     context 'with gbp currency' do
@@ -114,10 +102,6 @@ describe Api::DisplayLineItemBudgetsController, type: :controller do
 
   def valid_budget_params
     { budget_loc: 5_000 }
-  end
-
-  def invalid_budget_params
-    { budget_loc: 40_000 }
   end
 
   def create_gbp_currency
