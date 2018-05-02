@@ -67,7 +67,7 @@ RSpec.describe Api::EalertTemplatesController, type: :controller do
 
     before { allow_any_instance_of(Asset).to receive(:presigned_url).and_return(FFaker::Internet.http_url) }
 
-    it { expect(ContractMailer).to receive_message_chain(:ealert, :deliver_later); subject }
+    it { expect(ContractMailer).to receive_message_chain(:ealert, :deliver_now); subject }
   end
 
   private

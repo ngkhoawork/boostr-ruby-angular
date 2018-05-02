@@ -68,7 +68,7 @@ RSpec.describe Contracts::SerializersPolicy do
   end
 
   def all_index_columns
-    [:id, :company_id, :name, :restricted, :type, :status, :advertiser, :agency, :deal]
+    [:id, :company_id, :days_notice_required, :name, :restricted, :type, :status, :advertiser, :agency, :deal]
   end
 
   def restricted_index_columns
