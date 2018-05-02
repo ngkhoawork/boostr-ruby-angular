@@ -749,6 +749,11 @@
             //color: white;
             color: #2ca02c;
         }
+        ul[datepicker-popup-wrap] {
+            left: auto !important;
+            right: 50%;
+            transform: translateX(50%);
+        }
     }
     .error-tooltip {
         font-family: "Avenir Next", Arial, serif;
