@@ -83,7 +83,7 @@
                 .row-w50.pr8
                     .form-group
                         %label Deal
-                        %input.form-control{'placeholder': 'Search for Deal', 'ng-model': 'form.deal', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchDeals($viewValue)'}
+                        %input.form-control{'placeholder': 'Search for Deal', 'ng-model': 'form.deal', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchDeals($viewValue)', 'typeahead-on-select': 'onDealSelect($item)'}
                 .row-w50.pl8
                     .form-group
                         %label Publisher

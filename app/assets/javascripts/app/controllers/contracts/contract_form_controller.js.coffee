@@ -86,4 +86,12 @@
 
         HoldingCompany.all().then (holdingCompanies) ->
             $scope.holdingCompanies = holdingCompanies
+
+        $scope.onDealSelect = (item) ->
+            if item && item.advertiser_id
+                Client.get({id: item.advertiser_id}).$promise.then (client) ->
+                    $scope.form.advertiser = client if client
+            if item && item.agency_id
+                Client.get({id: item.agency_id}).$promise.then (client) ->
+                    $scope.form.agency = client if client
 ]
