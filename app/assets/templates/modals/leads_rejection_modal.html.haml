@@ -8,7 +8,7 @@
         %span.error-text {{ errors.comment }}
         %span.star *
         %label {{ commentText }}
-        %textarea.form-control{ 'msd-elastic': '', rows: '1', ng: { model: 'rejectionComment' }, placeholder: 'Enter comments' }
+        %textarea.form-control{ 'msd-elastic': '', rows: '1', ng: { model: 'rejectionComment', change: 'checkValidity()' }, placeholder: 'Enter comments' }
 
     .popup-modal-footer.text-center
       %button.btn.btn-default{ type: 'button', ng: { click: 'cancel()' } } Cancel
