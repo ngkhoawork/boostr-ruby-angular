@@ -689,3 +689,9 @@
     overflow-y: auto;
   }
 }
+#activity-form-modal {
+  .dropdown-menu[typeahead-popup] {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}
