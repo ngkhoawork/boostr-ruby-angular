@@ -53,14 +53,13 @@
                   else if !$scope.deal_product.product2
                     $scope.deal_product.product_id = $scope.deal_product.product1
 
-            hasSubProduct = () ->
-                $scope.productOptionsEnabled && _.find($scope.products, (p) -> p.parent_id == $scope.deal_product.product_id)
+            $scope.hasSubProduct = (level) ->
+                if $scope.productOptionsEnabled && subProduct = _.find($scope.products, (p) -> 
+                    (!level || p.level == level) && p.parent_id == $scope.deal_product.product_id)
+                    return subProduct
 
-            $scope.disableForm = () ->
-                $scope.deal_product.isIncorrectTotalBudgetPercent || 
-                !$scope.deal_product.product_id || 
-                (!isPmpDeal && _.find($scope.currentDeal.products, (p) -> p.id == $scope.deal_product.product_id)) ||
-                hasSubProduct()
+            $scope.selectedProduct = () ->
+                _.find $scope.products, (p) -> p.id == $scope.deal_product.product_id
 
             addProductBudgetCorrection = ->
                 budgetSum = 0
@@ -87,6 +86,7 @@
                     $scope.deal_product.deal_product_budgets[index].budget_loc = value
                 else
                     return value
+
             showWarningModal = (message) ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/deal_warning.html'
@@ -96,6 +96,7 @@
                     keyboard: true
                     resolve:
                         message: -> message
+                        id: ->
 
             $scope.setCurrencySymbol = (value, index) ->
                 value = $scope.currency_symbol + value
@@ -193,25 +194,32 @@
 
             $scope.addProduct = ->
                 $scope.errors = {}
+
+                if !$scope.deal_product.product_id
+                    $scope.errors['product_id'] = 'Product is required'
+                else if subProduct = $scope.hasSubProduct()
+                    $scope.errors['product' + subProduct.level] = $scope['option' + subProduct.level + 'Field'] + ' is required'
+                else if !isPmpDeal && _.find($scope.currentDeal.products, (p) -> p.id == $scope.deal_product.product_id)
+                    $scope.errors['product_id'] = "Product's already added"
+
+                if !_.isEmpty($scope.errors) || $scope.deal_product.isIncorrectTotalBudgetPercent then return
+
                 dealProduct = cutSymbolsAddProductBudget($scope.deal_product)
-                product = _.find $scope.products, (product) ->
-                    return product.id == dealProduct.product_id
-                if product
-                    if isPmpDeal && product.revenue_type != 'PMP'
-                        message = 'This deal has only PMP products. You can\'t add non PMP product.'
-                        showWarningModal(message)
-                    else if !isPmpDeal && currentDeal.deal_products.length > 0 && product.revenue_type == 'PMP'
-                        message = 'This deal has only non PMP products. You can\'t add PMP product.'
-                        showWarningModal(message)
-                    else
-                        DealProduct.create(deal_id: $scope.currentDeal.id, deal_product: dealProduct).then(
-                            (deal) ->
-                                $rootScope.$broadcast 'deal_product_added', deal
-                                $scope.cancel()
-                            (resp) ->
-                                for key, error of resp.data.errors
-                                    $scope.errors[key] = error && error[0]
-                        )
+                if isPmpDeal && $scope.selectedProduct().revenue_type != 'PMP'
+                    message = 'This deal has only PMP products. You can\'t add non PMP product.'
+                    showWarningModal(message)
+                else if !isPmpDeal && currentDeal.deal_products.length > 0 && $scope.selectedProduct().revenue_type == 'PMP'
+                    message = 'This deal has only non PMP products. You can\'t add PMP product.'
+                    showWarningModal(message)
+                else
+                    DealProduct.create(deal_id: $scope.currentDeal.id, deal_product: dealProduct).then(
+                        (deal) ->
+                            $rootScope.$broadcast 'deal_product_added', deal
+                            $scope.cancel()
+                        (resp) ->
+                            for key, error of resp.data.errors
+                                $scope.errors[key] = error && error[0]
+                    )
 
             $scope.resetDealProduct = ->
                 $scope.deal_product = {

@@ -54,14 +54,13 @@
                   else if !$scope.content_fee.product2
                     $scope.content_fee.product_id = $scope.content_fee.product1
 
-            hasSubProduct = () ->
-                $scope.productOptionsEnabled && _.find($scope.products, (p) -> p.parent_id == $scope.content_fee.product_id)
+            $scope.hasSubProduct = (level) ->
+                if $scope.productOptionsEnabled && subProduct = _.find($scope.products, (p) -> 
+                    (!level || p.level == level) && p.parent_id == $scope.content_fee.product_id)
+                    return subProduct
 
-            $scope.disableForm = () ->
-                $scope.content_fee.isIncorrectTotalBudgetPercent || 
-                !$scope.content_fee.product_id || 
-                _.find(content_fee_products, (p) -> p.id == $scope.content_fee.product_id) ||
-                hasSubProduct()
+            $scope.selectedProduct = () ->
+                _.find $scope.products, (p) -> p.id == $scope.content_fee.product_id
 
             addProductBudgetCorrection = ->
                 budgetSum = 0
@@ -190,6 +189,16 @@
 
             $scope.addContentFee = ->
                 $scope.errors = {}
+
+                if !$scope.content_fee.product_id
+                    $scope.errors['product_id'] = 'Product is required'
+                else if subProduct = $scope.hasSubProduct()
+                    $scope.errors['product' + subProduct.level] = $scope['option' + subProduct.level + 'Field'] + ' is required'
+                else if _.find(content_fee_products, (p) -> p.id == $scope.content_fee.product_id)
+                    $scope.errors['product_id'] = "Product's already added"
+
+                if !_.isEmpty($scope.errors) || $scope.content_fee.isIncorrectTotalBudgetPercent then return
+
                 contentFee = cutSymbolsAddProductBudget($scope.content_fee)
                 ContentFee.create(io_id: $scope.currentIO.id, content_fee: contentFee).then(
                     (deal) ->
