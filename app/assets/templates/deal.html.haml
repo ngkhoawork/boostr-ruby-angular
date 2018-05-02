@@ -13,7 +13,7 @@
           %div{'ng-include': '"partials/deal/deal_members.html"'}
         .col-xs-6{'ng-if': '!egnyteHealthy || !companyEgnyteIntegration.enabled'}
           .attachments.block
-            %upload-file{'deal-files': 'dealFiles', type: "deal"}
+            %upload-file{type: 'deal'}
     .col-xs-3
       %div{'ng-include': '"partials/deal/deal_next_steps.html"'}
       %div{'ng-include': '"partials/deal/deal_insights.html"'}

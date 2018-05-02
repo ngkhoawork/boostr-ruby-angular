@@ -1,21 +1,26 @@
-@directives.directive 'uploadFile', ['$rootScope', '$timeout', '$http', 'Transloadit', 'Field', '$filter'
-  ($rootScope, $timeout, $http, Transloadit, Field, $filter) ->
+@directives.directive 'uploadFile', [
+  '$rootScope', '$timeout', '$http', 'Transloadit', 'Field', 'Attachment'
+  ($rootScope,   $timeout,   $http,   Transloadit,   Field,   Attachment) ->
     restrict: 'E'
     templateUrl: 'directives/upload-files.html'
     scope:
-      dealFiles: '='
       type: "@"
     controller: ($scope, $routeParams) ->
       $scope.fileToUpload = null
       $scope.progressBarCur = 0
-      $scope.dealFiles = []
+      $scope.uploadedFiles = []
       $scope.uploadError = 'Connection lost'
-      $scope.uploadShow = false;
-      $scope.uploaded = false;
-      $scope.assemblyJson = undefined;
-
+      $scope.uploadShow = false
+      $scope.uploaded = false
+      $scope.assemblyJson = undefined
       # $scope.subType = {};
       $scope.subTypes = [];
+      mainParams =
+        id: $routeParams.id
+        type: $scope.type
+        entity: $scope.type + 's'
+
+      Attachment.get(mainParams).then (data) -> $scope.uploadedFiles = data
 
       Field.defaults {}, 'Multiple'
         .then (resp) ->
@@ -43,43 +48,24 @@
         $scope.$apply (scope) ->
           scope.upload e.target.files[0]
 
-      returnUrlByType = () ->
-
-
       $scope.deleteFile = (file) ->
         if (file && file.id && confirm('Are you sure you want to delete "' +  file.original_file_name + '"?'))
-          switch $scope.type
-            when "contract"
-              url = '/api/contracts/'+ $routeParams.id + '/attachments/' + file.id + '?type=' + $scope.type
-            when "publisher"
-              url = '/api/publishers/'+ $routeParams.id + '/attachments/' + file.id + '?type=' + $scope.type
-            else
-              url = '/api/deals/'+ $routeParams.id + '/attachments/' + file.id + '?type=' + $scope.type
-
-          $http.delete url
-          .then (respond) ->
-            $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
-              return dealFile.id != file.id
+          Attachment.delete(_.extend({fileId: file.id}, mainParams)).then (respond) ->
+            $scope.uploadedFiles = _.reject $scope.uploadedFiles, (item) -> item.id is file.id
 
       $scope.saveOnServer = (file, subtype) ->
-        switch $scope.type
-          when "contract"
-            url = '/api/contracts/'+ $routeParams.id + '/attachments/' + file.id
-          when "publisher"
-            url = '/api/publishers/'+ $routeParams.id + '/attachments/' + file.id
-          else
-            url = '/api/deals/'+ $routeParams.id + '/attachments/' + file.id
-
-        $http.put url,
-          type: $scope.type,
-          asset:
-            asset_file_name: file.asset_file_name
-            asset_file_size: file.asset_file_size
-            asset_content_type: file.asset_content_type
-            original_file_name: file.original_file_name
-            comment: file.comment
-            subtype: file.subtype?.name || ''
-
+        Attachment.update(
+          _.extend
+            fileId: file.id
+            asset:
+              asset_file_name: file.asset_file_name
+              asset_file_size: file.asset_file_size
+              asset_content_type: file.asset_content_type
+              original_file_name: file.original_file_name
+              comment: file.comment
+              subtype: file.subtype?.name || ''
+          , mainParams
+        )
 
       $scope.upload = (file) ->
         if not file or 'name' not of file
@@ -137,25 +123,18 @@
               folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
               fullFileName = folder + assemblyJson.results[':original'][0].url.substr(assemblyJson.results[':original'][0].url.lastIndexOf('/') + 1);
 
-            switch $scope.type
-              when "contract"
-                url = '/api/contracts/'+ $routeParams.id + '/attachments'
-              when "publisher"
-                url = '/api/publishers/'+ $routeParams.id + '/attachments'
-              else
-                url = '/api/deals/'+ $routeParams.id + '/attachments'
-
-            $http.post url,
-                type: $scope.type,
+            Attachment.save(
+              _.extend
                 asset:
                   asset_file_name: fullFileName
                   asset_file_size: assemblyJson.results[':original'][0].size
                   asset_content_type: assemblyJson.results[':original'][0].mime
                   original_file_name: assemblyJson.results[':original'][0].name
-                  # comment: $scope.comment
-                  # subtype: $scope.subType.selected.name
-              .then (response) ->
-                $scope.dealFiles.push response.data
+#                  comment: $scope.comment
+#                  subtype: $scope.subType.selected.name
+              , mainParams
+            ).then (resp) ->
+                $scope.uploadedFiles.push resp
 
                 $scope.progressBarCur = 0
                 $scope.uploadFile.status = 'EMPTY'
@@ -193,6 +172,6 @@
         return mb < 100000000
 
     link: (scope, element, attrs) ->
-      scope.dealFiles = element.dealFiles
+      scope.uploadedFiles = element.uploadedFiles
 
 ]
