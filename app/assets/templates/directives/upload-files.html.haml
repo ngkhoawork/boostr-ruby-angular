@@ -68,6 +68,6 @@
                       %span.editable{'ng-class': '{"not-selected": !file.subtype}'} {{file.subtype.name || 'File Type'}}
                       %span.caret
                     %ul.dropdown-menu
-                      %li{'ng-repeat': 'option in subTypes', 'ng-class': '{active: file.subtype.id == option.id}'}
+                      %li{'ng-repeat': 'option in subTypes', 'ng-class': '{active: file.subtype.name == option.name}'}
                         %a{'href': '', 'ng-click': 'file.subtype = option; saveOnServer(file)'}
                           %span.text {{option.name}}

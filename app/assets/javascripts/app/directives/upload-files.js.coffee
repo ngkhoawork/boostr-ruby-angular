@@ -20,7 +20,10 @@
         type: $scope.type
         entity: $scope.type + 's'
 
-      Attachment.get(mainParams).then (data) -> $scope.uploadedFiles = data
+      Attachment.get(mainParams).then (data) ->
+        $scope.uploadedFiles = _.map data, (file) ->
+          file.subtype = {name: file.subtype}
+          file
 
       Field.defaults {}, 'Multiple'
         .then (resp) ->
