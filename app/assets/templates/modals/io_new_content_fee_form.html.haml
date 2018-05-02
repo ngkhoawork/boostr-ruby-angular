@@ -16,7 +16,7 @@
                                 {{ $select.selected.name }}
                             %ui-select-choices{ repeat: 'product.id as product in productsByLevel(0) | orderBy: "name" | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'product.name' } } }
-                .col-xs-4{ 'ng-if': 'productOptionsEnabled' }
+                .col-xs-6{ 'ng-if': 'productOptionsEnabled' }
                     .form-group{ 'ng-class': '{error: errors.product_id}' }
                         %span.error-text {{errors.product_id}}
                         %label 
@@ -27,7 +27,7 @@
                                 {{ $select.selected.name }}
                             %ui-select-choices{ repeat: 'product.id as product in productsByLevel(0) | orderBy: "name" | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'product.name' } } }
-                .col-xs-4{ 'ng-if': 'productOptionsEnabled && productOption1Enabled' }
+                .col-xs-6{ 'ng-if': 'productOptionsEnabled && productOption1Enabled' }
                     .form-group{ 'ng-class': '{error: errors.product1}' }
                         %span.error-text {{errors.product1}}
                         %label 
@@ -38,7 +38,7 @@
                                 {{ $select.selected.name }}
                             %ui-select-choices{ repeat: 'product.id as product in productsByLevel(1) | orderBy: "name" | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'product.name' } } }
-                .col-xs-4{ 'ng-if': 'productOptionsEnabled && productOption2Enabled' }
+                .col-xs-6{ 'ng-if': 'productOptionsEnabled && productOption2Enabled' }
                     .form-group{ 'ng-class': '{error: errors.product2}' }
                         %span.error-text {{errors.product2}}
                         %label 
