@@ -1,4 +1,4 @@
-#deals
+#deals.z-styles
 	.z-sliding-filter{'ng-class': '{open: filter.isOpen}'}
 		.header
 			Filter
@@ -20,7 +20,7 @@
 								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
 							%span.dropdown-title Select from list
 							.dropdown-block
-								.dropdown-option{'ng-repeat': "member in filter.members | filter: filtering  | orderBy: 'name'", role: 'menuitem'}
+								.dropdown-option{'ng-repeat': "member in filter.members | filter: filtering | orderBy: 'name'", role: 'menuitem'}
 									%a{href: '', 'ng-click': 'filter.select("member", member)'} {{member.name}}
 			.filter-row
 				.filter-name
@@ -38,7 +38,7 @@
 								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
 							%span.dropdown-title Select from list
 							.dropdown-block
-								.dropdown-option{'ng-repeat': "team in filter.teams | filter: filtering  | orderBy: 'name'", role: 'menuitem'}
+								.dropdown-option{'ng-repeat': "team in filter.teams | filter: filtering | orderBy: 'name'", role: 'menuitem'}
 									%a{href: '', 'ng-click': 'filter.select("team", team)'} {{team.name}}
 
 
@@ -79,6 +79,12 @@
 			.filter-row
 				.filter-name
 					%div
+						External IO Number
+				.filter-textbox
+					%input{ ng: { model: 'filter.selected.external_id' }, placeholder: 'Put an External IO Number' }
+			.filter-row
+				.filter-name
+					%div
 						Budget
 				.filter-dropdown
 					%i.fa.fa-close{'ng-show': 'filter.selected.budget.min || filter.selected.budget.max', 'ng-click': 'filter.reset("budget")'}
@@ -94,8 +100,8 @@
 									to
 									%input.form-control{'ng-model': 'filter.maxBudget', 'ng-change': 'filter.slider.onChangeNumber("max")'}
 								%rzslider{'rz-slider-model': 'filter.slider.minValue',
-										  'rz-slider-high': 'filter.slider.maxValue',
-										  'rz-slider-options': 'filter.slider.options'}
+									'rz-slider-high': 'filter.slider.maxValue',
+									'rz-slider-options': 'filter.slider.options'}
 			.filter-row
 				.filter-name
 					%div
@@ -133,8 +139,8 @@
 					%span.bs-datepicker
 						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.startDate.startDate && filter.selected.startDate.endDate}'}
 							%div.date-picker{'date-range-picker': true,
-			                                           'ng-model': 'filter.datePicker.startDate',
-			                                           options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyStartDate}}'}
+								'ng-model': 'filter.datePicker.startDate',
+								options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyStartDate}}'}
 								%span.filter-date {{filter.getDateValue('startDate')}}
 							%span.caret
 			.filter-row
@@ -146,8 +152,8 @@
 					%span.bs-datepicker
 						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.createdDate.startDate && filter.selected.createdDate.endDate}'}
 							%div.date-picker{'date-range-picker': true,
-			                                           'ng-model': 'filter.datePicker.createdDate',
-			                                           options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyCreatedDate}}'}
+								'ng-model': 'filter.datePicker.createdDate',
+								options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyCreatedDate}}'}
 								%span.filter-date {{filter.getDateValue('createdDate')}}
 							%span.caret
 			.filter-row
@@ -170,16 +176,93 @@
 	.container-fluid
 		.row
 			.col-xs-12.deals-menu
-				%span.title Deals
-				%add-button{'ng-click': 'showNewDealModal()'} Add Deal
-				.deals-types
-					%span{'ng-repeat': 'type in dealTypes', 'ng-class': '{active: type.name == teamFilter().name}', 'ng-click': 'filterDeals(type)'}
-						{{type.name}}
+				.header-item
+					%span.title Deals
+				.header-item
+					%add-button{'ng-click': 'showNewDealModal()'} Add Deal
+				.header-item
+					.deals-types
+						%span{'ng-repeat': 'type in dealTypes', 'ng-class': '{active: type.name == teamFilter().name}', 'ng-click': 'filterDeals(type)'}
+							{{type.name}}
+				.header-item.deal-search
+					%i.fa.fa-search
+					%input.form-control{ ng: { model: 'searchText', change: 'getDeals()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
+				.header-item.view-toggle
+					%div.view-toggle-inner
+						.view-toggle-item{'ng-click': 'changeView("list")', 'ng-class': '{active: view == "list"}', tooltip: 'List View'}
+							%i.fa.fa-list
+						.view-toggle-item{'ng-click': 'changeView("columns")', 'ng-class': '{active: view == "columns"}',  tooltip: 'Column View'}
+							%i.fa.fa-columns
 				%button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
 					Add filter
-		.row.deals-container{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5', 'scroll-listen-for-event': 'lazy:scroll'}}
-			.deals-table
+		.row{'ng-if': 'view == "list"'}
+			.block
+				.table-wrapper
+					%table.table.table-hover
+						%thead
+							%tr.z-sortable-prime
+								%th
+									.z-sortable{by: 'name', default: true}
+										Name
+								%th
+									.z-sortable{by: 'advertiser.name'}
+										Advertiser
+								%th
+									.z-sortable{by: 'agency.name'}
+										Agency
+								%th
+									.z-sortable{by: 'stage.name'}
+										Stage
+								%th
+									.z-sortable{by: 'stage.probability'}
+										\%
+								%th.right
+									.z-sortable{by: 'budget_loc'}
+										Budget
+								%th.right
+									.z-sortable{by: 'budget'}
+										Budget USD
+								%th
+									.z-sortable{by: 'share_members[0].name'}
+										Seller
+								%th
+									.z-sortable{by: 'start_date'}
+										Start Date
+								%th
+									.z-sortable{by: 'end_date'}
+										End Date
+								%th
+									.z-sortable{by: 'integration.external_id'}
+										External #
+						%tbody{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5'}}
+							%tr{ ng: { repeat: 'deal in deals | orderBy : zSort.by : zSort.rev'} }
+								%td
+									%a{'ng-href': '/deals/{{deal.id}}'}
+										{{deal.name}}
+								%td
+									{{deal.advertiser.name}}
+								%td
+									{{deal.agency.name}}
+								%td
+									{{deal.stage.name}}
+								%td
+									{{deal.stage.probability}}%
+								%td.right
+									{{deal.budget_loc | currency:deal.curr_symbol:0 }}
+								%td.right
+									{{deal.budget | currency:'$':0 }}
+								%td
+									%div{'ng-repeat': 'member in deal.share_members'}
+										{{member.name}} {{member.share || 0}}%
+								%td
+									{{deal.start_date | date: 'M/d/yyyy'}}
+								%td
+									{{deal.end_date | date: 'M/d/yyyy'}}
+								%td
+									{{deal.integration.external_id}}
+		.row.deals-container{'ng-if': 'view == "columns"'}
+			.deals-table{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5', 'scroll-listen-for-event': 'lazy:scroll'}}
 				.deal-column{'ng-repeat': 'stage in stages', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
 					.column-header
 						%span

@@ -10,6 +10,8 @@ class DealIndexSerializer < ActiveModel::Serializer
     :agency_id,
     :company_id,
     :deal_members,
+    :integration,
+    :share_members,
     :start_date,
     :end_date,
     :name,
@@ -36,12 +38,25 @@ class DealIndexSerializer < ActiveModel::Serializer
     object.agency
   end
 
+  def integration
+    object.integrations.operative.as_json(override: true, only: [:id, :external_id, :external_type])
+  end
+
   def deal_custom_field
     object.deal_custom_field
   end
 
   def deal_members
     object.users.as_json(override: true, only: [:id], methods: :name)
+  end
+
+  def share_members
+    object
+      .deal_members
+      .with_not_zero_share
+      .map do |deal_member| 
+        deal_member.serializable_hash(only: [:id, :user_id, :share], methods: :name)
+      end
   end
 
   def curr_symbol

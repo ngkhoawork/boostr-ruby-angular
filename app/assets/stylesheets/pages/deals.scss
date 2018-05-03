@@ -8,6 +8,7 @@
     min-height: calc(100vh - #{$header-height});
     position: relative;
     overflow-x: hidden;
+    padding-top: 0;
     a {
         color: $secondary-color;
     }
@@ -27,8 +28,37 @@
         }
     }
     .deals-menu {
-        height: $deals-menu-h;
-        padding: 30px;
+        display: flex;
+        align-items: center;
+
+        .header-item {
+            margin-right: 30px;
+            white-space: nowrap;
+            &:last-child {
+                margin: 0;
+            }
+        }
+        .view-toggle {
+            margin: 0 30px 0 auto;
+            .view-toggle-inner {
+                font-size: 20px;
+                i.fa {
+                    margin-right: 8px;
+                }
+                .view-toggle-item {
+                    display: inline-block;
+                    border-radius: 4px;
+                    padding: 0 10px;
+                    &.active {
+                        color: $main-color;
+                    }
+                    &:hover {
+                        background-color: #e8e8ea;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
         .title {
             font-size: 24px;
             font-weight: bold;
@@ -47,6 +77,22 @@
                 margin-left: 0;
             }
         }
+    }
+    .deal-search {
+      width: 30%;
+      position: relative;
+      i.fa {
+        position: absolute;
+        font-size: 20px;
+        color: lighten($secondary-font-color, 15%);
+        top: 13px;
+        left: 10px;
+      }
+      input {
+        width: 100%;
+        padding-left: 38px;
+        background-color: white;
+      }
     }
     .deal-error {
         position: absolute;
@@ -158,9 +204,9 @@
         padding: 10px;
         margin-bottom: 10px;
         border-radius: 3px;
-        //box-shadow: 0 1px 3px gray;
         border-bottom: 2px solid #E4E4E6;
         background-color: white;
+        word-spacing: break-word;
         .block-menu {
             position: absolute;
             right: 5px;

@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$scope', '$window', '$timeout', '$document', '$filter', '$modal', '$q', '$location', 'Deal', 'Team', 'Stage', 'ExchangeRate', 'DealsFilter', 'TimePeriod', 'shadeColor', 'Validation'
-    ( $rootScope,   $scope,   $window,   $timeout,   $document,   $filter,   $modal,   $q,   $location,   Deal,   Team,   Stage,   ExchangeRate,   DealsFilter,   TimePeriod,   shadeColor,   Validation) ->
+    ['$rootScope', '$scope', '$window', '$timeout', '$document', '$filter', '$modal', '$q', '$location', 'Deal', 'Team', 'Stage', 'ExchangeRate', 'DealsFilter', 'TimePeriod', 'shadeColor', 'Validation', 'localStorageService'
+    ( $rootScope,   $scope,   $window,   $timeout,   $document,   $filter,   $modal,   $q,   $location,   Deal,   Team,   Stage,   ExchangeRate,   DealsFilter,   TimePeriod,   shadeColor,   Validation,   localStorageService) ->
             formatMoney = $filter('formatMoney')
             $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
             $scope.isLoading = false
@@ -9,6 +9,7 @@
             $scope.selectedDeal = null
             $scope.stages = []
             $scope.columns = []
+            $scope.view = localStorageService.get('dealsViewType') || 'columns'
             $scope.deals = []
             $scope.dealsInfo = {}
             $scope.dealTypes = [
@@ -16,6 +17,11 @@
                 {name: 'My Team\'s Deals', param: 'team'}
                 {name: 'All Deals', param: 'all'}
             ]
+
+            $scope.changeView = (view) ->
+                $scope.view = view
+                localStorageService.set('dealsViewType', view)
+                $scope.getDeals()
 
             $scope.teamFilter = (value) ->
                 if value then DealsFilter.teamFilter = value else DealsFilter.teamFilter
@@ -103,30 +109,7 @@
                         if (_this.createdDate.startDate && _this.createdDate.endDate)
                             $scope.filter.selected.createdDate = _this.createdDate
                 apply: (reset, callback) ->
-                    this.appliedSelection = angular.copy this.selected
-                    $scope.page = 1
-                    params = getDealParams()
-
-                    $window.scrollTo(0, 0)
-                    $scope.isLoading = true
-                    $q.all({
-                        deals: Deal.list(params)
-                        deals_info: Deal.deals_info_by_stage(params)
-                    }).then (data) ->
-                        $scope.deals = data.deals
-                        $scope.dealsInfo = data.deals_info.deals_info
-                        $scope.stages = data.deals_info.stages
-                        columns = []
-                        $scope.stages.forEach (stage, i) ->
-                            stage.index = i
-                            column = []
-                            column.open = stage.open
-                            columns.push column
-                        $scope.emptyColumns = angular.copy columns
-                        updateDealsTable(callback)
-                        $scope.filter.isOpen = false
-                        $scope.allDealsLoaded = false
-                        $timeout -> $scope.isLoading = false
+                    $scope.getDeals(callback)
                     this.isOpen = false
                 reset: (key) ->
                     DealsFilter.reset(key)
@@ -169,6 +152,7 @@
                     query.budget_from = f.budget.min if f.budget
                     query.budget_to = f.budget.max if f.budget
                     query.curr_cd = f.currency.curr_cd if f.currency
+                    query.external_id = f.external_id if f.external_id
                     query.time_period_id = f.timePeriod.id if f.timePeriod
                     query.start_start_date = f.startDate.startDate if f.startDate.startDate
                     query.start_end_date = f.startDate.endDate if f.startDate.endDate
@@ -177,7 +161,57 @@
                     query.closed_year = f.yearClosed if f.yearClosed
                     query
 
-            updateDealsTable = (callback) ->
+            $scope.getDeals = (callback) ->
+                this.appliedSelection = angular.copy this.selected
+                $scope.page = 1
+                params = getDealParams()
+                $scope.deals = []
+                $scope.columns = []
+                $scope.dealsInfo = []
+                $scope.stages = []
+                $window.scrollTo(0, 0)
+                $scope.isLoading = true
+                if $scope.view == 'columns'
+                    getColumnDeals(params, callback)
+                else
+                    getListDeals(params)
+
+            parseBudget = (data) ->
+                data = _.map data, (item) ->
+                    item.budget = parseInt item.budget if item.budget
+                    item.budget_loc = parseInt item.budget_loc if item.budget_loc
+                    item
+
+            getListDeals = (params) ->
+                Deal.list(params).then (deals) ->
+                    parseBudget deals
+                    $scope.deals = deals
+                    $scope.filter.isOpen = false
+                    $scope.allDealsLoaded = false
+                    $timeout -> $scope.isLoading = false
+
+            getColumnDeals = (params, callback) ->
+                $q.all({
+                    deals: Deal.list(params)
+                    deals_info: Deal.deals_info_by_stage(params)
+                }).then (data) ->
+                    parseBudget data.deals
+                    $scope.deals = data.deals
+                    $scope.dealsInfo = data.deals_info.deals_info
+                    $scope.stages = data.deals_info.stages
+                    columns = []
+                    $scope.stages.forEach (stage, i) ->
+                        stage.index = i
+                        column = []
+                        column.open = stage.open
+                        columns.push column
+                    $scope.emptyColumns = angular.copy columns
+                    updateDealsTable(callback)
+                    $scope.filter.isOpen = false
+                    $scope.allDealsLoaded = false
+                    $timeout -> $scope.isLoading = false
+
+            updateDealsTable = (callback)->
                 columns = angular.copy $scope.emptyColumns
                 $scope.deals.forEach (deal) ->
                     if !deal || !deal.stage_id then return
@@ -201,6 +235,7 @@
 
             getDealParams = ->
                 params = {filter: $scope.teamFilter().param}
+                params.q = $scope.searchText if $scope.searchText
                 _.extend params, $scope.filter.toQuery()
 
             $scope.init = ->
@@ -229,10 +264,25 @@
                 params = getDealParams()
                 params.page = ++$scope.page
                 $scope.isLoading = true
+                switch $scope.view
+                    when 'list'
+                      loadMoreDealsList(params)
+                    when 'columns'
+                      loadMoreDealsColumns(params)
+
+            loadMoreDealsList = (params) ->
                 Deal.list(params).then (data) ->
+                    parseBudget data
                     $scope.allDealsLoaded = !data.length
                     $scope.deals = $scope.deals.concat data
                     updateDealsTable()
+                    $timeout -> $scope.isLoading = false
+
+            loadMoreDealsColumns = (params) ->
+                Deal.list(params).then (data) ->
+                    parseBudget data
+                    $scope.allDealsLoaded = !data.length
+                    $scope.deals = $scope.deals.concat data
                     $timeout -> $scope.isLoading = false
 
             $scope.filterDeals = (filter) ->
