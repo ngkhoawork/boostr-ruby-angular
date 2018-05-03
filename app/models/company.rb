@@ -72,7 +72,7 @@ class Company < ActiveRecord::Base
 
   has_one :billing_address, as: :addressable, class_name: 'Address'
   has_one :physical_address, as: :addressable, class_name: 'Address'
-  has_one :egnyte_integration, dependent: :destroy
+  has_one :egnyte_integration, inverse_of: :company, dependent: :destroy
 
   serialize :forecast_permission, HashSerializer
 
@@ -120,7 +120,7 @@ class Company < ActiveRecord::Base
     setup_default_validations
 
     AssignmentRule.create(company_id: self.id, name: 'No Match', default: true, position: 100_000)
-    build_egnyte_integration(enabled: false)
+    build_egnyte_integration(enabled: false) unless egnyte_integration
   end
 
   def setup_client_fields

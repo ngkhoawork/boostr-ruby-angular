@@ -17,8 +17,19 @@
     .auth-wrap {
       position: absolute;
       right: 0;
-      top: 0;
+      top: -5px;
       text-align: right;
+
+      .user-info {
+        display: grid;
+        & > a {
+          color: #636F7A;
+          &:hover {
+            color: white;
+          }
+        }
+      }
+
       & > a {
         color: #636F7A;
         &:hover {
