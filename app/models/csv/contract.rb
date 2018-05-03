@@ -111,7 +111,12 @@ class Csv::Contract
   end
 
   def deal
-    @_deal ||= company.deals.find_by(name: deal_name, id: deal_id)
+    @_deal ||= if deal_id.present? || deal_name.present?
+      deals = company.deals
+      deals = deals.where(name: deal_name) if deal_name.present?
+      deals = deals.where(id: deal_id) if deal_id.present?
+      deals.first
+    end
   end
 
   def publisher
