@@ -226,6 +226,7 @@
                     alignColumnsHeight()
                 callback() if _.isFunction callback
 
+
             alignColumnsHeight = ->
                 columns = angular.element('.column-body')
                 if columns && columns.offset()

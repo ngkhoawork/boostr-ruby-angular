@@ -33,6 +33,7 @@ class Deal < ActiveRecord::Base
 
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
   has_one :egnyte_folder, as: :subject
+  has_many :contracts, dependent: :nullify
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :deal_products, dependent: :destroy

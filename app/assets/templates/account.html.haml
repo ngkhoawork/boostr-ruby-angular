@@ -12,6 +12,7 @@
       %div{'ng-include': '"partials/account/account_ios.html"'}
       %div{'ng-include': '"partials/account/ssp_mapping.html"'}
       %div{'ng-if': 'egnyte_authenticated', 'ng-include': '"partials/account/account_egnyte.html"'}
+      %related-contracts{type: 'account'}
     .col-xs-3
       %div{'ng-include': '"partials/account/account_details.html"'}
       %activity-feed{object: 'currentClient', type: 'account'}

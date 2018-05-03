@@ -1,0 +1,49 @@
+#contracts.z-styles
+	.container-fluid.contracts-inner
+		.row.contracts-header.mb30
+			.header-item
+				.main-title Contracts
+			.header-item
+				%add-button{'ng-click': 'showContractModal()'}
+					Add Contract
+			.header-item.switch-row
+				%span{ng: {repeat: 'switch in switches', class: '{active: switch.name == teamFilter().name}', click: 'switchContracts(switch)'}}
+					{{switch.name}}
+			.header-item.contract-search
+				%i.fa.fa-search
+				%input.form-control{placeholder: 'Search', ng: {model: 'params.q', 'model-options': '{debounce: 400}', change: 'searchContracts()' }}
+			.header-item
+				%div{ng: {include: '"contracts/contracts_filter.html"', controller: 'ContractsFilterController'}}
+
+		.row.block{'ng-if': '!contracts.length'}
+			.title No Data Available
+		.row.block{'ng-if': 'contracts.length'}
+			.table-wrapper
+				%table.table.table-hover
+					%thead
+						%tr.z-sortable-prime
+							%th.z-sortable{by: '-id', default: true} ID
+							%th.z-sortable{by: 'name'} Name
+							%th.z-sortable{by: 'type'} Type
+							%th.z-sortable{by: 'restricted'} Restricted
+							%th.z-sortable{by: 'status'} Status
+							%th.z-sortable{by: 'advertiser'} Advertiser
+							%th.z-sortable{by: 'agency'} Agency
+							%th.z-sortable{by: 'deal'} Deal
+							%th.z-sortable{by: 'publisher'} Publisher
+					%tbody{infinite: {scroll: 'loadMoreContracts()', 'scroll-disabled': 'isLoading || allContractsLoaded', 'scroll-listen-for-event': 'lazy:scroll'}}
+						%tr{'ng-repeat': 'contract in contracts | orderBy : zSort.by : zSort.rev'}
+							%td {{contract.id}}
+							%td
+								%a{'ng-href': '/contracts/{{contract.id}}'} {{contract.name}}
+							%td {{contract.type.name}}
+							%td {{contract.restricted}}
+							%td {{contract.status.name}}
+							%td
+								%a{'ng-href': '/accounts/{{contract.advertiser.id}}'} {{contract.advertiser.name}}
+							%td
+								%a{'ng-href': '/accounts/{{contract.agency.id}}'} {{contract.agency.name}}
+							%td
+								%a{'ng-href': '/deals/{{contract.deal.id}}'} {{contract.deal.name}}
+							%td
+								%a{'ng-href': '/publishers/{{contract.publisher.id}}'} {{contract.publisher.name}}

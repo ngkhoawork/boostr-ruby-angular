@@ -387,6 +387,14 @@
       templateUrl: 'users/profile.html'
       controller: 'ProfileController'
 
+    .when '/contracts',
+      templateUrl: 'contracts/contracts.html'
+      controller: 'ContractsController'
+
+    .when '/contracts/:id',
+      templateUrl: 'contracts/contract.html'
+      controller: 'ContractController'
+
 
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true

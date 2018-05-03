@@ -1,0 +1,53 @@
+.detail-stats.block
+	%div.stats-body
+		%div.contract-title.mb30
+			%span.main-title
+				{{contract.name}}
+				%i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(contract)'}
+				%i.fa.fa-trash.delete-deal{'ng-click': 'deleteContract(contract)'}
+				.ealert-button.pull-right
+					%i.fa.fa-envelope.z-icon{ng: {click: 'showEalertModal(contract)'}}
+					%span eAlerts
+
+			.detail-info
+				%a{'href': '', 'ng-href': '/accounts/{{contract.advertiser.id}}'} {{contract.advertiser.name || ''}}
+				{{contract.advertiser.name && contract.agency.name && '|'}}
+				%a{'href': '', 'ng-href': '/accounts/{{contract.agency.id}}'} {{contract.agency.name || ''}}
+
+		.clearfix
+		%div.stats-numbers
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Status
+						.title{'ng-if': 'contract.status'} {{contract.status.name}}
+						.title{'ng-if': '!contract.status'} None
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Deal
+						.title{'ng-if': 'contract.deal'}
+							%a{'href': '', 'ng-href': '/deals/{{contract.deal.id}}'} {{contract.deal.name}}
+						.title{'ng-if': '!contract.deal'}
+							None
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Agency Holding
+						.title{'ng-if': 'contract.holding_company'}
+							%a{'href': '', 'ng-href': '/accounts/{{contract.agency_holding.id}}'} {{contract.holding_company.name}}
+						.title{'ng-if': '!contract.holding_company'}
+							None
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Auto Renew
+						.title
+							%z-toggle{'ng-model': 'contract.auto_renew', 'ng-change': 'updateContract()'}
+			-#%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Auto Notifications
+						.title
+							%z-toggle{ng: {model: 'contract.auto_notifications', change: 'updateContract()'}}

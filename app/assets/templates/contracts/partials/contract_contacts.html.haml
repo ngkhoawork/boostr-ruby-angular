@@ -1,0 +1,34 @@
+.contracts.block
+	%div.mb20
+		%span.title Contacts
+		%add-button{'ng-click': 'addContact(contract)'} Add
+
+	%table.table.table-striped
+		%thead
+			%tr
+				%th.left Name
+				%th.left Position
+				%th.left Email
+				%th.left Account Name
+				%th.left Role
+		%tbody
+			%tr{ ng: { repeat: 'contact in contract.contract_contacts | orderBy: "contact_name"'} }
+				%td
+					%a.mr8{'href': '', 'ng-href': '/contacts/{{contact.contact_id}}'} {{ contact.contact_name }}
+					%i.fa.fa-pencil.z-icon{'ng-click': 'showContactEditModal(contact)'}
+					%i.fa.fa-trash.z-icon{'ng-click': 'unassignContact(contact)'}
+				%td {{contact.contact_position}}
+				%td {{contact.contact_email}}
+				%td {{contact.contact_client_name}}
+				%td.left
+					.dropdown
+						%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+							%span.editable{'ng-class': '{"not-selected": !contact.role_id}'} {{contact.role_name || 'Select role'}}
+							%span.caret
+						%ul.dropdown-menu
+							%li
+								%a{'href': '', 'ng-click': 'updateContactRole(contact)'}
+									%span.text No role
+							%li{'ng-repeat': 'role in contactRoles', 'ng-class': '{active: contact.role_id == role.id}'}
+								%a{'href': '', 'ng-click': 'updateContactRole(contact, role)'}
+									%span.text {{role.name}}
