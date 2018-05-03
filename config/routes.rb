@@ -623,6 +623,7 @@ Rails.application.routes.draw do
     resources :contracts, except: [:new, :edit] do
       resources :attachments, only: [:index, :update, :create, :destroy]
       get :settings, on: :collection
+      post :import_special_terms, on: :collection
     end
 
     resources :ealert_templates, only: [:show, :update], param: :type do

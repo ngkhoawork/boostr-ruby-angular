@@ -60,6 +60,15 @@ class Api::ContractsController < ApplicationController
            serializer: Api::Contracts::SettingsSerializer
   end
 
+  def import_special_terms
+    if params[:file].present?
+      import_contract_special_terms_csv
+      render json: {
+        message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
+      }, status: :ok
+    end
+  end
+
   private
 
   def resource
@@ -146,6 +155,13 @@ class Api::ContractsController < ApplicationController
 
   def import_contracts_csv 
     S3FileImportWorker.perform_async('Importers::ContractsService',
+      company.id,
+      params[:file][:s3_file_path],
+      params[:file][:original_filename])
+  end
+
+  def import_contract_special_terms_csv 
+    S3FileImportWorker.perform_async('Importers::ContractSpecialTermsService',
       company.id,
       params[:file][:s3_file_path],
       params[:file][:original_filename])
