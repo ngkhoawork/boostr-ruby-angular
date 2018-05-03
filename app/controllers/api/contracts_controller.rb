@@ -15,13 +15,20 @@ class Api::ContractsController < ApplicationController
   def create
     authorize!
 
-    if build_resource.save
-      render json: resource,
-             serializer: permitted_serializer,
-             status: :created
+    if params[:file].present?
+      import_contracts_csv
+      render json: {
+        message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
+      }, status: :ok
     else
-      render json: { errors: resource.errors.messages },
-             status: :unprocessable_entity
+      if build_resource.save
+        render json: resource,
+               serializer: permitted_serializer,
+               status: :created
+      else
+        render json: { errors: resource.errors.messages },
+               status: :unprocessable_entity
+      end
     end
   end
 
@@ -135,5 +142,12 @@ class Api::ContractsController < ApplicationController
 
   def forbidden_response
     render json: { errors: ['Not Authorized'] }, status: :forbidden
+  end
+
+  def import_contracts_csv 
+    S3FileImportWorker.perform_async('Importers::ContractsService',
+      company.id,
+      params[:file][:s3_file_path],
+      params[:file][:original_filename])
   end
 end
