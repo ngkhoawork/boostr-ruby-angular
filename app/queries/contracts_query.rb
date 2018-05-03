@@ -54,7 +54,7 @@ class ContractsQuery < BaseQuery
     def by_team_id(team_id)
       return self unless team_id
 
-      user_ids = users_by_team_id(team_id).pluck(:id)
+      user_ids = team_user_ids(team_id)
 
       by_user_id(user_ids)
     end
@@ -107,8 +107,8 @@ class ContractsQuery < BaseQuery
 
     private
 
-    def users_by_team_id(team_id)
-      Team.find(team_id).all_members_and_leaders
+    def team_user_ids(team_id)
+      Team.find(team_id).all_members_and_leaders_ids
     end
 
     def user_team(user)
