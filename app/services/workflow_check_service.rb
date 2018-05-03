@@ -12,7 +12,7 @@ class WorkflowCheckService
   def run_criteria_chain
     select_criteria
 
-    validate_exist_history if deal.blank?
+    return validate_exist_history if deal.blank?
 
     @event_log = find_by_workflow_id
     @workflow_log = log
