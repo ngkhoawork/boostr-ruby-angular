@@ -91,7 +91,7 @@ class AssetCsv
   end
 
   def attachable_type_valid?
-    %w(Deal Activity).include?(self.attachable_type)
+    %w(Deal Activity Contract).include?(self.attachable_type)
   end
 
   def creator
