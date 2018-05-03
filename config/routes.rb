@@ -586,7 +586,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :leads, only: [:index, :show] do
+    resources :leads, only: [:index, :show, :update] do
       member do
         get :accept
         get :reject

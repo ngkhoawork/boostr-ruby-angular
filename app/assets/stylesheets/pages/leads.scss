@@ -113,6 +113,10 @@
                 color: lighten($secondary-font-color, 10%);
                 font-size: 13px;
                 padding: 2px 0;
+
+                span {
+                    word-wrap: break-word;
+                }
             }
             .td-action {
                 margin-top: auto;
