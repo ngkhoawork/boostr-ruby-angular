@@ -6,11 +6,11 @@ class Address < ActiveRecord::Base
   validate :us_state
 
   before_validation do
-    self.phone = phone.gsub(/[^0-9]/, '') if attribute_present?('phone')
+    self.phone  = phone.gsub(/[^0-9]/, '') if attribute_present?('phone')
     self.mobile = mobile.gsub(/[^0-9]/, '') if attribute_present?('mobile')
   end
 
-  scope :contacts_by_email, -> email { where(addressable_type: 'Contact').where('email ilike ANY (array[?])', email) }
+  scope :contacts_by_email, -> (email) { where(addressable_type: 'Contact').where('email ilike ANY (array[?])', email) }
 
   def us_state
     if state.present?
