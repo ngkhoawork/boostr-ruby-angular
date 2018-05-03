@@ -67,6 +67,9 @@
     .form-row {
         display: flex;
         align-items: flex-end;
+        .row-w30 {
+            width: 30%;
+        }
         .row-w33 {
             width: 33.33%;
         }
