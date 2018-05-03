@@ -82,3 +82,5 @@ Deploying:
 </pre>
 
 
+Create migration of activerecord if added mongo db
+rails g migration name --orm='active_record'

@@ -13,7 +13,7 @@ class Workflow::ParamsHashBuilder
       mapping_hash = Workflow::MappingHashFinder.new(base_object_name_sym: bo_name.to_sym,
                                                      mapping_name: param).find
 
-      values = format_data(Workflow::ParamsValuesFetcher.new(param, base_object_id, bo_name, mapped_suffix).fetch_values)
+      values = format_data(Workflow::ParamsValuesFetcher.new(param, base_object_id, bo_name, mapped_suffix).fetch_values, param)
       next unless mapping_hash
       if mapping_hash[:select_collection]
         next hsh[mapped_prefix].concat(values) if hsh[mapped_prefix]
@@ -29,7 +29,7 @@ class Workflow::ParamsHashBuilder
     result
   end
 
-  def format_data(data)
+  def format_data(data, param)
     return format_date(data) if data.is_a?(String) && data.to_s.include?("UTC")
     return format_date(data) if data.is_a?(Time)
     return format_date(data) if data.is_date?
@@ -37,6 +37,7 @@ class Workflow::ParamsHashBuilder
     return rounded(data.to_f) + " " if data.is_a?(BigDecimal)
     return format_arr(data) if data.is_a?(Array)
     return format_arr(data) if data.is_a?(Hash)
+    return data if param.eql?('ios.external_io_number') || param.eql?('ios.io_number')
     return number_with_delimiter(data.to_f) if is_number?(data)
     data
   end
