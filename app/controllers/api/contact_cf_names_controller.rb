@@ -10,6 +10,8 @@ class Api::ContactCfNamesController < ApplicationController
   end
 
   def update
+    update_field_options
+
     if contact_cf_name.update_attributes(contact_cf_name_params)
       render json: contact_cf_name, status: :accepted
     else
@@ -34,6 +36,17 @@ class Api::ContactCfNamesController < ApplicationController
   end
 
   private
+
+  def update_field_options
+    field_option = contact_cf_name_params[:contact_cf_options_attributes]
+
+    if field_option.present? && field_option.count > 0
+      option_ids = field_option.map { |option| option[:id] }
+      contact_cf_name.contact_cf_options.by_options(option_ids).destroy_all
+    else
+      contact_cf_name.contact_cf_options.destroy_all
+    end
+  end
 
   def contact_cf_names
     current_user.company.contact_cf_names.includes(:contact_cf_options)

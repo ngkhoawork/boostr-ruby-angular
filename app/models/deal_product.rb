@@ -5,7 +5,7 @@ class DealProduct < ActiveRecord::Base
   belongs_to :product
   belongs_to :ssp
   has_many :deal_product_budgets, -> { order(:start_date) }, dependent: :destroy
-  has_one :deal_product_cf, dependent: :destroy
+  has_one :deal_product_cf, dependent: :destroy, inverse_of: :deal_product
 
   enum pmp_type: PMP_TYPES
 

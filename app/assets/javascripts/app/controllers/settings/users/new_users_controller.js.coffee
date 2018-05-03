@@ -1,11 +1,15 @@
 @app.controller 'NewUsersController',
-['$scope', '$modalInstance', 'User', 'onInvite',
-($scope, $modalInstance, User, onInvite) ->
+['$scope', '$modalInstance', 'User', 'onInvite', 'Team'
+($scope, $modalInstance, User, onInvite, Team) ->
   $scope.user_types = User.user_types_list
 
-  $scope.formType = "New"
-  $scope.submitText = "Invite"
-  $scope.user = {roles: ['user']}
+  $scope.init = ->
+    $scope.formType = "New"
+    $scope.submitText = "Invite"
+    $scope.user = {roles: ['user']}
+    
+    Team.all().then (teams) ->
+      $scope.teams = teams
 
   $scope.submitForm = () ->
     index = $scope.user.roles.indexOf('admin')
@@ -23,4 +27,6 @@
 
   $scope.cancel = ->
     $modalInstance.dismiss()
+
+  $scope.init()  
 ]

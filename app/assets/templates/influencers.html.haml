@@ -24,7 +24,7 @@
               %th Address
               %th Phone
               %th Status
-          %tbody{infinite: {scroll: 'loadMoreInfluencers()', 'infinite-scroll-immediate-check': 'true', 'scroll-disabled': 'isLoading'}}
+          %tbody{infinite: {scroll: 'loadMoreInfluencers()', 'infinite-scroll-immediate-check': 'true', 'scroll-disabled': 'isLoading', 'scroll-listen-for-event': 'lazy:scroll'}}
             %tr{'ng-repeat': 'influencer in influencers'}
               %td
                 %a{href: '', 'ng-href': '/influencers/{{influencer.id}}'} {{influencer.name}}

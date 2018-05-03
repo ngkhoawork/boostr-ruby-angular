@@ -58,11 +58,23 @@ RSpec.describe Api::ContactCfNamesController, type: :controller do
       put :update, id: contact_cf_name.id,
       contact_cf_name: {
         position: 5,
-        contact_cf_options_attributes: {id: option.id, value: 'Updaterino'}
+        contact_cf_options_attributes: [{id: option.id, value: 'Updaterino'}]
       }
 
       expect(contact_cf_name.reload.position).to be 5
       expect(option.reload.value).to eql 'Updaterino'
+    end
+
+    it 'update dropdown options for contact cf option' do
+      option = contact_cf_name.contact_cf_options
+
+      put :update, id: contact_cf_name.id,
+          contact_cf_name: {
+              position: 5,
+              contact_cf_options_attributes: {}
+          }
+
+      expect(option.reload).to be_empty
     end
   end
 

@@ -1,17 +1,14 @@
 require 'rails_helper'
 
-RSpec.describe ContactCf, type: :model do
-  context 'associations' do
-    it { should belong_to(:company) }
-    it { should belong_to(:contact) }
-  end
-
+RSpec.describe PublisherCustomField, type: :model do
   describe 'validations' do
     subject { instance.save }
 
+    let(:attrs) { { 'percentage1' => percentage_value, publisher: publisher, company: company } }
+
     let!(:percentage_cf_name) do
       create(
-        :contact_cf_name,
+        :publisher_custom_field_name,
         field_type: 'percentage',
         field_index: 1,
         field_label: FFaker::HipsterIpsum.word,
@@ -19,19 +16,18 @@ RSpec.describe ContactCf, type: :model do
       )
     end
 
-    let(:attrs) { { 'percentage1' => percentage_value, contact: contact, company: company } }
     let(:percentage_value) { 50 }
 
     it do
-      expect{subject}.to change{ContactCf.count}.by(1)
-      expect(last_created_contact_cf.percentage1).to eq percentage_value
+      expect{subject}.to change{PublisherCustomField.count}.by(1)
+      expect(last_created_publisher_cf.percentage1).to eq percentage_value
     end
 
     context 'and when percentage_value is not numeric' do
       let(:percentage_value) { '101ABC' }
 
       it do
-        expect{subject}.not_to change{ContactCf.count}
+        expect{subject}.not_to change{PublisherCustomField.count}
         expect(
           row_field_errors(instance, percentage_cf_name.field_label)
         ).to match /must be a number/i
@@ -42,7 +38,7 @@ RSpec.describe ContactCf, type: :model do
       let(:percentage_value) { 101 }
 
       it do
-        expect{subject}.not_to change{ContactCf.count}
+        expect{subject}.not_to change{PublisherCustomField.count}
         expect(
           row_field_errors(instance, percentage_cf_name.field_label)
         ).to match /must be in 0-100 range/i
@@ -64,11 +60,11 @@ RSpec.describe ContactCf, type: :model do
     @_company ||= create(:company)
   end
 
-  def contact
-    @_contact ||= create(:contact, company: company)
+  def publisher
+    @_publisher ||= create(:publisher, name: 'Amazon', company: company)
   end
 
-  def last_created_contact_cf
-    @_last_created_contact_cf ||= ContactCf.last
+  def last_created_publisher_cf
+    @_last_created_publisher_cf ||= PublisherCustomField.last
   end
 end

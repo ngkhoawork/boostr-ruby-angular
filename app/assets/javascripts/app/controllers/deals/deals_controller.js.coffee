@@ -2,7 +2,7 @@
     ['$rootScope', '$scope', '$window', '$timeout', '$document', '$filter', '$modal', '$q', '$location', 'Deal', 'Team', 'Stage', 'ExchangeRate', 'DealsFilter', 'TimePeriod', 'shadeColor', 'Validation'
     ( $rootScope,   $scope,   $window,   $timeout,   $document,   $filter,   $modal,   $q,   $location,   Deal,   Team,   Stage,   ExchangeRate,   DealsFilter,   TimePeriod,   shadeColor,   Validation) ->
             formatMoney = $filter('formatMoney')
-
+            $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
             $scope.isLoading = false
             $scope.allDealsLoaded = false
             $scope.page = 1
@@ -102,7 +102,7 @@
                         _this = $scope.filter.datePicker
                         if (_this.createdDate.startDate && _this.createdDate.endDate)
                             $scope.filter.selected.createdDate = _this.createdDate
-                apply: (reset) ->
+                apply: (reset, callback) ->
                     this.appliedSelection = angular.copy this.selected
                     $scope.page = 1
                     params = getDealParams()
@@ -123,7 +123,7 @@
                             column.open = stage.open
                             columns.push column
                         $scope.emptyColumns = angular.copy columns
-                        updateDealsTable()
+                        updateDealsTable(callback)
                         $scope.filter.isOpen = false
                         $scope.allDealsLoaded = false
                         $timeout -> $scope.isLoading = false
@@ -177,7 +177,7 @@
                     query.closed_year = f.yearClosed if f.yearClosed
                     query
 
-            updateDealsTable = ->
+            updateDealsTable = (callback) ->
                 columns = angular.copy $scope.emptyColumns
                 $scope.deals.forEach (deal) ->
                     if !deal || !deal.stage_id then return
@@ -190,6 +190,7 @@
                 $timeout ->
                     addScrollEvent()
                     alignColumnsHeight()
+                callback() if _.isFunction callback
 
             alignColumnsHeight = ->
                 columns = angular.element('.column-body')
@@ -236,7 +237,7 @@
 
             $scope.filterDeals = (filter) ->
                 $scope.teamFilter filter
-                $scope.filter.apply()
+                $scope.filter.apply(null, $scope.scrollCallback)
 
             $scope.openFilter = ->
                 $scope.isFilterOpen = !$scope.isFilterOpen
@@ -324,7 +325,7 @@
                     deal.deal_members = deal.members
                     $scope.deals[index] = deal
                     updateDealsInfo()
-                    updateDealsTable()
+                    updateDealsTable($scope.scrollCallback)
 
             $scope.filtering = (item) ->
                 if !item then return false
@@ -399,7 +400,7 @@
                         index = _.findIndex $scope.deals, {id: deal.id}
                         $scope.deals.splice index, 1
                         updateDealsInfo()
-                        updateDealsTable()
+                        updateDealsTable($scope.scrollCallback)
 
             x = 0
             shift = 0

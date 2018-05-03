@@ -6,5 +6,9 @@ FactoryGirl.define do
     field_type 'note'
     sequence(:field_label) { |n| "Test #{n}" }
     sequence(:position) { |n| n }
+
+    after(:create) do |item|
+      create(:publisher_custom_field_option, publisher_custom_field_name: item)
+    end
   end
 end

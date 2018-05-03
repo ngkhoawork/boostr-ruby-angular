@@ -86,7 +86,7 @@
                       {{ productTime | date: 'MMM-yy' }}
                   %th{ ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: 'fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index' } }
                     .z-sortable{by: '"deal_custom_field[\""+fieldName+"\"]"'} {{dealCustomFieldName.field_label}}
-              %tbody.nowrap{'infinite-scroll': "loadMoreData()"}
+              %tbody.nowrap{'infinite-scroll': "loadMoreData()", 'infinite-scroll-listen-for-event': 'lazy:scroll'}
                 %tr{ ng: { repeat: 'deal in deals | orderBy : zSort.by : zSort.rev' } }
                   %td
                     %div{ ng: { repeat: 'user in deal.users' } }

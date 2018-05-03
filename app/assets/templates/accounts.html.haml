@@ -152,7 +152,7 @@
                                 %th.z-sortable{by: 'client_members'} Team
                                 %th.z-sortable{by: 'address.city'} City
                                 %th.z-sortable{by: '_lastTouch'} Last Touch
-                        %tbody{infinite: {scroll: "loadMoreClients()", 'scroll-disabled': 'isClientsLoading || allClientsLoaded'}}
+                        %tbody{infinite: {scroll: "loadMoreClients()", 'scroll-disabled': 'isClientsLoading || allClientsLoaded', 'scroll-listen-for-event': 'lazy:scroll'}}
                             %tr{ ng: { repeat: 'client in clients | orderBy : zSort.by : zSort.rev'} }
                                 %td
                                     %a{'ng-href': '/accounts/{{client.id}}'}

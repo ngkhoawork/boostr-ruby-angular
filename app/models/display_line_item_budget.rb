@@ -36,8 +36,6 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
   set_callback :save, :after, :update_revenue_fact_callback
 
-  validate :sum_of_budgets_within_line_item, unless: -> { has_dfp_budget_correction }
-
   def update_revenue_fact_callback
     if budget_changed?
       update_revenue_pipeline_budget(self)
@@ -321,14 +319,6 @@ class DisplayLineItemBudget < ActiveRecord::Base
   def self.convert_params_currency(exchange_rate, params)
     params[:budget] = params[:budget_loc] / exchange_rate
     params
-  end
-
-  def sum_of_budgets_within_line_item
-    return unless budget_loc.present?
-
-    if max_monthly_budget_exceeded?
-      errors.add(:budget, 'sum of monthly budgets can\'t be more then line item budget')
-    end
   end
 
   def correct_budget
