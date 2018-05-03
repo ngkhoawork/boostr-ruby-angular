@@ -107,16 +107,13 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Publisher Type', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Renewal Terms', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Member Role', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Contact Role', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contract', name: 'Type', value_type: 'Option', locked: true)
-    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Status', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Member Role', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contract', name: 'Special Term Name', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contract', name: 'Special Term Type', value_type: 'Option', locked: true)
-    member_role =
-      fields.find_or_initialize_by(subject_type: 'Contract', name: 'Member Role', value_type: 'Option', locked: true)
-    setup_default_options(member_role, ['Active', 'Expired'])
-    contact_role =
-      fields.find_or_initialize_by(subject_type: 'Contract', name: 'Contact Role', value_type: 'Option', locked: true)
-    setup_default_options(contact_role, ['Active', 'Expired'])
+    status = fields.find_or_initialize_by(subject_type: 'Contract', name: 'Status', value_type: 'Option', locked: true)
+    setup_default_options(status, ['Active', 'Expired'])
     cost_type = fields.find_or_initialize_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
     setup_default_options(cost_type, ['General'])
 
