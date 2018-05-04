@@ -317,7 +317,7 @@ RSpec.describe Api::ContractsController, type: :controller do
   end
 
   describe '#update' do
-    let(:attributes) { { name: FFaker::Lorem.word } }
+    let(:attributes) { { name: 'New Contract Name' } }
     let(:params) { { id: contract.id, contract: attributes } }
 
     subject { put :update, params }

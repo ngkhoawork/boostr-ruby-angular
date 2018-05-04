@@ -360,6 +360,7 @@ Rails.application.routes.draw do
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
       resources :deal_products, only: [:create, :update, :destroy]
       collection do
+        get :pipeline_deals
         get :pipeline_report
         get :pipeline_report_totals
         get :pipeline_report_monthly_budgets
@@ -577,14 +578,15 @@ Rails.application.routes.draw do
     resource :egnyte_integration, only: [:show, :create, :update] do
       collection do
         get :oauth_settings
-        get :oauth_callback
+        get :company_oauth_callback
+        get :user_oauth_callback
         get :navigate_to_deal
         get :navigate_to_account_deals
-        put :disconnect_egnyte
+        put :disconnect_user
       end
     end
 
-    resources :leads, only: [:index, :show] do
+    resources :leads, only: [:index, :show, :update] do
       member do
         get :accept
         get :reject

@@ -49,7 +49,6 @@ class Api::ProductsController < ApplicationController
       :product_family_id,
       :parent_id,
       :full_name,
-      :auto_generated,
       {
         values_attributes: [
           :id,

@@ -1,6 +1,6 @@
 class Egnyte::Actions::GetNavigateUri::Deal < Egnyte::Actions::GetNavigateUri::Base
   def self.required_option_keys
-    @required_option_keys ||= %i(egnyte_integration_id deal_id)
+    @required_option_keys ||= super | %i(deal_id)
   end
 
   private
@@ -10,6 +10,6 @@ class Egnyte::Actions::GetNavigateUri::Deal < Egnyte::Actions::GetNavigateUri::B
   end
 
   def folder_path
-    egnyte_folder.path
+    folder.path
   end
 end

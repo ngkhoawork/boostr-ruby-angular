@@ -40,7 +40,7 @@
       url: 'api/deals/:id/latest_log'
     forecast_detail:
       method: 'GET'
-      url: 'api/deals.json'
+      url: 'api/deals/pipeline_deals'
       isArray: true
     won_deals:
       method: 'GET'

@@ -39,6 +39,10 @@ class ContactCfName < ActiveRecord::Base
     field_label.parameterize.underscore
   end
 
+  def field_name
+    "#{field_type}#{field_index}"
+  end
+
   private
 
   def assign_index

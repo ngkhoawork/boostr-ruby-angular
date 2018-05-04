@@ -16,7 +16,7 @@ class Contact < ActiveRecord::Base
 
   has_one :primary_client, through: :primary_client_contact, source: :client
   has_one :primary_client_contact, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
-  has_one :contact_cf, dependent: :destroy
+  has_one :contact_cf, dependent: :destroy, inverse_of: :contact
 
   has_many :clients, -> { uniq }, through: :client_contacts
   has_many :account_dimensions, -> { uniq }, through: :account_contacts

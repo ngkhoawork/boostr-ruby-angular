@@ -30,19 +30,20 @@ class Workflow::AttachmentHashBuilder
   def attachment_text
     attachment_mappings.each_with_object('') do |mapping, text|
       value = fetch_values_for_mapping(mapping['name'])
-      formatted_value = formatted_string(value)
+      formatted_value = formatted_string(value, mapping)
       next if formatted_value.blank?
       text << "*#{mapping['label_name']}*: #{formatted_value}\n"
     end
   end
 
-  def formatted_string(data)
+  def formatted_string(data, param)
     return format_date(data) if data.is_a?(String) && data.to_s.include?("UTC")
     return format_date(data) if data.is_a?(Time)
     return format_date(data) if data.is_date?
     return format_arr(data) if data.is_a?(Array)
     return round(data.to_f) if data.is_a?(BigDecimal)
     return data.to_date.to_s if data.is_a?(ActiveSupport::TimeWithZone)
+    return data if param['name'].eql?('ios.external_io_number') || param['name'].eql?('ios.io_number')
     return format_number(data.to_f) if is_number?(data)
     data
   end

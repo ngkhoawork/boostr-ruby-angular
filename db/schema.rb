@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180412033456) do
+ActiveRecord::Schema.define(version: 20180303003530) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1786,6 +1786,15 @@ ActiveRecord::Schema.define(version: 20180412033456) do
 
   add_index "ealerts", ["company_id"], name: "index_ealerts_on_company_id", using: :btree
 
+  create_table "egnyte_authentications", force: :cascade do |t|
+    t.integer  "user_id"
+    t.string   "state_token"
+    t.string   "access_token"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "egnyte_authentications", ["user_id"], name: "index_egnyte_authentications_on_user_id", using: :btree
 
   create_table "egnyte_folders", force: :cascade do |t|
     t.integer  "subject_id"
@@ -1802,14 +1811,13 @@ ActiveRecord::Schema.define(version: 20180412033456) do
     t.integer  "company_id"
     t.string   "app_domain"
     t.string   "access_token"
-    t.boolean  "connected",           default: false
     t.boolean  "enabled",             default: false
-
-    t.datetime "created_at",                                                                                                                                                        null: false
-    t.datetime "updated_at",                                                                                                                                                        null: false
-    t.jsonb    "deal_folder_tree",    default: {"nodes"=>[{"nodes"=>[], "title"=>"RFP"}, {"nodes"=>[], "title"=>"Proposal"}, {"nodes"=>[], "title"=>"Creative"}], "title"=>"Deal"}, null: false
-    t.jsonb    "account_folder_tree", default: {"nodes"=>[{"nodes"=>[], "title"=>"Contract"}, {"nodes"=>[], "title"=>"Templates"}], "title"=>"Account"},                            null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.jsonb    "deal_folder_tree"
+    t.jsonb    "account_folder_tree"
     t.string   "deals_folder_name"
+    t.string   "state_token"
   end
 
   add_index "egnyte_integrations", ["company_id"], name: "index_egnyte_integrations_on_company_id", using: :btree
@@ -2278,10 +2286,8 @@ ActiveRecord::Schema.define(version: 20180412033456) do
     t.string   "name"
     t.string   "revenue_type"
     t.integer  "company_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
-    t.integer  "parent_id"
-    t.integer  "top_parent_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
   add_index "product_dimensions", ["company_id"], name: "index_product_dimensions_on_company_id", using: :btree
@@ -2649,25 +2655,6 @@ ActiveRecord::Schema.define(version: 20180412033456) do
   add_index "ssp_advertisers", ["created_by"], name: "index_ssp_advertisers_on_created_by", using: :btree
   add_index "ssp_advertisers", ["ssp_id"], name: "index_ssp_advertisers_on_ssp_id", using: :btree
   add_index "ssp_advertisers", ["updated_by"], name: "index_ssp_advertisers_on_updated_by", using: :btree
-
-  create_table "ssp_credentials", force: :cascade do |t|
-    t.integer  "company_id"
-    t.string   "key",                                      null: false
-    t.string   "secret",                                   null: false
-    t.integer  "publisher_id",                             null: false
-    t.integer  "ssp_id"
-    t.integer  "type_id",              default: 1
-    t.boolean  "switched_on",          default: true
-    t.string   "parser_type",          default: "rubicon"
-    t.string   "integration_type"
-    t.string   "integration_provider"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "create_objects"
-  end
-
-  add_index "ssp_credentials", ["company_id"], name: "index_ssp_credentials_on_company_id", using: :btree
-  add_index "ssp_credentials", ["ssp_id"], name: "index_ssp_credentials_on_ssp_id", using: :btree
 
   create_table "ssps", force: :cascade do |t|
     t.string "name"

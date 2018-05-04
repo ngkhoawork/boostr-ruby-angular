@@ -57,7 +57,7 @@ class Deal < ActiveRecord::Base
   has_one :billing_deal_contact, -> { where(role: 'Billing') }, class_name: 'DealContact'
   has_one :billing_contact, through: :billing_deal_contact, source: :contact
 
-  has_one :deal_custom_field, dependent: :destroy
+  has_one :deal_custom_field, dependent: :destroy, inverse_of: :deal
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
     order('activities.deal_id', 'activities.happened_at DESC')
   }, class_name: 'Activity'
@@ -201,6 +201,22 @@ class Deal < ActiveRecord::Base
   scope :has_io, -> {
     joins(:io).where('ios.id IS NOT NULL')
   }
+  scope :by_sales_process, -> (sales_process_id) do
+    joins(:stage).where('stages.sales_process_id = ?', sales_process_id) if sales_process_id.present?
+  end
+  scope :by_name_or_advertiser_name_or_agency_name, -> (name) do
+    joins('LEFT JOIN clients advertisers ON advertisers.id = deals.advertiser_id AND advertisers.deleted_at IS NULL')
+        .joins('LEFT JOIN clients agencies ON agencies.id = deals.agency_id AND agencies.deleted_at IS NULL')
+        .where('deals.name ilike :name OR advertisers.name ilike :name OR agencies.name ilike :name', name: "%#{name}%") if name
+  end
+  scope :by_external_id, -> (external_id) do
+    joins(:integrations)
+        .where(
+          'integrations.external_type = ? AND integrations.external_id = ?',
+          'operative',
+          external_id
+        ) if external_id.present?
+  end
 
   def update_pipeline_fact_callback
     if stage_id_changed?
@@ -221,6 +237,7 @@ class Deal < ActiveRecord::Base
     if open_changed?
       update_pipeline_fact(self)
     end
+    custom_workflow_update('update')
   end
 
   def asana_connect
@@ -1327,7 +1344,7 @@ class Deal < ActiveRecord::Base
           source_value_params[:id] = deal_source_value.id
         end
 
-        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date).collect{|item| item.id}
+        deal_change[:time_period_ids] += current_user.company.time_period_ids(deal.start_date, deal.end_date)
         deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
         deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
         deal_change[:product_ids] += deal.deal_products.collect{|item| item.product_id}
@@ -1354,7 +1371,7 @@ class Deal < ActiveRecord::Base
           deal_change[:user_ids] += [user.id]
         end
 
-        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", start_date, end_date).collect{|item| item.id}
+        deal_change[:time_period_ids] += current_user.company.time_period_ids(start_date, end_date)
         deal_change[:stage_ids] += [stage.id] if stage.present?
         deal_contact_list.each do |contact|
           deal.deal_contacts.find_or_create_by(contact: contact)

@@ -36,8 +36,6 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
   set_callback :save, :after, :update_revenue_fact_callback
 
-  validate :sum_of_budgets_within_line_item, unless: -> { has_dfp_budget_correction }
-
   def update_revenue_fact_callback
     if budget_changed?
       update_revenue_pipeline_budget(self)
@@ -275,7 +273,12 @@ class DisplayLineItemBudget < ActiveRecord::Base
       }
 
       if io.present?
-        io_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", [io.start_date, start_date].min, [io.end_date, end_date].max).collect{|item| item.id}
+        io_change[:time_period_ids] += current_user
+                                          .company
+                                          .time_period_ids(
+                                            [io.start_date, start_date].min,
+                                            [io.end_date, end_date].max
+                                          )
         io_change[:user_ids] += io.users.collect{|item| item.id}
         io_change[:product_ids] += io.products.collect{|item| item.id}
       end
@@ -316,14 +319,6 @@ class DisplayLineItemBudget < ActiveRecord::Base
   def self.convert_params_currency(exchange_rate, params)
     params[:budget] = params[:budget_loc] / exchange_rate
     params
-  end
-
-  def sum_of_budgets_within_line_item
-    return unless budget_loc.present?
-
-    if max_monthly_budget_exceeded?
-      errors.add(:budget, 'sum of monthly budgets can\'t be more then line item budget')
-    end
   end
 
   def correct_budget

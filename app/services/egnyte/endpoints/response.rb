@@ -14,7 +14,11 @@ class Egnyte::Endpoints::Response
   end
 
   def body
-    @body ||= JSON.parse(@response.body, symbolize_names: true) if @response.body.present?
+    return @body if @body
+
+    @body = JSON.parse(@response.body, symbolize_names: true) if @response.body.present?
+  rescue JSON::ParserError
+    @body = @response.body
   end
 
   def success?

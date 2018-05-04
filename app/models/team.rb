@@ -54,7 +54,7 @@ class Team < ActiveRecord::Base
   end
 
   def leader_and_member_ids
-    [leader_id] | members.pluck(:id)
+    ([leader_id] | member_ids).compact
   end
 
   def all_children
@@ -287,8 +287,8 @@ class Team < ActiveRecord::Base
     User.joins('JOIN teams on teams.leader_id = users.id').where("teams.id IN (#{descendents_sql})")
   end
 
-  def all_members_and_leaders
-    all_members.union(all_leaders)
+  def all_members_and_leaders_ids
+    all_members.union(all_leaders).pluck(:id)
   end
 
   def sum_pos_balance

@@ -70,9 +70,7 @@ class Product < ActiveRecord::Base
       id: self.id,
       company_id: self.company_id,
       name: self.name,
-      revenue_type: self.revenue_type,
-      parent_id: parent_id,
-      top_parent_id: top_parent_id
+      revenue_type: self.revenue_type
     )
   end
 
@@ -231,9 +229,9 @@ class Product < ActiveRecord::Base
   end
 
   def update_children
-    parent_full_name = auto_generated ? full_name : generate_full_name
+    parent_full_name = full_name
     children.each do |child|
-      child.full_name = parent_full_name + ' ' + child.name if child.auto_generated
+      child.full_name = parent_full_name + ' ' + child.name
       child.save
     end
   end
@@ -241,13 +239,16 @@ class Product < ActiveRecord::Base
   def check_recursive_parent_id
     if parent_id.present?
       ids = [id].compact
-      depth = calculate_level - 1
+      depth = parent.level + 1
       while ids.present? 
-        depth += 1
         ids = company.products.where(parent_id: ids).pluck(:id)
-        errors.add(:base, "You can't select child product as parent.") and break if ids.include?(parent_id)
+        depth += 1 if ids.present?
+        if ids.include?(parent_id)
+          errors.add(:base, "You can't select child product as parent.") and break
+        elsif depth > 2
+          errors.add(:base, "Product level should be less than equal to 2. Please consider level of child products.") and break
+        end
       end
-      errors.add(:base, "Product level should be less than equal to 2. Please consider level of child products.") if depth > 2
     end
   end
 

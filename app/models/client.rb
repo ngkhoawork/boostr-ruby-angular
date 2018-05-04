@@ -59,7 +59,7 @@ class Client < ActiveRecord::Base
     order('activities.agency_id', 'activities.happened_at DESC')
   }, class_name: 'Activity'
 
-  has_one :account_cf, dependent: :destroy
+  has_one :account_cf, dependent: :destroy, inverse_of: :client
   has_one :primary_client_member, -> { order(share: :desc) }, class_name: 'ClientMember'
   has_one :primary_user, through: :primary_client_member, source: :user
   has_one :address, as: :addressable

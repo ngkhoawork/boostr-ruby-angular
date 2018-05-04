@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
   belongs_to :company
+  has_one :egnyte_auth, class_name: 'EgnyteAuthentication', dependent: :destroy
   belongs_to :team, counter_cache: :members_count
   has_many :client_members
   has_many :clients, -> (user) { where(company_id: user.company_id) }, through: :client_members
@@ -139,6 +140,10 @@ class User < ActiveRecord::Base
     is?(:admin)
   end
 
+  def egnyte_authenticated
+    !!egnyte_auth&.passed?
+  end
+
   def is_not_legal?
     !is_legal?
   end
@@ -217,7 +222,8 @@ class User < ActiveRecord::Base
           :product_option1,
           :product_option2,
           :product_option1_enabled,
-          :product_option2_enabled
+          :product_option2_enabled,
+          :egnyte_authenticated
         ]
       ).except(:override))
     end

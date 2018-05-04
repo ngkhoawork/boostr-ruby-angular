@@ -1,6 +1,6 @@
 class Api::Leads::IndexSerializer < ActiveModel::Serializer
   attributes :id, :name, :title, :email, :country, :state, :budget, :notes, :created_at, :accepted_at, :company_name,
-             :rejected_at, :reassigned_at, :user, :contact, :clients, :untouched_days
+             :rejected_at, :reassigned_at, :user, :contact, :clients, :untouched_days, :rejected_reason
 
   has_many :deals, serializer: Api::Leads::DealSerializer
   has_one :client, serializer: Api::Leads::ClientSerializer

@@ -383,6 +383,10 @@
       templateUrl: 'logi.html'
       controller: 'LogiConfigurationsController'
 
+    .when '/profile',
+      templateUrl: 'users/profile.html'
+      controller: 'ProfileController'
+
     .when '/contracts',
       templateUrl: 'contracts/contracts.html'
       controller: 'ContractsController'

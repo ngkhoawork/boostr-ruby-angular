@@ -13,6 +13,7 @@ class PublisherCustomFieldName < ActiveRecord::Base
 
   scope :by_company, -> (id) { where(company_id: id) }
   scope :by_type,  -> type { where(field_type: type) }
+  scope :by_index, -> field_index { where(field_index: field_index) }
   scope :order_by_position, -> { order(:position) }
 
   INDEX_FOR_FIRST_CF = 1
@@ -31,8 +32,8 @@ class PublisherCustomFieldName < ActiveRecord::Base
     link: 7
   }
 
-  def fetch_attr_name_for_publisher_custom_field
-    "#{field_type}#{field_index}"
+  def field_name
+    field_type + field_index.to_s
   end
 
   private
@@ -43,10 +44,6 @@ class PublisherCustomFieldName < ActiveRecord::Base
 
   def remove_custom_fields_values
     company.publisher_custom_fields.update_all(field_name => nil)
-  end
-
-  def field_name
-    field_type + field_index.to_s
   end
 
   def amount_of_custom_fields_per_type

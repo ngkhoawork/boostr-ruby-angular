@@ -1,6 +1,7 @@
 @app.controller 'AccountsController',
-['$scope', '$filter', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts', 'ClientsTypes', 'AccountsFilter','CurrentUser'
-($scope, $filter, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http, ClientContacts, ClientsTypes, AccountsFilter, CurrentUser) ->
+['$scope', '$filter', '$timeout', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts', 'ClientsTypes', 'AccountsFilter', 'CurrentUser'
+($scope, $filter, $timeout, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http, ClientContacts, ClientsTypes, AccountsFilter, CurrentUser) ->
+  $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
   formatMoney = $filter('formatMoney')
   $scope.query = ""
   $scope.page = 1
@@ -49,7 +50,7 @@
       selected = this.selected
 
       $scope.page = 1
-      $scope.getClients()
+      $scope.getClients($scope.scrollCallback)
       if !reset then this.isOpen = false
     reset: (key) ->
       AccountsFilter.reset(key)
@@ -88,7 +89,7 @@
       clearTimeout(searchTimeout)
       searchTimeout = null
     searchTimeout = setTimeout(
-      -> $scope.getClients()
+      -> $scope.getClients($scope.scrollCallback)
       400
     )
 
@@ -102,7 +103,7 @@
   $scope.filterAccounts = (filter) ->
     $scope.teamFilter filter
     $scope.page = 1
-    $scope.getClients()
+    $scope.getClients($scope.scrollCallback)
     $scope.getFilterOptions()
 
   $scope.loadMoreClients = ->
@@ -119,7 +120,7 @@
       $scope.filter.regions = Field.findFieldOptions(fields, 'Region')
       $scope.filter.segments = Field.findFieldOptions(fields, 'Segment')
 
-  $scope.getClients = ->
+  $scope.getClients = (callback) ->
     $scope.isClientsLoading = true
     params = {
       filter: $scope.teamFilter().param,
@@ -153,6 +154,7 @@
       else
         $scope.clients = clients
       $scope.isClientsLoading = false
+      callback() if _.isFunction callback
 
   addMissingClientFields = (clients) ->
     _.map clients, (client) ->

@@ -10,9 +10,9 @@
       update_settings:
         method: 'PUT'
         url: '/api/egnyte_integration'
-      disconnect_egnyte:
+      disconnect_user:
         method: 'PUT'
-        url: '/api/egnyte_integration/disconnect_egnyte'
+        url: '/api/egnyte_integration/disconnect_user'
       navigateToDeal:
         method: 'GET'
         url: '/api/egnyte_integration/navigate_to_deal'
@@ -24,7 +24,7 @@
     this.show = (params) -> resource.show(params).$promise
     this.egnyteSetup = (params) -> resource.egnyte_setup(params).$promise
     this.updateConfiguration = (params) -> resource.update_settings(params).$promise
-    this.disconnect = (params) -> resource.disconnect_egnyte(params).$promise
+    this.disconnect = (params) -> resource.disconnect_user(params).$promise
     this.navigateToDeal = (params) -> resource.navigateToDeal(params).$promise
     this.navigateToAccount = (params) -> resource.navigateToAccount(params).$promise
 

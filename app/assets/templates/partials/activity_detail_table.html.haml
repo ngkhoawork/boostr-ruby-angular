@@ -39,8 +39,8 @@
           %i.fa.fa-pencil.z-icon.mr8{'ng-click': 'showActivityEditModal(activity)'}
         %td.left {{ activity.activity_type_name }}
         %td.left
-          %div{ng: {if: '!isTextHasTags(activity.comment) && activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250'}}
-          %div{'ng-if': 'isTextHasTags(activity.comment) || activity.activity_type.name == "Email"'}
+          %div.long-comment{ng: {if: '!isTextHasTags(activity.comment) && activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250'}}
+          %div.long-comment{'ng-if': 'isTextHasTags(activity.comment) || activity.activity_type.name == "Email"'}
             %p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
             %button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity, $event)'}
               Show email

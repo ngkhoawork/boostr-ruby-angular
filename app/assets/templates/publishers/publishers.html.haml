@@ -96,15 +96,13 @@
           {{type.name}}
       .header-item.publisher-search
         %i.fa.fa-search
-        %input.form-control{ ng: { model: 'searchText', change: 'getPublishers()', 'model-options': '{debounce: 500}' }, placeholder: "Search by Name" }
+        %input.form-control{ ng: { model: 'searchText', change: 'getPublishers(null, scrollCallback)', 'model-options': '{debounce: 500}' }, placeholder: "Search by Name" }
       .header-item.view-toggle
         %div.view-toggle-inner
           %div{'ng-click': 'changeView("list")', 'ng-class': '{active: view == "list"}'}
             %i.fa.fa-list
-            List
           %div{'ng-click': 'changeView("columns")', 'ng-class': '{active: view == "columns"}'}
             %i.fa.fa-columns
-            Columns
 
       .header-item
         %button.btn-main{'ng-click': 'filter.open($event)'}
@@ -148,7 +146,7 @@
                   .z-sortable{by: 'comscore'}
                     Comscore 250
 
-            %tbody{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
+            %tbody{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5', 'scroll-listen-for-event': 'lazy:scroll'}}
               %tr{ ng: { repeat: 'publisher in publishers | orderBy : zSort.by : zSort.rev'} }
                 %td
                   %a{'ng-href': '/publishers/{{publisher.id}}'} {{publisher.name}}
@@ -199,7 +197,7 @@
                   %z-toggle{'ng-model': 'publisher.comscore', 'ng-change': 'updatePublisher(publisher)', 'ng-click': '$event.stopPropagation()'}
 
     .row.publishers-container{'ng-if': 'view == "columns"'}
-      .publishers-table{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5'}}
+      .publishers-table{infinite: {scroll: 'loadMorePublishers()', 'scroll-disabled': 'isPublishersLoading || allPublishersLoaded', 'scroll-distance': '0.5', 'scroll-listen-for-event': 'lazy:scroll'}}
         .publisher-column{'ng-repeat': 'stage in publishersPipeline', 'ng-init': 'columnIndex = $index'}
           .column-header{'z-coloring-stage': '{color: baseColor, stage: stage}'}
             %span

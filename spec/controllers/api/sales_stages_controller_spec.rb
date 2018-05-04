@@ -41,10 +41,8 @@ describe Api::SalesStagesController, type: :controller do
     it 'failed when params are invalid' do
       put :update, id: sales_stage.id, sales_stage: invalid_sales_stage_params, format: :json
 
-      sales_stage.reload
-
-      expect(sales_stage.name).not_to eq invalid_sales_stage_params[:name]
-      expect(sales_stage.probability).not_to eq invalid_sales_stage_params[:probability]
+      expect(sales_stage.reload.name).not_to eq invalid_sales_stage_params[:name]
+      expect(sales_stage.reload.probability).not_to eq invalid_sales_stage_params[:probability]
     end
   end
 

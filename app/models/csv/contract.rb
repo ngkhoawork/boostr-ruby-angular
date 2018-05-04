@@ -53,9 +53,9 @@ class Csv::Contract
       c.end_date = formatted_date(end_date)
       c.auto_notifications = true?(auto_notifications)
       c.currency = currency
-      c.amount = amount.to_d
+      c.amount = amount&.to_d
       c.description = description
-      c.days_notice_required = days_notice_required.to_i
+      c.days_notice_required = days_notice_required&.to_i
       c.deal = deal
       c.publisher = publisher
       c.advertiser = advertiser

@@ -6,34 +6,53 @@ class Egnyte::PrivateActions::CreateUniqFolder < Egnyte::Actions::Base
   def perform
     response = api_caller.create_folder(folder_path: @options[:path], access_token: access_token)
 
-    if response.folder_already_exists?
-      @options[:path] = build_uniq_path
+    if response.success?
+      @options[:path]
+    elsif response.folder_already_exists?
+      uniq_path = build_uniq_path(@options[:path])
 
-      api_caller.create_folder(folder_path: @options[:path], access_token: access_token)
+      api_caller.create_folder(folder_path: uniq_path, access_token: access_token)
+      uniq_path
+    else
+      raise Egnyte::Errors::UnhandledRequest, response.body
     end
-
-    @options[:path]
   end
 
   private
 
-  def parent_path
-    @options[:path].sub(/\/[\w ]+(?:\/)?\z/, '')
+  def build_uniq_path(path_template)
+    neighbor_folder_names = neighbor_folders(path_template).map { |folder| folder[:name] }
+
+    related_names = grep_names(neighbor_folder_names, path_template)
+
+    latest_version = extract_folders_versions(related_names).max
+
+    attach_version_to_path(path_template, latest_version + 1)
   end
 
-  def build_uniq_path
-    response = api_caller.get_folder_by_path(folder_path: parent_path, access_token: access_token)
-
-    related_folder_names =
-      response.body[:folders].map { |folder| folder[:name] }.grep(/#{Regexp.escape(folder_name)}/)
-
-    latest_version = extract_folders_versions(related_folder_names).max
-
-    attach_version_to_path(@options[:path], latest_version + 1)
+  def folder_name(path)
+    path.match(/(?<=\/)[\w ]+\z/)[0]
   end
 
-  def folder_name
-    @options[:path].match(/(?<=\/)[\w ]+\z/)[0]
+  def parent_path(path)
+    path.sub(/\/[\w ]+(?:\/)?\z/, '')
+  end
+
+  def grep_names(neighbor_names, path)
+    neighbor_names.grep(/#{Regexp.escape(folder_name(path))}/)
+  end
+
+  def neighbor_folders(path)
+    response = api_caller.get_folder_by_path(
+      folder_path: parent_path(path),
+      access_token: access_token
+    )
+
+    if response.success?
+      response.body[:folders]
+    else
+      raise Egnyte::Errors::UnhandledRequest, response.body
+    end
   end
 
   def extract_folders_versions(folder_names)

@@ -1,11 +1,11 @@
 @app.controller 'ContactsController',
-    ['$scope', '$rootScope', '$window', '$modal', '$routeParams', '$location', '$sce', '$http', '$httpParamSerializer', 'Contact', 'Field', 'Activity', 'ActivityType', 'Reminder',  'ContactsFilter'
-    ( $scope,   $rootScope,   $window,   $modal,   $routeParams,   $location,   $sce,   $http,   $httpParamSerializer,   Contact,   Field,   Activity,   ActivityType,   Reminder,    ContactsFilter) ->
-
+    ['$scope', '$rootScope', '$window', '$timeout', '$modal', '$routeParams', '$location', '$sce', '$http', '$httpParamSerializer', 'Contact', 'Field', 'Activity', 'ActivityType', 'Reminder',  'ContactsFilter'
+    ( $scope,   $rootScope,   $window,  $timeout, $modal,   $routeParams,   $location,   $sce,   $http,   $httpParamSerializer,   Contact,   Field,   Activity,   ActivityType,   Reminder,    ContactsFilter) ->
+            $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
             $scope.contacts = []
             $scope.feedName = 'Updates'
             $scope.page = 1
-            $scope.contactsPerPage = 20
+            $scope.contactsPerPage = 10
             $scope.query = ""
             $scope.showMeridian = true
             $scope.isLoading = false
@@ -51,7 +51,7 @@
                         filter.end_date = s.date.endDate.toDate()
                     filter
                 apply: (reset) ->
-                    $scope.getContacts()
+                    $scope.getContacts(null, $scope.scrollCallback)
                     if !reset then this.isOpen = false
                 searching: (item) ->
                     if !item then return false
@@ -130,9 +130,9 @@
             $scope.$watch 'query', (oldValue, newValue) ->
                 if oldValue != newValue
                     $scope.page = 1
-                    $scope.getContacts()
+                    $scope.getContacts(null, $scope.scrollCallback)
 
-            $scope.getContacts = (next) ->
+            $scope.getContacts = (next, callback) ->
                 $scope.isLoading = true
                 if !next then $scope.page = 1
                 params = {
@@ -150,6 +150,8 @@
                     else
                         $scope.contacts = contacts
                     $scope.isLoading = false
+                    console.log 'asdsaasdasd'
+                    callback() if _.isFunction callback
 
             $scope.loadMoreContacts = ->
                 if !$scope.allContactsLoaded then $scope.getContacts(true)
@@ -179,7 +181,7 @@
 
             $scope.switchContacts = (swch) ->
                 $scope.teamFilter swch
-                $scope.init();
+                $scope.getContacts null, $scope.scrollCallback
 
             $scope.export = ->
                 params = {
