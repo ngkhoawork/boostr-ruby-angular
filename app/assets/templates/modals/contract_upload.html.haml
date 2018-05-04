@@ -1,4 +1,4 @@
-#csv_import_modal
+#revenue_upload_modal
   .modal-header.text-center
     %a.close{ ng: { click: 'cancel()' } }
       %span{'aria-hidden' => 'true'}
@@ -6,43 +6,52 @@
     = inline_svg 'icons/csv.svg'
     %h3.modal-title
       %strong
-        Import Asset Mapping File
+        Import Contracts
       %br
       %small
-        You can map your attachments to Deals and Activities
+        Please import contracts from a CSV file into your current system.
 
   .modal-body
     .well.transparent
-      %h6.text-center
-        Please use these column names to map your files correctly:
+      %p.text-center
+        Make sure your CSV file includes these EXACT headers and columns:
 
-      %ol.row.center-block.grid-block
-        %li File Name*
-        %li
-          Object Type*
-          %br
-          %span Deal or Activity or Contract
-        %li
-          Object Id*
-          %br
-          %span Id of the parent item
-        %li Created At
-        %li Uploader Email
-
-    .well.transparent{ng: { show: 'metadata && metadata.length > 0' }}
-      %h6.text-center
-        You have some unmapped files:
-
-      %ul.row.center-block.grid-block
-        %li{ng: { repeat: 'unmapped_file in metadata' }}
-          {{unmapped_file.original_file_name}}
-
-      .custom-pagination{'bgf-pagination': 'bgf-pagination',
-          'collection': 'metadata',
-          'per-page': '50',
-          'link-group-size': "2",
-          'client-limit': "100",
-          'url': 'metadata_url'}
+      %ol.row.center-block
+        .row
+          %li.col-xs-4 Name*
+          %li.col-xs-4 
+            Created Date
+            %br
+            (mm/dd/yyyy)
+          %li.col-xs-4 Restricted
+        .row
+          %li.col-xs-4 Type*
+          %li.col-xs-4 Status
+          %li.col-xs-4 Auto Renew
+        .row
+          %li.col-xs-4 
+            Start Date
+            %br
+            (mm/dd/yyyy)
+          %li.col-xs-4 
+            End Date
+            %br
+            (mm/dd/yyyy)
+          %li.col-xs-4 Auto Notifications
+        .row
+          %li.col-xs-4 Currency
+          %li.col-xs-4 Amount
+          %li.col-xs-4 Description
+        .row
+          %li.col-xs-4 Days Notice Required
+          %li.col-xs-4 Deal
+          %li.col-xs-4 Deal ID
+        .row
+          %li.col-xs-4 Publisher
+          %li.col-xs-4 Advertiser
+          %li.col-xs-4 Agency
+        .row
+          %li.col-xs-4 Agency Holding
 
     .well.well-lg.dark
       .row

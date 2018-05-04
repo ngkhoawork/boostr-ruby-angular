@@ -17,14 +17,14 @@ FactoryGirl.define do
     end
 
     trait :advertiser do
-      after(:create) do |client|
+      before(:create) do |client|
         client.client_type_id = Field.find_by(company_id: client.company_id, name: 'Client Type')
                                      .options.find_by('options.name = ?', 'Advertiser').id
       end
     end
 
     trait :agency do
-      after(:create) do |client|
+      before(:create) do |client|
         client.client_type_id = Field.find_by(company_id: client.company_id, name: 'Client Type')
                                      .options.find_by('options.name = ?', 'Agency').id
       end
