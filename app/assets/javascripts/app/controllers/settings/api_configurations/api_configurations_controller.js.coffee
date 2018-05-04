@@ -62,11 +62,7 @@
             mappings.providers.asana_connect
           when 'Google Sheets'
             mappings.providers.google_sheets
-          when 'SSP Rubicon'
-            mappings.providers.ssps
-          when 'SSP SpotX'
-            mappings.providers.ssps
-          when 'SSP'
+          when 'SSP Rubicon', 'SSP SpotX', 'SSP AdX', 'SSP'
             mappings.providers.ssps
 
       init = () ->
@@ -141,16 +137,12 @@
 
       $scope.delete = (api_configuration) ->
         if confirm('Are you sure you want to delete "' +  api_configuration.integration_type + '"?')
-          switch api_configuration.integration_provider
-            when "SSP Rubicon"
-              ApiConfiguration.delete_ssp api_configuration, ->
-                $location.path('/settings/api_configurations')
-            when "SSP SpotX"
-              ApiConfiguration.delete_ssp api_configuration, ->
-                $location.path('/settings/api_configurations')
-            else
-              ApiConfiguration.delete api_configuration, ->
-                $location.path('/settings/api_configurations')
+          if api_configuration.integration_provider in ["SSP Rubicon", "SSP SpotX", "SSP AdX"]
+            ApiConfiguration.delete_ssp api_configuration, ->
+              $location.path('/settings/api_configurations')
+          else
+            ApiConfiguration.delete api_configuration, ->
+              $location.path('/settings/api_configurations')
 
       $scope.$on 'updated_api_integrations', ->
         init()
