@@ -237,7 +237,7 @@ class Deal < ActiveRecord::Base
     if open_changed?
       update_pipeline_fact(self)
     end
-    custom_workflow_update('update')
+    custom_workflow_update('update') if budget_changed?
   end
 
   def asana_connect
