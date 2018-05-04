@@ -6,32 +6,44 @@
         .popup-modal-body
             .row
                 .col-xs-6{ 'ng-if': '!productOptionsEnabled' }
-                    .form-group
-                        %label Product
+                    .form-group{ 'ng-class': '{error: errors.product_id}' }
+                        %span.error-text {{errors.product_id}}
+                        %label 
+                            Product
+                            %span.star *
                         %ui-select{ name: 'product', ng: { model: 'content_fee.product_id', disabled: true, required: true } }
                             %ui-select-match{ placeholder: 'Product' }
                                 {{ $select.selected.name }}
                             %ui-select-choices{ repeat: 'product.id as product in productsByLevel(0) | orderBy: "name" | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'product.name' } } }
-                .col-xs-4{ 'ng-if': 'productOptionsEnabled' }
-                    .form-group
-                        %label Product
+                .col-xs-6{ 'ng-if': 'productOptionsEnabled' }
+                    .form-group{ 'ng-class': '{error: errors.product_id}' }
+                        %span.error-text {{errors.product_id}}
+                        %label 
+                            Product
+                            %span.star *
                         %ui-select{ name: 'product_level_0', ng: { model: 'content_fee.product0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
                             %ui-select-match{ placeholder: 'Product' }
                                 {{ $select.selected.name }}
                             %ui-select-choices{ repeat: 'product.id as product in productsByLevel(0) | orderBy: "name" | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'product.name' } } }
-                .col-xs-4{ 'ng-if': 'productOptionsEnabled && productOption1Enabled' }
-                    .form-group
-                        %label {{ option1Field }}
+                .col-xs-6{ 'ng-if': 'productOptionsEnabled && productOption1Enabled' }
+                    .form-group{ 'ng-class': '{error: errors.product1}' }
+                        %span.error-text {{errors.product1}}
+                        %label 
+                            {{ option1Field }}
+                            %span.star{'ng-if': 'hasSubProduct(1) || selectedProduct().level >= 1'} *
                         %ui-select{ name: 'product_level_1', ng: { model: 'content_fee.product1', disabled: '!content_fee.product0 || productsByLevel(1).length == 0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
                             %ui-select-match{ placeholder: '{{ option1Field }}', 'allow-clear': 'true' }
                                 {{ $select.selected.name }}
                             %ui-select-choices{ repeat: 'product.id as product in productsByLevel(1) | orderBy: "name" | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'product.name' } } }
-                .col-xs-4{ 'ng-if': 'productOptionsEnabled && productOption2Enabled' }
-                    .form-group
-                        %label {{ option2Field }}
+                .col-xs-6{ 'ng-if': 'productOptionsEnabled && productOption2Enabled' }
+                    .form-group{ 'ng-class': '{error: errors.product2}' }
+                        %span.error-text {{errors.product2}}
+                        %label 
+                            {{ option2Field }}
+                            %span.star{'ng-if': 'hasSubProduct(2) || selectedProduct().level == 2'} *
                         %ui-select{ name: 'product_level_2', ng: { model: 'content_fee.product2', disabled: '!content_fee.product1 || productsByLevel(2).length == 0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
                             %ui-select-match{ placeholder: '{{ option1Field }}', 'allow-clear': 'true' }
                                 {{ $select.selected.name }}
@@ -64,4 +76,4 @@
                                     'float-only':''}
         .popup-modal-footer
             %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
-            %button.btn.btn-warning{'type': 'submit', 'ng-disabled': 'disableForm()'} Add Content Fee
+            %button.btn.btn-warning{'type': 'submit'} Add Content Fee
