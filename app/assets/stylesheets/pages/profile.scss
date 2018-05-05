@@ -1,0 +1,29 @@
+#profile {
+  .egnyte {
+    .connected-block {
+      .disconnect {
+        color: red;
+        cursor: pointer;
+        width: 135px;
+        float: right;
+        padding-top: 4px;
+      }
+    }
+  }
+
+  .save-button {
+    text-align: center;
+  }
+
+  .egnyte-header-title {
+    color: #818689;
+  }
+
+  .main-title {
+    padding-bottom: 20px;
+  }
+
+  .popup-modal {
+    padding: 0;
+  }
+}

@@ -80,6 +80,7 @@ class DealProduct < ActiveRecord::Base
         forecast_pipeline_fact_calculator.calculate()
       end
     end
+    deal.custom_workflow_update('update')
   end
 
   def active_exchange_rate

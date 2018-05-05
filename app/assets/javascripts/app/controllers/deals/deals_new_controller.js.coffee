@@ -1,6 +1,6 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$filter', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation', 'SalesProcess', 'Egnyte'
-($scope, $modal, $modalInstance, $q, $filter, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation, SalesProcess, Egnyte) ->
+['$scope', '$modal', '$modalInstance', '$q', '$filter', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation', 'SalesProcess'
+($scope, $modal, $modalInstance, $q, $filter, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation, SalesProcess) ->
 
   $scope.init = ->
     $scope.formType = 'New'
@@ -129,7 +129,7 @@
           if !field then return $scope.errors[key] = 'Sales process is required'
 
     $scope.dealCustomFieldNames.forEach (item) ->
-      if item.show_on_modal == true && item.is_required == true && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
+      if !item.disabled && item.show_on_modal && item.is_required && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
         $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
     ($scope.base_fields_validations || []).forEach (validation) ->
@@ -146,11 +146,11 @@
       (deal) ->
         $modalInstance.close(deal)
         if options.type != 'gmail' && !options.lead
-          Egnyte.show().then (egnyteSettings) ->
-            if(egnyteSettings.access_token && egnyteSettings.connected)
-              $location.path('/deals' + '/' + deal.id).search({isNew: 'true'});
-            else
-              $location.path('/deals' + '/' + deal.id);
+          if($scope.currentUser.egnyte_authenticated)
+            $location.path('/deals' + '/' + deal.id).search({isNew: 'true'});
+          else
+            $location.path('/deals' + '/' + deal.id);
+
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

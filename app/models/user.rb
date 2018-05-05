@@ -6,12 +6,14 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
   belongs_to :company
+  has_one :egnyte_auth, class_name: 'EgnyteAuthentication', dependent: :destroy
   belongs_to :team, counter_cache: :members_count
   has_many :client_members
   has_many :clients, -> (user) { where(company_id: user.company_id) }, through: :client_members
   has_many :revenues, -> (user) { where(company_id: user.company_id) }, through: :clients
   has_many :deal_members
   has_many :io_members
+  has_many :contract_members
   has_many :pmp_members
   has_many :deals, -> (user) { where(company_id: user.company_id) }, through: :deal_members
   has_many :ios, -> (user) { where(company_id: user.company_id) }, through: :io_members
@@ -138,6 +140,14 @@ class User < ActiveRecord::Base
     is?(:admin)
   end
 
+  def egnyte_authenticated
+    !!egnyte_auth&.passed?
+  end
+
+  def is_not_legal?
+    !is_legal?
+  end
+
   def add_role(role)
     if !is?(role)
       self.roles_mask += 2**ROLES.index(role)
@@ -212,7 +222,8 @@ class User < ActiveRecord::Base
           :product_option1,
           :product_option2,
           :product_option1_enabled,
-          :product_option2_enabled
+          :product_option2_enabled,
+          :egnyte_authenticated
         ]
       ).except(:override))
     end

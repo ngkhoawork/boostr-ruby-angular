@@ -104,7 +104,7 @@
           if !field then return $scope.errors[key] = 'Sales process is required'
           
     $scope.dealCustomFieldNames.forEach (item) ->
-      if item.show_on_modal == true && item.is_required == true && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
+      if !item.disabled && item.show_on_modal && item.is_required && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
         $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
     ($scope.base_fields_validations || []).forEach (validation) ->

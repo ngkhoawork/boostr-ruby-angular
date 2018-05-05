@@ -44,8 +44,6 @@
 
     if subject && subject.fields
       finish(subject.fields)
-    else if (data[subject_type])
-      finish(data[subject_type])
     else
       @all({ subject: subject_type }).then (fields) ->
         data[subject_type] = fields
@@ -55,7 +53,7 @@
 
   @field = (subject, field_name) ->
     if subject.fields && subject.fields.length > 0
-      subject_field = $filter('filter')(subject.fields, { name: field_name })[0]
+      subject_field = _.findWhere(subject.fields, { name: field_name })
       if subject_field
         _.findWhere(subject.values, field_id: subject_field.id)
 

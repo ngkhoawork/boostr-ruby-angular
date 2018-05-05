@@ -1,0 +1,5 @@
+.block.contract-description.campaign-details
+    %div.mb20
+        %span.title Description
+    %div{ng: {if: 'contract.description', 'text-truncate': 'contract.description', 'tt-chars-threshold': '250'}}
+    %div{ng: {if: '!contract.description'}} No description

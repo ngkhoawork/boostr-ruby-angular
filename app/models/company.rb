@@ -8,6 +8,7 @@ class Company < ActiveRecord::Base
   has_many :deals
   has_many :deal_products, through: :deals
   has_many :deal_product_budgets, through: :deal_products
+  has_many :contracts
   has_many :stages
   has_many :distinct_stages, -> {distinct}, class_name: 'Stage'
   has_many :products
@@ -34,6 +35,7 @@ class Company < ActiveRecord::Base
   has_many :bps
   has_many :assets, dependent: :destroy
   has_many :ealerts, dependent: :destroy
+  has_many :ealert_templates, class_name: 'EalertTemplate::Base', dependent: :destroy
   has_many :bp_estimates, through: :bps
   has_many :deal_custom_field_names
   has_many :deal_product_cf_names
@@ -72,7 +74,7 @@ class Company < ActiveRecord::Base
 
   has_one :billing_address, as: :addressable, class_name: 'Address'
   has_one :physical_address, as: :addressable, class_name: 'Address'
-  has_one :egnyte_integration, dependent: :destroy
+  has_one :egnyte_integration, inverse_of: :company, dependent: :destroy
 
   serialize :forecast_permission, HashSerializer
 
@@ -101,6 +103,13 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Publisher Type', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Renewal Terms', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Publisher', name: 'Member Role', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Contact Role', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Type', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Member Role', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Special Term Name', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contract', name: 'Special Term Type', value_type: 'Option', locked: true)
+    status = fields.find_or_initialize_by(subject_type: 'Contract', name: 'Status', value_type: 'Option', locked: true)
+    setup_default_options(status, ['Active', 'Expired'])
     cost_type = fields.find_or_initialize_by(subject_type: 'Cost', name: 'Cost Type', value_type: 'Option', locked: true)
     setup_default_options(cost_type, ['General'])
 
@@ -120,7 +129,7 @@ class Company < ActiveRecord::Base
     setup_default_validations
 
     AssignmentRule.create(company_id: self.id, name: 'No Match', default: true, position: 100_000)
-    build_egnyte_integration(enabled: false)
+    build_egnyte_integration(enabled: false) unless egnyte_integration
   end
 
   def setup_client_fields
@@ -141,6 +150,7 @@ class Company < ActiveRecord::Base
       { name: 'Multiple', fields: fields.where(subject_type: 'Multiple') },
       { name: 'Influencers', fields: fields.where(subject_type: 'Influencer') },
       { name: 'Publishers', fields: fields.where(subject_type: 'Publisher') },
+      { name: 'Contracts', fields: fields.where(subject_type: 'Contract') },
       { name: 'Costs', fields: fields.where(subject_type: 'Cost') }
     ]
   end
@@ -284,6 +294,8 @@ class Company < ActiveRecord::Base
     validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'deal_source_value')
     validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'agency')
     validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'next_steps')
+
+    validations.find_or_initialize_by(object: 'Lead', value_type: 'Boolean', factor: 'Require Rejection Explanation')
   end
 
   def setup_default_activity_types

@@ -1,0 +1,16 @@
+#leads_modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header
+      {{ formType }}
+      %span.close-btn{ ng: { click: 'cancel()' } }
+    .popup-modal-body
+      .form-group{ ng: { class: '{ error: errors.comment }' } }
+        %span.error-text {{ errors.comment }}
+        %span.star *
+        %label {{ commentText }}
+        %textarea.form-control{ 'msd-elastic': '', rows: '1', ng: { model: 'rejectionComment', change: 'checkValidity()' }, placeholder: 'Enter comments' }
+
+    .popup-modal-footer.text-center
+      %button.btn.btn-default{ type: 'button', ng: { click: 'cancel()' } } Cancel
+      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
+  

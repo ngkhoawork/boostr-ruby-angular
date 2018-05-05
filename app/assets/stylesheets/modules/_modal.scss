@@ -242,6 +242,11 @@
     padding-right: 0;
   }
   .date, .calendar-addon {
+    .bs-datepicker {
+      .dropdown-menu {
+        left: 0 !important;
+      }
+    }
     .input-group-addon {
       background-color: white;
       .fa {
@@ -250,8 +255,7 @@
     }
     .form-control {
       border-left: none;
-      border-bottom-right-radius: 5px;
-      border-top-right-radius: 5px;
+      border-radius: 0 5px 5px 0;
       padding-left: 0;
     }
     .error {

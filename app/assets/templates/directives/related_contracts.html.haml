@@ -1,0 +1,24 @@
+#related-contracts.block
+    %div.mb20
+        %span.title Related Contracts
+        -#%add-button{'ng-click': 'addContract()'} Add
+
+    .table-wrapper{'ng-if': '!contracts.length'}
+        %h6 No related contracts
+    .table-wrapper{'ng-if': 'contracts.length'}
+        %table.table.table-hover
+            %thead
+                %tr.z-sortable-prime
+                    %th.z-sortable{by: 'id'} ID
+                    %th.z-sortable{by: 'name'} Name
+                    %th.z-sortable{by: 'type'} Type
+                    %th.z-sortable{by: 'restricted'} Restricted
+                    %th.z-sortable{by: 'status'} Status
+            %tbody
+                %tr{'ng-repeat': 'contract in contracts | orderBy : zSort.by : zSort.rev'}
+                    %td {{contract.id}}
+                    %td
+                        %a{'ng-href': '/contracts/{{contract.id}}'} {{contract.name}}
+                    %td {{contract.type.name}}
+                    %td {{contract.restricted}}
+                    %td {{contract.status.name}}

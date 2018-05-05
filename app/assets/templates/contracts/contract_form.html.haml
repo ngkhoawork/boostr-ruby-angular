@@ -1,0 +1,114 @@
+#contract_modal.popup-modal
+    %form{ng: {submit: 'submitForm()'}}
+        .popup-modal-header
+            {{formType}} Contract
+            %span.close-btn{'ng-click': 'cancel()'}
+        .popup-modal-body
+            %h4.mb20 Contract Details
+            .form-row
+                %div{'ng-class': '{"row-w70 pr16": userIsLegal, "row-w100": !userIsLegal}'}
+                    .form-group{'ng-class':'{error: errors.name}'}
+                        %span.error-text {{errors.name}}
+                        %label Name
+                        %span.star *
+                        %input.form-control{placeholder: 'Name', ng: {model: 'form.name'}}
+                .row-w30.toggle-wrap{'ng-if': 'userIsLegal'}
+                    %z-toggle{ng: {model: 'form.restricted'}}
+                    %span Restricted
+            .form-row
+                .row-w35.pr16
+                    .form-group{'ng-class':'{error: errors.type_id}'}
+                        %span.error-text {{errors.type_id}}
+                        %label Type
+                        %span.star *
+                        %ui-select{ng: {model: 'form.type_id'}}
+                            %ui-select-match{placeholder: 'Type'} {{$select.selected.name}}
+                            %ui-select-choices{repeat: 'type.id as type in types | orderBy: "name"'}
+                                %div {{type.name}}
+                .row-w35.pr16
+                    .form-group
+                        %label Status
+                        %ui-select{ng: {model: 'form.status_id'}}
+                            %ui-select-match{placeholder: 'Status'} {{$select.selected.name}}
+                            %ui-select-choices{repeat: 'status.id as status in statuses | orderBy: "name"'}
+                                %div {{status.name}}
+                .row-w30.toggle-wrap
+                    %z-toggle{ng: {model: 'form.auto_renew'}}
+                    %span Auto Renew
+            .form-row
+                .row-w33.date.pr16
+                    .form-group{'ng-class':'{error: errors.startDate}'}
+                        %span.error-text {{errors.startDate}}
+                        %label Start Date
+                        .input-group
+                            %span.input-group-addon
+                                %i.fa.fa-calendar
+                            %span.bs-datepicker
+                                %input.form-control.box.w4{readonly: true, placeholder: 'Pick date', datepicker: {popup: 'MMMM d, y', timezone: true}, ng: {model: 'form.start_date', click: 'startDateOpened = true'}, 'is-open': 'startDateOpened'}
+                .row-w33.date.pr16
+                    .form-group{'ng-class':'{error: errors.endDate}'}
+                        %span.error-text {{errors.endDate}}
+                        %label End Date
+                        .input-group
+                            %span.input-group-addon
+                                %i.fa.fa-calendar
+                            %span.bs-datepicker
+                                %input.form-control.box.w4{readonly: true, placeholder: 'Pick date', datepicker: {popup: 'MMMM d, y', timezone: true}, ng: {model: 'form.end_date', click: 'endDateOpened = true'}, 'is-open': 'endDateOpened'}
+
+                .row-w33.toggle-wrap
+                    %z-toggle{ng: {model: 'form.auto_notifications'}}
+                    %span Auto Notifications
+
+            .form-row
+                .row-w35.pr16
+                    .form-group
+                        %label Currency
+                        -#%input.form-control{placeholder: 'USD', ng: {model: 'form.cur'}}
+                        %ui-select{ng: {model: 'form.curr_cd'}}
+                            %ui-select-match{placeholder: 'USD'} {{$select.selected.name}}
+                            %ui-select-choices{repeat: 'currency.curr_cd as currency in currencies'}
+                                %div {{currency.name}}
+                .row-w35.pr16
+                    .form-group
+                        %label Amount
+                        %input.form-control{placeholder: 'Amount', ng: {model: 'form.amount'}}
+                .row-w30
+                    .form-group
+                        %label Days Notice Required
+                        %input.form-control{placeholder: 'Days', ng: {model: 'form.days_notice_required'}}
+
+            .form-group
+                %label Description
+                %textarea.form-control{'msd-elastic': '', placeholder: 'Description', ng: {model: 'form.description'}}
+
+            .mb30
+            %h4.mb20 Account Details
+            .form-row
+                .row-w50.pr8
+                    .form-group
+                        %label Deal
+                        %input.form-control{'placeholder': 'Search for Deal', 'ng-model': 'form.deal', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchDeals($viewValue)', 'typeahead-on-select': 'onDealSelect($item)'}
+                .row-w50.pl8
+                    .form-group
+                        %label Publisher
+                        %input.form-control{'placeholder': 'Search for Publisher', 'ng-model': 'form.publisher', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchPublishers($viewValue)'}
+            .form-row
+                .row-w50.pr8
+                    .form-group
+                        %label Advertiser
+                        %input.form-control{'placeholder': 'Search for Advertiser', 'ng-model': 'form.advertiser', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchClients($viewValue, "advertiser")'}
+                .row-w50.pl8
+                    .form-group
+                        %label Agency
+                        %input.form-control{'placeholder': 'Search for Agency', 'ng-model': 'form.agency', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchClients($viewValue, "agency")'}
+            .form-row
+                .row-w50.pr8
+                    .form-group
+                        %label Agency Holding
+                        %ui-select{ng: {model: 'form.holding_company_id'}}
+                            %ui-select-match{placeholder: 'Agency Holding'} {{$select.selected.name}}
+                            %ui-select-choices{repeat: 'holdingCompany.id as holdingCompany in holdingCompanies'}
+                                %div {{holdingCompany.name}}
+        .popup-modal-footer
+            %button.btn.btn-default{type: 'button', 'ng-click': 'cancel()'} Cancel
+            %button.btn.btn-primary{type: 'submit'} {{submitText}}

@@ -1,8 +1,12 @@
 class Egnyte::Actions::GetNavigateUri::Base < Egnyte::Actions::Base
-  def perform
-    return unless enabled_and_connected? && egnyte_folder
+  def self.required_option_keys
+    @required_option_keys ||= %i(egnyte_integration_id user_auth_id)
+  end
 
-    if egnyte_folder.path
+  def perform
+    return unless enabled? && user_auth.passed? && folder
+
+    if folder.path
       navigate || update_path_and_navigate
     else
       update_path_and_navigate
@@ -10,6 +14,8 @@ class Egnyte::Actions::GetNavigateUri::Base < Egnyte::Actions::Base
   end
 
   private
+
+  delegate :access_token, to: :user_auth
 
   def navigate
     response = api_caller.navigate(folder_path: folder_path, access_token: access_token)
@@ -19,7 +25,7 @@ class Egnyte::Actions::GetNavigateUri::Base < Egnyte::Actions::Base
     elsif response.bad_request?
       nil
     else
-      raise Egnyte::Errors::UnhandledRequest
+      raise Egnyte::Errors::UnhandledRequest, response.body
     end
   end
 
@@ -30,12 +36,16 @@ class Egnyte::Actions::GetNavigateUri::Base < Egnyte::Actions::Base
   end
 
   def update_folder_path
-    response = api_caller.get_folder_by_id(folder_id: egnyte_folder.uuid, access_token: access_token)
+    response = api_caller.get_folder_by_id(folder_id: folder.uuid, access_token: access_token)
 
-    egnyte_folder.update(path: response.body[:path])
+    folder.update(path: response.body[:path])
   end
 
-  def egnyte_folder
-    @egnyte_folder ||= record.egnyte_folder
+  def folder
+    @folder ||= record.egnyte_folder
+  end
+
+  def user_auth
+    @user_auth ||= EgnyteAuthentication.find(@options[:user_auth_id])
   end
 end

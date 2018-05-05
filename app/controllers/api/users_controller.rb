@@ -55,6 +55,7 @@ class Api::UsersController < ApplicationController
       :starting_page,
       :user_type,
       :is_active,
+      :is_legal,
       :default_currency,
       :employee_id,
       :office,

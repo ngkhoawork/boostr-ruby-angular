@@ -233,6 +233,7 @@ Rails.application.routes.draw do
         get :service_account_email
         get :ssp_credentials
         get :workflowable_actions
+        get :ssp_providers
       end
       member do
         post :delete_ssp
@@ -360,6 +361,7 @@ Rails.application.routes.draw do
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
       resources :deal_products, only: [:create, :update, :destroy]
       collection do
+        get :pipeline_deals
         get :pipeline_report
         get :pipeline_report_totals
         get :pipeline_report_monthly_budgets
@@ -577,14 +579,15 @@ Rails.application.routes.draw do
     resource :egnyte_integration, only: [:show, :create, :update] do
       collection do
         get :oauth_settings
-        get :oauth_callback
+        get :company_oauth_callback
+        get :user_oauth_callback
         get :navigate_to_deal
         get :navigate_to_account_deals
-        put :disconnect_egnyte
+        put :disconnect_user
       end
     end
 
-    resources :leads, only: [:index, :show] do
+    resources :leads, only: [:index, :show, :update] do
       member do
         get :accept
         get :reject
@@ -618,6 +621,18 @@ Rails.application.routes.draw do
 
     resources :logi_configurations, only: [:index, :logi_callback] do
       get :logi_callback, on: :collection
+    end
+
+    resources :contracts, except: [:new, :edit] do
+      resources :attachments, only: [:index, :update, :create, :destroy]
+      get :settings, on: :collection
+      post :import_special_terms, on: :collection
+    end
+
+    resources :ealert_templates, only: [:show, :update], param: :type do
+      member do
+        post :send_ealert
+      end
     end
   end
 

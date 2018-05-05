@@ -1,6 +1,6 @@
 class ApiConfigurationService < BaseService
   def create_api_configuration
-    if params[:integration_provider].eql?('Ssp')
+    if params[:ssp_id].present?
       user_company.ssp_credentials.create!(ssp_params)
     else
       user_company.send(get_association_sym).create!(params)
@@ -20,23 +20,10 @@ class ApiConfigurationService < BaseService
   end
 
   def parser_type
-    case params[:type_id]
-    when 1
-      { ssp_id: search_ssp('SpotX'), parser_type: 'spotx_aws' }
-    when 2
-      { ssp_id: search_ssp('Rubicon'), parser_type: 'rubicon' }
-    end
+    { parser_type: Ssp.find(params[:ssp_id])&.parser_type }
   end
 
   def ssp_params
-    {
-      key: params[:key],
-      secret: params[:secret],
-      publisher_id: params[:publisher_id],
-      type_id: params[:type_id],
-      switched_on: params[:switched_on],
-      integration_type: 'SspCredential',
-      ssp_id: params[:ssp_id],
-    }.merge(parser_type)
+    params.merge(type_id: params[:ssp_id], integration_type: 'SspCredential').merge(parser_type)
   end
 end

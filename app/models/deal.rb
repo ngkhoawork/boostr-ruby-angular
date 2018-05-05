@@ -33,6 +33,7 @@ class Deal < ActiveRecord::Base
 
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
   has_one :egnyte_folder, as: :subject
+  has_many :contracts, dependent: :nullify
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :deal_products, dependent: :destroy
@@ -200,6 +201,22 @@ class Deal < ActiveRecord::Base
   scope :has_io, -> {
     joins(:io).where('ios.id IS NOT NULL')
   }
+  scope :by_sales_process, -> (sales_process_id) do
+    joins(:stage).where('stages.sales_process_id = ?', sales_process_id) if sales_process_id.present?
+  end
+  scope :by_name_or_advertiser_name_or_agency_name, -> (name) do
+    joins('LEFT JOIN clients advertisers ON advertisers.id = deals.advertiser_id AND advertisers.deleted_at IS NULL')
+        .joins('LEFT JOIN clients agencies ON agencies.id = deals.agency_id AND agencies.deleted_at IS NULL')
+        .where('deals.name ilike :name OR advertisers.name ilike :name OR agencies.name ilike :name', name: "%#{name}%") if name
+  end
+  scope :by_external_id, -> (external_id) do
+    joins(:integrations)
+        .where(
+          'integrations.external_type = ? AND integrations.external_id = ?',
+          'operative',
+          external_id
+        ) if external_id.present?
+  end
 
   def update_pipeline_fact_callback
     if stage_id_changed?
@@ -220,6 +237,7 @@ class Deal < ActiveRecord::Base
     if open_changed?
       update_pipeline_fact(self)
     end
+    custom_workflow_update('update') if budget_changed?
   end
 
   def asana_connect

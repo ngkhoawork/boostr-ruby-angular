@@ -1,0 +1,31 @@
+#activity-form-modal.popup-modal
+    .popup-modal-header
+        New Special Term
+        %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+        .row
+            .col-xs-6
+                .form-group{'ng-class':'{error: errors.name_id}'}
+                    %span.error-text {{errors.name_id}}
+                    %label
+                        Name
+                        %span.star *
+                    %ui-select{'ng-model': 'form.name_id'}
+                        %ui-select-match{placeholder: 'Special Term Name'}
+                            {{$select.selected.name}}
+                        %ui-select-choices{repeat: 'termName.id as termName in termNames | orderBy: "name"'}
+                            {{termName.name}}
+            .col-xs-6
+                .form-group
+                    %label Type
+                    %ui-select{'ng-model': 'form.type_id'}
+                        %ui-select-match{placeholder: 'Special Term Type'}
+                            {{$select.selected.name}}
+                        %ui-select-choices{repeat: 'termType.id as termType in termTypes | orderBy: "name"'}
+                            {{termType.name}}
+        .form-group
+            %label Comment
+            %textarea.form-control{'msd-elastic': '', 'placeholder': 'Type your update here', 'ng-model': 'form.comment'}
+    .popup-modal-footer
+        %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
+        %button.btn.btn-warning{'type': 'submit', 'ng-click': 'submitForm()'} Create
