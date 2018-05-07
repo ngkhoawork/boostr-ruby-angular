@@ -40,6 +40,7 @@
       switch key
         when 'name'
           if !field then return $scope.errors[key] = 'Name is required'
+          if contact.name == contact.address.email then return $scope.errors[key] = 'Name cannot match email address'
         when 'client_id'
           if !field  then return $scope.errors[key] = 'Primary Account is required'
         when 'address'
@@ -51,16 +52,16 @@
         $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
     if Object.keys($scope.errors).length > 0 then return
-    $scope.buttonDisabled = true
-    $scope.contact.set_primary_client = true
-    Contact._update(id: $scope.contact.id, contact: $scope.contact).then(
-      (contact) ->
-        $modalInstance.close(contact)
-      (resp) ->
-        for key, error of resp.data.errors
-          $scope.errors[key] = error && error[0]
-        $scope.buttonDisabled = false
-    )
+    # $scope.buttonDisabled = true
+    # $scope.contact.set_primary_client = true
+    # Contact._update(id: $scope.contact.id, contact: $scope.contact).then(
+    #   (contact) ->
+    #     $modalInstance.close(contact)
+    #   (resp) ->
+    #     for key, error of resp.data.errors
+    #       $scope.errors[key] = error && error[0]
+    #     $scope.buttonDisabled = false
+    # )
 
   $scope.getClients = (query = '') ->
     $scope.isLoading = true

@@ -3,15 +3,15 @@
 		%span.title Unassigned Contacts
 
 	%div.contact{'ng-repeat': 'contact in unassignedContacts'}
-		%button.btn.btn-primary.btn-lg{ ng: { click: 'showAssignContactModal(contact)', disabled: 'contact.name == contact.address.email' } }
+		%button.btn.btn-primary.btn-lg{ ng: { click: 'showEditModal(contact)' } }
 			= inline_svg "icons/client-meeting.svg"
 			Assign
 		%i.fa.fa-trash.delete-item{'ng-click': 'deleteUnassignedContact(contact)'}
 		%label Email:
 		%p {{contact.address.email}}
 		%label{ for: 'contact-name-{{ contact.id }}' } Name:
-		%p
-			%input{id: 'contact-name-{{ contact.id }}', type: 'text', 'ng-model': 'contact.name', placeholder: 'Enter name', 'ng-blur': 'saveCurrentContact(contact)'}
+		%p {{ contact.name }}
+		-# %input{id: 'contact-name-{{ contact.id }}', type: 'text', 'ng-model': 'contact.name', placeholder: 'Enter name', 'ng-blur': 'saveCurrentContact(contact)'}
 		%p{'ng-if': 'contact.name==contact.address.email'}
 			Name cannot match email address
 
