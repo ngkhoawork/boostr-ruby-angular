@@ -1,12 +1,11 @@
-namespace :reset_display_line_item_delivered_budget do
-  desc "TODO"
-  task :process_task, [:company_id] => [:environment] do |t, args|
-    exit unless args[:company_id]
+desc "update display line item's delivered and remaining budget according to the sum of monthly budgets"
 
-    company = Company.find(args[:company_id])
-    exit unless company
+task :reset_display_line_item_delivered_budget, [:company_id] => [:environment] do |_, args|
+  company = args[:company_id] && Company.find_by_id(args[:company_id])
+  exit unless company
 
-    company.display_line_items.each do |item|
+  company.display_line_items.find_in_batches(batch_size: 20) do |group|
+    group.each do |item|
       budget_delivered = item.display_line_item_budgets.sum(:budget)
       budget_delivered_loc = item.display_line_item_budgets.sum(:budget_loc)
       budget_remaining = [(item.budget || 0) - budget_delivered, 0].max
