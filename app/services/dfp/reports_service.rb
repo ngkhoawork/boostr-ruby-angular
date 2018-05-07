@@ -17,7 +17,7 @@ module DFP
                               NEXT_12_MONTHS)
 
   class ReportsService < BaseService
-    API_VERSION = :v201702
+    API_VERSION = :v201802
     MAX_RETRIES = 5
     RETRY_INTERVAL = 2
 
