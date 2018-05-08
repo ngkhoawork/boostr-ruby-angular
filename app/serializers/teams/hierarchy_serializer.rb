@@ -4,7 +4,4 @@ class Teams::HierarchySerializer < Teams::BaseSerializer
   has_many :members, serializer: Users::BaseSerializer
   has_many :all_leaders, serializer: Users::BaseSerializer, key: :leaders
 
-  # def leaders
-  #   object.all_leaders
-  # end
 end
