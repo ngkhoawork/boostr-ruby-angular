@@ -14,8 +14,9 @@ class Api::TeamsController < ApplicationController
         all_teams << temp_team
       end
       render json: all_teams
+      # render json: parent_teams, each_serializer: Teams::HierarchySerializer
     else
-      render json: current_user.company.teams.roots(params[:root_only])
+      render json: current_user.company.teams.roots(params[:root_only]), each_serializer: Teams::IndexSerializer
     end
 
   end
@@ -73,7 +74,7 @@ class Api::TeamsController < ApplicationController
   end
 
   def show
-    render json: team
+    render json: team, serializer: Teams::IndexSerializer
   end
 
   def update
