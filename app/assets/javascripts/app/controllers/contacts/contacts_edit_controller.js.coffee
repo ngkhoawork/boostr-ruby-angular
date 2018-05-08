@@ -28,6 +28,8 @@
     $scope.contact.address.phone = $filter('tel')($scope.contact.address.phone)
     $scope.contact.address.mobile = $filter('tel')($scope.contact.address.mobile)
 
+  if $scope.contact.name == $scope.contact.address.email then $scope.contact.name = ''
+
   $scope.submitForm = () ->
     emailRegExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
 
@@ -52,16 +54,16 @@
         $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
     if Object.keys($scope.errors).length > 0 then return
-    # $scope.buttonDisabled = true
-    # $scope.contact.set_primary_client = true
-    # Contact._update(id: $scope.contact.id, contact: $scope.contact).then(
-    #   (contact) ->
-    #     $modalInstance.close(contact)
-    #   (resp) ->
-    #     for key, error of resp.data.errors
-    #       $scope.errors[key] = error && error[0]
-    #     $scope.buttonDisabled = false
-    # )
+    $scope.buttonDisabled = true
+    $scope.contact.set_primary_client = true
+    Contact._update(id: $scope.contact.id, contact: $scope.contact).then(
+      (contact) ->
+        $modalInstance.close(contact)
+      (resp) ->
+        for key, error of resp.data.errors
+          $scope.errors[key] = error && error[0]
+        $scope.buttonDisabled = false
+    )
 
   $scope.getClients = (query = '') ->
     $scope.isLoading = true
