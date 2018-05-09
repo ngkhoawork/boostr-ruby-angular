@@ -11,7 +11,7 @@ class Cost < ActiveRecord::Base
   delegate :company, to: :io
 
   accepts_nested_attributes_for :cost_monthly_amounts
-  accepts_nested_attributes_for :values
+  accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
   scope :estimated, -> { where('is_estimated IS true') }
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
