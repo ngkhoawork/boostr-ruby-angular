@@ -45,7 +45,7 @@
                         Field.set('Cost', fields)
                         $scope.currentIO.costs = _.map $scope.currentIO.costs, (cost) ->
                             Field.defaults(cost, 'Cost').then (fields) ->
-                                cost.type = Field.field(cost, 'Type')
+                                cost.type = Field.field(cost, 'Cost Type')
                             return cost
 
             $scope.productsByLevel = (level, product)->
