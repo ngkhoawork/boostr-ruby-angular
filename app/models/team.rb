@@ -57,20 +57,6 @@ class Team < ActiveRecord::Base
     ([leader_id] | member_ids).compact
   end
 
-  def all_children
-    temp_children = Team.where(parent_id: self.id)
-    children = []
-    temp_children.each do |child|
-      temp_child = child.as_json
-      temp_child[:children] = child.all_children
-      temp_child[:members] = child.all_members
-      temp_child[:leaders] = child.all_leaders
-      temp_child[:members_count] = temp_child[:members].count
-      children << temp_child
-    end
-    children
-  end
-
   def remove_team_leader
     self.update(leader_id: nil)
   end

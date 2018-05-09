@@ -4,17 +4,7 @@ class Api::TeamsController < ApplicationController
   def index
     if params[:all_teams]
       parent_teams = current_user.company.teams.where("parent_id is null")
-      all_teams = []
-      parent_teams.each do |current_team|
-        temp_team = current_team.as_json
-        temp_team[:children] = current_team.all_children
-        temp_team[:members] = current_team.all_members
-        temp_team[:leaders] = current_team.all_leaders
-        temp_team[:members_count] = temp_team[:members].count
-        all_teams << temp_team
-      end
-      render json: all_teams
-      # render json: parent_teams, each_serializer: Teams::HierarchySerializer
+      render json: parent_teams, each_serializer: Teams::HierarchySerializer
     else
       render json: current_user.company.teams.roots(params[:root_only]), each_serializer: Teams::IndexSerializer
     end

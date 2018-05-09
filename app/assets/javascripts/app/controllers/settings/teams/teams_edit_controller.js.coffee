@@ -5,6 +5,7 @@
   $scope.formType = 'Edit'
   $scope.submitText = 'Update'
   $scope.team = team
+  $scope.users = []
 
   $scope.init = ->
     $q.all({ 
@@ -38,7 +39,6 @@
             $scope.availableLeaders.push($scope.leader)
           if u && !u['is_leader'] && !u['team_id']
             $scope.availableLeaders.push(u)
-        
         if u && !u['is_leader'] && !u['team_id']
           $scope.availableUsers.push(u)
       $scope.team.members = _.map members, (item) ->
