@@ -37,10 +37,6 @@ class Company < ActiveRecord::Base
   has_many :ealerts, dependent: :destroy
   has_many :ealert_templates, class_name: 'EalertTemplate::Base', dependent: :destroy
   has_many :bp_estimates, through: :bps
-  has_many :deal_custom_field_names
-  has_many :deal_product_cf_names
-  has_many :account_cf_names
-  has_many :contact_cf_names
   has_many :deal_custom_fields, through: :deals
   has_many :deal_product_cfs, through: :deal_products
   has_many :account_cfs, through: :clients
@@ -63,11 +59,24 @@ class Company < ActiveRecord::Base
   has_many :publisher_stages, dependent: :destroy
   has_many :sales_stages, dependent: :destroy
   has_many :publishers, dependent: :destroy
-  has_many :publisher_custom_field_names, dependent: :destroy
   has_many :publisher_custom_fields, through: :publishers
   has_many :ssp_advertisers
   has_many :sales_processes
   has_many :ssp_credentials, dependent: :destroy
+
+  has_many :deal_custom_field_names
+  has_many :deal_product_cf_names
+  has_many :account_cf_names
+  has_many :contact_cf_names
+  has_many :publisher_custom_field_names, dependent: :destroy
+  has_many :custom_field_names, dependent: :destroy
+
+  has_many :deal_custom_field_names
+  has_many :deal_product_cf_names
+  has_many :account_cf_names
+  has_many :contact_cf_names
+  has_many :publisher_custom_field_names, dependent: :destroy
+  has_many :custom_field_names, dependent: :destroy
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'

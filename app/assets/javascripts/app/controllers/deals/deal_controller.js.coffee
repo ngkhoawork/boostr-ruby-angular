@@ -127,8 +127,7 @@
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
-    Company.get().$promise.then (company) ->
-      $scope.company = company
+    Company.get().$promise.then (company) -> $scope.company = company
     getSsps()
 
   checkPmpDeal = () ->

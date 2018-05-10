@@ -36,7 +36,7 @@
         api_url: ->
           '/api/activities'
         custom_fields_api: ->
-          undefined
+          'CustomFieldNames'
         metadata: ->
           false
 

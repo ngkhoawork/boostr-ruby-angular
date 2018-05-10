@@ -576,6 +576,8 @@ Rails.application.routes.draw do
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
 
+    resources :custom_field_names, path: 'custom_field_names/:subject_type'
+
     resource :egnyte_integration, only: [:show, :create, :update] do
       collection do
         get :oauth_settings

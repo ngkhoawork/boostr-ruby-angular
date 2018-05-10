@@ -1,6 +1,6 @@
 @app.controller "ActivityNewController", [
-    '$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Field', 'Contact', 'Publisher', 'Reminder', 'activity', 'options', '$http'
-    ($scope,   $rootScope,   $modalInstance,   Activity,   ActivityType,   Deal,   Client,   Field,   Contact,   Publisher,   Reminder,   activity,   options,   $http) ->
+    '$scope', '$rootScope', 'CustomFieldNames', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Field', 'Contact', 'Publisher', 'Reminder', 'activity', 'options', '$http'
+    ($scope,   $rootScope, CustomFieldNames,   $modalInstance,   Activity,   ActivityType,   Deal,   Client,   Field,   Contact,   Publisher,   Reminder,   activity,   options,   $http) ->
 
             $scope.types = []
             $scope.isPublisherEnabled = _isPublisherEnabled
@@ -60,6 +60,8 @@
 
             #edit mode
             if activity
+                if activity.custom_field
+                  $scope.form.activity_custom_field_obj = activity.custom_field
                 $scope.popupTitle = 'Edit Activity'
                 $scope.submitButtonText = 'Save'
                 if activity.deal
@@ -94,6 +96,9 @@
 
             $scope.contacts = []
             $scope.showReminderForm = false
+
+            CustomFieldNames.all({subject_type: 'activity', show_on_modal: true}).then (customFieldNames) ->
+              $scope.customFieldNames = customFieldNames
 
             $scope.selectType = (type) ->
                 $scope.selectedType = type
@@ -221,6 +226,10 @@
                             if !field
                                 return $scope.errors[key] = 'Comment is required'
 
+                $scope.customFieldNames.forEach (item) ->
+                  if item.is_required && (!$scope.form.activity_custom_field_obj || !$scope.form.activity_custom_field_obj[item.field_name])
+                    $scope.errors[item.field_name] = item.field_label + ' is required'
+
                 if Object.keys($scope.errors).length > 0 then return
 
                 activityData =
@@ -228,6 +237,7 @@
                     activity_type_name: $scope.selectedType.name
                     comment: $scope.form.comment
                     happened_at: $scope.form.date
+                    custom_field_attributes: $scope.form.activity_custom_field_obj
                     timed: false
                 if $scope.form.time && $scope.form.time.getTime
                     activityData.timed = true

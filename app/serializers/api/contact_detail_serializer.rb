@@ -95,6 +95,12 @@ class Api::ContactDetailSerializer < ActiveModel::Serializer
   end
 
   def activities
-    object.activities.as_json(override: true, include: { activity_type: { only: [:id, :name, :css_class, :action] } })
+    object.activities.as_json(
+      override: true,
+      include: {
+        custom_field: {},
+        activity_type: { only: [:id, :name, :css_class, :action] }
+      }
+    )
   end
 end
