@@ -1,24 +1,24 @@
 class WorkflowCheckService
 
-  attr_accessor :obj_id, :options, :workflow_criterions, :id, :sql, :event_log, :deal, :workflow_log
+  attr_accessor :obj_id, :options, :workflow_criterions, :workflow_id, :sql, :event_log, :deal, :workflow_log
 
-  def initialize(obj_id, options, workflow_criterions, id)
+  def initialize(obj_id, options, workflow_id)
     @obj_id = obj_id
     @options = options
-    @workflow_criterions = workflow_criterions
-    @id = id
+    @workflow_id = workflow_id
   end
 
   def run_criteria_chain
     select_criteria
 
-    return validate_exist_history if deal.blank?
+    return remove_exist_history if deal.blank?
 
     @event_log = find_by_workflow_id
     @workflow_log = log
 
     vmc = find_matched_criteria
     if vmc.present?
+      return true if option&.field&.name.eql?('Close Reason')
       return false if vmc.content.map { |c| c.symbolize_keys }.eql?(check_values_in_reflections)
     else
       return create_log unless event_log.present?
@@ -28,10 +28,13 @@ class WorkflowCheckService
     end
   end
 
+  def option
+    Option.find_by(id: options[:option_id])
+  end
+
   def run_check_exist_criteria_chain
     select_criteria
     wf = workflow_criterions.last
-    return false if wf.base_object.eql?('Products') && wf.field.eql?('full_name')
     return unless deal.present?
     @event_log = find_by_workflow_id
 
@@ -44,7 +47,7 @@ class WorkflowCheckService
   end
 
   def find_by_workflow_id
-    WorkflowEventLog.search_wf_events(id, criteria_hash)&.last
+    WorkflowEventLog.search_wf_events(workflow_id, criteria_hash)&.last
   end
 
   def criteria_hash
@@ -68,7 +71,7 @@ class WorkflowCheckService
       deal_ids: [obj_id],
       deal_create: [obj_id],
       deal_update: [obj_id],
-      workflow_id: id
+      workflow_id: workflow_id
     }
   end
 
@@ -76,7 +79,7 @@ class WorkflowCheckService
     {
       deal_id: obj_id,
       content: check_values_in_reflections,
-      workflow_id: id
+      workflow_id: workflow_id
     }
   end
 
@@ -92,7 +95,7 @@ class WorkflowCheckService
   end
 
   def find_by_workflow_id
-    WorkflowEventLog.search_wf_events(id, criteria_hash)&.last
+    WorkflowEventLog.search_wf_events(workflow_id, criteria_hash)&.last
   end
 
   def find_matched_criteria
@@ -102,10 +105,11 @@ class WorkflowCheckService
   end
 
   def search_ws_states
-    DealWorkflowState.where(workflow_id: id, deal_id: obj_id)
+    DealWorkflowState.where(workflow_id: workflow_id, deal_id: obj_id)
   end
 
   def select_criteria
+    @workflow_criterions = WorkflowCriterion.where(workflow_id: workflow_id)
     @sql = DealsWorkflowQueryBuilder.new(workflow_criterions, obj_id).get_query
     @deal = Deal.connection.select_all(sql).to_hash
   end
@@ -127,7 +131,7 @@ class WorkflowCheckService
     end
   end
 
-  def validate_exist_history
+  def remove_exist_history
     search_ws_states&.delete_all
     return false
   end
@@ -138,7 +142,7 @@ class WorkflowCheckService
   end
 
   def log
-    WorkflowEventLog.search_in_deals_criteria_hash(obj_id, options[:type], criteria_hash, id)&.last
+    WorkflowEventLog.search_in_deals_criteria_hash(obj_id, options[:type], criteria_hash, workflow_id)&.last
   end
 
   def create_log

@@ -217,6 +217,9 @@ class Deal < ActiveRecord::Base
           external_id
         ) if external_id.present?
   end
+  scope :close_reason_selection, -> (deal_id) do
+    close_reason_field.values.find_by(subject_id: deal_id)
+  end
 
   def update_pipeline_fact_callback
     if stage_id_changed?
@@ -237,7 +240,7 @@ class Deal < ActiveRecord::Base
     if open_changed?
       update_pipeline_fact(self)
     end
-    custom_workflow_update('update') if budget_changed?
+    WorkflowWorker.perform_async(deal_id: id, type: 'update') if budget_changed?
   end
 
   def asana_connect
