@@ -49,8 +49,8 @@ class Csv::ActivePmpItem
     raise_error("Pmp type")
   end
 
-  def check_product
-    ::Product.find_by(name: product).id
+  def product_by_name
+    ::Product.find_by(name: product).pluck(:id)
   rescue
     raise_error("Product")
   end
@@ -79,7 +79,7 @@ class Csv::ActivePmpItem
       pmp_id: check_pmp_id,
       ssp_id: check_ssp,
       pmp_type: check_pmp_type,
-      product_id: check_product,
+      product_id: product_by_name,
       start_date: check_and_format_date(start_date),
       end_date: check_and_format_date(end_date),
       budget: check_budget,

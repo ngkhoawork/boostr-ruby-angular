@@ -6,6 +6,7 @@ class ContentFeeProductBudget < ActiveRecord::Base
 
   scope :for_time_period, -> (start_date, end_date) { where('content_fee_product_budgets.start_date <= ? AND content_fee_product_budgets.end_date >= ?', end_date, start_date) }
   scope :for_year_month, -> (effect_date) { where("DATE_PART('year', start_date) = ? AND DATE_PART('month', start_date) = ?", effect_date.year, effect_date.month) }
+  scope :for_end_date_year_month, -> (effect_date) { where("DATE_PART('year', end_date) = ? AND DATE_PART('month', end_date) = ?", effect_date.year, effect_date.month) }
 
   scope :for_product_id, -> (product_id) { where('content_fees.product_id = ?', product_id) if product_id.present? }
 
