@@ -132,6 +132,20 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     subject.perform
   end
 
+  it 'deletes a row when status is deleted and line exists in our system', focus: true do
+    content_for_files([
+      line_item_csv_file(
+        sales_order_id: io.id,
+        sales_order_line_item_id: display_line_item.line_number,
+        line_item_status: 'deleted'
+      ),
+      invoice_csv_file
+    ])
+
+    subject.perform
+    expect{ display_line_item.reload }.to raise_error ActiveRecord::RecordNotFound
+  end
+
   context 'revenue_calculation_patterns' do
     context 'Invoice Units pattern' do
       it 'sums invoice_line_item.invoice_units and multiplies by net_unit_cost' do
@@ -480,5 +494,9 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       exclude_child_line_items,
       { sales_order_line_items: line_item_file, invoice_line_item: invoice_file }
     )
+  end
+
+  def display_line_item
+    @display_line_item ||= create :display_line_item, io: io
   end
 end
