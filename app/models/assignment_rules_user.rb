@@ -10,6 +10,13 @@ class AssignmentRulesUser < ActiveRecord::Base
   scope :not_next, -> { where(next: false) }
   scope :order_by_position, -> { order(:position) }
 
+  def next_record
+    related_assignment_rules_users
+      .where('id > ?', id)
+      .order(:id)
+      .first
+  end
+
   private
 
   def set_position
