@@ -16,7 +16,7 @@ class Contact < ActiveRecord::Base
 
   has_one :primary_client, through: :primary_client_contact, source: :client
   has_one :primary_client_contact, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
-  has_one :contact_cf, dependent: :destroy
+  has_one :contact_cf, dependent: :destroy, inverse_of: :contact
 
   has_many :clients, -> { uniq }, through: :client_contacts
   has_many :account_dimensions, -> { uniq }, through: :account_contacts
@@ -41,6 +41,7 @@ class Contact < ActiveRecord::Base
   has_and_belongs_to_many :activities, after_add: :update_activity_updated_at
 
   delegate :email, :street1, :street2, :city, :state, :zip, :phone, :mobile, :country, to: :address, allow_nil: true
+  delegate :name, to: :client, prefix: true, allow_nil: true
 
   accepts_nested_attributes_for :contact_cf
   accepts_nested_attributes_for :address

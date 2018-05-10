@@ -32,12 +32,15 @@
     send_to_operative:
       method: 'POST'
       url: '/api/deals/:id/send_to_operative'
+    send_to_google_sheet:
+      method: 'POST'
+      url: '/api/deals/:id/send_to_google_sheet'
     get_latest_operative_log:
       method: 'GET'
       url: 'api/deals/:id/latest_log'
     forecast_detail:
       method: 'GET'
-      url: 'api/deals.json'
+      url: 'api/deals/pipeline_deals'
       isArray: true
     won_deals:
       method: 'GET'
@@ -107,6 +110,15 @@
   @send_to_operative = (params) ->
     deferred = $q.defer()
     resource.send_to_operative params,
+      (resp) ->
+        deferred.resolve(resp)
+      (err) ->
+        deferred.reject(err)
+    deferred.promise
+
+  @send_to_google_sheet = (params) ->
+    deferred = $q.defer()
+    resource.send_to_google_sheet params,
       (resp) ->
         deferred.resolve(resp)
       (err) ->

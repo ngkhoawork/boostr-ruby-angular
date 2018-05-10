@@ -30,18 +30,21 @@ class Workflow::AttachmentHashBuilder
   def attachment_text
     attachment_mappings.each_with_object('') do |mapping, text|
       value = fetch_values_for_mapping(mapping['name'])
-      formatted_value = formatted_string(value)
+      formatted_value = formatted_string(value, mapping)
       next if formatted_value.blank?
       text << "*#{mapping['label_name']}*: #{formatted_value}\n"
     end
   end
 
-  def formatted_string(data)
+  def formatted_string(data, param)
+    return format_date(data) if data.is_a?(String) && data.to_s.include?("UTC")
+    return format_date(data) if data.is_a?(Time)
     return format_date(data) if data.is_date?
     return format_arr(data) if data.is_a?(Array)
     return round(data.to_f) if data.is_a?(BigDecimal)
     return data.to_date.to_s if data.is_a?(ActiveSupport::TimeWithZone)
-    return format_number(data) if is_number?(data)
+    return data if param['name'].eql?('ios.external_io_number') || param['name'].eql?('ios.io_number')
+    return format_number(data.to_f) if is_number?(data)
     data
   end
 
@@ -53,17 +56,17 @@ class Workflow::AttachmentHashBuilder
 
   def format_number(data)
     return data.to_i if options[:attachment_mappings][0]["name"].eql?('deal.stage_probability')
-    '%.2f' % data
+    number_with_delimiter(data)
   end
 
   def format_arr(data)
     return if data.blank?
-    data.map{|c| detect_format(c.symbolize_keys.values)}.join('; ')
+    data.map{|c| detect_format(c.symbolize_keys.values)}.join(' ')
   end
 
   def detect_format(val)
-    return (val.to_f) if val.is_a?(BigDecimal)
-    return (val.map{|c|number_with_delimiter(c.to_f)}) if val.is_a?(Array)
+    return round(val.to_f) if val.is_a?(BigDecimal)
+    return (val.map{|c| handle_array(c) }) if val.is_a?(Array)
     val
   end
 
@@ -71,8 +74,14 @@ class Workflow::AttachmentHashBuilder
     number_with_delimiter(val.round)
   end
 
+  def handle_array(data)
+    return format_date(data) if data.is_a?(Time)
+    return number_with_delimiter(data.to_f) if data.is_a?(BigDecimal)
+    data
+  end
+
   def number_with_delimiter(number, delimiter=",")
-    number.to_s.gsub(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1#{delimiter}")
+    number.round.to_s.gsub(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1#{delimiter}")
   end
 
   def workflowable_obj_name
@@ -80,7 +89,7 @@ class Workflow::AttachmentHashBuilder
   end
 
   def format_date(origin_date)
-    origin_date.strftime('%b %d, %Y')
+    origin_date.to_date.to_s
   end
 
   def attachment_mappings

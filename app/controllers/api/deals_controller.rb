@@ -10,16 +10,6 @@ class Api::DealsController < ApplicationController
           render json: suggest_deals
         elsif params[:activity].present?
           render json: activity_deals
-        elsif params[:time_period_id].present?
-          if valid_time_period?
-            if params[:is_product].present?
-              render json: product_forecast_deals
-            else
-              render json: forecast_deals
-            end
-          else
-            render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
-          end
         elsif params[:year].present?
           response_deals = company.deals
             .includes(
@@ -123,6 +113,14 @@ class Api::DealsController < ApplicationController
           return
         end
       }
+    end
+  end
+
+  def pipeline_deals
+    if valid_time_period?
+      render json: params[:is_product] ? product_forecast_deals : forecast_deals
+    else
+      render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
     end
   end
 
@@ -274,12 +272,19 @@ class Api::DealsController < ApplicationController
         message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
       }, status: :ok
     else
-      @deal = company.deals.new(deal_params.merge(deal_custom_field: DealCustomField.new, manual_update: true, custom_trigger: true))
+      @deal = company.deals.new(
+        deal_params.merge(
+          deal_custom_field: DealCustomField.new(deal_cf_params),
+          manual_update: true,
+          custom_trigger: true
+        )
+      )
 
       deal.created_by = current_user.id
       deal.updated_by = current_user.id
 
       if deal.save(context: :manual_update)
+        deal.custom_workflow_update("create")
         render json: deal, status: :created
       else
         render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -296,6 +301,7 @@ class Api::DealsController < ApplicationController
       deal.deal_custom_field = DealCustomField.new(deal_cf_params)
     end
     if deal.save(context: :manual_update)
+      deal.custom_workflow_update("update")
       render deal
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -317,6 +323,18 @@ class Api::DealsController < ApplicationController
       render json: { message: 'deal was sent to operative' }
     else
       render json: { errors: 'cannot send this deal to operative please recheck a deal and try again later' },
+             status: :unprocessable_entity
+    end
+  end
+
+  def send_to_google_sheet
+    config = company.google_sheets_configurations.first
+
+    if config.switched_on?
+      GoogleSheetsWorker.perform_async(config.sheet_id, deal.id)
+      render json: { message: 'deal was sent to google sheet' }
+    else
+      render json: { errors: 'cannot send this deal to google sheet please recheck a deal and try again later' },
              status: :unprocessable_entity
     end
   end
@@ -940,6 +958,8 @@ class Api::DealsController < ApplicationController
     deals_with_stage = deals.where(stage: stage)
       .by_seller_id(params[:member_id])
       .by_team_id(params[:team_id])
+      .by_external_id(params[:external_id])
+      .by_name_or_advertiser_name_or_agency_name(params[:q])
       .for_client(params[:advertiser_id])
       .for_client(params[:agency_id])
       .by_budget_range(params[:budget_from], params[:budget_to])

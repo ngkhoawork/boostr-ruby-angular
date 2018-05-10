@@ -7,8 +7,6 @@
       Drag and drop a file to upload or click Add button
   .files-uploader
     .files-uploader__drop-area
-      -#%span.files-uploader__describe
-        Drag and drop a file to upload or <a href="#" ng-click="callUpload($event)"> click to browse</a>
       %input#file-uploader.files-uploader__file-input{ type: 'file', 'z-on-change': 'changeFile', 'file-model':'fileToUpload' }
     .files-uploader__content
       %figure.files-uploader__uploading-elem{ng: { show: 'uploadShow', class: "{'error': uploadFile.status == 'ERROR' || uploadFile.status == 'ABORT', 'success': uploadFile.status == 'SUCCESS'}" }}
@@ -37,24 +35,13 @@
       %ul.files-uploader__list
         %li.files-uploader__list-elem{ ng: { repeat: 'file in uploadedFiles | orderBy: "-created_at"'} }
           %header.files-uploader__list-elem__main
-            %span.files-uploader__list-elem__file-name
-              %a{ download: '', href:'{{file.presigned_url}}' }{{file.original_file_name}}
-            %span.files-uploader__list-elem__file-size
-              {{file.asset_file_size | bytes }}
-            %span.files-uploader__list-elem__delete
-              %i.fa.fa-trash.delete-deal{'ng-click': 'deleteFile(file)'}
-              -#%btn.btn-link{ ng: { click: 'deleteFile(file)' } }
-                = inline_svg 'icons/trash.svg'
-
-        %li.files-uploader__list-elem{ ng: { repeat: 'file in dealFiles | orderBy: "-created_at"'} }
-          %header.files-uploader__list-elem__main
             %span.files-uploader__list-elem__show-datails{"ng-click" => "showDetails = !showDetails", "ng-show" => "!showDetails"}
               = inline_svg 'icons/hide-details.svg'
             %span.files-uploader__list-elem__show-datails{"ng-click" => "showDetails = !showDetails", "ng-show" => "showDetails"}
               = inline_svg 'icons/show-details.svg'
 
             %span.files-uploader__list-elem__file-name
-              %a{ download: '', href:'{{file.presigned_url}}' }{{file.original_file_name}}
+              %a{ download: '', href:'{{file.presigned_url}}', target: '_blank' }{{file.original_file_name}}
             %span.files-uploader__list-elem__file-size
               {{file.asset_file_size | bytes }}
             %span.files-uploader__list-elem__creator{ ng: { if: 'file.creator' } }
@@ -67,8 +54,6 @@
               {{ file.created_at | date : mediumDate }}
             %span.files-uploader__list-elem__delete
               %i.fa.fa-trash.delete-deal{'ng-click': 'deleteFile(file)'}
-              -#%btn.btn-link{ ng: { click: 'deleteFile(file)' } }
-                = inline_svg 'icons/trash.svg'
           %footer.files-uploader__list-elem__details.form-horizontal{"ng-show" => "showDetails"}
             %form{'ng-submit': 'saveOnServer(file)'}
               .form-group
@@ -83,10 +68,6 @@
                       %span.editable{'ng-class': '{"not-selected": !file.subtype}'} {{file.subtype.name || 'File Type'}}
                       %span.caret
                     %ul.dropdown-menu
-                      %li{'ng-repeat': 'option in subTypes', 'ng-class': '{active: file.subtype.id == option.id}'}
+                      %li{'ng-repeat': 'option in subTypes', 'ng-class': '{active: file.subtype.name == option.name}'}
                         %a{'href': '', 'ng-click': 'file.subtype = option; saveOnServer(file)'}
                           %span.text {{option.name}}
-
-                -#.col-xs-4.col-xs-offset-2
-                  %button.btn.btn-primary.btn-block{'ng-click': 'saveOnServer(file); showDetails = !showDetails;'}
-                    Save

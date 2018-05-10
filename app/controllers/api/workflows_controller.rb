@@ -6,9 +6,9 @@ class Api::WorkflowsController < ApplicationController
   end
 
   def create
-    workflow = Workflow.new(workflow_params.merge(default_params))
+    workflow = Workflow.create(workflow_params.merge(default_params))
 
-    if workflow.save
+    if workflow
       render json: workflow, status: :created
     else
       render json: { errors: workflow.errors.messages }, status: :unprocessable_entity

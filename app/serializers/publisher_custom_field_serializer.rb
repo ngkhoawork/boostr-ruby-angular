@@ -5,7 +5,7 @@ class PublisherCustomFieldSerializer < ActiveModel::Serializer
         field_label: custom_field_name.field_label,
         field_type: custom_field_name.field_type,
         field_value: fetch_field_value(custom_field_name),
-        attr_name: custom_field_name.fetch_attr_name_for_publisher_custom_field,
+        attr_name: custom_field_name.field_name,
         field_index: custom_field_name.field_index
       }
     end
@@ -18,6 +18,6 @@ class PublisherCustomFieldSerializer < ActiveModel::Serializer
   end
 
   def fetch_field_value(custom_field_name)
-    object.send(custom_field_name.fetch_attr_name_for_publisher_custom_field)
+    object.send(custom_field_name.field_name)
   end
 end

@@ -4,7 +4,7 @@ ActiveAdmin.register Company do
   :logi_enabled, :resource_link, :agreements_enabled, :leads_enabled, :contracts_enabled,
   billing_address_attributes: [ :street1, :street2, :city, :state, :zip, :website, :phone ],
   physical_address_attributes: [ :street1, :street2, :city, :state, :zip ],
-  egnyte_integration_attributes: [ :id, :app_domain, :deals_folder_name, :enabled ]
+  egnyte_integration_attributes: [ :id, :app_domain, :deals_folder_name, :connect_email, :enabled ]
 
   index do
     selectable_column
@@ -135,11 +135,49 @@ ActiveAdmin.register Company do
     panel "Egnyte Integration" do
       f.inputs for: [:egnyte_integration, f.object.egnyte_integration || EgnyteIntegration.new] do |ei|
         ei.input :app_domain
-        ei.input :enabled
-        ei.input :deals_folder_name
+        ei.input :deals_folder_name, hint: 'deals will be kept in'
+
+        if ei.object.connected?
+          ei.input :enabled
+        else
+          ei.input :connect_email, hint: 'email with auth link will be sent to'
+          ei.input :enabled, input_html: { disabled: true }, hint: 'will be clickable after auth get completed'
+        end
       end
     end
 
     f.actions
+  end
+
+  controller do
+    after_filter :send_connect_egnyte_email, only: :update
+
+    private
+
+    def send_connect_egnyte_email
+      if egnyte_integration.non_connected? && egnyte_connect_email.present? && egnyte_integration.app_domain.present?
+        EgnyteMailer.company_connection(egnyte_connect_email, build_egnyte_auth_link).deliver_now
+      end
+    end
+
+    def egnyte_connect_email
+      params[:company]&.[](:egnyte_integration_attributes)&.[](:connect_email)
+    end
+
+    def build_egnyte_auth_link
+      Egnyte::Actions::BuildAuthorizationUri.new(
+        domain: egnyte_integration.app_domain,
+        redirect_uri: company_oauth_callback_api_egnyte_integration_url(protocol: 'https', host: host),
+        auth_record: egnyte_integration
+      ).perform
+    end
+
+    def egnyte_integration
+      resource.egnyte_integration
+    end
+
+    def host
+      ENV['HOST'] || request.domain
+    end
   end
 end

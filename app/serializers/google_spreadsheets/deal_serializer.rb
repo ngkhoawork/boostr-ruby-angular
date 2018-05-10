@@ -30,7 +30,7 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
   end
 
   def launch
-    "#{object.start_date.strftime('%d-%m-%Y')} - #{object.end_date.strftime('%d-%m-%Y')}"
+    "#{object.start_date.strftime('%m-%d-%Y')} - #{object.end_date.strftime('%m-%d-%Y')}"
   end
 
   def seller
@@ -103,7 +103,7 @@ class GoogleSpreadsheets::DealSerializer < ActiveModel::Serializer
     value = find_custom_field_value('Proposal Due Date')
     return value if value.is_a?(String)
 
-    value.strftime('%d-%m-%Y')
+    value.strftime('%m-%d-%Y')
   end
 
   def demo

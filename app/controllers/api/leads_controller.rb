@@ -71,6 +71,14 @@ class Api::LeadsController < ApplicationController
     render json: { message: import_message }, status: :ok
   end
 
+  def update
+    if lead.update_attributes(lead_params)
+      render json: Api::Leads::IndexSerializer.new(lead).serializable_hash
+    else
+      render json: { errors: lead.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def lead
@@ -115,7 +123,8 @@ class Api::LeadsController < ApplicationController
   def lead_params
     params
       .require(:lead)
-      .permit(:first_name, :last_name, :title, :email, :company_name, :country, :state, :budget, :notes, :company_id)
+      .permit(:first_name, :last_name, :title, :email, :company_name, :country, :state, :budget, :notes, :company_id,
+              :rejected_reason)
       .merge(status: Lead::NEW, created_from: Lead::WEB_FORM)
   end
 

@@ -5,7 +5,7 @@ class Workflow::TemplateStringBuilder
   end
 
   def build
-    Mustache.render(text, params_hash)
+    CGI::unescapeHTML(Mustache.render(text, params_hash))
   end
 
   private

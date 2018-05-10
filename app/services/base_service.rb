@@ -5,8 +5,4 @@ class BaseService
       self.class.send(:attr_reader, name)
     end
   end
-
-  def search_ssp type
-    Ssp.find_by(name: type)&.id
-  end
 end

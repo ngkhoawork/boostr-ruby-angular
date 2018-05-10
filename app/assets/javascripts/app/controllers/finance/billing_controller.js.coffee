@@ -102,7 +102,7 @@
                         Field.set('Cost', fields)
                         $scope.costs = _.map $scope.costs, (cost) ->
                             Field.defaults(cost, 'Cost').then (fields) ->
-                                cost.type = Field.field(cost, 'Type')
+                                cost.type = Field.field(cost, 'Cost Type')
                             return cost
 
             getTeams = () ->

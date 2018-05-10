@@ -1,7 +1,7 @@
 @app.controller 'PablishersController', [
   '$scope', '$q', '$document', '$timeout', '$modal', 'Publisher', 'PublishersFilter', 'localStorageService', 'zError'
   ($scope,   $q,   $document,   $timeout,   $modal,   Publisher,   PublishersFilter,   localStorageService,   zError) ->
-
+    $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
     $scope.baseColor = '#81B130'
     $scope.publishers = []
     $scope.publishersPipeline = []
@@ -49,7 +49,7 @@
         _.each s.customFields, (value, id) -> filter["custom_field_#{id}"] = value if _.isBoolean(value) || value
         filter
       apply: (reset) ->
-        $scope.getPublishers()
+        $scope.getPublishers(null, $scope.scrollCallback)
         if !reset then this.isOpen = false
       searching: (item) ->
         if !item then return false
@@ -76,7 +76,7 @@
       $scope.view = view
       localStorageService.set('publishersViewType', view)
       resetPagination()
-      $scope.getPublishers()
+      $scope.getPublishers(null, $scope.scrollCallback)
 
     $scope.init = ->
       if $scope.teamFilter()
@@ -88,7 +88,7 @@
 
     $scope.filterPublishers = (type) ->
       $scope.teamFilter type
-      $scope.getPublishers()
+      $scope.getPublishers(null, $scope.scrollCallback)
 
     $scope.getPublisherSettings = () ->
       Publisher.publisherSettings().then (settings) ->
@@ -106,7 +106,7 @@
           _.omit $scope.teamFilter(), 'name'
       )
 
-    $scope.getPublishers = (nextPage) ->
+    $scope.getPublishers = (nextPage, callback) ->
       if !nextPage then resetPagination()
       params = getParams()
       switch $scope.view

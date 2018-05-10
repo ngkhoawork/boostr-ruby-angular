@@ -23,6 +23,10 @@
             color: #3498DB;
             cursor: pointer;
         }
+        .long-comment {
+            max-width: 700px;
+            word-wrap: break-word;
+        }
     }
     .dropdown-menu {
         li {

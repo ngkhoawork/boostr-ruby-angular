@@ -3,7 +3,7 @@
 ( $scope,   $modalInstance,   Product,   ProductFamily,   Field,   product,   products,   productFamilies,   company) ->
   $scope.formType = 'New'
   $scope.submitText = 'Create'
-  $scope.product = product || { active: true, auto_generated: true }
+  $scope.product = product || { active: true }
   $scope.revenueTypes = Product.revenue_types
   $scope.productFamilies =  productFamilies
   $scope.product_options_enabled = company.product_options_enabled
@@ -27,16 +27,15 @@
       p
 
   getProductPath = (p, str=' > ') ->
-    path = p.name
+    path = p.name || ''
     parent = _.find products, (o) -> o.id == p.parent_id
     while parent
-      path = parent.name + str + path
+      path = (parent.name || '') + str + path
       parent = _.find products, (o) -> o.id == parent.parent_id
     path
 
-  $scope.onChangeAutoGenerate = () ->
-    if $scope.product.auto_generated
-      $scope.product.full_name = getProductPath($scope.product, ' ')
+  $scope.updateFullName = () ->
+    $scope.product.full_name = getProductPath($scope.product, ' ')
 
   $scope.submitForm = () ->
     $scope.errors = {}

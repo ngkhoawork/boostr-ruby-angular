@@ -5,7 +5,7 @@ class DealProduct < ActiveRecord::Base
   belongs_to :product
   belongs_to :ssp
   has_many :deal_product_budgets, -> { order(:start_date) }, dependent: :destroy
-  has_one :deal_product_cf, dependent: :destroy
+  has_one :deal_product_cf, dependent: :destroy, inverse_of: :deal_product
 
   enum pmp_type: PMP_TYPES
 
@@ -80,6 +80,7 @@ class DealProduct < ActiveRecord::Base
         forecast_pipeline_fact_calculator.calculate()
       end
     end
+    deal.custom_workflow_update('update')
   end
 
   def active_exchange_rate
@@ -263,7 +264,7 @@ class DealProduct < ActiveRecord::Base
       deal_product = deal.deal_products.find_by(product: product)
 
       if deal.present?
-        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date).collect{|item| item.id}
+        deal_change[:time_period_ids] += current_user.company.time_period_ids(deal.start_date, deal.end_date)
         deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
         deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
         deal_change[:product_ids] += deal.deal_products.collect{|item| item.product_id}
@@ -271,13 +272,13 @@ class DealProduct < ActiveRecord::Base
       deal_change[:product_ids] += [product.id]
 
       if !(deal_product)
-        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date).collect{|item| item.id}
+        deal_change[:time_period_ids] += current_user.company.time_period_ids(deal.start_date, deal.end_date)
         deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
         deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
         deal_change[:product_ids] += [product.id]
         deal_product = deal.deal_products.new
       elsif (deal_product.budget != budget || deal_product.budget_loc != budget_loc)
-        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date).collect{|item| item.id}
+        deal_change[:time_period_ids] += current_user.company.time_period_ids(deal.start_date, deal.end_date)
         deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
         deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
         deal_change[:product_ids] += [product.id]

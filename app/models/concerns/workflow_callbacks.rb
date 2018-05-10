@@ -4,10 +4,9 @@ module WorkflowCallbacks
   extend ActiveSupport::Concern
 
   included do
-    after_update { check_chains_for_workflows(on_update_workflows, self, destroyed: false, callback_type: "update", alias: "update") }
-    after_create { check_chains_for_workflows(on_create_workflows, self, destroyed: false, callback_type: "create", alias: "create") }
-    after_save   { check_chains_for_workflows(on_create_workflows, self, destroyed: false, callback_type: "create", alias: "save") if custom_trigger }
-    before_destroy { check_chains_for_workflows(on_destroy_workflows, self, destroyed: true, callback_type: "destroy", alias: "destroy") }
+    before_destroy { check_chains_for_workflows(on_destroy_workflows, self, destroyed: true, callback_type: "destroy") }
+
+    before_update  { track_deal_state(callback_type: 'update') }
   end
 
   def check_chains_for_workflows(workflows, model_instance, options = {})
@@ -20,6 +19,20 @@ module WorkflowCallbacks
         WorkflowChainChecker.check(workflow.id, model_instance.id, options) if workflow.send("fire_on_#{options[:callback_type]}")
       end
     rescue => error
+    end
+  end
+
+  def custom_workflow_update(type)
+    workflows.each do |workflow|
+      next unless workflow.switched_on?
+      WorkflowChainChecker.check(workflow.id, id, type: type) if workflow.send("fire_on_#{type}")
+    end
+  end
+
+  def track_deal_state(type)
+    workflows.each do |workflow|
+      next unless workflow.switched_on?
+      WorkflowChainChecker.tracking(workflow.id, id, type: type)
     end
   end
 

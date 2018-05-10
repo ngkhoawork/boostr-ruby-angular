@@ -7,7 +7,7 @@ class SlackService
     channel = channel_present?(channel_name) ? channel_name : create_channel(channel_name).dig(:channel, :name)
 
     client.chat_postMessage(channel: "##{channel}",
-                            text: message.to_s,
+                            text: CGI::unescapeHTML(message.to_s),
                             parse: 'full',
                             attachments: [options.fetch(:attachment)])
   end

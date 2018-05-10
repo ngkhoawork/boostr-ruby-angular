@@ -97,7 +97,7 @@
             %i.fa.fa-check-circle
             <strong style="text-transform: capitalize"></strong>
             {{notification}}
-        %table{'infinite-scroll': "loadMoreBps()", 'infinite-scroll-immediate-check': 'true'}
+        %table{'infinite-scroll': "loadMoreBps()", 'infinite-scroll-immediate-check': 'true', 'infinite-scroll-listen-for-event': 'lazy:scroll'}
           %thead.fixed
             %tr{ width: "100%" }
               %th.left{ width: "12%" }

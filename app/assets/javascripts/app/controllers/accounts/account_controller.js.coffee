@@ -40,17 +40,17 @@
       $scope.setClientTypes(client_types)
 
   getCurrentCompany = (deal) ->
-    Egnyte.show().then (egnyteSettings) ->
-      $scope.company = egnyteSettings
-      if(egnyteSettings.access_token && egnyteSettings.connected)
-        $scope.egnyteConnected = true
-        $scope.egnyte(egnyteSettings.access_token, egnyteSettings.app_domain, $scope.currentClient)
+    $scope.egnyte_authenticated = $scope.currentUser.egnyte_authenticated
+
+    if($scope.currentUser.egnyte_authenticated)
+      $scope.egnyteConnected = true
+      $scope.egnyte($scope.currentClient)
 
   getAccountCfNames = () ->
     AccountCfName.all().then (accountCfNames) ->
       $scope.accountCfNames = accountCfNames
 
-  $scope.egnyte = (token, domain, account) ->
+  $scope.egnyte = (account) ->
     Egnyte.navigateToAccount(advertiser_id: account.id).then (response) ->
       if response.navigate_to_deal_uri
         $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)

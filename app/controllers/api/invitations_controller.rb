@@ -30,6 +30,8 @@ class Api::InvitationsController < Devise::InvitationsController
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.for(:accept_invitation).concat [:first_name, :last_name]
-    devise_parameter_sanitizer.for(:invite).concat [:first_name, :last_name, :user_type, :title, :employee_id, :office]
+    devise_parameter_sanitizer.for(:invite).concat(
+      [:first_name, :last_name, :user_type, :title, :employee_id, :office, :team_id, :is_legal]
+    )
   end
 end

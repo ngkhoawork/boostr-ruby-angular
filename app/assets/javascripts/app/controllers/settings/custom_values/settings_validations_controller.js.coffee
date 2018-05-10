@@ -34,6 +34,8 @@
           $scope.restrict_deal_reopen = validation
         else if validation.factor == 'Require Won Reason'
           $scope.require_won_reason = validation
+        else if validation.factor == 'Require Rejection Explanation'
+          $scope.require_lead_rejection_explanation = validation
       $scope.stages = data.stages
 
   $scope.updateValidation = (validation) ->

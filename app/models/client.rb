@@ -39,6 +39,9 @@ class Client < ActiveRecord::Base
   has_many :agency_contacts, through: :agencies, source: :contacts
   has_many :advertiser_contacts, -> { uniq }, through: :advertisers, source: :primary_contacts
 
+  has_many :advertiser_contracts, class_name: 'Contract', foreign_key: :advertiser_id, dependent: :nullify
+  has_many :agency_contracts, class_name: 'Contract', foreign_key: :agency_id, dependent: :nullify
+
   has_many :values, as: :subject
   has_many :activities, -> { order(happened_at: :desc) }
   has_many :agency_activities, -> { order(happened_at: :desc) }, class_name: 'Activity', foreign_key: 'agency_id'
@@ -56,7 +59,7 @@ class Client < ActiveRecord::Base
     order('activities.agency_id', 'activities.happened_at DESC')
   }, class_name: 'Activity'
 
-  has_one :account_cf, dependent: :destroy
+  has_one :account_cf, dependent: :destroy, inverse_of: :client
   has_one :primary_client_member, -> { order(share: :desc) }, class_name: 'ClientMember'
   has_one :primary_user, through: :primary_client_member, source: :user
   has_one :address, as: :addressable

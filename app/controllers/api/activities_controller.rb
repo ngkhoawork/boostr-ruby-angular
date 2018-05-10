@@ -49,34 +49,14 @@ class Api::ActivitiesController < ApplicationController
 
   def destroy
     activity.destroy
+
     render nothing: true
   end
 
   private
 
   def process_raw_contact_data
-    addresses = params[:guests].map { |c| c[:address][:email] }
-    existing_contact_ids = Address.contacts_by_email(addresses).map(&:addressable_id)
-    existing_company_contacts = Contact.where(id: existing_contact_ids, company_id: current_user.company_id)
-    new_contacts = []
-
-    existing_emails = existing_company_contacts.map(&:address).map(&:email)
-    new_incoming_contacts = params[:guests].reject do |raw_contact|
-      existing_emails.include?(raw_contact[:address][:email])
-    end
-
-    new_incoming_contacts.each do |new_contact_data|
-      contact = current_user.company.contacts.new(
-        name: new_contact_data['name'],
-        address_attributes: { email: new_contact_data['address']['email'] },
-        created_by: current_user.id
-      )
-      if contact.save
-        new_contacts << contact
-      end
-    end
-
-    existing_company_contacts.ids + new_contacts.map(&:id)
+    ::ProcessRawContactDataService.new(params[:guests], current_user).perform
   end
 
   def activity_params
@@ -151,42 +131,20 @@ class Api::ActivitiesController < ApplicationController
   end
 
   def filtered_activities
-    query_str = "user_id in (?)"
-    is_company_activity = false
-    member_ids = []
+    options = {
+      company_id: company.id,
+      activity_type_id: params[:activity_type_id],
+      start_date: parsed_filter_dates[:start_date],
+      end_date: parsed_filter_dates[:end_date]
+    }
+
     if params[:member_id] && params[:member_id] != "all"
-      member_ids << params[:member_id]
+      options.merge!(member_id: params[:member_id])
     elsif params[:team_id] && params[:team_id] != "all"
-      if team.present?
-        member_ids += team.all_members.collect{|member| member.id}
-      end
-    else
-      is_company_activity = true
-      query_str = "company_id = #{company.id}"
+      options.merge!(team_id: params[:team_id])
     end
 
-
-    if params[:activity_type_id]
-      query_str += " and activity_type_id = #{params[:activity_type_id]}"
-    end
-
-    if params[:start_date] && params[:end_date]
-      start_date = Date.parse(params[:start_date])
-      end_date = Date.parse(params[:end_date]).end_of_day
-    else
-      end_date = Time.now.end_of_day
-      start_date = end_date - 30.days
-    end
-    query_str += " and happened_at >= '#{start_date}' and happened_at <= '#{end_date}'"
-
-    if is_company_activity == true
-      data = company.activities.where(query_str)
-    else
-      data = company.activities.where(query_str, member_ids)
-    end
-
-    # puts data
-    data
+    ActivitiesQuery.new(options).perform
   end
 
   def client_filtered_activities
@@ -268,5 +226,14 @@ class Api::ActivitiesController < ApplicationController
       current_user.company_id,
       params[:file][:original_filename]
     ]
+  end
+  
+  def parsed_filter_dates
+    @parsed_filter_dates ||=
+      if params[:start_date] && params[:end_date]
+        { start_date: Date.parse(params[:start_date]), end_date: Date.parse(params[:end_date]).end_of_day }
+      else
+        { start_date: Time.now.end_of_day - 30.days, end_date: Time.now.end_of_day }
+      end
   end
 end

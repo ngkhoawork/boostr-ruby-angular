@@ -16,6 +16,7 @@
         {name: 'INFLUENCERS', url: '/influencers'} if _isCompanyInfluencerEnabled
         {name: 'LEADS', url: '/leads'} if _isLeadsEnabled
         {name: 'BOTTOMS UP', url: '/bps'}
+        {name: 'CONTRACTS', url: '/contracts'}
         {name: 'FINANCE', url: '/finance', dropdown: [
             {name: 'Billing', url: '/finance/billing'}
         ]}

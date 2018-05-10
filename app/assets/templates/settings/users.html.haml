@@ -35,6 +35,8 @@
                   %th.left
                     .z-sortable{by: 'is_admin'} Is Admin
                   %th.left
+                    .z-sortable{by: 'is_legal'} Is Legal
+                  %th.left
                     .z-sortable{by: 'revenue_requests_access'} Revenue Requests
                   %th.left
                     Action
@@ -77,17 +79,11 @@
                       %ui-select-choices{ repeat: 'status.value as status in user_statuses' }
                         %div{ ng: { bind: { html: 'status.name' } } }
                   %td.left
-                    .show-hide-remainder-form
-                      .switch-remainder-form
-                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'user.is_admin', 'ng-change': "submitUser(user)", id: "rem-act-modal-toggle{{user.id}}"}
-                        %label{:for => "rem-act-modal-toggle{{user.id}}"}
-                          %span
+                    %z-toggle{'ng-model': 'user.is_admin', 'ng-change': 'submitUser(user)'}
                   %td.left
-                    .show-hide-remainder-form
-                      .switch-remainder-form
-                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'user.revenue_requests_access', 'ng-change': "submitUser(user)", id: "revenue_requests_access{{user.id}}"}
-                        %label{:for => "revenue_requests_access{{user.id}}"}
-                          %span
+                    %z-toggle{'ng-model': 'user.is_legal', 'ng-change': 'submitUser(user)'}
+                  %td.left
+                    %z-toggle{'ng-model': 'user.revenue_requests_access', 'ng-change': 'submitUser(user)'}
                   %td.left
                     %a{href: '/switch_user?scope_identifier=user_{{user.id}}', target: '_blank'} Login As
                   %td.left{ ng: { click: 'editModal(user)' } }

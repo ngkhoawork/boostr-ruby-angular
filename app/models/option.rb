@@ -20,6 +20,7 @@ class Option < ActiveRecord::Base
   scope :for_company, -> (id) { where(company_id: id) }
 
   before_create :set_position
+  before_destroy :allow_destroy_when_not_locked
 
   def used
     values.count > 0
@@ -50,5 +51,14 @@ class Option < ActiveRecord::Base
 
   def set_position
     self.position ||= Option.count
+  end
+
+  def allow_destroy_when_not_locked
+    if locked?
+      errors.add(:base, 'can not be deleted when locked')
+      false
+    else
+      true
+    end
   end
 end

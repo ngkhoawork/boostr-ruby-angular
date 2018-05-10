@@ -101,7 +101,7 @@ describe Api::PublisherCustomFieldNamesController do
     end
   end
 
-  describe 'POST #create' do
+  describe 'PUT #update' do
     it 'updates publisher custom field name' do
       expect(publisher_custom_field_name.field_label).not_to eq 'Updated label'
 
@@ -120,6 +120,18 @@ describe Api::PublisherCustomFieldNamesController do
           publisher_custom_field_name: invalid_publisher_custom_field_name_params
 
       expect(publisher_custom_field_name.reload.field_label).not_to eq 'Updated label'
+    end
+
+    it 'update dropdown options for publisher cf' do
+      option = publisher_custom_field_name.publisher_custom_field_options
+
+      put :update, id: publisher_custom_field_name.id,
+          publisher_custom_field_name: {
+              position: 5,
+              publisher_custom_field_options_attributes: {}
+          }
+
+      expect(option.reload).to be_empty
     end
   end
 

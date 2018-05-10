@@ -33,8 +33,8 @@
 			backdrop: 'static'
 			keyboard: false
 			resolve:
-				client: ->
-					{}
+				client: -> {}
+				options: -> {}
 
 		modalInstance.result.then (account) ->
 			console.log account

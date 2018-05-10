@@ -115,12 +115,6 @@ describe Api::DisplayLineItemsController, type: :controller do
         expect(display_line_item_budget.budget.to_i).to eq valid_budget_params[:budget_loc]
         expect(display_line_item_budget.budget_loc.to_i).to eq valid_budget_params[:budget_loc]
       end
-
-      it 'failed to create display line item budget with invalid params' do
-        expect{
-          post :add_budget, id: display_line_item.id, display_line_item_budget: invalid_budget_params, format: :json
-        }.to_not change(DisplayLineItemBudget, :count)
-      end
     end
 
     context 'with gbp currency' do
@@ -198,10 +192,6 @@ describe Api::DisplayLineItemsController, type: :controller do
 
   def valid_budget_params
     { budget_loc: 2_000, month: 'Oct 2016' }
-  end
-
-  def invalid_budget_params
-    { budget_loc: 40_000, month: 'Oct 2016' }
   end
 
   def create_gbp_currency

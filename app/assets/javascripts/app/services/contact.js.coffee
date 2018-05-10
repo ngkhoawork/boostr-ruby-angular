@@ -111,7 +111,6 @@
 
   resource._update = (params) ->
     deferred = $q.defer()
-    console.log 'UPDATE'
     resource.update(
       params
       (contact) ->

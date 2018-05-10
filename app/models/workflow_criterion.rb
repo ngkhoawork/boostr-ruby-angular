@@ -51,7 +51,7 @@ class WorkflowCriterion < ActiveRecord::Base
     return options.alias(:client_subcategories)[:name].send(arel_operator, criteria_value) if field.eql?("client_subcategories")
     return account_cfs[field].send(arel_operator, criteria_value) if base_object.eql?('Account Custom Fields')
     return deal_custom_fields[field].send(arel_operator, criteria_value) if base_object.eql?('Deal Custom Fields')
-    criteria_field.send(arel_operator, date_field? ? criteria_value.to_time.utc : criteria_value)
+    criteria_field.send(arel_operator, date_field? ? criteria_value.to_date : criteria_value)
   end
 
   def ilike_string

@@ -100,6 +100,36 @@
         metadata: ->
           false
 
+  $scope.showUploadContractsModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contract_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/contracts'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
+  $scope.showUploadContractSpecialTermsModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contract_special_terms_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/contracts/import_special_terms'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.showUploadDisplayIOModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/display_io_upload.html'
@@ -381,6 +411,8 @@
     { title: 'Asset Mapping Import', click: $scope.showUploadAssetMappingModal, linkText: 'Import Asset Mapping or check unmapped' },
     { title: 'Assets Import', click: $scope.showUploadAssetsModal, linkText: 'Import Compressed Assets' },
     { title: 'Contacts Import', click: $scope.showUploadContactsModal, linkText: 'Import Contacts' },
+    { title: 'Contracts Import', click: $scope.showUploadContractsModal, linkText: 'Import Contracts' },
+    { title: 'Contract Special Terms Import', click: $scope.showUploadContractSpecialTermsModal, linkText: 'Import Contract Special Terms' },
     { title: 'Deal Product Monthly Budget Import', click: $scope.showUploadDealProductBudgetModal, linkText: 'Import Deal Product Monthly Budget' },
     { title: 'Deal Products Import', click: $scope.showUploadDealProductModal, linkText: 'Import Deal Products' },
     { title: 'Deals Import', click: $scope.showUploadDealsModal, linkText: 'Import Deals' },

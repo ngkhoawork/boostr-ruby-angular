@@ -4,6 +4,7 @@ describe Api::ActivitiesController, type: :controller do
   let!(:company) { create :company }
   let(:new_company) { create :company }
   let(:team) { create :parent_team, company: company }
+  let(:child_team) { create :child_team, parent: team, company: company }
   let(:user) { create :user, team: team, company: company }
   let(:client) { create :client, company: company }
   let(:deal) { create :deal, advertiser: client, company: company }
@@ -12,11 +13,71 @@ describe Api::ActivitiesController, type: :controller do
   let(:activity_with_custom_field_params) do
     activity_params.merge(custom_field_attributes: { text1: FFaker::HipsterIpsum.word })
   end
-  let(:existing_activity) { create :activity, company: company }
+  let!(:existing_activity) { create :activity, happened_at: DateTime.current, user: user, company: company }
   let(:user_contact) { create :contact, address_attributes: { email: user.email }, company: company }
 
   before :each do
     sign_in user
+  end
+
+  describe "GET #index" do
+    let(:params) { { format: :json } }
+
+    subject { get :index, params }
+
+    context 'when filters are present' do
+      let(:params) { super().merge!(filter: 'detail') }
+
+      context 'and include member_id' do
+        let(:params) { super().merge!(member_id: user.id) }
+
+        context 'where current_user is creator' do
+          before { existing_activity.update(user: user) }
+
+          it { subject; expect(response_json.map { |activity| activity['id'] }).to include existing_activity.id }
+        end
+
+        context 'where current_user is not creator' do
+          before { existing_activity.update(user: nil) }
+
+          it { subject; expect(response_json.map { |activity| activity['id'] }).not_to include existing_activity.id }
+        end
+      end
+
+      context 'and include team_id' do
+        let(:params) { super().merge!(team_id: team.id) }
+
+        context 'where current_user is team member' do
+          before { user.update(team: team) }
+
+          it { subject; expect(response_json.map { |activity| activity['id'] }).to include existing_activity.id }
+        end
+
+        context 'where current_user is leader' do
+          before { team.update(leader: user) }
+
+          it { subject; expect(response_json.map { |activity| activity['id'] }).to include existing_activity.id }
+        end
+
+        context 'where current_user is team member of its child team' do
+          before { user.update(team: child_team) }
+
+          it { subject; expect(response_json.map { |activity| activity['id'] }).to include existing_activity.id }
+        end
+
+        context 'where current_user is leader of its child team' do
+          before { child_team.update(leader: user) }
+
+          it { subject; expect(response_json.map { |activity| activity['id'] }).to include existing_activity.id }
+        end
+
+        context 'where current_user is not related with the team' do
+          let!(:existing_activity) { create :activity, happened_at: DateTime.current }
+
+          it { subject; expect(response_json.map { |activity| activity['id'] }).not_to include existing_activity.id }
+        end
+      end
+    end
   end
 
   describe "POST #create" do
@@ -27,7 +88,6 @@ describe Api::ActivitiesController, type: :controller do
           contacts: contacts.map(&:id)
         }, format: :json
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
         expect(response_json['contacts'].length).to eq 10
       }.to change(Activity, :count).by(1).and \
            change(CustomField, :count).by(1)
@@ -39,7 +99,6 @@ describe Api::ActivitiesController, type: :controller do
         contacts: contacts.map(&:id) + [user_contact.id]
       }, format: :json
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
       expect(response_json['contacts'].length).to eq 10
     end
 
@@ -50,6 +109,9 @@ describe Api::ActivitiesController, type: :controller do
           { name: 'Peggy M. Castle', address: { email: 'PeggyMCastle@rhyta.com' } },
           { name: 'William Bernard', address: { email: 'WilliamBBernard@jourrapide.com' } }
         ]
+      }
+      let(:invalid_guests) {
+        [1, 2]
       }
 
       before do
@@ -65,7 +127,6 @@ describe Api::ActivitiesController, type: :controller do
             guests: existing_contacts
           }, format: :json
           expect(response).to be_success
-          response_json = JSON.parse(response.body)
           expect(response_json['contacts'].length).to eq 10
         }.to change(Activity, :count).by(1)
       end
@@ -78,7 +139,6 @@ describe Api::ActivitiesController, type: :controller do
             guests: existing_contacts
           }, format: :json
           expect(response).to be_success
-          response_json = JSON.parse(response.body)
           expect(response_json['contacts'].length).to eq 10
         }.to change(Activity, :count).by(1)
       end
@@ -92,7 +152,6 @@ describe Api::ActivitiesController, type: :controller do
             guests: existing_contacts
           }, format: :json
           expect(response).to be_success
-          response_json = JSON.parse(response.body)
           expect(response_json['contacts'].length).to eq 12
           new_contacts = response_json['contacts'].select do |contact|
             contact["name"] == 'Peggy M. Castle' || contact["name"] == 'William Bernard'
@@ -109,13 +168,23 @@ describe Api::ActivitiesController, type: :controller do
           guests: existing_contacts
         }, format: :json
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
+        expect(response_json['contacts'].length).to eq 10
+      end
+
+      it 'does not create new contacts for invalid guests' do
+        existing_contacts_with_invalid = existing_contacts + invalid_guests
+        post :create,
+             { activity: activity_params,
+               guests:   existing_contacts_with_invalid },
+             format: :json
+
+        expect(response).to be_success
         expect(response_json['contacts'].length).to eq 10
       end
 
       context 'when there are contacts with same email in other companies' do
         it 'does not return contacts from different companies' do
-          duplicate_contact = new_company.contacts.create(
+          _duplicate_contact = new_company.contacts.create(
             name: contacts[0].name,
             address_attributes: { email: contacts[0].address.email }
           )
@@ -126,7 +195,6 @@ describe Api::ActivitiesController, type: :controller do
               guests: existing_contacts
             }, format: :json
             expect(response).to be_success
-            response_json = JSON.parse(response.body)
             expect(response_json['contacts'].length).to eq 10
           }.to change(Activity, :count).by(1)
         end
@@ -147,7 +215,6 @@ describe Api::ActivitiesController, type: :controller do
               guests: existing_contacts
             }, format: :json
             expect(response).to be_success
-            response_json = JSON.parse(response.body)
             expect(response_json['contacts'].length).to eq 11
             new_contact = response_json['contacts'].find {|c| c["name"] == duplicate_contact.name}
             expect(new_contact['name']).to eq duplicate_contact.name
@@ -192,7 +259,6 @@ describe Api::ActivitiesController, type: :controller do
         contacts: contacts.map(&:id)
       }, format: :json
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
       expect(response_json['contacts'].length).to eq 10
     end
 
@@ -203,7 +269,6 @@ describe Api::ActivitiesController, type: :controller do
         contacts: contacts.map(&:id) + [user_contact.id]
       }, format: :json
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
       expect(response_json['contacts'].length).to eq 10
     end
 
@@ -229,7 +294,6 @@ describe Api::ActivitiesController, type: :controller do
           guests: existing_contacts
         }, format: :json
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
         expect(response_json['contacts'].length).to eq 10
       end
 
@@ -241,7 +305,6 @@ describe Api::ActivitiesController, type: :controller do
           guests: existing_contacts
         }, format: :json
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
         expect(response_json['contacts'].length).to eq 10
       end
 
@@ -254,7 +317,6 @@ describe Api::ActivitiesController, type: :controller do
           guests: existing_contacts
         }, format: :json
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
         expect(response_json['contacts'].length).to eq 12
         new_contacts = response_json['contacts'].select do |contact|
           contact["name"] == 'Peggy M. Castle' || contact["name"] == 'William Bernard'
@@ -272,7 +334,6 @@ describe Api::ActivitiesController, type: :controller do
           guests: existing_contacts
         }, format: :json
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
         expect(response_json['contacts'].length).to eq 10
       end
 
@@ -289,7 +350,6 @@ describe Api::ActivitiesController, type: :controller do
             guests: existing_contacts
           }, format: :json
           expect(response).to be_success
-          response_json = JSON.parse(response.body)
           expect(response_json['contacts'].length).to eq 10
         end
 
@@ -309,7 +369,6 @@ describe Api::ActivitiesController, type: :controller do
             guests: existing_contacts
           }, format: :json
           expect(response).to be_success
-          response_json = JSON.parse(response.body)
           expect(response_json['contacts'].length).to eq 11
           new_contact = response_json['contacts'].find {|c| c["name"] == duplicate_contact.name}
           expect(new_contact['name']).to eq duplicate_contact.name
@@ -347,5 +406,11 @@ describe Api::ActivitiesController, type: :controller do
         expect(contact.reload.activity_updated_at).to_not eq activity_params[:happened_at]
       end
     end
+  end
+
+  private
+
+  def response_json
+    @_response_json ||= JSON.parse(response.body)
   end
 end

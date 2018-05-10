@@ -2,8 +2,6 @@ require 'google/apis/sheets_v4'
 require 'googleauth/stores/file_token_store'
 
 class GoogleSheetsApiClient
-  class RecordNotFoundInSpreadsheet < StandardError; end
-  class RecordAlreadyExistsInSpreadsheet < StandardError; end
   class RecordNotSaved < StandardError; end
 
   APPLICATION_NAME = 'Boostrcrm'.freeze
@@ -16,12 +14,8 @@ class GoogleSheetsApiClient
 
   attr_reader :service, :spreadsheet_id, :values, :record
 
-  def self.add_row(spreadsheet_id, record)
-    new(spreadsheet_id, record).add_row
-  end
-
-  def self.update_row(spreadsheet_id, record)
-    new(spreadsheet_id, record).update_row
+  def self.perform(*args)
+    new(*args).perform
   end
 
   def initialize(spreadsheet_id, record)
@@ -35,25 +29,25 @@ class GoogleSheetsApiClient
     authorize_service
   end
 
-  def add_row
-    raise RecordAlreadyExistsInSpreadsheet if row_record_index.present?
+  def perform
+    updated_rows = if row_record_index
+                     update_spreadsheet_value(*args)&.updated_rows
+                   else
+                     append_spreadsheet_value(*args)&.updates&.updated_rows
+                   end
 
-    response = append_spreadsheet_value(spreadsheet_id, DEFAULT_RANGE, values, value_input_option: :raw)
-
-    response&.updates&.updated_rows == 1
-  end
-
-  def update_row
-    raise RecordNotFoundInSpreadsheet if row_record_index.nil?
-
-    response = update_spreadsheet_value(spreadsheet_id, range, values, value_input_option: :raw)
-
-    response&.updated_rows == 1
+    updated_rows.eql?(1)
   end
 
   private
 
+  def args
+    [spreadsheet_id, range, values, value_input_option: :raw]
+  end
+
   def range
+    return DEFAULT_RANGE unless row_record_index
+
     "A#{row_record_index}:AT#{row_record_index}"
   end
 
@@ -62,9 +56,7 @@ class GoogleSheetsApiClient
 
     index = get_spreadsheet_values(spreadsheet_id, ID_COLUMN_RANGE).values.index([id.to_s])
 
-    return nil unless index
-
-    @_row_record_index ||= index + 1
+    @_row_record_index = index ? index + 1 : nil
   end
 
   def authorize_service

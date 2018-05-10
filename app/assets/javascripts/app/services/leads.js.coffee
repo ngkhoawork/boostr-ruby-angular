@@ -7,6 +7,9 @@
                 isArray: true
             getById:
                 url: '/api/leads/:id'
+            update:
+                method: 'PUT'
+                url: '/api/leads/:id'
             users:
                 url: '/api/leads/users'
                 isArray: true
@@ -22,6 +25,7 @@
 
         this.get = (params) -> resource.get(params).$promise
         this.getById = (params) -> resource.getById(params).$promise
+        this.update = (id, params) -> resource.update(id, params).$promise
         this.users = (params) -> resource.users(params).$promise
         this.accept = (params) ->
             deferred = $q.defer()

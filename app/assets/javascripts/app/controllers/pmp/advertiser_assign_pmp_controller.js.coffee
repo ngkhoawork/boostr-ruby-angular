@@ -42,8 +42,8 @@
           backdrop: 'static'
           keyboard: false
           resolve:
-            client: ->
-              {}
+            client: -> {}
+            options: -> {}
         .result.then (client) ->
           if client
             $scope.assign(client)

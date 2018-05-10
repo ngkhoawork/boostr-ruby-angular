@@ -3,7 +3,9 @@
     %a#logo{:href => root_path}
     %div.auth-wrap
       - if user_signed_in?
-        = link_to "Sign out", destroy_user_session_path, method: :delete, class: 'navbar-link'
+        .user-info
+          = link_to current_user.name, '/profile', class: 'navbar-link'
+          = link_to "Sign out", destroy_user_session_path, method: :delete, class: 'navbar-link'
       - else
         = link_to "Sign in", new_user_session_path, class: 'navbar-link'
       %starting-page

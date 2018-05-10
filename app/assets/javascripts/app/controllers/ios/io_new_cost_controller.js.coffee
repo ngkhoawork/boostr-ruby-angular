@@ -22,7 +22,7 @@
             $scope.option2Field = company.product_option2_field || 'Option2'
 
             Field.defaults($scope.cost, 'Cost').then (fields) ->
-                $scope.cost.type = Field.field($scope.cost, 'Type')
+                $scope.cost.type = Field.field($scope.cost, 'Cost Type')
 
             for month in $scope.currentIO.months
                 month = moment().year(month[0]).month(month[1] - 1).format('MMM YYYY')
@@ -55,6 +55,14 @@
                     $scope.cost.product2 = null
                   else if !$scope.cost.product2
                     $scope.cost.product_id = $scope.cost.product1
+
+            $scope.hasSubProduct = (level) ->
+                if $scope.productOptionsEnabled && subProduct = _.find($scope.products, (p) -> 
+                    (!level || p.level == level) && p.parent_id == $scope.cost.product_id)
+                    return subProduct
+
+            $scope.selectedProduct = () ->
+                _.find $scope.products, (p) -> p.id == $scope.cost.product_id
 
             addProductBudgetCorrection = ->
                 budgetSum = 0
@@ -184,6 +192,14 @@
 
             $scope.addCost = ->
                 $scope.errors = {}
+
+                if !$scope.cost.product_id
+                    $scope.errors['product_id'] = 'Product is required'
+                else if subProduct = $scope.hasSubProduct()
+                    $scope.errors['product' + subProduct.level] = $scope['option' + subProduct.level + 'Field'] + ' is required'
+
+                if !_.isEmpty($scope.errors) || $scope.cost.isIncorrectTotalBudgetPercent then return
+
                 cost = cutSymbolsAddProductBudget($scope.cost)
                 Cost.create(io_id: $scope.currentIO.id, cost: cost).then(
                     (deal) ->
@@ -196,6 +212,7 @@
                         for key, error of resp.data.errors
                             $scope.errors[key] = error && error[0]
                 )
+
             $scope.resetCost = ->
                 $scope.cost = {
                     cost_monthly_amounts: []

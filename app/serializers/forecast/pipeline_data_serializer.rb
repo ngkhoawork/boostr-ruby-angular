@@ -1,7 +1,7 @@
 class Forecast::PipelineDataSerializer < ActiveModel::Serializer
   attributes  :id, :name, :start_date, :end_date, :stage_id, :client_name,
               :agency_name, :probability, :budget, :in_period_amt, :in_period_split_amt, :wday_in_stage,
-              :wday_since_opened, :wday_in_stage_color, :wday_since_opened_color
+              :wday_since_opened, :wday_in_stage_color, :wday_since_opened_color, :in_period_split_weighted_amt
 
   def client_name
     object.advertiser.name rescue nil
@@ -27,6 +27,11 @@ class Forecast::PipelineDataSerializer < ActiveModel::Serializer
 
   def in_period_split_amt
     partial_amounts[:split_period_amt]
+  end
+
+  def in_period_split_weighted_amt
+    return nil unless probability && partial_amounts[:split_period_amt]
+    probability * partial_amounts[:split_period_amt] / 100.0
   end
 
   def wday_in_stage

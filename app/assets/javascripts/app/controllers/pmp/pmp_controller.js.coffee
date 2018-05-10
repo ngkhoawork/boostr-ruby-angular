@@ -190,7 +190,10 @@
     getGraphData = (data, attr) ->
       _.reduce(data, (arr, row) ->
         if row[attr]?
-          arr.push(parseFloat(row[attr]))
+          if attr == 'win_rate'
+            arr.push(Math.round(parseFloat(row[attr])* 100))
+          else
+            arr.push(parseFloat(row[attr]))
         else
           arr.push null
         arr

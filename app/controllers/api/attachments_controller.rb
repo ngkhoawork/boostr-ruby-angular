@@ -52,6 +52,8 @@ class Api::AttachmentsController < ApplicationController
       company.deals.find(params[:deal_id])
     when 'publisher'
       company.publishers.find(params[:publisher_id])
+    when 'contract'
+      company.contracts.find(params[:contract_id])
     end
   end
 

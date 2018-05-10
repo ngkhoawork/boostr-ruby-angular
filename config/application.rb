@@ -33,8 +33,9 @@ module Boostr
     config.active_record.raise_in_transactional_callbacks = true
     config.active_support.escape_html_entities_in_json = false
 
-    config.autoload_paths << Rails.root.join('lib')
-    config.autoload_paths << Rails.root.join('validators')
+    %w(lib validators policies).each do |dir_name|
+      config.autoload_paths << Rails.root.join(dir_name)
+    end
 
     config.active_job.queue_adapter = :sidekiq
 

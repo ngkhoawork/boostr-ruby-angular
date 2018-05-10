@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Contact', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType', 'DealAttachment', 'localStorageService', 'Company', 'Egnyte'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,  Contact,    Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,   DealAttachment,   localStorageService,   Company, Egnyte) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Contact', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType',  'localStorageService', 'Company', 'Egnyte'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,  Contact,    Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,    localStorageService,   Company,   Egnyte) ->
 
   $scope.agencyRequired = false
   $scope.showMeridian = true
@@ -24,6 +24,8 @@
     isEnabled: false
     isLoading: false
     dealLog: null
+  $scope.googleSheetsIntegration =
+    isEnabled: false
   $scope.PMPType = PMPType
 
   ###*
@@ -52,6 +54,7 @@
 
   CurrentUser.get().$promise.then (user) ->
     $scope.currentUser = user
+    $scope.egnyte_authenticated = $scope.currentUser.egnyte_authenticated
 
   $scope.isUrlValid = (url) ->
     regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
@@ -66,24 +69,22 @@
     if url && url.search('//') == -1 then return '//' + url else url
 
   $scope.getCurrentCompany = (deal) ->
-    Egnyte.show().then (egnyteSettings) ->
-      $scope.companyEgnyteIntegration = egnyteSettings
-      if(egnyteSettings.access_token && egnyteSettings.connected)
-        $scope.egnyteConnected = true
-        if($routeParams.isNew)
-          sendRequest(egnyteSettings.access_token, egnyteSettings.app_domain, deal)
+    if($scope.currentUser.egnyte_authenticated)
+      $scope.egnyteConnected = true
 
-        else
-          Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
-            if !response.navigate_to_deal_uri
-              $scope.egnyteHealthy = false
-            else
-              $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
-              $scope.egnyteIsLoading = false
-              $scope.egnyteHealthy = true
+      if($routeParams.isNew)
+        sendRequest(deal)
+      else
+        Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
+          console.log(response)
+          if !response.navigate_to_deal_uri
+            $scope.egnyteHealthy = false
+          else
+            $scope.embeddedUrl = $sce.trustAsResourceUrl(response.navigate_to_deal_uri)
+            $scope.egnyteIsLoading = false
+            $scope.egnyteHealthy = true
 
-
-  sendRequest = (token, domain, deal) ->
+  sendRequest = (deal) ->
     $scope.egnyteUrlRequest = $timeout (->
       Egnyte.navigateToDeal(deal_id: deal.id).then (response) ->
         if response.navigate_to_deal_uri
@@ -93,7 +94,7 @@
           $location.search({})
 
         else
-          sendRequest(token, domain, deal)
+          sendRequest(deal)
       return
     ), 3000
 
@@ -112,6 +113,7 @@
       if initialLoad
         checkCurrentUserDealShare(deal.members)
         getOperativeIntegration(deal.id)
+        getGoogleSheetsIntegration(deal.id)
     , (err) ->
       if(err && err.status == 404)
         $location.url('/deals')
@@ -127,7 +129,6 @@
     getValidations()
     Company.get().$promise.then (company) -> $scope.company = company
     getSsps()
-    getDealFiles()
 
   checkPmpDeal = () ->
     $scope.isPmpDeal = false
@@ -136,10 +137,6 @@
       if product.revenue_type == 'PMP'
         $scope.isPmpDeal = true
         $scope.pmpColumns = 3
-
-  getDealFiles = () ->
-    DealAttachment.list(deal_id: $routeParams.id, type: "deal").then (res) ->
-      $scope.dealFiles = res
 
   getSsps = () ->
     SSP.all().then (ssps) ->
@@ -684,7 +681,7 @@
     if option == 'Billing'
       if !confirm("Confirm you want to assign an unrelated billing contact")
         return
-    deal_contact.role = option; 
+    deal_contact.role = option;
     deal_contact.errors = {}
 
     DealContact.update(
@@ -948,6 +945,9 @@
             $scope.operativeIntegration.isLoading = false
       , 2000
 
+  $scope.sendToGoogleSheet = (dealId)->
+    Deal.send_to_google_sheet(id: dealId)
+
   calcRestBudget = () ->
     sum = _.reduce($scope.budgets, (res, budget) ->
       res += Number(budget.budget_loc) || 0
@@ -961,6 +961,12 @@
         $scope.operativeIntegration.isEnabled = operative.switched_on
         Deal.latest_log(id: dealId).then (log) ->
           $scope.operativeIntegration.dealLog = log if log && log.id
+
+  getGoogleSheetsIntegration = (dealId) ->
+    ApiConfiguration.all().then (data) ->
+      google_sheets = _.findWhere data.api_configurations, integration_type: 'GoogleSheetsConfiguration'
+      if google_sheets && google_sheets.switched_on
+        $scope.googleSheetsIntegration.isEnabled = google_sheets.switched_on
 
   $scope.getWarningSettings = () ->
     dealsWithoutWarning = localStorageService.get('dealsWithoutWarning') || []

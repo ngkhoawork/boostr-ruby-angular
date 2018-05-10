@@ -1,17 +1,15 @@
 class EgnyteIntegration < ActiveRecord::Base
-  belongs_to :company
+  attr_accessor :connect_email
+
+  belongs_to :company, required: true
 
   validates :company_id, uniqueness: true
-  validate :app_domain_is_required_for_enabled
+  validate :connected_is_required_for_enabled
 
   before_validation :escape_protocol_in_app_domain, if: 'app_domain.present? && app_domain_changed?'
   before_save :ensure_defaults
 
   class << self
-    def find_by_state_token(state_token)
-      find_by(access_token: state_token)
-    end
-
     def deal_folder_tree_default
       {
         title: 'Deal',
@@ -53,16 +51,29 @@ class EgnyteIntegration < ActiveRecord::Base
     end
   end
 
-  def enabled_and_connected?
-    enabled? && connected?
+  def connected?
+    !!access_token
+  end
+
+  def non_connected?
+    !connected?
   end
 
   private
 
-  delegate :deal_folder_tree_default, :account_folder_tree_default, :deals_folder_name_default, to: :class
+  delegate :deal_folder_tree_default, :deals_folder_name_default, to: :class
 
-  def app_domain_is_required_for_enabled
-    errors.add(:enabled, 'can not be set without app_domain') if enabled? && app_domain.blank?
+  def account_folder_tree_default
+    self.class.account_folder_tree_default.tap do |account_folder_tree|
+      account_folder_tree[:nodes] << {
+        title: deals_folder_name,
+        nodes: []
+      } unless account_folder_tree[:nodes].map { |node| node[:title] }.include?(deals_folder_name)
+    end
+  end
+
+  def connected_is_required_for_enabled
+    errors.add(:base, 'can not be enabled before connected') if enabled? && non_connected?
   end
 
   def escape_protocol_in_app_domain
@@ -70,8 +81,8 @@ class EgnyteIntegration < ActiveRecord::Base
   end
 
   def ensure_defaults
+    self.deals_folder_name = deals_folder_name_default if deals_folder_name.blank?
     self.account_folder_tree = account_folder_tree_default if account_folder_tree.blank?
     self.deal_folder_tree = deal_folder_tree_default if deal_folder_tree.blank?
-    self.deals_folder_name = deals_folder_name_default if deals_folder_name.blank?
   end
 end
