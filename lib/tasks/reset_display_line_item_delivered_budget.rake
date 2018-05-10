@@ -12,9 +12,9 @@ task :reset_display_line_item_delivered_budget, [:company_id] => [:environment] 
       budget_remaining_loc = [(item.budget_loc || 0) - budget_delivered_loc, 0].max
       
       puts "============"
-      puts item.id
-      puts item.budget_delivered
-      puts budget_delivered
+      puts "Item id: #{item.id}"
+      puts "Old delivered: #{item.budget_delivered}"
+      puts "New delivered: #{budget_delivered}"
 
       item.update(
         budget_delivered: budget_delivered,
