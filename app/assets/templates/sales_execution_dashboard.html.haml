@@ -14,7 +14,7 @@
               %p{ class: "select" }
                 {{ selectedMember.name ? selectedMember.name : "Select Member" }}
             %ul.dropdown-menu.members
-              %li{ ng: { repeat: 'member in selectedTeam.members', class: '{active: member.id == selectedMember.id}' } }
+              %li{ ng: { repeat: 'member in selectedTeam.members | orderBy : "name"', class: '{active: member.id == selectedMember.id}' } }
                 %a{ href: '', ng: { click: 'changeMember(member)' } }
                   {{ member.name }}
 
