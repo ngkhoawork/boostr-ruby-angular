@@ -17,7 +17,7 @@ class InactiveClientsQuery
       .by_subcategory(options[:subcategory_id])
       .includes(:users, :latest_advertiser_activity)
       .by_member_id(seller_id)
-      .by_member_id(team&.all_members_and_leaders)
+      .by_member_id(team&.all_members_and_leaders_ids)
       .distinct
   end
 
