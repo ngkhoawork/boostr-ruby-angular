@@ -4,7 +4,7 @@ task :reset_display_line_item_delivered_budget, [:company_id] => [:environment] 
   company = args[:company_id] && Company.find_by_id(args[:company_id])
   exit unless company
 
-  company.display_line_items.find_in_batches(batch_size: 20) do |group|
+  company.display_line_items.find_in_batches do |group|
     group.each do |item|
       budget_delivered = item.display_line_item_budgets.sum(:budget)
       budget_delivered_loc = item.display_line_item_budgets.sum(:budget_loc)
