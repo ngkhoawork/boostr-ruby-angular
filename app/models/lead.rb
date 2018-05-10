@@ -123,7 +123,8 @@ class Lead < ActiveRecord::Base
   end
 
   def rule
-    state.downcase.match(NON_USA_STATE).to_s.empty? ? rule_by_states_and_countries : rule_by_countries
+    state.blank? || state.downcase.match(NON_USA_STATE).to_s.present? ?
+      rule_by_countries : rule_by_states_and_countries
   end
 
   def rule_by_countries
@@ -144,7 +145,7 @@ class Lead < ActiveRecord::Base
 
   def next_assignment_rules_user
     @_next_assignment_rules_user ||=
-      find_rule.assignment_rules_users.find_by(position: find_next_available_rule.position.next)
+      find_next_available_rule.next_record
   end
 
   def first_assignment_rules_user
