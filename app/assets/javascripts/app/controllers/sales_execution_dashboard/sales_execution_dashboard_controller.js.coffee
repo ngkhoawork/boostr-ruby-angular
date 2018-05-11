@@ -23,6 +23,10 @@
       $scope.selectedTeamId = null
       $scope.selectedMemberId = null
 
+      $scope.filter =
+        selectedMember: null
+        selectedTeam: null
+
       $scope.productPipelineChoice = 'weighted'
       $scope.optionsProductPipeline = SalesExecutionDashboardDataStore.getOptionsProductPipeline()
 
@@ -116,8 +120,8 @@
             return member.id
           $scope.allLeaderId = _.map $scope.teams[0].leaders, (member) ->
             return member.id
-          $scope.selectedTeam = $scope.teams[0]
-          $scope.selectedTeamId = $scope.selectedTeam.id
+          $scope.filter.selectedTeam = $scope.teams[0]
+          $scope.filter.selectedTeamId = $scope.selectedTeam.id
 
           SalesExecutionDashboard.kpis("member_ids[]": allUsers(), time_period: $scope.kpisChoice).then (data) ->
             $scope.allKPIs = data[0]
@@ -186,12 +190,25 @@
           calculateKPIs()
       , true);
 
+      $scope.$watch('selectedMember', () =>
+        if ($scope.selectedMember)
+          $scope.selectedMember = value
+          $scope.selectedMemberId = $scope.selectedMember.id
+          $scope.selectedMemberList = [$scope.selectedMember.id]
+          $scope.selectedLeaderList = []
+          calculateKPIs()
+      , true);
+
+      $scope.applyFilter = ->
+        $scope.selectedTeam = angular.copy $scope.filter.selectedTeam
+        $scope.selectedMember = angular.copy $scope.filter.selectedMember
+
+      $scope.isFilterApplied = ->
+        !angular.equals $scope.filter.selectedTeam, $scope.selectedTeam || 
+          !angular.equals $scope.filter.selectedMember, $scope.selectedMember
+
       $scope.changeMember=(value) =>
-        $scope.selectedMember = value
-        $scope.selectedMemberId = $scope.selectedMember.id
-        $scope.selectedMemberList = [$scope.selectedMember.id]
-        $scope.selectedLeaderList = []
-        calculateKPIs()
+        $scope.filter.selectedMember = value
 
       $scope.changeActivitySummaryChoice=(value) =>
         $scope.activitySummaryChoice = value
