@@ -11,8 +11,7 @@ class Api::LeadsController < ApplicationController
   def create_lead
     lead = Lead.new(lead_params)
 
-    # if captcha_succeed? && lead.save
-    if lead.save
+    if captcha_succeed? && lead.save
       redirect_to params[:return_to]
     else
       render json: { errors: lead.errors.messages }, status: :unprocessable_entity
