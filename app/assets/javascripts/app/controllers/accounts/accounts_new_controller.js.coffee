@@ -185,7 +185,7 @@
         $scope.closeDuplicateList()
 
   $scope.onSelectRegion = (item, model) ->
-    $scope.stateFieldRequired = $scope.currentUser.company_id == 11 && item.name == 'USA'
+    $scope.stateFieldRequired = $scope.currentUser.company_id == 44 && item.name == 'USA'
     $scope.errors = _.omit($scope.errors, 'state') unless $scope.stateFieldRequired
     $scope.showAddressFields = true if $scope.stateFieldRequired
 

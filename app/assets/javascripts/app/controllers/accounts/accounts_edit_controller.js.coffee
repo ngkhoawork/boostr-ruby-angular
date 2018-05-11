@@ -34,7 +34,7 @@
             $scope.client.client_type.option_id = option.id
       $scope.setClientTypes()
       $scope.getClients($scope.query)
-      if $scope.currentUser.company_id == 11 && $scope.client.client_region && $scope.client.client_region['name'] == 'USA'
+      if $scope.currentUser.company_id == 44 && $scope.client.client_region && $scope.client.client_region['name'] == 'USA'
         $scope.stateFieldRequired = true
       if !$scope.client.client_segment_id && segment = _.find($scope.client.fields[4].options, name: 'Not Top 100')
         $scope.client.client_segment_id = segment.id 
@@ -154,7 +154,7 @@
     $modalInstance.dismiss()
 
   $scope.onSelectRegion = (item, model) ->
-    $scope.stateFieldRequired = $scope.currentUser.company_id == 11 && item.name == 'USA'
+    $scope.stateFieldRequired = $scope.currentUser.company_id == 44 && item.name == 'USA'
     $scope.errors = _.omit($scope.errors, 'state') unless $scope.stateFieldRequired
     $scope.showAddressFields = true if $scope.stateFieldRequired
 
