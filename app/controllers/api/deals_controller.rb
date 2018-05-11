@@ -284,7 +284,7 @@ class Api::DealsController < ApplicationController
       deal.updated_by = current_user.id
 
       if deal.save(context: :manual_update)
-        deal.custom_workflow_update("create")
+        WorkflowWorker.perform_async(deal_id: deal.id, type: 'create')
         render json: deal, status: :created
       else
         render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -301,7 +301,11 @@ class Api::DealsController < ApplicationController
       deal.deal_custom_field = DealCustomField.new(deal_cf_params)
     end
     if deal.save(context: :manual_update)
-      deal.custom_workflow_update("update")
+      opts = { deal_id: deal.id, type: "update" }
+      if params['deal']['close_reason'].present?
+        opts.merge!(option_id: params['deal']['close_reason']['option_id'])
+      end
+      WorkflowWorker.perform_async(opts)
       render deal
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity
