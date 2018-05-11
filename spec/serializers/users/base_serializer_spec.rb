@@ -33,10 +33,10 @@ describe Users::BaseSerializer do
 
   def user
     @_user ||= create :user,  company: company,
-                                team: team,
-                                first_name: 'John',
-                                last_name: 'Doe',
-                                email: 'john.doe@boostr.com',
-                                office: 'office 1'
+                              team: team,
+                              first_name: 'John',
+                              last_name: 'Doe',
+                              email: 'john.doe@boostr.com',
+                              office: 'office 1'
   end
 end

@@ -8,4 +8,8 @@ class Users::BaseSerializer < ActiveModel::Serializer
               :team_id,
               :is_leader,
               :office
+
+  def is_leader
+    object.leader?
+  end
 end

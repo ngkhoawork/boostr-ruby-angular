@@ -3,6 +3,14 @@ require 'rails_helper'
 describe UserSerializer do
   it 'serializes user data' do
     expect(serializer.id).to eq(user.id)
+    expect(serializer.company_id).to eq(company.id)
+    expect(serializer.email).to eq('john.doe@boostr.com')
+    expect(serializer.first_name).to eq('John')
+    expect(serializer.last_name).to eq('Doe')
+    expect(serializer.name).to eq('John Doe')
+    expect(serializer.team_id).to eq(team.id)
+    expect(serializer.is_leader).to eq(false)
+    expect(serializer.office).to eq('office 1')
     expect(serializer.is_legal).to eq(true)
     expect(serializer.default_currency).to eq('USD')
     expect(serializer.roles_mask).to eq(7)
@@ -26,7 +34,7 @@ describe UserSerializer do
   end
 
   def company
-    create :company
+    @_company ||= create :company
   end
 
   def leader
@@ -48,6 +56,10 @@ describe UserSerializer do
   def user
     @_user ||= create :user,  company: company,
                               team: team,
+                              first_name: 'John',
+                              last_name: 'Doe',
+                              email: 'john.doe@boostr.com',
+                              office: 'office 1',
                               is_legal: true,
                               cycle_time: 45.2,
                               is_active: true,

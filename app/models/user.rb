@@ -196,10 +196,6 @@ class User < ActiveRecord::Base
     teams.count > 0
   end
 
-  def is_leader
-    leader?
-  end
-
   def as_json(options = {})
     if options[:override]
       super(options)
