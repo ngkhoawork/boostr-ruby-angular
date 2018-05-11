@@ -145,7 +145,7 @@ class Lead < ActiveRecord::Base
 
   def next_assignment_rules_user
     @_next_assignment_rules_user ||=
-      find_next_available_rule.next_record
+      find_next_available_rule.next_record_by_position
   end
 
   def first_assignment_rules_user
