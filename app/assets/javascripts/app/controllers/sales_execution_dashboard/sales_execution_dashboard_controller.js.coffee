@@ -121,7 +121,6 @@
           $scope.allLeaderId = _.map $scope.teams[0].leaders, (member) ->
             return member.id
           $scope.filter.selectedTeam = $scope.teams[0]
-          $scope.filter.selectedTeamId = $scope.selectedTeam.id
 
           SalesExecutionDashboard.kpis("member_ids[]": allUsers(), time_period: $scope.kpisChoice).then (data) ->
             $scope.allKPIs = data[0]
