@@ -48,7 +48,8 @@ class DisplayLineItemBudgetCsv
       budget_loc: calculate_budget_loc,
       ad_server_budget: calculate_budget_loc,
       video_avg_view_rate: video_avg_view_rate,
-      video_completion_rate: video_completion_rate
+      video_completion_rate: video_completion_rate,
+      invoice_id: invoice_id
     }
   end
 

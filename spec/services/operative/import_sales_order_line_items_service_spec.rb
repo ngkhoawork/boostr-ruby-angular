@@ -132,7 +132,7 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     subject.perform
   end
 
-  it 'deletes a row when status is deleted and line exists in our system', focus: true do
+  it 'deletes a row when status is deleted and line exists in our system' do
     content_for_files([
       line_item_csv_file(
         sales_order_id: io.id,
