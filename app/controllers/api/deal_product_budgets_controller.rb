@@ -20,12 +20,10 @@ class Api::DealProductBudgetsController < ApplicationController
 
   def create
     if params[:file].present?
-      CsvImportWorker.perform_async(
-        params[:file][:s3_file_path],
-        'DealProductBudget',
-        current_user.id,
-        params[:file][:original_filename]
-      )
+      S3FileImportWorker.perform_async('Importers::DealProductBudgetsService',
+                                      current_user.company_id,
+                                      params[:file][:s3_file_path],
+                                      params[:file][:original_filename])
 
       render json: {
         message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
