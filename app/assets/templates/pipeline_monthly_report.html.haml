@@ -91,12 +91,18 @@
                   %td
                     %div{ ng: { repeat: 'user in deal.users' } }
                       {{ user.first_name + " " + user.last_name + " (" + user.share + "%)"}}
-                  %td {{ deal.advertiser.name }}
+                  %td 
+                    %a{ href: '', ng: { href: '/accounts/{{deal.advertiser.id}}' }, target: '_blank' }
+                      {{ deal.advertiser.name }}
                   %td
-                    %a{ href: '', ng: { href: '/deals/{{deal.id}}'  } }
+                    %a{ href: '', ng: { href: '/deals/{{deal.id}}' }, target: '_blank' }
                       {{ deal.name }}
-                  %td {{ deal.agency.name }}
-                  %td {{ deal.agency.parent_client.name }}
+                  %td
+                    %a{ href: '', ng: { href: '/accounts/{{deal.agency.id}}' }, target: '_blank' }
+                      {{ deal.agency.name }}
+                  %td
+                    %a{ href: '', ng: { href: '/accounts/{{deal.agency.parent_client.id}}' }, target: '_blank' }
+                      {{ deal.agency.parent_client.name }}
                   %td {{ deal.stage.name }}
                   %td {{ deal.stage.probability }}%
                   %td {{ deal.budget | currency:'$':0}}
