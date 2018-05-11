@@ -16,7 +16,7 @@ if ENV['RAILS_ENV'] == 'test'
 end
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-ENV['RAILS_ENV'] ||= 'test'
+ENV['RAILS_ENV']      ||= 'test'
 ENV['S3_BUCKET_NAME'] ||= 'test'
 
 require 'spec_helper'
@@ -79,7 +79,7 @@ RSpec.configure do |config|
     DatabaseCleaner.start
   end
 
-    config.append_after :each do
+  config.append_after :each do
     DatabaseCleaner.clean
   end
 

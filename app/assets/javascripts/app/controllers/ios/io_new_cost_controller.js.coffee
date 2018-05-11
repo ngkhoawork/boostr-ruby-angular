@@ -22,7 +22,7 @@
             $scope.option2Field = company.product_option2_field || 'Option2'
 
             Field.defaults($scope.cost, 'Cost').then (fields) ->
-                $scope.cost.type = Field.field($scope.cost, 'Type')
+                $scope.cost.type = Field.field($scope.cost, 'Cost Type')
 
             for month in $scope.currentIO.months
                 month = moment().year(month[0]).month(month[1] - 1).format('MMM YYYY')

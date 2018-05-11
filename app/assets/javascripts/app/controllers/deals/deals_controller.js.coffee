@@ -276,7 +276,6 @@
                     parseBudget data
                     $scope.allDealsLoaded = !data.length
                     $scope.deals = $scope.deals.concat data
-                    updateDealsTable()
                     $timeout -> $scope.isLoading = false
 
             loadMoreDealsColumns = (params) ->
@@ -284,6 +283,7 @@
                     parseBudget data
                     $scope.allDealsLoaded = !data.length
                     $scope.deals = $scope.deals.concat data
+                    updateDealsTable($scope.scrollCallback)
                     $timeout -> $scope.isLoading = false
 
             $scope.filterDeals = (filter) ->
