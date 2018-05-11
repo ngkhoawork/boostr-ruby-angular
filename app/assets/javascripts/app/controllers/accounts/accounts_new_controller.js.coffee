@@ -13,6 +13,7 @@
   $scope.isDuplicateShow = false
   $scope.isLoaderShow = false
   $scope.minSearchStringLength = 3 # the minimum search string length
+  $scope.stateFieldRequired = false
 
   if options.lead
     client = $scope.client
@@ -97,6 +98,9 @@
       if $scope.client && (!$scope.client[validation.factor] && !$scope.client.address[validation.factor])
         $scope.errors[validation.factor] = validation.name + ' is required'
 
+    if $scope.stateFieldRequired && !$scope.client.address['state']
+      $scope.errors['state'] = 'State is required'
+
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true
     $scope.removeCategoriesFromAgency()
@@ -179,5 +183,14 @@
     if  $scope.duplicates
       if  $scope.duplicates.length == 0
         $scope.closeDuplicateList()
+
+  $scope.onSelectRegion = (item, model) ->
+    $scope.stateFieldRequired = $scope.currentUser.company_id == 11 && item.name == 'USA'
+    $scope.errors = _.omit($scope.errors, 'state') unless $scope.stateFieldRequired
+    $scope.showAddressFields = true if $scope.stateFieldRequired
+
+  $scope.onSelectClientType = (item, model) ->
+    if $scope.Advertiser && model == $scope.Advertiser && !$scope.client.client_segment_id && segment = _.find($scope.client.fields[4].options, name: 'Not Top 100')
+      $scope.client.client_segment_id = segment.id 
 
 ]

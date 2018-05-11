@@ -13,7 +13,7 @@
           %span.error-text {{errors.client_type}}
           %label{ for: 'client-type' } Account Type
           %span.star *
-          %ui-select{ name: 'client-type', ng: { model: 'client.client_type.option_id', change: 'searchClients(""); clearErrors()', disabled: true } }
+          %ui-select{ name: 'client-type', ng: { model: 'client.client_type.option_id', change: 'searchClients(""); clearErrors()', disabled: true }, 'on-select': 'onSelectClientType($item, $model)' }
             %ui-select-match{ placeholder: 'Account Type' }
               {{ $select.selected.name }}
             %ui-select-choices{ repeat: 'option.id as option in client.client_type.options | filter: { name: $select.search }' }
@@ -54,7 +54,7 @@
               Region
               %span.star{ 'ng-if': "baseFieldRequired('client_region_id')" }
                 *
-            %ui-select{ region: 'client-region', ng: { model: 'client.client_region_id', disabled: true } }
+            %ui-select{ region: 'client-region', ng: { model: 'client.client_region_id', disabled: true }, 'on-select': 'onSelectRegion($item, $model)' }
               %ui-select-match{ placeholder: 'Region' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'region.id as region in client.fields[3].options | filter: { name: $select.search }' }
@@ -165,8 +165,12 @@
           .col-xs-5
             %label{ for: 'city' } City
             %input.form-control{ placeholder: 'City', ng: { model: 'client.address.city' }, name: 'city'  }
-          .col-xs-4
-            %label{ for: 'state' } State
+          .col-xs-4{ ng: {class: '{error: errors.state}'} }
+            %span.error-text {{errors.state}}
+            %label{ for: 'state' } 
+              State
+              %span.star{ 'ng-if': "stateFieldRequired" }
+                *
             %ui-select.bo-state-select{ name: 'state', ng: { model: 'client.address.state', disabled: true } }
               %ui-select-match{ placeholder: 'State' }
                 {{ $select.selected.name }}
