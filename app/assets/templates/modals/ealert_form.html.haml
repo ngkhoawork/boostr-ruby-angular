@@ -22,7 +22,7 @@
           .recipient-item{'ng-repeat': 'recipient in recipient_list track by $index'}
             {{recipient}}
             %span.close-btn{'ng-click': 'removeRecipient($index)'}
-        %input.form-control.recipient-field{type: 'text', placeholder: "Add custom recipients", 'ng-keypress': 'onKeypress($event)'}
+        %input.form-control.recipient-field{type: 'text', placeholder: "Add custom recipients", ng: { keypress: 'onKeypress($event)', blur: 'onBlur($event)' }}
       .form-group
         %label{ for: 'comment' } Comments to eAlert
         %textarea.form-control{ 'msd-elastic': '', rows: 2, 'ng-model': "comment", name: "{{fieldName}}", placeholder: 'Enter {{accountCfName.field_label}}' }
