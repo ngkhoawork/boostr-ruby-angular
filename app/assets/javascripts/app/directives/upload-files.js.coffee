@@ -55,6 +55,7 @@
         if (file && file.id && confirm('Are you sure you want to delete "' +  file.original_file_name + '"?'))
           Attachment.delete(_.extend({fileId: file.id}, mainParams)).then (respond) ->
             $scope.uploadedFiles = _.reject $scope.uploadedFiles, (item) -> item.id is file.id
+            angular.element('#file-uploader').val('') 
 
       $scope.saveOnServer = (file, subtype) ->
         Attachment.update(

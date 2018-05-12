@@ -127,8 +127,7 @@
     getDealCustomFieldNames()
     getDealProductCfNames()
     getValidations()
-    Company.get().$promise.then (company) ->
-      $scope.company = company
+    Company.get().$promise.then (company) -> $scope.company = company
     getSsps()
 
   checkPmpDeal = () ->
@@ -526,8 +525,9 @@
     User.query().$promise.then (users) ->
       $scope.users = $filter('notIn')(users, $scope.currentDeal.members, 'user_id')
 
-  $scope.linkExistingUser = (item) ->
+  $scope.linkExistingUser = (item, select) ->
     $scope.userToLink = undefined
+    select.selected = null
     DealMember.create(deal_id: $scope.currentDeal.id, deal_member: { user_id: item.id, share: 0, values: [] }).then (deal) ->
       $scope.setCurrentDeal(deal, true)
 

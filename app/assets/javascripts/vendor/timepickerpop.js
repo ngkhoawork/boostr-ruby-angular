@@ -93,21 +93,26 @@ angular.module('timepickerPop', [ 'ui.bootstrap' ])
           $scope.disabledInt = angular.isUndefined($scope.disabled)? false : $scope.disabled;
 
           $scope.toggle = function() {
-        	if ($scope.isOpen) {
-        		$scope.close();
-        	} else {
-        		$scope.open();
-        	}
+            if ($scope.isOpen) {
+              $scope.close();
+            } else {
+              $scope.open();
+            }
           };
         },
         link : function(scope, element, attrs) {
           var picker = {
         		  open : function () {
-        			  timepickerState.closeAll();
-        			  scope.isOpen = true;
+                timepickerState.closeAll();
+                if (scope.disabledInt && !inTimepicker) 
+                  scope.$apply(function() {
+                    scope.isOpen = true;
+                  });
+                else
+                  scope.isOpen = true; 
         		  },
         		  close: function () {
-        			  scope.isOpen = false;
+                scope.isOpen = false;
         		  }
           		  
           }
@@ -132,6 +137,10 @@ angular.module('timepickerPop', [ 'ui.bootstrap' ])
           element.bind('click', function(event) {
             event.preventDefault();
             event.stopPropagation();
+            inTimepicker = angular.element(event.target).closest('.timepicker-dropdown-menu').length;
+            if (scope.disabledInt && !inTimepicker) {
+              scope.toggle()
+            }
           });
 
           $document.bind('click', function(event) {
@@ -143,7 +152,7 @@ angular.module('timepickerPop', [ 'ui.bootstrap' ])
         },
         template : "<input type='text' class='box1' ng-model='inputTime' ng-disabled='disabledInt' time-format show-meridian='showMeridian' ng-click='toggle()' />"
             + "  <div class='input-group-btn pull-left' ng-class='{open:isOpen}'> "
-            + "          <div class='dropdown-menu'> "
+            + "          <div class='dropdown-menu timepicker-dropdown-menu'> "
             + "            <timepicker ng-model='inputTime' show-meridian='showMeridian'></timepicker> "
             + "           </div> " + "  </div>"
       };

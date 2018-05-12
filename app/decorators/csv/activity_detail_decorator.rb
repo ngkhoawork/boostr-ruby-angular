@@ -1,9 +1,18 @@
 class Csv::ActivityDetailDecorator
   EMPTY_LINE = ''.freeze
 
-  def initialize(activity)
-    @activity = activity
+  def self.required_options
+    %i(custom_field_names)
   end
+
+  def initialize(activity, opts = {})
+    @activity = activity
+    @opts = opts.symbolize_keys
+
+    required_options.each { |opt_name| raise "#{opt_name} option must be present" unless @opts[opt_name] }
+  end
+
+  delegate :required_options, to: :class
 
   def date
     activity.happened_at.strftime('%m/%d/%Y')
@@ -48,4 +57,16 @@ class Csv::ActivityDetailDecorator
   private
 
   attr_reader :activity
+
+  def method_missing(method_name, *args)
+    custom_field_name = @opts[:custom_field_names].detect do |custom_field_name|
+      custom_field_name.field_label.parameterize('_') == method_name.to_s
+    end
+
+    if custom_field_name
+      activity.custom_field&.public_send(custom_field_name.field_name)
+    else
+      super
+    end
+  end
 end

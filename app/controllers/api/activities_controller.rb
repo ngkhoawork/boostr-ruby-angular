@@ -4,7 +4,7 @@ class Api::ActivitiesController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        render json: activities.preload(:activity_type, :assets, :agency, :client, :creator, :publisher, deal: [:stage, :advertiser], contacts: [:address])
+        render json: preload_assocs(activities)
       }
       format.csv {
         send_data activity_csv_report, filename: "activity-detail-reports-#{Date.today}.csv"
@@ -14,12 +14,7 @@ class Api::ActivitiesController < ApplicationController
 
   def create
     if params[:file].present?
-      CsvImportWorker.perform_async(
-        params[:file][:s3_file_path],
-        'Activity',
-        current_user.id,
-        params[:file][:original_filename]
-      )
+      SmartCsvImportWorker.perform_async(*csv_import_params)
 
       render json: {
         message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
@@ -79,7 +74,8 @@ class Api::ActivitiesController < ApplicationController
       :activity_type,
       :timed,
       :google_event_id,
-      :uuid
+      :uuid,
+      custom_field_attributes: CustomField.attribute_names
     )
   end
 
@@ -88,7 +84,7 @@ class Api::ActivitiesController < ApplicationController
   end
 
   def activity_csv_report
-    Csv::ActivityDetailService.new(activities).perform
+    Csv::ActivityDetailService.new(activities, company).perform
   end
 
   def activities
@@ -118,6 +114,20 @@ class Api::ActivitiesController < ApplicationController
 
   def company
     @company ||= current_user.company
+  end
+
+  def preload_assocs(activity)
+    activity.preload(
+      :activity_type,
+      :assets,
+      :agency,
+      :client,
+      :creator,
+      :publisher,
+      :custom_field,
+      deal: [:stage, :advertiser],
+      contacts: [:address]
+    )
   end
 
   def filtered_activities
@@ -208,6 +218,16 @@ class Api::ActivitiesController < ApplicationController
     @_activity_happened_at ||= activity.happened_at
   end
 
+  def csv_import_params
+    [
+      params[:file][:s3_file_path],
+      'Importers::ActivitiesService',
+      current_user.id,
+      current_user.company_id,
+      params[:file][:original_filename]
+    ]
+  end
+  
   def parsed_filter_dates
     @parsed_filter_dates ||=
       if params[:start_date] && params[:end_date]
