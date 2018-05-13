@@ -2,7 +2,7 @@ module DFP
   class IntegrationErrors < StandardError
   end
 
-  FIXED_DATE_RANGE_TYPES = %w(TODAY
+  FIXED_DATE_RANGE_TYPES = %w[TODAY
                               YESTERDAY
                               LAST_WEEK
                               LAST_MONTH
@@ -14,11 +14,11 @@ module DFP
                               CURRENT_AND_NEXT_MONTH
                               NEXT_QUARTER
                               NEXT_3_MONTHS
-                              NEXT_12_MONTHS)
+                              NEXT_12_MONTHS].freeze
 
   class ReportsService < BaseService
     API_VERSION = :v201802
-    MAX_RETRIES = 5
+    MAX_RETRIES = 10
     RETRY_INTERVAL = 2
 
     def initialize(options = {})
@@ -35,7 +35,7 @@ module DFP
         run_report_job_by_query(saved_query)
         check_report_status
         get_report_by_id(report_job[:id])
-      rescue DfpApi::V201702::ReportService::ApiException => e
+      rescue DfpApi::V201802::ReportService::ApiException => e
         puts e.class
       end
     end
@@ -61,6 +61,9 @@ module DFP
       if !response[:results].nil?
         first_result = response[:results].first
         @saved_query = first_result[:report_query]
+        unless first_result[:is_compatible_with_api_version]
+          raise DFP::IntegrationErrors, "Report query with id: #{first_result[:id]} contains unsupported parameters"
+        end
       else
         raise DFP::IntegrationErrors, 'There is no report with such id'
       end

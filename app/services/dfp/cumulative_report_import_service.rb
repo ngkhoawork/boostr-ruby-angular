@@ -36,6 +36,17 @@ class DFP::CumulativeReportImportService < BaseService
     file = open(file_url)
     IO.copy_stream(file, report_file_path)
     report_file_path
+  rescue DFP::IntegrationErrors => e
+    csv_log = CsvImportLog.new(rows_processed: 0,
+                               rows_imported: 0,
+                               rows_failed: 1,
+                               rows_skipped: 0,
+                               company_id: dfp_api_configuration.company_id,
+                               source: 'dfp',
+                               object_name: 'dfp_cumulative')
+    csv_log.log_error([e.message])
+    csv_log.save!
+    return
   end
 
   def report_file_path

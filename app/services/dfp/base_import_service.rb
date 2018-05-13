@@ -19,7 +19,7 @@ class DFP::BaseImportService
       File.open(file, 'r:ISO-8859-1')
     rescue Exception => e
       puts e
-      import_log = CsvImportLog.new(company_id: company_id, object_name: import_type)
+      import_log = CsvImportLog.new(company_id: company_id, object_name: import_type, source: 'dfp')
       import_log.set_file_source(file)
       import_log.log_error [e.class.to_s, e.message]
       import_log.save
@@ -27,7 +27,7 @@ class DFP::BaseImportService
   end
 
   def parse_dfp_report
-    import_log = CsvImportLog.new(company_id: company_id, object_name: import_type)
+    import_log = CsvImportLog.new(company_id: company_id, object_name: import_type, source: 'dfp')
     import_log.set_file_source(report_file)
 
     CSV.parse(report_csv, { headers: true, header_converters: :symbol }) do |row|
