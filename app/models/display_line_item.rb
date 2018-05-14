@@ -65,6 +65,8 @@ class DisplayLineItem < ActiveRecord::Base
   after_create :update_io_budget
   after_update :update_io_budget
 
+  before_save :remove_budgets_out_of_dates, if: -> { start_date_changed? || end_date_changed? }
+
   after_destroy do |display_line_item|
     update_revenue_pipeline_budget(display_line_item)
   end
@@ -76,6 +78,10 @@ class DisplayLineItem < ActiveRecord::Base
   scope :for_time_period, -> (start_date, end_date) { where('display_line_items.start_date <= ? AND display_line_items.end_date >= ?', end_date, start_date) }
   scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) if product_id.present? }
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
+
+  def remove_budgets_out_of_dates
+    display_line_item_budgets.outside_time_period(start_date, end_date).destroy_all
+  end
 
   def update_revenue_fact_callback
     update_revenue_pipeline_budget(self) if budget_changed? || budget_loc_changed?

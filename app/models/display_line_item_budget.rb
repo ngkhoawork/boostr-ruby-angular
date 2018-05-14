@@ -29,6 +29,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
     where(ios: { created_at: (start_date.to_datetime.beginning_of_day)..(end_date.to_datetime.end_of_day) }) if start_date.present? && end_date.present?
   end
 
+  scope :outside_time_period, -> (start_date, end_date) do
+    where('display_line_item_budgets.start_date > ? OR display_line_item_budgets.end_date < ?', end_date, start_date)
+  end
+
   attr_accessor :has_dfp_budget_correction
 
   before_save :correct_budget, if: -> { has_dfp_budget_correction }
