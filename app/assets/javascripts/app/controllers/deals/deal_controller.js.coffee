@@ -470,7 +470,7 @@
       budgetPercentSum = 0
       _.each deal_product.deal_product_budgets, (item) ->
         budgetPercentSum = budgetPercentSum + Number(item.budget_percent)
-      deal_product.total_budget_percent = budgetPercentSum;
+      deal_product.total_budget_percent = Number(budgetPercentSum.toFixed(1))
       if(budgetPercentSum != 100)
         deal_product.isIncorrectTotalBudgetPercent = true;
         _.each deal_product.deal_product_budgets, (item) ->
@@ -490,7 +490,7 @@
           budgetSum = 0
           budgetPercentSum = 0
           _.each deal_product.deal_product_budgets, (deal_product_budget, index) ->
-            deal_product_budget.budget_percent = Math.round(deal_product_budget.budget_loc/deal_product.budget_loc*100)
+            deal_product_budget.budget_percent = Number((deal_product_budget.budget_loc / deal_product.budget_loc * 100).toFixed(1))
             budgetSum = budgetSum + deal_product_budget.budget_loc
             budgetPercentSum = budgetPercentSum + deal_product_budget.budget_percent
 
