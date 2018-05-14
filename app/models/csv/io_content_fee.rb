@@ -120,5 +120,4 @@ class Csv::IoContentFee
   def date_between_io?(date)
     date.between?(io.start_date, io.end_date)
   end
-
 end
