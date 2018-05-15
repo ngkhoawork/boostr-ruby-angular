@@ -5,7 +5,7 @@ class DisplayLineItemBudgetCsvOperative < DisplayLineItemBudgetCsv
 
   attr_accessor :company_id, :external_io_number, :line_number, :month_and_year,
                 :ctr, :impressions, :clicks, :video_avg_view_rate, :video_completion_rate,
-                :budget_loc, :io_name, :revenue_calculation_pattern
+                :budget_loc, :io_name, :revenue_calculation_pattern, :invoice_id
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -32,6 +32,7 @@ class DisplayLineItemBudgetCsvOperative < DisplayLineItemBudgetCsv
   end
 
   def display_line_item_budget
+    @_display_line_item_budget ||= display_line_item.display_line_item_budgets.find_by(invoice_id: invoice_id)
     @_display_line_item_budget ||= display_line_item.display_line_item_budgets.find_by(start_date: start_date)
     @_display_line_item_budget ||= display_line_item.display_line_item_budgets.new(display_line_item_budget_attributes)
   end
