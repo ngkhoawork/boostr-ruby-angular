@@ -61,13 +61,13 @@ class DisplayLineItem < ActiveRecord::Base
   attr_accessor :override_budget_delivered
 
   before_create do
-    coorect_budget_remaining
+    correct_budget_remaining
     set_alert
   end
 
   before_update do
     reset_budget_delivered unless override_budget_delivered
-    coorect_budget_remaining
+    correct_budget_remaining
     set_alert
   end
 
@@ -92,7 +92,7 @@ class DisplayLineItem < ActiveRecord::Base
     display_line_item_budgets.outside_time_period(start_date, end_date).destroy_all
   end
 
-  def coorect_budget_remaining
+  def correct_budget_remaining
     self.budget_delivered     = budget_delivered || 0
     self.budget_delivered_loc = budget_delivered_loc || 0
     self.budget_remaining     = [(budget || 0) - budget_delivered, 0].max

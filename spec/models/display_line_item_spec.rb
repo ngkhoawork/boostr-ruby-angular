@@ -12,88 +12,98 @@ RSpec.describe DisplayLineItem, type: :model do
   end
 
   context 'before_create' do
-    it 'corrects remaining budgets when create without budget_delivered' do
-      expect(item.budget_delivered.to_f).to be 0.0
-      expect(item.budget_delivered_loc.to_f).to be 0.0
-      expect(item.budget_remaining.to_f).to be 5000.0
-      expect(item.budget_remaining_loc.to_f).to be 5000.0
+    describe '#correct_budget_remaining' do
+      it 'corrects remaining budgets when create without budget_delivered' do
+        expect(item.budget_delivered.to_f).to be 0.0
+        expect(item.budget_delivered_loc.to_f).to be 0.0
+        expect(item.budget_remaining.to_f).to be 5000.0
+        expect(item.budget_remaining_loc.to_f).to be 5000.0
+      end
+
+      it 'corrects remaining budgets when create with budget_delivered' do
+        expect(item_with_delivered.budget_delivered.to_f).to be 3000.0
+        expect(item_with_delivered.budget_delivered_loc.to_f).to be 3000.0
+        expect(item_with_delivered.budget_remaining.to_f).to be 2000.0
+        expect(item_with_delivered.budget_remaining_loc.to_f).to be 2000.0
+      end
     end
 
-    it 'corrects remaining budgets when create with budget_delivered' do
-      expect(item_with_delivered.budget_delivered.to_f).to be 3000.0
-      expect(item_with_delivered.budget_delivered_loc.to_f).to be 3000.0
-      expect(item_with_delivered.budget_remaining.to_f).to be 2000.0
-      expect(item_with_delivered.budget_remaining_loc.to_f).to be 2000.0
-    end
+    describe '#set_alert' do
+      it 'called set_alert when create without delivered' do
+        expect(item.daily_run_rate.to_f).to be 0.0
+        expect(item.daily_run_rate_loc.to_f).to be 0.0
+        expect(item.num_days_til_out_of_budget.to_i).to be 0
+        expect(item.balance.to_f).to be 0.0
+        expect(item.balance_loc.to_f).to be 0.0
+      end
 
-    it 'called set_alert when create without delivered' do
-      expect(item.daily_run_rate.to_f).to be 0.0
-      expect(item.daily_run_rate_loc.to_f).to be 0.0
-      expect(item.num_days_til_out_of_budget.to_i).to be 0
-      expect(item.balance.to_f).to be 0.0
-      expect(item.balance_loc.to_f).to be 0.0
-    end
-
-    it 'called set_alert when create with delivered' do
-      expect(item_with_delivered.daily_run_rate.to_f).to be 600.0
-      expect(item_with_delivered.daily_run_rate_loc.to_f).to be 600.0
-      expect(item_with_delivered.num_days_til_out_of_budget.to_i).to be 3
-      expect(item_with_delivered.balance.to_f).to be 1800.0
-      expect(item_with_delivered.balance_loc.to_f).to be 1800.0
+      it 'called set_alert when create with delivered' do
+        expect(item_with_delivered.daily_run_rate.to_f).to be 600.0
+        expect(item_with_delivered.daily_run_rate_loc.to_f).to be 600.0
+        expect(item_with_delivered.num_days_til_out_of_budget.to_i).to be 3
+        expect(item_with_delivered.balance.to_f).to be 1800.0
+        expect(item_with_delivered.balance_loc.to_f).to be 1800.0
+      end
     end
   end
 
-  describe '#remove_budgets_out_of_dates' do
-    it 'removes lines outside of flight dates on date change' do
-      display_line_item(start_date: Date.new(2018, 1, 1), end_date: Date.new(2018, 4, 30))
+  context 'before_save' do
+    describe '#remove_budgets_out_of_dates' do
+      it 'removes lines outside of flight dates on date change' do
+        display_line_item(start_date: Date.new(2018, 1, 1), end_date: Date.new(2018, 4, 30))
 
-      display_line_item_budgets(4, start_date: Date.new(2018, 2, 1), end_date: Date.new(2018, 2, 28))
-      display_line_item_budgets.last.update(start_date: Date.new(2018, 4, 1), end_date: Date.new(2018, 4, 30))
-      display_line_item_budgets.first.update(start_date: Date.new(2018, 1, 1), end_date: Date.new(2018, 1, 31))
+        display_line_item_budgets(4, start_date: Date.new(2018, 2, 1), end_date: Date.new(2018, 2, 28))
+        display_line_item_budgets.last.update(start_date: Date.new(2018, 4, 1), end_date: Date.new(2018, 4, 30))
+        display_line_item_budgets.first.update(start_date: Date.new(2018, 1, 1), end_date: Date.new(2018, 1, 31))
 
-      expect(display_line_item.display_line_item_budgets.count).to be 4
+        expect(display_line_item.display_line_item_budgets.count).to be 4
 
-      display_line_item.update(start_date: Date.new(2018, 2, 1), end_date: Date.new(2018, 3, 31))
+        display_line_item.update(start_date: Date.new(2018, 2, 1), end_date: Date.new(2018, 3, 31))
 
-      expect(display_line_item.display_line_item_budgets.count).to be 2
-    end
+        expect(display_line_item.display_line_item_budgets.count).to be 2
+      end
 
-    it 'does not remove line item budgets if no date change' do
-      display_line_item(start_date: Date.new(2018, 1, 1), end_date: Date.new(2018, 4, 30))
+      it 'does not remove line item budgets if no date change' do
+        display_line_item(start_date: Date.new(2018, 1, 1), end_date: Date.new(2018, 4, 30))
 
-      display_line_item_budgets(4, start_date: Date.new(2016, 1, 1), end_date: Date.new(2016, 1, 31))
+        display_line_item_budgets(4, start_date: Date.new(2016, 1, 1), end_date: Date.new(2016, 1, 31))
 
-      expect(display_line_item.display_line_item_budgets.count).to be 4
+        expect(display_line_item.display_line_item_budgets.count).to be 4
 
-      display_line_item.update(start_date: Date.new(2018, 1, 1))
+        display_line_item.update(start_date: Date.new(2018, 1, 1))
 
-      expect(display_line_item.display_line_item_budgets.count).to be 4
+        expect(display_line_item.display_line_item_budgets.count).to be 4
+      end
     end
   end
 
   context 'before_update' do
-    it 'resets delivered and remaining budgets when update without override_budget_delivered' do
-      item.update(
-        budget_delivered: 1000.0,
-        budget_delivered_loc: 1000.0
-      )
+    describe '#reset_budget_delivered' do
+      it 'resets delivered and remaining budgets when update without override_budget_delivered' do
+        item.update(
+          budget_delivered: 1000.0,
+          budget_delivered_loc: 1000.0
+        )
 
-      expect(item.budget_delivered.to_f).to be 0.0
-      expect(item.budget_delivered_loc.to_f).to be 0.0
-      expect(item.budget_remaining.to_f).to be 5000.0
-      expect(item.budget_remaining_loc.to_f).to be 5000.0
+        expect(item.budget_delivered.to_f).to be 0.0
+        expect(item.budget_delivered_loc.to_f).to be 0.0
+        expect(item.budget_remaining.to_f).to be 5000.0
+        expect(item.budget_remaining_loc.to_f).to be 5000.0
+      end
     end
-    it 'updates delivered and remaining budgets when update with override_budget_delivered' do
-      item_with_delivered.update(
-        budget_delivered: 1000.0,
-        budget_delivered_loc: 1000.0,
-        override_budget_delivered: true
-      )
+    describe '#reset_budget_delivered' do
+      it 'updates delivered and remaining budgets when update with override_budget_delivered' do
+        item_with_delivered.update(
+          budget_delivered: 1000.0,
+          budget_delivered_loc: 1000.0,
+          override_budget_delivered: true
+        )
 
-      expect(item_with_delivered.budget_delivered.to_f).to be 1000.0
-      expect(item_with_delivered.budget_delivered_loc.to_f).to be 1000.0
-      expect(item_with_delivered.budget_remaining.to_f).to be 4000.0
-      expect(item_with_delivered.budget_remaining_loc.to_f).to be 4000.0
+        expect(item_with_delivered.budget_delivered.to_f).to be 1000.0
+        expect(item_with_delivered.budget_delivered_loc.to_f).to be 1000.0
+        expect(item_with_delivered.budget_remaining.to_f).to be 4000.0
+        expect(item_with_delivered.budget_remaining_loc.to_f).to be 4000.0
+      end
     end
   end
 
