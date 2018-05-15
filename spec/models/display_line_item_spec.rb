@@ -1,16 +1,46 @@
 require 'rails_helper'
 
 RSpec.describe DisplayLineItem, type: :model do
-  it 'closes deal display product when line item comes from datafeed' do
-    deal_product
+  context 'after_create' do
+    it 'closes deal display product when line item comes from datafeed' do
+      deal_product
+      deal.update(stage: closed_won_stage, updated_by: 0)
+      expect(deal_product.reload.open).to be true
+      create :display_line_item, io: deal.io, dont_update_parent_budget: true
+      expect(deal_product.reload.open).to be false
+    end
+  end
 
-    deal.update(stage: closed_won_stage, updated_by: 0)
+  context 'before_create' do
+    it 'corrects remaining budgets when create without budget_delivered' do
+      expect(item.budget_delivered.to_f).to be 0.0
+      expect(item.budget_delivered_loc.to_f).to be 0.0
+      expect(item.budget_remaining.to_f).to be 5000.0
+      expect(item.budget_remaining_loc.to_f).to be 5000.0
+    end
 
-    expect(deal_product.reload.open).to be true
+    it 'corrects remaining budgets when create with budget_delivered' do
+      expect(item_with_delivered.budget_delivered.to_f).to be 3000.0
+      expect(item_with_delivered.budget_delivered_loc.to_f).to be 3000.0
+      expect(item_with_delivered.budget_remaining.to_f).to be 2000.0
+      expect(item_with_delivered.budget_remaining_loc.to_f).to be 2000.0
+    end
 
-    create :display_line_item, io: deal.io, dont_update_parent_budget: true
+    it 'called set_alert when create without delivered' do
+      expect(item.daily_run_rate.to_f).to be 0.0
+      expect(item.daily_run_rate_loc.to_f).to be 0.0
+      expect(item.num_days_til_out_of_budget.to_i).to be 0
+      expect(item.balance.to_f).to be 0.0
+      expect(item.balance_loc.to_f).to be 0.0
+    end
 
-    expect(deal_product.reload.open).to be false
+    it 'called set_alert when create with delivered' do
+      expect(item_with_delivered.daily_run_rate.to_f).to be 600.0
+      expect(item_with_delivered.daily_run_rate_loc.to_f).to be 600.0
+      expect(item_with_delivered.num_days_til_out_of_budget.to_i).to be 3
+      expect(item_with_delivered.balance.to_f).to be 1800.0
+      expect(item_with_delivered.balance_loc.to_f).to be 1800.0
+    end
   end
 
   describe '#remove_budgets_out_of_dates' do
@@ -41,6 +71,34 @@ RSpec.describe DisplayLineItem, type: :model do
     end
   end
 
+  context 'before_update' do
+    it 'resets delivered and remaining budgets when update without override_budget_delivered' do
+      item.update(
+        budget_delivered: 1000.0,
+        budget_delivered_loc: 1000.0
+      )
+
+      expect(item.budget_delivered.to_f).to be 0.0
+      expect(item.budget_delivered_loc.to_f).to be 0.0
+      expect(item.budget_remaining.to_f).to be 5000.0
+      expect(item.budget_remaining_loc.to_f).to be 5000.0
+    end
+    it 'updates delivered and remaining budgets when update with override_budget_delivered' do
+      item_with_delivered.update(
+        budget_delivered: 1000.0,
+        budget_delivered_loc: 1000.0,
+        override_budget_delivered: true
+      )
+
+      expect(item_with_delivered.budget_delivered.to_f).to be 1000.0
+      expect(item_with_delivered.budget_delivered_loc.to_f).to be 1000.0
+      expect(item_with_delivered.budget_remaining.to_f).to be 4000.0
+      expect(item_with_delivered.budget_remaining_loc.to_f).to be 4000.0
+    end
+  end
+
+  private
+
   def company
     @company ||= create :company
   end
@@ -49,12 +107,36 @@ RSpec.describe DisplayLineItem, type: :model do
     @deal ||= create :deal, company: company
   end
 
+  def item
+    @_item ||= create :display_line_item, budget: 5000.0,
+                                          budget_loc: 5000.0,
+                                          start_date: start_date,
+                                          end_date: end_date
+  end
+
+  def item_with_delivered
+    @_item_with_delivered ||= create :display_line_item,  budget: 5000.0,
+                                                          budget_loc: 5000.0,
+                                                          budget_delivered: 3000.0,
+                                                          budget_delivered_loc: 3000.0,
+                                                          start_date: start_date,
+                                                          end_date: end_date
+  end
+
+  def start_date
+    @_start_date ||= (DateTime.now - 4.days)
+  end
+
+  def end_date
+    @_end_date ||= (DateTime.now + 5.days)
+  end
+
   def closed_won_stage
-    @_won_stage ||= create(:won_stage, company: company, open: false)
+    create :won_stage, company: company, open: false
   end
 
   def display_product
-    @display_product ||= create(:product, revenue_type: 'Display', company: company)
+    create :product, revenue_type: 'Display', company: company
   end
 
   def deal_product

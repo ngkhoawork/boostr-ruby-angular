@@ -38,12 +38,20 @@ class DisplayLineItemBudget < ActiveRecord::Base
   before_save :correct_budget, if: -> { has_dfp_budget_correction }
   before_save :set_cpd_price_type_budget, if: -> { has_dfp_budget_correction }
 
+  after_create :update_line_item_budget_delivered
+  after_update :update_line_item_budget_delivered
+  after_destroy :update_line_item_budget_delivered
+
   set_callback :save, :after, :update_revenue_fact_callback
 
   def update_revenue_fact_callback
     if budget_changed?
       update_revenue_pipeline_budget(self)
     end
+  end
+
+  def update_line_item_budget_delivered
+    DisplayLineItem::UpdateBudgetDelivered.new(self).perform
   end
 
   def update_revenue_pipeline_budget(display_line_item_budget)

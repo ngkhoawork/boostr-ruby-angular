@@ -58,9 +58,18 @@ class DisplayLineItem < ActiveRecord::Base
   end
 
   attr_accessor :dont_update_parent_budget
+  attr_accessor :override_budget_delivered
 
-  before_create :set_alert
-  before_update :set_alert
+  before_create do
+    coorect_budget_remaining
+    set_alert
+  end
+
+  before_update do
+    reset_budget_delivered unless override_budget_delivered
+    coorect_budget_remaining
+    set_alert
+  end
 
   after_create :update_io_budget
   after_update :update_io_budget
@@ -81,6 +90,18 @@ class DisplayLineItem < ActiveRecord::Base
 
   def remove_budgets_out_of_dates
     display_line_item_budgets.outside_time_period(start_date, end_date).destroy_all
+  end
+
+  def coorect_budget_remaining
+    self.budget_delivered     = budget_delivered || 0
+    self.budget_delivered_loc = budget_delivered_loc || 0
+    self.budget_remaining     = [(budget || 0) - budget_delivered, 0].max
+    self.budget_remaining_loc = [(budget_loc || 0)- budget_delivered_loc, 0].max
+  end
+
+  def reset_budget_delivered
+    self.budget_delivered     = self.budget_delivered_was
+    self.budget_delivered_loc = self.budget_delivered_loc_was
   end
 
   def update_revenue_fact_callback

@@ -23,7 +23,7 @@ class Io < ActiveRecord::Base
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
   has_many :costs, dependent: :destroy
   has_many :cost_monthly_amounts, dependent: :destroy, through: :costs
-  has_many :display_line_items, dependent: :destroy
+  has_many :display_line_items, dependent: :destroy, class_name: "::DisplayLineItem"
   has_many :display_line_item_budgets, dependent: :destroy, through: :display_line_items
   has_many :print_items, dependent: :destroy
   has_many :temp_ios, dependent: :destroy
