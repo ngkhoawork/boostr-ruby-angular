@@ -47,6 +47,8 @@
   Validation.account_base_fields().$promise.then (data) ->
     $scope.advertiser_base_fields_validations = data['Advertiser Base Field']
     $scope.agency_base_fields_validations = data['Agency Base Field']
+    $scope.require_usa_state = _.find data['Account Custom Validation'], factor: 'Require USA State'
+    $scope.default_segment = _.find data['Account Custom Validation'], factor: 'Default Segment - Not Top 100'
 
   $scope.getClients = (query = '') ->
     $scope.isLoading = true
@@ -185,12 +187,12 @@
         $scope.closeDuplicateList()
 
   $scope.onSelectRegion = (item, model) ->
-    $scope.stateFieldRequired = $scope.currentUser.company_id == 44 && item.name == 'USA'
+    $scope.stateFieldRequired = $scope.require_usa_state && item.name == 'USA'
     $scope.errors = _.omit($scope.errors, 'state') unless $scope.stateFieldRequired
     $scope.showAddressFields = true if $scope.stateFieldRequired
 
   $scope.onSelectClientType = (item, model) ->
-    if $scope.Advertiser && model == $scope.Advertiser && !$scope.client.client_segment_id && segment = _.find($scope.client.fields[4].options, name: 'Not Top 100')
+    if $scope.default_segment && $scope.Advertiser && model == $scope.Advertiser && !$scope.client.client_segment_id && segment = _.find($scope.client.fields[4].options, name: 'Not Top 100')
       $scope.client.client_segment_id = segment.id 
 
 ]
