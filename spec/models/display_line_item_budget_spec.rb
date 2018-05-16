@@ -11,10 +11,10 @@ describe DisplayLineItemBudget, type: :model do
       budget_item
       display_item.reload
 
-      expect(display_item.budget_delivered.to_f).to be 500.0
-      expect(display_item.budget_delivered_loc.to_f).to be 500.0
-      expect(display_item.budget_remaining.to_f).to be 4500.0
-      expect(display_item.budget_remaining_loc.to_f).to be 4500.0
+      expect(display_item.reload.budget_delivered.to_f).to be 500.0
+      expect(display_item.reload.budget_delivered_loc.to_f).to be 500.0
+      expect(display_item.reload.budget_remaining.to_f).to be 4500.0
+      expect(display_item.reload.budget_remaining_loc.to_f).to be 4500.0
     end
   end
 

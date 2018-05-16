@@ -39,7 +39,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
   before_save :set_cpd_price_type_budget, if: -> { has_dfp_budget_correction }
 
   after_create :update_line_item_budget_delivered
-  after_update :update_line_item_budget_delivered
+  after_update :update_line_item_budget_delivered, if: -> { budget_changed? }
   after_destroy :update_line_item_budget_delivered
 
   set_callback :save, :after, :update_revenue_fact_callback
@@ -51,7 +51,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   def update_line_item_budget_delivered
-    DisplayLineItem::UpdateBudgetDelivered.new(self).perform
+    DisplayLineItem::UpdateBudgetDelivered.new(display_line_item).perform if display_line_item
   end
 
   def update_revenue_pipeline_budget(display_line_item_budget)
