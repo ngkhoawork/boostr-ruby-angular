@@ -1,5 +1,6 @@
 class AddValidationsToCompany44 < ActiveRecord::Migration
   def up
+    return unless company.present?
     company.validations.find_or_create_by(
       object: 'Account Custom Validation', 
       value_type: 'Boolean', 
