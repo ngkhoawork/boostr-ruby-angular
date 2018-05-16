@@ -257,38 +257,6 @@ class User < ActiveRecord::Base
     company.sales_processes.by_active(true).count > 1
   end
 
-  def set_alert(should_save=false)
-    member_ids = [self.id]
-
-    if self.leader?
-      self.teams.each do |t|
-        member_ids += t.all_members.collect{|m| m.id}
-        member_ids += t.all_leaders.collect{|m| m.id}
-      end
-    end
-
-    member_ids = member_ids.uniq
-
-    io_ids = Io.joins(:io_members).where("io_members.user_id in (?)", member_ids).all.collect{|io| io.id}.uniq
-
-    DisplayLineItem.where("io_id in (?)", io_ids).each do |display|
-      if display.balance > 0
-        self.pos_balance_cnt += 1
-        self.pos_balance += display.balance
-      elsif display.balance < 0
-        self.neg_balance_cnt += 1
-        self.neg_balance += display.balance
-      end
-    end
-
-    self.pos_balance_l_cnt = self.pos_balance_cnt
-    self.pos_balance_l = self.pos_balance
-    self.neg_balance_l_cnt = self.neg_balance_cnt
-    self.neg_balance_l = self.neg_balance
-    self.last_alert_at = DateTime.now
-    self.save if should_save
-  end
-
   def currency_exists
     if default_currency.present? && Currency.find_by(curr_cd: default_currency).nil?
       errors.add(:default_currency, "currency does not exist")

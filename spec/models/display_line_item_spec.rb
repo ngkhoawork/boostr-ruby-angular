@@ -1,10 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe DisplayLineItem, type: :model do
+  before do
+    deal_product
+    deal.update(stage: closed_won_stage, updated_by: 0)
+  end
+
   context 'after_create' do
     it 'closes deal display product when line item comes from datafeed' do
-      deal_product
-      deal.update(stage: closed_won_stage, updated_by: 0)
       expect(deal_product.reload.open).to be true
       create :display_line_item, io: deal.io, dont_update_parent_budget: true
       expect(deal_product.reload.open).to be false
@@ -107,6 +110,21 @@ RSpec.describe DisplayLineItem, type: :model do
     end
   end
 
+  context 'after_save' do
+    describe '#update_io_budget' do
+      it 'updates io budget after create' do
+        create :display_line_item, io: deal.io, budget: 50
+        expect(deal.io.reload.budget.to_f).to be 50.0
+      end
+      it 'updates io budget after update' do
+        display_item = create :display_line_item, io: deal.io, budget: 50
+        expect(deal.io.reload.budget.to_f).to be 50.0
+        display_item.update(budget: 100)
+        expect(deal.io.reload.budget.to_f).to be 100.0
+      end
+    end
+  end
+
   private
 
   def company
@@ -117,15 +135,21 @@ RSpec.describe DisplayLineItem, type: :model do
     @deal ||= create :deal, company: company
   end
 
+  def io
+    @_io ||= create :io, company: company
+  end
+
   def item
-    @_item ||= create :display_line_item, budget: 5000.0,
+    @_item ||= create :display_line_item, io: io,
+                                          budget: 5000.0,
                                           budget_loc: 5000.0,
                                           start_date: start_date,
                                           end_date: end_date
   end
 
   def item_with_delivered
-    @_item_with_delivered ||= create :display_line_item,  budget: 5000.0,
+    @_item_with_delivered ||= create :display_line_item,  io: io,
+                                                          budget: 5000.0,
                                                           budget_loc: 5000.0,
                                                           budget_delivered: 3000.0,
                                                           budget_delivered_loc: 3000.0,

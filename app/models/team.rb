@@ -291,42 +291,6 @@ class Team < ActiveRecord::Base
     all_members.union(all_leaders).pluck(:id)
   end
 
-  def sum_pos_balance
-    pos_balance = leader.nil? ? 0 : leader.pos_balance
-    pos_balance += members.all.sum(:pos_balance)
-    children.each do |child|
-      pos_balance += child.sum_pos_balance
-    end
-    return pos_balance
-  end
-
-  def sum_neg_balance
-    neg_balance = leader.nil? ? 0 : leader.neg_balance
-    neg_balance += members.all.sum(:neg_balance)
-    children.each do |child|
-      neg_balance += child.sum_neg_balance
-    end
-    return neg_balance
-  end
-
-  def sum_pos_balance_lcnt
-    pos_balance_lcnt = leader.nil? ? 0 : leader.pos_balance_lcnt
-    pos_balance_lcnt += members.all.sum(:pos_balance_lcnt)
-    children.each do |child|
-      pos_balance_lcnt += child.sum_pos_balance_lcnt
-    end
-    return pos_balance_lcnt
-  end
-
-  def sum_neg_balance_lcnt
-    neg_balance_lcnt = leader.nil? ? 0 : leader.neg_balance_lcnt
-    neg_balance_lcnt += members.all.sum(:neg_balance_lcnt)
-    children.each do |child|
-      neg_balance_lcnt += child.sum_neg_balance_lcnt
-    end
-    return neg_balance_lcnt
-  end
-
   def descendents
     self.class.descendents_for(self)
   end

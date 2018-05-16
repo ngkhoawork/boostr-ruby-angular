@@ -71,10 +71,12 @@ class DisplayLineItem < ActiveRecord::Base
     set_alert
   end
 
-  after_create :update_io_budget
-  after_update :update_io_budget
-
   before_save :remove_budgets_out_of_dates, if: -> { start_date_changed? || end_date_changed? }
+
+  after_save do
+    update_io_budget
+    close_deal_products
+  end
 
   after_destroy do |display_line_item|
     update_revenue_pipeline_budget(display_line_item)
@@ -102,6 +104,14 @@ class DisplayLineItem < ActiveRecord::Base
   def reset_budget_delivered
     self.budget_delivered     = self.budget_delivered_was
     self.budget_delivered_loc = self.budget_delivered_loc_was
+  end
+  
+  def update_io_budget
+    io.update_total_budget if !dont_update_parent_budget && budget_changed? && io
+  end
+
+  def close_deal_products
+    io.deal.close_display_product if io_id_changed? && io.present?
   end
 
   def update_revenue_fact_callback
@@ -161,22 +171,6 @@ class DisplayLineItem < ActiveRecord::Base
           forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
           forecast_revenue_fact_calculator.calculate()
         end
-      end
-    end
-  end
-  
-  def update_io_budget
-    if io.present?
-      io.update_total_budget unless dont_update_parent_budget
-      if io.deal.present?
-        io.deal.close_display_product()
-      end
-    end
-
-    if io_id_changed? && io.present?
-      io.users.update_all(pos_balance_cnt: 0, neg_balance_cnt: 0, pos_balance: 0, neg_balance: 0, pos_balance_l_cnt: 0, neg_balance_l_cnt: 0, pos_balance_l: 0, neg_balance_l: 0, last_alert_at: DateTime.now)
-      io.users.each do |user|
-        user.set_alert(true)
       end
     end
   end
