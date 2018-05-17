@@ -1,10 +1,11 @@
 require 'rails_helper'
 
-describe TeamSerializer do
+describe Teams::BaseSerializer do
   before do
     member1
     member2
   end
+
   it 'serializes user data' do
     expect(serializer.id).to eq(team.id)
     expect(serializer.name).to eq('West Team')
