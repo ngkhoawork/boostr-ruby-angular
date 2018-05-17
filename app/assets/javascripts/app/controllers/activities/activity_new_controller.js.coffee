@@ -55,7 +55,6 @@
 
             #edit mode
             if activity
-                console.log activity
                 $scope.popupTitle = 'Edit Activity'
                 $scope.submitButtonText = 'Save'
                 if activity.custom_field

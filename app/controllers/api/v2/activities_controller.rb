@@ -131,7 +131,7 @@ class Api::V2::ActivitiesController < ApiController
     existing_company_contacts.ids + new_contacts.map(&:id)
   end
 
-  def activity_paramsd
+  def activity_params
     params.require(:activity).permit(
       :type,
       :deal_id,

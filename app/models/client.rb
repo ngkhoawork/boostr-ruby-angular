@@ -256,6 +256,9 @@ class Client < ActiveRecord::Base
               creator: {},
               contacts: {},
               custom_field: { only: CustomField.allowed_attr_names(company, 'Activity') },
+              client: { only: [:id, :name] },
+              agency: { only: [:id, :name] },
+              deal: { only: [:id, :name] },
               publisher: { only: [:id, :name] },
               assets: {
                 methods: [
