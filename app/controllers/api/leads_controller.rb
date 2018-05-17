@@ -79,6 +79,10 @@ class Api::LeadsController < ApplicationController
     end
   end
 
+  def clients
+    render json: suggested_clients, each_serializer: Api::Leads::ClientSerializer
+  end
+
   private
 
   def lead
@@ -130,5 +134,11 @@ class Api::LeadsController < ApplicationController
 
   def captcha_succeed?
     RecaptchaService.new(lead_params[:company_id], params['g-recaptcha-response']).succeed?
+  end
+
+  def suggested_clients
+    return if lead.company_name.blank?
+
+    company.clients.fuzzy_name_string_search(lead.company_name)
   end
 end

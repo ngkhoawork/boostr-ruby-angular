@@ -140,7 +140,11 @@ class Client < ActiveRecord::Base
 
   pg_search_scope :fuzzy_name_string_search,
                   against: :name,
-                  using: :trigram
+                  using: {
+                    tsearch: {
+                      prefix: true
+                    }
+                  }
 
   ADVERTISER = 10
   AGENCY = 11

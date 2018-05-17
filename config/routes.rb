@@ -596,6 +596,7 @@ Rails.application.routes.draw do
         get :reassign
         get :map_with_client
         get :reject_from_email
+        get :clients
       end
 
       collection do
