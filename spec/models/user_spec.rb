@@ -10,6 +10,20 @@ RSpec.describe User, type: :model do
   let(:user) { create :user }
   let(:user_dimension) { UserDimension.find_by_id(user.id) }
 
+  context 'validations' do
+    subject { user }
+
+    context 'presence' do
+      it('first name should be present') { should validate_presence_of(:first_name) }
+      it('last name should be present') { should validate_presence_of(:last_name) }
+      it('email should be present') { should validate_presence_of(:email) }
+    end
+
+    context 'uniqueness' do
+      it('email should be uniq') { should validate_uniqueness_of(:email) }
+    end
+  end
+
   context 'before_update' do
     it 'promotes user to an admin if user type is changed to ADMIN' do
       expect(user.user_type).to_not eq ADMIN
@@ -19,7 +33,7 @@ RSpec.describe User, type: :model do
   end
 
   context 'after_create' do
-    it "user dimension with same id is created" do
+    it 'user dimension with same id is created' do
       expect(user_dimension.id).to equal(user.id)
     end
   end
@@ -147,38 +161,38 @@ RSpec.describe User, type: :model do
     it 'finds a user by payload sub key' do
       allow(Digest::SHA1).to receive(:hexdigest).and_return(:encrypted_hash_part)
 
-      payload = { "sub" => user.id, "refresh" => :encrypted_hash_part }
+      payload = { 'sub' => user.id, 'refresh' => :encrypted_hash_part }
 
       expect(User.from_token_payload payload).to eql user
     end
 
     it 'returns nil if user is not found' do
-      payload = { "sub" => nil, "refresh" => :encrypted_hash_part }
+      payload = { 'sub' => nil, 'refresh' => :encrypted_hash_part }
 
       expect(User.from_token_payload payload).to be nil
     end
 
     it 'returns nil if user is inactive' do
       user.update(is_active: false)
-      payload = { "sub" => user.id, "refresh" => :encrypted_hash_part }
+      payload = { 'sub' => user.id, 'refresh' => :encrypted_hash_part }
 
       expect(User.from_token_payload payload).to be nil
     end
 
     it 'returns nil if refresh token does not match' do
-      payload = { "sub" => user.id, "refresh" => :stale_hash_part }
+      payload = { 'sub' => user.id, 'refresh' => :stale_hash_part }
 
       expect(User.from_token_payload payload).to be nil
     end
 
     it 'returns nil if sub param is empty' do
-      payload = { "refresh" => :stale_hash_part }
+      payload = { 'refresh' => :stale_hash_part }
 
       expect(User.from_token_payload payload).to be nil
     end
 
     it 'returns nil if refresh token param is empty' do
-      payload = { "sub" => user.id }
+      payload = { 'sub' => user.id }
 
       expect(User.from_token_payload payload).to be nil
     end
