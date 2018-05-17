@@ -3,7 +3,11 @@ require 'rails_helper'
 describe Report::PipelineSummaryService do
   before do
     create_values
-    create :deal_member, deal: deal
+    deal_member1
+    deal_member2
+    deal_member3
+    deal_member_leader
+    team_level_3
   end
 
   it 'pipeline summary service with default params' do
@@ -33,31 +37,55 @@ describe Report::PipelineSummaryService do
   end
 
   it 'pipeline summary find by stage' do
-    expect(pipeline_summary_service(company, {stage_ids: [deal.stage_id]}).perform.object.count).to eq(1)
+    expect(pipeline_summary_service(company, {stage_ids: [stage.id]}).perform.object.count).to eq(3)
   end
 
   it 'pipeline summary find by seller' do
-    seller_params = { seller_id: deal.deal_members.first.user_id }
+    seller_params = { seller_id: deals[0].deal_members.first.user_id }
 
     expect(pipeline_summary_service(company, seller_params).perform.object.count).to eq(1)
   end
 
   it 'pipeline summary find by start date' do
     date_params = {
-      start_date: deal.start_date - 1.day,
-      end_date: deal.end_date - 1.day
+      start_date: start_date - 1.day,
+      end_date: end_date - 1.day
     }
 
-    expect(pipeline_summary_service(company, date_params).perform.object.count).to eq(1)
+    expect(pipeline_summary_service(company, date_params).perform.object.count).to eq(3)
   end
 
   it 'pipeline summary find by created date' do
     date_params = {
-      created_date_start: deal.created_at - 1.day,
-      created_date_end: deal.created_at + 1.day
+      created_date_start: deals[0].created_at - 1.day,
+      created_date_end: deals[0].created_at + 1.day
     }
 
-    expect(pipeline_summary_service(company, date_params).perform.object.count).to eq(1)
+    expect(pipeline_summary_service(company, date_params).perform.object.count).to eq(3)
+  end
+
+  it 'pipeline summary find by parent team' do
+    date_params = {
+      team_id: team_level_1.id
+    }
+
+    expect(pipeline_summary_service(company, date_params).perform.object.count).to eq(3)
+  end
+
+  it 'pipeline summary find by level 1 sub team' do
+    date_params = {
+      team_id: team_level_2.id
+    }
+
+    expect(pipeline_summary_service(company, date_params).perform.object.count).to eq(2)
+  end
+
+  it 'pipeline summary find by level 2 sub team' do
+    date_params = {
+      team_id: team_level_3.id
+    }
+
+    expect(pipeline_summary_service(company, date_params).perform.object.count).to eq(2)
   end
 
   private
@@ -78,11 +106,70 @@ describe Report::PipelineSummaryService do
     @_field ||= create :field, company: company
   end
 
-  def create_values
-    create :value, company: company, field: field, subject: deal, option: options
+  def stage
+    @_stage ||= create :stage, company: company
   end
 
-  def deal
-    @_deal ||= create :deal, company: company
+  def team_level_1
+    @_team_level_1 ||= create :team, company: company
+  end
+
+  def team_level_2
+    @_team_level_2 ||= create :team, company: company, parent: team_level_1
+  end
+
+  def team_level_3
+    @_team_level_3 ||= create :team, company: company, parent: team_level_2, leader: leader
+  end
+
+  def user1
+    @_user1 ||= create :user, company: company, team: team_level_1
+  end
+
+  def user2
+    @_user2 ||= create :user, company: company, team: team_level_2
+  end
+
+  def user3
+    @_user3 ||= create :user, company: company, team: team_level_3
+  end
+
+  def leader
+    @_leader ||= create :user, company: company
+  end
+
+  def deal_member1
+    @_deal_member1 ||= create :deal_member, deal: deals[0], user: user1
+  end
+
+  def deal_member2
+    @_deal_member2 ||= create :deal_member, deal: deals[1], user: user2
+  end
+
+  def deal_member3
+    @_deal_member3 ||= create :deal_member, deal: deals[1], user: user3
+  end
+
+  def deal_member_leader
+    @_deal_member_leader ||= create :deal_member, deal: deals[2], user: leader
+  end
+
+  def create_values
+    create :value, company: company, field: field, subject: deals[0], option: options
+  end
+
+  def deals
+    @_deals ||= create_list :deal, 3, company: company,
+                                      start_date: start_date,
+                                      end_date: end_date,
+                                      stage: stage
+  end
+
+  def start_date
+    @_start_date ||= Date.parse('2017-04-01')
+  end
+
+  def end_date
+    @_end_date ||= Date.parse('2017-06-30')
   end
 end
