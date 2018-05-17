@@ -212,6 +212,7 @@
                     message = 'This deal has only non PMP products. You can\'t add PMP product.'
                     showWarningModal(message)
                 else
+                    $scope.disableSubmitButton = true
                     DealProduct.create(deal_id: $scope.currentDeal.id, deal_product: dealProduct).then(
                         (deal) ->
                             $rootScope.$broadcast 'deal_product_added', deal
@@ -219,6 +220,7 @@
                         (resp) ->
                             for key, error of resp.data.errors
                                 $scope.errors[key] = error && error[0]
+                            $scope.disableSubmitButton = false    
                     )
 
             $scope.resetDealProduct = ->
