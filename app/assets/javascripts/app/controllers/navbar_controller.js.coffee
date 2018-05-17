@@ -1,9 +1,14 @@
 @app.controller 'NavbarController',
-['$scope', '$window', '$document', '$location', '$timeout'
-( $scope,   $window,   $document,   $location,   $timeout ) ->
+['$scope', '$window', '$document', '$location', '$timeout', '$routeParams',
+( $scope,   $window,   $document,   $location,   $timeout,   $routeParams) ->
+    $scope.query = if $location.path() == '/search' then $location.search().query else ''
 
     $scope.isActive = (viewLocation) ->
       $location.path().indexOf(viewLocation) == 0
+
+    $scope.search = () ->
+      if $scope.query.length > 0
+        $location.url('/search?query=' + $scope.query)
 
     $scope.navbar = [
         {name: 'HOME PAGE', url: '/dashboard'}

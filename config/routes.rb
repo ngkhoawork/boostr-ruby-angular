@@ -636,6 +636,8 @@ Rails.application.routes.draw do
         post :send_ealert
       end
     end
+
+    get 'search/:query', to: 'search#all'
   end
 
   mount Sidekiq::Web => '/sidekiq'

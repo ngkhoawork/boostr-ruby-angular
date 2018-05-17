@@ -1,6 +1,12 @@
 class Contact < ActiveRecord::Base
   SAFE_COLUMNS = %i{name position created_at updated_at}
 
+  include PgSearch
+
+  multisearchable against: [:name, :email], 
+                  additional_attributes: lambda { |contact| { company_id: contact.company_id } },
+                  if: lambda { |contact| !contact.deleted? }
+
   acts_as_paranoid
 
   WEB_FORM_LEAD = 'web-form lead'.freeze

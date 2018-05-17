@@ -13,6 +13,35 @@
       background-image: image-url("branding/boostr_logo.png");
       background-repeat: no-repeat;
       background-position: center;
+      margin-right: 50px;
+    }
+    .global-search {
+      position: relative;
+      display: inline-block;
+      vertical-align: top;
+      padding-left: 20px;
+      border-left: 1px solid #646769;
+      height: 34px;
+      margin-top: 4px;
+
+      .fa-search {
+        position: absolute;
+        font-size: 22px;
+        vertical-align: middle;
+        font-weight: normal;
+        margin-top: 5px;
+      }
+      .form-control {
+        height: 30px;
+        vertical-align: middle;
+        border: none;
+        background: none;
+        color: #fff;
+        font-size: 16px;
+        font-weight: initial;
+        padding-left: 30px;
+        width: 100%;
+      }
     }
     .auth-wrap {
       position: absolute;

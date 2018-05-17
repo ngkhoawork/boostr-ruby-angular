@@ -2,6 +2,11 @@ class Client < ActiveRecord::Base
   SAFE_COLUMNS = %i{name}
 
   include PgSearch
+  
+  multisearchable against: [:name],
+                  additional_attributes: lambda { |client| { company_id: client.company_id } },
+                  if: lambda { |client| !client.deleted? }
+
   acts_as_paranoid
 
   belongs_to :company
@@ -389,6 +394,20 @@ class Client < ActiveRecord::Base
 
   def self.workflowable_reflections
     %i{ account_cf }
+  end
+
+  def self.rebuild_pg_search_documents
+    connection.execute <<-SQL
+     INSERT INTO pg_search_documents (searchable_type, searchable_id, company_id, content, created_at, updated_at)
+       SELECT 'Client' AS searchable_type,
+              clients.id AS searchable_id,
+              clients.company_id AS company_id,
+              clients.name AS content,
+              now() AS created_at,
+              now() AS updated_at
+       FROM clients
+       WHERE clients.deleted_at IS NULL
+    SQL
   end
 
   private

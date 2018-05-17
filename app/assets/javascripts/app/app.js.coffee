@@ -35,6 +35,10 @@
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
   $routeProvider
+    .when '/search',
+      templateUrl: 'search.html'
+      controller: 'SearchController'
+      
     .when '/dashboard',
       templateUrl: 'dashboard.html'
       controller: 'DashboardController'

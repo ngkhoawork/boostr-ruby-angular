@@ -8,6 +8,11 @@ class Deal < ActiveRecord::Base
 
   include GoogleSheetsExportable
   include WorkflowCallbacks
+  include PgSearch
+
+  multisearchable against: [:name, :advertiser_name, :agency_name], 
+                  additional_attributes: lambda { |deal| { company_id: deal.company_id } },
+                  if: lambda { |deal| !deal.deleted? }
 
   acts_as_paranoid
 
@@ -1654,6 +1659,14 @@ class Deal < ActiveRecord::Base
 
   def generate_io
     Deal::IoGenerateService.new(self).perform
+  end
+
+  def advertiser_name
+    advertiser&.name
+  end
+
+  def agency_name
+    agency&.name
   end
 
   private

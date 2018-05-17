@@ -1,0 +1,95 @@
+#global-search.z-styles{infinite: {scroll: 'loadMore()', 'scroll-disabled': 'isLoading || allLoaded', 'scroll-distance': '0.5'}}
+  .container-fluid
+    .title
+      Search Results for: 
+      %b ’{{query}}’
+
+  .container-fluid{ 'ng-if': 'clients.length > 0' }
+    .block
+      .title-row.mb10
+        %span.title Accounts
+      .table-wrapper
+        %table.table.table-hover.table-striped
+          %thead
+            %tr
+              %th.left Name
+              %th.left Type
+              %th.left Category
+              %th.left Team
+          %tbody
+            %tr{ ng: { repeat: 'client in clients' } }
+              %td.left 
+                %a{'ng-href': '/accounts/{{client.id}}'} {{ client.name }}
+              %td.left {{ client.client_type.name }}
+              %td.left {{ client.client_category.name }}
+              %td.left
+                %div{ 'ng-repeat': 'member in client.client_members' }
+                  {{ member.user.name + " (" + member.share + "%)" }}
+
+  .container-fluid{ 'ng-if': 'contacts.length > 0' }
+    .block
+      .title-row.mb10
+        %span.title Contacts
+      .table-wrapper
+        %table.table.table-hover.table-striped
+          %thead
+            %tr
+              %th.left Name
+              %th.left Position
+              %th.left Related Accounts
+              %th.left Email
+          %tbody
+            %tr{ ng: { repeat: 'contact in contacts' } }
+              %td.left
+                %a{'ng-href': '/contacts/{{contact.id}}'} {{ contact.name }}
+              %td.left {{ contact.position }}
+              %td.left 
+                %div{ 'ng-repeat': 'client in contact.clients' }
+                  {{ client.name }}
+              %td.left {{ contact.email }}
+
+  .container-fluid{ 'ng-if': 'deals.length > 0' }
+    .block
+      .title-row.mb10
+        %span.title Deals
+      .table-wrapper
+        %table.table.table-hover.table-striped
+          %thead
+            %tr
+              %th.left Name
+              %th.left Advertiser
+              %th.left Agency
+              %th.left Stage
+              %th.left %
+              %th.left Budget
+          %tbody
+            %tr{ ng: { repeat: 'deal in deals' } }
+              %td.left
+                %a{'ng-href': '/deals/{{deal.id}}'} {{ deal.name }}
+              %td.left {{ deal.advertiser.name }}
+              %td.left {{ deal.agency.name }}
+              %td.left {{ deal.stage.name }}
+              %td.left {{ deal.stage.probability }}%
+              %td.left {{ deal.budget_loc | currency:deal.currency.curr_symbol:0 }}
+
+  .container-fluid{ 'ng-if': 'ios.length > 0' }
+    .block
+      .title-row.mb10
+        %span.title IOs
+      .table-wrapper
+        %table.table.table-hover.table-striped
+          %thead
+            %tr
+              %th.left IO #
+              %th.left Name
+              %th.left Advertiser
+              %th.left Agency
+              %th.left Budget
+          %tbody
+            %tr{ ng: { repeat: 'io in ios' } }
+              %td.left {{ io.io_number }}
+              %td.left
+                %a{'ng-href': 'revenue/ios/{{io.id}}'} {{ io.name }}
+              %td.left {{ io.advertiser.name }}
+              %td.left {{ io.agency.name }}
+              %td.left {{ io.budget_loc | currency:io.currency.curr_symbol:0 }}

@@ -3,6 +3,10 @@ class Io < ActiveRecord::Base
                     created_at updated_at name budget_loc curr_cd}
 
   include CurrencyExchangeble
+  include PgSearch
+
+  multisearchable against: [:name, :advertiser_name, :agency_name], 
+                  additional_attributes: lambda { |io| { company_id: io.company_id } }
 
   belongs_to :advertiser, class_name: 'Client', foreign_key: 'advertiser_id'
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id'
@@ -256,15 +260,19 @@ class Io < ActiveRecord::Base
     a.merge(b) {|key, a_item, b_item| merge_recursively(a_item, b_item) }
   end
   def as_json(options = {})
-    super(merge_recursively(options,
-        include: {
-            currency: { only: :curr_symbol },
-            advertiser: { name: {} },
-            agency: { name: {} },
-            deal: { name: {} }
-        }
+    if options[:override]
+      super(options)
+    else
+      super(merge_recursively(options,
+          include: {
+              currency: { only: :curr_symbol },
+              advertiser: { name: {} },
+              agency: { name: {} },
+              deal: { name: {} }
+          }
+        )
       )
-    )
+    end
   end
 
   def get_agency
@@ -376,5 +384,13 @@ class Io < ActiveRecord::Base
       end
     end
     return sum_period_budget, split_period_budget
+  end
+
+  def advertiser_name
+    advertiser&.name
+  end
+
+  def agency_name
+    agency&.name
   end
 end
