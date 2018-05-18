@@ -32,19 +32,26 @@ class EmailThread < ActiveRecord::Base
 
   def self.thread_list current_user_id, thread_ids
     threads(current_user_id, thread_ids).as_json.each_with_object({}) { |thread, result|
-      result[thread['thread_id']] = thread.merge!({
-        last_open: {location: thread['location'],
-                    ip: thread['ip'],
-                    device: thread['device'],
-                    opened_at: thread['opened_at'],
-                    is_gmail: thread['is_gmail']}
-      })
-
-      result[thread['thread_id']].except!('location', 'rn', 'ip', 'device', 'opened_at', 'is_gmail')
+      result[thread['thread_id']] = thread.merge! last_opened_email thread
+      result[thread['thread_id']].except! 'location', 'rn', 'ip', 'device', 'opened_at', 'is_gmail'
     }
   end
 
   def last_five_opens
     email_opens.order("created_at DESC").first(5)
+  end
+
+  private
+
+  def self.last_opened_email thread
+    if thread['opened_at']
+      { last_open: { location: thread['location'],
+                     ip: thread['ip'],
+                     device: thread['device'],
+                     opened_at: thread['opened_at'],
+                     is_gmail: thread['is_gmail'] } }
+    else
+      { last_open: nil }
+    end
   end
 end
