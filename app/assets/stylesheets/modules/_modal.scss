@@ -693,3 +693,8 @@
     overflow-y: auto;
   }
 }
+#user-modal {
+  .star {
+    color: $error-color;
+  }
+}
