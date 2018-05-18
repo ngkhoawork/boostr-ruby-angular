@@ -144,7 +144,7 @@
 
     if moment(this.deal.start_date).isAfter(this.deal.end_date) then return $scope.errors['end_date'] = 'End Date can\'t be before Start Date';
 
-    fields = ['name', 'stage_id', 'advertiser_id', 'agency_id', 'deal_type', 'source_type', 'start_date', 'end_date']
+    fields = ['name', 'stage_id', 'advertiser_id', 'agency', 'deal_type', 'source_type', 'start_date', 'end_date']
     fields.push('sales_process_id') unless $scope.team
 
     fields.forEach (key) ->
@@ -156,7 +156,7 @@
           if !field then return $scope.errors[key] = 'Stage is required'
         when 'advertiser_id'
           if !field then return $scope.errors[key] = 'Advertiser is required'
-        when 'agency_id'
+        when 'agency'
           if !field && options && options.agreement && options.agreement.agencies.length 
             return $scope.errors[key] = 'Agency is required'
         when 'start_date'

@@ -67,11 +67,11 @@
                             {{ $select.selected.name }}
                         %ui-select-choices{ repeat: 'advertiser.id as advertiser in availableAdvertisers | filter: { name: $select.search }' }
                             %div{ ng: { bind: { html: 'advertiser.name' } } }        
-                .form-group.agency-field{'ng-class':'{error: errors.agency_id}'}
-                    %span.error-text {{errors.agency_id}}
+                .form-group.agency-field{'ng-class':'{error: errors.agency}'}
+                    %span.error-text {{errors.agency}}
                     %label{style: 'display: block'}
                         Agency
-                        %span.star{ 'ng-if': "availableAgencies.length" } *
+                        %span.star{ 'ng-if': "availableAgencies.length || baseFieldRequired('agency')" } *
                     %ui-select{ name: 'agency', ng: { if: '!availableAgencies.length', model: 'deal.agency_id', disabled: true, keyup: 'searchClients($select.search, Agency)' }, 'on-select': 'agencySelected($model)' }
                         %ui-select-match{ placeholder: 'Agency' }
                             {{ $select.selected.name }}
