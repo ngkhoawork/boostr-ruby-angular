@@ -7,20 +7,40 @@ class EmailThread < ActiveRecord::Base
   scope :without_opens, -> () {  includes(:email_opens).where(email_opens: {id: nil}) }
   scope :search_by_email_threads, -> (term) { where("lower(subject) LIKE :term OR lower(recipient) LIKE :term OR lower(recipient_email) LIKE :term", term: "%#{term}%".downcase)}
 
-  def self.threads thread_ids
-    select('thread_id,
-            email_guid AS thread_guid,
-            COUNT(email_opens.id) AS email_opens_count')
-    .joins('LEFT OUTER JOIN email_opens ON email_opens.guid = email_threads.email_guid')
-    .where(thread_id: thread_ids)
-    .group('email_threads.id')
+  def self.threads current_user_id, thread_ids
+    find_by_sql(["SELECT * FROM (
+      SELECT
+        thread_id,
+        email_guid AS thread_guid,
+        email_opens.location,
+        email_opens.opened_at,
+        email_opens.ip,
+        email_opens.device,
+        email_opens.is_gmail,
+        COUNT(email_opens.ID) OVER (partition by email_threads.ID) AS email_opens_count,
+        row_number() OVER (partition by email_threads.ID ORDER BY email_opens.opened_at DESC) rn
+      FROM
+        email_threads
+      LEFT OUTER JOIN email_opens ON email_opens.guid = email_threads.email_guid
+      WHERE
+       email_threads.user_id = ?
+       AND email_threads.thread_id IN (?)
+      ) q
+      WHERE q.rn = 1", current_user_id, thread_ids])
+
   end
 
-  def self.thread_list thread_ids
-    threads(thread_ids).as_json.each_with_object({}) { |thread, result|
+  def self.thread_list current_user_id, thread_ids
+    threads(current_user_id, thread_ids).as_json.each_with_object({}) { |thread, result|
       result[thread['thread_id']] = thread.merge!({
-        last_open: EmailOpen.by_thread(thread['thread_guid']).last
+        last_open: {location: thread['location'],
+                    ip: thread['ip'],
+                    device: thread['device'],
+                    opened_at: thread['opened_at'],
+                    is_gmail: thread['is_gmail']}
       })
+
+      result[thread['thread_id']].except!('location', 'rn', 'ip', 'device', 'opened_at', 'is_gmail')
     }
   end
 
