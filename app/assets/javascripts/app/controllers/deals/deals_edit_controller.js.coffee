@@ -115,7 +115,20 @@
 
     Deal.update(id: $scope.deal.id, deal: $scope.deal).then(
       (deal) ->
-        $modalInstance.close()
+        if deal.info_messages.length
+          $scope.infoModalInstance = $modal.open
+            templateUrl: 'modals/info_modal.html'
+            size: 'md'
+            controller: 'AgreementInfoController'
+            backdrop: 'static'
+            keyboard: false
+            resolve:
+              options: ->
+                  messages: deal.info_messages
+                  typeOfExcluded: 'agreement'
+                  typeOfUpdate: 'deal'
+              
+        $modalInstance.close(deal)
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

@@ -1,0 +1,65 @@
+#agreements-section.block
+  %div.mb20
+    %span.title Agreements
+    -# %add-button{'ng-click': 'addAgreement()'} Add
+  
+  .table-wrapper
+    %table.table.table-hover.table-striped
+      %thead
+        %tr
+          %th Name
+          %th Agreement Type
+          %th Advertiser
+          %th Agency
+          %th Holding Company
+          %th Publisher
+          %th Start Date
+          %th End Date
+          %th Target Amount
+          %th Track
+      %tbody
+        %tr{ ng: {  if: '!agreements.length' } }
+          %td.center.auto-colspan No data available
+        %tr{ ng: { repeat: 'agreement in agreements', if: 'agreements.length' } }
+          %td
+            %a{ href: '', ng: { href: '/agreements/{{ agreement.id }}' } } {{ agreement.name }}
+          %td {{ agreement.spend_agreement_type }}
+
+          %td{ ng: { if: 'agreement.parent_companies.length < 1' } } 
+            %strong N/A
+          %td{ ng: { if: 'agreement.parent_companies.length == 1' } } {{ agreement.parent_companies[0].name }}
+          %td.multiple{ ng: { if: 'agreement.parent_companies.length > 1' } }
+            %a{ href: 'javascript:void(0)', ng: { click: 'toggleDrodown($event)' } } {{ agreement.parent_companies.length }} Advertisers
+            .multiple-list-wrapper
+              .multiple-list
+                %span{ ng: { repeat: 'client in agreement.parent_companies track by client.id' } } {{ client.name }}  
+
+          %td{ ng: { if: 'agreement.agencies.length < 1' } } 
+            %strong N/A
+          %td{ ng: { if: 'agreement.agencies.length == 1' } } {{ agreement.agencies[0].name }}
+          %td.multiple{ ng: { if: 'agreement.agencies.length > 1' } }
+            %a{ href: 'javascript:void(0)', ng: { click: 'toggleDrodown($event)' } } {{ agreement.agencies.length }} Agencies
+            .multiple-list-wrapper
+              .multiple-list
+                %span{ ng: { repeat: 'client in agreement.agencies track by client.id' } } {{ client.name }}    
+
+          %td{ ng: { if: '!agreement.holding_company.name' } }
+            %strong N/A
+          %td{ ng: { if: 'agreement.holding_company.name' } } {{ agreement.holding_company.name }}
+
+          %td{ ng: { if: 'agreement.publishers.length < 1' } } 
+            %strong N/A
+          %td{ ng: { if: 'agreement.publishers.length == 1' } } {{ agreement.publishers[0].name }}
+          %td.multiple{ ng: { if: 'agreement.publishers.length > 1' } }
+            %a{ href: 'javascript:void(0)', ng: { click: 'toggleDrodown($event)' } } {{ agreement.publishers.length }} Publishers
+            .multiple-list-wrapper
+              .multiple-list
+                %span{ ng: { repeat: 'client in agreement.publishers track by client.id' } } {{ client.name }}
+
+          %td {{ agreement.start_date | date: 'M/d/yyyy' }}
+          %td {{ agreement.end_date | date: 'M/d/yyyy' }}
+          %td {{ agreement.target | currency: $: 0 }}
+          %td
+            %strong{ ng: { if: 'agreement.manually_tracked' } } Manual
+            %strong{ ng: { if: '!agreement.manually_tracked' } } Auto
+  

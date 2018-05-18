@@ -1,6 +1,6 @@
 @app.controller 'IOController',
-    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'Product', 'DisplayLineItem', 'Company', 'InfluencerContentFee', 'Cost', 'Field'
-    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   Product,   DisplayLineItem,   Company,   InfluencerContentFee,   Cost,   Field) ->
+    ['$scope', '$window', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'Product', 'DisplayLineItem', 'Company', 'InfluencerContentFee', 'Cost', 'Field', 'Agreement'
+    ( $scope,  $window,  $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   Product,   DisplayLineItem,   Company,   InfluencerContentFee,   Cost,   Field, Agreement) ->
             $scope.currentIO = {}
             $scope.activeTab = 'ios'
             $scope.currency_symbol = '$'
@@ -48,6 +48,8 @@
                                 cost.type = Field.field(cost, 'Cost Type')
                             return cost
 
+                    getAgreements()
+
             $scope.productsByLevel = (level, product)->
                 _.filter $scope.products, (p) -> 
                     if level == 0
@@ -65,6 +67,16 @@
                     model.product.level2 = {}
                   else if item.level == 1
                     model.product.level2 = {}
+                    getAgreements()        
+
+            getAgreements = ->
+                Agreement.get_io_agreements({ io_id: $scope.currentIO.id })
+                    .$promise.then (agreements) -> $scope.agreements = agreements if agreements
+
+            resetProducts = ->
+                io_products = _.map $scope.currentIO.content_fees, (content_fee_item) ->
+                    return content_fee_item.product
+                $scope.products = $filter('notIn')($scope.products, io_products)
 
             $scope.showIOEditModal = (io) ->
                 $scope.modalInstance = $modal.open
@@ -152,7 +164,7 @@
                         currentIO: ->
                             $scope.currentIO
                         company: ->
-                            $scope.company
+                            $scope.company           
 
             $scope.deleteIo = (io) ->
                 if confirm('Are you sure you want to delete "' +  io.name + '"?')
@@ -353,6 +365,29 @@
 
             $scope.$on 'cost_added', ->
                 $scope.init()
+
+            $scope.toggleDrodown = (event) ->
+                dropdown = angular.element(event.target).next()
+                tableWrapper = angular.element('#agreements-section table').parent()
+
+                if dropdown.is(':visible')
+                    dropdown.hide()
+                    # Add overflow-x: auto if dropdown is closed
+                    tableWrapper.addClass('table-wrapper')
+                    return
+                else
+                    multipleLists = angular.element('.multiple-list-wrapper')
+                    multipleLists.hide()
+                    dropdown.show()
+                    # Remove overflow-x: auto if dropdown is open
+                    tableWrapper.removeClass('table-wrapper')
+                    return
+
+            $window.addEventListener 'click', (event) ->
+                target = angular.element(event.target)
+                if target.closest(".multiple").length == 0
+                    multipleLists = angular.element('.multiple-list-wrapper')
+                    multipleLists.hide()
 
             $scope.init()
     ]

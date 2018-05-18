@@ -20,6 +20,7 @@ FactoryGirl.define do
       before(:create) do |client|
         client.client_type_id = Field.find_by(company_id: client.company_id, name: 'Client Type')
                                      .options.find_by('options.name = ?', 'Advertiser').id
+        client.account_type = Client::ADVERTISER
       end
     end
 
@@ -27,6 +28,7 @@ FactoryGirl.define do
       before(:create) do |client|
         client.client_type_id = Field.find_by(company_id: client.company_id, name: 'Client Type')
                                      .options.find_by('options.name = ?', 'Agency').id
+        client.account_type = Client::AGENCY
       end
     end
 

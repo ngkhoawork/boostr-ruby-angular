@@ -255,6 +255,10 @@ class Api::DealsController < ApplicationController
     end
   end
 
+  def possible_agreements
+    render json: matching_spend_agreements, each_serializer: Api::SpendAgreements::PossibleAgreementSerializer
+  end
+
   def show
     deal
   end
@@ -362,7 +366,27 @@ class Api::DealsController < ApplicationController
     }
   end
 
+  def spend_agreements
+    render json: spend_agreement_deals, each_serializer: Api::SpendAgreements::SpendAgreementsSerializer,
+           advertiser_type_id: Client.advertiser_type_id(company),
+           agency_type_id: Client.agency_type_id(company),
+           type_field_id: company.fields.find_by(subject_type: 'Multiple', name: 'Spend Agreement Type').id,
+           status_field_id: company.fields.find_by(subject_type: 'Multiple', name: 'Spend Agreement Status').id
+  end
+
+  def assign_agreements
+    id_deal.spend_agreement_deals.create!(hash_build(:spend_agreement_id, spend_agreements_for_assign))
+
+    render json: { status: :created }, status: :created
+  rescue StandardError => e
+    render json: e, status: :unprocessable_entity
+  end
+
   private
+
+  def hash_build(key, arr)
+    arr.map{|id| {key => id} }
+  end
 
   def forecast_deals
     response_deals = []
@@ -594,6 +618,10 @@ class Api::DealsController < ApplicationController
     end
   end
 
+  def spend_agreements_for_assign
+    params.permit(assign_agreements: []).require(:assign_agreements)
+  end
+
   def deal_params
     params.require(:deal).permit(
         :name,
@@ -621,7 +649,7 @@ class Api::DealsController < ApplicationController
                 :value
             ]
         }
-    ).merge(modifying_user: current_user)
+    ).merge(modifying_user: current_user, manual_update: true)
   end
 
   def deal_cf_params
@@ -776,6 +804,14 @@ class Api::DealsController < ApplicationController
 
   def deal
     @deal ||= company.deals.find(params[:id])
+  end
+
+  def id_deal
+    @id_deal ||= company.deals.find(params[:deal_id])
+  end
+
+  def spend_agreement_deals
+    id_deal.spend_agreement_deals
   end
 
   def company
@@ -980,6 +1016,10 @@ class Api::DealsController < ApplicationController
 
   def company_teams_data
     company.teams.pluck_to_struct(:id, :name, :leader_id)
+  end
+
+  def matching_spend_agreements
+     SpendAgreementTrackingService.new(deal: deal).possible_agreements
   end
 
   def team_stages

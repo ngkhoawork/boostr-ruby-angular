@@ -1,0 +1,19 @@
+#agreement.z-styles.z-detail-page
+    .container-fluid.pad
+        .col-xs-12
+            %ul.breadcrumb
+                %a{ href: "javascript:void(0)", ng: { href: '/agreements' } }
+                    %span.glyphicon.glyphicon-chevron-left{ 'aria-hidden': 'true' }
+                    Back to Agreements
+
+    .container-fluid.pad
+        .col-xs-9.sections
+            %div{'ng-include': '"partials/agreement/agreement_stats.html"'}
+            %div{'ng-include': '"partials/agreement/agreement_spend.html"'}
+            %div{'ng-include': '"partials/agreement/agreement_revenues.html"'}
+            %div{'ng-include': '"partials/agreement/agreement_deals.html"'}
+            %div{'ng-include': '"partials/agreement/agreement_teams.html"'}
+
+        .col-xs-3
+            %div{'ng-include': '"partials/agreement/agreement_clients.html"'}
+            %div{'ng-include': '"partials/agreement/agreement_details.html"'}

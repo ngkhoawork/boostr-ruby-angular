@@ -1,0 +1,23 @@
+.block
+    %div.mb20
+        %span.title Deals
+        %add-button{ ng: { click: 'showAssignDealModal()', if: 'agreement.manually_tracked && loaded' } } Add
+    %table.table.table-hover
+        %thead
+            %tr
+                %th Name
+                %th Budget
+                %th Stage
+                %th Probability
+                %th Start Date
+                %th End Date
+        %tbody
+            %tr{ ng: { repeat: 'deal in agreement.deals' } }
+                %td
+                    %a.mr8{ href: 'javascript:void(0)', target: '_blank', ng: { href: '/deals/{{ deal.deal_id }}' } } {{ deal.deal.name }}
+                    %i.fa.fa-trash.exclude{ ng: { click: 'excludeDeal(deal)', if: 'agreement.manually_tracked' } }
+                %td {{ deal.deal.budget | currency: $: 0 }}
+                %td {{ deal.deal.stage }}
+                %td {{ deal.deal.probability }}%
+                %td {{ deal.deal.start_date | date }}
+                %td {{ deal.deal.end_date | date }}
