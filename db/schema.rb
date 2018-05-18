@@ -1985,20 +1985,19 @@ ActiveRecord::Schema.define(version: 20180303003530) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "hoopla_integrations", force: :cascade do |t|
-    t.integer  "company_id"
-    t.string   "hoopla_client_id"
-    t.string   "hoopla_client_secret"
-    t.boolean  "credentials_confirmed",   default: false
-    t.boolean  "active",                  default: false
+  create_table "hoopla_details", force: :cascade do |t|
+    t.integer  "api_configuration_id"
+    t.string   "client_id"
+    t.string   "client_secret"
+    t.boolean  "connected",               default: false
     t.string   "access_token"
-    t.datetime "access_token_expires_in"
+    t.datetime "access_token_expires_at"
     t.string   "deal_won_newsflash_href"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
   end
 
-  add_index "hoopla_integrations", ["company_id"], name: "index_hoopla_integrations_on_company_id", using: :btree
+  add_index "hoopla_details", ["api_configuration_id"], name: "index_hoopla_details_on_api_configuration_id", using: :btree
 
   create_table "hoopla_users", force: :cascade do |t|
     t.string   "href"
