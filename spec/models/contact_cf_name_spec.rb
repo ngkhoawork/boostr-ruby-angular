@@ -24,7 +24,15 @@ RSpec.describe ContactCfName, type: :model do
         expect(build_contact_custom_field_name(position: 2)).to be_valid
       end
 
-      it 'not valid with not uniq position' do
+      it 'valid with non uniq position in different companies' do
+        contact_cf_name(position: 1)
+
+        new_custom_field = build_contact_custom_field_name(position: 1, company: create(:company))
+
+        expect(new_custom_field).to be_valid
+      end
+
+      it 'not valid with not uniq position in one company' do
         contact_cf_name(position: 1)
 
         expect(build_contact_custom_field_name(position: 1)).not_to be_valid
@@ -136,16 +144,16 @@ RSpec.describe ContactCfName, type: :model do
     end
   end
 
-  def contact_cf_name(attrs = {})
-    @_contact_cf_name ||= create :contact_cf_name, company: company, **attrs
+  def contact_cf(attrs = {})
+    @_contact_cf ||= create :contact_cf, company: company, **attrs
   end
 
   def build_contact_custom_field_name(attrs = {})
     build :contact_cf_name, company: company, **attrs
   end
 
-  def contact_cf(attrs = {})
-    @_contact_cf ||= create :contact_cf, company: company, **attrs
+  def contact_cf_name(attrs = {})
+    @_contact_cf_name ||= create :contact_cf_name, company: company, **attrs
   end
 
   def contact_cf_names(amount = 2, attrs = {})

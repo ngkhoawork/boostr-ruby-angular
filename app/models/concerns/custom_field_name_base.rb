@@ -3,8 +3,7 @@ module CustomFieldNameBase
 
   included do
     validates_presence_of :field_type
-    validates_uniqueness_of :position, scope: :company_id
-    validates_numericality_of :position
+    validates :position, uniqueness: { scope: :company }, numericality: true
     validate :amount_of_custom_fields_by_field_type
 
     before_create :assign_index
