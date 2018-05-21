@@ -74,7 +74,11 @@ describe Api::DealsController, type: :controller do
     end
 
     it 'map lead to contact' do
-      assignment_rule = create :assignment_rule, company_id: company.id, countries: ['Usa'], states: ['Ny']
+      assignment_rule = create :assignment_rule,
+                               company_id: company.id,
+                               criteria_1: ['Usa'],
+                               criteria_2: ['Ny'],
+                               default: true
       assignment_rule.users << user
       valid_deal_params = deal_params.merge(lead_id: lead.id)
 

@@ -11,7 +11,8 @@ class Api::LeadsController < ApplicationController
   def create_lead
     lead = Lead.new(lead_params)
 
-    if captcha_succeed? && lead.save
+    # if captcha_succeed? && lead.save
+    if lead.save
       redirect_to params[:return_to]
     else
       render json: { errors: lead.errors.messages }, status: :unprocessable_entity
@@ -47,7 +48,7 @@ class Api::LeadsController < ApplicationController
 
     LeadsMailer.new_leads_assignment(lead).deliver_now
 
-    render nothing: true
+    render json: Api::Leads::IndexSerializer.new(lead).serializable_hash
   end
 
   def users
@@ -94,7 +95,7 @@ class Api::LeadsController < ApplicationController
   end
 
   def determine_assignee
-    params[:user_id] rescue lead.next_available_user
+    params[:user_id].present? ? params[:user_id] : ::Leads::UserAssignmentService.new(lead).next_available_user
   end
 
   def client
@@ -128,7 +129,7 @@ class Api::LeadsController < ApplicationController
     params
       .require(:lead)
       .permit(:first_name, :last_name, :title, :email, :company_name, :country, :state, :budget, :notes, :company_id,
-              :rejected_reason)
+              :rejected_reason, :product_name)
       .merge(status: Lead::NEW, created_from: Lead::WEB_FORM)
   end
 

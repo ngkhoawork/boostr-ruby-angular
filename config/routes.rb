@@ -613,7 +613,10 @@ Rails.application.routes.draw do
         get :remove_user
       end
 
-      put :update_positions, on: :collection
+      collection do
+        put :update_positions
+        get :field_types
+      end
     end
 
     resources :workflows, only: [:index, :create, :update, :destroy] do

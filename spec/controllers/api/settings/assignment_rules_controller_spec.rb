@@ -28,21 +28,21 @@ describe Api::Settings::AssignmentRulesController do
   end
 
   describe 'PUT #update' do
-    it 'update countries list' do
-      expect(assignment_rule.countries).to be_empty
+    it 'update criteria_1 list' do
+      expect(assignment_rule.criteria_1).to be_empty
 
-      put :update, id: assignment_rule.id, assignment_rule: { countries: ['USA'] }
+      put :update, id: assignment_rule.id, assignment_rule: { criteria_1: ['USA'] }
 
-      expect(assignment_rule.reload.countries).to include 'USA'
+      expect(assignment_rule.reload.criteria_1).to include 'USA'
     end
 
-    it 'update states list' do
-      expect(assignment_rule.countries).to be_empty
+    it 'update criteria_2 list' do
+      expect(assignment_rule.criteria_1).to be_empty
 
-      put :update, id: assignment_rule.id, assignment_rule: { states: ['Arizona', 'California'] }
+      put :update, id: assignment_rule.id, assignment_rule: { criteria_2: ['Arizona', 'California'] }
 
-      expect(assignment_rule.reload.states).to include 'Arizona'
-      expect(assignment_rule.reload.states).to include 'California'
+      expect(assignment_rule.reload.criteria_2).to include 'Arizona'
+      expect(assignment_rule.reload.criteria_2).to include 'California'
     end
   end
 
