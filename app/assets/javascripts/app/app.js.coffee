@@ -338,6 +338,14 @@
       templateUrl: 'bp.html'
       controller: 'BPController'
 
+    .when '/agreements',
+      templateUrl: 'agreements.html'
+      controller: 'AgreementsController'
+      
+    .when '/agreements/:id',
+      templateUrl: 'agreement.html'
+      controller: 'AgreementController'
+
     .when '/forecast/:team_id?',
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'

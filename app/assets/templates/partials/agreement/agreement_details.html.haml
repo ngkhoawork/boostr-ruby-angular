@@ -1,0 +1,51 @@
+.agreement-details.block
+    %div.mb20
+        %span.title Info
+
+    %div.custom-field-item
+        %div.custom-field-item-label
+            Start Date
+            .error-tooltip{ ng: { if: 'errors.start_date' } }
+                {{ errors.start_date }}
+        %div.custom-field-item-field
+            .datetime-field.bs-datepicker
+                %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{ "not-valid": errors.start_date }', model: 'agreement.start_date', click: 'dateOpened.startDate = !dateOpened.startDate', change: "updateAgreementDate('start_date')", blur: "updateAgreementDate('start_date')", cloak: true, if: '!disableCustomFields' }, 'is-open': 'dateOpened.startDate' }
+                    {{ (agreement.start_date | date) || 'Select date' }}
+                    %span.caret
+    
+    %div.custom-field-item
+        %div.custom-field-item-label
+            End Date
+            .error-tooltip{ ng: { if: 'errors.end_date' } }
+                {{ errors.end_date }}
+        %div.custom-field-item-field
+            .datetime-field.bs-datepicker
+                %span.editable{ datepicker: { popup: 'MMMM d, y' }, ng: { class: '{ "not-valid": errors.end_date }', model: 'agreement.end_date', click: 'dateOpened.endDate = !dateOpened.endDate', change: "updateAgreementDate('end_date')", blur: "updateAgreementDate('end_date')", cloak: true, if: '!disableCustomFields' }, 'is-open': 'dateOpened.endDate' }
+                    {{ (agreement.end_date | date) || 'Select date' }}
+                    %span.caret    
+    
+    %div.custom-field-item
+        %div.custom-field-item-label Type
+        %div.custom-field-item-field
+            .dropdown
+                %button.btn.btn-primary.dropdown-toggle{ 'data-toggle': 'dropdown', type: 'button', ng: { disabled: 'disableCustomFields' } }
+                    %span.editable{ ng: { cloak: true } }
+                        %span{ ng: { if: 'agreement.spend_agreement_type.name' } } {{ agreement.spend_agreement_type.name || 'Select type' }}
+                    %span.caret
+                %ul.dropdown-menu
+                    %li{ ng: { repeat: 'type in options.spend_agreement_types', class: '{ active: agreement.spend_agreement_type == type }' } }
+                        %a{ href: '', ng: { click: 'agreement.spend_agreement_type = type; updateAgreement()'} }
+                            %span.text {{ type.name }}
+
+    %div.custom-field-item
+        %div.custom-field-item-label Track
+        %div.custom-field-item-field
+            .dropdown
+                %button.btn.btn-primary.dropdown-toggle{ 'data-toggle': 'dropdown', type: 'button', ng: { disabled: 'disableCustomFields' } }
+                    %span.editable{ ng: { cloak: true } }
+                        {{ agreement.track || 'Select track' }}
+                    %span.caret
+                %ul.dropdown-menu
+                    %li{ ng: { repeat: 'track in options.tracks', class: '{ active: agreement.track == track }' } }
+                        %a{ href: '', ng: { click: 'agreement.track = track; updateAgreement()'} }
+                            %span.text {{ track }}   

@@ -176,6 +176,17 @@ describe Api::DealsController, type: :controller do
     end
   end
 
+  describe 'PUT #assign_agreements' do
+    let(:deal) { create :deal, company: company }
+    let(:new_agreements) { (create_list :spend_agreement, 3, company: company, manually_tracked: true) }
+
+    it 'assigns new spend agreements' do
+      put :assign_agreements, deal_id: deal.id, assign_agreements: new_agreements.map(&:id)
+
+      expect(deal.reload.spend_agreements.ids).to eq new_agreements.map(&:id)
+    end
+  end
+
   private
 
   def lead

@@ -56,6 +56,8 @@ class Deal < ActiveRecord::Base
 
   has_one :billing_deal_contact, -> { where(role: 'Billing') }, class_name: 'DealContact'
   has_one :billing_contact, through: :billing_deal_contact, source: :contact
+  has_many :spend_agreement_deals, dependent: :destroy
+  has_many :spend_agreements, through: :spend_agreement_deals
 
   has_one :deal_custom_field, dependent: :destroy, inverse_of: :deal
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
@@ -83,7 +85,7 @@ class Deal < ActiveRecord::Base
   delegate :open?, to: :stage, allow_nil: true, prefix: true
   delegate :active?, to: :stage, allow_nil: true, prefix: true
 
-  attr_accessor :modifying_user, :manual_update, :custom_trigger
+  attr_accessor :modifying_user, :manual_update, :custom_trigger, :info_messages, :spend_agreements_before_track, :spend_agreements_after_track
 
   before_update do
     if curr_cd_changed?
@@ -110,6 +112,8 @@ class Deal < ActiveRecord::Base
   end
 
   after_commit :integrate_with_operative
+  after_update :track_spend_agreements, if: -> { run_agreements_tracking? && manual_update }
+  after_update :build_agreements_info_message
 
   before_create do
     update_stage
@@ -124,6 +128,7 @@ class Deal < ActiveRecord::Base
     send_ealert
     connect_deal_clients
     log_stage_changes
+    track_spend_agreements if manual_update
   end
 
   after_commit :asana_connect, on: [:create]
@@ -142,7 +147,7 @@ class Deal < ActiveRecord::Base
 
   set_callback :save, :after, :update_pipeline_fact_callback
 
-  scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
+  scope :for_client, -> (client_id) { where('advertiser_id in (:client_id) OR agency_id in (:client_id)', client_id: client_id) if client_id.present? }
   scope :for_time_period, -> (start_date, end_date) do
     where('start_date <= ? AND end_date >= ?', end_date, start_date) if start_date.present? && end_date.present?
   end
@@ -186,6 +191,7 @@ class Deal < ActiveRecord::Base
     where(closed_at: closed_at.beginning_of_year.to_datetime.beginning_of_day..closed_at.end_of_year.to_datetime.end_of_day) if closed_at.present?
   end
   scope :by_advertisers, -> (ids) { where('advertiser_id in (?)', ids) if ids.present? }
+  scope :by_agencies, -> (ids) { where('agency_id in (?)', ids) if ids.present? }
   scope :by_created_date, -> (start_date, end_date) do
     where(created_at: (start_date.to_datetime.beginning_of_day)..(end_date.to_datetime.end_of_day)) if start_date.present? && end_date.present?
   end
@@ -225,6 +231,12 @@ class Deal < ActiveRecord::Base
     close_reason_field.values.find_by(subject_id: deal_id)
   end
 
+  attr_accessor :manual_update
+
+  def run_agreements_tracking?
+    advertiser_id_changed? || agency_id_changed? || start_date_changed? || end_date_changed?
+  end
+
   def update_pipeline_fact_callback
     if stage_id_changed?
       update_pipeline_fact_stage(stage_id_was, stage_id)
@@ -249,6 +261,23 @@ class Deal < ActiveRecord::Base
 
   def asana_connect
     AsanaConnectWorker.perform_in(10.minutes, self.id) if asana_integration_required?
+  end
+
+  def info_messages
+    @info_messages ||= []
+  end
+
+  def build_agreements_info_message
+    message = SpendAgreements::InfoMessageBuilder.new(before_track: self.spend_agreements_before_track,
+                                                      after_track: self.spend_agreements_after_track,
+                                                      message_context: :deal).perform
+    self.info_messages << message if message
+  end
+
+  def track_spend_agreements
+    self.spend_agreements_before_track = self.spend_agreements.pluck_to_hash(:id, :name)
+    SpendAgreementTrackingService.new(deal: self).track_spend_agreements
+    self.spend_agreements_after_track = self.spend_agreements.pluck_to_hash(:id, :name)
   end
 
   def asana_integration_required?

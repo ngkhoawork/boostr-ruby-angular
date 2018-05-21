@@ -1,6 +1,6 @@
 @app.controller 'NewUsersController',
-['$scope', '$modalInstance', 'User', 'onInvite', 'Team'
-($scope, $modalInstance, User, onInvite, Team) ->
+['$scope', '$modalInstance', 'User', 'onInvite', 'Team', 'options'
+($scope, $modalInstance, User, onInvite, Team, options) ->
   $scope.user_types = User.user_types_list
 
   $scope.init = ->
@@ -24,6 +24,9 @@
       (user) ->
         if onInvite
           onInvite(user)
+        if options.assignToAgreement
+          $modalInstance.close(user)
+          return
         $modalInstance.close()
       (reject) -> $scope.buttonDisabled = false
     )

@@ -93,6 +93,7 @@ end
 
 group :test do
   gem 'shoulda-matchers', require: false
+  gem 'json_matchers'
   gem 'vcr'
   gem 'webmock'
   gem 'simplecov', require: false
