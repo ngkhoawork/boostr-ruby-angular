@@ -444,7 +444,7 @@
   currentUserRoles.isSuperAdmin = -> _.contains this, 'superadmin'
 
   CurrentUser.get().$promise.then (user) ->
-    user.leader = user['leader?']
+    user.leader = user.is_leader
     $rootScope.currentUser = user
     updateTalkus user
 
