@@ -38,6 +38,12 @@
               create: { templateUrl: 'modals/ssp_credentials.html', controller: 'SspCredentialsCreateController' },
               update: { templateUrl: 'modals/ssp_credentials.html', controller: 'SspCredentialsEditController' }
             }
+          },
+          hoopla: {
+            actions: {
+              create: { templateUrl: 'modals/hoopla_configuration_form.html', controller: 'HooplaConfigurationsCreateController' },
+              update: { templateUrl: 'modals/hoopla_configuration_form.html', controller: 'HooplaConfigurationsEditController' }
+            }
           }
         }
       }
@@ -64,6 +70,8 @@
             mappings.providers.google_sheets
           when 'SSP Rubicon', 'SSP SpotX', 'SSP AdX', 'SSP'
             mappings.providers.ssps
+          when 'Hoopla'
+            mappings.providers.hoopla
 
       init = () ->
         $scope.api_configurations = []

@@ -17,6 +17,7 @@ class API::ApiConfigurations::Single < API::Single
   property :asana_connect_details, exec_context: :decorator
   property :datafeed_configuration_details, exec_context: :decorator
   property :google_sheets_details, exec_context: :decorator
+  property :hoopla_details, exec_context: :decorator
   property :job_status, exec_context: :decorator
   property :can_be_scheduled, exec_context: :decorator
 
@@ -48,6 +49,10 @@ class API::ApiConfigurations::Single < API::Single
 
   def google_sheets_details
     represented.google_sheets_details if represented.integration_type == 'GoogleSheetsConfiguration'
+  end
+
+  def hoopla_details
+    represented.hoopla_details if represented.integration_type == 'HooplaConfiguration'
   end
 
   def job_status

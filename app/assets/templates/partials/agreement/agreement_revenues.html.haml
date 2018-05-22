@@ -1,0 +1,22 @@
+.block
+    %div.mb20
+        %span.title Revenue Details
+    %table.table.table-hover
+        %thead
+            %tr
+                %th Name
+                %th Advertiser
+                %th Budget
+                %th Agreement Amt
+                %th Start Date
+                %th End Date
+        %tbody
+            %tr{ ng: { repeat: 'revenue in agreement.revenues' } }
+                %td
+                    %a.mr8{ href: '', target: '_blank', ng: { href: '/revenue/ios/{{ revenue.id }}' } } {{ revenue.name }}
+                %td
+                    %a.mr8{ href: '', target: '_blank', ng: { href: '/accounts/{{ revenue.advertiser_id }}' } } {{ revenue.advertiser_name }}
+                %td {{ revenue.budget | currency: $: 0 }}
+                %td {{ revenue.agreement_amt | currency: $: 0 }}
+                %td {{ revenue.start_date | date }}
+                %td {{ revenue.end_date | date }}

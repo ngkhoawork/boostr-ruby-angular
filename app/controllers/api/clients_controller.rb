@@ -29,7 +29,7 @@ class Api::ClientsController < ApplicationController
         response.headers['X-Total-Count'] = results.count.to_s
         results = results.limit(limit).offset(offset)
         render json: results,
-          each_serializer: Clients::ClientListSerializer,
+          each_serializer: ::Clients::ClientListSerializer,
             advertiser: Client.advertiser_type_id(company),
             agency: Client.agency_type_id(company),
             categories: category_options
@@ -201,12 +201,11 @@ class Api::ClientsController < ApplicationController
   end
 
   def child_clients
-    client = company.clients.find(params[:client_id])
-    if client
-      render json: client.child_clients
-    else
-      render json: []
-    end
+    render json: child_clients_search
+  end
+
+  def parent_clients
+    render json: parent_clients_search
   end
 
   private
@@ -460,5 +459,27 @@ class Api::ClientsController < ApplicationController
 
   def file_params
     params.require(:file).permit(:s3_file_path, :original_filename)
+  end
+
+  def child_clients_search
+    company
+      .clients
+      .by_parent_clients(params[:parent_clients])
+      .fuzzy_find(params[:search])
+      .exclude_ids(params[:exclude_ids])
+      .by_type_id(params[:client_type_id])
+      .limit(20)
+      .pluck_to_struct(:id, :name, :parent_client_id)
+  end
+
+  def parent_clients_search
+    company
+      .clients
+      .by_ids(company.clients.parent_ids)
+      .fuzzy_find(params[:search])
+      .exclude_ids(params[:exclude_ids])
+      .by_type_id(params[:client_type_id])
+      .limit(20)
+      .pluck_to_struct(:id, :name)
   end
 end

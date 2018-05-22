@@ -16,7 +16,7 @@
             return if _.isNull user
             params = {id: lead.id}
             params.user_id = user.id if user
-            Leads.reassign(params).then ->
-                $scope.cancel()
+            Leads.reassign(params).then (lead) ->
+                $modalInstance.close(lead)
 
 ]

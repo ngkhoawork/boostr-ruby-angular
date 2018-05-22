@@ -83,6 +83,7 @@
 									%th.left  
 									%th.left.column{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled' } {{ company.product_option1_field || 'Option1' }}
 									%th.left.column{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled' } {{ company.product_option2_field || 'Option2' }}
+									%th.left.column{ 'ng-repeat': 'cf in contentFeeCustomFieldNames | orderBy: "position"' } {{ cf.field_label }}
 									%th.column.left Start Date
 									%th.column.left End Date
 									%th.column.right Total Budget
@@ -122,6 +123,8 @@
 												%li{'ng-repeat': 'product in productsByLevel(2, content_fee.product)', 'ng-class': '{active: content_fee.product.level2.id == product.id}'}
 													%a{'href': '', 'ng-click': 'onChangeProduct(product, content_fee); updateContentFee(content_fee);'}
 														%span.text {{product.name}}
+									%td.left.column{ 'ng-repeat': 'cf in contentFeeCustomFieldNames | orderBy: "position"' } 
+										%custom-field{ 'field-type': '{{cf.field_type}}', 'field-label': '{{cf.field_label}}', 'custom-field': 'content_fee.custom_field', 'field-name': '{{cf.field_name}}', 'on-update-field': 'updateContentFeeCF(content_fee, cf)', 'currency-symbol': '{{currency_symbol}}', 'type': 'inlineEdit', 'id': '{{content_fee.id}}', 'options': 'cf.custom_field_options', 'required': 'cf.is_required' }
 									%td
 										{{ currentIO.start_date | date: 'M/d/yyyy' }}
 									%td
@@ -137,6 +140,7 @@
 								%tr.sum-budgets-row{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0'} }
 									%td{ 'ng-show': 'company.product_options_enabled && company.product_option1_enabled'}
 									%td{ 'ng-show': 'company.product_options_enabled && company.product_option2_enabled'}
+									%td{ 'ng-repeat': 'cf in contentFeeCustomFieldNames' } 
 									%td{colspan: 3}
 									%td.right
 										%b TOTAL
@@ -148,6 +152,7 @@
 									%td.center.auto-colspan
 										No data available
 				%div{'ng-include': '"partials/io/io_costs.html"'}
+				%div{'ng-include': '"partials/io/io_agreements.html"'}
 				.block#line-display
 					%div.mb20
 						%span.title Line Items - display

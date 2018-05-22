@@ -1,0 +1,136 @@
+.z-sliding-filter{'ng-class': '{open: filter.isOpen}'}
+  .header
+    Filter
+    %span.pull-right{'ng-click': 'filter.close($event)'} Close
+  .body
+
+    .filter-row
+      .filter-name
+        %div
+          Name
+      .filter-dropdown
+        %i.fa.fa-close{'ng-show': 'filter.selected.name', 'ng-click': 'filter.reset("name")'}
+        %span{ dropdown: '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+          .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.name}'}
+            {{filter.selected.name || 'Select a name'}}
+            %span.caret
+          .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+              %i.fa.fa-search
+              %input.form-control{ placeholder: 'Search', ng: { model: 'filter.search', change: 'getAgreementsNames(filter.search)', 'model-options': '{ debounce: 250 }' } }
+            %span.dropdown-title{ ng: { if: 'filter.names.length != 0' } } Select from list
+            .dropdown-option{'ng-repeat': 'agreement in filter.names | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+              %a{href: '', 'ng-click': 'filter.select("name", agreement.name)'} {{agreement.name}}
+            %span.not-found{ ng: { if: 'filter.names.length == 0' } } Nothing Found
+
+    .filter-row
+      .filter-name
+        %div
+          Type
+      .filter-dropdown
+        %i.fa.fa-close{'ng-show': 'filter.selected.agreementType', 'ng-click': 'filter.reset("agreementType")'}
+        %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+          .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.agreementType}'}
+            {{filter.selected.agreementType.name || 'Select Type'}}
+            %span.caret
+          .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+              %i.fa.fa-search
+              %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+            %span.dropdown-title Select from list
+            .dropdown-option{'ng-repeat': 'agreementType in filter.agreementTypes | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+              %a{href: '', 'ng-click': 'filter.select("agreementType", agreementType)'} {{agreementType.name}}
+
+    .filter-row
+      .filter-name
+        %div
+          Status
+      .filter-dropdown
+        %i.fa.fa-close{'ng-show': 'filter.selected.status', 'ng-click': 'filter.reset("status")'}
+        %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+          .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.status}'}
+            {{filter.selected.status.name || 'Select a Status'}}
+            %span.caret
+          .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+              %i.fa.fa-search
+              %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+            %span.dropdown-title Select from list
+            .dropdown-option{'ng-repeat': 'status in filter.statuses | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+              %a{href: '', 'ng-click': 'filter.select("status", status)'} {{status.name}}
+
+    .filter-row
+      .filter-name
+        %div
+          Client
+      .filter-dropdown
+        %i.fa.fa-close{'ng-show': 'filter.selected.client', 'ng-click': 'filter.reset("client")'}
+        %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+          .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.client}'}
+            {{filter.selected.client.name || 'Select a Client'}}
+            %span.caret
+          .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+              %i.fa.fa-search
+              %input.form-control{'placeholder': 'Search', ng: { model: 'filter.search', change: 'searchClients(filter.search)', 'model-options': '{ debounce: 250 }' } } 
+            %span.dropdown-title{ ng: { if: 'filter.names.length != 0' } } Select from list
+            .dropdown-option{'ng-repeat': 'client in filter.clients', role: 'menuitem'}
+              %a{href: '', 'ng-click': 'filter.select("client", client)'} {{client.name}}
+            %span.not-found{ ng: { if: 'filter.clients.length == 0' } } Nothing Found  
+
+    .filter-row
+      .filter-name
+        %div
+          Date
+      .filter-dropdown
+        %i.fa.fa-close{'ng-show': 'filter.selected.date.startDate && filter.selected.date.endDate', 'ng-click': 'filter.reset("date")'}
+        %span.bs-datepicker
+          .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.date.startDate && filter.selected.date.endDate}'}
+            %div.date-picker{'date-range-picker': true,
+                                                'ng-model': 'filter.datePicker.date',
+                                                options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyDate}}'}
+              %span.filter-date {{filter.getDateValue("date")}}
+            %span.caret
+
+    .filter-row
+      .filter-name
+        %div
+          Target Amount
+      .filter-dropdown
+        %i.fa.fa-close{'ng-show': 'filter.selected.target.min || filter.selected.target.max', 'ng-click': 'filter.reset("target")'}
+        %span{'dropdown': '', 'on-toggle': 'filter.slider.refresh()'}
+          .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.target.min || filter.selected.target.max}'}
+            {{filter.getTargetValue()}}
+            %span.caret
+          .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+            .dropdown-budget{'ng-click': '$event.stopPropagation()'}
+              .budget-range-input
+                From
+                %input.form-control{'ng-model': 'filter.minTarget', 'ng-change': 'filter.slider.onChangeNumber("min")'}
+                to
+                %input.form-control{'ng-model': 'filter.maxTarget', 'ng-change': 'filter.slider.onChangeNumber("max")'}
+              %rzslider{'rz-slider-model': 'filter.slider.minValue',
+                    'rz-slider-high': 'filter.slider.maxValue',
+                    'rz-slider-options': 'filter.slider.options'}
+
+    .filter-row
+      .filter-name
+        %div
+          Track
+      .filter-dropdown
+        %i.fa.fa-close{'ng-show': 'filter.selected.track', 'ng-click': 'filter.reset("track")'}
+        %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+          .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.track}'}
+            {{filter.selected.track || 'Select a Track'}}
+            %span.caret
+          .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+              %i.fa.fa-search
+              %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+            %span.dropdown-title Select from list
+            .dropdown-option{'ng-repeat': 'track in filter.tracks | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+              %a{href: '', 'ng-click': 'filter.select("track", track)'} {{track}}        
+
+  .footer
+    %span.reset{'ng-click': 'filter.resetAll()'} Reset
+    %button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters

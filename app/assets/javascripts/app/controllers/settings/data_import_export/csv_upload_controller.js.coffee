@@ -93,8 +93,14 @@
   getCustomFields = ->
     if custom_fields_api
       service = $injector.get(custom_fields_api)
-      service.csv_headers().then (custom_fields) ->
-        $scope.custom_fields = custom_fields
+
+      # Temporary until we will use new structure of custom fields in all places
+      if custom_fields_api == 'CustomFieldNames'
+        service.all({subject_type: 'activity', show_on_modal: true}).then (custom_fields) ->
+          $scope.custom_fields = custom_fields
+      else
+        service.csv_headers().then (custom_fields) ->
+          $scope.custom_fields = custom_fields
 
   getMetadata = ->
     if metadata == true

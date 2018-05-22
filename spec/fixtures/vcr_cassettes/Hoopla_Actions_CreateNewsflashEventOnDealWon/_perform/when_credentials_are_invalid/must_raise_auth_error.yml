@@ -1,0 +1,55 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.hoopla.net/oauth2/token
+    body:
+      encoding: US-ASCII
+      string: grant_type=client_credentials&client_id=BAD_CLIENT_ID&client_secret=BAD_CLIENT_SECRET
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Host:
+      - api.hoopla.net
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache
+      Content-Type:
+      - application/vnd.net.hoopla.error+json
+      Date:
+      - Fri, 11 May 2018 13:26:33 GMT
+      Set-Cookie:
+      - B=Ck2Xslr1mgm2kAALIHQrAg==; expires=Thu, 31-Dec-37 23:55:55 GMT; domain=hoopla.net;
+        secure; httponly; path=/
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - fc06434d-8502-45d4-ab37-17a2ca8206c9
+      X-Runtime:
+      - '0.006639'
+      X-Xss-Protection:
+      - 1; mode=block
+      Content-Length:
+      - '108'
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"message":"Client BAD_CLIENT_ID cannot be authenticated","class":"HooplaHttpException::Unauthorized","data":{}}'
+    http_version: 
+  recorded_at: Fri, 11 May 2018 13:26:33 GMT
+recorded_with: VCR 3.0.3

@@ -1,0 +1,34 @@
+#assign_modal.member-assign.popup-modal{ ng: { click: 'onModalClick($event)' } }
+    %form.form-horizontal
+        .popup-modal-header
+            Assign Member/s
+            %span.close-btn{ ng: { click: 'cancel()' } }
+			
+        .popup-modal-body.modal-body.p15
+            .form-group.with-add-btn
+                .form-control-wrapper
+                    %input.form-control{ name: 'member', placeholder: 'Search for Users to Assign', ng: { model: 'searchText' } }
+                    .list-wrapper{ ng: { show: 'showMembersDropdown && members.length > 0 ' } }
+                        %ul.list
+                            %li{ ng: { repeat: 'member in filteredMembers = (members | filter: { name: searchText })' } }
+                                %span.name {{ member.name }} 
+                                %a.select.pull-right{ href: "javascript:void(0)", ng: { click: "selectMember(member)" } }
+                                    Select
+                            %li.text-center{ ng: { if: 'filteredMembers.length == 0' } }
+                                %span.name Nothing Found
+                %button.add-btn.plus-btn{ type: 'button', ng: { click: 'showAddMemberModal()' } }
+				
+            .form-group
+                .row
+                    .col-xs-12
+                        %h5.assigned-header{ ng: { if: 'assignedMembers.length > 0' } } Selected Members:
+                        %h5.assigned-header{ ng: { if: 'assignedMembers.length == 0' } } No members selected yet
+                        %ul.assigned-list
+                            %li{ ng: { repeat: 'member in assignedMembers' } }
+                                {{ member.name }}
+                                %a.remove.pull-right{ href: "javascript:void(0)", ng: { click: "removeMember(member)" } }
+                                    Remove
+
+        .popup-modal-footer
+            %button.btn.btn-default{ type: 'button', ng: { click: 'cancel()' } } Cancel
+            %button.btn.btn-primary{ type: 'submit', ng: { click: 'assignMembers()', disabled: 'assignedMembers.length == 0' } } Assign

@@ -39,7 +39,13 @@ class Api::InactivesController < ApplicationController
   private
 
   def inactives_data(ids)
-    options = { ids: ids, category_id: params[:category_id], subcategory_id: params[:subcategory_id] }
+    options = { 
+      ids: ids, 
+      category_id: params[:category_id], 
+      subcategory_id: params[:subcategory_id],
+      team_id: params[:team_id],
+      seller_id: params[:seller_id]
+    }
     InactiveClientsQuery.new(options).perform
   end
 

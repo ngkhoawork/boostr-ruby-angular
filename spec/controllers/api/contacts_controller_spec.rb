@@ -151,7 +151,11 @@ RSpec.describe Api::ContactsController, type: :controller do
 
     it 'map lead to contact' do
       user = create :user, company: company
-      assignment_rule = create :assignment_rule, company_id: company.id, countries: ['Usa'], states: ['Ny']
+      assignment_rule = create :assignment_rule,
+                               company_id: company.id,
+                               criteria_1: ['Usa'],
+                               criteria_2: ['Ny'],
+                               default: true
       assignment_rule.users << user
 
       post :create, contact: contact_params, lead_id: lead.id

@@ -1,47 +1,46 @@
 #activity-feed.block
-	%div.switch-row.pull-right{'ng-if': 'activitySwitch'}
-		%span{'ng-class': '{active: activitySwitch == "past"}', 'ng-click': 'setActivitySwitch("past")'} Past
-		%span{'ng-class': '{active: activitySwitch == "future"}', 'ng-click': 'setActivitySwitch("future")'} Future
-	%div.mb20
-		%span.title Activity
-		%add-button{'ng-click': 'showNewActivityModal()'} Add
-	%p{'ng-show': '!activities || !activities.length'}
-		No activity
-	%div.activity-item{'ng-repeat': 'activity in activities | orderBy: activitiesOrder || "happened_at" : activitySwitch == "past"'}
-		%div.activity-header
-			%i.activity-icon.mr8.fa{'class': '{{activity.activity_type.css_class}}'}
-			%span
-				%b {{activity.activity_type.name}}
-			%span {{activity.happened_at | date: 'mediumDate'}}
+  %div.switch-row.pull-right{'ng-if': 'activitySwitch'}
+    %span{'ng-class': '{active: activitySwitch == "past"}', 'ng-click': 'setActivitySwitch("past")'} Past
+    %span{'ng-class': '{active: activitySwitch == "future"}', 'ng-click': 'setActivitySwitch("future")'} Future
+  %div.mb20
+    %span.title Activity
+    %add-button{'ng-click': 'showNewActivityModal()'} Add
+  %p{'ng-show': '!activities || !activities.length'}
+    No activity
+  %div.activity-item{'ng-repeat': 'activity in activities | orderBy: activitiesOrder || "happened_at" : activitySwitch == "past"'}
+    %div.activity-header
+      %i.activity-icon.mr8.fa{'class': '{{activity.activity_type.css_class}}'}
+      %span
+        %b {{activity.activity_type.name}}
+      %span {{activity.happened_at | date: 'mediumDate'}}
+    %div.activity-body
+      %p
+        %strong {{activity.creator.first_name}} {{activity.creator.last_name}}
+        {{activity.activity_type.action}}
+        %span{'ng-repeat': 'contact in activity.contacts'}
+          %a{href: '', 'ng-href': '/contacts/{{contact.id}}'}> {{contact.name}}
+          {{$last ? '' : ', '}}
+      %p{'ng-if': 'activity.client'}
+        Account
+        %a{href: '', 'ng-href': '/accounts/{{activity.client.id}}'} {{activity.client.name}}
+      %p{'ng-if': 'activity.deal'}
+        Deal
+        %a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}
+          {{activity.deal.name}}
+      %div{ng: {if: '!isTextHasTags(activity.comment) && activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250'}}
+      %div{'ng-if': 'isTextHasTags(activity.comment) || activity.activity_type.name == "Email"'}
+        %p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
+        %button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity)'}
+          Show email
+      %p{'ng-repeat': 'asset in activity.assets'}
+        %a{href: '{{asset.presigned_url}}', target: '_blank'}
+          {{asset.original_file_name}}
 
-		%div.activity-body
-			%p
-				%strong {{activity.creator.first_name}} {{activity.creator.last_name}}
-				{{activity.activity_type.action}}
-				%span{'ng-repeat': 'contact in activity.contacts'}
-					%a{href: '', 'ng-href': '/contacts/{{contact.id}}'}> {{contact.name}}
-					{{$last ? '' : ', '}}
-			%p{'ng-if': 'activity.client'}
-				Account
-				%a{href: '', 'ng-href': '/accounts/{{activity.client.id}}'} {{activity.client.name}}
-			%p{'ng-if': 'activity.deal'}
-				Deal
-				%a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}
-					{{activity.deal.name}}
-			%div{ng: {if: '!isTextHasTags(activity.comment) && activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250'}}
-			%div{'ng-if': 'isTextHasTags(activity.comment) || activity.activity_type.name == "Email"'}
-				%p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
-				%button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity)'}
-					Show email
-			%p{'ng-repeat': 'asset in activity.assets'}
-				%a{href: '{{asset.presigned_url}}', target: '_blank'}
-					{{asset.original_file_name}}
+    %div.activity-control
+      %a{href: '', 'ng-click': 'showActivityEditModal(activity)'}
+        Edit
+      %a.delete-team{href: '', 'ng-click': 'deleteActivity(activity)'}
+        Delete
 
-		%div.activity-control
-			%a{href: '', 'ng-click': 'showActivityEditModal(activity)'}
-				Edit
-			%a.delete-team{href: '', 'ng-click': 'deleteActivity(activity)'}
-				Delete
-
-	%span.load-more{'ng-if': 'hasMoreActivities', 'ng-click': 'loadMoreActivities()'}
-		Load more
+  %span.load-more{'ng-if': 'hasMoreActivities', 'ng-click': 'loadMoreActivities()'}
+    Load more

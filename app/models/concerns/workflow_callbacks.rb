@@ -4,35 +4,27 @@ module WorkflowCallbacks
   extend ActiveSupport::Concern
 
   included do
-    before_destroy { check_chains_for_workflows(on_destroy_workflows, self, destroyed: true, callback_type: "destroy") }
+    before_destroy { check_chains_for_workflows(on_destroy_workflows, self, destroyed: true, callback_type: 'destroy') }
 
-    before_update  { track_deal_state(callback_type: 'update') }
+    before_update  { track_deal_state }
   end
 
-  def check_chains_for_workflows(workflows, model_instance, options = {})
+  def check_chains_for_workflows(workflows, deal, options = {})
     begin
-      return unless model_instance.belongs_to_company?
+      return unless deal.belongs_to_company?
 
       workflows.each do |workflow|
-        next unless workflow.switched_on?
-
-        WorkflowChainChecker.check(workflow.id, model_instance.id, options) if workflow.send("fire_on_#{options[:callback_type]}")
+        next unless workflow.switched_on? && workflow.send("fire_on_#{options[:callback_type]}")
+        WorkflowChainChecker.check(workflow, deal, options)
       end
     rescue => error
     end
   end
 
-  def custom_workflow_update(type)
+  def track_deal_state
     workflows.each do |workflow|
       next unless workflow.switched_on?
-      WorkflowChainChecker.check(workflow.id, id, type: type) if workflow.send("fire_on_#{type}")
-    end
-  end
-
-  def track_deal_state(type)
-    workflows.each do |workflow|
-      next unless workflow.switched_on?
-      WorkflowChainChecker.tracking(workflow.id, id, type: type)
+      WorkflowChainChecker.tracking(workflow, self)
     end
   end
 

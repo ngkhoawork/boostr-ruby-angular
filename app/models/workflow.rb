@@ -1,3 +1,4 @@
+require 'awesome_print'
 class Workflow < ActiveRecord::Base
   belongs_to :company, required: true
   belongs_to :user
@@ -16,26 +17,46 @@ class Workflow < ActiveRecord::Base
 
   scope :for_company, -> (id) { where(company_id: id) }
 
+  attr_accessor :skip_update
+
   def workflow_event_logs
+    return if skip_update
     remove_workflow_history if self.changed? || !md5_signature.eql?(sign)
   end
 
   def remove_workflow_history
     WorkflowEventLog.where(workflow_id: id)&.delete_all
     DealWorkflowState.where(workflow_id: id)&.delete_all
-  end
-
-  def create_signature
+    self.skip_update = true
+    ap "#"*100
+    ap "history removed"
+    ap "#"*100
     update_attribute(:md5_signature, sign)
   end
 
-  def sign
-    sign = workflow_criterions.order(created_at: :desc).pluck(:created_at).join
-    Digest::MD5.hexdigest(sign)
+  def create_signature
+    self.skip_update = true
+    update_attribute(:md5_signature, sign)
   end
 
-  def should_integrate?(obj_id, options)
-    WorkflowCheckService.new(obj_id, options, workflow_criterions, id).run_criteria_chain
+  def criteria_hash
+    critirious = workflow_criterions.map do |wc|
+      {
+        base_object: wc.base_object,
+        field: wc.field,
+        math_operator: wc.math_operator,
+        value: wc.value,
+        relation: wc.relation,
+        data_type: wc.data_type
+      }
+    end
+    critirious.sort_by! do |critirio|
+      [critirio[:base_object], critirio[:field]]
+    end
+  end
+
+  def sign
+    Digest::MD5.hexdigest(criteria_hash.to_s)
   end
 
   def should_integrate_tracking?(obj_id, options)

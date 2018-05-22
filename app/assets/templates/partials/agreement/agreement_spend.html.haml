@@ -1,0 +1,22 @@
+.block
+    %div.mb20
+        %span.title Spend Summaries
+    .table-wrapper
+        %table.table.table-hover
+            %thead
+                %tr
+                    %th Tracking Type
+                    %th{ ng: { repeat: 'spend in agreement.spend_summaries' } } {{ spend.date }}
+            %tbody
+                %tr
+                    %td
+                        %strong Pipeline 
+                    %td{ ng: { repeat: 'spend in agreement.spend_summaries' } } {{ spend.pipeline | currency: $ : 0 }}
+                %tr
+                    %td
+                        %strong Revenue 
+                    %td{ ng: { repeat: 'spend in agreement.spend_summaries' } } {{ spend.revenue | currency: $ : 0 }}
+                %tr
+                    %td 
+                        %strong Total 
+                    %td{ ng: { repeat: 'spend in agreement.spend_summaries' } } {{ spend.total | currency: $ : 0 }}

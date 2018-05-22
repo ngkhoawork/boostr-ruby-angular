@@ -14,6 +14,10 @@
                 method: 'PUT'
                 url: '/api/assignment_rules/update_positions'
                 isArray: true
+            fieldType:
+                method: 'GET'
+                url: '/api/assignment_rules/field_types'
+
 
         @get = (params) -> resource.query(params).$promise
         @save = (params) -> resource.save(params).$promise
@@ -22,6 +26,7 @@
         @addUser = (params) -> resource.addUser(params).$promise
         @removeUser = (params) -> resource.removeUser(params).$promise
         @updatePositions = (params) -> resource.updatePositions(params).$promise
+        @fieldType = (params) -> resource.fieldType(params).$promise
 
         return
 ]

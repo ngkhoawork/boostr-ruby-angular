@@ -1,11 +1,13 @@
 class ContentFee < ActiveRecord::Base
+  include HasCustomField
+
   belongs_to :io
   belongs_to :product
   has_many :influencer_content_fees, dependent: :destroy
-
   has_many :content_fee_product_budgets, dependent: :destroy
-
   has_one :request, as: :requestable, dependent: :destroy
+
+  delegate :company_id, to: :io, prefix: false
 
   validate :active_exchange_rate
 
@@ -135,9 +137,11 @@ class ContentFee < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(
+    super(
+      options.merge(
         include: [
-            :content_fee_product_budgets
+          :content_fee_product_budgets,
+          custom_field: { only: CustomField.allowed_attr_names(company, 'ContentFee') }
         ]
       )
     )

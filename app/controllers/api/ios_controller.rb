@@ -98,6 +98,14 @@ class Api::IosController < ApplicationController
     end
   end
 
+  def spend_agreements
+    render json: io_spend_agreements, each_serializer: Api::SpendAgreements::SpendAgreementSerializer,
+           advertiser_type_id: Client.advertiser_type_id(company),
+           agency_type_id: Client.agency_type_id(company),
+           type_field_id: company.fields.find_by(subject_type: 'Multiple', name: 'Spend Agreement Type').id,
+           status_field_id: company.fields.find_by(subject_type: 'Multiple', name: 'Spend Agreement Status').id
+  end
+
   private
 
   def import_success_message
@@ -126,6 +134,10 @@ class Api::IosController < ApplicationController
     by_pages(
       apply_filters(company_ios).includes(:currency, :deal, :agency, :advertiser)
     )
+  end
+
+  def io_spend_agreements
+    company.ios.find(params[:io_id]).spend_agreements
   end
 
   def io_costs_csv

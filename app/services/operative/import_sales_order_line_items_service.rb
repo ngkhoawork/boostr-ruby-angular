@@ -6,6 +6,7 @@ class Operative::ImportSalesOrderLineItemsService
     @exclude_child_line_items = exclude_child_line_items
     @sales_order_line_items = files.fetch(:sales_order_line_items)
     @invoice_line_items = files.fetch(:invoice_line_item)
+    @marked_to_delete = []
   end
 
   def perform
@@ -16,13 +17,14 @@ class Operative::ImportSalesOrderLineItemsService
       self.class.define_product_mapping(@product_mapping)
       parse_invoices
       parse_line_items
+      destroy_marked_to_delete
     end
   end
 
   private
   attr_reader :company_id, :revenue_calculation_pattern, :sales_order_line_items,
               :invoice_line_items, :invoice_csv_file, :sales_order_csv_file, :invoice_csv_file,
-              :exclude_child_line_items
+              :exclude_child_line_items, :marked_to_delete
 
   def open_file(file)
     begin
@@ -81,7 +83,8 @@ class Operative::ImportSalesOrderLineItemsService
         next
       end
 
-      if irrelevant_line_item(row)
+      if irrelevant_line_item?(row)
+        mark_for_deletion(row)
         import_log.count_skipped
         next
       end
@@ -106,6 +109,12 @@ class Operative::ImportSalesOrderLineItemsService
     import_log.save
   end
 
+  def destroy_marked_to_delete
+    marked_to_delete.each_slice(500) do |batch|
+      DisplayLineItem.joins(:io).where(ios: {company_id: company_id}, line_number: batch).destroy_all
+    end
+  end
+
   def build_dli_csv(row)
     invoice = find_in_invoices(row[:sales_order_line_item_id], row[:net_unit_cost])
     DisplayLineItemCsv.new(
@@ -127,12 +136,18 @@ class Operative::ImportSalesOrderLineItemsService
     )
   end
 
-  def irrelevant_line_item(row)
+  def irrelevant_line_item?(row)
     row[:line_item_status].try(:downcase) != 'sent_to_production' ||
     parent_line_item_presence(row[:parent_line_item_id]) ||
     !row[:quantity].present? ||
     !row[:net_cost].present? ||
     row[:net_cost].to_f.zero?
+  end
+
+  def mark_for_deletion(row)
+    if row[:line_item_status]&.downcase == 'deleted'
+      marked_to_delete << row.field(:sales_order_line_item_id)
+    end
   end
 
   def parent_line_item_presence(parent_line_item_id)

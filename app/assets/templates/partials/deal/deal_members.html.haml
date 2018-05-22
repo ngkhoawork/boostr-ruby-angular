@@ -5,7 +5,7 @@
 			%add-button{ dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } } Add
 			%ul.dropdown-menu.new-member-options
 				%li.existing-user-options
-					%ui-select{ name: 'user-list', ng: { model: 'userToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingUser($item)' }
+					%ui-select{ name: 'user-list', ng: { model: 'userToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingUser($item, $select)' }
 						%ui-select-match{ placeholder: 'start typing their name here' }
 							{{ $select.selected.name }}
 						%ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }

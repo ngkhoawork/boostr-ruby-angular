@@ -1,0 +1,23 @@
+.block.team-block
+    %div.mb20
+        %span.title Team
+        %add-button{ ng: { click: 'showAddMemberModal()', if: 'loaded' } } Add
+    %table.table.table-hover
+        %thead
+            %tr
+                %th Member
+                %th Role
+        %tbody
+            %tr{ ng: { repeat: 'member in agreement.team' } }
+                %td
+                    {{ member.user.first_name }} {{ member.user.last_name }}
+                    %i.fa.fa-trash.exclude{ ng: { click: 'excludeMember(member)'} }
+                %td 
+                    .dropdown
+                        %button.btn.btn-primary.dropdown-toggle{ 'data-toggle': 'dropdown', type: 'button' }
+                            %span.editable {{ member.role || 'Select role' }}
+                            %span.caret
+                        %ul.dropdown-menu
+                            %li{ ng: { repeat: 'role in options.roles', class: '{ active: role.id === member.role.option_id }' } }
+                                %a{ href: 'javascript:void(0)', ng: { click: 'updateMember(member, role)' } }
+                                    %span.text {{role.name}}
