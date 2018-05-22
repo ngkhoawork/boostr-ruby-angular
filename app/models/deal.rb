@@ -331,6 +331,10 @@ class Deal < ActiveRecord::Base
     stage.probability.eql?(100) && stage.open? == false
   end
 
+  def just_switched_to_closed_won?
+    closed_won? && previous_changes[:stage_id]
+  end
+
   def closed_with_io?
     !stage.open? && stage.probability == 100 && io.present?
   end
@@ -1745,7 +1749,7 @@ class Deal < ActiveRecord::Base
   end
 
   def create_hoopla_newsflash_event
-    return unless closed_won? && company.hoopla_configurations.first&.switched_on?
+    return unless just_switched_to_closed_won? && company.hoopla_configurations.first&.switched_on? && manual_update
 
     Hoopla::CreateNewsflashEventOnDealWonWorker.perform_async(id, updated_by, company_id)
   end
