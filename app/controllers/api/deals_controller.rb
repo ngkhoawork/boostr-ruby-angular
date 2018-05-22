@@ -884,7 +884,7 @@ class Api::DealsController < ApplicationController
   end
 
   def team
-    if params[:team_id].present?
+    @_team ||= if params[:team_id].present?
       company.teams.find(params[:team_id])
     elsif current_user.leader?
       company.teams.where(leader: current_user).first
@@ -996,8 +996,7 @@ class Api::DealsController < ApplicationController
 
   def all_ordered_deals_by_stage(stage)
     deals_with_stage = deals.where(stage: stage)
-      .by_seller_id(params[:member_id])
-      .by_team_id(params[:team_id])
+      .by_deal_team(member_ids)
       .by_external_id(params[:external_id])
       .by_name_or_advertiser_name_or_agency_name(params[:q])
       .for_client(params[:advertiser_id])
@@ -1012,6 +1011,15 @@ class Api::DealsController < ApplicationController
     closed_year = Date.new(params[:closed_year].to_i) if params[:closed_year].present?
 
     stage.open? ? deals_with_stage.order(:start_date) : deals_with_stage.by_closed_at(closed_year).order(closed_at: :desc)
+  end
+
+  def member_ids
+    @_member_ids ||=
+      if params[:member_id]
+        [params[:member_id]]
+      elsif params[:team_id]
+        team.all_members_and_leaders
+      end
   end
 
   def company_teams_data
