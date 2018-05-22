@@ -107,7 +107,6 @@
           _.each teams, (team) ->
             all_members = [].concat(all_members, team.members)
             all_leaders = [].concat(all_leaders, team.leaders)
-#          $scope.teams = teams
           $scope.teams = [{
             id: 0,
             name:'All Teams',
@@ -191,7 +190,6 @@
 
       $scope.$watch('selectedMember', () =>
         if ($scope.selectedMember)
-          $scope.selectedMember = value
           $scope.selectedMemberId = $scope.selectedMember.id
           $scope.selectedMemberList = [$scope.selectedMember.id]
           $scope.selectedLeaderList = []
