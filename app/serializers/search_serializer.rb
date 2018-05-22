@@ -32,7 +32,7 @@ class SearchSerializer < ActiveModel::Serializer
       object.searchable.as_json({
         override: true,
         options: {
-          only: [:id, :name, :budget_loc, :budget],
+          only: [:id, :name, :budget_loc, :budget, :start_date, :end_date],
           include: {
             advertiser: {
               only: [:id, :name]
@@ -50,7 +50,7 @@ class SearchSerializer < ActiveModel::Serializer
     when 'Io'
       object.searchable.as_json({
         override: true,
-        only: [:id, :io_number, :name, :budget, :budget_loc],
+        only: [:id, :io_number, :name, :budget, :budget_loc, :start_date, :end_date],
         include: {
           advertiser: {
             only: [:id, :name]

@@ -1,14 +1,55 @@
 @app.controller 'NavbarController',
-['$scope', '$window', '$document', '$location', '$timeout', '$routeParams',
-( $scope,   $window,   $document,   $location,   $timeout,   $routeParams) ->
+['$scope', '$window', '$document', '$location', '$timeout', '$routeParams', 'Search', 
+( $scope,   $window,   $document,   $location,   $timeout,   $routeParams,   Search) ->
     $scope.query = if $location.path() == '/search' then $location.search().query else ''
+    $scope.searchResults = []
+    searchTimeout = null
 
     $scope.isActive = (viewLocation) ->
       $location.path().indexOf(viewLocation) == 0
 
-    $scope.search = () ->
-      if $scope.query.length > 0
-        $location.url('/search?query=' + $scope.query)
+    $scope.search = (keyCode, query) ->
+      if query.length == 0
+        $scope.searchResults = []
+      else if keyCode == 13
+        $scope.searchResults = []
+        $scope.query = query
+        $location.url('/search?query=' + encodeURIComponent(query))
+      else
+        if searchTimeout then $timeout.cancel(searchTimeout)
+        searchTimeout = $timeout(() ->
+          return if query != $scope.query
+          Search.all(query: query, limit: 10, order: 'rank').then (results) ->
+            $scope.searchResults = results
+        , 250)
+
+    $scope.displayType = (res) ->
+      switch res.searchable_type
+        when 'Client' 
+          'Account'
+        when 'Contact'
+          'Contact'
+        when 'Io'
+          'IO'
+        when 'Deal'
+          'Deal'
+
+    $scope.showDetail = (res) ->
+      url = switch res.searchable_type
+        when 'Client' 
+          'accounts/' + res.details.id
+        when 'Contact'
+          'contacts/' + res.details.id
+        when 'Io'
+          'revenue/ios/' + res.details.id
+        when 'Deal'
+          'deals/' + res.details.id
+      $location.url(url)
+
+    $scope.clearSearch = () ->
+      $timeout () -> 
+        $scope.searchResults = []
+      , 200
 
     $scope.navbar = [
         {name: 'HOME PAGE', url: '/dashboard'}
@@ -71,6 +112,8 @@
         if windowEl.scrollTop() > headerOffset
             header.addClass 'fixed-header'
             header.css 'top', windowEl.scrollTop() - headerOffset
+            $scope.$apply () ->
+              $scope.searchResults = []
         else
             header.removeClass 'fixed-header'
             header.css 'top', 0

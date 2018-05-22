@@ -11,8 +11,10 @@
     $scope.page = 1
 
     getData = () ->
+      $scope.isLoading = true
       if $scope.query.length > 0
         Search.all(query: $scope.query, page: $scope.page).then (results) ->
+          $scope.results = ($scope.results || []).concat results
           _.each results, (record) ->
             switch(record.searchable_type)
               when 'Client'
@@ -27,9 +29,9 @@
           $timeout -> $scope.isLoading = false
 
     $scope.loadMore = ->
-        $scope.page++
-        $scope.isLoading = true
-        getData()
+      $scope.page++
+      $scope.isLoading = true
+      getData()
 
     getData()
 ]

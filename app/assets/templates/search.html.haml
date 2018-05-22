@@ -1,7 +1,10 @@
 #global-search.z-styles{infinite: {scroll: 'loadMore()', 'scroll-disabled': 'isLoading || allLoaded', 'scroll-distance': '0.5'}}
   .container-fluid
-    .title
+    .title{'ng-if': 'results && results.length > 0'}
       Search Results for: 
+      %b ’{{query}}’
+    .title{'ng-if': 'results && results.length == 0'}
+      No match found for:
       %b ’{{query}}’
 
   .container-fluid{ 'ng-if': 'clients.length > 0' }
@@ -62,6 +65,8 @@
               %th.left Stage
               %th.left %
               %th.left Budget
+              %th.left Start Date
+              %th.left End Date
           %tbody
             %tr{ ng: { repeat: 'deal in deals' } }
               %td.left
@@ -71,6 +76,8 @@
               %td.left {{ deal.stage.name }}
               %td.left {{ deal.stage.probability }}%
               %td.left {{ deal.budget_loc | currency:deal.currency.curr_symbol:0 }}
+              %td.left {{ deal.start_date | date: 'M/d/yyyy'}}
+              %td.left {{ deal.end_date | date: 'M/d/yyyy'}}
 
   .container-fluid{ 'ng-if': 'ios.length > 0' }
     .block
@@ -85,6 +92,8 @@
               %th.left Advertiser
               %th.left Agency
               %th.left Budget
+              %th.left Start Date
+              %th.left End Date
           %tbody
             %tr{ ng: { repeat: 'io in ios' } }
               %td.left {{ io.io_number }}
@@ -93,3 +102,5 @@
               %td.left {{ io.advertiser.name }}
               %td.left {{ io.agency.name }}
               %td.left {{ io.budget_loc | currency:io.currency.curr_symbol:0 }}
+              %td.left {{ io.start_date | date: 'M/d/yyyy'}}
+              %td.left {{ io.end_date | date: 'M/d/yyyy'}}

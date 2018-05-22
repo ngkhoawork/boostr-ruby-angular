@@ -19,10 +19,13 @@
       position: relative;
       display: inline-block;
       vertical-align: top;
-      padding-left: 20px;
+      padding-left: 15px;
       border-left: 1px solid #646769;
       height: 34px;
       margin-top: 4px;
+      width: 50%;
+      max-width: 500px;
+      font-family: "Avenir Next";
 
       .fa-search {
         position: absolute;
@@ -31,16 +34,62 @@
         font-weight: normal;
         margin-top: 5px;
       }
-      .form-control {
-        height: 30px;
+      input.form-control {
+        height: 100%;
         vertical-align: middle;
         border: none;
         background: none;
-        color: #fff;
+        color: #FFFFFF;
         font-size: 16px;
         font-weight: initial;
-        padding-left: 30px;
+        padding-left: 33px;
+        padding-right: 0;
         width: 100%;
+
+        &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+          color: #6E7981;
+        }
+        &::-moz-placeholder { /* Firefox 19+ */
+          color: #6E7981;
+        }
+        &:-ms-input-placeholder { /* IE 10+ */
+          color: #6E7981;
+        }
+        &:-moz-placeholder { /* Firefox 18- */
+          color: #6E7981;
+        }
+      }
+      .search-dropdown {
+        list-style-type: none;
+        margin-left: 25px;
+        padding: 0;
+        border: 1px solid rgba(150, 162, 172, .1);
+        border-bottom: 0;
+        border-radius: 4px;
+        box-shadow: 0 15px 25px 0 rgba(0, 0, 0, .15);
+
+        li {
+          padding: 11px 10px;
+          width: 100%;
+          background: #FFF;
+          cursor: pointer;
+          color: #2B3C49;
+          border-bottom: 1px solid rgba(150,162,172,0.1);
+
+          &:hover {
+            background-color: #F8F9F9;
+          }
+
+          a {
+            position: absolute;
+            right: 10px;
+          }
+
+          &:first-child {
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+          }
+        }
       }
     }
     .auth-wrap {
@@ -73,6 +122,7 @@
     font-size: 15px;
     position: relative;
     transform-origin: 0;
+    z-index: -1;
     .navbar-item {
       white-space: nowrap;
       border-bottom: 2px solid transparent;

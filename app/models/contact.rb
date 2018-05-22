@@ -3,7 +3,7 @@ class Contact < ActiveRecord::Base
 
   include PgSearch
 
-  multisearchable against: [:name, :email], 
+  multisearchable against: [:name, :email, :client_names], 
                   additional_attributes: lambda { |contact| { company_id: contact.company_id } },
                   if: lambda { |contact| !contact.deleted? }
 
@@ -292,6 +292,10 @@ class Contact < ActiveRecord::Base
     else
       nil
     end
+  end
+
+  def client_names
+    clients.pluck(:name).join(' ')
   end
 
   private

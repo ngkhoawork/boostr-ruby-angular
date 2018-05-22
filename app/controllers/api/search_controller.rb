@@ -4,9 +4,9 @@ class Api::SearchController < ApplicationController
   def all
     render json: PgSearch.multisearch(query)
                          .where(company_id: current_user.company_id)
-                         .reorder('searchable_type ASC, rank DESC, id ASC')
-                         .page(params[:page] || 1)
-                         .per(20)
+                         .reorder(order)
+                         .page(page)
+                         .limit(limit)
                          .includes(:searchable),
            each_serializer: SearchSerializer
   end
@@ -15,5 +15,21 @@ class Api::SearchController < ApplicationController
 
   def query
     params[:query]
+  end
+
+  def page
+    params[:page] || 1
+  end
+
+  def limit
+    params[:limit] || 20
+  end
+
+  def order
+    if params[:order] == 'rank'
+      'rank DESC'
+    else
+      'searchable_type ASC, rank DESC, id ASC'
+    end
   end
 end
