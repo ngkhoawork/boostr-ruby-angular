@@ -21,7 +21,6 @@
             Deal-ID
             %span.star *
           %input.form-control{ placeholder: 'Deal-ID', ng: { model: 'item.ssp_deal_id', required: true }, name: 'deal_id' }
-
       .row
         .col-md-6.form-group{'ng-class':'{error: errors.budget_loc}'}
           %span.error-text {{errors.budget_loc}}
@@ -41,7 +40,7 @@
               %div{ ng: { bind: { html: 'pmpType.name' } } }
               
       .row
-        .col-md-6.form-group{'ng-class':'{error: errors.product_id}'}
+        .col-md-6.form-group{ 'ng-if': '!productOptionsEnabled', 'ng-class':'{error: errors.product_id}'}
           %span.error-text {{errors.product_id}}
           %label{ for: 'product_id' }
             Product
@@ -51,6 +50,65 @@
               {{ $select.selected.name }}
             %ui-select-choices{ repeat: 'product.id as product in products' }
               %div{ ng: { bind: { html: 'product.name' } } }
+        .col-xs-6{ 'ng-if': 'productOptionsEnabled' }
+          .form-group{ 'ng-class': '{error: errors.product_id}' }
+            %span.error-text {{errors.product_id}}
+            %label
+              Product
+              %span.star *
+            %ui-select{ name: 'product_level_0', ng: { model: 'item.product0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
+              %ui-select-match{ placeholder: 'Product' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'product.id as product in productsByLevel(0) | orderBy: "name" | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'product.name' } } }
+        .col-xs-6{ 'ng-if': 'productOptionsEnabled && productOption1Enabled' }
+          .form-group{ 'ng-class': '{error: errors.product1}' }
+            %span.error-text {{errors.product1}}
+            %label
+              {{ option1Field }}
+              %span.star{'ng-if': 'hasSubProduct(1) || selectedProduct().level >= 1'} *
+            %ui-select{ name: 'product_level_1', ng: { model: 'item.product1', disabled: '!item.product0 || productsByLevel(1).length == 0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
+              %ui-select-match{ placeholder: '{{ option1Field }}', 'allow-clear': 'true' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'product.id as product in productsByLevel(1) | orderBy: "name" | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'product.name' } } }
+        .col-xs-6{ 'ng-if': 'productOptionsEnabled && productOption2Enabled' }
+          .form-group{ 'ng-class': '{error: errors.product2}' }
+            %span.error-text {{errors.product2}}
+            %label
+              {{ option2Field }}
+              %span.star{'ng-if': 'hasSubProduct(2) || selectedProduct().level == 2'} *
+            %ui-select{ name: 'product_level_2', ng: { model: 'item.product2', disabled: '!item.product1 || productsByLevel(2).length == 0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
+              %ui-select-match{ placeholder: '{{ option2Field }}', 'allow-clear': 'true' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'product.id as product in productsByLevel(2) | orderBy: "name" | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'product.name' } } }
+      .row
+        .col-md-6.form-group{ng: {repeat: 'pmpItemCustomField in pmpItemcustomFieldNames | orderBy: "position"', init: "fieldName = pmpItemCustomField.field_name", if: "!pmpItemCustomField.disabled", class:'{error: errors[fieldName]}'}}
+          %span.error-text {{errors[fieldName]}}
+          %label{ for: '{{fieldName}}' }
+            {{pmpItemCustomField.field_label}}
+            %span.star{ 'ng-if': "pmpItemCustomField.is_required == true" }
+              *
+          %input.form-control{ 'ng-if': "pmpItemCustomField.field_type != 'number'&& pmpItemCustomField.field_type != 'currency' && pmpItemCustomField.field_type != 'note' && pmpItemCustomField.field_type != 'datetime' && pmpItemCustomField.field_type != 'boolean' && pmpItemCustomField.field_type != 'number_4_dec' && pmpItemCustomField.field_type != 'dropdown' && pmpItemCustomField.field_type != 'integer'", placeholder: 'Enter {{pmpItemCustomField.field_label}}', ng: { model: 'item.pmp_item_custom_field_obj[fieldName]' }, name: '{{fieldName}}' }
+          %input.form-control{'ng-if': "pmpItemCustomField.field_type == 'number'", 'msd-elastic': '', 'ng-model': "item.pmp_item_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pmpItemCustomField.field_label}}', 'numbers-with-commas': true}
+          %input.form-control{'ng-if': "pmpItemCustomField.field_type == 'integer'", 'msd-elastic': '', 'ng-model': "item.pmp_item_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pmpItemCustomField.field_label}}',  'numbers-only': ''}
+          %input.form-control{'ng-if': "pmpItemCustomField.field_type == 'currency'", 'msd-elastic': '', 'ng-model': "item.pmp_item_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pmpItemCustomField.field_label}}',  'numbers-only': ''}
+          %input.form-control{'ng-if': "pmpItemCustomField.field_type == 'number_4_dec'", 'msd-elastic': '', 'ng-model': "item.pmp_item_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pmpItemCustomField.field_label}}',  'numbers-only': ''}
+          %textarea.form-control{ 'ng-if': "pmpItemCustomField.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "item.pmp_item_custom_field_obj[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{pmpItemCustomField.field_label}}' }
+          .bs-datepicker
+            %input.form-control{ 'ng-if': "pmpItemCustomField.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'item.pmp_item_custom_field_obj[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{pmpItemCustomField.field_label}}' }
+          .show-hide-remainder-form{ ng: {  if: "pmpItemCustomField.field_type == 'boolean'" } }
+            .switch-remainder-form
+              %input.cmn-toggle.cmn-toggle-round-flat{id: "act-{{fieldName}}", type: 'checkbox', 'ng-model': 'item.pmp_item_custom_field_obj[fieldName]'}
+              %label{for: "act-{{fieldName}}"}
+                %span
+          %ui-select{ name: '{{fieldName}}', ng: { if: "pmpItemCustomField.field_type == 'dropdown'", model: 'item.pmp_item_custom_field_obj[fieldName]', disabled: true } }
+            %ui-select-match{ placeholder: 'Select value' }
+              {{ $select.selected.value }}
+            %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in pmpItemCustomField.custom_field_options | filter: { value: $select.search }' }
+              %div{ ng: { bind: { html: 'customFieldOption.value' } } }
+
 
     .popup-modal-footer.text-center
       %button.btn.btn-default{ 'type': 'button', 'ng-click': 'closeModal()' } Cancel

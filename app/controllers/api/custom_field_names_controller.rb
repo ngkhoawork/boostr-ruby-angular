@@ -2,7 +2,7 @@ class Api::CustomFieldNamesController < ApplicationController
   respond_to :json
 
   def index
-    render json: collection,
+    render json: collection.order(:position),
            each_serializer: CustomFieldNames::Serializer
   end
 

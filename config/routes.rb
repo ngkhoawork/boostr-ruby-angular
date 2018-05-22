@@ -362,7 +362,7 @@ Rails.application.routes.draw do
     end
     resources :pmps, only: [:index, :show, :create, :update, :destroy] do
       resources :pmp_members, only: [:create, :update, :destroy]
-      resources :pmp_items, only: [:create, :update, :destroy]
+      resources :pmp_items, only: [:create, :update, :show, :destroy]
       get :no_match_advertisers, on: :collection
       post :bulk_assign_advertiser, on: :collection
       post :assign_advertiser, on: :member

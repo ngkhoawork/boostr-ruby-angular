@@ -15,6 +15,7 @@
       { name: 'Publisher', value: 'publisher' }
       { name: 'Activity', value: 'activity' }
       { name: 'IO Content Fee', value: 'content_fee' }
+      { name: 'PMP Item', value: 'pmp_item' }
     ]
 
     $scope.customFieldOptions = [ {id: null, value: ""} ]

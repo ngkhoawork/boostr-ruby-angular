@@ -12,6 +12,7 @@
 
   $scope.init = () ->
     getCustomFields()
+    getProductFields()
     getMetadata()
     Company.get().$promise.then (company) -> $scope.company = company
 
@@ -96,8 +97,13 @@
 
       # Temporary until we will use new structure of custom fields in all places
       if custom_fields_api == 'CustomFieldNames'
-        service.all({subject_type: 'activity', show_on_modal: true}).then (custom_fields) ->
-          $scope.custom_fields = custom_fields
+        if api_url == '/api/active_pmps/import_item'
+          service.all({subject_type: 'pmp_item', show_on_modal: true}).then (custom_fields) ->
+            $scope.required_custom_fields = _.filter custom_fields, (c) -> c.disabled == false && c.is_required == true
+            $scope.optional_custom_fields = _.filter custom_fields, (c) -> c.disabled == false && c.is_required == false
+        if api_url == '/api/deal_products'
+          service.all({subject_type: 'activity', show_on_modal: true}).then (custom_fields) ->
+            $scope.custom_fields = custom_fields
       else
         service.csv_headers().then (custom_fields) ->
           $scope.custom_fields = custom_fields
@@ -105,6 +111,13 @@
   getMetadata = ->
     if metadata == true
       $scope.metadata_url = api_url + '/metadata'
+
+  getProductFields = ->
+    if api_url == '/api/active_pmps/import_item'
+      user = $scope.currentUser
+      $scope.product_fields = []
+      if user.product_options_enabled
+        $scope.product_fields = [user.product_option1, user.product_option2]
 
   $scope.init()
 ]

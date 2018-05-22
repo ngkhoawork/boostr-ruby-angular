@@ -33,7 +33,7 @@ class DealProductBudget < ActiveRecord::Base
   validates :start_date, :end_date, presence: true
 
   def daily_budget
-    budget / (end_date - start_date + 1).to_f
+    (budget || 0) / (end_date - start_date + 1).to_f
   end
 
   def budget_percentage

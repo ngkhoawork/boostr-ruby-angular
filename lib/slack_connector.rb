@@ -37,6 +37,15 @@ class SlackConnector
 
       api_config = SlackApiConfiguration.find_or_initialize_by(company_id: company_id, integration_provider: Integration::SLACK)
       api_config.update(params)
+      update_wf_actions(company_id, api_config&.id)
+    end
+
+    def update_wf_actions(company_id, api_connection_id)
+      company = Company.find(company_id)
+      return unless company.present?
+      wf_ids = company.workflows.pluck(:id)
+      return unless wf_ids.present?
+      WorkflowAction.where(workflow_id: wf_ids)&.map{|c|c.update_attribute(:api_configuration_id, api_connection_id)}
     end
 
     def disable_api_configuration(company_id)

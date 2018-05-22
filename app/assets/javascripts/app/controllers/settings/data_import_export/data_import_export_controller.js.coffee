@@ -367,7 +367,7 @@
         api_url: ->
           '/api/active_pmps/import_item'
         custom_fields_api: ->
-          undefined
+          'CustomFieldNames'
         metadata: ->
           false
 

@@ -18,6 +18,14 @@ class Api::PmpItemsController < ApplicationController
     end
   end
 
+  def show
+    if pmp_item
+      render json: pmp_item, serializer: Pmps::PmpItemSerializer
+    else
+      render json: {  }, status: :unprocessable_entity
+    end
+  end
+
   def destroy
     pmp_item.destroy
     render nothing: true
@@ -31,7 +39,8 @@ class Api::PmpItemsController < ApplicationController
       :ssp_deal_id,
       :budget_loc,
       :pmp_type,
-      :product_id
+      :product_id,
+      custom_field_attributes: CustomField.attribute_names
     )
   end
 

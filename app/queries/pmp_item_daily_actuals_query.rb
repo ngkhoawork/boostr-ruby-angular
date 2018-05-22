@@ -5,6 +5,8 @@ class PmpItemDailyActualsQuery
   end
 
   def perform
+    return grouped_item_records if options['list_type'].eql?('grouped') && options['custom'].eql?('items')
+    return grouped_records if options['list_type'].eql?('grouped') && !options['custom'].eql?('items')
     relation.by_start_date(options[:start_date], options[:end_date])
         .with_advertiser(options[:with_advertiser])
         .order(:pmp_item_id, :date)
@@ -21,6 +23,33 @@ class PmpItemDailyActualsQuery
   private
 
   attr_reader :relation, :options, :company
+
+  def grouped_records
+    results = company
+                  .pmp_items.where(without_adv: true)
+    if options[:name].present?
+      results = results
+                    .includes(:pmp_item_daily_actuals,:pmp)
+                    .extending(Scopes)
+                    .where(pmp_item_daily_actuals: {advertiser_id: nil})
+                    .where.not(pmp_item_daily_actuals: {revenue: 0.0})
+                    .by_start_date(options[:start_date], options[:end_date])
+                    .where('pmp_item_daily_actuals.ssp_advertiser ilike ? OR pmps.name ilike ? OR ssp_deal_id ilike ?',
+                           "%#{options[:name]}%", "%#{options[:name]}%", "%#{options[:name]}%")
+    end
+    if options[:agency_id].present?
+      results = results.where(agency_id: options[:agency_id])
+    end
+    results.order(total_revenue_by_daily_items: :desc)
+  end
+
+  def grouped_item_records
+    company
+        .pmp_item_daily_actuals
+        .where(pmp_item_id: options[:pmp_item_id])
+        .where(pmp_item_daily_actuals: {advertiser_id: nil})
+        .where.not(revenue: 0.0)
+  end
 
   def relation
     if options[:name].nil?

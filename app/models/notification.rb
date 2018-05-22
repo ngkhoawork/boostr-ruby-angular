@@ -2,6 +2,8 @@ class Notification < ActiveRecord::Base
   LOST_DEAL = 'Lost Deal'.freeze
   PMP_STOPPED_RUNNING = 'PMP-stopped Running'.freeze
   DATAFEED_STATUS = 'Datafeed Status'.freeze
+  TYPES = {'no_match_io'=> 1}.freeze
+  scope :active, ->{ where(active: true) }
 
   belongs_to :company
   
@@ -16,3 +18,4 @@ class Notification < ActiveRecord::Base
     recipients.blank? ? [] : recipients.split(',').map(&:strip)
   end
 end
+

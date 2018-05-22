@@ -3,6 +3,7 @@ class Operative::ImportSalesOrderLineItemsService
     @api_config = api_config
     @files = files
     @marked_to_delete = []
+    @temp_io_ids = []
   end
 
   def perform
@@ -12,12 +13,13 @@ class Operative::ImportSalesOrderLineItemsService
     parse_invoices
     parse_line_items
     destroy_marked_to_delete
+    notify_no_match_ios
   end
 
   private
 
   attr_reader :api_config, :files, :sales_order_line_items, :marked_to_delete,
-              :invoice_line_items
+              :invoice_line_items, :temp_io_ids
 
   delegate :company_id, :revenue_calculation_pattern, :product_mapping,
            :exclude_child_line_items, :skip_not_changed?, to: :api_config
@@ -33,6 +35,11 @@ class Operative::ImportSalesOrderLineItemsService
       import_log.log_error [error.class.to_s, error.message]
       import_log.save
     end
+  end
+
+  def notify_no_match_ios
+    return unless temp_io_ids.present?
+    NoMatchIoMailer.notify(temp_io_ids, company_id).deliver_later(queue: "default")
   end
 
   def parse_invoices
@@ -95,7 +102,8 @@ class Operative::ImportSalesOrderLineItemsService
 
       if dli_csv.valid?
         begin
-          dli_csv.perform
+          id = dli_csv.perform
+          temp_io_ids << id if id.present?
           import_log.count_imported
         rescue Exception => e
           import_log.count_failed
