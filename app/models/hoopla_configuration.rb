@@ -3,10 +3,16 @@ class HooplaConfiguration < ApiConfiguration
 
   validate :connected_is_required_for_switched_on
 
+  after_destroy :flush_hoopla_users
+
   after_commit :bind_deal_won_newsflash, on: [:create, :update]
-  after_commit :sync_users, on: [:create, :update]
+  after_commit :bind_hoopla_users, on: [:create, :update]
 
   accepts_nested_attributes_for :hoopla_details
+
+  def just_switched_on?
+    switched_on? && previous_changes[:switched_on]
+  end
 
   private
 
@@ -20,10 +26,12 @@ class HooplaConfiguration < ApiConfiguration
     Hoopla::BindDealWonNewsflashWorker.perform_async(company_id)
   end
 
-  def sync_users
-    return unless switched_on? && previous_changes[:switched_on]
+  def bind_hoopla_users
+    Hoopla::BindCompanyUsersWorker.perform_async(company_id) if just_switched_on?
+  end
 
-    Hoopla::SyncCompanyUsersWorker.perform_async(company_id)
+  def flush_hoopla_users
+    HooplaUser.where(user_id: company.user_ids).destroy_all
   end
 
   def method_missing(method, *args)
