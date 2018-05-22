@@ -28,7 +28,7 @@ class Hoopla::Actions::CreateNewsflashEventOnDealWon < Hoopla::Actions::Base
   end
 
   def hoopla_user
-    user.hoopla_user || (raise Hoopla::Errors::NewsflashEventFailed, 'hoopla user must be present')
+    user.hoopla_user || raise_hoopla_user_must_present!(user.id)
   end
 
   def newsflash_event_options
@@ -60,6 +60,10 @@ class Hoopla::Actions::CreateNewsflashEventOnDealWon < Hoopla::Actions::Base
 
   def formatted_end_date
     deal.end_date&.strftime('%m/%d/%Y')
+  end
+
+  def raise_hoopla_user_must_present!(user_id)
+    raise Hoopla::Errors::NewsflashEventFailed, "hoopla user must be present for user_id: #{user_id}"
   end
 
   def log_error(message)

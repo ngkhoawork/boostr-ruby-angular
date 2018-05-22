@@ -6,7 +6,7 @@ class HooplaConfiguration < ApiConfiguration
   after_destroy :flush_hoopla_users
 
   after_commit :bind_deal_won_newsflash, on: [:create, :update]
-  after_commit :bind_hoopla_users, on: [:create, :update]
+  after_commit :sync_hoopla_users, on: [:create, :update]
 
   accepts_nested_attributes_for :hoopla_details
 
@@ -26,8 +26,8 @@ class HooplaConfiguration < ApiConfiguration
     Hoopla::BindDealWonNewsflashWorker.perform_async(company_id)
   end
 
-  def bind_hoopla_users
-    Hoopla::BindCompanyUsersWorker.perform_async(company_id) if just_switched_on?
+  def sync_hoopla_users
+    Hoopla::SyncCompanyUsersWorker.perform_async(company_id) if just_switched_on?
   end
 
   def flush_hoopla_users
