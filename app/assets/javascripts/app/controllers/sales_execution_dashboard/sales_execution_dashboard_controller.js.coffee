@@ -3,6 +3,7 @@
    '$scope',
    '$q',
    'Team',
+   'CurrentUser'
    'SalesExecutionDashboard',
    'SalesExecutionDashboardDataStore',
    'DealLossSummaryDataStore',
@@ -12,6 +13,7 @@
      $scope,
      $q,
      Team,
+     CurrentUser,
      SalesExecutionDashboard,
      SalesExecutionDashboardDataStore,
      DealLossSummaryDataStore,
@@ -121,6 +123,9 @@
             return member.id
           $scope.filter.selectedTeam = $scope.teams[0]
 
+          searchAndSetTeam($scope.teams, $scope.currentUser)
+          searchAndSetSeller($scope.filter.selectedTeam.members, $scope.currentUser)
+
           SalesExecutionDashboard.kpis("member_ids[]": allUsers(), time_period: $scope.kpisChoice).then (data) ->
             $scope.allKPIs = data[0]
 
@@ -187,6 +192,24 @@
             return item.id
           calculateKPIs()
       , true);
+
+      searchAndSetTeam = (teams, user) ->
+        for team in teams
+          if team.leader_id && team.leader_id == user.id
+            $scope.filter.selectedTeam = team
+            return
+          else if team.id && team.id == user.team_id
+            $scope.filter.selectedTeam = team
+            return
+          if team.children && team.children.length
+            searchAndSetTeam team.children, user
+            return
+
+      searchAndSetSeller = (members, user) ->
+        if !_.isArray members then return
+        if _.findWhere members, {id: user.id}
+          $scope.filter.selectedMember = user
+          return
 
       $scope.$watch('selectedMember', () =>
         if ($scope.selectedMember)
