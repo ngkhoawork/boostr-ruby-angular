@@ -24,7 +24,7 @@
       when 'account' then $scope.customFieldName.account_cf_options
       when 'contact' then $scope.customFieldName.contact_cf_options
       when 'publisher' then $scope.customFieldName.publisher_custom_field_options
-      when 'activity' then $scope.customFieldName.custom_field_options
+      else $scope.customFieldName.custom_field_options
 
   $scope.addCustomFieldOption = () ->
     $scope.customFieldOptions.push({id: null, value: ""})
@@ -43,7 +43,7 @@
       AccountCfName.field_type_list
     else if field_object == 'publisher'
       PublisherCustomFieldName.field_type_list
-    else if field_object == 'activity'
+    else
       CustomFieldNames.field_type_list
 
   $scope.submitForm = () ->
@@ -65,7 +65,7 @@
         $modalInstance.close()
       when 'publisher' then PublisherCustomFieldName.update(id: customFieldName.id, publisher_custom_field_name: $scope.customFieldName).then (customFieldName) ->
         $modalInstance.close()
-      when 'activity' then CustomFieldNames.update(subject_type: $scope.customFieldName.field_object, id: customFieldName.id, custom_field_name: $scope.customFieldName).then (customFieldName) ->
+      else CustomFieldNames.update(subject_type: $scope.customFieldName.field_object, id: customFieldName.id, custom_field_name: $scope.customFieldName).then (customFieldName) ->
         $modalInstance.close()
 
   $scope.cancel = ->

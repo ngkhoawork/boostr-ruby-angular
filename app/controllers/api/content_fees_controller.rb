@@ -50,7 +50,8 @@ class Api::ContentFeesController < ApplicationController
         :io_id,
         {
             content_fee_product_budgets_attributes: [:id, :budget, :budget_loc]
-        }
+        },
+        custom_field_attributes: CustomField.attribute_names
     )
   end
 end

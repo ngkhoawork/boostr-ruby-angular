@@ -4,6 +4,7 @@ class CustomFieldNamesQuery < BaseQuery
       .for_model(model_name)
       .by_company_id(options[:company_id])
       .by_show_on_modal(options[:show_on_modal])
+      .by_active_status(options[:active])
   end
 
   private
@@ -13,7 +14,7 @@ class CustomFieldNamesQuery < BaseQuery
   end
 
   def model_name
-    options[:subject_type]&.classify
+    Array(options[:subject_type])&.map(&:classify)
   end
 
   module Scopes
@@ -23,6 +24,10 @@ class CustomFieldNamesQuery < BaseQuery
 
     def by_show_on_modal(show_on_modal)
       show_on_modal.nil? ? self : where(show_on_modal: show_on_modal)
+    end
+
+    def by_active_status(active)
+      active.nil? ? self : where(disabled: active == 'true' ? false : true)
     end
   end
 end

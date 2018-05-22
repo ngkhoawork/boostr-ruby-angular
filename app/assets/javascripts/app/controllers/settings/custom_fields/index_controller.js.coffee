@@ -11,8 +11,9 @@
     getCustomFieldNames()
 
   getCustomFieldNames = () ->
-    CustomFieldNames.all({subject_type: 'activity'}).then (customFieldNames) ->
-      $scope.customFieldNames = customFieldNames
+    CustomFieldNames.all({'subject_type[]': ['activity', 'content_fee']}).then (customFieldNames) ->
+      $scope.activityCustomFieldNames = _.filter customFieldNames, (c) -> c.subject_type == 'Activity'
+      $scope.contentFeeCustomFieldNames = _.filter customFieldNames, (c) -> c.subject_type == 'ContentFee'
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -33,12 +34,6 @@
   getPublisherCustomFieldName = () ->
     PublisherCustomFieldName.all().then (results) ->
       $scope.publisher_custom_field_names = results
-
-  $scope.updateTimePeriod = (time_period_id) ->
-    $location.path("/settings/deal_custom_field_names/#{time_period_id}")
-
-  $scope.updateDealCustomFieldName = (dealCustomFieldName) ->
-    DealCustomFieldName.update({id: dealCustomFieldName.id, dealCustomFieldName: dealCustomFieldName})
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
@@ -82,7 +77,7 @@
         AccountCfName.delete(id: customFieldName.id)
       else if objectType == 'publisher'
         PublisherCustomFieldName.delete(id: customFieldName.id)
-      else if objectType == 'activity'
+      else
         CustomFieldNames.delete(subject_type: objectType, id: customFieldName.id)
 
   $scope.$on 'updated_deal_custom_field_names', ->
@@ -95,7 +90,7 @@
     $scope.init()
   $scope.$on 'updated_publisher_custom_field_names', ->
     $scope.init()
-  $scope.$on 'updated_activity_custom_field', ->
+  $scope.$on 'updated_custom_field_names', ->
     $scope.init()
 
   $scope.init()

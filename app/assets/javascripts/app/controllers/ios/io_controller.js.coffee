@@ -1,6 +1,6 @@
 @app.controller 'IOController',
-    ['$scope', '$window', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'Product', 'DisplayLineItem', 'Company', 'InfluencerContentFee', 'Cost', 'Field', 'Agreement'
-    ( $scope,  $window,  $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   Product,   DisplayLineItem,   Company,   InfluencerContentFee,   Cost,   Field, Agreement) ->
+    ['$scope', '$window', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'Product', 'DisplayLineItem', 'Company', 'InfluencerContentFee', 'Cost', 'Field', 'Agreement', 'CustomFieldNames'
+    ( $scope,  $window,  $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   Product,   DisplayLineItem,   Company,   InfluencerContentFee,   Cost,   Field, Agreement, CustomFieldNames) ->
             $scope.currentIO = {}
             $scope.activeTab = 'ios'
             $scope.currency_symbol = '$'
@@ -49,6 +49,9 @@
                             return cost
 
                     getAgreements()
+
+                    CustomFieldNames.all(subject_type: 'content_fee', active: true).then (customFieldNames) ->
+                        $scope.contentFeeCustomFieldNames = customFieldNames
 
             $scope.productsByLevel = (level, product)->
                 _.filter $scope.products, (p) -> 
@@ -152,6 +155,8 @@
                             $scope.currentIO
                         company: ->
                             $scope.company
+                        customFieldNames: ->
+                            $scope.contentFeeCustomFieldNames
 
             $scope.showNewCostModal = () ->
                 $scope.modalInstance = $modal.open
@@ -293,6 +298,12 @@
                         for key, error of resp.data.errors
                             $scope.errors[key] = error && error[0]
                 )
+
+            $scope.updateContentFeeCF = (content_fee, cf) ->
+                if cf.is_required && cf.field_type != 'boolean' && !content_fee.custom_field[cf.field_name]
+                    $scope.init()
+                else
+                    $scope.updateContentFee(content_fee)
 
             $scope.updateCost = (data) ->
                 $scope.errors = {}
