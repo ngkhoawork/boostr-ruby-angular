@@ -141,8 +141,8 @@
                     %input.form-control{ 'ng-if': "dealCustomFieldName.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.deal_custom_field[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{dealCustomFieldName.field_label}}' }
                 .show-hide-remainder-form{ ng: { if: "dealCustomFieldName.field_type == 'boolean' " } }
                     .switch-remainder-form
-                        %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}", type: 'checkbox', 'ng-model': 'deal.deal_custom_field[fieldName]'}
-                        %label{:for => "{{fieldName}}"}
+                        %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}-modal", type: 'checkbox', 'ng-model': 'deal.deal_custom_field[fieldName]'}
+                        %label{:for => "{{fieldName}}-modal"}
                             %span
                 %ui-select{ name: '{{fieldName}}', ng: { if: "dealCustomFieldName.field_type == 'dropdown'", model: 'deal.deal_custom_field[fieldName]', disabled: true } }
                     %ui-select-match{ placeholder: 'Select value' }
