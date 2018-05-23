@@ -6,7 +6,7 @@
         .main-title Agreements
       .header-item
         %add-button{ ng: { click: 'showNewAgreementModal()' } }
-          Add Agreements
+          Add Agreement
       .header-item.switch-row
         %span{ ng: { repeat: 'switch in switches', class: '{ active: switch.name == teamFilter().name }', click: 'switchAgreements(switch)' } }
           {{ switch.name }}
