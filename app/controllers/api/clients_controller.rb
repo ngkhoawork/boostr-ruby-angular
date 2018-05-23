@@ -28,6 +28,7 @@ class Api::ClientsController < ApplicationController
 
         response.headers['X-Total-Count'] = results.count.to_s
         results = results.limit(limit).offset(offset)
+        p results.first.client_members
         render json: results,
           each_serializer: Clients::ClientListSerializer,
             advertiser: Client.advertiser_type_id(company),
