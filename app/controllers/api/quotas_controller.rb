@@ -29,6 +29,15 @@ class Api::QuotasController < ApplicationController
     render json: { message: import_message }, status: :ok
   end
 
+  def destroy
+    if current_user.is_admin
+      quota.destroy
+      render nothing: true
+    else
+      render json: { error: 'You can\'t delete quota' }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def time_period

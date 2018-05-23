@@ -28,5 +28,12 @@
       $rootScope.$broadcast 'updated_quotas'
     deferred.promise
 
+  @delete = (quota) ->
+    deferred = $q.defer()
+    resource.delete id: quota.id, () ->
+      deferred.resolve()
+      $rootScope.$broadcast 'updated_quotas'
+    deferred.promise
+
   return
 ]
