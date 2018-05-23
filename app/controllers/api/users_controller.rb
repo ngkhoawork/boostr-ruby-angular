@@ -2,7 +2,9 @@ class Api::UsersController < ApplicationController
   respond_to :json
 
   def index
-    render json: current_user.company.users.order(:id)
+    render json: current_user.company.users
+                                     .by_user_type(user_types)
+                                     .order(:id)
   end
 
   def update
@@ -24,7 +26,7 @@ class Api::UsersController < ApplicationController
   end
 
   def signed_in_user
-    render json: current_user
+    render json: current_user, serializer: Users::CompanyInfoSerializer
   end
 
   def import
@@ -40,6 +42,23 @@ class Api::UsersController < ApplicationController
   end
 
   private
+
+  def user_types
+    user_type_param.map do |type|
+      case type
+      when 'seller' then SELLER
+      when 'sales_manager' then SALES_MANAGER
+      end
+    end.compact
+  end
+
+  def user_type_param
+    if params[:type].kind_of?(Array)
+      params[:type]
+    else
+      [params[:type]]
+    end
+  end
 
   def user_params
     user_params = params.require(:user).permit(

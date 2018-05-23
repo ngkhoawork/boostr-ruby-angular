@@ -38,7 +38,7 @@ gem 'responders'
 gem 'roar', '~> 1.0.4'
 gem 'countries'
 gem 'faraday'
-gem 'attr_encrypted', '~> 3.0.0'
+gem 'attr_encrypted', '3.0.0'
 gem 'net-sftp', require: false
 gem 'google-dfp-api', '=0.20.0' # Locking DFP integration gem due to some changes in recent version
 gem 'clean_pagination'
@@ -93,6 +93,7 @@ end
 
 group :test do
   gem 'shoulda-matchers', require: false
+  gem 'json_matchers'
   gem 'vcr'
   gem 'webmock'
   gem 'simplecov', require: false

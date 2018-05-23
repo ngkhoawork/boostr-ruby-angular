@@ -4,7 +4,7 @@ class Api::ActivitiesController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        render json: activities.preload(:activity_type, :assets, :agency, :client, :creator, :publisher, deal: [:stage, :advertiser], contacts: [:address])
+        render json: preload_assocs(activities)
       }
       format.csv {
         send_data activity_csv_report, filename: "activity-detail-reports-#{Date.today}.csv"
@@ -14,12 +14,7 @@ class Api::ActivitiesController < ApplicationController
 
   def create
     if params[:file].present?
-      CsvImportWorker.perform_async(
-        params[:file][:s3_file_path],
-        'Activity',
-        current_user.id,
-        params[:file][:original_filename]
-      )
+      SmartCsvImportWorker.perform_async(*csv_import_params)
 
       render json: {
         message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
@@ -54,34 +49,14 @@ class Api::ActivitiesController < ApplicationController
 
   def destroy
     activity.destroy
+
     render nothing: true
   end
 
   private
 
   def process_raw_contact_data
-    addresses = params[:guests].map { |c| c[:address][:email] }
-    existing_contact_ids = Address.contacts_by_email(addresses).map(&:addressable_id)
-    existing_company_contacts = Contact.where(id: existing_contact_ids, company_id: current_user.company_id)
-    new_contacts = []
-
-    existing_emails = existing_company_contacts.map(&:address).map(&:email)
-    new_incoming_contacts = params[:guests].reject do |raw_contact|
-      existing_emails.include?(raw_contact[:address][:email])
-    end
-
-    new_incoming_contacts.each do |new_contact_data|
-      contact = current_user.company.contacts.new(
-        name: new_contact_data['name'],
-        address_attributes: { email: new_contact_data['address']['email'] },
-        created_by: current_user.id
-      )
-      if contact.save
-        new_contacts << contact
-      end
-    end
-
-    existing_company_contacts.ids + new_contacts.map(&:id)
+    ::ProcessRawContactDataService.new(params[:guests], current_user).perform
   end
 
   def activity_params
@@ -99,7 +74,8 @@ class Api::ActivitiesController < ApplicationController
       :activity_type,
       :timed,
       :google_event_id,
-      :uuid
+      :uuid,
+      custom_field_attributes: CustomField.attribute_names
     )
   end
 
@@ -108,7 +84,7 @@ class Api::ActivitiesController < ApplicationController
   end
 
   def activity_csv_report
-    Csv::ActivityDetailService.new(activities).perform
+    Csv::ActivityDetailService.new(activities, company).perform
   end
 
   def activities
@@ -138,6 +114,20 @@ class Api::ActivitiesController < ApplicationController
 
   def company
     @company ||= current_user.company
+  end
+
+  def preload_assocs(activity)
+    activity.preload(
+      :activity_type,
+      :assets,
+      :agency,
+      :client,
+      :creator,
+      :publisher,
+      :custom_field,
+      deal: [:stage, :advertiser],
+      contacts: [:address]
+    )
   end
 
   def filtered_activities
@@ -228,6 +218,16 @@ class Api::ActivitiesController < ApplicationController
     @_activity_happened_at ||= activity.happened_at
   end
 
+  def csv_import_params
+    [
+      params[:file][:s3_file_path],
+      'Importers::ActivitiesService',
+      current_user.id,
+      current_user.company_id,
+      params[:file][:original_filename]
+    ]
+  end
+  
   def parsed_filter_dates
     @parsed_filter_dates ||=
       if params[:start_date] && params[:end_date]

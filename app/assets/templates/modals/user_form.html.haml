@@ -17,7 +17,7 @@
         %input.form-control{ placeholder: 'Last Name', ng: { model: 'user.last_name' }, name: 'last_name' }
 
 
-      .form-group{'ng-if': '!user["leader?"]'}
+      .form-group{'ng-if': '!user["is_leader"]'}
         %label.control-label{ for: 'parent' } Team
         %ui-select{ name: 'parent', ng: { model: 'user.team_id', disabled: true } }
           %ui-select-match{ placeholder: 'Select A Team', "allow-clear": 'true' }

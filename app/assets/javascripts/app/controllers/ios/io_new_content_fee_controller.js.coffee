@@ -1,6 +1,6 @@
 @app.controller "IONewContentFeeController",
-    ['$scope', '$rootScope', '$modalInstance', '$filter', 'Product', 'ContentFee', 'currentIO', 'company', 
-        ($scope, $rootScope, $modalInstance, $filter, Product, ContentFee, currentIO, company) ->
+    ['$scope', '$rootScope', '$modalInstance', '$filter', 'Product', 'ContentFee', 'currentIO', 'company', 'customFieldNames',
+        ($scope, $rootScope, $modalInstance, $filter, Product, ContentFee, currentIO, company, customFieldNames) ->
             $scope.currency_symbol = (->
                 if currentIO && currentIO.currency
                     if currentIO.currency.curr_symbol
@@ -13,7 +13,8 @@
             $scope.content_fee = {
                 io_id: currentIO.id,
                 content_fee_product_budgets: []
-                months: []
+                months: [],
+                custom_field: {}
             }
             content_fee_products = _.map currentIO.content_fees, (c) -> c.product
             $scope.productOptionsEnabled = company.product_options_enabled
@@ -21,6 +22,7 @@
             $scope.productOption2Enabled = company.product_option2_enabled
             $scope.option1Field = company.product_option1_field || 'Option1'
             $scope.option2Field = company.product_option2_field || 'Option2'
+            $scope.customFieldNames = _.filter (customFieldNames || []), (cf) -> cf.show_on_modal
 
             for month in $scope.currentIO.months
                 month = moment().year(month[0]).month(month[1] - 1).format('MMM YYYY')
@@ -196,6 +198,10 @@
                     $scope.errors['product' + subProduct.level] = $scope['option' + subProduct.level + 'Field'] + ' is required'
                 else if _.find(content_fee_products, (p) -> p.id == $scope.content_fee.product_id)
                     $scope.errors['product_id'] = "Product's already added"
+
+                $scope.customFieldNames.forEach (cf) ->
+                  if cf.is_required && cf.field_type != 'boolean' && !$scope.content_fee.custom_field[cf.field_name]
+                    $scope.errors[cf.field_name] = cf.field_label + ' is required'
 
                 if !_.isEmpty($scope.errors) || $scope.content_fee.isIncorrectTotalBudgetPercent then return
 

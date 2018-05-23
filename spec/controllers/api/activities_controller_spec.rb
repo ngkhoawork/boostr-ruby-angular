@@ -9,9 +9,10 @@ describe Api::ActivitiesController, type: :controller do
   let(:client) { create :client, company: company }
   let(:deal) { create :deal, advertiser: client, company: company }
   let(:contacts) { create_list :contact, 10, clients: [client], company: company }
-  let(:activity_params) {
-    attributes_for(:activity)
-  }
+  let(:activity_params) { attributes_for(:activity) }
+  let(:activity_with_custom_field_params) do
+    activity_params.merge(custom_field_attributes: { text1: FFaker::HipsterIpsum.word })
+  end
   let!(:existing_activity) { create :activity, happened_at: DateTime.current, user: user, company: company }
   let(:user_contact) { create :contact, address_attributes: { email: user.email }, company: company }
 
@@ -83,12 +84,13 @@ describe Api::ActivitiesController, type: :controller do
     it 'creates a new activity and returns success' do
       expect {
         post :create, {
-          activity: activity_params,
+          activity: activity_with_custom_field_params,
           contacts: contacts.map(&:id)
         }, format: :json
         expect(response).to be_success
         expect(response_json['contacts'].length).to eq 10
-      }.to change(Activity, :count).by(1)
+      }.to change(Activity, :count).by(1).and \
+           change(CustomField, :count).by(1)
     end
 
     it 'filters out current user from contacts' do
@@ -107,6 +109,9 @@ describe Api::ActivitiesController, type: :controller do
           { name: 'Peggy M. Castle', address: { email: 'PeggyMCastle@rhyta.com' } },
           { name: 'William Bernard', address: { email: 'WilliamBBernard@jourrapide.com' } }
         ]
+      }
+      let(:invalid_guests) {
+        [1, 2]
       }
 
       before do
@@ -166,9 +171,20 @@ describe Api::ActivitiesController, type: :controller do
         expect(response_json['contacts'].length).to eq 10
       end
 
+      it 'does not create new contacts for invalid guests' do
+        existing_contacts_with_invalid = existing_contacts + invalid_guests
+        post :create,
+             { activity: activity_params,
+               guests:   existing_contacts_with_invalid },
+             format: :json
+
+        expect(response).to be_success
+        expect(response_json['contacts'].length).to eq 10
+      end
+
       context 'when there are contacts with same email in other companies' do
         it 'does not return contacts from different companies' do
-          duplicate_contact = new_company.contacts.create(
+          _duplicate_contact = new_company.contacts.create(
             name: contacts[0].name,
             address_attributes: { email: contacts[0].address.email }
           )

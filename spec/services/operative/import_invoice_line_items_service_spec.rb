@@ -13,6 +13,7 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
 
   it 'passes rows to DisplayLineItemCsv' do
     expect(DisplayLineItemBudgetCsv).to receive(:new).with(
+      invoice_id: '10',
       line_number: '2',
       budget_loc: 150.0,
       month_and_year: '01-2017',
@@ -30,6 +31,7 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
     context 'Invoice Units pattern' do
       it 'passes invoice_units divided by 1000' do
         expect(DisplayLineItemBudgetCsv).to receive(:new).with(
+          invoice_id: '10',
           line_number: '2',
           budget_loc: 150.0,
           month_and_year: '01-2017',
@@ -49,6 +51,7 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
         recognized_revenue_pattern = DatafeedConfigurationDetails.get_pattern_id('Recognized Revenue')
 
         expect(DisplayLineItemBudgetCsv).to receive(:new).with(
+          invoice_id: '10',
           line_number: '2',
           budget_loc: 90000.0,
           month_and_year: '01-2017',
@@ -66,6 +69,7 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
         recognized_revenue_pattern = DatafeedConfigurationDetails.get_pattern_id('Recognized Revenue')
 
         expect(DisplayLineItemBudgetCsv).to receive(:new).with(
+          invoice_id: '10',
           line_number: '2',
           budget_loc: 100000.0,
           month_and_year: '01-2017',
@@ -85,6 +89,7 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
         invoice_amount_pattern = DatafeedConfigurationDetails.get_pattern_id('Invoice Amount')
 
         expect(DisplayLineItemBudgetCsv).to receive(:new).with(
+          invoice_id: '10',
           line_number: '2',
           budget_loc: 35000.0,
           month_and_year: '01-2017',

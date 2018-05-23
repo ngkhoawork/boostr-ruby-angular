@@ -11,6 +11,7 @@ class Api::ActivitySerializer < ActiveModel::Serializer
   )
 
   has_one :creator, serializer: Api::Publishers::UserSerializer
+  has_one :custom_field, serializer: CustomFields::Serializer
 
   private
 

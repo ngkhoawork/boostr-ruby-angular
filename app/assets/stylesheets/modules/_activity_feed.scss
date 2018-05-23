@@ -64,4 +64,22 @@
             background-color: $separate-line-color;
         }
     }
+
+  .activity-custom-fields {
+    .custom-field-item {
+      display: inline-flex;
+      width: 100%;
+      padding-bottom: 5px;
+
+      .custom-field-item-label {
+        width: 40%;
+        font-weight: 600;
+      }
+
+      .custom-field-item-field {
+        display: inline-block;
+        width: 60%;
+      }
+    }
+  }
 }

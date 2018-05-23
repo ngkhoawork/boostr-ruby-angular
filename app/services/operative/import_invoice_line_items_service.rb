@@ -108,6 +108,7 @@ class Operative::ImportInvoiceLineItemsService
 
   def build_line_item_budget_csv(row)
     DisplayLineItemBudgetCsvOperative.new(
+      invoice_id: row[:invoice_id],
       line_number: row[:sales_order_line_item_id],
       budget_loc: recognized_revenue_calculator(row),
       month_and_year: @parsed_invoices[row[:invoice_id]],

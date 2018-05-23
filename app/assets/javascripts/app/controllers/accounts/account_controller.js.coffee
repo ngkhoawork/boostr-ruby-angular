@@ -1,6 +1,6 @@
 @app.controller 'AccountController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes', 'CurrentUser', 'Egnyte'
-($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes, CurrentUser, Egnyte) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes', 'CurrentUser', 'Egnyte'
+($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes, CurrentUser, Egnyte) ->
 
   $scope.showMeridian = true
   $scope.activitiesOrder = '-happened_at'
@@ -79,7 +79,7 @@
       $scope.client_connections = client_connections
 
   $scope.getChildClients = ->
-    Client.child_clients({id: $scope.currentClient.id}).$promise.then (child_clients) ->
+    Client.child_clients({'parent_clients[]': [$scope.currentClient.id]}).$promise.then (child_clients) ->
       $scope.child_clients = child_clients
 
   $scope.removeClientMember = (clientMember) ->

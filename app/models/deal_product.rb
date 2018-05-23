@@ -22,6 +22,7 @@ class DealProduct < ActiveRecord::Base
     if deal_product_budgets.empty?
       self.create_product_budgets
     end
+    WorkflowWorker.perform_async(deal_id: deal.id, type: 'update')
   end
 
   after_update do
@@ -80,7 +81,7 @@ class DealProduct < ActiveRecord::Base
         forecast_pipeline_fact_calculator.calculate()
       end
     end
-    deal.custom_workflow_update('update')
+    WorkflowWorker.perform_async(deal_id: deal.id, type: 'update')
   end
 
   def active_exchange_rate

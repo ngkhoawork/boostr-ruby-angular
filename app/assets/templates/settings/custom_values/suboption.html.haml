@@ -1,6 +1,6 @@
 .row
   .col-xs-10
-    %input.title.editable-control{ type: 'text', 'ng-model': 'suboption.name', placeholder: "Enter option", 'ng-blur': 'isUpdating || updateSubOption(suboption)' }
+    %input.title.editable-control{ type: 'text', 'ng-model': 'suboption.name', placeholder: "Enter option", 'ng-blur': 'isUpdating || updateSubOption(suboption)', 'ng-mousedown': 'rememberPreviousName(suboption.name)' }
     %span.default-label{ ng: {if: 'suboption.locked' }}
       (Default)
   %a.delete{ href: '', ng: { click: 'deleteSubOption(suboption)', if: '!suboption.locked' } }

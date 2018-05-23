@@ -145,7 +145,8 @@ class Api::V2::ActivitiesController < ApiController
       :activity_type,
       :timed,
       :google_event_id,
-      :uuid
+      :uuid,
+      custom_field_attributes: CustomField.attribute_names
     )
   end
 

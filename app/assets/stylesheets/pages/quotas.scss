@@ -33,16 +33,4 @@
       font-weight: bold;
     }
   }
-
-  .table-wrapper tr:hover {
-    cursor: pointer;
-    
-    .edit-icon {
-      display: inline-block;
-    }
-  }
-
-  .table-wrapper .edit-icon {
-    display: none;
-  }
 }

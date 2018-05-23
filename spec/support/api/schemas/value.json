@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "integer" },
+    "field_id": { "type": "number" },
+    "option_id": { "type": "number" }
+  }
+}

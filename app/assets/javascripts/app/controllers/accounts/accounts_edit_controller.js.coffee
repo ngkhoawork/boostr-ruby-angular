@@ -11,7 +11,7 @@
       client.address.city or
       client.address.state or
       client.address.zip))
-
+  $scope.stateFieldRequired = false
 
   CountriesList.get (data) ->
     $scope.countries = data.countries
@@ -23,17 +23,7 @@
     $scope.formType = "Edit"
     $scope.submitText = "Update"
 
-    getHoldingCompanies()
-    Field.defaults($scope.client, 'Client').then (fields) ->
-      if ($scope.client.client_type)
-        selectedOption = $scope.client.client_type.option || null
-      $scope.client.client_type = Field.field($scope.client, 'Client Type')
-      if (selectedOption)
-        $scope.client.client_type.options.forEach (option) ->
-          if option.name == selectedOption
-            $scope.client.client_type.option_id = option.id
-      $scope.setClientTypes()
-      $scope.getClients($scope.query)
+    getHoldingCompanies() 
 
     client_category_id = $scope.client.client_category_id
     if client_category_id
@@ -45,6 +35,23 @@
     Validation.account_base_fields().$promise.then (data) ->
       $scope.advertiser_base_fields_validations = data['Advertiser Base Field']
       $scope.agency_base_fields_validations = data['Agency Base Field']
+      $scope.require_usa_state = _.find data['Account Custom Validation'], factor: 'Require USA State'
+      $scope.default_segment = _.find data['Account Custom Validation'], factor: 'Default Segment - Not Top 100'
+      
+      Field.defaults($scope.client, 'Client').then (fields) ->
+        if ($scope.client.client_type)
+          selectedOption = $scope.client.client_type.option || null
+        $scope.client.client_type = Field.field($scope.client, 'Client Type')
+        if (selectedOption)
+          $scope.client.client_type.options.forEach (option) ->
+            if option.name == selectedOption
+              $scope.client.client_type.option_id = option.id
+        $scope.setClientTypes()
+        $scope.getClients($scope.query)
+        if $scope.require_usa_state && $scope.client.client_region && $scope.client.client_region['name'] == 'USA'
+          $scope.stateFieldRequired = true
+        if $scope.default_segment && !$scope.client.client_segment_id && segment = _.find($scope.client.fields[4].options, name: 'Not Top 100')
+          $scope.client.client_segment_id = segment.id
 
   getHoldingCompanies = ->
     HoldingCompany.all({}).then (holdingCompanies) ->
@@ -75,6 +82,9 @@
     (base_fields_validation || []).forEach (validation) ->
       if $scope.client && (!$scope.client[validation.factor] && !$scope.client.address[validation.factor])
         $scope.errors[validation.factor] = validation.name + ' is required'
+
+    if $scope.stateFieldRequired && !$scope.client.address['state']
+      $scope.errors['state'] = 'State is required'
 
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true
@@ -145,6 +155,15 @@
 
   $scope.cancel = ->
     $modalInstance.dismiss()
+
+  $scope.onSelectRegion = (item, model) ->
+    $scope.stateFieldRequired = $scope.require_usa_state && item.name == 'USA'
+    $scope.errors = _.omit($scope.errors, 'state') unless $scope.stateFieldRequired
+    $scope.showAddressFields = true if $scope.stateFieldRequired
+
+  $scope.onSelectClientType = (item, model) ->
+    if $scope.default_segment && $scope.Advertiser && model == $scope.Advertiser && !$scope.client.client_segment_id && segment = _.find($scope.client.fields[4].options, name: 'Not Top 100')
+      $scope.client.client_segment_id = segment.id 
 
   $scope.init()
 ]

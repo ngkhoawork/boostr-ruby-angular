@@ -1,6 +1,17 @@
 @app.controller 'InactivesController',
-    ['$scope', '$document', 'InactivesService', 'Product', 'Field'
-        ($scope, $document, IN, Product, Field) ->
+    ['$scope', '$document', 'InactivesService', 'Product', 'Field', 'Team', 'User',
+        ($scope, $document, IN, Product, Field, Team, User) ->
+            $scope.teams = []
+            $scope.sellers = []
+
+            init = () ->
+                Team.all().then (teams) ->
+                    $scope.teams = teams
+                    $scope.teams.unshift {id: null, name: 'All'}
+                User.query({'type[]': ['seller', 'sales_manager']}).$promise.then (sellers) ->
+                    $scope.sellers = sellers
+                    $scope.sellers.unshift {id: null, name: 'All'}
+
             colors = ['#3498DB', '#8CC135']
             $scope.inactive =
                 data: null
@@ -33,6 +44,8 @@
                             else
                                 this.subcategories = this.allSubcategories
                         when 'subcategory' then this.filter.subcategory_id = item.id
+                        when 'team' then this.filter.team_id = item.id
+                        when 'seller' then this.filter.seller_id = item.id
                     this.applyFilter()
 
                 resetFilter: ->
@@ -91,6 +104,8 @@
                             else
                                 this.subcategories = this.allSubcategories
                         when 'subcategory' then this.filter.subcategory_id = item.id
+                        when 'team' then this.filter.team_id = item.id
+                        when 'seller' then this.filter.seller_id = item.id
                     this.applyFilter()
 
                 resetFilter: ->
@@ -278,4 +293,5 @@
                     .attr('width', 150)
                     .text (d) -> d.label
 
+            init()
     ]

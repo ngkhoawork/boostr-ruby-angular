@@ -23,6 +23,7 @@
                     color: $main-color;
                     font-weight: bold;
                     cursor: pointer;
+                    user-select: none;
                     &:hover {
                         color: darken($main-color, 10%);
                     }
@@ -49,6 +50,10 @@
                         border-right-width: 4px;
                         padding-right: 5px;
                     }
+                }
+                .rule-type {
+                    margin-left: 10px;
+                    font-weight: 600;
                 }
                 &.default-rule {
                     padding-left: 17px;
@@ -88,6 +93,7 @@
                     background: transparent;
                     padding: 2px 5px;
                     outline: none;
+                    margin-right: 10px;
                 }
             }
             .rules-wrap {

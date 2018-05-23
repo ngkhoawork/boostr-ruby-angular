@@ -29,10 +29,18 @@ class DisplayLineItemBudget < ActiveRecord::Base
     where(ios: { created_at: (start_date.to_datetime.beginning_of_day)..(end_date.to_datetime.end_of_day) }) if start_date.present? && end_date.present?
   end
 
+  scope :outside_time_period, -> (start_date, end_date) do
+    where('display_line_item_budgets.start_date > ? OR display_line_item_budgets.end_date < ?', end_date, start_date)
+  end
+
   attr_accessor :has_dfp_budget_correction
 
   before_save :correct_budget, if: -> { has_dfp_budget_correction }
   before_save :set_cpd_price_type_budget, if: -> { has_dfp_budget_correction }
+
+  after_create :update_line_item_budget_delivered
+  after_update :update_line_item_budget_delivered, if: -> { budget_changed? }
+  after_destroy :update_line_item_budget_delivered
 
   set_callback :save, :after, :update_revenue_fact_callback
 
@@ -40,6 +48,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
     if budget_changed?
       update_revenue_pipeline_budget(self)
     end
+  end
+
+  def update_line_item_budget_delivered
+    DisplayLineItem::UpdateBudgetDelivered.new(display_line_item).perform if display_line_item
   end
 
   def update_revenue_pipeline_budget(display_line_item_budget)

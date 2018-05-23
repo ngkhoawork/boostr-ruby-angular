@@ -81,7 +81,6 @@ class Revenue < ActiveRecord::Base
         errors << error
       end
     end
-    set_alerts(company_id)
     errors
   end
 
@@ -183,82 +182,6 @@ class Revenue < ActiveRecord::Base
         self.balance = 0
       end
       self.last_alert_at = DateTime.now
-    end
-  end
-
-  def self.set_alerts(company_id)
-    User.where(company_id: company_id).update_all(pos_balance_cnt: 0, neg_balance_cnt: 0, pos_balance: 0, neg_balance: 0, pos_balance_l_cnt: 0, neg_balance_l_cnt: 0, pos_balance_l: 0, neg_balance_l: 0, last_alert_at: DateTime.now)
-    where(company_id: company_id).each do |r|
-      if r.last_alert_at.nil? || r.last_alert_at.to_date < DateTime.now.to_date
-        r.set_alert
-      end
-      r.client.client_members.each do |cm|
-        if cm.share > 0
-          u = cm.user
-          if r.balance > 0
-            u.pos_balance_cnt += 1
-            u.pos_balance += r.balance*cm.share/100
-          elsif r.balance < 0
-            u.neg_balance_cnt += 1
-            u.neg_balance += r.balance*cm.share/100
-          end
-          u.pos_balance_l_cnt = u.pos_balance_cnt
-          u.pos_balance_l = u.pos_balance
-          u.neg_balance_l_cnt = u.neg_balance_cnt
-          u.neg_balance_l = u.neg_balance
-          u.last_alert_at = DateTime.now
-          u.save
-        end
-      end
-    end
-    Team.where(company_id: company_id).where.not(leader_id: nil).each do |t|
-      l = t.leader
-      if !l.nil?
-        ps = []
-        t.all_members.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance > 0").each do |r|
-                ps += [r] if !ps.include?(r)
-              end
-            end
-          end
-        end
-        t.all_leaders.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance > 0").each do |r|
-                ps += [r] if !ps.include?(r)
-              end
-            end
-          end
-        end
-        l.pos_balance_l_cnt = ps.length
-        ns = []
-        t.all_members.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance < 0").each do |r|
-                ns += [r] if !ns.include?(r)
-              end
-            end
-          end
-        end
-        t.all_leaders.each do |m|
-          m.clients.each do |c|
-            if c.client_members.where(user_id: m.id).first.share > 0
-              c.revenues.where("revenues.balance < 0").each do |r|
-                ns += [r] if !ns.include?(r)
-              end
-            end
-          end
-        end
-        l.neg_balance_l_cnt = ns.length
-        l.pos_balance_l = t.sum_pos_balance
-        l.neg_balance_l = t.sum_neg_balance
-        l.last_alert_at = DateTime.now
-        l.save
-      end
     end
   end
 

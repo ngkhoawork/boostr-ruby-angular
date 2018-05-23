@@ -1,6 +1,6 @@
 @app.controller 'NewUsersController',
-['$scope', '$modalInstance', 'User', 'onInvite', 'Team'
-($scope, $modalInstance, User, onInvite, Team) ->
+['$scope', '$modalInstance', 'User', 'onInvite', 'Team', 'options'
+($scope, $modalInstance, User, onInvite, Team, options) ->
   $scope.user_types = User.user_types_list
 
   $scope.init = ->
@@ -20,10 +20,16 @@
       if (index > -1)
         $scope.user.roles.splice(index, 1)
     $scope.buttonDisabled = true
-    User.invite(user: $scope.user).$promise.then (user) ->
-      if onInvite
-        onInvite(user)
-      $modalInstance.close()
+    User.invite(user: $scope.user).$promise.then(
+      (user) ->
+        if onInvite
+          onInvite(user)
+        if options.assignToAgreement
+          $modalInstance.close(user)
+          return
+        $modalInstance.close()
+      (reject) -> $scope.buttonDisabled = false
+    )
 
   $scope.cancel = ->
     $modalInstance.dismiss()

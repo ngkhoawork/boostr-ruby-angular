@@ -1,6 +1,6 @@
 @app.controller "SettingsDealCustomFieldNamesNewController",
-['$scope', '$modalInstance', '$q', '$filter', 'DealCustomFieldName', 'DealProductCfName', 'AccountCfName', 'ContactCfName', 'PublisherCustomFieldName', 'User', 'TimePeriod', 'customFieldName',
-($scope, $modalInstance, $q, $filter, DealCustomFieldName, DealProductCfName, AccountCfName, ContactCfName, PublisherCustomFieldName, User, TimePeriod, customFieldName) ->
+['$scope', '$modalInstance', '$q', '$filter', 'CustomFieldNames', 'DealCustomFieldName', 'DealProductCfName', 'AccountCfName', 'ContactCfName', 'PublisherCustomFieldName', 'User', 'TimePeriod', 'customFieldName',
+($scope, $modalInstance, $q, $filter, CustomFieldNames, DealCustomFieldName, DealProductCfName, AccountCfName, ContactCfName, PublisherCustomFieldName, User, TimePeriod, customFieldName) ->
 
   $scope.init = () ->
     $scope.formType = "New"
@@ -13,6 +13,8 @@
       { name: 'Account', value: 'account' }
       { name: 'Contact', value: 'contact' }
       { name: 'Publisher', value: 'publisher' }
+      { name: 'Activity', value: 'activity' }
+      { name: 'IO Content Fee', value: 'content_fee' }
     ]
 
     $scope.customFieldOptions = [ {id: null, value: ""} ]
@@ -40,6 +42,15 @@
       AccountCfName.field_type_list
     else if field_object == 'publisher'
       PublisherCustomFieldName.field_type_list
+    else
+      CustomFieldNames.field_type_list
+
+  onRequestSuccess = (customFieldName) ->
+    $modalInstance.close()
+
+  onRequestFail = (resp) ->
+    $scope.responseErrors = resp.data.errors
+    $scope.buttonDisabled = false
 
   $scope.submitForm = () ->
     $scope.errors = {}
@@ -66,49 +77,37 @@
 
     $scope.buttonDisabled = true
 
-    if $scope.customFieldName.field_object == 'deal'
-      DealCustomFieldName.create(deal_custom_field_name: $scope.customFieldName).then(
-        (customFieldName) ->
-          $modalInstance.close()
-        (resp) ->
-          $scope.responseErrors = resp.data.errors
-          $scope.buttonDisabled = false
-      )
-
-    if $scope.customFieldName.field_object == 'deal_product'
-      DealProductCfName.create(deal_product_cf_name: $scope.customFieldName).then(
-        (customFieldName) ->
-          $modalInstance.close()
-        (resp) ->
-          $scope.responseErrors = resp.data.errors
-          $scope.buttonDisabled = false
-      )
-    if $scope.customFieldName.field_object == 'account'
-      AccountCfName.create(account_cf_name: $scope.customFieldName).then(
-        (customFieldName) ->
-          $modalInstance.close()
-        (resp) ->
-          $scope.responseErrors = resp.data.errors
-          $scope.buttonDisabled = false
-      )
-
-    if $scope.customFieldName.field_object == 'contact'
-      ContactCfName.create(contact_cf_name: $scope.customFieldName).then(
-        (customFieldName) ->
-          $modalInstance.close()
-        (resp) ->
-          $scope.responseErrors = resp.data.errors
-          $scope.buttonDisabled = false
-      )
-
-    if $scope.customFieldName.field_object == 'publisher'
-      PublisherCustomFieldName.create(publisher_custom_field_name: $scope.customFieldName).then(
-        (customFieldName) ->
-          $modalInstance.close()
-        (resp) ->
-          $scope.responseErrors = resp.data.errors
-          $scope.buttonDisabled = false
-      )
+    switch $scope.customFieldName.field_object
+      when 'deal'
+        DealCustomFieldName.create(deal_custom_field_name: $scope.customFieldName).then(
+          onRequestSuccess
+          onRequestFail
+        )
+      when 'deal_product'
+        DealProductCfName.create(deal_product_cf_name: $scope.customFieldName).then(
+          onRequestSuccess
+          onRequestFail
+        )
+      when 'account'
+        AccountCfName.create(account_cf_name: $scope.customFieldName).then(
+          onRequestSuccess
+          onRequestFail
+        )
+      when 'contact'
+        ContactCfName.create(contact_cf_name: $scope.customFieldName).then(
+          onRequestSuccess
+          onRequestFail
+        )
+      when 'publisher'
+        PublisherCustomFieldName.create(publisher_custom_field_name: $scope.customFieldName).then(
+          onRequestSuccess
+          onRequestFail
+        )
+      else
+        CustomFieldNames.create(subject_type: $scope.customFieldName.field_object, custom_field_name: $scope.customFieldName).then(
+          onRequestSuccess
+          onRequestFail
+        )
 
   $scope.cancel = ->
     $modalInstance.close()

@@ -1,0 +1,19 @@
+#info_modal.popup-modal
+    .popup-modal-header.text-center
+        INFO
+    .popup-modal-body.text-center
+        %strong{{ ng: { if: 'isString' } }} {{ message }}
+        %div{ ng: { if: 'isObject' } }
+            %div{ ng: { if: '!isSingular' } }
+                The following {{ typeOfExcluded }}s have been removed because they no longer match the terms of the {{ typeOfUpdate }}:
+                %span{ ng: { repeat: 'item in message.excluded_objects' } }
+                    %a{ href: 'javascript:void(0)', ng: { href: '/{{ typeOfExcluded }}s/{{ item.id }}' } }
+                        %strong {{ item.name }}
+                    {{ $last ? '.' : ( $index==message.excluded_objects.length-2 ) ? ' and ' : ', ' }}
+            %div{ ng: { if: 'isSingular' } }
+                %span{ ng: { repeat: 'item in message.excluded_objects' } }
+                    %a{ href: 'javascript:void(0)', ng: { href: '/{{ typeOfExcluded }}s/{{ item.id }}' } } 
+                        %strong {{ item.name }} 
+                    {{ typeOfExcluded }} has been removed because it no longer match the terms of the {{ typeOfUpdate }}.
+    .popup-modal-footer
+        %button.btn{ type: 'button', ng: { click: 'close()' } } Close

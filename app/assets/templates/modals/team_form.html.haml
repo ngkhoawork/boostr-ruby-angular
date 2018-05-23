@@ -36,7 +36,7 @@
             %ui-select{ multiple: true, name: 'members', ng: { model: 'team.members', disabled: true, change: 'memberChanged()' } }
               %ui-select-match{ placeholder: "Type Name" }
                 {{ $item.first_name }} {{ $item.last_name }}
-              %ui-select-choices{ repeat: 'user.id as user in availableUsers | filter: { name: $select.search, "leader?": false }' }
+              %ui-select-choices{ repeat: 'user.id as user in availableUsers | filter: { name: $select.search, "is_leader": false }' }
                 %div{ ng: { bind: { html: 'user.name' } } }
       .form-group
         .row

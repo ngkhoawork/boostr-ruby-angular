@@ -5,9 +5,10 @@ describe Deal do
   let(:user) { create :user }
 
   context 'associations' do
-    it { should have_many(:contacts).through(:deal_contacts) }
-    it { should have_many(:deal_contacts) }
-    it { should have_many(:requests) }
+    it { is_expected.to have_many(:contacts).through(:deal_contacts) }
+    it { is_expected.to have_many(:deal_contacts) }
+    it { is_expected.to have_many(:requests) }
+    it { is_expected.to have_many(:spend_agreements).through(:spend_agreement_deals) }
 
     context 'restrictions' do
       let!(:deal) { create :deal }
@@ -23,18 +24,26 @@ describe Deal do
   end
 
   context 'scopes' do
-
     context 'for_client' do
       let!(:deal) { create :deal }
-      let(:agency) { create :client }
-      let!(:another_deal) { create :deal, agency: agency }
+      let(:agency) { create :client, :agency }
+      let(:advertiser) { create :client, :advertiser }
+      let!(:another_deal) { create :deal, agency: agency, advertiser: advertiser }
 
       it 'returns all when client_id is nil' do
         expect(Deal.for_client(nil).count).to eq(2)
       end
 
-      it 'returns only the contacts that belong to the client_id' do
+      it 'returns deals by agency' do
         expect(Deal.for_client(agency.id).count).to eq(1)
+      end
+
+      it 'returns deals by advertiser' do
+        expect(Deal.for_client(advertiser.id).count).to eq(1)
+      end
+
+      it 'returns deals by advertiser and agency' do
+        expect(Deal.for_client([advertiser.id, agency.id]).count).to eq(1)
       end
     end
 
@@ -43,7 +52,7 @@ describe Deal do
       let!(:in_deal) { create :deal, start_date: '2015-02-01', end_date: '2015-2-28'  }
       let!(:out_deal) { create :deal, start_date: '2016-02-01', end_date: '2016-2-28'  }
 
-      it 'should return deals that are completely in the time period' do
+      it 'returns deals that are completely in the time period' do
         expect(Deal.for_time_period(time_period.start_date, time_period.end_date).count).to eq(1)
         expect(Deal.for_time_period(time_period.start_date, time_period.end_date)).to include(in_deal)
       end

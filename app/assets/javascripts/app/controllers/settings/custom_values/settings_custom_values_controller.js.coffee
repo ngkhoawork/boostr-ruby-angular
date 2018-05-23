@@ -38,6 +38,9 @@
   $scope.setOption = (option) ->
     $scope.current.option = option
 
+  previousName = ''
+  $scope.rememberPreviousName = (name) -> previousName = name
+
   $scope.updateOption = (option, warn=true) ->
     $scope.isUpdating = true;
     if option.id
@@ -48,6 +51,7 @@
           $scope.isUpdating = false
         , 100);
       else
+        option.name = previousName
         setTimeout(()->
           $scope.isUpdating = false
         , 100);
@@ -72,6 +76,7 @@
           $scope.isUpdating = false
         , 100);
       else
+        suboption.name = previousName
         setTimeout(()->
           $scope.isUpdating = false
         , 100);

@@ -150,7 +150,6 @@
                     else
                         $scope.contacts = contacts
                     $scope.isLoading = false
-                    console.log 'asdsaasdasd'
                     callback() if _.isFunction callback
 
             $scope.loadMoreContacts = ->

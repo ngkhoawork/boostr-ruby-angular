@@ -1,0 +1,79 @@
+.custom-field{ 'ng-switch': 'fieldType', 'ng-class': '{"has-error": isRequired()}' }
+
+  .text-field{ ng: { 'switch-when': 'text' } }
+    %input{ 'ng-if': 'inlineOrForm()', 'ng-model': 'value', placeholder: 'Enter {{fieldLabel}}', 'ng-blur': 'onUpdate(value)', 'ng-class': '{"form-control": type=="form", "editable": type=="inlineEdit"}' }
+    %span{ 'ng-if': 'type == "showOnly"' } {{ value }}
+
+  .text-area{ ng: { 'switch-when': 'note' } }
+    %textarea{ 'ng-if': 'inlineOrForm()', 'ng-model': 'value', placeholder: 'Enter {{fieldLabel}}', 'ng-blur': 'onUpdate(value)', 'rows': '1', 'msd-elastic': '', 'ng-class': '{"form-control": type=="form", "editable": type=="inlineEdit"}' }
+    %span{'ng-if': 'type == "showOnly"'} {{ value }}
+
+  .currency-field{ ng: { 'switch-when': 'number' } }
+    %input.form-control{ 'ng-if': 'type == "form"', 'ng-model': 'value', 'ng-blur': 'onUpdate(value)', 'numbers-only': '', placeholder: '{{fieldLabel}}' }
+    %div{ 'ng-if': 'type == "inlineEdit"', 'click-to-edit': 'click-to-edit', type: 'number', decimal: '2', 'ng-model': 'value', 'on-after-save': 'onUpdate(value)' }
+    %span{ 'ng-if': 'type == "showOnly"' } {{ value | number:2 }}
+
+  .currency-field{ ng: { 'switch-when': 'number_4_dec' } }
+    %input.form-control{ 'ng-if': 'type == "form"', 'ng-model': 'value', 'ng-blur': 'onUpdate(value)', 'numbers-only': '', placeholder: '{{fieldLabel}}' }
+    %div{ 'ng-if': 'type == "inlineEdit"', 'click-to-edit': 'click-to-edit', type: "number", decimal: '4', 'ng-model': 'value', 'on-after-save': 'onUpdate(value)' }
+    %span{ 'ng-if': 'type == "showOnly"' } {{ value | number:4 }}
+
+  .currency-field{ ng: { 'switch-when': 'integer' } }
+    %input.form-control{ 'ng-if': 'type == "form"', 'ng-model': 'value', 'ng-blur': 'onUpdate(value)', 'numbers-only': '', placeholder: '{{fieldLabel}}' }
+    %div{ 'ng-if': 'type == "inlineEdit"', 'click-to-edit': 'click-to-edit', type: "number", decimal: '0', 'ng-model': 'value', 'on-after-save': 'onUpdate(value)' }
+    %span{ 'ng-if': 'type == "showOnly"' } {{ value | number:0 }}
+
+  .currency-field{ ng: { 'switch-when': 'currency' } }
+    %input.form-control{ 'ng-if': 'type == "form"', 'ng-model': 'value', 'ng-blur': 'onUpdate(value)', 'numbers-only': '', placeholder: '{{fieldLabel}}' }
+    %div{ 'ng-if': 'type == "inlineEdit"', 'click-to-edit': 'click-to-edit', type: "number", decimal: '2', prefix: '{{currencySymbol}}', 'ng-model': 'value', 'on-after-save': 'onUpdate(value)' }
+    %span{ 'ng-if': 'type == "showOnly"' } {{ value | currency:currencySymbol:2 }}
+
+  .percentage-field{ ng: { 'switch-when': 'percentage' } }
+    %input.form-control{ 'ng-if': 'type == "form"', 'ng-model': 'value', 'ng-blur': 'onUpdate(value)', 'numbers-only': '', placeholder: '{{fieldLabel}}' }
+    %div{ 'ng-if': 'type == "inlineEdit"', 'click-to-edit': 'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': 'value', 'on-after-save': 'onUpdate(value)' }
+    %span{ 'ng-if': 'type == "showOnly"' } {{ value | percentage:2 }}
+
+  .datetime-field{ ng: { 'switch-when': 'datetime' } }
+    %input.form-control{ readonly: true, type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { if: 'type == "form"', model: 'value', change: 'onUpdate(value)', click: 'datepickerOpened = !datepickerOpened' }, 'is-open': 'datepickerOpened', placeholder: '{{fieldLabel}}' }
+    .bs-datepicker{ 'ng-if': 'type == "inlineEdit"' }
+      %span.editable{ datepicker: { popup: 'MMMM d, y' }, ng: { class: '{"not-selected": !value}', model: 'value', change: 'onUpdate(value)', click: 'datepickerOpened = !datepickerOpened' }, 'is-open': 'datepickerOpened' }
+        {{ (value | date) || 'Select date' }}
+        %span.caret
+    %span{ 'ng-if': 'type == "showOnly"' } {{ value | date }}
+
+  .boolean-field.show-hide-remainder-form{ ng: { 'switch-when': 'boolean' } }
+    .switch-remainder-form{ 'ng-if': 'inlineOrForm()' }
+      %input.cmn-toggle.cmn-toggle-round-flat{ id: 'cf{{id + fieldName}}', type: 'checkbox', 'ng-model': 'value', 'ng-change': "onUpdate(value)"}
+      %label{:for => "cf{{id + fieldName}}"}
+        %span
+    %span{ 'ng-if': 'type == "showOnly"' } {{ value ? 'Yes' : 'No' }}
+
+  .dropdown{ ng: { 'switch-when': 'dropdown' } }
+    %div{ 'ng-if': 'type == "form"' }
+      %ui-select{ ng: { model: 'value', change: 'onUpdate(value)' } }
+        %ui-select-match{ placeholder: '{{fieldLabel}}' }
+          {{ $select.selected.value }}
+        %ui-select-choices{ repeat: 'option.value as option in options' }
+          %div{ ng: { bind: { html: 'option.value' } } }       
+    %div{ 'ng-if': 'type == "inlineEdit"' }
+      %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+        %span.editable{'ng-class': '{"not-selected": !value}'}
+          {{ value || 'Select option' }}
+        %span.caret
+      %ul.dropdown-menu
+        %li{'ng-repeat': 'option in options', 'ng-class': '{active: value == option.value}'}
+          %a{'href': '', 'ng-click': 'value = option.value; onUpdate(value)'}
+            %span.text {{ option.value }}
+    %span{ 'ng-if': 'type == "showOnly"' } {{ value }}
+
+  .currency-field{ ng: { 'switch-when': 'sum' } }
+    %input.form-control{ 'ng-if': 'type == "form"', 'ng-model': 'value', 'ng-blur': 'onUpdate(value)', 'numbers-only': '', placeholder: '{{fieldLabel}}' }
+    %div{ 'ng-if': 'type == "inlineEdit"', 'click-to-edit': 'click-to-edit', type: "number", decimal: '0', 'ng-model': "value", 'on-after-save': 'onUpdate(value)' }
+    %div{ 'ng-if': 'type == "showOnly"' } {{ value | number:0 }}
+
+  .link-field{ ng: { 'switch-when': 'link'} }
+    %input.form-control{ 'ng-if': 'type == "form"', 'ng-model': 'value', 'ng-blur': 'onUpdate(value)', 'type': 'text', placeholder: 'Enter {{fieldLabel}}' }
+    %input.editable{ 'ng-if': 'type == "inlineEdit"', 'ng-model': 'value', placeholder: 'Enter {{fieldLabel}}', 'ng-blur': 'onUpdate(value)' }
+    %div{ 'ng-if': 'type == "showOnly"' } 
+      %a{ 'ng-href': '{{value}}', 'target': '_blank' }
+        {{ value }}

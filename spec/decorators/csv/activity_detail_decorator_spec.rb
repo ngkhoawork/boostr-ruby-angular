@@ -18,7 +18,7 @@ describe Csv::ActivityDetailDecorator do
   private
 
   def activity_detail_decorator
-    @_activity_detail_decorator ||= described_class.new(activity)
+    @_activity_detail_decorator ||= described_class.new(activity, custom_field_names: [])
   end
 
   def activity
