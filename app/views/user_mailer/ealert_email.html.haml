@@ -12,7 +12,7 @@
           - style = "background: url('#{root_url}won-deal.png'); background-repeat: no-repeat; background-position: 70%; height: 110px;"
           
         %td{ style: "#{style}" }
-          .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;'}
+          .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;word-break: break-word;'}
             #{@deal.name}
           - if @deal.stage_active?
             .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}

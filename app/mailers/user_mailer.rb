@@ -83,9 +83,10 @@ class UserMailer < ApplicationMailer
       }
     })
     deal_settings_fields = @deal.company.fields.where(subject_type: 'Deal').pluck(:id, :name)
-
     subject = "eAlert - #{@deal.name}"
-
+    if @ealert['subject'] && @deal
+      subject = Workflow::MessageBuilder.new(@ealert['subject'], @deal).build_message
+    end
     position_fields = [
       {
         'name' => 'agency',
