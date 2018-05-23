@@ -39,7 +39,10 @@
 
   $scope.submitEalert = (ealert) ->
     $scope.errors = {}
-    if ealert.delay == null
+
+    if !ealert.subject
+      $scope.errors['subject'] = 'Subject is required!'
+    else if ealert.delay == null
       $scope.errors['delay'] = 'Auto send delay is required!'
     else if ealert.delay < 0
       $scope.errors['delay'] = 'Auto send delay can\'t be negative value!'
