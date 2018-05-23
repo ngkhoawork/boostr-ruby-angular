@@ -1,4 +1,4 @@
-class PgSearchQuery
+class GlobalSearchQuery
   attr_reader :options
 
   def initialize(options)

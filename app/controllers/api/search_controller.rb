@@ -9,7 +9,7 @@ class Api::SearchController < ApplicationController
   private
 
   def filtered_records
-    PgSearchQuery.new(options).perform
+    GlobalSearchQuery.new(options).perform
   end
 
   def options
