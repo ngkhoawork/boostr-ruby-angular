@@ -11,6 +11,8 @@ class Operative::DatafeedService
     import_sales_orders
     import_sales_order_line_items
     import_invoice_line_items
+  rescue => e
+    log_general_error(e, '')
   end
 
   private
@@ -20,7 +22,7 @@ class Operative::DatafeedService
   def get_files
     file_service.perform
     if file_service.error.present?
-      log_general_error(file_service)
+      log_general_error(file_service.error, file_service.data_filename_local)
     else
       @datafeed_archive = file_service.data_filename_local
     end
@@ -66,11 +68,11 @@ class Operative::DatafeedService
     date.strftime('%m%d%Y')
   end
 
-  def log_general_error(file_service)
+  def log_general_error(error, file_source)
     import_log = CsvImportLog.new(company_id: api_config.company_id, object_name: 'io', source: 'operative')
     import_log.count_failed
-    import_log.log_error(file_service.error)
-    import_log.set_file_source(file_service.data_filename_local)
+    import_log.log_error(error)
+    import_log.set_file_source(file_source)
     import_log.save
   end
 
