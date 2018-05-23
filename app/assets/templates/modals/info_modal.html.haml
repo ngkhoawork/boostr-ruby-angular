@@ -14,6 +14,6 @@
                 %span{ ng: { repeat: 'item in message.excluded_objects' } }
                     %a{ href: 'javascript:void(0)', ng: { href: '/{{ typeOfExcluded }}s/{{ item.id }}' } } 
                         %strong {{ item.name }} 
-                    {{ typeOfExcluded }} has been removed because it no longer match the terms of the {{ typeOfUpdate }}.
+                    {{ typeOfExcluded }} has been removed because it no longer matches the terms of the {{ typeOfUpdate }}.
     .popup-modal-footer
         %button.btn{ type: 'button', ng: { click: 'close()' } } Close

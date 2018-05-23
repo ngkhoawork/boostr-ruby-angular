@@ -38,6 +38,19 @@
                             %span.text {{ type.name }}
 
     %div.custom-field-item
+        %div.custom-field-item-label Status
+        %div.custom-field-item-field
+            .dropdown
+                %button.btn.btn-primary.dropdown-toggle{ 'data-toggle': 'dropdown', type: 'button', ng: { disabled: 'disableCustomFields' } }
+                    %span.editable{ ng: { cloak: true } }
+                        %span{ ng: { if: 'agreement.status.name' } } {{ agreement.status.name || 'Select status' }}
+                    %span.caret
+                %ul.dropdown-menu
+                    %li{ ng: { repeat: 'status in options.statuses', class: '{ active: agreement.status == status }' } }
+                        %a{ href: '', ng: { click: 'agreement.status = status; updateAgreement()'} }
+                            %span.text {{ status.name }}
+
+    %div.custom-field-item
         %div.custom-field-item-label Track
         %div.custom-field-item-field
             .dropdown

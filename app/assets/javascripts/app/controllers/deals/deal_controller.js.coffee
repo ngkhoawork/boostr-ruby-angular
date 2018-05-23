@@ -275,6 +275,7 @@
     $scope.setBudgetPercent(deal)
     $scope.getStages()
     checkPmpDeal()
+    getAgreements()
 
   $scope.getStages = ->
     Stage.query({active: true, sales_process_id: $scope.currentDeal.stage.sales_process_id}).$promise.then (stages) ->

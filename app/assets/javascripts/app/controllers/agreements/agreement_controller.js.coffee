@@ -126,9 +126,6 @@
             query.client_ids = $scope.agreement.advertisers.map (agency) -> agency.id
         
         $scope.agreement.values.forEach (value) ->
-            console.log 'value: ', value
-            console.log '$scope.agreement.status: ', $scope.agreement.status
-            console.log '$scope.agreement.spend_agreement_type: ', $scope.agreement.spend_agreement_type
             if $scope.agreement.status && value.field_id == $scope.agreement.status.field_id
                 query.values_attributes.push {
                     id: value.id

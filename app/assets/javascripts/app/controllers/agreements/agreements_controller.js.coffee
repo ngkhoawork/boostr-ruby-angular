@@ -1,6 +1,6 @@
 @app.controller 'AgreementsController',
-['$scope', '$filter', '$window', '$timeout', '$modal', 'localStorageService', 'Agreement', 'AgreementsFilter', 'CustomValue', 'Client'
-($scope, $filter, $window, $timeout, $modal, localStorageService, Agreement, AgreementsFilter, CustomValue, Client) ->
+['$scope', '$rootScope', '$filter', '$window', '$timeout', '$modal', 'localStorageService', 'Agreement', 'AgreementsFilter', 'CustomValue', 'Client'
+($scope, $rootScope, $filter, $window, $timeout, $modal, localStorageService, Agreement, AgreementsFilter, CustomValue, Client) ->
   init = ->
     $scope.getAgreements()
     $scope.filter.getFilterOptions()
@@ -25,11 +25,13 @@
     localStorageService.set('agreementTeamFilter', AgreementsFilter.teamFilter)
     AgreementsFilter.teamFilter
 
-  unless localStorageService.get('agreementTeamFilter')
+  if !localStorageService.get('agreementTeamFilter') && !$rootScope.currentUserIsLeader
     $scope.teamFilter $scope.switches[0]
-  else
+  else if localStorageService.get('agreementTeamFilter') && !$rootScope.currentUserIsLeader
     agreementTeamFilter = localStorageService.get('agreementTeamFilter')
     $scope.teamFilter agreementTeamFilter
+  else if $rootScope.currentUserIsLeader
+    $scope.teamFilter $scope.switches[1]
 
   $scope.filter =
     isOpen: false
@@ -231,8 +233,9 @@
 
   updateAgreement = (editedAgreement) ->
     index = _.findIndex $scope.agreements, {id: editedAgreement.id}
+    editedAgreement.allAdvertisers = editedAgreement.parent_companies.concat(editedAgreement.advertisers)
     $scope.agreements[index] = editedAgreement
-
+    
   $scope.switchAgreements = (swch) ->
     $scope.teamFilter swch
     page = 1

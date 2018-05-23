@@ -27,7 +27,10 @@ class SpendAgreementTrackingService < BaseService
   end
 
   def add_matching_spend_agreements
-    deal.spend_agreement_deals.where.not(spend_agreement_id: matching_spend_agreement_ids).delete_all
+    deal.spend_agreement_deals
+        .joins(:spend_agreement)
+        .where('spend_agreements.manually_tracked = ?', false)
+        .where.not(spend_agreement_id: matching_spend_agreement_ids).delete_all
     deal.spend_agreement_deals.create(hash_build(:spend_agreement_id, (matching_spend_agreement_ids.uniq - deal.spend_agreements.ids)))
   end
 
