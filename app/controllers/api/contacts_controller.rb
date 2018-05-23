@@ -13,6 +13,7 @@ class Api::ContactsController < ApplicationController
           :client,
           :values,
           :address,
+          :contact_cf,
           non_primary_client_contacts: [:client]
         )
         .limit(limit)
