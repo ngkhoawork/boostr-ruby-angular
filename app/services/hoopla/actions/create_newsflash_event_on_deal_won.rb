@@ -6,13 +6,15 @@ class Hoopla::Actions::CreateNewsflashEventOnDealWon < Hoopla::Actions::Base
   end
 
   def perform
-    response = api_caller.create_newsflash_event(create_newsflash_event_options)
+    response = api_caller.create_newsflash_event(newsflash_event_options)
 
     if response.success?
       true
     else
       raise Hoopla::Errors::UnhandledRequest, response.body
     end
+  rescue Hoopla::Errors::NewsflashEventFailed => e
+    log_error(e.message)
   end
 
   private
@@ -26,10 +28,10 @@ class Hoopla::Actions::CreateNewsflashEventOnDealWon < Hoopla::Actions::Base
   end
 
   def hoopla_user
-    user.hoopla_user || (raise 'hoopla_user does not exist')
+    user.hoopla_user || raise_hoopla_user_must_present!(user.id)
   end
 
-  def create_newsflash_event_options
+  def newsflash_event_options
     @options.merge(
       title: title,
       message: message,
@@ -58,5 +60,20 @@ class Hoopla::Actions::CreateNewsflashEventOnDealWon < Hoopla::Actions::Base
 
   def formatted_end_date
     deal.end_date&.strftime('%m/%d/%Y')
+  end
+
+  def raise_hoopla_user_must_present!(user_id)
+    raise Hoopla::Errors::NewsflashEventFailed, "hoopla user must be present for user_id: #{user_id}"
+  end
+
+  def log_error(message)
+    IntegrationLog.create!(
+      company_id: @options[:company_id],
+      deal_id: @options[:deal_id],
+      api_provider: 'hoopla',
+      object_name: 'deal',
+      is_error: true,
+      error_text: message
+    )
   end
 end
