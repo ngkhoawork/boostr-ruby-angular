@@ -25,8 +25,13 @@
       $scope.selectedTeamId = null
       $scope.selectedMemberId = null
 
+      allMemberEntry = {
+        name: 'All',
+        id: null,
+      }
+
       $scope.filter =
-        selectedMember: null
+        selectedMember: allMemberEntry
         selectedTeam: null
 
       $scope.productPipelineChoice = 'weighted'
@@ -37,6 +42,7 @@
 
       $scope.dealLossStagesChoice = "qtd"
       $scope.kpisChoice = "qtd"
+      $scope.members = []
 
       $scope.activitySummaryChoice = "qtd"
       $scope.optionsActivitySummary = ActivitySummaryDataStore.getOptions()
@@ -122,9 +128,7 @@
           $scope.allLeaderId = _.map $scope.teams[0].leaders, (member) ->
             return member.id
           $scope.filter.selectedTeam = $scope.teams[0]
-
           searchAndSetTeam($scope.teams, $scope.currentUser)
-          searchAndSetSeller($scope.filter.selectedTeam.members, $scope.currentUser)
 
           SalesExecutionDashboard.kpis("member_ids[]": allUsers(), time_period: $scope.kpisChoice).then (data) ->
             $scope.allKPIs = data[0]
@@ -181,29 +185,16 @@
           $scope.dataQuaterForecast =  SalesExecutionDashboardDataStore.getGraphDataQuarterForecast()
           $scope.optionsQuarterForecast = SalesExecutionDashboardDataStore.getOptionsQuarterForecast()
 
-      $scope.$watch('selectedTeam', () =>
-        if ($scope.selectedTeam)
-          $scope.selectedTeamId = $scope.selectedTeam.id
-          $scope.selectedMember = null
-          $scope.selectedMemberId = null
-          $scope.selectedMemberList = _.map $scope.selectedTeam.members, (item) =>
-            return item.id
-          $scope.selectedLeaderList = _.map $scope.selectedTeam.leaders, (item) =>
-            return item.id
-          calculateKPIs()
-      , true);
-
       searchAndSetTeam = (teams, user) ->
         for team in teams
           if team.leader_id && team.leader_id == user.id
             $scope.filter.selectedTeam = team
-            return
+            break
           else if team.id && team.id == user.team_id
             $scope.filter.selectedTeam = team
-            return
+            break
           if team.children && team.children.length
             searchAndSetTeam team.children, user
-            return
 
       searchAndSetSeller = (members, user) ->
         if !_.isArray members then return
@@ -211,17 +202,32 @@
           $scope.filter.selectedMember = user
           return
 
-      $scope.$watch('selectedMember', () =>
-        if ($scope.selectedMember)
-          $scope.selectedMemberId = $scope.selectedMember.id
-          $scope.selectedMemberList = [$scope.selectedMember.id]
-          $scope.selectedLeaderList = []
-          calculateKPIs()
+      $scope.$watch('filter.selectedTeam', () =>
+        if ($scope.filter.selectedTeam)
+          $scope.members = angular.copy($scope.filter.selectedTeam.members)
+          $scope.members.unshift(allMemberEntry);
+          $scope.filter.selectedMember = allMemberEntry;
+          searchAndSetSeller($scope.filter.selectedTeam.members, $scope.currentUser)
       , true);
 
       $scope.applyFilter = ->
         $scope.selectedTeam = angular.copy $scope.filter.selectedTeam
         $scope.selectedMember = angular.copy $scope.filter.selectedMember
+
+        if ($scope.selectedMember.id)
+          $scope.selectedMemberId = $scope.selectedMember.id
+          $scope.selectedMemberList = [$scope.selectedMember.id]
+          $scope.selectedLeaderList = []
+        else if ($scope.selectedTeam)
+          $scope.selectedTeamId = $scope.selectedTeam.id
+          $scope.selectedMember = null
+          $scope.selectedMemberId = null
+          $scope.selectedMemberList = _.map $scope.selectedTeam.members, (item) =>
+            return item.id
+          $scope.selectedLeaderList = _.map $scope.selectedTeam.leaders, (item) =>
+            return item.id
+
+        calculateKPIs()
 
       $scope.isFilterApplied = ->
         !angular.equals $scope.filter.selectedTeam, $scope.selectedTeam || 
