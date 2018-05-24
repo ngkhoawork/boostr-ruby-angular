@@ -1,11 +1,9 @@
 require 'rails_helper'
 
-describe Teams::IndexSerializer do
+describe Teams::ChildSerializer do
   before do
     member1
     member2
-    child_team1
-    child_team2
   end
 
   it 'serializes user data' do
@@ -21,9 +19,6 @@ describe Teams::IndexSerializer do
     expect(serializer.members).to include(member1_serializer)
     expect(serializer.members).to include(member2_serializer)
     expect(serializer.parent).to eq(parent_serializer)
-    expect(serializer.children.count).to eq(2)
-    expect(serializer.children).to include(child_team1_serializer)
-    expect(serializer.children).to include(child_team2_serializer)
   end
 
   private
@@ -54,22 +49,6 @@ describe Teams::IndexSerializer do
 
   def member2_serializer
     UserSerializer.new(member2).object
-  end
-
-  def child_team1_serializer
-    Teams::ChildSerializer.new(child_team1).object
-  end
-
-  def child_team2_serializer
-    Teams::ChildSerializer.new(child_team2).object
-  end
-
-  def child_team1
-    @_child_team1 ||= create :team, company: company, parent: team
-  end
-
-  def child_team2
-    @_child_team2 ||= create :team, company: company, parent: team
   end
 
   def parent_team
