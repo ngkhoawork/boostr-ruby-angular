@@ -25,8 +25,6 @@
                   %th.left
                     .z-sortable{by: 'title'} Title
                   %th.left
-                    .z-sortable{by: '["team.name", "teams[0].name"]'} Team
-                  %th.left
                     .z-sortable{by: 'default_currency'} Default Currency
                   %th.left
                     .z-sortable{by: 'user_type'} Type
@@ -58,8 +56,6 @@
                     {{ user.email }}
                   %td.left{ ng: { click: 'editModal(user)' } }
                     {{ user.title }}
-                  %td.left{ ng: { click: 'editModal(user)' } }
-                    {{ user.teams.length > 0 ? 'Leader - ' + user.teams[0].name : user.team.name}}
                   %td.left
                     %ui-select{ name: 'default-currency', ng: { model: 'user.default_currency' }, 'on-select': 'submitUser(user)' }
                       %ui-select-match

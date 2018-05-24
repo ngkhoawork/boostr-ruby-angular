@@ -8,6 +8,7 @@ class Api::UsersController < ApplicationController
   end
 
   def update
+    user.skip_reconfirmation!
     if user.update_attributes(user_params)
       user.roles = params[:roles]
       user.save
