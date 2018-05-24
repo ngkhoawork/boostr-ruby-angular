@@ -1332,7 +1332,7 @@ class Deal < ActiveRecord::Base
         closed_at: closed_date,
         closed_reason_text: closed_reason_text,
         next_steps: next_steps,
-        legacy_id: row[19].strip
+        legacy_id: row[19]&.strip
       }
 
       deal_params[:created_by] = created_by if created_by
