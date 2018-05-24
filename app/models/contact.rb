@@ -118,6 +118,7 @@ class Contact < ActiveRecord::Base
       relation.primary = true if relations.count == 0
       relation.save
     end
+    update_pg_search_document
   end
 
   def primary_client_json
