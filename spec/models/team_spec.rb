@@ -25,14 +25,21 @@ RSpec.describe Team, type: :model do
         record = Team.new
         record.name = ''
         record.valid?
-        record.errors[:name].should include("can't be blank") # check for presence of error
+        record.errors[:name].should include("can't be blank")
       end
     end
     describe '#recursive_team_assignment_validation' do
       it 'is not passed' do
         parent.parent_id = child.id
         parent.valid?
-        parent.errors[:team].should include("You can't assign your child teams as your parent.") # check for presence of error
+        parent.errors[:team].should include("You can't assign your child teams as your parent.")
+      end
+    end
+    describe '#self_parent_assignment_validation' do
+      it 'is not passed' do
+        parent.parent_id = parent.id
+        parent.valid?
+        parent.errors[:team].should include("You can't assign yourself as your parent.")
       end
     end
   end

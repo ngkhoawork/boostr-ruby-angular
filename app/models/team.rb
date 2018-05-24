@@ -15,6 +15,7 @@ class Team < ActiveRecord::Base
   scope :roots, proc { |root_only| where(parent_id: nil) if root_only }
 
   validates :name, presence: true
+  validate :self_parent_assignment_validation
   validate :recursive_team_assignment_validation
 
   before_destroy do |team_record|
@@ -54,6 +55,11 @@ class Team < ActiveRecord::Base
     end
   end
 
+  def self_parent_assignment_validation
+    return unless parent.present? && id
+    errors.add(:team, "You can't assign yourself as your parent.") if parent_id == id
+  end
+  
   def recursive_team_assignment_validation
     return unless parent.present? && id
     errors.add(:team, "You can't assign your child teams as your parent.") if parent.all_parent_ids.include?(id)
