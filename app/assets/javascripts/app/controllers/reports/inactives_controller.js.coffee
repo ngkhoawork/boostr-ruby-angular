@@ -1,16 +1,32 @@
 @app.controller 'InactivesController',
-    ['$scope', '$document', 'InactivesService', 'Product', 'Field', 'Team', 'User',
-        ($scope, $document, IN, Product, Field, Team, User) ->
+    ['$scope', '$q', '$document', 'InactivesService', 'Product', 'Field', 'Team', 'User', 'CurrentUser',
+        ($scope, $q, $document, IN, Product, Field, Team, User, CurrentUser) ->
             $scope.teams = []
             $scope.sellers = []
 
             init = () ->
-                Team.all().then (teams) ->
-                    $scope.teams = teams
+                $q.all(
+                    teams: Team.all(),
+                    sellers: User.query({'type[]': ['seller', 'sales_manager']}).$promise,
+                    currentUser: CurrentUser.get().$promise
+                ).then (data) ->
+                    $scope.teams = _.sortBy data.teams, 'name'
                     $scope.teams.unshift {id: null, name: 'All'}
-                User.query({'type[]': ['seller', 'sales_manager']}).$promise.then (sellers) ->
-                    $scope.sellers = sellers
+                    $scope.sellers = _.sortBy data.sellers, 'name'
                     $scope.sellers.unshift {id: null, name: 'All'}
+                    $scope.currentUser = data.currentUser
+                    if defaultSeller = _.find($scope.sellers, id: $scope.currentUser.id)
+                        $scope.inactive.setValue('seller', defaultSeller)
+                        $scope.seasonalInactive.setValue('seller', defaultSeller)
+                    if defaultTeam = _.find($scope.teams, leader_id: $scope.currentUser.id)
+                        $scope.inactive.setValue('team', defaultTeam)
+                        $scope.seasonalInactive.setValue('team', defaultTeam)
+                    $scope.inactive.setFilter('qtrs', $scope.inactive.lookbackWindow[1])
+                    $scope.inactive.default = {
+                        selected: angular.copy($scope.inactive.selected)
+                        filter: angular.copy($scope.inactive.filter)
+                    }
+                    $scope.seasonalInactive.setFilter('comparisonType', $scope.seasonalInactive.comparisonTypes[0])
 
             colors = ['#3498DB', '#8CC135']
             $scope.inactive =
@@ -26,10 +42,10 @@
                     {name: '7 Qtrs', value: 7}
                     {name: '8 Qtrs', value: 8}
                 ]
+                default: {}
                 filter: {}
                 selected: {}
-                setFilter: (type, item) ->
-                    if !item then return
+                setValue: (type, item) ->
                     this.selected[type] = item
                     switch type
                         when 'qtrs' then this.filter.qtrs = item.value
@@ -46,11 +62,15 @@
                         when 'subcategory' then this.filter.subcategory_id = item.id
                         when 'team' then this.filter.team_id = item.id
                         when 'seller' then this.filter.seller_id = item.id
+
+                setFilter: (type, item) ->
+                    if !item then return
+                    this.setValue(type, item)
                     this.applyFilter()
 
                 resetFilter: ->
-                    this.selected = {'qtrs': {name: '2 Qtrs', value: 2}}
-                    this.filter = {'qtrs': 2}
+                    this.selected = angular.copy this.default.selected
+                    this.filter = angular.copy this.default.filter
                     this.subcategories = this.allSubcategories
                     this.applyFilter()
 
@@ -62,8 +82,6 @@
                         drawChart(data, $scope.inactive.chartId, true)
                     ), (err) ->
                         if err then console.log(err)
-            #default filters
-            $scope.inactive.setFilter('qtrs', $scope.inactive.lookbackWindow[1])
 
             currentQuarter = moment().quarter()
             $scope.seasonalInactive =
@@ -75,7 +93,9 @@
                     {name: 'Quarters', value: 'quarter'}
                     {name: 'Months', value: 'month'}
                 ]
-                filter: {}
+                filter: {
+                  time_period_number: 8
+                }
                 selected: {}
                 getSeasonalDescription: ->
                     if !this.selected.comparisonNumber then return
@@ -84,8 +104,8 @@
                     name = period2.slice 0, -4
                     period1 = name + (year - 1)
                     period1 + ' over ' + period2
-                setFilter: (type, item) ->
-                    if !item then return
+
+                setValue: (type, item) ->
                     this.selected[type] = item
                     switch type
                         when 'comparisonType'
@@ -106,6 +126,10 @@
                         when 'subcategory' then this.filter.subcategory_id = item.id
                         when 'team' then this.filter.team_id = item.id
                         when 'seller' then this.filter.seller_id = item.id
+
+                setFilter: (type, item) ->
+                    if !item then return
+                    this.setValue(type, item)
                     this.applyFilter()
 
                 resetFilter: ->
@@ -133,10 +157,6 @@
                         drawChart(data['seasonal_inactives'], _this.chartId, true)
                     ), (err) ->
                         if err then console.log(err)
-
-            #default filters
-            $scope.seasonalInactive.filter['time_period_number'] = 8
-            $scope.seasonalInactive.setFilter('comparisonType', $scope.seasonalInactive.comparisonTypes[0])
 
             Field.defaults({}, 'Client').then (clients) ->
                 categories = [{name: 'All', id: null}]
