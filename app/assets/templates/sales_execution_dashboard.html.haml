@@ -6,17 +6,21 @@
           %h3
             Sales Execution Dashboard
 
-        .col-xs-4
-          %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
-        .col-xs-4
+        .col-xs-3
+          %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"filter.selectedTeam"}
+        .col-xs-3
           %div.member-list{ dropdown: true }
             %a{ href: '', dropdown: { toggle: true } }
               %p{ class: "select" }
-                {{ selectedMember.name ? selectedMember.name : "Select Member" }}
+                {{ filter.selectedMember.name ? filter.selectedMember.name : "Select Member" }}
             %ul.dropdown-menu.members
-              %li{ ng: { repeat: 'member in selectedTeam.members | orderBy : "name"', class: '{active: member.id == selectedMember.id}' } }
+              %li{ ng: { repeat: 'member in members | orderBy : "name"', class: '{active: member.id == filter.selectedMember.id}' } }
                 %a{ href: '', ng: { click: 'changeMember(member)' } }
                   {{ member.name }}
+
+        .col-xs-2
+          %button.mr20.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
+            Run Report
 
 
   .container-fluid
