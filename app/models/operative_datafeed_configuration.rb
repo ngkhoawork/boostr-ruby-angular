@@ -38,7 +38,15 @@ class OperativeDatafeedConfiguration < ApiConfiguration
 
   def start_job(job_type: 'intraday')
     if can_be_scheduled?
-      datafeed_configuration_details.update(job_id: worker(job_type).perform_async(id))
+      datafeed_configuration_details.update(job_id: worker(job_type).set(queue: queue_selector).perform_async(id))
+    end
+  end
+
+  def queue_selector
+    if Rails.env == 'production'
+      'daily:operative_datafeed_generator'
+    else
+      'default'
     end
   end
 
