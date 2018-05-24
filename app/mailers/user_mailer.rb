@@ -226,6 +226,10 @@ class UserMailer < ApplicationMailer
     mail(to: recipients, subject: "PMP Digest - Deal-ID's without revenue today")
   end
 
+  def datafeed_finished(recipients)
+    mail(to: recipients, subject: "Datafeed Alert")
+  end
+
   private
 
   def lost_deal_subject_for(deal)

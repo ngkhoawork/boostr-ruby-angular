@@ -130,6 +130,7 @@ class Company < ActiveRecord::Base
     notifications.find_or_initialize_by(name: 'Lost Deal', active: true)
     notifications.find_or_initialize_by(name: 'Pipeline Changes Reports', active: true)
     notifications.find_or_initialize_by(name: Notification::PMP_STOPPED_RUNNING, active: true)
+    notifications.find_or_initialize_by(name: Notification::DATAFEED_STATUS, active: true)
 
     setup_client_fields
 
