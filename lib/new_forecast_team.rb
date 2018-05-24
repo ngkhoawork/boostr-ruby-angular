@@ -261,7 +261,8 @@ class NewForecastTeam
 
   def add_revenue_data(data)
     revenue_data.each do |item|
-      user = company.users.find(item.user_id)
+      user = company.users.find_by_id(item.user_id)
+      next unless user
       if team_members[item.user_id] && team_members[item.user_id].count > 0
         team_members[item.user_id].each do |team|
           data[:teams][team.id] ||= build_team_data(team)
@@ -278,7 +279,8 @@ class NewForecastTeam
 
   def add_pmp_revenue_data(data)
     pmp_revenue_data.each do |item|
-      user = company.users.find(item.user_id)
+      user = company.users.find_by_id(item.user_id)
+      next unless user
       if team_members[item.user_id] && team_members[item.user_id].count > 0
         team_members[item.user_id].each do |team|
           data[:teams][team.id] ||= build_team_data(team)
@@ -295,7 +297,8 @@ class NewForecastTeam
 
   def deduct_cost_revenue_data(data)
     cost_revenue_data.each do |item|
-      user = company.users.find(item.user_id)
+      user = company.users.find_by_id(item.user_id)
+      next unless user
       if team_members[item.user_id] && team_members[item.user_id].count > 0
         team_members[item.user_id].each do |team|
           data[:teams][team.id] ||= build_team_data(team)
@@ -326,7 +329,8 @@ class NewForecastTeam
     source_data = isNetForecast ? pipeline_data_net : pipeline_data
     return if !source_data
     source_data.each do |item|
-      user = company.users.find(item.user_id)
+      user = company.users.find_by_id(item.user_id)
+      next unless user
       weighted_amount = item.pipeline_amount.to_f * company.stages.find(item.stage_id).probability.to_f / 100
       if team_members[item.user_id] && team_members[item.user_id].count > 0
         team_members[item.user_id].each do |team|
