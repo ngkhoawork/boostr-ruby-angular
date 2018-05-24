@@ -163,6 +163,8 @@ Rails.application.routes.draw do
       resources :contact_cf_names, only: [:index]
       resources :display_line_items, only: [:create]
       resources :display_line_item_budgets, only: [:create]
+      resources :custom_field_names, only: [:index, :create, :show, :update, :destroy]
+      resources :sales_processes, only: [:index, :create, :show, :update]
     end # API V2 END
 
     post '/slack/auth', to: 'slack_connect#auth'
