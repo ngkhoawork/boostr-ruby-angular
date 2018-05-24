@@ -15,6 +15,8 @@ class Team < ActiveRecord::Base
   scope :roots, proc { |root_only| where(parent_id: nil) if root_only }
 
   validates :name, presence: true
+  validate :self_parent_assignment_validation
+  validate :recursive_team_assignment_validation
 
   before_destroy do |team_record|
     remove_team_leader
@@ -53,6 +55,16 @@ class Team < ActiveRecord::Base
     end
   end
 
+  def self_parent_assignment_validation
+    return unless parent.present? && id
+    errors.add(:team, "You can't assign yourself as your parent.") if parent_id == id
+  end
+  
+  def recursive_team_assignment_validation
+    return unless parent.present? && id
+    errors.add(:team, "You can't assign your child teams as your parent.") if parent.all_parent_ids.include?(id)
+  end
+
   def leader_and_member_ids
     ([leader_id] | member_ids).compact
   end
@@ -70,6 +82,10 @@ class Team < ActiveRecord::Base
 
   def leader_name
     leader.name if leader.present?
+  end
+
+  def all_parent_ids
+    ([parent_id] + (parent&.all_parent_ids || [])).compact
   end
 
   def all_deals_for_time_period(start_date, end_date)
