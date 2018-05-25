@@ -54,14 +54,15 @@
 							%div.stats-col
 								.col-body-wrap
 									.col-body
+										%span.error-tooltip{'ng-show': 'errors.ioDate'} {{ errors.ioDate }}
 										.description Start-End Dates
 										%div{'ng-if': 'currentUser.is_admin || canEditIO'}
 											.title.bs-datepicker
-												%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.start_date', click: 'startOpened = !startOpened', class: '{ editing: startOpened }', change: 'updateIO()' }, 'is-open': 'startOpened' }
+												%span.editable{ datepicker: { popup: 'MMMM d, y' }, ng: { model: 'currentIO.start_date', click: 'startOpened = !startOpened', class: '{ editing: startOpened }', change: 'updateIODate("start_date")' }, 'is-open': 'startOpened' }
 													{{currentIO.start_date | date : 'mediumDate'}}
 												{{'-'}}
 												%span.no-wrap-line
-													%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.end_date', click: 'endOpened = !endOpened', class: '{ editing: endOpened }', change: 'updateIO()' }, 'is-open': 'endOpened' }
+													%span.editable{ datepicker: { popup: 'MMMM d, y' }, ng: { model: 'currentIO.end_date', click: 'endOpened = !endOpened', class: '{ editing: endOpened }', change: 'updateIODate("end_date")' }, 'is-open': 'endOpened' }
 														{{currentIO.end_date | date : 'mediumDate'}}
 													%span.caret
 										%div{'ng-if': '!currentUser.is_admin && !canEditIO'}
