@@ -25,13 +25,13 @@
       $scope.selectedTeamId = null
       $scope.selectedMemberId = null
 
-      allMemberEntry = {
+      $scope.allMemberEntry = {
         name: 'All',
         id: null,
       }
 
       $scope.filter =
-        selectedMember: allMemberEntry
+        selectedMember: $scope.allMemberEntry
         selectedTeam: null
 
       $scope.productPipelineChoice = 'weighted'
@@ -42,7 +42,6 @@
 
       $scope.dealLossStagesChoice = "qtd"
       $scope.kpisChoice = "qtd"
-      $scope.members = []
 
       $scope.activitySummaryChoice = "qtd"
       $scope.optionsActivitySummary = ActivitySummaryDataStore.getOptions()
@@ -204,9 +203,7 @@
 
       $scope.$watch('filter.selectedTeam', () =>
         if ($scope.filter.selectedTeam)
-          $scope.members = angular.copy($scope.filter.selectedTeam.members)
-          $scope.members.unshift(allMemberEntry);
-          $scope.filter.selectedMember = allMemberEntry;
+          $scope.filter.selectedMember = $scope.allMemberEntry;
           searchAndSetSeller($scope.filter.selectedTeam.members, $scope.currentUser)
       , true);
 
