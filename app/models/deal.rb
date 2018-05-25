@@ -256,7 +256,7 @@ class Deal < ActiveRecord::Base
     if open_changed?
       update_pipeline_fact(self)
     end
-    WorkflowWorker.perform_async(deal_id: id, type: 'update') if budget_changed?
+    WorkflowWorker.perform_async(deal_id: id, type: 'update') if budget_changed? && manual_update
   end
 
   def asana_connect
