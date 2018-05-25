@@ -1,0 +1,48 @@
+.detail-stats.block
+    %div.stats-body
+        %div.agreement-title.mb30
+            %span.main-title
+                {{ agreement.name }}
+                %i.fa.fa-pencil.edit-agreement{ ng: { click: 'showAgreementEditModal()', if: 'loaded' } }
+                %i.fa.fa-trash.delete-agreement{ ng: { click: 'deleteAgreement()', if: 'loaded' } }
+         
+        %div.stats-numbers.mb30
+            %div.stats-col
+                .col-body-wrap
+                    .col-body
+                        .description Target Amount
+                        .title {{ agreement.target | currency: currency_symbol : 0 }}
+                        -# .subtitle{ ng: { if: 'agreement.currency.curr_cd != "USD"' } } {{ agreement.target | currency: '$' : 0 }} 
+             
+            %div.stats-col
+                .col-body-wrap
+                    .col-body
+                        .description Un-Weighted Pipeline
+                        .title {{ agreement.pipeline_amount | currency: currency_symbol : 0 }}
+                        -# .subtitle{ ng: { if: 'agreement.currency.curr_cd != "USD"' } } {{ agreement.pipeline_amount | currency: '$' : 0 }}
+
+            %div.stats-col
+                .col-body-wrap
+                    .col-body
+                        .description Weighted Pipeline
+                        .title {{ agreement.weighted_pipeline_amount | currency: currency_symbol : 0 }}
+                        -# .subtitle{ ng: { if: 'agreement.currency.curr_cd != "USD"' } } {{ agreement.weighted_pipeline_amount | currency: '$' : 0 }}
+                        
+            %div.stats-col
+                .col-body-wrap
+                    .col-body
+                        .description Revenue Amount
+                        .title {{ agreement.revenue_amount | currency: currency_symbol : 0 }}
+                        -# .subtitle{ ng: { if: 'agreement.currency.curr_cd != "USD"' } } {{ agreement.revenue_amount | currency: '$' : 0 }}
+
+            %div.stats-col
+                .col-body-wrap
+                    .col-body
+                        .description Booked to Target
+                        .title {{ agreement.bookedToTarget }}%
+
+            %div.stats-col
+                .col-body-wrap
+                    .col-body
+                        .description Forecast % to Target
+                        .title {{ agreement.forecastToTarget }}%

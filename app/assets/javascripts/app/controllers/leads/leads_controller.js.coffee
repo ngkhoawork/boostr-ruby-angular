@@ -71,6 +71,8 @@
                 size: 'md'
                 resolve:
                     lead: -> lead
+            .result.then (updatedLead) ->
+                if updatedLead then replaceLead updatedLead
 
         $scope.showDealModal = (lead) ->
             modal = $modal.open

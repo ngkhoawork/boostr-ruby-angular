@@ -6,6 +6,7 @@ class Integration < ActiveRecord::Base
   GOOGLE_SHEETS = 'Google Sheets'.freeze
   SSP = 'SSP'.freeze
   SLACK = 'Slack'.freeze
+  HOOPLA = 'Hoopla'.freeze
 
   validates :external_id, :external_type, presence: true
 
@@ -15,7 +16,7 @@ class Integration < ActiveRecord::Base
 
   def self.get_types(current_user)
     integration_types = [
-      OPERATIVE, OPERATIVE_DATAFEED, DFP, ASANA_CONNECT, SSP
+      OPERATIVE, OPERATIVE_DATAFEED, DFP, ASANA_CONNECT, SSP, HOOPLA
     ]
     integration_types << GOOGLE_SHEETS if current_user.company.buzzfeed?
     integration_types

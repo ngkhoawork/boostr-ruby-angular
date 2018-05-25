@@ -5,6 +5,7 @@
   $scope.formType = 'Edit'
   $scope.submitText = 'Update'
   $scope.team = team
+  $scope.users = []
 
   $scope.init = ->
     $q.all({ 
@@ -36,10 +37,9 @@
           if u.id == $scope.team.leader_id
             $scope.leader = u
             $scope.availableLeaders.push($scope.leader)
-          if u && !u['leader?'] && !u['team_id']
+          if u && !u['is_leader'] && !u['team_id']
             $scope.availableLeaders.push(u)
-        
-        if u && !u['leader?'] && !u['team_id']
+        if u && !u['is_leader'] && !u['team_id']
           $scope.availableUsers.push(u)
       $scope.team.members = _.map members, (item) ->
         return item.id
@@ -51,13 +51,13 @@
     searchObj = _.find $scope.availableLeaders, (item) ->
       return item.id == id
     if searchObj != undefined
-      searchObj['leader?'] = false
+      searchObj['is_leader'] = false
 
   $scope.afterLeaderChange = (id) ->
     searchObj = _.find $scope.availableUsers, (item) ->
       return item.id == id
     if searchObj != undefined
-      searchObj['leader?'] = true
+      searchObj['is_leader'] = true
     resetUsers()
 
   $scope.submitForm = () ->

@@ -1,6 +1,6 @@
 .row
   .col-xs-10
-    %input.title.editable-control{ type: 'text', 'ng-model': 'option.name', placeholder: "Enter option", 'ng-blur': 'isUpdating || updateOption(option)' }
+    %input.title.editable-control{ type: 'text', 'ng-model': 'option.name', placeholder: "Enter option", 'ng-blur': 'isUpdating || updateOption(option)', 'ng-mousedown': 'rememberPreviousName(option.name)' }
     |
     %span.total
       {{ option.suboptions.length }}-Sub

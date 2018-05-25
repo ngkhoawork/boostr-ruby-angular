@@ -15,7 +15,7 @@ class Validation < ActiveRecord::Base
   end
 
   scope :account_base_fields, -> do
-    where('object in (?)', ['Advertiser Base Field', 'Agency Base Field'])
+    where('object in (?)', ['Advertiser Base Field', 'Agency Base Field', 'Account Custom Validation'])
         .joins(:criterion)
         .where('values.value_boolean = ?', true)
   end

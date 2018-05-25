@@ -1,0 +1,131 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.hoopla.net/oauth2/token
+    body:
+      encoding: US-ASCII
+      string: grant_type=client_credentials&client_id=CLIENT_ID&client_secret=CLIENT_SECRET
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Host:
+      - api.hoopla.net
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 11 May 2018 12:43:19 GMT
+      Etag:
+      - W/"7747adff1001a6b1c5a01c2ade9cdd5d"
+      Set-Cookie:
+      - B=Ck2Xslr1j+e2kAALHZN7Ag==; expires=Thu, 31-Dec-37 23:55:55 GMT; domain=hoopla.net;
+        secure; httponly; path=/
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - d576d185-3cb4-4d61-9ba7-5811fc83ba3f
+      X-Runtime:
+      - '0.009613'
+      X-Xss-Protection:
+      - 1; mode=block
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"access_token":"75ff5fcd49ce39f50e7b7101/213bc5cf03b7ebd8aacf219ec8ae707d88e14fc61ab11fde39497194fa84363dc6edf5a6bc34c5b941a8d93dad5f28e82a4917205ae8e60ad565ce8c6a2ce06db2aa9a5613fe768e200f81d7a034e8f515c3a3ab4df2b4da252866aaa5b398210c5bec86c1e4460fffe0a9601292e9f7651395f60687d2dc6309e156dcc71cff26b83cb471c440b92016d3bc4eccd010ba4eb6ffc51ab98ba86ba0b41cf5d05523be8dfea5fda063bc12cbf005/4e90e82e51b93bf6126d16e4c76a3f8b","refresh_token":"95ccd1ec08824941f66aec55/837662228c091f5b6a098a1510c632746246b2a71c874f4427e63b488c427306b2d9e82551a75803f6d6fb80a9e5fd95df8a71a5479523407ce16a4a3970426f53b206935213b6fd934324c40e1fed54c41b7ccf75b9735b71de0364be18014ed2d61bbaa12646625d9eca418fd5b3c6b479b32763/0bbe62a37c97b971eea5a5acb90b8198","token_type":"bearer","expires_in":1800,"user_id":null,"email":null,"customer_id":"15dcf3cd-588a-4aed-a0bd-c4e74054922f","customer_state":"free_trial","role":"External"}'
+    http_version: 
+  recorded_at: Fri, 11 May 2018 12:43:18 GMT
+- request:
+    method: post
+    uri: https://api.hoopla.net/newsflashes/newsflash_id/events
+    body:
+      encoding: UTF-8
+      string: '{"title":"Aglae Will CLOSED $0","message":"Aglae Will CLOSED $0 DEAL
+        FOR Deal 1 INDIA-WHISKEY-FIVE!","owner":{"kind":"user","href":"https://api.hoopla.net/users/user_id"}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/vnd.hoopla.newsflash-event+json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.hoopla.net
+      Authorization:
+      - Bearer 75ff5fcd49ce39f50e7b7101/213bc5cf03b7ebd8aacf219ec8ae707d88e14fc61ab11fde39497194fa84363dc6edf5a6bc34c5b941a8d93dad5f28e82a4917205ae8e60ad565ce8c6a2ce06db2aa9a5613fe768e200f81d7a034e8f515c3a3ab4df2b4da252866aaa5b398210c5bec86c1e4460fffe0a9601292e9f7651395f60687d2dc6309e156dcc71cff26b83cb471c440b92016d3bc4eccd010ba4eb6ffc51ab98ba86ba0b41cf5d05523be8dfea5fda063bc12cbf005/4e90e82e51b93bf6126d16e4c76a3f8b
+      Content-Type:
+      - application/vnd.hoopla.newsflash-event+json
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Access-Control-Allow-Origin:
+      - "*"
+      Authorization:
+      - Bearer eec13476d01992b1af387701/aeff758e5fd18cf3c393cdf9ebac62e264c63f7c8878efa0d03fadd78b558cf85daf228b2278776bfbea6e762cbb8b12f08a5c5567bca055d80d9f45361c1964445f22507ef6661c6ca2f5e69c73bac752262f19ff8e2a5aa231c71b12c803fad6b3bd076041310898fdffa7d7f1b4a9e0cf24ff0e94b6833c134c11a74fc367332f7d8b5d296b994329583bb25cf1b1903de6d74172e86aebb5fe1a2e040a4e3fca3092519565e5905b8afe54/b2ba319ae415d8e379da45095e86080b
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Content-Type:
+      - application/vnd.hoopla.newsflash-event+json
+      Date:
+      - Fri, 11 May 2018 12:43:20 GMT
+      Etag:
+      - W/"ef8c69eda50f45295212527c536e448d"
+      Set-Cookie:
+      - B=Ck2FGVr1j+iCogARHLzIAg==; expires=Thu, 31-Dec-37 23:55:55 GMT; domain=hoopla.net;
+        secure; httponly; path=/
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Hoopla-Customer-Id:
+      - 15dcf3cd-588a-4aed-a0bd-c4e74054922f
+      X-Hoopla-User-Email:
+      - ''
+      X-Hoopla-User-Id:
+      - ''
+      X-Rate-Limit-Max:
+      - '1000'
+      X-Rate-Limit-Remaining:
+      - '996'
+      X-Rate-Limit-Reset:
+      - '100'
+      X-Request-Id:
+      - 1ede5c8e-a438-4c6e-8661-4058c04b0799
+      X-Runtime:
+      - '0.203409'
+      X-Xss-Protection:
+      - 1; mode=block
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"href":"https://api.hoopla.net/newsflashes/newsflash_id/events/fe01a08c-5844-4195-ab42-12d3d6b69506","newsflash":{"href":"https://api.hoopla.net/newsflashes/newsflash_id"},"title":"Aglae
+        Will CLOSED $0","message":"Aglae Will CLOSED $0 DEAL FOR Deal 1 INDIA-WHISKEY-FIVE!","owner":{"kind":"user","href":"https://api.hoopla.net/users/user_id"},"recipients":[],"updated_at":"2018-05-11T12:43:20.454Z"}'
+    http_version: 
+  recorded_at: Fri, 11 May 2018 12:43:19 GMT
+recorded_with: VCR 3.0.3

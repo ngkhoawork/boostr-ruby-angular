@@ -49,6 +49,7 @@ class Company < ActiveRecord::Base
   has_many :operative_datafeed_configurations, dependent: :destroy
   has_many :asana_connect_configurations, dependent: :destroy
   has_many :google_sheets_configurations, dependent: :destroy
+  has_many :hoopla_configurations, dependent: :destroy
   has_many :initiatives, dependent: :destroy
   has_many :integration_logs, dependent: :destroy
   has_many :requests
@@ -63,6 +64,7 @@ class Company < ActiveRecord::Base
   has_many :ssp_advertisers
   has_many :sales_processes
   has_many :ssp_credentials, dependent: :destroy
+  has_many :spend_agreements, dependent: :destroy
 
   has_many :deal_custom_field_names
   has_many :deal_product_cf_names
@@ -128,6 +130,7 @@ class Company < ActiveRecord::Base
     notifications.find_or_initialize_by(name: 'Lost Deal', active: true)
     notifications.find_or_initialize_by(name: 'Pipeline Changes Reports', active: true)
     notifications.find_or_initialize_by(name: Notification::PMP_STOPPED_RUNNING, active: true)
+    notifications.find_or_initialize_by(name: Notification::DATAFEED_STATUS, active: true)
 
     setup_client_fields
 
@@ -139,6 +142,7 @@ class Company < ActiveRecord::Base
 
     AssignmentRule.create(company_id: self.id, name: 'No Match', default: true, position: 100_000)
     build_egnyte_integration(enabled: false) unless egnyte_integration
+    setup_agreements
   end
 
   def setup_client_fields
@@ -320,5 +324,11 @@ class Company < ActiveRecord::Base
     activity_types.find_or_initialize_by(name:'Email', action:'emailed to', icon:'/assets/icons/email.png', css_class: 'bstr-email', editable: false, position: 10)
     activity_types.find_or_initialize_by(name:'Post Sale Meeting', action:'had post sale meeting with', icon:'/assets/icons/post-sale.png', css_class: 'bstr-post-sale-meeting', position: 11)
     activity_types.find_or_initialize_by(name:'Internal Meeting', action:'had internal meeting with', icon:'/assets/icons/internal-meeting.png', css_class: 'bstr-internal-meeting', position: 12)
+  end
+
+  def setup_agreements
+    fields.find_or_initialize_by(subject_type: 'Multiple', name: 'Spend Agreement Type', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Multiple', name: 'Spend Agreement Status', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Multiple', name: 'Spend Agreement Member Role', value_type: 'Option', locked: true)
   end
 end

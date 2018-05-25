@@ -29,10 +29,11 @@
                 %th.left Product Family
                 %th.right Quota ($)
             %tbody
-              %tr{ ng: { repeat: 'quota in quotas | orderBy: "::user_name"', click: 'showEditModal(quota)' } }
+              %tr{ ng: { repeat: 'quota in quotas | orderBy: "::user_name"' } }
                 %td.left
                   {{ quota.user_name }}
-                  %i.fa.fa-pencil.edit-icon
+                  %i.fa.fa-pencil.z-icon{'ng-click': 'showEditModal(quota)'}
+                  %i.fa.fa-trash.z-icon{'ng-click': 'delete(quota)'}
                 %td.left
                   {{ quota.value_type | firstUppercase}}
                 %td.left
@@ -40,4 +41,4 @@
                 %td.left
                   {{ quota.product_type == 'ProductFamily' ? quota.product.name : '' }}
                 %td.right
-                  %input.editable-control.text-center{ type: 'text', 'ng-model': 'quota.value', placeholder: "0", 'ng-blur': 'updateQuota(quota)', 'ng-style': "{width:'100px'}", 'ng-click': '$event.stopPropagation();' }
+                  %input.editable-control.text-center{ type: 'text', 'ng-model': 'quota.value', placeholder: "0", 'ng-blur': 'updateQuota(quota)', 'ng-style': "{width:'100px'}", 'ng-click': '$event.stopPropagation();', 'numbers-with-commas': '' }

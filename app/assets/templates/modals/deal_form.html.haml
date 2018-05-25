@@ -56,20 +56,32 @@
                     %label{style: 'display: block'}
                         Advertiser
                         %span.star *
-                    %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true, keyup: 'searchClients($select.search, Advertiser)' }, 'on-select': "advertiserSelected($model)" }
+                    %ui-select{ name: 'advertiser', ng: { if: '!availableAdvertisers.length', model: 'deal.advertiser_id', disabled: true, keyup: 'searchClients($select.search, Advertiser)' }, 'on-select': "advertiserSelected($model)" }
                         %ui-select-match{ placeholder: 'Advertiser' }
                             {{ $select.selected.name }}
                         %ui-select-choices{ repeat: 'advertiser.id as advertiser in advertisers' }
                             %div{ ng: { bind: { html: 'advertiser.name' } } }
+
+                    %ui-select{ name: 'advertiser', ng: { if: 'availableAdvertisers.length', model: 'deal.advertiser_id', disabled: true }, 'on-select': "advertiserSelected($model)" }
+                        %ui-select-match{ placeholder: 'Advertiser' }
+                            {{ $select.selected.name }}
+                        %ui-select-choices{ repeat: 'advertiser.id as advertiser in availableAdvertisers | filter: { name: $select.search }' }
+                            %div{ ng: { bind: { html: 'advertiser.name' } } }        
                 .form-group.agency-field{'ng-class':'{error: errors.agency}'}
                     %span.error-text {{errors.agency}}
                     %label{style: 'display: block'}
                         Agency
-                        %span.star{ 'ng-if': "baseFieldRequired('agency')" } *
-                    %ui-select{ name: 'agency', ng: { model: 'deal.agency_id', disabled: true, keyup: 'searchClients($select.search, Agency)' }, 'on-select': 'agencySelected($model)' }
+                        %span.star{ 'ng-if': "availableAgencies.length || baseFieldRequired('agency')" } *
+                    %ui-select{ name: 'agency', ng: { if: '!availableAgencies.length', model: 'deal.agency_id', disabled: true, keyup: 'searchClients($select.search, Agency)' }, 'on-select': 'agencySelected($model)' }
                         %ui-select-match{ placeholder: 'Agency' }
                             {{ $select.selected.name }}
                         %ui-select-choices{ repeat: 'agency.id as agency in agencies' }
+                            %div{ ng: { bind: { html: 'agency.name' } } }
+                    
+                    %ui-select{ name: 'agency', ng: { if: 'availableAgencies.length', model: 'deal.agency_id', disabled: true }, 'on-select': 'agencySelected($model)' }
+                        %ui-select-match{ placeholder: 'Agency' }
+                            {{ $select.selected.name }}
+                        %ui-select-choices{ repeat: 'agency.id as agency in availableAgencies | filter: { name: $select.search }' }
                             %div{ ng: { bind: { html: 'agency.name' } } }
                 %button.add-btn.plus-btn{type: 'button', 'ng-click': 'createNewClientModal()'}
             .form-group
@@ -109,14 +121,14 @@
                         %label{ for: 'start-date' }
                             Start Date
                             %span.star *
-                        %input.form-control{readonly: true, name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'deal.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+                        %input.form-control{readonly: true, name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'deal.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened', 'max-date': 'dateRestrictions.max_start_date', placeholder: "{{ dateRestrictions.max_start_date_formated }}" }
 
                     .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.end_date}'}
                         %span.error-text {{errors.end_date}}
                         %label{ for: 'end-date' }
                             End Date
                             %span.star *
-                        %input.form-control{readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
+                        %input.form-control{readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened', 'min-date': 'dateRestrictions.min_end_date', placeholder: "{{ dateRestrictions.min_end_date_formated }}" }
             .form-group{ng: {repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index", if: "dealCustomFieldName.show_on_modal && !dealCustomFieldName.disabled", class:'{error: errors[fieldName]}'}}
                 %span.error-text {{errors[fieldName]}}
                 %label{ for: '{{fieldName}}', ng: { if: "dealCustomFieldName.field_type != 'sum'" } }

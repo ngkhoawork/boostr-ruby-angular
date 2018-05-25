@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Contact', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType',  'localStorageService', 'Company', 'Egnyte'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,  Contact,    Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,    localStorageService,   Company,   Egnyte) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$window', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Contact', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'SSP', 'DisplayLineItem', 'Validation', 'PMPType',  'localStorageService', 'Company', 'Egnyte', 'Agreement'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $window,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,  Contact,    Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   SSP,   DisplayLineItem,   Validation,   PMPType,    localStorageService,   Company,   Egnyte, Agreement) ->
 
   $scope.agencyRequired = false
   $scope.showMeridian = true
@@ -114,6 +114,7 @@
         checkCurrentUserDealShare(deal.members)
         getOperativeIntegration(deal.id)
         getGoogleSheetsIntegration(deal.id)
+        getAgreements()
     , (err) ->
       if(err && err.status == 404)
         $location.url('/deals')
@@ -129,6 +130,21 @@
     getValidations()
     Company.get().$promise.then (company) -> $scope.company = company
     getSsps()
+
+  getAgreements = ->
+    Agreement.get_deal_agreements({ deal_id: $scope.currentDeal.id })
+      .$promise.then (agreements) -> 
+        agreements.forEach (agreement) ->
+          if agreement.spend_agreement
+            agreement.spend_agreement.allAdvertisers = agreement.spend_agreement.parent_companies.concat(agreement.spend_agreement.advertisers)
+        $scope.currentDeal.agreements = agreements if agreements
+
+  $scope.excludeAgreement = (agreement) ->
+    if confirm('Are you sure you want to exclude "' +  agreement.spend_agreement.name + '"?')
+        Agreement.exclude_deal( { spend_agreement_id: agreement.spend_agreement.id, id: agreement.id }
+            (data) -> getAgreements()
+            (reject) -> console.error reject
+        )    
 
   checkPmpDeal = () ->
     $scope.isPmpDeal = false
@@ -259,6 +275,7 @@
     $scope.setBudgetPercent(deal)
     $scope.getStages()
     checkPmpDeal()
+    getAgreements()
 
   $scope.getStages = ->
     Stage.query({active: true, sales_process_id: $scope.currentDeal.stage.sales_process_id}).$promise.then (stages) ->
@@ -544,7 +561,20 @@
 
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
       (deal) ->
+        if deal.info_messages.length
+          $scope.infoModalInstance = $modal.open
+            templateUrl: 'modals/info_modal.html'
+            size: 'md'
+            controller: 'AgreementInfoController'
+            backdrop: 'static'
+            keyboard: false
+            resolve:
+              options: ->
+                  messages: deal.info_messages
+                  typeOfExcluded: 'agreement'
+                  typeOfUpdate: 'deal'
         $scope.ealertReminder = true
+        getAgreements()
       (resp) ->
         if resp.data.errors
           $scope.checkAgencyRequiredError resp.data.errors
@@ -596,7 +626,7 @@
           $scope.showWonLossModal(currentDeal, true)
         else
           Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
-            (deal) ->
+            (deal) ->       
               if currentDeal.close_reason.option then $scope.init()
               $scope.ealertReminder = true
             (resp) ->
@@ -780,6 +810,17 @@
         publisher: ->
           {}
 
+  $scope.addAgreement = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/agreement_assign.html'
+      size: 'md'
+      controller: 'AgreementsAssignController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        deal: -> $scope.currentDeal
+    .result.then (agreements) -> getAgreements()
+
   $scope.backToPrevStage = ->
     if $scope.prevStageId
       $scope.currentDeal.stage_id = $scope.prevStageId
@@ -816,6 +857,7 @@
       resolve:
         deal: ->
           angular.copy deal
+    .result.then (deal) -> getAgreements() if deal
 
   $scope.showDealEalertModal = (deal) ->
     setValidDeal()
@@ -986,5 +1028,28 @@
 
   $scope.$watch 'currentUser', (currentUser) ->
     $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser
+
+  $scope.toggleDrodown = (event) ->
+    dropdown = angular.element(event.target).next()
+    tableWrapper = angular.element('#agreements-section table').parent()
+
+    if dropdown.is(':visible')
+      dropdown.hide()
+      # Add overflow-x: auto if dropdown is closed
+      tableWrapper.addClass('table-wrapper')
+      return
+    else
+      multipleLists = angular.element('.multiple-list-wrapper')
+      multipleLists.hide()
+      dropdown.show()
+      # Remove overflow-x: auto if dropdown is open
+      tableWrapper.removeClass('table-wrapper')
+      return
+
+  $window.addEventListener 'click', (event) ->
+    target = angular.element(event.target)
+    if target.closest(".multiple").length == 0
+      multipleLists = angular.element('.multiple-list-wrapper')
+      multipleLists.hide()  
 
 ]

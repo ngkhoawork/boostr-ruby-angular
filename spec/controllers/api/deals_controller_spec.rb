@@ -74,7 +74,11 @@ describe Api::DealsController, type: :controller do
     end
 
     it 'map lead to contact' do
-      assignment_rule = create :assignment_rule, company_id: company.id, countries: ['Usa'], states: ['Ny']
+      assignment_rule = create :assignment_rule,
+                               company_id: company.id,
+                               criteria_1: ['Usa'],
+                               criteria_2: ['Ny'],
+                               default: true
       assignment_rule.users << user
       valid_deal_params = deal_params.merge(lead_id: lead.id)
 
@@ -169,6 +173,17 @@ describe Api::DealsController, type: :controller do
       expect(response).not_to be_success
       expect(deal.reload.deleted_at).to be_nil
       expect(json_response['errors']['delete']).to eql(['Please delete IO for this deal before deleting'])
+    end
+  end
+
+  describe 'PUT #assign_agreements' do
+    let(:deal) { create :deal, company: company }
+    let(:new_agreements) { (create_list :spend_agreement, 3, company: company, manually_tracked: true) }
+
+    it 'assigns new spend agreements' do
+      put :assign_agreements, deal_id: deal.id, assign_agreements: new_agreements.map(&:id)
+
+      expect(deal.reload.spend_agreements.ids).to eq new_agreements.map(&:id)
     end
   end
 

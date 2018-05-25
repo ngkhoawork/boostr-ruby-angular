@@ -1,0 +1,53 @@
+.agreement-clients.block{ style: 'display: none' }
+    %div.mb20
+        %span.title Clients
+
+    %div.custom-field-item
+        %div.custom-field-item-label
+            Advertisers
+        %div.custom-field-item-field{ ng: { if: 'agreement.allAdvertisers.length' } }
+            %ul
+                %li{ ng: { repeat: 'client in agreement.allAdvertisers | limitTo : limit.advertisers' } }
+                    %a{ ng: { href: '/accounts/{{ client.id }}' }, target: '_blank', href: 'javascript:void(0)' } {{ client.name }}
+                %li{ ng: { if: 'agreement.allAdvertisers.length > limit.advertisers && limit.advertisers' } }
+                    %a.more{ href: 'javascript:void(0)', ng: { click: 'showMore("advertisers")' } } Show {{ agreement.allAdvertisers.length - limit.advertisers }} more
+                %li{ ng: { if: '!limit.advertisers' } }
+                    %a.less{ href: 'javascript:void(0)', ng: { click: 'showLess("advertisers")' } } Show less   
+        %div.custom-field-item-field{ ng: { if: '!agreement.allAdvertisers.length' } }
+            %strong Not Selected
+
+    %div.custom-field-item
+        %div.custom-field-item-label
+            Agency Holding
+        %div.custom-field-item-field{ ng: { if: 'agreement.holding_company' } }
+            %a{ ng: { href: '/accounts/{{ agreement.holding_company.id }}' }, target: '_blank', href: 'javascript:void(0)' } {{ agreement.holding_company.name }}
+        %div.custom-field-item-field{ ng: { if: '!agreement.holding_company' } }
+            %strong Not Selected
+                
+    %div.custom-field-item
+        %div.custom-field-item-label
+            Agencies
+        %div.custom-field-item-field{ ng: { if: 'agreement.agencies.length' } }
+            %ul
+                %li{ ng: { repeat: 'client in agreement.agencies | limitTo: limit.agencies' } }
+                    %a{ ng: { href: '/accounts/{{ client.id }}' }, target: '_blank', href: 'javascript:void(0)' } {{ client.name }}
+                %li{ ng: { if: 'agreement.agencies.length > limit.agencies && limit.agencies' } }
+                    %a.more{ href: 'javascript:void(0)', ng: { click: 'showMore("agencies")' } } Show {{ agreement.agencies.length - limit.agencies }} more
+                %li{ ng: { if: '!limit.agencies' } }
+                    %a.less{ href: 'javascript:void(0)', ng: { click: 'showLess("agencies")' } } Show less       
+        %div.custom-field-item-field{ ng: { if: '!agreement.agencies.length' } }
+            %strong Not Selected
+             
+    %div.custom-field-item
+        %div.custom-field-item-label
+            Publishers
+        %div.custom-field-item-field{ ng: { if: 'agreement.publishers.length' } }
+            %ul
+                %li{ ng: { repeat: 'client in agreement.publishers | limitTo: limit.publishers' } }
+                    %a{ ng: { href: '/publishers/{{ client.id }}' }, target: '_blank' } {{ client.name }}
+                %li{ ng: { if: 'agreement.publishers.length > limit.publishers && limit.publishers' } }
+                    %a.more{ href: 'javascript:void(0)', ng: { click: 'showMore("publishers")' } } Show {{ agreement.publishers.length - limit.publishers }} more
+                %li{ ng: { if: '!limit.publishers' } }
+                    %a.less{ href: 'javascript:void(0)', ng: { click: 'showLess("publishers")' } } Show less
+        %div.custom-field-item-field{ ng: { if: '!agreement.publishers.length' } }
+            %strong Not Selected    

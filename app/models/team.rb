@@ -15,6 +15,8 @@ class Team < ActiveRecord::Base
   scope :roots, proc { |root_only| where(parent_id: nil) if root_only }
 
   validates :name, presence: true
+  validate :self_parent_assignment_validation
+  validate :recursive_team_assignment_validation
 
   before_destroy do |team_record|
     remove_team_leader
@@ -53,22 +55,18 @@ class Team < ActiveRecord::Base
     end
   end
 
-  def leader_and_member_ids
-    ([leader_id] | member_ids).compact
+  def self_parent_assignment_validation
+    return unless parent.present? && id
+    errors.add(:team, "You can't assign yourself as your parent.") if parent_id == id
+  end
+  
+  def recursive_team_assignment_validation
+    return unless parent.present? && id
+    errors.add(:team, "You can't assign your child teams as your parent.") if parent.all_parent_ids.include?(id)
   end
 
-  def all_children
-    temp_children = Team.where(parent_id: self.id)
-    children = []
-    temp_children.each do |child|
-      temp_child = child.as_json
-      temp_child[:children] = child.all_children
-      temp_child[:members] = child.all_members
-      temp_child[:leaders] = child.all_leaders
-      temp_child[:members_count] = temp_child[:members].count
-      children << temp_child
-    end
-    children
+  def leader_and_member_ids
+    ([leader_id] | member_ids).compact
   end
 
   def remove_team_leader
@@ -84,6 +82,10 @@ class Team < ActiveRecord::Base
 
   def leader_name
     leader.name if leader.present?
+  end
+
+  def all_parent_ids
+    ([parent_id] + (parent&.all_parent_ids || [])).compact
   end
 
   def all_deals_for_time_period(start_date, end_date)
@@ -289,42 +291,6 @@ class Team < ActiveRecord::Base
 
   def all_members_and_leaders_ids
     all_members.union(all_leaders).pluck(:id)
-  end
-
-  def sum_pos_balance
-    pos_balance = leader.nil? ? 0 : leader.pos_balance
-    pos_balance += members.all.sum(:pos_balance)
-    children.each do |child|
-      pos_balance += child.sum_pos_balance
-    end
-    return pos_balance
-  end
-
-  def sum_neg_balance
-    neg_balance = leader.nil? ? 0 : leader.neg_balance
-    neg_balance += members.all.sum(:neg_balance)
-    children.each do |child|
-      neg_balance += child.sum_neg_balance
-    end
-    return neg_balance
-  end
-
-  def sum_pos_balance_lcnt
-    pos_balance_lcnt = leader.nil? ? 0 : leader.pos_balance_lcnt
-    pos_balance_lcnt += members.all.sum(:pos_balance_lcnt)
-    children.each do |child|
-      pos_balance_lcnt += child.sum_pos_balance_lcnt
-    end
-    return pos_balance_lcnt
-  end
-
-  def sum_neg_balance_lcnt
-    neg_balance_lcnt = leader.nil? ? 0 : leader.neg_balance_lcnt
-    neg_balance_lcnt += members.all.sum(:neg_balance_lcnt)
-    children.each do |child|
-      neg_balance_lcnt += child.sum_neg_balance_lcnt
-    end
-    return neg_balance_lcnt
   end
 
   def descendents

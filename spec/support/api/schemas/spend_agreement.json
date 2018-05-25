@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "properties" : {
+    "id" : { "type" : "number" },
+    "name": { "type": "string" },
+    "created_at" : { "type" : "string", "format": "date-time" },
+    "updated_at" : { "type" : "string", "format": "date-time" },
+    "status" : { "type" : "string null" },
+    "spend_agreement_type" : { "type" : "string null" },
+    "start_date" : { "type" : "date" },
+    "end_date" : { "type" : "date" },
+    "target" : { "type" : "number" },
+    "manually_tracked" : { "type" : "boolean" },
+    "company_id" : { "type" : "number" },
+    "holding_company" : { "$ref": "client.json" },
+    "advertisers": {
+      "type": "array",
+      "items": {
+        "$ref": "client.json"
+      }
+    },
+    "agencies": {
+      "type": "array",
+      "items": {
+        "$ref": "client.json"
+      }
+    },
+    "publishers": {
+      "type": "array",
+      "items": {
+        "$ref": "client.json"
+      }
+    },
+    "parent_companies": {
+      "type": "array",
+      "items": {
+        "$ref": "client.json"
+      }
+    },
+    "values": {
+      "type": "array",
+      "items": {
+        "$ref": "value.json"
+      }
+    }
+  }
+}

@@ -4,12 +4,18 @@
         $scope.form = ''
         $scope.users = []
         $scope.rules = []
+        $scope.fieldTypes = []
         positions = {}
+        selectedType = null
         $scope.selectedRule = null
         $scope.defaultRule = null
 
         User.query().$promise.then (data) ->
             $scope.users = data
+
+        AssignmentRule.fieldType()
+            .then (types) -> $scope.fieldTypes = types.field_types
+            .catch (err) -> console.error err
 
         (getRules = (selectedName) ->
             AssignmentRule.get().then (data) ->
@@ -21,6 +27,13 @@
                     $scope.rules[0] ||
                     $scope.defaultRule
         )()
+
+        $scope.decorateType = (type) ->
+            switch type
+                when 'country' then 'Country'
+                when 'source_url' then 'Source URL'
+                when 'product_name' then 'Product'
+                else type
 
         $scope.selectRule = (rule) ->
             $scope.selectedRule = rule
@@ -65,20 +78,20 @@
             form = $scope.form
             switch type
                 when 'rule'
-                    AssignmentRule.save(name: form).then ->
+                    AssignmentRule.save(name: form, field_type: selectedType).then ->
                         getRules(form)
-                when 'country'
+                when 'criteria_1'
                     if !rule then return
                     AssignmentRule.update(
                         id: rule.id
-                        countries: _.union [form], rule.countries
+                        criteria_1: _.union [form], rule.criteria_1
                     ).then (updatedRule) ->
                         _.extend rule, updatedRule
-                when 'state'
+                when 'criteria_2'
                     if !rule then return
                     AssignmentRule.update(
                         id: rule.id
-                        states: _.union [form], rule.states
+                        criteria_2: _.union [form], rule.criteria_2
                     ).then (updatedRule) ->
                         _.extend rule, updatedRule
 
@@ -90,10 +103,10 @@
             switch type
                 when 'rule'
                     params.name = rule.name
-                when 'country'
-                    params.countries = _.reject rule.countries, (item) -> !item.trim()
-                when 'state'
-                    params.states = _.reject rule.states, (item) -> !item.trim()
+                when 'criteria_1'
+                    params.criteria_1 = _.reject rule.criteria_1, (item) -> !item.trim()
+                when 'criteria_2'
+                    params.criteria_2 = _.reject rule.criteria_2, (item) -> !item.trim()
             AssignmentRule.update(params).then (updatedRule) ->
                 _.extend rule, updatedRule
 
@@ -102,6 +115,10 @@
             target = $(e.target)
             target.closest('.rules-column').find('.new-row').addClass('visible').find('input').focus()
             return
+
+        $scope.selectType = (event, type) ->
+            selectedType = type
+            $scope.showForm(event)
 
         getPositions = ->
             _positions = {}

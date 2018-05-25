@@ -11,6 +11,8 @@ class Ios::ContentFeeSerializer < ActiveModel::Serializer
     :content_fee_product_budgets
   )
 
+  has_one :custom_field, serializer: CustomFields::Serializer
+
   def content_fee_product_budgets
     object.content_fee_product_budgets.order(start_date: :asc)
   end

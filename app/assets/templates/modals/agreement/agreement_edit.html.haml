@@ -1,0 +1,112 @@
+#agreements_add_modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header
+      Edit Agreement
+      %span.close-btn{ ng: { click: 'cancel()' } }
+    .popup-modal-body
+
+      .form-group{ ng: { class: '{ error: errors.name }'} }
+        %span.error-text {{ errors.name }}
+        %label{ for: 'name' } Name
+        %span.star *
+        %input.form-control{ autofocus: true, name: 'name', placeholder: 'Name', ng: { model: 'agreement.name' } }
+
+      .row
+        .col-sm-6
+          .form-group{ ng: { class: '{ error: errors.spend_agreement_type }'} }
+            %span.error-text {{ errors.spend_agreement_type }}
+            %label{ for: 'type' } Type
+            %span.star *
+            %ui-select{ name: 'type', ng: { model: 'agreement.spend_agreement_type', disabled: 'disableCustomFields' } }
+              %ui-select-match{ placeholder: 'Select Type' }
+                %span{ ng: { if: '$select.selected.name' } } {{ $select.selected.name }}
+                %span{ ng: { if: '!$select.selected.name' } } {{ $select.selected }}
+              %ui-select-choices{ repeat: 'item in (options.spend_agreement_types | filter: $select.search)' }
+                %div{ ng: { bind: { html: 'item.name' } } }
+        .col-sm-6
+          .form-group{ ng: { class: '{ error: errors.status }'} }
+            %span.error-text {{ errors.status }}
+            %label{ for: 'status' } Status
+            %span.star *
+            %ui-select{ name: 'status', ng: { model: 'agreement.status', disabled: 'disableCustomFields' } }
+              %ui-select-match{ placeholder: 'Select Status' }
+                %span{ ng: { if: '$select.selected.name' } } {{ $select.selected.name }}
+                %span{ ng: { if: '!$select.selected.name' } } {{ $select.selected }}
+              %ui-select-choices{ repeat: 'item in (options.statuses | filter: $select.search)' }
+                %div{ ng: { bind: { html: 'item.name' } } }
+
+      .form-group
+        %label{ for: 'agency-holding-company' } Agency Holding Company
+        %ui-select{ name: 'agency-holding-company', ng: { model: 'agreement.holding_company', change: 'chooseHoldingCompany(agreement.holding_company)' } }
+          %ui-select-match{ placeholder: 'Search for Agency Holding Company', 'allow-clear': true }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'item in (options.holding_companies | filter: $select.search) track by item.id' }
+            %div{ ng: { bind: { html: 'item.name' } } }
+
+      .form-group
+        %label{ for: 'agency' } Agency(s)
+        %ui-select{ multiple: true, name: 'agency', ng: { model: 'agreement.agencies', keyup: 'getAgencies($select.search, true)', disabled: 'disableAgencyField' } }
+          %ui-select-match{ placeholder: 'Select Agency(s)', 'allow-clear': true }
+            {{ $item.name }}
+          %ui-select-choices{ repeat: 'item in (options.agencies | filter: $select.search) track by item.id' }
+            %div{ ng: { bind: { html: 'item.name' } } }
+      
+      .form-group
+        %label{ for: 'advertiser-parent-company' } Advertiser or Parent Company
+        %ui-select{ multiple: true, name: 'advertiser-parent-company', ng: { model: 'agreement.parent_companies', 'allow-clear': true, keyup: 'getAdvertiserParentCompanies($select.search)', change: 'changeAdvertiserParentCompanies()' } }
+          %ui-select-match{ placeholder: 'Select Company', 'allow-clear': true }
+            {{ $item.name }}
+          %ui-select-choices{ repeat: 'item in (options.parent_clients | filter: $select.search) track by item.id' }
+            %div{ ng: { bind: { html: 'item.name' } } }
+
+      .row
+        .col-sm-6
+          .form-group
+            %label{ for: 'child-accounts-brands' } Brands/Child Accounts
+            %ui-select{  multiple: true, name: 'child-accounts-brands', ng: { model: 'agreement.advertisers', keyup: 'getChildAccountsBrands($select.search, true)', disabled: 'disableChildClientsField', change: 'getChildAccountsBrands()' } }
+              %ui-select-match{ placeholder: 'Select', 'allow-clear': true }
+                {{ $item.name }}
+              %ui-select-choices{ repeat: 'item in (options.advertisers | filter: $select.search) track by item.id' }
+                %div{ ng: { bind: { html: 'item.name' } } }
+        .col-sm-6
+          .form-group
+            %label{ for: 'publisher' } Publisher
+            %ui-select{ multiple: true, name: 'publisher', ng: { model: 'agreement.publishers', keyup: 'getPublishers($select.search)' } }
+              %ui-select-match{ placeholder: 'Search for Publisher', 'allow-clear': true }
+                {{ $item.name }}
+              %ui-select-choices{ repeat: 'item in options.publishers | filter: filterPublisherOptions()' }
+                %div{ ng: { bind: { html: 'item.name' } } }
+
+      .row
+        .form-group.col-md-6.bs-datepicker{ ng: { class:'{error: errors.start_date}' } }
+          %span.error-text {{ errors.start_date }}
+          %label{ for: 'start-date' }
+            Start Date
+            %span.star *
+          %input.form-control{ readonly: true, name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'agreement.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+        .form-group.col-md-6.bs-datepicker{ ng: { class:'{error: errors.end_date}' } }
+          %span.error-text {{ errors.end_date }}
+          %label{ for: 'end-date' }
+            End Date
+            %span.star *
+          %input.form-control{ readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'agreement.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
+
+      .row
+        .col-sm-6
+          .form-group
+            %label{ for: 'target' } Target Amount
+            %input.form-control{ name: 'target', placeholder: '0', ng: { model: 'agreement.target' }, 'numbers-with-commas': true }
+        .col-sm-6
+          .form-group{ ng: { class:'{error: errors.track}' } }
+            %span.error-text {{ errors.track }}
+            %label{ for: 'track' } Track
+            %span.star *
+            %ui-select{ name: 'track', ng: { model: 'agreement.track' } }
+              %ui-select-match{ placeholder: 'Select Track' }
+                {{ $select.selected }}
+              %ui-select-choices{ repeat: 'item in options.tracks' }
+                %div{ ng: { bind: { html: 'item' } } }
+
+    .popup-modal-footer
+      %button.btn.btn-default{ type: 'button', ng: { click: 'cancel()' } } Cancel
+      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'submitButtonDisabled' } } Update

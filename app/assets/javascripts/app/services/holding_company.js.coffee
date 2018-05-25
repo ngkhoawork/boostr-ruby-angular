@@ -20,6 +20,11 @@
       url: '/api/holding_companies/:id/account_dimensions'
       isArray: true
     }
+    relatedAccountsWithoutHolding: {
+      method: 'GET'
+      url: '/api/account_dimensions'
+      isArray: true
+    }
 
   holding_companies = []
 
@@ -33,7 +38,11 @@
       deferred.resolve(holding_companies)
     deferred.promise
 
-  @relatedAccounts = (id) -> resource.relatedAccounts({id: id}).$promise
-  
+  @relatedAccounts = ( id, search = '', agencyIDs = [] ) ->
+    resource.relatedAccounts( { id: id, search: search, 'exclude_ids[]': agencyIDs } ).$promise
+
+  @relatedAccountsWithoutHolding = (search = '', agencyIDs = [] ) ->
+    resource.relatedAccountsWithoutHolding( { search: search, 'exclude_ids[]': agencyIDs } ).$promise
+
   return
 ]

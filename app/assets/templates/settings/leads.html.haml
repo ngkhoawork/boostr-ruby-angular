@@ -9,7 +9,11 @@
                 .rules-column
                     .rule-column-header
                         %div ASSIGNMENT RULE
-                        .rule-add-btn{'ng-click': 'showForm($event)'} Add
+                        .rule-add-btn.z-dropdown{dropdown: true}
+                            %div{'dropdown-toggle': true} Add
+                            %div.dropdown-menu.dropdown-menu-right
+                                %div.dropdown-item{ng: {repeat: 'type in fieldTypes', click: 'selectType($event, type)'}}
+                                    {{decorateType(type)}}
                     .rule-row.rule-name.new-row
                         %form{'ng-submit': 'submitForm($event, "rule")'}
                             %input.form-control{placeholder: 'Name', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "rule")'}
@@ -18,6 +22,8 @@
                         .rule-row.rule-name{ng: {repeat: 'rule in rules', click: 'selectRule(rule)', class: '{active: rule === selectedRule}'}, dnd: {draggable: 'rule', moved: 'onRuleMoved($index)'}}
                             %span{'editable-text': 'rule.name', blur: 'submit', onaftersave: 'updateField("rule", rule)'}
                                 {{rule.name}}
+                            \-
+                            %span.rule-type {{decorateType(rule.field_type)}}
                             %i.fa.fa-trash.z-icon{'ng-click': 'deleteRule($event, rule)'}
                     %div{'ng-if': 'defaultRule'}
                         .rule-row.rule-name.default-rule{ng: {click: 'selectRule(defaultRule)', class: '{active: defaultRule === selectedRule}'}}
@@ -29,26 +35,26 @@
                         %div CRITERIA 1
                         .rule-add-btn{'ng-click': 'showForm($event)'} Add
                     .rule-row.rule-name.new-row
-                        %form{'ng-submit': 'submitForm($event, "country")'}
-                            %input.form-control{placeholder: 'Country', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "country")'}
+                        %form{'ng-submit': 'submitForm($event, "criteria_1")'}
+                            %input.form-control{placeholder: 'Criteria 1', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "criteria_1")'}
                         %i.fa.fa-close.z-icon{'ng-mousedown': 'hideForm($event)'}
-                    .rule-row{'ng-repeat': 'country in selectedRule.countries track by $index'}
-                        %span{'editable-text': 'selectedRule.countries[$index]', blur: 'submit', onaftersave: 'updateField("country", selectedRule)'}
-                            {{selectedRule.countries[$index]}}
-                        %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("countries", country)'}
+                    .rule-row{'ng-repeat': 'criteria in selectedRule.criteria_1 track by $index'}
+                        %span{'editable-text': 'selectedRule.criteria_1[$index]', blur: 'submit', onaftersave: 'updateField("criteria_1", selectedRule)'}
+                            {{selectedRule.criteria_1[$index]}}
+                        %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("criteria_1", criteria)'}
 
                 .rules-column
                     .rule-column-header
                         %div CRITERIA 2
                         .rule-add-btn{'ng-click': 'showForm($event)'} Add
                     .rule-row.rule-name.new-row
-                        %form{'ng-submit': 'submitForm($event, "state")'}
-                            %input.form-control{placeholder: 'State', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "state")'}
+                        %form{'ng-submit': 'submitForm($event, "criteria_2")'}
+                            %input.form-control{placeholder: 'Criteria 2', 'ng-model': 'form', 'ng-blur': 'submitForm($event, "criteria_2")'}
                         %i.fa.fa-close.z-icon{'ng-mousedown': 'hideForm($event)'}
-                    .rule-row{'ng-repeat': 'state in selectedRule.states track by $index'}
-                        %span{'editable-text': 'selectedRule.states[$index]', blur: 'submit', onaftersave: 'updateField("state", selectedRule)'}
-                            {{selectedRule.states[$index]}}
-                        %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("states", state)'}
+                    .rule-row{'ng-repeat': 'criteria in selectedRule.criteria_2 track by $index'}
+                        %span{'editable-text': 'selectedRule.criteria_2[$index]', blur: 'submit', onaftersave: 'updateField("criteria_2", selectedRule)'}
+                            {{selectedRule.criteria_2[$index]}}
+                        %i.fa.fa-trash.z-icon{'ng-click': 'deleteField("criteria_2", criteria)'}
 
                 .rules-column
                     .rule-column-header

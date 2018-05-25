@@ -4,10 +4,12 @@ class OperativeDatafeedFulldayCompanyWorker < BaseWorker
   def perform(id)
     return if api_config(id).blank?
 
-    Operative::DatafeedService.new(api_config(id), Date.today).perform
+    Operative::DatafeedService.new(api_config, Date.today).perform
+
+    send_status_notification
   end
 
-  def api_config(id)
+  def api_config(id=0)
     @api_config ||= OperativeDatafeedConfiguration
       .joins(:datafeed_configuration_details)
       .where(switched_on: true)
@@ -17,5 +19,15 @@ class OperativeDatafeedFulldayCompanyWorker < BaseWorker
 
   def expiration
     @expiration ||= 60 * 60 * 4 # 4 hours
+  end
+
+  def datafeed_status_notification
+    api_config.company.notifications.find_by_name(Notification::DATAFEED_STATUS)
+  end
+
+  def send_status_notification
+    recipients = datafeed_status_notification.recipients_arr
+
+    UserMailer.datafeed_finished(recipients).deliver_now
   end
 end

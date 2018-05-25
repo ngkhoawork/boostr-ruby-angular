@@ -3,6 +3,7 @@
    '$scope',
    '$q',
    'Team',
+   'CurrentUser'
    'SalesExecutionDashboard',
    'SalesExecutionDashboardDataStore',
    'DealLossSummaryDataStore',
@@ -12,6 +13,7 @@
      $scope,
      $q,
      Team,
+     CurrentUser,
      SalesExecutionDashboard,
      SalesExecutionDashboardDataStore,
      DealLossSummaryDataStore,
@@ -22,6 +24,15 @@
       $scope.selectedMember = null
       $scope.selectedTeamId = null
       $scope.selectedMemberId = null
+
+      $scope.allMemberEntry = {
+        name: 'All',
+        id: null,
+      }
+
+      $scope.filter =
+        selectedMember: $scope.allMemberEntry
+        selectedTeam: null
 
       $scope.productPipelineChoice = 'weighted'
       $scope.optionsProductPipeline = SalesExecutionDashboardDataStore.getOptionsProductPipeline()
@@ -103,7 +114,6 @@
           _.each teams, (team) ->
             all_members = [].concat(all_members, team.members)
             all_leaders = [].concat(all_leaders, team.leaders)
-#          $scope.teams = teams
           $scope.teams = [{
             id: 0,
             name:'All Teams',
@@ -116,8 +126,8 @@
             return member.id
           $scope.allLeaderId = _.map $scope.teams[0].leaders, (member) ->
             return member.id
-          $scope.selectedTeam = $scope.teams[0]
-          $scope.selectedTeamId = $scope.selectedTeam.id
+          $scope.filter.selectedTeam = $scope.teams[0]
+          searchAndSetTeam($scope.teams, $scope.currentUser)
 
           SalesExecutionDashboard.kpis("member_ids[]": allUsers(), time_period: $scope.kpisChoice).then (data) ->
             $scope.allKPIs = data[0]
@@ -174,8 +184,38 @@
           $scope.dataQuaterForecast =  SalesExecutionDashboardDataStore.getGraphDataQuarterForecast()
           $scope.optionsQuarterForecast = SalesExecutionDashboardDataStore.getOptionsQuarterForecast()
 
-      $scope.$watch('selectedTeam', () =>
-        if ($scope.selectedTeam)
+      searchAndSetTeam = (teams, user) ->
+        for team in teams
+          if team.leader_id && team.leader_id == user.id
+            $scope.filter.selectedTeam = team
+            break
+          else if team.id && team.id == user.team_id
+            $scope.filter.selectedTeam = team
+            break
+          if team.children && team.children.length
+            searchAndSetTeam team.children, user
+
+      searchAndSetSeller = (members, user) ->
+        if !_.isArray members then return
+        if _.findWhere members, {id: user.id}
+          $scope.filter.selectedMember = user
+          return
+
+      $scope.$watch('filter.selectedTeam', () =>
+        if ($scope.filter.selectedTeam)
+          $scope.filter.selectedMember = $scope.allMemberEntry;
+          searchAndSetSeller($scope.filter.selectedTeam.members, $scope.currentUser)
+      , true);
+
+      $scope.applyFilter = ->
+        $scope.selectedTeam = angular.copy $scope.filter.selectedTeam
+        $scope.selectedMember = angular.copy $scope.filter.selectedMember
+
+        if ($scope.selectedMember.id)
+          $scope.selectedMemberId = $scope.selectedMember.id
+          $scope.selectedMemberList = [$scope.selectedMember.id]
+          $scope.selectedLeaderList = []
+        else if ($scope.selectedTeam)
           $scope.selectedTeamId = $scope.selectedTeam.id
           $scope.selectedMember = null
           $scope.selectedMemberId = null
@@ -183,15 +223,15 @@
             return item.id
           $scope.selectedLeaderList = _.map $scope.selectedTeam.leaders, (item) =>
             return item.id
-          calculateKPIs()
-      , true);
+
+        calculateKPIs()
+
+      $scope.isFilterApplied = ->
+        !angular.equals $scope.filter.selectedTeam, $scope.selectedTeam || 
+          !angular.equals $scope.filter.selectedMember, $scope.selectedMember
 
       $scope.changeMember=(value) =>
-        $scope.selectedMember = value
-        $scope.selectedMemberId = $scope.selectedMember.id
-        $scope.selectedMemberList = [$scope.selectedMember.id]
-        $scope.selectedLeaderList = []
-        calculateKPIs()
+        $scope.filter.selectedMember = value
 
       $scope.changeActivitySummaryChoice=(value) =>
         $scope.activitySummaryChoice = value

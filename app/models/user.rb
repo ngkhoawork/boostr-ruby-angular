@@ -33,6 +33,7 @@ class User < ActiveRecord::Base
   has_many :publishers, through: :publisher_members
   has_many :assignment_rules_users
   has_many :assignment_rules, through: :assignment_rules_users
+  has_one :hoopla_user, inverse_of: :user
 
   ROLES = %w(user admin superadmin supportadmin)
 
@@ -97,7 +98,7 @@ class User < ActiveRecord::Base
   end
 
   def company_egnyte_enabled
-    company.egnyte_integration&.enabled
+    company.egnyte_integration&.enabled || false
   end
 
   def company_publisher_enabled
@@ -255,38 +256,6 @@ class User < ActiveRecord::Base
 
   def has_multiple_sales_process
     company.sales_processes.by_active(true).count > 1
-  end
-
-  def set_alert(should_save=false)
-    member_ids = [self.id]
-
-    if self.leader?
-      self.teams.each do |t|
-        member_ids += t.all_members.collect{|m| m.id}
-        member_ids += t.all_leaders.collect{|m| m.id}
-      end
-    end
-
-    member_ids = member_ids.uniq
-
-    io_ids = Io.joins(:io_members).where("io_members.user_id in (?)", member_ids).all.collect{|io| io.id}.uniq
-
-    DisplayLineItem.where("io_id in (?)", io_ids).each do |display|
-      if display.balance > 0
-        self.pos_balance_cnt += 1
-        self.pos_balance += display.balance
-      elsif display.balance < 0
-        self.neg_balance_cnt += 1
-        self.neg_balance += display.balance
-      end
-    end
-
-    self.pos_balance_l_cnt = self.pos_balance_cnt
-    self.pos_balance_l = self.pos_balance
-    self.neg_balance_l_cnt = self.neg_balance_cnt
-    self.neg_balance_l = self.neg_balance
-    self.last_alert_at = DateTime.now
-    self.save if should_save
   end
 
   def currency_exists

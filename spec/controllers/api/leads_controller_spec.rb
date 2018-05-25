@@ -249,6 +249,6 @@ describe Api::LeadsController do
   end
 
   def assignment_rule
-    @_assignment_rule ||= create :assignment_rule, company_id: company.id, countries: ['Usa'], states: ['Ny']
+    @_assignment_rule ||= create :assignment_rule, company_id: company.id, criteria_1: ['Usa'], criteria_2: ['Ny']
   end
 end

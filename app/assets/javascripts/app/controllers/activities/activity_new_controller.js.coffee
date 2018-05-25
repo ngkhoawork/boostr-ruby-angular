@@ -30,26 +30,21 @@
                 showSpinners: false
 
             #modal source dispatch
-            if options
+            if options && !activity
                 $scope.showRelated = $scope.isEdit
                 switch options.type
                     when 'deal'
                         $scope.form.deal = options.data
                     when 'account'
-                        if options.isAdvertiser
+                        if options.data && options.data.client_type_name == "Advertiser"
                             $scope.form.advertiser = options.data
-                        else
+                        else if options.data && options.data.client_type_name == "Agency"
                             $scope.form.agency = options.data
                     when 'contact'
                         $scope.currentContact = options.data
                         $scope.form.contacts.push options.data
-                        if $scope.isEdit then break
-                        if options.isAdvertiser
-                            $scope.form.advertiser =
-                                id: options.data.client_id
-                        else
-                            $scope.form.agency =
-                                id: options.data.client_id
+                        options.data && $scope.form[options.data.primary_client_type.toLowerCase()] =
+                            options.data.primary_client_json
                     when 'gmail'
                         $scope.showRelated = true
                         $scope.form = _.extend $scope.form, options.data
@@ -60,10 +55,10 @@
 
             #edit mode
             if activity
-                if activity.custom_field
-                  $scope.form.activity_custom_field_obj = activity.custom_field
                 $scope.popupTitle = 'Edit Activity'
                 $scope.submitButtonText = 'Save'
+                if activity.custom_field
+                  $scope.form.activity_custom_field_obj = activity.custom_field
                 if activity.deal
                     activity.deal.formatted_name = activity.deal.name
                     $scope.form.deal = activity.deal

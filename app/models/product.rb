@@ -5,6 +5,7 @@ class Product < ActiveRecord::Base
   belongs_to :product_family
   belongs_to :parent, class_name: 'Product', inverse_of: :children
   belongs_to :top_parent, class_name: 'Product'
+
   has_many :deal_products
   has_many :values, as: :subject
   has_many :ad_units
@@ -12,6 +13,7 @@ class Product < ActiveRecord::Base
   has_many :quotas, as: :product
   has_many :pmp_items
   has_many :costs
+  has_many :leads, dependent: :nullify
 
   validates :margin,
     numericality: {
@@ -42,7 +44,8 @@ class Product < ActiveRecord::Base
   scope :by_revenue_type, -> (revenue_type) { where('revenue_type = ?', revenue_type) if revenue_type }
   scope :by_product_family, -> (product_family_id) { where('product_family_id = ?', product_family_id) if product_family_id }
   scope :by_level, -> (level) { where(level: level) unless level.nil? }
-  
+  scope :by_name, -> (name) { where('name ilike ?', "%#{name}%") }
+
   before_save do
     set_top_parent
     set_level

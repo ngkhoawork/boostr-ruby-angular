@@ -1,0 +1,36 @@
+#assign_modal.deal-assign.popup-modal{ ng: { click: 'onModalClick($event)' } }
+    %form.form-horizontal
+        .popup-modal-header
+            Assign Deals
+            %span.close-btn{ ng: { click: 'cancel()' } }
+         
+        .popup-modal-body.modal-body.p15{ ng: { if: '!canAssign && loaded' } }
+            %p.text-center You cannot assign Deal to this Agreement because Holding Company does not have related Agency/s   
+        .popup-modal-body.modal-body.p15{ ng: { if: 'canAssign' } }
+            .form-group.with-add-btn
+                .form-control-wrapper
+                    %input.form-control{ name: 'deal', placeholder: 'Search for Deals to Assign', ng: { model: 'searchText' } }
+                    .list-wrapper{ ng: { show: 'showDealsDropdown' } }
+                        %ul.list
+                            %li{ ng: { repeat: 'deal in filteredDeals = (deals | filter: { name: searchText })' } }
+                                %span.name {{ deal.name }} 
+                                %a.select.pull-right{ href: "javascript:void(0)", ng: { click: "selectDeal(deal)" } }
+                                    Select
+                            %li.text-center{ ng: { if: 'filteredDeals.length == 0' } }
+                                %span.name Nothing Found for this Agreement
+                %button.add-btn.plus-btn{ type: 'button', ng: { click: 'showAddDealModal()' } }
+				
+            .form-group
+                .row
+                    .col-xs-12
+                        %h5.assigned-header{ ng: { if: 'assignedDeals.length > 0' } } Selected Deals:
+                        %h5.assigned-header{ ng: { if: 'assignedDeals.length == 0' } } No deals selected yet
+                        %ul.assigned-list
+                            %li{ ng: { repeat: 'deal in assignedDeals' } }
+                                {{ deal.name }}
+                                %a.remove.pull-right{ href: "javascript:void(0)", ng: { click: "removeDeal(deal)" } }
+                                    Remove
+
+        .popup-modal-footer{ ng: { if: 'canAssign' } }
+            %button.btn.btn-default{ type: 'button', ng: { click: 'cancel()' } } Cancel
+            %button.btn.btn-primary{ type: 'submit', ng: { click: 'assignDeals()', disabled: 'assignedDeals.length == 0' } } Assign

@@ -22,7 +22,7 @@ class Field < ActiveRecord::Base
   validates :value_type, inclusion: VALUE_TYPES, presence: true
 
   def as_json(opts = {})
-    super(opts.merge(include: [options: {include: [:suboptions]}]))
+    super(opts.merge(include: [options: { methods: [:used], include: [:suboptions] }]))
   end
 
   def option_from_name(name)

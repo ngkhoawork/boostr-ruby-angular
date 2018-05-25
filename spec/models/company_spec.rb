@@ -22,7 +22,7 @@ RSpec.describe Company, type: :model do
     it 'creates default fields' do
       expect {
         create :company_with_defaults
-      }.to change(Field, :count).by(25)
+      }.to change(Field, :count).by(28)
     end
 
     it 'creates default field options' do

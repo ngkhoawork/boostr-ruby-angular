@@ -57,6 +57,10 @@ class Api::Settings::AssignmentRulesController < ApplicationController
     render json: rules
   end
 
+  def field_types
+    render json: { field_types: AssignmentRule::TYPES }
+  end
+
   private
 
   def company
@@ -74,7 +78,7 @@ class Api::Settings::AssignmentRulesController < ApplicationController
   def assignment_rule_params
     params
       .require(:assignment_rule)
-      .permit(:name, countries: [], states: [])
+      .permit(:name, :field_type, criteria_1: [], criteria_2: [])
       .merge(company_id: company.id)
   end
 
@@ -83,15 +87,15 @@ class Api::Settings::AssignmentRulesController < ApplicationController
   end
 
   def modify_assignment_rule_params
-    params[:assignment_rule][:states] = [] if states_nil?
-    params[:assignment_rule][:countries] = [] if countries_nil?
+    params[:assignment_rule][:criteria_2] = [] if criteria_2_nil?
+    params[:assignment_rule][:criteria_1] = [] if criteria_1_nil?
   end
 
-  def states_nil?
-    params[:assignment_rule].keys.include?('states') && params[:assignment_rule][:states].nil?
+  def criteria_2_nil?
+    params[:assignment_rule].keys.include?('criteria_2') && params[:assignment_rule][:criteria_2].nil?
   end
 
-  def countries_nil?
-    params[:assignment_rule].keys.include?('countries') && params[:assignment_rule][:countries].nil?
+  def criteria_1_nil?
+    params[:assignment_rule].keys.include?('criteria_1') && params[:assignment_rule][:criteria_1].nil?
   end
 end

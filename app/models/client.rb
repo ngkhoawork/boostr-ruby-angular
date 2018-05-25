@@ -7,6 +7,9 @@ class Client < ActiveRecord::Base
   belongs_to :company
   belongs_to :parent_client, class_name: 'Client'
 
+  has_many :spend_agreement_clients
+  has_many :spend_agreements, through: :spend_agreement_clients
+
   has_many :child_clients, class_name: 'Client', foreign_key: :parent_client_id
   has_many :client_members
   has_many :users, through: :client_members
@@ -91,7 +94,7 @@ class Client < ActiveRecord::Base
 
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
-  scope :exclude_ids, -> ids { where.not(id: ids) }
+  scope :exclude_ids, -> ids { where.not(id: ids) if ids.present? }
   scope :by_contact_ids, -> ids { Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id").where("client_contacts.contact_id in (:q)", {q: ids}).order(:name).distinct }
   scope :by_category, -> category_id { where(client_category_id: category_id) if category_id.present? }
   scope :by_subcategory, -> subcategory_id { where(client_subcategory_id: subcategory_id) if subcategory_id.present? }
@@ -110,6 +113,9 @@ class Client < ActiveRecord::Base
   scope :without_related_clients, -> contact_id do
     where.not(id: ClientContact.where(contact_id: contact_id).pluck(:client_id))
   end
+  scope :by_parent_clients, -> ids { where(parent_client_id: ids) if ids.present? }
+  scope :fuzzy_find, -> term { fuzzy_search(term) if term.present? }
+  scope :parent_ids, -> { where.not(parent_client_id: nil).distinct.pluck(:parent_client_id) }
 
   pg_search_scope :search_by_name,
                   against: :name,
@@ -124,23 +130,28 @@ class Client < ActiveRecord::Base
                     }
                   },
                   ranked_by: ':trigram'
-
-  pg_search_scope :fuzzy_search,
-                  against: :name,
-                  using: {
-                    tsearch: {
-                      prefix: true,
-                      any_word: true
-                    },
-                    dmetaphone: {
-                      any_word: true
-                    }
-                  },
-                  ranked_by: ':trigram'
+  
+  pg_search_scope :fuzzy_search, {
+    against: :name,
+    using: {
+      tsearch: {
+        prefix: true,
+        any_word: true
+      },
+      dmetaphone: {
+        any_word: true
+      }
+    },
+    ranked_by: ':trigram'
+  }
 
   pg_search_scope :fuzzy_name_string_search,
                   against: :name,
-                  using: :trigram
+                  using: {
+                    tsearch: {
+                      prefix: true
+                    }
+                  }
 
   ADVERTISER = 10
   AGENCY = 11
@@ -237,6 +248,9 @@ class Client < ActiveRecord::Base
           activities: {
             include: {
               creator: {},
+              client: { only: [:id, :name] },
+              agency: { only: [:id, :name] },
+              deal: { only: [:id, :name] },
               publisher: { only: [:id, :name] },
               contacts: {},
               custom_field: { only: CustomField.allowed_attr_names(company, 'Activity') },
@@ -253,6 +267,9 @@ class Client < ActiveRecord::Base
               creator: {},
               contacts: {},
               custom_field: { only: CustomField.allowed_attr_names(company, 'Activity') },
+              client: { only: [:id, :name] },
+              agency: { only: [:id, :name] },
+              deal: { only: [:id, :name] },
               publisher: { only: [:id, :name] },
               assets: {
                 methods: [

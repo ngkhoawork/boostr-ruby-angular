@@ -19,6 +19,31 @@ RSpec.describe Team, type: :model do
     end
   end
 
+  context 'validation' do
+    describe '#name' do
+      it 'is required' do
+        record = Team.new
+        record.name = ''
+        record.valid?
+        record.errors[:name].should include("can't be blank")
+      end
+    end
+    describe '#recursive_team_assignment_validation' do
+      it 'is not passed' do
+        parent.parent_id = child.id
+        parent.valid?
+        parent.errors[:team].should include("You can't assign your child teams as your parent.")
+      end
+    end
+    describe '#self_parent_assignment_validation' do
+      it 'is not passed' do
+        parent.parent_id = parent.id
+        parent.valid?
+        parent.errors[:team].should include("You can't assign yourself as your parent.")
+      end
+    end
+  end
+
   context '#all_deals_for_time_period' do
     let(:time_period) { create :time_period, company: company }
     let(:parent_member) { create :user, team: parent, company: company }
