@@ -21,7 +21,8 @@ describe SpendAgreement, type: :model do
       it 'assigns clients' do
         spend_agreement
 
-        expect(spend_agreement.reload.clients.order(:created_at)).to eq [advertiser, agency]
+        expect(spend_agreement.reload.clients.order(:created_at)).to include advertiser
+        expect(spend_agreement.reload.clients.order(:created_at)).to include agency
       end
 
       it 'unlinks clients' do
@@ -37,7 +38,9 @@ describe SpendAgreement, type: :model do
 
         spend_agreement.update(client_ids: [advertiser.id, agency.id, new_advertiser.id])
 
-        expect(spend_agreement.reload.clients.order(:created_at).ids).to eq [advertiser.id, agency.id, new_advertiser.id]
+        expect(spend_agreement.reload.clients.order(:created_at).ids).to include advertiser.id
+        expect(spend_agreement.reload.clients.order(:created_at).ids).to include agency.id
+        expect(spend_agreement.reload.clients.order(:created_at).ids).to include new_advertiser.id
       end
 
       it 'removes clients' do
