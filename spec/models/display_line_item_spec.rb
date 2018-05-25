@@ -125,6 +125,34 @@ RSpec.describe DisplayLineItem, type: :model do
     end
   end
 
+  describe '#remove_budgets_out_of_dates' do
+    it 'removes lines outside of flight dates on date change' do
+      display_line_item(start_date: Date.new(2018, 1, 1), end_date: Date.new(2018, 4, 30))
+
+      display_line_item_budgets(4, start_date: Date.new(2018, 2, 1), end_date: Date.new(2018, 2, 28))
+      display_line_item_budgets.last.update(start_date: Date.new(2018, 4, 1), end_date: Date.new(2018, 4, 30))
+      display_line_item_budgets.first.update(start_date: Date.new(2018, 1, 1), end_date: Date.new(2018, 1, 31))
+
+      expect(display_line_item.display_line_item_budgets.count).to be 4
+
+      display_line_item.update(start_date: Date.new(2018, 2, 1), end_date: Date.new(2018, 3, 31))
+
+      expect(display_line_item.display_line_item_budgets.count).to be 2
+    end
+
+    it 'does not remove line item budgets if no date change' do
+      display_line_item(start_date: Date.new(2018, 1, 1), end_date: Date.new(2018, 4, 30))
+
+      display_line_item_budgets(4, start_date: Date.new(2016, 1, 1), end_date: Date.new(2016, 1, 31))
+
+      expect(display_line_item.display_line_item_budgets.count).to be 4
+
+      display_line_item.update(start_date: Date.new(2018, 1, 1))
+
+      expect(display_line_item.display_line_item_budgets.count).to be 4
+    end
+  end
+
   private
 
   def company
