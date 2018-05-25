@@ -26,6 +26,9 @@ describe Users::CompanyInfoSerializer do
     expect(serializer.product_option2_enabled).to eq(true)
     expect(serializer.product_options_enabled).to eq(true)
     expect(serializer.revenue_requests_access).to eq(true)
+    expect(serializer.contracts_enabled).to eq(true)
+    expect(serializer.teams).to eq(teams)
+    expect(serializer.team).to eq(user_team)
   end
 
   private
@@ -38,6 +41,7 @@ describe Users::CompanyInfoSerializer do
     @_company ||= create :company,  forecast_gap_to_quota_positive: true,
                                     influencer_enabled: true,
                                     logi_enabled: true,
+                                    contracts_enabled: true,
                                     enable_net_forecasting: true,
                                     product_options_enabled: true,
                                     product_option1_enabled: true,
@@ -50,6 +54,14 @@ describe Users::CompanyInfoSerializer do
 
   def team
     @_team ||= create :team, leader: leader
+  end
+
+  def teams
+    TeamSerializer.new(user.teams).object
+  end
+
+  def user_team
+    TeamSerializer.new(team).object
   end
 
   def user
