@@ -18,8 +18,12 @@ class Users::CompanyInfoSerializer < Users::BaseSerializer
              :egnyte_authenticated,
              :leads_enabled,
              :revenue_requests_access,
+             :contracts_enabled,
              :user_type,
              :title,
              :win_rate,
              :starting_page
+
+  has_one :team, serializer: TeamSerializer
+  has_many :teams, serializer: TeamSerializer
 end
