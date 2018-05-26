@@ -9,7 +9,9 @@
           %span{'text-in-bold': '', 'text': 'res.details.name', 'lookup': 'query'} 
           %a{'ng-click': '$event.stopPropagation(); showDetail(res);'}
             Go to {{ displayType(res) }}
-            
+        %li.view-all{'ng-if': 'searchResults.length > 0', 'ng-click': 'search(13, query)'}
+          %span View all search results for ‘{{query}}’
+
     %div.auth-wrap
       - if user_signed_in?
         .user-info

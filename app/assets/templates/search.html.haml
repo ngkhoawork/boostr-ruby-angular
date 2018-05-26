@@ -1,13 +1,22 @@
 #global-search.z-styles{infinite: {scroll: 'loadMore()', 'scroll-disabled': 'isLoading || allLoaded', 'scroll-distance': '0.5'}}
   .container-fluid
     .title{'ng-if': 'results && results.length > 0'}
-      Search Results for: 
+      {{count}} Search Results for: 
       %b ’{{query}}’
+      .navigations
+        %span.mr6 Go To:
+        %a{href: '', 'ng-click': 'scrollTo("#accounts-section")'} Accounts
+        |
+        %a{href: '', 'ng-click': 'scrollTo("#contacts-section")'} Contacts
+        |
+        %a{href: '', 'ng-click': 'scrollTo("#deals-section")'} Deals
+        |
+        %a{href: '', 'ng-click': 'scrollTo("#ios-section")'} IOs
     .title{'ng-if': 'results && results.length == 0'}
       No match found for:
       %b ’{{query}}’
 
-  .container-fluid{ 'ng-if': 'clients.length > 0' }
+  #accounts-section.container-fluid{ 'ng-if': 'clients.length > 0' }
     .block
       .title-row.mb10
         %span.title Accounts
@@ -29,7 +38,7 @@
                 %div{ 'ng-repeat': 'member in client.client_members' }
                   {{ member.name + " (" + member.share + "%)" }}
 
-  .container-fluid{ 'ng-if': 'contacts.length > 0' }
+  #contacts-section.container-fluid{ 'ng-if': 'contacts.length > 0' }
     .block
       .title-row.mb10
         %span.title Contacts
@@ -51,7 +60,7 @@
                   {{ client.name }}
               %td.left {{ contact.email }}
 
-  .container-fluid{ 'ng-if': 'deals.length > 0' }
+  #deals-section.container-fluid{ 'ng-if': 'deals.length > 0' }
     .block
       .title-row.mb10
         %span.title Deals
@@ -79,7 +88,7 @@
               %td.left {{ deal.start_date | date: 'M/d/yyyy'}}
               %td.left {{ deal.end_date | date: 'M/d/yyyy'}}
 
-  .container-fluid{ 'ng-if': 'ios.length > 0' }
+  #ios-section.container-fluid{ 'ng-if': 'ios.length > 0' }
     .block
       .title-row.mb10
         %span.title IOs

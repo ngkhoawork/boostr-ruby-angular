@@ -12,15 +12,17 @@
       if query.length == 0
         $scope.searchResults = []
       else if keyCode == 13
+        if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
         $scope.searchResults = []
         $scope.query = query
         $location.url('/search?query=' + encodeURIComponent(query))
       else
-        if searchTimeout then $timeout.cancel(searchTimeout)
+        if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
         searchTimeout = $timeout(() ->
           return if query != $scope.query
           Search.all(query: query, limit: 10, order: 'rank').then (results) ->
-            $scope.searchResults = results
+            return unless searchTimeout
+            $scope.searchResults = _.sortBy results, 'searchable_type'
         , 250)
 
     $scope.displayType = (res) ->

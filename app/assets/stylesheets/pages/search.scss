@@ -2,5 +2,11 @@
   .container-fluid > .title {
     font-size: 26px;
     margin-bottom: 20px;
+
+    .navigations {
+      display: inline;
+      font-size: 14px;
+      margin-left: 40px;
+    }
   }
 }

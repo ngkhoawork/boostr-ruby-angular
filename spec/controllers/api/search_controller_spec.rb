@@ -3,24 +3,32 @@ require 'rails_helper'
 RSpec.describe Api::SearchController, type: :controller do
   before do
     sign_in user
+    create :deal, name: 'test', company: company
+    create :deal, name: 'new deal', company: company, advertiser: advertiser
+    create :deal, name: 'new deal2', company: company, agency: agency
+    create :contact, name: 'test contact', company: company, client: client
+    create :contact, name: 'new contact', company: company, client: client, address: address
+    create :contact, name: 'new contact2', company: company, client: advertiser
+    create :io, name: 'test', company: company
+    create :io, name: 'new io', company: company, advertiser: advertiser
+    create :io, name: 'new io2', company: company, agency: agency
   end
 
-  describe "GET #all" do
+  describe 'GET #all' do
     it 'returns a list of search results' do
-      create :deal, name: 'test', company: company
-      create :deal, name: 'new deal', company: company, advertiser: advertiser
-      create :deal, name: 'new deal2', company: company, agency: agency
-      create :contact, name: 'test contact', company: company, client: client
-      create :contact, name: 'new contact', company: company, client: client, address: address
-      create :contact, name: 'new contact2', company: company, client: advertiser
-      create :io, name: 'test', company: company
-      create :io, name: 'new io', company: company, advertiser: advertiser
-      create :io, name: 'new io2', company: company, agency: agency
-
       get :all, query: 'test', format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
       expect(response_json.length).to eq(11)
+    end
+  end
+
+  describe 'GET #count' do
+    it 'returns search count' do
+      get :count, query: 'test', format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['count']).to eq(11)
     end
   end
 

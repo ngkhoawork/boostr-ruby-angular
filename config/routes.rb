@@ -637,7 +637,8 @@ Rails.application.routes.draw do
       end
     end
 
-    get 'search/:query', to: 'search#all'
+    get 'search', to: 'search#all'
+    get 'search/count', to: 'search#count'
   end
 
   mount Sidekiq::Web => '/sidekiq'
