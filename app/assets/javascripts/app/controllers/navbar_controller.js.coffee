@@ -36,8 +36,8 @@
         when 'Deal'
           'Deal'
 
-    $scope.showDetail = (res) ->
-      url = switch res.searchable_type
+    $scope.detailPage = (res) ->
+      switch res.searchable_type
         when 'Client' 
           'accounts/' + res.details.id
         when 'Contact'
@@ -46,12 +46,26 @@
           'revenue/ios/' + res.details.id
         when 'Deal'
           'deals/' + res.details.id
-      $location.url(url)
 
-    $scope.clearSearch = () ->
-      $timeout () -> 
-        $scope.searchResults = []
-      , 200
+
+    $scope.showDetail = (res) ->
+      if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
+      $scope.searchResults = []
+
+    closest = (element, className) ->
+      if element[0].nodeName == 'HTML'
+          return
+      else if element.hasClass(className)
+          element
+      else
+          closest(element.parent(), className)
+
+    $scope.clearSearch = (event) ->
+      if event
+        element = angular.element(event.originalEvent.explicitOriginalTarget)
+        return if closest(element, 'search-dropdown')
+      if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
+      $scope.searchResults = []
 
     $scope.navbar = [
         {name: 'HOME PAGE', url: '/dashboard'}
