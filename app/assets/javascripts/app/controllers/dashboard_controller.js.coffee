@@ -252,34 +252,29 @@
                         else
                             return item
                     $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.clients[0].name
+                    contactCopy = angular.copy contact
+                    contactCopy.clients = angular.copy updated_contact.clients
+                    contactCopy.client_id = updated_contact.client_id
+                    $scope.contactActionLog = $scope.contactActionLog.filter (log) ->
+                        log.previousContact.id != updated_contact.id
                     $scope.contactActionLog.push({
-                        previousContact: contact,
+                        previousContact: contactCopy,
                         message: updated_contact.clients[0].name
-                    })            
+                    })
 
             $scope.undoAssignContact = (contact) ->
-                previousContact = _.find $scope.unassignedContacts, (item) ->
-                    return item.id == contact.id
-                Contact._update(id: contact.id, contact: contact).then (updated_contact) ->
-                    $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
-                        if (item.id == updated_contact.id)
-                            return updated_contact
-                        else
-                            return item
+                previousContact = angular.copy contact
+                Contact.unassign_account(id: contact.id, client_id: contact.client_id).$promise.then (data) ->
+                    $scope.contactActionLog = $scope.contactActionLog.filter (log) ->
+                        log.previousContact.id != previousContact.id
 
+                    $scope.contactNotification[previousContact.id] = "Unassigned"
+                    $scope.contactActionLog.push({
+                        previousContact: previousContact,
+                        message: ""
+                    })
 
-                    if updated_contact.clients.length > 0
-                        $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.clients[0].name
-                        $scope.contactActionLog.push({
-                            previousContact: previousContact,
-                            message: updated_contact.clients[0].name
-                        })
-                    else
-                        $scope.contactNotification[updated_contact.id] = "Unassigned"
-                        $scope.contactActionLog.push({
-                            previousContact: previousContact,
-                            message: ""
-                        })
+                    $scope.unassignedContacts.push(previousContact)
 
             $scope.getStages = ->
                 Stage.query({active: true, current_team: true}).$promise.then (stages) ->
