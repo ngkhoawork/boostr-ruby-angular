@@ -28,13 +28,16 @@ class Logi::BuildAuthorizationUrl
     request_params.map { |key, value| "#{key}=#{value}" }.join('&')
   end
 
+  private
+
   def request_params
     {
       Username: @user.name,
       Rights: define_user_rights,
       companyID: @company_id.to_s,
       userID: @user.id,
-      userEMAIL: @user.email
+      userEMAIL: @user.email,
+      userType: define_user_type(@user.user_type)
     }
   end
 
@@ -42,4 +45,26 @@ class Logi::BuildAuthorizationUrl
     @user.is?(:superadmin) || @user.is?(:supportadmin) ? 'SuperAdmin' : ''
   end
 
+  def define_user_type type
+    case type
+      when DEFAULT
+        'Default'
+      when SELLER
+        'Seller'
+      when SALES_MANAGER
+        'SalesManager'
+      when ACCOUNT_MANAGER
+        'AccountManager'
+      when MANAGER_ACCOUNT_MANAGER
+        'ManagerAccountManager'
+      when ADMIN
+        'Admin'
+      when EXEC
+        'Exec'
+      when FAKE_USER
+        'FakeUser'
+      else
+        'Default'
+    end
+  end
 end
