@@ -18,7 +18,7 @@
 	%div.undo{ 'ng-if': "contactActionLog.length > 0" }
 		%div{ 'ng-repeat': "log in contactActionLog" }
 			%strong {{log.previousContact.name}}
-			{{log.message ? " assigned to " : "unassigned"}}
-			%strong {{log.message}}.
-			%a{ href:"javascript:void(0)", 'ng-click': "undoAssignContact(log.previousContact)" }
+			{{log.message ? " assigned to " : "unassigned."}}
+			%strong{ ng: { if: 'log.message' } } {{log.message}}.
+			%a{ href:"javascript:void(0)", ng: { click: "undoAssignContact(log.previousContact)", if: 'log.message !== ""' } }
 				Undo
