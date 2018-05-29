@@ -352,7 +352,8 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
     defaults = {
       company_id: company.id,
       object_name: 'io',
-      source: 'operative'
+      source: 'operative',
+      rows_processed: 11
     }
 
     @csv_import_log ||= create :csv_import_log, defaults.merge(opts)

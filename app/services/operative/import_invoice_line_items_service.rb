@@ -119,6 +119,7 @@ class Operative::ImportInvoiceLineItemsService
   def last_import_date
     CsvImportLog
       .where(company_id: company_id, object_name: 'display_line_item_budget', source: 'operative')
+      .successful_task
       .maximum(:created_at)
       &.to_date || -Float::INFINITY
   end
