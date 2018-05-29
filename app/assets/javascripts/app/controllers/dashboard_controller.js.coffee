@@ -253,7 +253,6 @@
                             return item
                     $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.clients[0].name
                     contactCopy = angular.copy contact
-                    contactCopy.clients = angular.copy updated_contact.clients
                     contactCopy.client_id = updated_contact.client_id
                     $scope.contactActionLog = $scope.contactActionLog.filter (log) ->
                         log.previousContact.id != updated_contact.id
@@ -263,18 +262,17 @@
                     })
 
             $scope.undoAssignContact = (contact) ->
-                previousContact = angular.copy contact
-                Contact.unassign_account(id: contact.id, client_id: contact.client_id).$promise.then (data) ->
-                    $scope.contactActionLog = $scope.contactActionLog.filter (log) ->
-                        log.previousContact.id != previousContact.id
+                Contact._update(id: contact.id, contact: contact).then (updatedContact) ->
+                    Contact.unassign_account(id: contact.id, client_id: contact.client_id).$promise.then (unassignedContact) ->
+                        $scope.contactActionLog = $scope.contactActionLog.filter (log) -> log.previousContact.id != unassignedContact.id
 
-                    $scope.contactNotification[previousContact.id] = "Unassigned"
-                    $scope.contactActionLog.push({
-                        previousContact: previousContact,
-                        message: ""
-                    })
+                        $scope.contactNotification[unassignedContact.id] = "Unassigned"
+                        $scope.contactActionLog.push({
+                            previousContact: unassignedContact,
+                            message: ""
+                        })
 
-                    $scope.unassignedContacts.push(previousContact)
+                        $scope.unassignedContacts.push(unassignedContact)
 
             $scope.getStages = ->
                 Stage.query({active: true, current_team: true}).$promise.then (stages) ->
