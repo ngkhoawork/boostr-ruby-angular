@@ -657,10 +657,19 @@
   $scope.findById = (arr, id)->
     _.findWhere arr, id: id
 
+  total_split_share = () ->
+    _.reduce $scope.dealMembers, (sum, dealMember) ->
+      sum + parseInt(dealMember.share)
+    , 0
+
   $scope.updateDealMember = (data) ->
-    DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
-      $scope.setCurrentDeal(deal, true)
-      checkCurrentUserDealShare(deal.members)
+    if total_split_share() > 100
+      data.share = _.find($scope.currentDeal.members, (member) -> member.id == data.id).share
+      $scope.showWarningModal 'Sum of split share on this deal is greater than 100. Update your split % properly.', null
+    else
+      DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
+        $scope.setCurrentDeal(deal, true)
+        checkCurrentUserDealShare(deal.members)
 
   $scope.onEditableBlur = () ->
   $scope.verifyMembersShare = ->
