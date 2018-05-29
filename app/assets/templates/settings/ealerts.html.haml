@@ -23,6 +23,25 @@
                     %label{:for => "show-billing-contact"}
                       %span
               .mb20.pb20.bb-gray
+                .show-budget-options-label
+                  Show Deal Product Monthly Budgets As
+                .show-budget-options
+                  .same-recipients-for
+                    Currency
+                  .show-hide-remainder-form
+                    .switch-remainder-form
+                      %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'ealert.show_budget_as_currency', id: "show-budget-as-currency"}
+                      %label{:for => "show-budget-as-currency"}
+                        %span
+                .show-budget-options
+                  .same-recipients-for
+                    Percentage
+                  .show-hide-remainder-form
+                    .switch-remainder-form
+                      %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'ealert.show_budget_as_percentage', id: "show-budget-as-percentage"}
+                      %label{:for => "show-budget-as-percentage"}
+                        %span
+              .mb20.pb20.bb-gray
                 .specify-the-recipien
                   Specify Recipients
                 .same-recipients-for
@@ -181,15 +200,24 @@
                               %strong Aug 17
                             %td
                               %strong Sep 17
-                          %tr
+                          %tr{'ng-if': 'ealert.show_budget_as_currency'}
                             %td
-                              10%
+                              £20.7K GBP, $25.9K USD
                             %td
-                              40%
+                              £40.2K GBP, $50.2K USD
                             %td
-                              25%
+                              £40.2K GBP, $50.2K USD
                             %td
-                              25%
+                              £38.9K GBP, $48.6K USD
+                          %tr{'ng-if': 'ealert.show_budget_as_percentage'}
+                            %td
+                              15%
+                            %td
+                              29%
+                            %td
+                              29%
+                            %td
+                              28%
                         .product-fields
                           %div{'ng-repeat': 'field in selectedFields | filter: dealProductCfFilter'}
                             %strong
@@ -209,15 +237,24 @@
                               %strong Aug 17
                             %td
                               %strong Sep 17
-                          %tr
+                          %tr{'ng-if': 'ealert.show_budget_as_currency'}
                             %td
-                              10%
+                              £8.9K GBP, $11.1K USD
                             %td
-                              40%
+                              £17.2K GBP, $21.5K USD
                             %td
-                              25%
+                              £17.2K GBP, $21.5K USD
                             %td
-                              25%
+                              £16.7K GBP, $20.8K USD
+                          %tr{'ng-if': 'ealert.show_budget_as_percentage'}
+                            %td
+                              15%
+                            %td
+                              29%
+                            %td
+                              29%
+                            %td
+                              28%
                         .product-fields
                           %div{'ng-repeat': 'field in selectedFields | filter: dealProductCfFilter'}
                             %strong

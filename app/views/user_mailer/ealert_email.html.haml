@@ -83,10 +83,19 @@
                 - @deal.months.each do |month|
                   %td
                     %strong #{Date.new(month[0],month[1]).strftime('%b %y')}
-              %tr
-                - deal_product['deal_product_budgets'].each do |deal_product_budget|
-                  %td
-                    #{deal_product_budget['budget_percentage']}%
+              - if @ealert['show_budget_as_currency']
+                %tr
+                  - deal_product['deal_product_budgets'].each do |deal_product_budget|
+                    %td
+                      #{@deal.currency.curr_symbol}#{number_to_human(deal_product_budget['budget_loc'])}&nbsp;#{@deal.currency.curr_cd}
+                      - if @deal.currency.curr_cd != 'USD'
+                        , $#{number_to_human(deal_product_budget['budget'])}
+                        &nbsp;USD
+              - if @ealert['show_budget_as_percentage']
+                %tr
+                  - deal_product['deal_product_budgets'].each do |deal_product_budget|
+                    %td
+                      #{deal_product_budget['budget_percentage']}%
             - if deal_product['deal_product_fields'].count > 0
               .product-fields{style: 'padding-left: 20px;font-size: 12px;'}
                 - deal_product['deal_product_fields'].each do |deal_product_field|
