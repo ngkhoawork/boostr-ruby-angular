@@ -1,7 +1,8 @@
 class Operative::ImportInvoiceLineItemsService
-  def initialize(company_id, revenue_calculation_pattern, files)
-    @company_id = company_id
-    @revenue_calculation_pattern = revenue_calculation_pattern
+  def initialize(api_config, files)
+    @company_id = api_config.company_id
+    @revenue_calculation_pattern = api_config.revenue_calculation_pattern
+    @skip_not_changed = api_config.skip_not_changed?
     @invoice_line_items = files.fetch(:invoice_line_item)
     @invoices = files.fetch(:invoice)
   end
@@ -17,7 +18,7 @@ class Operative::ImportInvoiceLineItemsService
   end
 
   private
-  attr_reader :company_id, :revenue_calculation_pattern, :invoice_line_items, :invoice_lines_csv_file, :invoices, :invoices_csv_file
+  attr_reader :company_id, :revenue_calculation_pattern, :invoice_line_items, :invoice_lines_csv_file, :invoices, :invoices_csv_file, :skip_not_changed
 
   def open_file(file)
     begin
@@ -69,6 +70,11 @@ class Operative::ImportInvoiceLineItemsService
         next
       end
 
+      if irrelevant_row(row)
+        import_log.count_skipped
+        next
+      end
+
       line_item_budget_csv = build_line_item_budget_csv(row)
 
       if line_item_budget_csv.irrelevant?
@@ -92,6 +98,29 @@ class Operative::ImportInvoiceLineItemsService
     end
 
     import_log.save
+  end
+
+  def irrelevant_row(row)
+    last_modified_date(row[:last_modified_on]) < acceptable_reimport_date
+  end
+
+  def last_modified_date(date)
+    date&.to_date || Date.today
+  end
+
+  def acceptable_reimport_date
+    @acceptable_reimport_date ||= if skip_not_changed
+      last_import_date
+    else
+      -Float::INFINITY
+    end
+  end
+
+  def last_import_date
+    CsvImportLog
+      .where(company_id: company_id, object_name: 'display_line_item_budget', source: 'operative')
+      .maximum(:created_at)
+      &.to_date || -Float::INFINITY
   end
 
   def amend_quotes(line)

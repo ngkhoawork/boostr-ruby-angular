@@ -3,13 +3,11 @@ require 'rails_helper'
 RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
   subject(:subject) {
     Operative::ImportSalesOrdersService.new(
-      company.id,
-      auto_close_deals,
+      api_config,
       {sales_order: sales_order_file, currency: currency_file}
     )
   }
-  let!(:company) { create :company }
-  let(:auto_close_deals) { true }
+
   let(:sales_order_file) { './spec/sales_order_file.csv' }
   let(:currency_file)    { './spec/currency_file.csv' }
   let(:io_csv)           { double() }
@@ -36,6 +34,52 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       auto_close_deals: true,
       exchange_rate_at_close: "1.55"
     }).and_return(io_csv)
+    expect(io_csv).to receive(:valid?).and_return(:true)
+    expect(io_csv).to receive(:perform)
+    subject.perform
+  end
+
+  it 'skips rows that got changed more than a day prior to last import' do
+    api_config.datafeed_configuration_details.update skip_not_changed: true
+
+    csv_import_log(created_at: Date.today - 1.month)
+
+    content_for_files([
+      sales_order_csv(last_modified_on: '2017-06-20 23:17:03'),
+      currency_csv
+    ])
+
+    expect(IoCsv).not_to receive(:new)
+    subject.perform
+  end
+
+  it 'does not skip old rows if option is disabled' do
+    api_config.datafeed_configuration_details.update skip_not_changed: false
+
+    csv_import_log(created_at: Date.today - 1.month)
+
+    content_for_files([
+      sales_order_csv(last_modified_on: '2017-06-20 23:17:03'),
+      currency_csv
+    ])
+
+    expect(IoCsv).to receive(:new).and_return(io_csv)
+    expect(io_csv).to receive(:valid?).and_return(:true)
+    expect(io_csv).to receive(:perform)
+    subject.perform
+  end
+
+  it 'does not skip rows that changed recently' do
+    api_config.datafeed_configuration_details.update skip_not_changed: true
+
+    csv_import_log(created_at: Date.today - 1.month)
+
+    content_for_files([
+      sales_order_csv(last_modified_on: DateTime.now.to_s),
+      currency_csv
+    ])
+
+    expect(IoCsv).to receive(:new).and_return(io_csv)
     expect(io_csv).to receive(:valid?).and_return(:true)
     expect(io_csv).to receive(:perform)
     subject.perform
@@ -134,7 +178,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       expect(import_log.rows_processed).to eq 8
       expect(import_log.rows_imported).to eq 4
       expect(import_log.rows_failed).to eq 2
-      expect(import_log.rows_skipped).to eq 1
+      expect(import_log.rows_skipped).to eq 2
       expect(import_log.error_messages).to eq [{"row"=>6, "message"=>["Io advertiser can't be blank"]}, {"row"=>7, "message"=>["Io name can't be blank"]}]
       expect(import_log.file_source).to eq 'sales_order_file.csv'
       expect(import_log.object_name).to eq 'io'
@@ -195,8 +239,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
   context 'intraday' do
     subject(:subject) {
       Operative::ImportSalesOrdersService.new(
-        company.id,
-        auto_close_deals,
+        api_config,
         {sales_order: sales_order_file}
       )
     }
@@ -288,5 +331,30 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       total_order_value: '5000',
       order_currency_id: 100
     }
+  end
+
+  def company
+    @company ||= create :company
+  end
+
+  def api_config
+    @api_config ||= create :operative_datafeed_configuration, {
+      company: company,
+      datafeed_configuration_details: datafeed_configuration_details
+    }
+  end
+
+  def datafeed_configuration_details
+    @datafeed_configuration_details ||= create :datafeed_configuration_details, auto_close_deals: true
+  end
+
+  def csv_import_log(opts={})
+    defaults = {
+      company_id: company.id,
+      object_name: 'io',
+      source: 'operative'
+    }
+
+    @csv_import_log ||= create :csv_import_log, defaults.merge(opts)
   end
 end

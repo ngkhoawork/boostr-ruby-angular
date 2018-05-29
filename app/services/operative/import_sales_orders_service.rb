@@ -1,7 +1,8 @@
 class Operative::ImportSalesOrdersService
-  def initialize(company_id, auto_close_deals, files)
-    @company_id = company_id
-    @auto_close_deals = auto_close_deals
+  def initialize(api_config, files)
+    @company_id = api_config.company_id
+    @auto_close_deals = api_config.auto_close_deals
+    @skip_not_changed = api_config.skip_not_changed?
     @sales_order = files[:sales_order]
     @currency = files[:currency]
     @currencies_list = {}
@@ -17,7 +18,7 @@ class Operative::ImportSalesOrdersService
 
   private
 
-  attr_reader :company_id, :auto_close_deals, :sales_order, :sales_order_file, :currency, :currency_file, :currencies_list
+  attr_reader :company_id, :auto_close_deals, :sales_order, :sales_order_file, :currency, :currency_file, :currencies_list, :skip_not_changed
 
   def open_file(file)
     File.open(file, 'r:ISO-8859-1')
@@ -70,6 +71,7 @@ class Operative::ImportSalesOrdersService
 
       if line_num == 0
         @headers = CSV.parse_line(line)
+        import_log.count_skipped
         next
       end
 
@@ -81,7 +83,7 @@ class Operative::ImportSalesOrdersService
         next
       end
 
-      if irrelevant_order(row)
+      if irrelevant_row(row)
         import_log.count_skipped
         next
       end
@@ -121,8 +123,30 @@ class Operative::ImportSalesOrdersService
     end
   end
 
-  def irrelevant_order(row)
-    row[:order_status] != 'active_order' || row[:order_start_date].blank? || row[:order_status].try(:downcase) == 'deleted'
+  def irrelevant_row(row)
+    last_modified_date(row[:last_modified_on]) < acceptable_reimport_date ||
+    row[:order_status] != 'active_order' ||
+    row[:order_start_date].blank? ||
+    row[:order_status].try(:downcase) == 'deleted'
+  end
+
+  def last_modified_date(date)
+    date&.to_date || Date.today
+  end
+
+  def acceptable_reimport_date
+    @acceptable_reimport_date ||= if skip_not_changed
+      last_import_date
+    else
+      -Float::INFINITY
+    end
+  end
+
+  def last_import_date
+    CsvImportLog
+      .where(company_id: company_id, object_name: 'io', source: 'operative')
+      .maximum(:created_at)
+      &.to_date || -Float::INFINITY
   end
 
   def build_io_csv(row)

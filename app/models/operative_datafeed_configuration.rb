@@ -7,7 +7,7 @@ class OperativeDatafeedConfiguration < ApiConfiguration
 
   delegate :auto_close_deals, :revenue_calculation_pattern, :product_mapping,
            :exclude_child_line_items, :run_intraday?, :run_fullday?,
-           :company_name, :job_id, to: :datafeed_configuration_details, prefix: false
+           :company_name, :job_id, :skip_not_changed?, to: :datafeed_configuration_details, prefix: false
 
   ALLOWED_RERUN_STATUSES = [
     :complete, :failed, :interrupted, nil

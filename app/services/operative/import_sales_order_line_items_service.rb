@@ -1,9 +1,10 @@
 class Operative::ImportSalesOrderLineItemsService
-  def initialize(company_id, revenue_calculation_pattern, product_mapping, exclude_child_line_items, files)
-    @company_id = company_id
-    @revenue_calculation_pattern = revenue_calculation_pattern
-    @product_mapping = product_mapping
-    @exclude_child_line_items = exclude_child_line_items
+  def initialize(api_config, files)
+    @company_id = api_config.company_id
+    @revenue_calculation_pattern = api_config.revenue_calculation_pattern
+    @product_mapping = api_config.product_mapping
+    @exclude_child_line_items = api_config.exclude_child_line_items
+    @skip_not_changed = api_config.skip_not_changed?
     @sales_order_line_items = files.fetch(:sales_order_line_items)
     @invoice_line_items = files.fetch(:invoice_line_item)
     @marked_to_delete = []
@@ -24,15 +25,15 @@ class Operative::ImportSalesOrderLineItemsService
   private
   attr_reader :company_id, :revenue_calculation_pattern, :sales_order_line_items,
               :invoice_line_items, :invoice_csv_file, :sales_order_csv_file, :invoice_csv_file,
-              :exclude_child_line_items, :marked_to_delete
+              :exclude_child_line_items, :marked_to_delete, :skip_not_changed
 
   def open_file(file)
     begin
       File.open(file, 'r:ISO-8859-1')
-    rescue Exception => e
+    rescue Exception => error
       import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item', source: 'operative')
       import_log.set_file_source(file)
-      import_log.log_error [e.class.to_s, e.message]
+      import_log.log_error [error.class.to_s, error.message]
       import_log.save
     end
   end
@@ -83,7 +84,7 @@ class Operative::ImportSalesOrderLineItemsService
         next
       end
 
-      if irrelevant_line_item?(row)
+      if irrelevant_row(row)
         mark_for_deletion(row)
         import_log.count_skipped
         next
@@ -136,12 +137,32 @@ class Operative::ImportSalesOrderLineItemsService
     )
   end
 
-  def irrelevant_line_item?(row)
+  def irrelevant_row(row)
+    last_modified_date(row[:last_modified_on]) < acceptable_reimport_date ||
     row[:line_item_status].try(:downcase) != 'sent_to_production' ||
     parent_line_item_presence(row[:parent_line_item_id]) ||
     !row[:quantity].present? ||
     !row[:net_cost].present? ||
     row[:net_cost].to_f.zero?
+  end
+
+  def last_modified_date(date)
+    date&.to_date || Date.today
+  end
+
+  def acceptable_reimport_date
+    @acceptable_reimport_date ||= if skip_not_changed
+      last_import_date
+    else
+      -Float::INFINITY
+    end
+  end
+
+  def last_import_date
+    CsvImportLog
+      .where(company_id: company_id, object_name: 'display_line_item', source: 'operative')
+      .maximum(:created_at)
+      &.to_date || -Float::INFINITY
   end
 
   def mark_for_deletion(row)
