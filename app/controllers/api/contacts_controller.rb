@@ -125,7 +125,7 @@ class Api::ContactsController < ApplicationController
     client_contact = contact.client_contacts.new(client_id: params[:client_id], primary: false)
 
     if client_contact.save
-      render nothing: true
+      render json: client_contact.contact, serializer: ContactSerializer
     else
       render json: { errors: client_contact.errors.messages }, status: :unprocessable_entity
     end
@@ -134,8 +134,9 @@ class Api::ContactsController < ApplicationController
   def unassign_account
     client_contact = contact.client_contacts.find_by(client_id: params[:client_id])
 
-    client_contact.destroy
-    render nothing: true
+    client_contact.destroy!
+
+    render json: client_contact.contact, serializer: ContactSerializer
   end
 
   private

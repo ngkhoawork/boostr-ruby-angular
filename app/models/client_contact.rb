@@ -12,6 +12,7 @@ class ClientContact < ActiveRecord::Base
   delegate :name, to: :account_dimension, prefix: true
 
   after_destroy  do
+    contact.update(client: nil) if contact.client_contacts.count == 0
   end
   def as_json(options = {})
     super(options.deep_merge(include: {
