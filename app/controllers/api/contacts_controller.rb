@@ -132,7 +132,7 @@ class Api::ContactsController < ApplicationController
   end
 
   def unassign_account
-    client_contact = contact.client_contacts.find_by(client_id: params[:client_id])
+    client_contact = contact.client_contacts.find_by!(client_id: params[:client_id])
 
     client_contact.destroy!
 
