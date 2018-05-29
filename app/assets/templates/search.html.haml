@@ -1,7 +1,7 @@
 #global-search.z-styles{infinite: {scroll: 'loadMore()', 'scroll-disabled': 'isLoading || allLoaded', 'scroll-distance': '0.5'}}
   .container-fluid
     .title{'ng-if': 'results && results.length > 0'}
-      {{count}} Search Results for: 
+      {{count}} Search Result{{count > 1 ? 's' : ''}} for: 
       %b ’{{query}}’
       .navigations
         %span.mr6 Go To:
