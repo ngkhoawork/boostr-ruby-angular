@@ -1,12 +1,14 @@
 @directives.directive 'zMappingTextInput', [
-  ->
-    link: linkFunc
+  '$document'
+  ($document) ->
     scope: { messageText: '=', fieldMapping: '=' }
     templateUrl: 'directives/mapping-text-input.html'
+    link: ($scope, element, attrs) ->
+      linkFunc($scope, element, $document)
 ]
 
-linkFunc = (scope, element) ->
-  textarea = element.find('input.target')
+linkFunc = (scope, element, document) ->
+  textarea = element.find('textarea.target')
   searchInput = element.find('input.search-field')
   modalWindow = $('#workflow-form-modal')
   dropdown = element.find('ul.dropdown-menu')
@@ -16,8 +18,18 @@ linkFunc = (scope, element) ->
   scope.search = ''
   cursorPosition = textarea.val().length
 
+  outsideClick = ->
+    scope.showSearch = false
+    scope.$apply()
+    return
+
+  document.bind 'click', outsideClick
+
+  scope.$on '$destroy', -> document.unbind 'click', outsideClick
+
   scope.toogleSearch = ->
     scope.showSearch = !scope.showSearch
+    event.stopPropagation()
     return
 
   modalWindow.on 'click', (event) ->
@@ -40,6 +52,9 @@ linkFunc = (scope, element) ->
 
     scope.messageText = output
     cursorPosition = cursorPosition + mapping.length
+
+  scope.preventOutsideClick = ->
+    event.stopPropagation()
 
   scope.checkCursorPosition = ->
     cursorPosition = textarea.prop("selectionStart")
