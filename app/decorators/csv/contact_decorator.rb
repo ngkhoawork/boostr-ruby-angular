@@ -65,6 +65,10 @@ class Csv::ContactDecorator
     @address ||= contact&.address
   end
 
+  def created_date
+    contact.created_at.strftime('%m/%d/%Y')
+  end
+
   private
 
   attr_reader :contact
