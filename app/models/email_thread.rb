@@ -31,10 +31,13 @@ class EmailThread < ActiveRecord::Base
   end
 
   def self.thread_list current_user_id, thread_ids
-    threads(current_user_id, thread_ids).as_json.each_with_object({}) { |thread, result|
-      result[thread['thread_id']] = thread.merge! last_opened_email thread
-      result[thread['thread_id']].except! 'location', 'rn', 'ip', 'device', 'opened_at', 'is_gmail'
+    threads(current_user_id, thread_ids).each_with_object({}){ |thread, result|
+      result[thread['thread_id']] = thread.parsed_json.merge! last_opened_email thread
     }
+  end
+
+  def parsed_json
+    self.as_json(only: [:thread_id, :thread_guid, :email_opens_count])
   end
 
   def last_five_opens
