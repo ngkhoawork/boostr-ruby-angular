@@ -28,7 +28,6 @@ describe DealMember, type: :model do
 
   describe 'checks if total split share on deal is less than equal to 100' do
     before do
-      deal
       create :deal_member, deal: deal, user: parent_team_member, share: 10
     end
 
@@ -41,11 +40,10 @@ describe DealMember, type: :model do
     end
 
     context 'when update member' do
-      let!(:deal_member) { create :deal_member, deal: deal, user: child_team_member, share: 90 }
+      let(:deal_member) { create :deal_member, deal: deal, user: child_team_member, share: 90 }
 
       it 'reset 0 when it is greater than 100' do
-        deal_member.share = 100
-        deal_member.save!
+        deal_member.update(share: 100)
         expect(deal.deal_members.count).to eq(2)
         expect(deal.deal_members.sum(:share)).to eq(0)
       end
