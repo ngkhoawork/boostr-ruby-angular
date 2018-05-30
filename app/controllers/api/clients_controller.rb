@@ -5,31 +5,9 @@ class Api::ClientsController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        if params[:name].present?
-           results = suggest_clients
-        else
-          results = clients
-                      .by_type_id(params[:client_type_id])
-                      .by_category(params[:client_category_id])
-                      .by_region(params[:client_region_id])
-                      .by_segment(params[:client_segment_id])
-                      .by_city(params[:city])
-                      .by_last_touch(params[:start_date], params[:end_date])
-                      .by_name(params[:search])
-                      .order(:name)
-                      .preload(:address, :client_member_info, :latest_advertiser_activity, :latest_agency_activity)
-                      .distinct
-        end
-
-        if params[:owner_id]
-          client_ids = Client.joins("INNER JOIN client_members ON clients.id = client_members.client_id").where("clients.company_id = ? AND client_members.user_id = ?", company.id, params[:owner_id]).pluck(:client_id)
-          results = results.by_ids(client_ids)
-        end
-
-        response.headers['X-Total-Count'] = results.count.to_s
-        results = results.limit(limit).offset(offset)
-        render json: results,
-          each_serializer: ::Clients::ClientListSerializer,
+        response.headers['X-Total-Count'] = filtered_clients.count.to_s
+        render json: filtered_clients.limit(limit).offset(offset),
+            each_serializer: ::Clients::ClientListSerializer,
             advertiser: Client.advertiser_type_id(company),
             agency: Client.agency_type_id(company),
             categories: category_options
@@ -39,7 +17,7 @@ class Api::ClientsController < ApplicationController
         require 'timeout'
         begin
           status = Timeout::timeout(120) {
-            send_data company.clients.to_csv(company), filename: "clients-#{Date.today}.csv"
+            send_data filtered_clients.to_csv(company), filename: "clients-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return
@@ -395,6 +373,33 @@ class Api::ClientsController < ApplicationController
     end
 
     @suggest_clients
+  end
+
+  def filtered_clients
+    return @_filtered_clients if @_filtered_clients
+
+    if params[:name].present?
+      @_filtered_clients = suggest_clients
+    else
+      @_filtered_clients = clients
+                  .by_type_id(params[:client_type_id])
+                  .by_category(params[:client_category_id])
+                  .by_region(params[:client_region_id])
+                  .by_segment(params[:client_segment_id])
+                  .by_city(params[:city])
+                  .by_last_touch(params[:start_date], params[:end_date])
+                  .by_name(params[:search])
+                  .order(:name)
+                  .preload(:address, :client_member_info, :latest_advertiser_activity, :latest_agency_activity)
+                  .distinct
+    end
+
+    if params[:owner_id]
+      client_ids = Client.joins("INNER JOIN client_members ON clients.id = client_members.client_id").where("clients.company_id = ? AND client_members.user_id = ?", company.id, params[:owner_id]).pluck(:client_id)
+      @_filtered_clients = @_filtered_clients.by_ids(client_ids)
+    end
+
+    @_filtered_clients
   end
 
   def connected_client_contacts_relation
