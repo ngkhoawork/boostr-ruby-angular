@@ -114,6 +114,8 @@ class Api::EalertsController < ApplicationController
       :same_all_stages,
       :delay,
       :show_billing_contact,
+      :show_budget_as_currency,
+      :show_budget_as_percentage,
       :budget,
       :flight_date,
       :agency,
