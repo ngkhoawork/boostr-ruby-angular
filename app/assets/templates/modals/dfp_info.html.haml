@@ -1,11 +1,8 @@
 #dfp-info-modal.popup-modal
   .popup-modal-header.info-text
-    .status_ok{ng: {if: 'resp.status == "ok"'}}
+    .status_ok
       %i.fa.fa-check-circle-o
       Info
-    .status_error{ng: {if: 'resp.status != "ok"'}}
-      %i.fa.fa-stop-circle-o
-      Error
     %span.close-btn{'ng-click': 'cancel()'}
   .popup-modal-body
     %h5 {{resp.message}}
