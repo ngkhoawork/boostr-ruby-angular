@@ -13,7 +13,7 @@
     if options.allUsers
       options.allUsers.forEach (exictUser) ->
         if exictUser.email == $scope.user.email
-          $scope.errors.email = ['Such email is already exist']
+          $scope.errors.email = ['Email already exists']
     index = $scope.user.roles.indexOf('admin')
     if ($scope.user.is_admin)
       if (index == -1)
