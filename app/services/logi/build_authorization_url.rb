@@ -61,8 +61,6 @@ class Logi::BuildAuthorizationUrl
         'Admin'
       when EXEC
         'Exec'
-      when FAKE_USER
-        'FakeUser'
       else
         'Default'
     end
