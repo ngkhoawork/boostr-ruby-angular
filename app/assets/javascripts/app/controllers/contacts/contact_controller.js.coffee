@@ -7,6 +7,7 @@
         $scope.contactCfNames = []
         $scope.relatedAccounts = []
         $scope.activitiesOrder = '-happened_at'
+        $scope._scope = -> this
 
         (getContact = ->
             Contact.getContact($routeParams.id).then (contact) ->
@@ -179,6 +180,18 @@
                     $scope.reminderOptions.editMode = true
                 , (err) ->
                     $scope.reminderOptions.buttonDisabled = false
+
+        $scope.isUrlValid = (url) ->
+            regexp = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?/
+            regexp.test url
+
+        $scope.getUrlHostname = (url) ->
+            a = document.createElement 'a'
+            a.href = $scope.fixUrl url
+            a.hostname
+
+        $scope.fixUrl = (url) ->
+            if url && url.search('//') == -1 then return '//' + url else url     
 
         $scope.$on 'updated_contacts', getContact
         $scope.$on 'contact_client_assigned', getRelated

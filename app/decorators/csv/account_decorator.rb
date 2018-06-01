@@ -8,7 +8,7 @@ class Csv::AccountDecorator
     REQUIRED_OPTIONS.each { |opt_name| raise "#{opt_name} option must be present" unless @opts[opt_name] }
   end
 
-  delegate :id, :name, :website, to: :@record
+  delegate :id, :name, :website, :legacy_id, to: :@record
 
   def type
     type_id

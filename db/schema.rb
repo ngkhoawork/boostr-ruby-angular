@@ -773,6 +773,16 @@ ActiveRecord::Schema.define(version: 20180420000253) do
     t.decimal  "number_4_dec8",   precision: 15, scale: 4
     t.decimal  "number_4_dec9",   precision: 15, scale: 4
     t.decimal  "number_4_dec10",  precision: 15, scale: 4
+    t.string   "link1"
+    t.string   "link2"
+    t.string   "link3"
+    t.string   "link4"
+    t.string   "link5"
+    t.string   "link6"
+    t.string   "link7"
+    t.string   "link8"
+    t.string   "link9"
+    t.string   "link10"
   end
 
   add_index "contact_cfs", ["company_id"], name: "index_contact_cfs_on_company_id", using: :btree

@@ -28,6 +28,7 @@
         { name: 'Boolean', value: 'boolean' }
         { name: 'Percentage', value: 'percentage' }
         { name: 'Dropdown', value: 'dropdown' }
+        { name: 'Link', value: 'link' }
       ]
 
       @all = (params) ->

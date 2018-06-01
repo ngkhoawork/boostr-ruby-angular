@@ -24,7 +24,8 @@ class ContactCfName < ActiveRecord::Base
     integer:      10,
     boolean:      10,
     percentage:   10,
-    dropdown:     10
+    dropdown:     10,
+    link:         10
   }
 
   private
