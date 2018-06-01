@@ -15,6 +15,17 @@ RSpec.describe DealProduct, type: :model do
     end
   end
 
+  describe '#create_product_budgets' do
+    it 'creates product budgets for the time period' do
+      deal_product = create :deal_product, deal: deal, product: product, budget: 1_000
+      deal_product_budgets = deal_product.deal_product_budgets
+      expect(deal_product_budgets.count).to eq(2)
+      expect(deal_product_budgets.map(&:start_date)).to eq([deal.start_date, Date.new(2015, 8, 1)])
+      expect(deal_product_budgets.map(&:end_date)).to eq([Date.new(2015, 7, 31), deal.end_date])
+      expect(deal_product_budgets.map(&:budget)).to eq([94, 906])
+    end
+  end
+
   describe '#update_product_budgets' do
     it 'splits total budget over month and updates product budgets' do
       deal_product.update(budget: 90_000)
