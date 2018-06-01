@@ -1512,7 +1512,7 @@ class Deal < ActiveRecord::Base
     if notification.present?
       recipients = notification.recipients_arr
 
-      UserMailer.close_email(recipients, self).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+      UserMailer.close_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
     end
   end
 
@@ -1523,7 +1523,8 @@ class Deal < ActiveRecord::Base
 
       recipients = notification.recipients_arr
 
-      UserMailer.lost_deal_email(recipients, self).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+      UserMailer.lost_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+
     end
   end
 
