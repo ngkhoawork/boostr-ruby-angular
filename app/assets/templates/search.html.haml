@@ -13,7 +13,7 @@
         |
         %a{href: '', 'ng-click': 'scrollTo("#ios-section")'} IOs
         |
-        %a{href: '', 'ng-click': 'scrollTo("#activities-section")'} Activity
+        %a{href: '', 'ng-click': 'scrollTo("#activities-section")'} Activities
     .title{'ng-if': 'results && results.length == 0'}
       No match found for:
       %b ’{{query}}’
@@ -119,7 +119,7 @@
   #activities-section.container-fluid{ 'ng-if': 'activities.length > 0' }
     #activity-feed.block
       .title-row.mb20
-        %span.title Activity
+        %span.title Activities
       %div.activity-item{'ng-repeat': 'activity in activities'}
         %div.activity-header
           %i.activity-icon.mr8.fa{'class': '{{activity.activity_type.css_class}}'}

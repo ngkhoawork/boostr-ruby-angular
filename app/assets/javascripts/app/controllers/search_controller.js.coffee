@@ -1,6 +1,6 @@
 @app.controller 'SearchController',
-['$scope', '$location', '$timeout', 'Search', '$q', '$modal', 'Activity',
-( $scope,   $location,   $timeout,   Search,   $q,   $modal,   Activity) ->
+['$scope', '$location', '$timeout', 'Search', '$q', '$modal', 'Activity', '$sce', 
+( $scope,   $location,   $timeout,   Search,   $q,   $modal,   Activity,   $sce) ->
     $scope.query = $location.search().query
     $scope.clients = []
     $scope.contacts = []
@@ -80,12 +80,33 @@
             activity
           options: ->
             null
+      $scope.modalInstance.result.then (updatedActivity) ->
+        return unless updatedActivity
+        index = $scope.activities.indexOf(activity)
+        $scope.activities.splice(index, 1, updatedActivity)
 
     $scope.deleteActivity = (activity) ->
       if confirm('Are you sure you want to delete the activity?')
         Activity.delete(activity).then () ->
           index = $scope.activities.indexOf(activity)
           $scope.activities.splice(index, 1)
+
+    $scope.isTextHasTags = (str) -> 
+      /<[a-z][\s\S]*>/i.test(str)
+
+    $scope.getHtml = (html) ->
+      return $sce.trustAsHtml(html)
+
+    $scope.showEmailsModal = (activity) ->
+      $scope.modalInstance = $modal.open
+        templateUrl: 'modals/activity_emails.html'
+        size: 'email'
+        controller: 'ActivityEmailsController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          activity: ->
+            activity
 
     getCount()
     getData()
