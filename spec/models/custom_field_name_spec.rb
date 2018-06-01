@@ -19,10 +19,20 @@ RSpec.describe CustomFieldName, type: :model do
         expect(build_custom_field_name(position: 2)).to be_valid
       end
 
-      it 'not valid with not uniq position' do
-        create_custom_field_name(position: 1)
+      it 'valid with non uniq position in different companies with one subject_type' do
+        create_custom_field_name(position: 1, subject_type: 'Ssp')
 
-        expect(build_custom_field_name(position: 1)).not_to be_valid
+        new_custom_field = build_custom_field_name(position: 1,
+                                                   company: create(:company),
+                                                   subject_type: 'Ssp')
+
+        expect(new_custom_field).to be_valid
+      end
+
+      it 'not valid with not uniq position in one company with one subject type' do
+        create_custom_field_name(position: 1, subject_type: 'Ssp')
+
+        expect(build_custom_field_name(position: 1, subject_type: 'Ssp')).not_to be_valid
       end
     end
 

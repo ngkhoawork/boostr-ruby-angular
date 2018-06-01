@@ -7,7 +7,9 @@ class CustomFieldName < ActiveRecord::Base
   validates :subject_type, inclusion: { in: :allowed_subject_types }
   validates :field_type, presence: true, inclusion: { in: :allowed_field_types }
   validates :field_label, presence: true
-  validates :position, presence: true, numericality: true, uniqueness: { scope: :company }
+  validates :position, uniqueness: { scope: [:subject_type, :company],
+                                     message: 'Custom field name should be unique' },
+                       presence: true, numericality: true
   validate  :ensure_allowed_number_of_fields_is_not_exceeded
 
   before_validation :assign_column_type

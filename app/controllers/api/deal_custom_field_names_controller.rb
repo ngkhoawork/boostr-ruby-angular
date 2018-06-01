@@ -74,7 +74,7 @@ class Api::DealCustomFieldNamesController < ApplicationController
   end
 
   def for_sum_field_type?
-    deal_custom_field_name_params[:field_type] == 'sum'
+    deal_custom_field_name_params[:field_type].eql? 'sum'
   end
 
   def deal_custom_field_names

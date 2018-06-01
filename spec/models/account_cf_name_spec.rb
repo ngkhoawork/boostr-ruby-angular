@@ -19,7 +19,15 @@ RSpec.describe AccountCfName, type: :model do
         expect(build_account_custom_field_name(position: 2)).to be_valid
       end
 
-      it 'not valid with not uniq position' do
+      it 'valid with non uniq position in different companies' do
+        create_account_custom_field_name(position: 1)
+
+        new_custom_field = build_account_custom_field_name(position: 1, company: create(:company))
+
+        expect(new_custom_field).to be_valid
+      end
+
+      it 'not valid with not uniq position in one company' do
         create_account_custom_field_name(position: 1)
 
         expect(build_account_custom_field_name(position: 1)).not_to be_valid
