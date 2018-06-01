@@ -63,9 +63,10 @@
       transformData = (data) ->
         grouped = _.groupBy data, 'name'
         arr = _.map grouped, (values, name) ->
+          id = values[0].advertiser_id if values && values[0] && values[0].advertiser_id
           valuesByDate = _.mapObject (_.groupBy values, 'date'), (val) -> val[0] && val[0].sum
           values = _.map $scope.months, (month) -> parseInt(valuesByDate[month.date]) || null
-          {name: name, values: values, total: _.reduce values, ((sum, val) -> sum += val || 0), 0}
+          {id: id, name: name, values: values, total: _.reduce values, ((sum, val) -> sum += val || 0), 0}
         totalValues = _.map $scope.months, (m, i) -> _.reduce arr, ((sum, item) -> sum += item.values[i] || 0), 0
         arr.push {name: 'Total', values: totalValues, total: _.reduce totalValues, ((sum, val) -> sum += val || 0), 0}
         arr

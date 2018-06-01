@@ -57,7 +57,7 @@
               %tr{'ng-repeat': 'advertiser in spendByAdvertisers', 'ng-class': '{total: $last}'}
                 %td{'ng-if': '$last'} {{advertiser.name}}
                 %td{'ng-if': '!$last'}
-                  %a{href: '', 'ng-href': '#'} {{advertiser.name}}
+                  %a{href: '', 'ng-href': '/accounts/{{ advertiser.id }}', target: '_blank'} {{advertiser.name}}
                 %td{'ng-repeat': 'val in advertiser.values track by $index'}
                   {{val ? (val | currency: '$' : '0') : '-'}}
                 %td.total
