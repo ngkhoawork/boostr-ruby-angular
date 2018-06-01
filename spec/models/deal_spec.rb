@@ -491,18 +491,6 @@ describe Deal do
     end
   end
 
-  describe '#reset_products' do
-    let!(:deal) { create :deal }
-    let!(:product) { create :product }
-    let!(:deal_product) { create :deal_product, deal: deal, product: product }
-
-    it 'deletes and recreates deal_product_budgets based on the start or end date changing' do
-      expect do
-        deal.update_attributes(end_date: Date.new(2015, 9, 29))
-      end.to change(DealProductBudget, :count).by(1)
-    end
-  end
-
   describe '#generate_deal_members' do
     let(:client) { create :client }
     let!(:client_role_owner) { create :option, field: client_role_field(company), name: "Owner" }

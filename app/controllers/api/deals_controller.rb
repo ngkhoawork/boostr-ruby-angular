@@ -640,6 +640,7 @@ class Api::DealsController < ApplicationController
         :closed_reason_text,
         :created_at,
         :lead_id,
+        :freezed,
         :created_from,
         {
             values_attributes: [

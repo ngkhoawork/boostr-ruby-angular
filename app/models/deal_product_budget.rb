@@ -28,6 +28,7 @@ class DealProductBudget < ActiveRecord::Base
     joins(deal_product: { deal: :stage })
     .where('(deals.open IS true) OR (stages.open IS false AND stages.probability=0)')
   end
+  scope :by_oldest, -> { order(:start_date) }
 
   validates :start_date, :end_date, presence: true
 
