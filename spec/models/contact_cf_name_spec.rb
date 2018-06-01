@@ -7,22 +7,63 @@ RSpec.describe ContactCfName, type: :model do
   end
 
   context 'validations' do
-    it { should validate_presence_of(:field_type) }
-
-    context 'empty slots validation' do
-      it 'is valid if there is space' do
-        cf_name = build :contact_cf_name, field_type: 'note'
-
-        expect(cf_name).to be_valid
+    describe 'presence' do
+      it 'valid when field_type present' do
+        expect(build_contact_custom_field_name(field_type: 'text')).to be_valid
       end
 
-      it 'is invalid when there is no space' do
-        create_list :contact_cf_name, 10, field_type: 'note', company: company
+      it 'not valid when field_type absent' do
+        expect(build_contact_custom_field_name(field_type: nil)).not_to be_valid
+      end
+    end
 
-        cf_name = build :contact_cf_name, field_type: 'note', company: company
+    describe 'uniqueness' do
+      it 'valid with uniq position' do
+        contact_cf_name(position: 1)
+
+        expect(build_contact_custom_field_name(position: 2)).to be_valid
+      end
+
+      it 'not valid with not uniq position' do
+        contact_cf_name(position: 1)
+
+        expect(build_contact_custom_field_name(position: 1)).not_to be_valid
+      end
+    end
+
+    describe 'numericality' do
+      it 'valid when position is numericality' do
+        expect(build_contact_custom_field_name(position: 1)).to be_valid
+      end
+
+      it 'not valid when position is not numericality' do
+        expect(build_contact_custom_field_name(position: 'first')).not_to be_valid
+      end
+    end
+
+    describe 'amount of custom fields by field type' do
+      it 'valid when field limit has not exceeded' do
+        contact_cf_names(9, field_type: 'text')
+
+        expect(build_contact_custom_field_name(field_type: 'text')).to be_valid
+      end
+
+      it 'not valid when field limit has exceeded' do
+        contact_cf_names(10, field_type: 'text')
+        cf_name = build_contact_custom_field_name(field_type: 'text')
 
         expect(cf_name).not_to be_valid
-        expect(cf_name.errors.full_messages).to eql(["Field type Note reached it's limit of 10"])
+        expect(cf_name.errors.full_messages).to eql(["Field type Text reached it's limit of 10"])
+      end
+    end
+
+    describe 'field type permitted' do
+      it 'valid when field type present in our list' do
+        expect(build_contact_custom_field_name(field_type: 'text')).to be_valid
+      end
+
+      it 'not valid when field type present but do not exist in our list' do
+        expect(build_contact_custom_field_name(field_type: 'string')).not_to be_valid
       end
     end
   end
@@ -65,39 +106,29 @@ RSpec.describe ContactCfName, type: :model do
     end
   end
 
-  context 'before_create' do
-    it 'sets field_index automatically' do
-      contact_cf_names(7, field_type: 'dropdown')
+  describe 'before create' do
+    describe 'assign index' do
+      it 'by automatically' do
+        cf_names = contact_cf_names(3, field_type: 'text')
 
-      expect(contact_cf_names.map(&:field_index))
-      .to eql [1, 2, 3, 4, 5, 6, 7]
-    end
+        expect(cf_names.map(&:field_index)).to eql([1, 2, 3])
+      end
 
-    it 'allocates freed up slots' do
-      contact_cf_names(10, field_type: 'datetime')
+      it 'set to the free index' do
+        cf_names = contact_cf_names(3, field_type: 'text')
 
-      new_cf = build :contact_cf_name, field_type: 'datetime', company: company
+        cf_names.second.destroy
 
-      expect(new_cf).not_to be_valid
-
-      contact_cf_names.third.destroy
-
-      expect(new_cf).to be_valid
-
-      new_cf.save
-
-      expect(new_cf.field_index).to be 3
-      expect(company.contact_cf_names.pluck(:field_index))
-      .to eql [1, 2, 4, 5, 6, 7, 8, 9, 10, 3]
+        expect(contact_cf_name(field_type: 'text').field_index).to eql(2)
+      end
     end
   end
-
 
   context 'after_create' do
     it 'updates company ContactCfs with field name' do
       contact_cf(note1: 2, contact: contact)
 
-      expect(contact_cf.note1).to eql "2"
+      expect(contact_cf.note1).to eql '2'
 
       contact_cf_name(field_type: 'note')
 
@@ -105,27 +136,27 @@ RSpec.describe ContactCfName, type: :model do
     end
   end
 
-  def contact_cf_name(opts={})
-    opts.merge! company: company
-    @_contact_cf_name ||= create :contact_cf_name, opts
+  def contact_cf_name(attrs = {})
+    @_contact_cf_name ||= create :contact_cf_name, company: company, **attrs
   end
 
-  def contact_cf(opts={})
-    opts.merge! company: company
-    @_contact_cf ||= create :contact_cf, opts
+  def build_contact_custom_field_name(attrs = {})
+    build :contact_cf_name, company: company, **attrs
   end
 
-  def contact_cf_names(amount=2, opts={})
-    opts.merge! company: company
-    @_contact_cf_names ||= create_list :contact_cf_name, amount, opts
+  def contact_cf(attrs = {})
+    @_contact_cf ||= create :contact_cf, company: company, **attrs
+  end
+
+  def contact_cf_names(amount = 2, attrs = {})
+    @_contact_cf_names ||= create_list :contact_cf_name, amount, company: company, **attrs
   end
 
   def company
     @_company ||= create :company
   end
 
-  def contact(opts={})
-    opts.merge! company: company
-    @_contact ||= create :contact, opts
+  def contact(attrs = {})
+    create :contact, company: company, **attrs
   end
 end

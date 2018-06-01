@@ -28,7 +28,7 @@
       .form-group{ ng: { if: 'formType == "New"', class:'{error: errors.field_type}' } }
         .row
           .col-xs-12
-            %span.error-text {{errors.field_type}}
+            %span.error-text {{errors.field_type[0]}}
             %label.control-label{ for: 'field_type' }
               Field Type
               %span.star *
@@ -51,7 +51,7 @@
       .form-group{ ng: { class:'{error: errors.field_label}'} }
         .row
           .col-xs-12
-            %span.error-text {{errors.field_label}}
+            %span.error-text {{errors.field_label[0]}}
             %label.control-label{ for: 'field_label' }
               Field Label
               %span.star *
@@ -59,7 +59,7 @@
       .form-group{ ng: { class:'{error: errors.position}'} }
         .row
           .col-xs-12
-            %span.error-text {{errors.position}}
+            %span.error-text {{errors.position[0]}}
             %label.control-label{ for: 'position' }
               Position
               %span.star *

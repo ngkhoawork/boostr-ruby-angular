@@ -59,8 +59,8 @@ describe 'PublisherCustomFieldName' do
     attributes_for :publisher_custom_field_name
   end
 
-  def publisher_custom_field_name(opts={})
-    company.publisher_custom_field_names.new(valid_publisher_custom_field_name_params.merge(opts))
+  def publisher_custom_field_name(attrs = {})
+    company.publisher_custom_field_names.new(valid_publisher_custom_field_name_params.merge(attrs))
   end
 
   def company

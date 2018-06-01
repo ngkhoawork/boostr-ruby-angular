@@ -12,24 +12,24 @@ class PublisherCustomFieldName < ActiveRecord::Base
   after_create :remove_custom_fields_values
 
   scope :by_company, -> (id) { where(company_id: id) }
-  scope :by_type,  -> type { where(field_type: type) }
-  scope :by_index, -> field_index { where(field_index: field_index) }
+  scope :by_type, -> (type) { where(field_type: type) }
+  scope :by_index, -> (field_index) { where(field_index: field_index) }
   scope :order_by_position, -> { order(:position) }
 
   INDEX_FOR_FIRST_CF = 1
-  FIELD_LIMITS = {
-    currency: 7,
-    text: 5,
-    note: 2,
-    datetime: 7,
-    number: 7,
+  FIELD_LIMITS       = {
+    currency:     7,
+    text:         5,
+    note:         2,
+    datetime:     7,
+    number:       7,
     number_4_dec: 7,
-    integer: 7,
-    boolean: 3,
-    percentage: 5,
-    dropdown: 7,
-    sum: 7,
-    link: 7
+    integer:      7,
+    boolean:      3,
+    percentage:   5,
+    dropdown:     7,
+    sum:          7,
+    link:         7
   }
 
   def field_name
@@ -47,9 +47,8 @@ class PublisherCustomFieldName < ActiveRecord::Base
   end
 
   def amount_of_custom_fields_per_type
-    if publishers_per_field_type.count >= field_limit
-      errors.add(:field_type, "#{self.field_type.capitalize} reached it's limit of #{field_limit}")
-    end
+    return if field_limit > publishers_per_field_type.count
+    errors.add(:field_type, "#{self.field_type.capitalize} reached it's limit of #{field_limit}")
   end
 
   def publishers_per_field_type

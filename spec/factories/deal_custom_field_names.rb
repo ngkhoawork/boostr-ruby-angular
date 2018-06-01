@@ -3,5 +3,6 @@ FactoryGirl.define do
     company nil
     field_index 1
     field_type 'sum'
+    sequence(:position) { |n| n }
   end
 end

@@ -73,13 +73,6 @@ class Company < ActiveRecord::Base
   has_many :publisher_custom_field_names, dependent: :destroy
   has_many :custom_field_names, dependent: :destroy
 
-  has_many :deal_custom_field_names
-  has_many :deal_product_cf_names
-  has_many :account_cf_names
-  has_many :contact_cf_names
-  has_many :publisher_custom_field_names, dependent: :destroy
-  has_many :custom_field_names, dependent: :destroy
-
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
 
