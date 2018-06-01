@@ -161,10 +161,10 @@
         query.external_io_number = f.selected.externalIoNumber if f.selected.externalIoNumber
         query.budget_start = f.selected.budget.min if f.selected.budget
         query.budget_end = f.selected.budget.max if f.selected.budget
-        query.start_date_start = f.selected.startDate.startDate if f.selected.startDate.startDate
-        query.start_date_end = f.selected.startDate.endDate if f.selected.startDate.endDate
-        query.end_date_start = f.selected.endDate.startDate if f.selected.endDate.startDate
-        query.end_date_end = f.selected.endDate.endDate if f.selected.endDate.endDate
+        query.start_date_start = f.selected.startDate.startDate.add(f.selected.startDate.startDate.utcOffset(), 'm') if f.selected.startDate.startDate
+        query.start_date_end = f.selected.startDate.endDate.add(f.selected.startDate.endDate.utcOffset(), 'm') if f.selected.startDate.endDate
+        query.end_date_start = f.selected.endDate.startDate.add(f.selected.endDate.startDate.utcOffset(), 'm') if f.selected.endDate.startDate
+        query.end_date_end = f.selected.endDate.endDate.add(f.selected.endDate.endDate.utcOffset(), 'm') if f.selected.endDate.endDate
       else
         $scope.showExpandableFilter= false
         $scope.filter.close()

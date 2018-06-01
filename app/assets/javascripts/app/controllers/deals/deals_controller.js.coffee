@@ -143,7 +143,7 @@
 #                    event.stopPropagation()
                     this.isOpen = false
                 toQuery: (previous) ->
-                    f = if previous then this.appliedSelection else this.selected
+                    f = if previous then this.appliedSelection else angular.copy this.selected
                     query = {}
                     query.member_id = f.member.id if f.member
                     query.team_id = f.team.id if f.team
@@ -154,10 +154,10 @@
                     query.curr_cd = f.currency.curr_cd if f.currency
                     query.external_id = f.external_id if f.external_id
                     query.time_period_id = f.timePeriod.id if f.timePeriod
-                    query.start_start_date = f.startDate.startDate if f.startDate.startDate
-                    query.start_end_date = f.startDate.endDate if f.startDate.endDate
-                    query.created_start_date = f.createdDate.startDate if f.createdDate.startDate
-                    query.created_end_date = f.createdDate.endDate if f.createdDate.endDate
+                    query.start_start_date = f.startDate.startDate.add(f.startDate.startDate.utcOffset(), 'm') if f.startDate.startDate
+                    query.start_end_date = f.startDate.endDate.add(f.startDate.endDate.utcOffset(), 'm') if f.startDate.endDate
+                    query.created_start_date = f.createdDate.startDate.add(f.createdDate.startDate.utcOffset(), 'm') if f.createdDate.startDate
+                    query.created_end_date = f.createdDate.endDate.add(f.createdDate.endDate.utcOffset(), 'm') if f.createdDate.endDate
                     query.closed_year = f.yearClosed if f.yearClosed
                     query
 

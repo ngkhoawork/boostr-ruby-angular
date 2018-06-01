@@ -140,8 +140,8 @@
     if $scope.filter.selected.owner
       params.owner_id = $scope.filter.selected.owner.id
     if $scope.filter.selected.date
-      params.start_date = $scope.filter.selected.date.startDate
-      params.end_date = $scope.filter.selected.date.endDate
+      params.start_date = $scope.filter.selected.date.startDate.add($scope.filter.selected.date.startDate.utcOffset(), 'm') if $scope.filter.selected.date.startDate
+      params.end_date = $scope.filter.selected.date.endDate.add($scope.filter.selected.date.endDate.utcOffset(), 'm') if $scope.filter.selected.date.endDate
     if $scope.query.trim().length
       params.name = $scope.query.trim()
 
