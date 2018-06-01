@@ -6,7 +6,7 @@ class Io < ActiveRecord::Base
   include PgSearch
 
   multisearchable against: [:name, :advertiser_name, :agency_name], 
-                  additional_attributes: lambda { |io| { company_id: io.company_id } }
+                  additional_attributes: lambda { |io| { company_id: io.company_id, order: 4 } }
 
   belongs_to :advertiser, class_name: 'Client', foreign_key: 'advertiser_id'
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id'

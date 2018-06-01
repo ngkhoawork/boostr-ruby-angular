@@ -4,7 +4,7 @@ class Contact < ActiveRecord::Base
   include PgSearch
 
   multisearchable against: [:name, :email, :client_names], 
-                  additional_attributes: lambda { |contact| { company_id: contact.company_id } },
+                  additional_attributes: lambda { |contact| { company_id: contact.company_id, order: 3 } },
                   if: lambda { |contact| !contact.deleted? }
 
   acts_as_paranoid

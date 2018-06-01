@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe SearchSerializer do
-  it 'serializer deal search data' do
+  it 'serializes deal search data' do
     expect(deal_serializer['id']).to eq(deal.id)
     expect(deal_serializer['name']).to eq('test deal')
     expect(deal_serializer['budget']).to eq(deal.budget)
@@ -14,7 +14,7 @@ describe SearchSerializer do
     expect(deal_serializer['stage']['probability']).to eq(0)
   end
 
-  it 'serializer io search data' do
+  it 'serializes io search data' do
     expect(io_serializer['id']).to eq(io.id)
     expect(io_serializer['io_number']).to eq(io.io_number)
     expect(io_serializer['name']).to eq('test io')
@@ -26,7 +26,7 @@ describe SearchSerializer do
     expect(io_serializer['agency']['name']).to eq('test agency')
   end
 
-  it 'serializer contact search data' do
+  it 'serializes contact search data' do
     expect(contact_serializer['id']).to eq(contact.id)
     expect(contact_serializer['name']).to eq('test contact')
     expect(contact_serializer['position']).to eq(contact.position)
@@ -34,7 +34,7 @@ describe SearchSerializer do
     expect(contact_serializer['clients'].first['name']).to eq('test advertiser')
   end
 
-  it 'serializer client search data' do
+  it 'serializes client search data' do
     create :client_member, client: advertiser, user: user
     expect(client_serializer['id']).to eq(advertiser.id)
     expect(client_serializer['name']).to eq('test advertiser')
@@ -43,7 +43,33 @@ describe SearchSerializer do
     expect(client_serializer['client_members'].first['name']).to eq('test user')
   end
 
+  it 'serializes activity data' do
+    expect(activity_serializer['id']).to eq(activity.id)
+    expect(activity_serializer['activity_type']['name']).to eq(activity.activity_type.name)
+    expect(activity_serializer['activity_type']['action']).to eq(activity.activity_type.action)
+    expect(activity_serializer['activity_type']['css_class']).to eq(activity.activity_type.css_class)
+    expect(activity_serializer['client']['id']).to eq(activity.client.id)
+    expect(activity_serializer['client']['name']).to eq(activity.client.name)
+    expect(activity_serializer['deal']['id']).to eq(activity.deal.id)
+    expect(activity_serializer['deal']['name']).to eq(activity.deal.name)
+    expect(activity_serializer['contacts'].count).to eq(activity.contacts.count)
+    expect(activity_serializer['contacts'].first['id']).to eq(activity.contacts&.first&.id)
+    expect(activity_serializer['contacts'].first['name']).to eq(activity.contacts&.first&.name)
+  end
+
   private
+
+  def activity_type
+    @_activity_type ||= create :activity_type
+  end
+
+  def activity
+    @_activity ||= create :activity, company: company, activity_type: activity_type
+  end
+
+  def activity_serializer
+    @_activity_serializer ||= JSON.parse(described_class.new(activity.pg_search_document).to_json)['details']
+  end
 
   def client_serializer
     @_client_serializer ||= JSON.parse(described_class.new(advertiser.pg_search_document).to_json)['details']

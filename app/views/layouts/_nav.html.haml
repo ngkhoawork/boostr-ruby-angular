@@ -6,11 +6,18 @@
       %input.form-control{'ng-model': 'query', 'ng-keyup': 'search($event.keyCode, query)', 'ng-blur': 'clearSearch($event)', placeholder: 'Search'}
       %ul.search-dropdown{'ng-if': 'searchResults.length > 0', 'ng-blur': 'clearSearch($event)'}
         %li{'ng-repeat': 'res in searchResults', 'ng-click': 'search(13, res.details.name)', 'ng-blur': 'clearSearch($event)', 'tabindex': '-1'}
-          %span{'text-in-bold': '', 'text': 'res.details.name', 'lookup': 'query', 'ng-blur': 'clearSearch($event)', 'tabindex': '-1'} 
-          %a{'href': '{{detailPage(res)}}', 'ng-click': '$event.stopPropagation(); showDetail(res);', 'ng-blur': 'clearSearch($event)'}
-            Go to {{ displayType(res) }}
+          %div{'ng-if': 'res.searchable_type != "Activity"'}
+            %span{'text-in-bold': '', 'text': 'res.details.name', 'lookup': 'query', 'ng-blur': 'clearSearch($event)', 'tabindex': '-1'} 
+            %a{'href': '{{detailPage(res)}}', 'ng-click': '$event.stopPropagation(); showDetail(res);', 'ng-blur': 'clearSearch($event)'}
+              Go to {{ displayType(res) }}
+          .no-pointer{'ng-if': 'res.searchable_type == "Activity"'}
+            %span {{ res.details.creator.first_name + " " +     res.details.creator.last_name }}
+            %span {{ res.details.activity_type.action }}
+            %span{'text-in-bold': '', 'text': 'activityContacts(res)', 'lookup': 'query'} 
+            %i.activity-icon.mr8.fa.pull-left{'class': '{{res.details.activity_type.css_class}}'}
+
         %li.view-all{'ng-if': 'searchResults.length > 0', 'ng-click': 'search(13, query)', 'ng-blur': 'clearSearch($event)', 'tabindex': '-1'}
-          %span{'ng-blur': 'clearSearch($event)', 'tabindex': '-1'} 
+          %div{'ng-blur': 'clearSearch($event)', 'tabindex': '-1'} 
             View all search results for ‘{{query}}’
 
     %div.auth-wrap

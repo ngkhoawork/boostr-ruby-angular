@@ -6,6 +6,17 @@ class GlobalSearchQuery
   end
 
   def perform
+    if options[:typeahead]
+      records = filtered_records.where.not(searchable_type: 'Activity')
+      records.count < limit.to_i ? filtered_records : records
+    else
+      filtered_records
+    end
+  end
+
+  private
+
+  def filtered_records 
     PgSearch.multisearch(options[:query])
            .where(company_id: options[:company_id])
            .reorder(order)
@@ -13,8 +24,6 @@ class GlobalSearchQuery
            .limit(limit)
            .includes(:searchable)
   end
-
-  private
 
   def page
     options[:page] || 1
@@ -26,9 +35,9 @@ class GlobalSearchQuery
 
   def order
     if options[:order] == 'rank'
-      'rank DESC'
+      'rank DESC, "order" ASC, id ASC'
     else
-      'searchable_type ASC, rank DESC, id ASC'
+      '"order" ASC, rank DESC, id ASC'
     end
   end
 end

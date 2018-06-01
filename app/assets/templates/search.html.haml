@@ -7,11 +7,13 @@
         %span.mr6 Go To:
         %a{href: '', 'ng-click': 'scrollTo("#accounts-section")'} Accounts
         |
-        %a{href: '', 'ng-click': 'scrollTo("#contacts-section")'} Contacts
-        |
         %a{href: '', 'ng-click': 'scrollTo("#deals-section")'} Deals
         |
+        %a{href: '', 'ng-click': 'scrollTo("#contacts-section")'} Contacts
+        |
         %a{href: '', 'ng-click': 'scrollTo("#ios-section")'} IOs
+        |
+        %a{href: '', 'ng-click': 'scrollTo("#activities-section")'} Activity
     .title{'ng-if': 'results && results.length == 0'}
       No match found for:
       %b ’{{query}}’
@@ -37,28 +39,6 @@
               %td.left
                 %div{ 'ng-repeat': 'member in client.client_members' }
                   {{ member.name + " (" + member.share + "%)" }}
-
-  #contacts-section.container-fluid{ 'ng-if': 'contacts.length > 0' }
-    .block
-      .title-row.mb10
-        %span.title Contacts
-      .table-wrapper
-        %table.table.table-hover.table-striped
-          %thead
-            %tr.z-sortable-prime
-              %th.left.z-sortable{by: 'name'} Name
-              %th.left.z-sortable{by: 'position'} Position
-              %th.left.z-sortable{by: 'clients'} Related Accounts
-              %th.left.z-sortable{by: 'email'} Email
-          %tbody
-            %tr{ ng: { repeat: 'contact in contacts | orderBy:zSort.by:zSort.rev' } }
-              %td.left
-                %a{'ng-href': '/contacts/{{contact.id}}'} {{ contact.name }}
-              %td.left {{ contact.position }}
-              %td.left 
-                %div{ 'ng-repeat': 'client in contact.clients' }
-                  {{ client.name }}
-              %td.left {{ contact.email }}
 
   #deals-section.container-fluid{ 'ng-if': 'deals.length > 0' }
     .block
@@ -88,6 +68,28 @@
               %td.left {{ deal.start_date | date: 'M/d/yyyy'}}
               %td.left {{ deal.end_date | date: 'M/d/yyyy'}}
 
+  #contacts-section.container-fluid{ 'ng-if': 'contacts.length > 0' }
+    .block
+      .title-row.mb10
+        %span.title Contacts
+      .table-wrapper
+        %table.table.table-hover.table-striped
+          %thead
+            %tr.z-sortable-prime
+              %th.left.z-sortable{by: 'name'} Name
+              %th.left.z-sortable{by: 'position'} Position
+              %th.left.z-sortable{by: 'clients'} Related Accounts
+              %th.left.z-sortable{by: 'email'} Email
+          %tbody
+            %tr{ ng: { repeat: 'contact in contacts | orderBy:zSort.by:zSort.rev' } }
+              %td.left
+                %a{'ng-href': '/contacts/{{contact.id}}'} {{ contact.name }}
+              %td.left {{ contact.position }}
+              %td.left 
+                %div{ 'ng-repeat': 'client in contact.clients' }
+                  {{ client.name }}
+              %td.left {{ contact.email }}
+
   #ios-section.container-fluid{ 'ng-if': 'ios.length > 0' }
     .block
       .title-row.mb10
@@ -113,3 +115,42 @@
               %td.left {{ io.budget_loc | currency:io.currency.curr_symbol:0 }}
               %td.left {{ io.start_date | date: 'M/d/yyyy'}}
               %td.left {{ io.end_date | date: 'M/d/yyyy'}}
+
+  #activities-section.container-fluid{ 'ng-if': 'activities.length > 0' }
+    #activity-feed.block
+      .title-row.mb20
+        %span.title Activity
+      %div.activity-item{'ng-repeat': 'activity in activities'}
+        %div.activity-header
+          %i.activity-icon.mr8.fa{'class': '{{activity.activity_type.css_class}}'}
+          %span
+            %b {{activity.activity_type.name}}
+          %span {{activity.happened_at | date: 'mediumDate'}}
+        %div.activity-body
+          %p
+            %strong {{activity.creator.first_name}} {{activity.creator.last_name}}
+            {{activity.activity_type.action}}
+            %span{'ng-repeat': 'contact in activity.contacts'}
+              %a{href: '', 'ng-href': '/contacts/{{contact.id}}'}> {{contact.name}}
+              {{$last ? '' : ', '}}
+          %p{'ng-if': 'activity.client'}
+            Account
+            %a{href: '', 'ng-href': '/accounts/{{activity.client.id}}'} {{activity.client.name}}
+          %p{'ng-if': 'activity.deal'}
+            Deal
+            %a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}
+              {{activity.deal.name}}
+          %div{ng: {if: '!isTextHasTags(activity.comment) && activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250'}}
+          %div{'ng-if': 'isTextHasTags(activity.comment) || activity.activity_type.name == "Email"'}
+            %p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
+            %button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity)'}
+              Show email
+          %p{'ng-repeat': 'asset in activity.assets'}
+            %a{href: '{{asset.presigned_url}}', target: '_blank'}
+              {{asset.original_file_name}}
+
+        %div.activity-control
+          %a{href: '', 'ng-click': 'showActivityEditModal(activity)'}
+            Edit
+          %a.delete-team{href: '', 'ng-click': 'deleteActivity(activity)'}
+            Delete

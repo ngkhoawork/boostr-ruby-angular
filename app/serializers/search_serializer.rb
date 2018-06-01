@@ -3,6 +3,7 @@ class SearchSerializer < ActiveModel::Serializer
     :id,
     :searchable_id,
     :searchable_type,
+    :order,
     :details
   )
 
@@ -20,6 +21,8 @@ class SearchSerializer < ActiveModel::Serializer
       Search::IoSerializer.new(searchable)
     when 'Contact'
       Search::ContactSerializer.new(searchable)
+    when 'Activity'
+      searchable
     end
   end
 end

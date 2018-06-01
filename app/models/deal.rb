@@ -11,7 +11,7 @@ class Deal < ActiveRecord::Base
   include PgSearch
 
   multisearchable against: [:name, :advertiser_name, :agency_name], 
-                  additional_attributes: lambda { |deal| { company_id: deal.company_id } },
+                  additional_attributes: lambda { |deal| { company_id: deal.company_id, order: 2 } },
                   if: lambda { |deal| !deal.deleted? }
 
   acts_as_paranoid

@@ -9,6 +9,7 @@
       $location.path().indexOf(viewLocation) == 0
 
     $scope.search = (keyCode, query) ->
+      return unless query
       if query.length == 0
         $scope.searchResults = []
       else if keyCode == 13
@@ -20,10 +21,13 @@
         if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
         searchTimeout = $timeout(() ->
           return if query != $scope.query
-          Search.all(query: query, limit: 10, order: 'rank').then (results) ->
+          Search.all(query: query, limit: 10, order: 'rank', typeahead: true).then (results) ->
             return unless searchTimeout
-            $scope.searchResults = _.sortBy results, 'searchable_type'
+            $scope.searchResults = _.sortBy results, 'order'
         , 250)
+
+    $scope.activityContacts = (res) ->
+      _.map(res.details.contacts, 'name').join(",")
 
     $scope.displayType = (res) ->
       switch res.searchable_type

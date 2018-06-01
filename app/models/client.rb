@@ -4,7 +4,7 @@ class Client < ActiveRecord::Base
   include PgSearch
   
   multisearchable against: [:name],
-                  additional_attributes: lambda { |client| { company_id: client.company_id } },
+                  additional_attributes: lambda { |client| { company_id: client.company_id, order: 1 } },
                   if: lambda { |client| !client.deleted? }
 
   acts_as_paranoid
@@ -398,13 +398,14 @@ class Client < ActiveRecord::Base
 
   def self.rebuild_pg_search_documents
     connection.execute <<-SQL
-     INSERT INTO pg_search_documents (searchable_type, searchable_id, company_id, content, created_at, updated_at)
+     INSERT INTO pg_search_documents (searchable_type, searchable_id, company_id, content, created_at, updated_at, "order")
        SELECT 'Client' AS searchable_type,
               clients.id AS searchable_id,
               clients.company_id AS company_id,
               clients.name AS content,
               now() AS created_at,
-              now() AS updated_at
+              now() AS updated_at,
+              1 AS "order"
        FROM clients
        WHERE clients.deleted_at IS NULL
     SQL

@@ -69,12 +69,21 @@
         box-shadow: 0 15px 25px 0 rgba(0, 0, 0, .15);
 
         li {
-          padding: 11px 10px;
+          padding: 0;
           width: 100%;
           background: #FFF;
-          cursor: pointer;
           color: #2B3C49;
+          cursor: pointer;
           border-bottom: 1px solid rgba(150,162,172,0.1);
+          
+          > div {
+            width: 100%;
+            padding: 11px 10px;
+          }
+
+          .no-pointer {
+            cursor: default;
+          }
 
           &:hover {
             background-color: #F8F9F9;
