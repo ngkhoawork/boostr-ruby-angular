@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :custom_field_name do
-    subject_type CustomFieldName.allowed_subject_types.sample
+    subject_type { CustomFieldName.allowed_subject_types.sample }
     field_type 'text'
     field_label FFaker::HipsterIpsum.word
     is_required false

@@ -1018,7 +1018,7 @@ class Api::DealsController < ApplicationController
       if params[:member_id]
         [params[:member_id]]
       elsif params[:team_id]
-        team.all_members_and_leaders
+        team.all_members_and_leaders_ids
       end
   end
 

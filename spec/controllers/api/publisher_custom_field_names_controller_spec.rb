@@ -91,7 +91,7 @@ describe Api::PublisherCustomFieldNamesController do
         post :create, publisher_custom_field_name: invalid_publisher_custom_field_name_params
       }.to_not change(PublisherCustomFieldName, :count)
     end
-  
+
     it 'failed to create a new publisher custom field name when limit by type was exceeded' do
       create_list :publisher_custom_field_name, 2, field_type: 'note', company: company
 
@@ -105,33 +105,47 @@ describe Api::PublisherCustomFieldNamesController do
     it 'updates publisher custom field name' do
       expect(publisher_custom_field_name.field_label).not_to eq 'Updated label'
 
-      put :update, 
-          id: publisher_custom_field_name.id, 
+      put :update,
+          id:                          publisher_custom_field_name.id,
           publisher_custom_field_name: valid_publisher_custom_field_name_params.merge(field_label: 'Updated label')
-      
+
       expect(publisher_custom_field_name.reload.field_label).to eq 'Updated label'
+    end
+
+    it 'update dropdown options for publisher cf' do
+      option = publisher_custom_field_name.publisher_custom_field_options
+
+      put :update,
+          id:                          publisher_custom_field_name.id,
+          publisher_custom_field_name: {
+            position:                                  5,
+            publisher_custom_field_options_attributes: {}
+          }
+
+      expect(option.reload).to be_empty
     end
 
     it 'failed to update publisher custom field name' do
       expect(publisher_custom_field_name.field_label).not_to eq 'Updated label'
 
       put :update,
-          id: publisher_custom_field_name.id,
+          id:                          publisher_custom_field_name.id,
           publisher_custom_field_name: invalid_publisher_custom_field_name_params
 
+      expect(response).to have_http_status :unprocessable_entity
       expect(publisher_custom_field_name.reload.field_label).not_to eq 'Updated label'
     end
 
-    it 'update dropdown options for publisher cf' do
-      option = publisher_custom_field_name.publisher_custom_field_options
+    it 'failed when update position and position already has taken' do
+      put :update,
+          id:                          publisher_custom_field_names.second.id,
+          publisher_custom_field_name: { position: publisher_custom_field_names.first.position }
 
-      put :update, id: publisher_custom_field_name.id,
-          publisher_custom_field_name: {
-              position: 5,
-              publisher_custom_field_options_attributes: {}
-          }
+      expect(response).to have_http_status :unprocessable_entity
 
-      expect(option.reload).to be_empty
+      response_json = JSON.parse(response.body)
+
+      expect(response_json['errors']['position']).to eq ['has already been taken']
     end
   end
 
@@ -159,6 +173,10 @@ describe Api::PublisherCustomFieldNamesController do
     @_publisher_custom_field_name ||= create :publisher_custom_field_name, company: company
   end
 
+  def publisher_custom_field_names
+    @_publisher_custom_field_names ||= create_list :publisher_custom_field_name, 2, company: company
+  end
+
   def valid_publisher_custom_field_name_params
     attributes_for :publisher_custom_field_name
   end
@@ -166,9 +184,9 @@ describe Api::PublisherCustomFieldNamesController do
   def invalid_publisher_custom_field_name_params
     {
       field_index: '',
-      field_type: 'note',
-      field_label: '',
-      position: ''
+      field_type:  'note',
+      field_label: 'Updated label',
+      position:    ''
     }
   end
 end
