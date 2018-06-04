@@ -206,6 +206,27 @@
       vertical-align: middle;
       display: inline-block;
       width: calc(50% - 30px);
+      .form-control {
+        position: relative;
+        padding-right: 30px;
+        .ui-select-match-text {
+          width: 100%;
+          overflow: hidden;
+        }
+        .clear-icon {
+          position: absolute;
+          color: lighten(red, 20%);
+          background: white;
+          padding: 4px 6px;
+          right: 11px;
+          top: 10px;
+          z-index: 1;
+          &:hover {
+            color: red;
+          }
+        }
+
+      }
     }
 
     .advertiser-field-fluid, .agency-field-fluid {
