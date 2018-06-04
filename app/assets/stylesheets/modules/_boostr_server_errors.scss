@@ -1,6 +1,9 @@
 .modal-open .boostr-server-errors-container {
     right: 18px;
 }
+.modal-open {
+    font-size: 12px !important;
+}
 .boostr-server-errors-container {
     position: fixed;
     z-index: 2000;

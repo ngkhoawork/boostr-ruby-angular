@@ -2,20 +2,26 @@
   %div.mb20
     %span.title PMP Items
     %add-button{ 'ng-click': 'showNewPmpItemModal()' } Add
-    
+
   .table-wrapper
     %table.table.table-hover
       %thead
         %tr
           %th.left Deal ID
           %th.left SSP
-          %th.left Product
+          %th.left{'ng-if': '!company.product_options_enabled' } Product
+          %th.left{'ng-if': 'company.product_options_enabled' } Product
+
+          %th.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} {{ company.product_option1_field }}
+          %th.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} {{ company.product_option2_field }}
           %th.left PMP Type
           %th.right Budget
           %th.right Delivered
           %th.right Remaining
           %th.right 7 Day Run Rate
           %th.right 30 Day Run Rate
+          %th{ ng: { repeat: "pmp_item_cf_label in pmp_items_cf_labels"} }
+            {{pmp_item_cf_label}}
           %th
       %tbody
         %tr{ ng: { repeat: "pmpItem in currentPMP.pmp_items | orderBy: 'deal_id'"} }
@@ -24,8 +30,14 @@
           %td.left
             %strong
               {{ pmpItem.ssp && pmpItem.ssp.name }}
-          %td.left
+          %td.left{'ng-if': '!company.product_options_enabled' }
             {{ pmpItem.product && pmpItem.product.name }}
+          %td.left{'ng-if': 'company.product_options_enabled' }
+            {{ pmpItem.product.level0.name }}
+          %td.left{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'}
+            {{ pmpItem.product.level1.name }}
+          %td.left{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'}
+            {{ pmpItem.product.level2.name}}
           %td.left
             {{ PMPType.getName(pmpItem.pmp_type) }}
           %td.right
@@ -38,6 +50,8 @@
             {{ (pmpItem.run_rate_7_days | currency:currencySymbol:2) || 'N/A' }}
           %td.right
             {{ (pmpItem.run_rate_30_days | currency:currencySymbol:2) || 'N/A' }}
+          %td.right{ ng: { repeat: "pmp_item_cf_key in pmp_items_cf_keys"} }
+            {{ formatData($index, pmp_item_cf_key, pmpItem.custom_field) }}
           %td.right.action-td
             %i.fa.fa-pencil.z-icon{ ng: { click: 'showPmpItemEditModal(pmpItem)' } }
             %i.fa.fa-trash.z-icon{ ng: { click: 'deletePmpItem(pmpItem)' } }

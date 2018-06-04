@@ -3,6 +3,7 @@ class Operative::ImportSalesOrdersService
     @api_config = api_config
     @files = files
     @currencies_list = {}
+    @temp_io_ids = []
   end
 
   def perform
@@ -11,7 +12,7 @@ class Operative::ImportSalesOrdersService
 
   private
 
-  attr_reader :api_config, :files, :currencies_list
+  attr_reader :api_config, :files, :currencies_list, :temp_io_ids
 
   delegate :company_id, :auto_close_deals, :skip_not_changed?, to: :api_config
 
@@ -30,6 +31,12 @@ class Operative::ImportSalesOrdersService
     parse_currencies
     save_currency_mappings
     parse_sales_order
+    notify_no_match_ios
+  end
+
+  def notify_no_match_ios
+    return unless temp_io_ids.present?
+    NoMatchIoMailer.notify(temp_io_ids,company_id).deliver_later(queue: "default")
   end
 
   def parse_currencies
@@ -99,7 +106,8 @@ class Operative::ImportSalesOrdersService
 
       if io_csv.valid?
         begin
-          io_csv.perform
+          id = io_csv.perform
+          temp_io_ids << id if id.present?
           import_log.count_imported
         rescue Exception => e
           import_log.count_failed

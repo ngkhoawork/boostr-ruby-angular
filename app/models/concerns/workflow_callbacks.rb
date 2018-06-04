@@ -51,4 +51,17 @@ module WorkflowCallbacks
   def workflows
     @_workflows ||=  Workflow.for_company(self.company.id).where(workflowable_type: self.class.name)
   end
+
+  def deal_product_state(event_type)
+    begin
+      opts = {
+        deal_id: self.id,
+        deal_products_sum: deal_products.sum(:budget),
+        event_type: event_type,
+        previous_products_sum: self.budget
+      }
+      DealProductState.create(opts)
+    rescue => e
+    end
+  end
 end

@@ -16,6 +16,7 @@ class Workflow < ActiveRecord::Base
   accepts_nested_attributes_for :workflow_action, :workflow_criterions
 
   scope :for_company, -> (id) { where(company_id: id) }
+  scope :active, -> { where(switched_on: true) }
 
   attr_accessor :skip_update
 

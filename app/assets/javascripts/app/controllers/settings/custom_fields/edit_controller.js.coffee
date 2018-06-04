@@ -85,6 +85,12 @@
       .update(subject_type: $scope.customFieldName.field_object, id: customFieldName.id, custom_field_name: $scope.customFieldName)
       .then (customFieldName) -> $modalInstance.close()
       .catch (reject) -> onError(reject)
+    
+  updatePmpItemCF = ->
+    CustomFieldNames
+    .update(subject_type: $scope.customFieldName.field_object, id: customFieldName.id, custom_field_name: $scope.customFieldName)
+    .then (customFieldName) -> $modalInstance.close()
+    .catch (reject) -> onError(reject)  
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
@@ -108,6 +114,8 @@
         updatePublisherCF()
       when 'activity'
         updateActivityCF()
+      when 'pmp_item'
+        updatePmpItemCF()
 
   $scope.cancel = -> $modalInstance.close()
 

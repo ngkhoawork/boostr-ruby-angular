@@ -1,19 +1,44 @@
 @app.controller 'RevenueController',
-  ['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem', 'PMP', 'PMPItemDailyActual', 'RevenueFilter', 'Deal', 'TimePeriod', 'Company',
-  ( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem,   PMP,   PMPItemDailyActual, RevenueFilter, Deal, TimePeriod, Company) ->
+  ['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem', 'PMP', 'PMPItemDailyActual', 'RevenueFilter', 'Deal', 'TimePeriod', 'Company', 'PMPItem',
+  ( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem,   PMP,   PMPItemDailyActual, RevenueFilter, Deal, TimePeriod, Company, PMPItem) ->
     formatMoney = $filter('formatMoney')
     $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
     $scope.isLoading = false
+    $scope.isItemsLoading = false
     $scope.allItemsLoaded = false
+    $scope.allCustomItemsLoaded = false
     $scope.revenue = []
+    $scope.revenueItems = []
+    $scope.selectedId = null
+    $scope.dataCount = 0
+    $scope.receivedCount = 0
     $scope.prevRequest = $q.defer()
+    $scope.prevItemsRequest = $q.defer()
+    $scope.revenueLimit = 50
+    $scope.selectedMenu = 'no-match-adv-ssp-advertisers'
+
+    $scope.menus = [
+      {
+        value: "no-match-adv",
+        name: "Deals"
+      },
+      {
+        value: "no-match-adv-ssp-advertisers",
+        name: "Advertisers"
+      }
+    ];
+
+    $scope.onSelectMenu = (value) ->
+      $scope.selectedMenu = value;
+      $scope.setCurrentTab(value);
+
     $scope.revenueFilters = [
-      {name: 'IOs', value: ''}
-      {name: 'No-Match IOs', value: 'no-match'}
-      {name: 'PMPs', value: 'pmp'}
-      {name: 'No-Match Advertisers', value: 'no-match-adv' || 'no-match-adv-ssp-advertisers'}
-      {name: 'Upside Revenues', value: 'upside'}
-      {name: 'At Risk Revenues', value: 'risk'}
+      {name: 'IOs', value: '', type: 'default'}
+      {name: 'No-Match IOs', value: 'no-match', type: 'default'}
+      {name: 'PMPs', value: 'pmp', type: 'default'}
+      {name: 'No-Match Advertisers', value: 'no-match-adv', type: 'custom'}
+      {name: 'Upside Revenues', value: 'upside', type: 'default'}
+      {name: 'At Risk Revenues', value: 'risk', type: 'default'}
     ]
     $scope.pacingAlertsFilters = [
       {name: 'My Lines', value: 'my'}
@@ -21,6 +46,7 @@
       {name: 'All Lines', value: 'all'}
     ]
     itemsPerPage = 10
+    customItemsPerPage = 25
     $scope.company = {}
     $scope.filter =
       page: 1
@@ -120,6 +146,27 @@
       select: (key, value) ->
         RevenueFilter.select(key, value)
 
+    $scope.orderKeys = {
+      row_1: true,
+      row_2: true,
+      row_3: true,
+      row_4: true,
+      row_5: true,
+      row_6: true
+    }
+
+    $scope.setCustomOrder = (keyName, orderVal, orderKey) ->
+      $scope.orderKeys[orderKey] = !orderVal;
+      if !orderVal
+        val = '-'+keyName
+      else
+        val = keyName
+      $scope.revenue = $filter('orderBy')($scope.revenue, val)
+
+    $scope.customFilter =
+      page: 1
+      revenueItems: $routeParams.filter || ''
+
     $scope.filtering = (item) ->
       if !item then return false
       if item.name
@@ -133,6 +180,12 @@
       $scope.revenue = []
       $scope.prevRequest.reject()
 
+    resetCustomPagination = ->
+      $scope.customFilter.page = 1
+      $scope.allCustomItemsLoaded = false
+      $scope.revenueItems = []
+      $scope.prevItemsRequest.reject()
+
     $scope.setFilter = (key, val) ->
       $scope.filter[key] = val
       switch key
@@ -143,6 +196,25 @@
     $scope.applyFilter = (callback) ->
       resetPagination()
       getData(getQuery(), callback)
+
+    $scope.applyCustomFilter = (id, callback) ->
+      resetCustomPagination()
+      getItemsData(getItemsQuery(id), callback)
+
+    getItemsQuery = (id) ->
+      f = $scope.customFilter
+      query = {}
+      query.per = customItemsPerPage
+      query.page = f.page
+      query.customFilter = f.revenueItems
+      query.pmp_item_id = id
+      query.list_type = 'grouped'
+      query.custom = 'items'
+      query.is_items = true
+      query.name = f.name if f.name
+
+
+      query
 
     getQuery = ->
       f = $scope.filter
@@ -165,7 +237,19 @@
         query.start_date_end = f.selected.startDate.endDate.add(f.selected.startDate.endDate.utcOffset(), 'm') if f.selected.startDate.endDate
         query.end_date_start = f.selected.endDate.startDate.add(f.selected.endDate.startDate.utcOffset(), 'm') if f.selected.endDate.startDate
         query.end_date_end = f.selected.endDate.endDate.add(f.selected.endDate.endDate.utcOffset(), 'm') if f.selected.endDate.endDate
-      else
+      else if query.filter == 'no-match-adv'
+        $scope.showExpandableFilter = true
+        query.list_type = 'grouped'
+        query.advertiser_id = f.selected.advertiser.id if f.selected.advertiser
+        query.agency_id = f.selected.agency.id if f.selected.agency
+        query.io_number = f.selected.ioNumber if f.selected.ioNumber
+        query.external_io_number = f.selected.externalIoNumber if f.selected.externalIoNumber
+        query.budget_start = f.selected.budget.min if f.selected.budget
+        query.budget_end = f.selected.budget.max if f.selected.budget
+        query.start_date_start = f.selected.startDate.startDate.add(f.selected.startDate.startDate.utcOffset(), 'm') if f.selected.startDate.startDate
+        query.start_date_end = f.selected.startDate.endDate.add(f.selected.startDate.endDate.utcOffset(), 'm') if f.selected.startDate.endDate
+        query.end_date_start = f.selected.endDate.startDate.add(f.selected.endDate.startDate.utcOffset(), 'm') if f.selected.endDate.startDate
+        query.end_date_end = f.selected.endDate.endDate.add(f.selected.endDate.endDate.utcOffset(), 'm') if f.selected.endDate.endDate
         $scope.showExpandableFilter= false
         $scope.filter.close()
 
@@ -193,16 +277,37 @@
         else
           IO.query query, (ios) -> revenueRequest.resolve ios
       revenueRequest.promise.then (data) ->
+        $scope.filter.ioNumbers = data.map( (resource) ->
+          resource.io_number
+        )
+        $scope.filter.externalIoNumbers = data.map( (resource) ->
+          resource.external_io_number
+        )
         setRevenue data, callback
+
+    getItemsData = (query, callback) ->
+      $scope.isItemsLoading = true
+      revenueCustomRequest = $q.defer()
+      $scope.prevItemsRequest = revenueCustomRequest
+      switch query.customFilter
+        when 'no-match-adv'
+          query.with_advertiser = false
+          PMPItemDailyActual.query query, (pmpItemDailyActuals) ->
+            revenueCustomRequest.resolve pmpItemDailyActuals
+      revenueCustomRequest.promise.then (response) ->
+        setItemsRevenue response, callback
 
     $scope.loadMoreRevenues = ->
       if !$scope.allItemsLoaded then getData(getQuery())
 
+    $scope.loadMoreItemsRevenues = (row) ->
+      if $scope.revenueItems.length < $scope.revenueLimit
+        getItemsData(getItemsQuery($scope.selectedId))
+      else
+        $scope.allCustomItemsLoaded = true
+
     $scope.setCurrentTab = (val) ->
-      $scope.filter.revenue = val
-      $scope.applyFilter()
-
-
+      $scope.setFilter(val);
 
     parseBudget = (data) ->
       data = _.map data, (item) ->
@@ -213,9 +318,18 @@
     setRevenue = (data, callback) ->
       if data.length < itemsPerPage then $scope.allItemsLoaded = true
       parseBudget data
-      $scope.revenue = $scope.revenue.concat data
+      $scope.revenue = $scope.revenue.concat(data)
       $scope.filter.page++
       $timeout -> $scope.isLoading = false
+      callback() if _.isFunction callback
+
+    setItemsRevenue = (response, callback) ->
+      if response.length < customItemsPerPage then $scope.allCustomItemsLoaded = true
+      parseBudget response
+      $scope.revenueItems = $scope.revenueItems.concat response
+      $scope.receivedCount = $scope.revenueItems.length
+      $scope.customFilter.page++
+      $timeout -> $scope.isItemsLoading = false
       callback() if _.isFunction callback
 
     $scope.showIOEditModal = (io) ->
@@ -227,6 +341,14 @@
         keyboard: false
         resolve:
           io: -> io
+
+    $scope.expandRecord = (row, index) ->
+      $scope.selectedPmpId = row.pmp.id
+      $scope.dataCount = row.count
+      row.expanded = !row.expanded;
+      $scope.selectedIndex = index
+      $scope.selectedId = row.id
+      $scope.applyCustomFilter(row.id)
 
     $scope.showAssignIOModal = (tempIO) ->
       $scope.modalInstance = $modal.open
@@ -250,7 +372,15 @@
           pmpItemDailyActual: ->
             pmpItemDailyActual
       modalInstance.result.then (ids) ->
-        $scope.revenue = _.filter $scope.revenue, (record) -> !_.contains(ids, record.id)
+        $scope.revenueItems = _.filter $scope.revenueItems, (record) -> !_.contains(ids, record.id)
+        PMPItem.get_item(pmp_id: $scope.selectedPmpId, id: $scope.selectedId).then (pmp_item) ->
+          changeCounters(pmp_item);
+
+    changeCounters = (pmp_item) ->
+      for item in $scope.revenue
+        if (item.id == pmp_item.id)
+          item.total_revenue_loc = pmp_item.total_revenue_loc;
+          item.total_impressions = pmp_item.total_impressions;
 
     $scope.showAssignPmpAdvertiserModal = (pmpObject) ->
       modalInstance = $modal.open
@@ -293,5 +423,5 @@
 
     Company.get().$promise.then (company) -> $scope.company = company
     $scope.getFilters()
-    $scope.applyFilter()	
+    $scope.applyFilter()
   ]

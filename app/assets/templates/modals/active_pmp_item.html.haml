@@ -31,10 +31,40 @@
         %li SSP
         %li PMP Type
         %li Product
+        %li{'ng-if': 'company.product_options_enabled && company.product_option1_enabled'} Product Level1
+        %li{'ng-if': 'company.product_options_enabled && company.product_option2_enabled'} Product Level2
         %li Start_date
         %li End_date
         %li Budget
         %li Delivered
+      .custom_fields{ng: { show: 'optional_custom_fields && optional_custom_fields.length > 0 || required_custom_fields && required_custom_fields.length > 0'   }}
+        %h6.text-center
+          %p
+            Optional PMP Item Custom Fields.
+          %p
+            Please use these EXACT headers to allow system to recognize Custom Fields:
+
+      %ol.row.center-block.grid-block{ng: { show: 'optional_custom_fields && optional_custom_fields.length > 0' }}
+        %h6.text-center
+          Optional Custom Fields
+        %li{ng: { repeat: 'optional_custom_field in optional_custom_fields' }}
+          {{ optional_custom_field.field_label }}
+      %ol.row.center-block.grid-block{ng: { show: 'required_custom_fields && required_custom_fields.length > 0' }}
+        %h6.text-center
+          Required Custom Fields
+        %li{ng: { repeat: 'required_custom_field in required_custom_fields' }}
+          {{ required_custom_field.field_label }}
+      -#Disabled for next release 21.06.2018
+      -#.custom_fields{ng: { show: 'company.product_options_enabled' }}
+        %h6.text-center
+          %p
+            Optional PMP Item product options.
+          %p
+            Please use these EXACT headers to allow system to recognize Product Fields:
+
+      -#%ol.row.center-block.grid-block{ng: { show: 'company.product_options_enabled' }}
+        %li{ng: { repeat: 'product_field in product_fields'}}
+          {{ product_field }}
 
     .well.well-lg.dark
       .row

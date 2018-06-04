@@ -113,6 +113,9 @@
         %div.filter-row.sub-filter{ ng: { if: "filter.revenue == 'risk' || filter.revenue == 'upside'"} }
           %span{ ng: { repeat: 'pacingFilter in pacingAlertsFilters', class: '{ active: filter.pacing == pacingFilter.value}', click: 'setFilter("pacing", pacingFilter.value)'} }
             {{pacingFilter.name}}
+        %div.filter-row.sub-filter{ ng: { if: "filter.revenue == 'no-match-adv' || filter.revenue == 'no-match-adv-ssp-advertisers'"} }
+          %span{ ng: { repeat: 'menu in menus', class: '{ active: selectedMenu == menu.value}', click: 'onSelectMenu(menu.value)'} }
+            {{menu.name}}
       .header-item.search
         %form
           .input-group
@@ -175,41 +178,9 @@
             %tbody{ 'ng-include': "'partials/revenue_no_match_display_rows.html'" }
 
 
-          %div#pmp_item_daily_actials{ng: {if: "filter.revenue == 'no-match-adv'"}}
-            %tr
-              %td
-                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv-ssp-advertisers')"}
-                  Deals
-              %td
-                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv')"}
-                  Advertisers
-            %table.table.table-hover
-              %thead
-                %tr.z-sortable-prime
-                  %th.left
-                    %span.z-sortable{by: 'ssp_deal_id'} Deal-ID
-                  %th.left
-                    %span.z-sortable{by: 'pmp.name'} PMP Name
-                  %th.left
-                    %span.z-sortable{by: 'ssp.name'} SSP Name
-                  %th.left
-                    %span.z-sortable{by: 'ssp_advertiser'} Advertiser
-                  %th.right
-                    %span.z-sortable{by: 'impressions'} Impressions
-                  %th.right
-                    %span.z-sortable{by: 'revenue_loc'} Revenue
-                  %th.right
-
-              %tbody{ 'ng-include': "'partials/revenue_no_match_advertiser_rows.html'" }
+          %div#pmp_item_daily_actials{ng: {if: "filter.revenue == 'no-match-adv'", include: "'partials/revenue_no_match_advertiser_rows.html'"}}
 
           %div#pmp_item_daily_actials{ng: {if: "filter.revenue == 'no-match-adv-ssp-advertisers'"}}
-            %tr
-              %td
-                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv-ssp-advertisers')"}
-                  Deals
-              %td
-                %button.btn.activity-email-btn{'ng-click': "setCurrentTab('no-match-adv')"}
-                  Advertisers
             %table.table.table-hover
               %thead
                 %tr.z-sortable-prime

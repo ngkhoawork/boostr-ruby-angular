@@ -1,20 +1,27 @@
 class Csv::ActivePmpItem
   include ActiveModel::Validations
   include Csv::Pmp
+  include Csv::ProductOptionable
 
   attr_accessor :deal_id,
                 :name,
+                :full_name,
                 :ssp,
                 :pmp_type,
-                :product,
+                :product_name,
+                :product_level1,
+                :product_level2,
                 :start_date,
                 :end_date,
                 :budget,
-                :delivered
+                :delivered,
+                :custom_fields_required,
+                :custom_fields_optional,
+                :company
 
   PMP_LABELS = {"Guaranteed" => "guaranteed", "Non-Guaranteed" => "non_guaranteed", "Always On" => "always_on"}.freeze
 
-  validates :deal_id, :name, :ssp, :pmp_type, :product, :delivered, presence: true
+  validates :deal_id, :name, :ssp, :pmp_type, :product_name, :delivered, presence: true
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -29,12 +36,39 @@ class Csv::ActivePmpItem
   private
 
   def record
+    raise custom_fields_required[:raises].join(', ') if custom_fields_required&.keys&.include?(:raises)
+
+    if custom_fields_params.present?
+      with_custom_fields_params = active_pmp_item_params.merge!(custom_field: CustomField.new(custom_fields_params))
+    end
     pmp_item = PmpItem.find_by(ssp_deal_id: deal_id)
     if pmp_item.present?
       pmp_item.update_attributes(active_pmp_item_params)
+      if pmp_item.custom_field.present?
+        pmp_item.custom_field.update_attributes(custom_fields_params)
+      else
+        pmp_item.custom_field = CustomField.new(custom_fields_params)
+        pmp_item.save
+      end
     else
-      PmpItem.new(active_pmp_item_params).save!
+      PmpItem.new(with_custom_fields_params).save!
     end
+  end
+
+  def custom_fields_params
+    results = fetch_results(custom_fields_optional)
+    results.merge!(fetch_results(custom_fields_required))
+    results
+  end
+
+  def fetch_results(collection)
+    collection&.map{ |cfk, cfv| [custom_field_name(cfk), cfv] }.to_h.symbolize_keys
+  end
+
+  def custom_field_name(key)
+    custom_field_name = CustomFieldName.active.for_model('PmpItem')&.find_by('lower(field_label) = ?', key)
+    return if custom_field_name.blank?
+    [custom_field_name&.column_type,custom_field_name&.column_index].join
   end
 
   def check_ssp
@@ -49,8 +83,13 @@ class Csv::ActivePmpItem
     raise_error("Pmp type")
   end
 
-  def product_by_name
-    ::Product.find_by(name: product).pluck(:id)
+  def check_product
+    # disabled for next release 21.06.2018
+    # if company&.product_options_enabled
+    #   ::Product.find_by(full_name: product_full_name).id
+    # else
+      ::Product.find_by(name: product_name).id
+    # end
   rescue
     raise_error("Product")
   end
@@ -79,7 +118,7 @@ class Csv::ActivePmpItem
       pmp_id: check_pmp_id,
       ssp_id: check_ssp,
       pmp_type: check_pmp_type,
-      product_id: product_by_name,
+      product_id: check_product,
       start_date: check_and_format_date(start_date),
       end_date: check_and_format_date(end_date),
       budget: check_budget,
