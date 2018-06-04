@@ -123,7 +123,7 @@
                   {{deal_product.product.full_name}}:
                 {{deal_product.budget_loc | currency: deal.currency.curr_symbol : 0}}
                 {{deal.currency.curr_cd}}
-                %span{'ng-if': 'deal.currency.curr_cd != "USD"'} 
+                %span{'ng-if': 'deal.currency.curr_cd != "USD"'}
                   , {{deal_product.budget | currency: '$' : 0}} USD
                 %table{width: '100%'} 
                   %tr
@@ -131,7 +131,13 @@
                       %strong {{ month | boDate : true }}
                   %tr
                     %td{'ng-repeat': 'product_budget in deal_product.deal_product_budgets'}
-                      {{ product_budget.budget_percent | number: 0 }}%
+                      %div{'ng-if': 'ealert.show_budget_as_currency'}
+                        %span
+                          {{product_budget.budget_loc | formatMoney: deal.currency.curr_symbol}}&nbsp;{{deal.currency.curr_cd}}
+                        %span{'ng-if': 'deal.currency.curr_cd != "USD"'} 
+                          , {{product_budget.budget | formatMoney: '$'}} USD
+                      %div{'ng-if': 'ealert.show_budget_as_percentage'}
+                        {{ product_budget.budget_percent | number: 0 }}%
                 .product-fields
                   %div{'ng-repeat': 'field in selected_fields | filter: dealProductCfFilter'}
                     %strong

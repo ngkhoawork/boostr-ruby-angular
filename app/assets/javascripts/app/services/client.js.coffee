@@ -107,6 +107,7 @@
   resource.allClients = []
   resource.currentClient = {}
   resource.totalCount = 0
+  resource.exportUrl = '/api/clients.csv'
 
   resource.__all = (params) ->
     deferred = $q.defer()

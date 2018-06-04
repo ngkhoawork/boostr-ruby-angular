@@ -16,7 +16,7 @@
                             %span.caret
                         %ul.dropdown-menu
                             %li{'ng-repeat': 'type in reminderTypes', 'ng-class': '{active: type === reminder.remindable_type}'}
-                                %a{'href': '', 'ng-click': 'reminder.remindable_type = type'}
+                                %a{'href': '', 'ng-click': 'reminder.remindable_type = type; reminder.remindable = null'}
                                     {{type}}
             .col-xs-6.time{'ng-switch': 'reminder.remindable_type'}
                 .form-group{'ng-switch-when': 'Deal'}

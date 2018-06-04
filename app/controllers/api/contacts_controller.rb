@@ -277,7 +277,17 @@ class Api::ContactsController < ApplicationController
         :number_4_dec7,
         :number_4_dec8,
         :number_4_dec9,
-        :number_4_dec10
+        :number_4_dec10,
+        :link1,
+        :link2,
+        :link3,
+        :link4,
+        :link5,
+        :link6,
+        :link7,
+        :link8,
+        :link9,
+        :link10
       ]
     )
   end

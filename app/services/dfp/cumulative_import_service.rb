@@ -48,7 +48,7 @@ module DFP
     end
 
     def csv_import_log
-      @csv_import_log ||= CsvImportLog.new(company_id: company_id, object_name: import_type)
+      @csv_import_log ||= CsvImportLog.new(company_id: company_id, object_name: import_type, source: 'dfp')
     end
 
     def non_duplicated_rows

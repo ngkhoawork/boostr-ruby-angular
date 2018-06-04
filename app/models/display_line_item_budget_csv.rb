@@ -5,7 +5,7 @@ class DisplayLineItemBudgetCsv
   validates_presence_of :impressions, if: :should_validate_impressions
 
   attr_accessor :company_id, :external_io_number, :line_number, :month_and_year, :ctr, :impressions, :clicks,
-                :video_avg_view_rate, :video_completion_rate, :budget_loc, :io_name
+                :video_avg_view_rate, :video_completion_rate, :budget_loc, :io_name, :invoice_id
 
   def initialize(attributes = {})
     attributes.each do |name, value|

@@ -18,6 +18,7 @@ class Csv::AccountsService < Csv::BaseService
       Region
       Segment
       Holding\ Company
+      Legacy\ ID
     )
   end
 

@@ -1,4 +1,4 @@
-class PmpItem < ActiveRecord::Base  
+class PmpItem < ActiveRecord::Base
   belongs_to :pmp, required: true
   belongs_to :ssp, required: true
   belongs_to :product
@@ -83,12 +83,8 @@ class PmpItem < ActiveRecord::Base
     end
   end
 
-  def run_rate(days)
-    if pmp_item_daily_actuals.count >= days
-      pmp_item_daily_actuals.latest.limit(days).to_a.sum(&:revenue_loc) / days
-    else
-      nil
-    end
+  def run_rate(days_count)
+    pmp_item_daily_actuals.last_days(days_count).sum(:revenue_loc) / days_count
   end
 
   def daily_actual_end_date
