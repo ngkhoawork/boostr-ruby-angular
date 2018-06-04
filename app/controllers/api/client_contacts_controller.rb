@@ -37,6 +37,7 @@ class Api::ClientContactsController < ApplicationController
   end
 
   def destroy
+    client_contact.unassign_contact
     client_contact.destroy
     render json: true
   end
