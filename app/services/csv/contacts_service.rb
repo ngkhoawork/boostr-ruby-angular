@@ -31,6 +31,7 @@ class Csv::ContactsService < Csv::BaseService
       'Country',
       'Phone',
       'Mobile',
+      'Created Date',
       'Related Accounts',
       'Job Level'
     ]
