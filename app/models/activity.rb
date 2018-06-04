@@ -1,5 +1,9 @@
 class Activity < ActiveRecord::Base
   include HasCustomField
+  include PgSearch
+
+  multisearchable against: [:contact_names, :deal_name, :advertiser_name], 
+                  additional_attributes: lambda { |activity| { company_id: activity.company_id, order: 5 } }
 
   belongs_to :company
   belongs_to :user
@@ -243,5 +247,17 @@ class Activity < ActiveRecord::Base
 
   def creator_team_name
     creator.team.name rescue nil
+  end
+
+  def contact_names
+    contacts&.pluck(:name)&.join(' ')
+  end
+
+  def deal_name
+    deal&.name
+  end
+
+  def advertiser_name
+    client&.name
   end
 end

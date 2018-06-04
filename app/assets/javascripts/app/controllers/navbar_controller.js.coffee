@@ -1,9 +1,75 @@
 @app.controller 'NavbarController',
-['$scope', '$window', '$document', '$location', '$timeout'
-( $scope,   $window,   $document,   $location,   $timeout ) ->
+['$scope', '$window', '$document', '$location', '$timeout', '$routeParams', 'Search', 
+( $scope,   $window,   $document,   $location,   $timeout,   $routeParams,   Search) ->
+    $scope.query = if $location.path() == '/search' then $location.search().query else ''
+    $scope.searchResults = []
+    searchTimeout = null
 
     $scope.isActive = (viewLocation) ->
       $location.path().indexOf(viewLocation) == 0
+
+    $scope.search = (keyCode, query) ->
+      return unless query
+      if query.length == 0
+        $scope.searchResults = []
+      else if keyCode == 13
+        if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
+        $scope.searchResults = []
+        $scope.query = query
+        $location.url('/search?query=' + encodeURIComponent(query))
+      else
+        if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
+        searchTimeout = $timeout(() ->
+          return if query != $scope.query
+          Search.all(query: query, limit: 10, order: 'rank', typeahead: true).then (results) ->
+            return unless searchTimeout
+            $scope.searchResults = _.sortBy results, 'order'
+        , 250)
+
+    $scope.activityContacts = (res) ->
+      _.map(res.details.contacts, 'name').join(",")
+
+    $scope.displayType = (res) ->
+      switch res.searchable_type
+        when 'Client' 
+          'Account'
+        when 'Contact'
+          'Contact'
+        when 'Io'
+          'IO'
+        when 'Deal'
+          'Deal'
+
+    $scope.detailPage = (res) ->
+      switch res.searchable_type
+        when 'Client' 
+          'accounts/' + res.details.id
+        when 'Contact'
+          'contacts/' + res.details.id
+        when 'Io'
+          'revenue/ios/' + res.details.id
+        when 'Deal'
+          'deals/' + res.details.id
+
+
+    $scope.showDetail = (res) ->
+      if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
+      $scope.searchResults = []
+
+    closest = (element, className) ->
+      if element[0].nodeName == 'HTML'
+          return
+      else if element.hasClass(className)
+          element
+      else
+          closest(element.parent(), className)
+
+    $scope.clearSearch = (event) ->
+      if event
+        element = angular.element(event.originalEvent.explicitOriginalTarget)
+        return if closest(element, 'search-dropdown')
+      if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
+      $scope.searchResults = []
 
     $scope.navbar = [
         {name: 'HOME PAGE', url: '/dashboard'}
@@ -67,6 +133,8 @@
         if windowEl.scrollTop() > headerOffset
             header.addClass 'fixed-header'
             header.css 'top', windowEl.scrollTop() - headerOffset
+            $scope.$apply () ->
+              $scope.searchResults = []
         else
             header.removeClass 'fixed-header'
             header.css 'top', 0
