@@ -134,6 +134,8 @@ class Api::ContactsController < ApplicationController
   def unassign_account
     client_contact = contact.client_contacts.find_by!(client_id: params[:client_id])
 
+    client_contact.unassign_contact
+
     client_contact.destroy!
 
     render json: client_contact.contact, serializer: ContactSerializer
