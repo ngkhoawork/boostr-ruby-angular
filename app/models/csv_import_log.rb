@@ -11,6 +11,13 @@ class CsvImportLog < ActiveRecord::Base
   scope :exclude_source, -> (source) { where.not(source: source) if source.present? }
   scope :successful_task, -> { where('rows_processed > 10') }
 
+  scope :last_import_date, -> (object_name, source) do
+    where(object_name: object_name, source: source)
+    .successful_task
+    .maximum(:created_at)
+    &.to_date
+  end
+
   def count_processed
     self.rows_processed += 1
   end
@@ -39,6 +46,12 @@ class CsvImportLog < ActiveRecord::Base
 
   def is_error?
     self.rows_failed > 0
+  end
+
+  def last_import_date
+    self.class
+        .for_company(company_id)
+        .last_import_date(object_name, source) || -Float::INFINITY
   end
 
   private
