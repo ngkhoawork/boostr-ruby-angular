@@ -22,11 +22,10 @@
       backdrop: 'static'
       keyboard: false
       resolve:
-        onInvite: ->
+        onInvite: -> 
           (user) ->
             $scope.users.push(user)
-        options: -> {}    
-
+        options: -> allUsers: angular.copy $scope.users 
 
   $scope.submitUser = (user) ->
     index = user.roles.indexOf('admin')

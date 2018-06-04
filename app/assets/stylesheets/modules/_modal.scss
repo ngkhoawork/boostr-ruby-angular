@@ -717,3 +717,8 @@
 #activity-form-modal {
   word-wrap: break-word;
 }
+#user-modal {
+  .star {
+    color: $error-color;
+  }
+}
