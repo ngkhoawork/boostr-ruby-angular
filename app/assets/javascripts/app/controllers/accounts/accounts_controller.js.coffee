@@ -1,6 +1,6 @@
 @app.controller 'AccountsController',
-['$scope', '$filter', '$timeout', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts', 'ClientsTypes', 'AccountsFilter', 'CurrentUser'
-($scope, $filter, $timeout, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http, ClientContacts, ClientsTypes, AccountsFilter, CurrentUser) ->
+['$scope', '$filter', '$httpParamSerializer', '$timeout', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts', 'ClientsTypes', 'AccountsFilter', 'CurrentUser'
+($scope, $filter, $httpParamSerializer, $timeout, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http, ClientContacts, ClientsTypes, AccountsFilter, CurrentUser) ->
   $scope.scrollCallback = -> $timeout -> $scope.$emit 'lazy:scroll'
   formatMoney = $filter('formatMoney')
   $scope.query = ""
@@ -120,8 +120,7 @@
       $scope.filter.regions = Field.findFieldOptions(fields, 'Region')
       $scope.filter.segments = Field.findFieldOptions(fields, 'Segment')
 
-  $scope.getClients = (callback) ->
-    $scope.isClientsLoading = true
+  getParams = () ->
     params = {
       filter: $scope.teamFilter().param,
       search: $scope.searchText,
@@ -144,7 +143,11 @@
       params.end_date = $scope.filter.selected.date.endDate.add($scope.filter.selected.date.endDate.utcOffset(), 'm') if $scope.filter.selected.date.endDate
     if $scope.query.trim().length
       params.name = $scope.query.trim()
+    params
 
+  $scope.getClients = (callback) ->
+    $scope.isClientsLoading = true
+    params = getParams()
     Client.query(params).$promise.then (clients) ->
       $scope.allClientsLoaded = !clients || clients.length < $scope.clientsPerPage
 #      if $scope.page == 2 then clients.shift()
@@ -192,8 +195,15 @@
 
   $scope.go = (client_id) ->
     $location.path('/accounts/' + client_id)
+
+  $scope.export = () ->
+    params = getParams()
+    $window.open Client.exportUrl + '?' + $httpParamSerializer params
+    return
+
   $scope.$on 'newClient', ->
     $scope.init()
+
   $scope.init()
 
 

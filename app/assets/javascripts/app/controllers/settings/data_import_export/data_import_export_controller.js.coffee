@@ -322,7 +322,7 @@
     return true
 
   $scope.exportClients = ->
-    $window.open('/api/clients.csv')
+    $window.open('/api/clients.csv?filter=all')
     return true
 
   $scope.exportContacts = ->
