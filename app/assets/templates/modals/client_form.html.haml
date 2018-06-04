@@ -65,7 +65,7 @@
             %ui-select{ parent_client: 'holding-company', ng: { model: 'client.holding_company_id', disabled: 'client.client_type.option_id === undefined'} }
               %ui-select-match{ placeholder: 'Pick from list', "allow-clear": 'true' }
                 {{ $select.selected.name || client.parent_client.name }}
-              %ui-select-choices{ repeat: 'option.id as option in holdingCompanies | filter: { name: $select.search }' }
+              %ui-select-choices{ repeat: 'option.id as option in holdingCompanies | orderBy: "name" | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'option.name' } } }
       .form-group{ ng: {if: 'Advertiser && client.client_type.option_id === Advertiser'} }
         .row
