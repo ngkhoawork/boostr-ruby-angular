@@ -65,6 +65,17 @@
 			%div.stats-col
 				.col-body-wrap
 					.col-body
+						.description Freeze Budgets
+						.title
+							.show-hide-remainder-form
+								.switch-remainder-form
+									%input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'currentDeal.freezed', 'ng-change': 'updateDeal()', id: "rem-act-modal-toggle12"}
+									%label{:for => "rem-act-modal-toggle12"}
+										%span
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
 						%span.error-tooltip{'ng-show': 'errors.stage'} {{ errors.stage }}
 						.description Current Stage
 						.dropdown

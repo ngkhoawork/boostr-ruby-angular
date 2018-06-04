@@ -21,18 +21,16 @@ class DealProduct < ActiveRecord::Base
   before_validation :ensure_budget_attributes_have_values
 
   after_create do
-    if deal_product_budgets.empty?
-      self.create_product_budgets
-    end
+    DealProduct::ResetBudgetsService.new(self).perform if deal_product_budgets.empty?
     wf_callback(deal)
   end
 
   after_update do
     if deal_product_budgets.sum(:budget_loc) != budget_loc || deal_product_budgets.sum(:budget) != budget
-      if budget_loc_changed? || budget_changed?
-        self.update_product_budgets
+      if budget_loc_changed? || budget_changed? && !deal.freezed?
+        update_product_budgets
       else
-        self.update_budget
+        update_budget
         should_update_deal_budget = true
       end
     end
@@ -96,37 +94,6 @@ class DealProduct < ActiveRecord::Base
       unless deal.company.active_currencies.include?(deal.curr_cd)
         errors.add(:curr_cd, "#{deal.curr_cd} does not have an active exchange rate")
       end
-    end
-  end
-
-  def create_product_budgets
-    last_index = deal.months.count - 1
-    total = 0
-    total_loc = 0
-
-    deal_start_date = deal.start_date
-    deal_end_date = deal.end_date
-
-    deal.months.each_with_index do |month, index|
-      if last_index == index
-        monthly_budget = budget - total
-        monthly_budget_loc = budget_loc - total_loc
-      else
-        monthly_budget = (daily_budget * deal.days_per_month[index]).round(0)
-        monthly_budget = 0 if monthly_budget.between?(0, 1)
-        total += monthly_budget
-
-        monthly_budget_loc = (daily_budget_loc * deal.days_per_month[index]).round(0)
-        monthly_budget_loc = 0 if monthly_budget_loc.between?(0, 1)
-        total_loc += monthly_budget_loc
-      end
-      period = Date.new(*month)
-      deal_product_budgets.create(
-        start_date: [period, deal_start_date].max,
-        end_date: [period.end_of_month, deal_end_date].min,
-        budget: monthly_budget,
-        budget_loc: monthly_budget_loc
-      )
     end
   end
 

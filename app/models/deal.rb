@@ -110,7 +110,7 @@ class Deal < ActiveRecord::Base
       send_ealert
       log_stage_changes
     end
-    reset_products if (start_date_changed? || end_date_changed?)
+    Deal::ResetBudgetsService.new(self).perform if (start_date_changed? || end_date_changed?)
     send_lost_deal_notification
     connect_deal_clients
     log_start_date_changes if start_date_changed?
@@ -122,6 +122,7 @@ class Deal < ActiveRecord::Base
 
   before_create do
     update_stage
+    set_freezed
     if self.closed_at.nil?
       self.closed_at = created_at unless stage.open?
     end
@@ -237,6 +238,10 @@ class Deal < ActiveRecord::Base
   end
 
   attr_accessor :manual_update
+
+  def set_freezed
+    self.freezed = company.default_deal_freeze_budgets
+  end
 
   def run_agreements_tracking?
     advertiser_id_changed? || agency_id_changed? || start_date_changed? || end_date_changed?
@@ -543,16 +548,6 @@ class Deal < ActiveRecord::Base
     deal_product_budgets.update_all("budget_loc = budget * #{self.exchange_rate}")
     deal_products.map{ |deal_product| deal_product.update_budget }
     self.budget_loc = budget * self.exchange_rate
-  end
-
-  def reset_products
-    # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
-    ActiveRecord::Base.no_touching do
-      deal_products.each do |deal_product|
-        deal_product.deal_product_budgets.destroy_all
-        deal_product.create_product_budgets
-      end
-    end
   end
 
   def generate_deal_members
