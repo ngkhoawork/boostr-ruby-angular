@@ -11,6 +11,7 @@
     $scope.segments = []
     $scope.regions = []
     $scope.months = []
+    $scope.accountData = []
     $scope.timeDimensions = []
     $scope.page = 1
     $scope.allClientsLoaded = false
@@ -27,6 +28,7 @@
           label: start.format('MMM YY')
           date: start.format('YYYY-MM')
           id: index++
+          totalRevenue: 0
         start.add 1, 'month'
       months
 
@@ -57,6 +59,8 @@
       query.page = $scope.page
 
       SpendByAccount.SpendByAccountReport(query).then (data) ->
+        $scope.accountData.push data
+        calculateTotalByMonth(_.flatten($scope.accountData))
         $scope.allClientsLoaded = !data || data.length < $scope.per
 
         if $scope.page++ > 1
@@ -66,6 +70,12 @@
         $scope.isLoading = false
         callback() if _.isFunction callback
 
+    calculateTotalByMonth = (data) ->
+      _.each data, (item) ->
+        _.each item.month_revenues, (revenue, month) ->
+          _.each $scope.months, (itemMonth) ->
+            if moment(new Date(itemMonth.date)).format('YYYY-MM') == moment(new Date(month)).format('YYYY-MM')
+              itemMonth.totalRevenue += revenue
 
     $scope.export = ->
       if !appliedFilter.start_date || !appliedFilter.end_date

@@ -46,7 +46,10 @@
                     .z-sortable{by: 'seller_names'}
                       Seller
                   %th{'ng-repeat': 'month in months'}
-                    .z-sortable{by: '["!!revenues[\""+month.id+"\"]", "revenues[\""+month.id+"\"]"]'} {{month.label}}
+                    .z-sortable.totalRevenue{by: '["!!revenues[\""+month.id+"\"]", "revenues[\""+month.id+"\"]"]'}
+                      %span
+                        {{ month.totalRevenue ? (month.totalRevenue | currency: '$' : '0') : '$0' }}
+                      {{month.label}}
 
               %tbody{infinite: {scroll: "loadMoreClients()", 'scroll-disabled': 'isLoading || allClientsLoaded', 'scroll-listen-for-event': 'lazy:scroll'}}
                 %tr{ ng: { repeat: 'account in spend_by_account  | orderBy : zSort.by : zSort.rev' } }
