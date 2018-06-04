@@ -34,11 +34,11 @@
         .col-sm-6
           .form-group{ style: 'margin-right: 0' }
             %label{ for: 'mobile' } Mobile
-            %input.form-control{ name: 'mobile', placeholder: 'Mobile Number', ng: { model: 'contact.address.mobile' } }
+            %input.form-control{ name: 'mobile', placeholder: 'Mobile Number', ng: { model: 'contact.address.mobile' }, 'numbers-only': true }
         .col-sm-6
           .form-group{ style: 'margin-left: 0' }
             %label{ for: 'office' } Office
-            %input.form-control{ name: 'office', placeholder: 'Office Number', ng: { model: 'contact.address.phone' } }
+            %input.form-control{ name: 'office', placeholder: 'Office Number', ng: { model: 'contact.address.phone' }, 'numbers-only': true }
       .form-group
         %label{ for: 'position' } Position
         %input.form-control{ name: 'position', placeholder: 'Position', ng: { model: 'contact.position' } }

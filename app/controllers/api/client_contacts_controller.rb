@@ -11,7 +11,7 @@ class Api::ClientContactsController < ApplicationController
     max_per_page = 100
     paginate client_contacts.count, max_per_page do |limit, offset|
       render json: client_contacts
-                    .preload(contact: [:address, values: [:option, :field]])
+                    .preload(contact: [:address, :contact_cf, values: [:option, :field]])
                     .limit(limit)
                     .offset(offset),
                     each_serializer: ClientContacts::ClientContactsForClientSerializer,
