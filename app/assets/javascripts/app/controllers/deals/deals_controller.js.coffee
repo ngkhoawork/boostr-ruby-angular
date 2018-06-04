@@ -133,6 +133,8 @@
                         when 'startDate' then 'Start date'
                         when 'createdDate' then 'Created date'
                 select: (key, value) ->
+                    if key == 'team'
+                        $scope.teamFilter({name: 'All Deals', param: 'all'})
                     DealsFilter.select(key, value)
                 onDropdownToggle: ->
                     this.search = ''
