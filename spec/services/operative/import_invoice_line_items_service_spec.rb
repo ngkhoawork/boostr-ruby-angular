@@ -27,6 +27,39 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
     subject.perform
   end
 
+  it 'skips rows that got changed more than a day prior to last import' do
+    api_config({ skip_not_changed: true })
+
+    csv_import_log(created_at: Date.today - 1.month)
+
+    expect(DisplayLineItemBudgetCsv).not_to receive(:new)
+    subject(last_modified_on: DateTime.now - 3.months).perform
+  end
+
+  it 'does not skip old rows if option is disabled' do
+    api_config({skip_not_changed: false})
+
+    csv_import_log(created_at: Date.today - 1.month)
+
+    expect(DisplayLineItemBudgetCsv).to receive(:new).and_return(line_item_budget_csv)
+    expect(line_item_budget_csv).to receive(:irrelevant?).and_return(false)
+    expect(line_item_budget_csv).to receive(:valid?).and_return(true)
+    expect(line_item_budget_csv).to receive(:perform)
+    subject(last_modified_on: DateTime.now - 3.months).perform
+  end
+
+  it 'does not skip rows that changed recently' do
+    api_config({skip_not_changed: true})
+
+    csv_import_log(created_at: Date.today - 1.month)
+
+    expect(DisplayLineItemBudgetCsv).to receive(:new).and_return(line_item_budget_csv)
+    expect(line_item_budget_csv).to receive(:irrelevant?).and_return(false)
+    expect(line_item_budget_csv).to receive(:valid?).and_return(true)
+    expect(line_item_budget_csv).to receive(:perform)
+    subject(last_modified_on: DateTime.now.to_s).perform
+  end
+
   context 'revenue_calculation_patterns' do
     context 'Invoice Units pattern' do
       it 'passes invoice_units divided by 1000' do
@@ -48,7 +81,8 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
 
     context 'Recognized Revenue pattern' do
       it 'sums invoice_line_item.recognized_revenue' do
-        recognized_revenue_pattern = DatafeedConfigurationDetails.get_pattern_id('Recognized Revenue')
+        revenue_pattern = DatafeedConfigurationDetails.get_pattern_id('Recognized Revenue')
+        api_config(revenue_calculation_pattern: revenue_pattern)
 
         expect(DisplayLineItemBudgetCsv).to receive(:new).with(
           invoice_id: '10',
@@ -56,17 +90,18 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
           budget_loc: 90000.0,
           month_and_year: '01-2017',
           impressions: '150000',
-          revenue_calculation_pattern: recognized_revenue_pattern,
+          revenue_calculation_pattern: revenue_pattern,
           company_id: company.id
         ).and_return(line_item_budget_csv)
         expect(line_item_budget_csv).to receive(:irrelevant?).and_return(false)
         expect(line_item_budget_csv).to receive(:valid?).and_return(:true)
         expect(line_item_budget_csv).to receive(:perform)
-        subject(recognized_revenue_pattern).perform
+        subject.perform
       end
 
       it 'multiplies recognized revenue by the recognized revenue adjustement' do
-        recognized_revenue_pattern = DatafeedConfigurationDetails.get_pattern_id('Recognized Revenue')
+        revenue_pattern = DatafeedConfigurationDetails.get_pattern_id('Recognized Revenue')
+        api_config(revenue_calculation_pattern: revenue_pattern)
 
         expect(DisplayLineItemBudgetCsv).to receive(:new).with(
           invoice_id: '10',
@@ -74,19 +109,20 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
           budget_loc: 100000.0,
           month_and_year: '01-2017',
           impressions: '150000',
-          revenue_calculation_pattern: recognized_revenue_pattern,
+          revenue_calculation_pattern: revenue_pattern,
           company_id: company.id
         ).and_return(line_item_budget_csv)
         expect(line_item_budget_csv).to receive(:irrelevant?).and_return(false)
         expect(line_item_budget_csv).to receive(:valid?).and_return(:true)
         expect(line_item_budget_csv).to receive(:perform)
-        subject(recognized_revenue_pattern, recognized_revenue_adjustment: 10000).perform
+        subject(recognized_revenue_adjustment: 10000).perform
       end
     end
 
     context 'Invoice Amount pattern' do
       it 'sums invoice_line_item.invoice_amount' do
-        invoice_amount_pattern = DatafeedConfigurationDetails.get_pattern_id('Invoice Amount')
+        revenue_pattern = DatafeedConfigurationDetails.get_pattern_id('Invoice Amount')
+        api_config(revenue_calculation_pattern: revenue_pattern)
 
         expect(DisplayLineItemBudgetCsv).to receive(:new).with(
           invoice_id: '10',
@@ -94,13 +130,13 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
           budget_loc: 35000.0,
           month_and_year: '01-2017',
           impressions: '150000',
-          revenue_calculation_pattern: invoice_amount_pattern,
+          revenue_calculation_pattern: revenue_pattern,
           company_id: company.id
         ).and_return(line_item_budget_csv)
         expect(line_item_budget_csv).to receive(:irrelevant?).and_return(false)
         expect(line_item_budget_csv).to receive(:valid?).and_return(:true)
         expect(line_item_budget_csv).to receive(:perform)
-        subject(invoice_amount_pattern).perform
+        subject.perform
       end
     end
   end
@@ -137,16 +173,42 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
     DatafeedConfigurationDetails.get_pattern_id('Invoice Units')
   end
 
-  def subject(revenue_calculation_pattern = default_pattern, opts={})
+  def subject(opts={})
     content_for_files([
       invoice_lines_csv_file(opts),
       invoice_csv_file
     ])
 
     @_subject ||= Operative::ImportInvoiceLineItemsService.new(
-      company.id,
-      revenue_calculation_pattern,
+      api_config,
       { invoice_line_item: invoice_lines_file, invoice: invoices_file }
     )
+  end
+
+  def api_config(opts={})
+    @api_config ||= create :operative_datafeed_configuration, {
+      company: company,
+      datafeed_configuration_details: datafeed_configuration_details(opts)
+    }
+  end
+
+  def datafeed_configuration_details(opts={})
+    defaults = {
+      revenue_calculation_pattern: default_pattern,
+      skip_not_changed: false
+    }
+
+    @details ||= create :datafeed_configuration_details, defaults.merge(opts)
+  end
+
+  def csv_import_log(opts={})
+    defaults = {
+      company_id: company.id,
+      object_name: 'display_line_item_budget',
+      source: 'operative',
+      rows_processed: 11
+    }
+
+    @csv_import_log ||= create :csv_import_log, defaults.merge(opts)
   end
 end

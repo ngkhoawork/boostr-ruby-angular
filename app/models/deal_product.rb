@@ -9,6 +9,8 @@ class DealProduct < ActiveRecord::Base
 
   enum pmp_type: PMP_TYPES
 
+  attr_accessor :manual_update
+
   validates :product, presence: true
   validates :budget, :budget_loc, numericality: true
   validate :active_exchange_rate
@@ -22,7 +24,7 @@ class DealProduct < ActiveRecord::Base
     if deal_product_budgets.empty?
       self.create_product_budgets
     end
-    WorkflowWorker.perform_async(deal_id: deal.id, type: 'update')
+    wf_callback(deal)
   end
 
   after_update do
@@ -81,6 +83,11 @@ class DealProduct < ActiveRecord::Base
         forecast_pipeline_fact_calculator.calculate()
       end
     end
+    wf_callback(deal)
+  end
+
+  def wf_callback(deal)
+    return unless manual_update
     WorkflowWorker.perform_async(deal_id: deal.id, type: 'update')
   end
 

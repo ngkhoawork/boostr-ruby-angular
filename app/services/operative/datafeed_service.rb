@@ -38,8 +38,7 @@ class Operative::DatafeedService
   def import_sales_orders
     return unless @extracted_files
     Operative::ImportSalesOrdersService.new(
-      api_config.company_id,
-      api_config.auto_close_deals,
+      api_config,
       @extracted_files.slice(:sales_order, :currency)
     ).perform
   end
@@ -47,10 +46,7 @@ class Operative::DatafeedService
   def import_sales_order_line_items
     return unless @extracted_files
     Operative::ImportSalesOrderLineItemsService.new(
-      api_config.company_id,
-      api_config.revenue_calculation_pattern,
-      api_config.product_mapping,
-      api_config.exclude_child_line_items,
+      api_config,
       @extracted_files.slice(:sales_order_line_items, :invoice_line_item)
     ).perform
   end
@@ -58,8 +54,7 @@ class Operative::DatafeedService
   def import_invoice_line_items
     return unless @extracted_files
     Operative::ImportInvoiceLineItemsService.new(
-      api_config.company_id,
-      api_config.revenue_calculation_pattern,
+      api_config,
       @extracted_files.slice(:invoice_line_item, :invoice)
     ).perform
   end

@@ -3,6 +3,10 @@ require 'rails_helper'
 RSpec.describe TimePeriod, type: :model do
   let!(:company) { create :company }
 
+  after(:all) do
+    Timecop.return
+  end
+
   context 'scopes' do
     let!(:time_period) { create :time_period }
 

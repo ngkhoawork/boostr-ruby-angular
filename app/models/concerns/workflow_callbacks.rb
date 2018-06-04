@@ -6,7 +6,7 @@ module WorkflowCallbacks
   included do
     before_destroy { check_chains_for_workflows(on_destroy_workflows, self, destroyed: true, callback_type: 'destroy') }
 
-    before_update  { track_deal_state }
+    before_update  { track_deal_state if manual_update }
   end
 
   def check_chains_for_workflows(workflows, deal, options = {})

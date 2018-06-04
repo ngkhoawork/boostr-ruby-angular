@@ -24,6 +24,10 @@ describe Api::DashboardsController do
     sign_in user
   end
 
+  after(:all) do
+    Timecop.return
+  end
+
   describe 'GET #show' do
     it 'returns json for the dashboard' do
       get :show, format: :json

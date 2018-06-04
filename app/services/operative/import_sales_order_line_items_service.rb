@@ -1,38 +1,36 @@
 class Operative::ImportSalesOrderLineItemsService
-  def initialize(company_id, revenue_calculation_pattern, product_mapping, exclude_child_line_items, files)
-    @company_id = company_id
-    @revenue_calculation_pattern = revenue_calculation_pattern
-    @product_mapping = product_mapping
-    @exclude_child_line_items = exclude_child_line_items
-    @sales_order_line_items = files.fetch(:sales_order_line_items)
-    @invoice_line_items = files.fetch(:invoice_line_item)
+  def initialize(api_config, files)
+    @api_config = api_config
+    @files = files
     @marked_to_delete = []
   end
 
   def perform
-    @sales_order_csv_file = open_file(sales_order_line_items)
-    @invoice_csv_file = open_file(invoice_line_items)
-    if @sales_order_csv_file && @invoice_csv_file
-      self.class.define_calculator_method(@revenue_calculation_pattern)
-      self.class.define_product_mapping(@product_mapping)
-      parse_invoices
-      parse_line_items
-      destroy_marked_to_delete
-    end
+    self.class.define_calculator_method(revenue_calculation_pattern)
+    self.class.define_product_mapping(product_mapping)
+
+    parse_invoices
+    parse_line_items
+    destroy_marked_to_delete
   end
 
   private
-  attr_reader :company_id, :revenue_calculation_pattern, :sales_order_line_items,
-              :invoice_line_items, :invoice_csv_file, :sales_order_csv_file, :invoice_csv_file,
-              :exclude_child_line_items, :marked_to_delete
 
-  def open_file(file)
+  attr_reader :api_config, :files, :sales_order_line_items, :marked_to_delete,
+              :invoice_line_items
+
+  delegate :company_id, :revenue_calculation_pattern, :product_mapping,
+           :exclude_child_line_items, :skip_not_changed?, to: :api_config
+
+  def open_file(file_label)
+    file = files.fetch file_label
+
     begin
       File.open(file, 'r:ISO-8859-1')
-    rescue Exception => e
+    rescue Exception => error
       import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item', source: 'operative')
       import_log.set_file_source(file)
-      import_log.log_error [e.class.to_s, e.message]
+      import_log.log_error [error.class.to_s, error.message]
       import_log.save
     end
   end
@@ -40,7 +38,9 @@ class Operative::ImportSalesOrderLineItemsService
   def parse_invoices
     @parsed_invoices ||= {}
 
-    File.foreach(invoice_csv_file).with_index do |line, line_num|
+    file = open_file(:invoice_line_item)
+
+    File.foreach(file).with_index do |line, line_num|
       if line_num == 0
         @headers = CSV.parse_line(line)
         next
@@ -65,9 +65,11 @@ class Operative::ImportSalesOrderLineItemsService
 
   def parse_line_items
     import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item', source: 'operative')
-    import_log.set_file_source(sales_order_line_items)
+    file = open_file(:sales_order_line_items)
+    import_log.set_file_source(file)
+    last_import_date = skip_not_changed? ? import_log.last_import_date : -Float::INFINITY
 
-    File.foreach(sales_order_csv_file).with_index do |line, line_num|
+    File.foreach(file).with_index do |line, line_num|
       import_log.count_processed
 
       if line_num == 0
@@ -83,7 +85,7 @@ class Operative::ImportSalesOrderLineItemsService
         next
       end
 
-      if irrelevant_line_item?(row)
+      if irrelevant_row(row, last_import_date)
         mark_for_deletion(row)
         import_log.count_skipped
         next
@@ -124,7 +126,7 @@ class Operative::ImportSalesOrderLineItemsService
       start_date: row[:sales_order_line_item_start_date],
       end_date: row[:sales_order_line_item_end_date],
       ad_server_product: row[:product_name],
-      product_name: product_mapping(row),
+      product_name: map_product(row),
       quantity: row[:quantity],
       price: row[:net_unit_cost],
       pricing_type: row[:cost_type],
@@ -136,12 +138,17 @@ class Operative::ImportSalesOrderLineItemsService
     )
   end
 
-  def irrelevant_line_item?(row)
+  def irrelevant_row(row, last_import_date)
+    last_modified_date(row[:last_modified_on]) < last_import_date ||
     row[:line_item_status].try(:downcase) != 'sent_to_production' ||
     parent_line_item_presence(row[:parent_line_item_id]) ||
     !row[:quantity].present? ||
     !row[:net_cost].present? ||
     row[:net_cost].to_f.zero?
+  end
+
+  def last_modified_date(date)
+    date&.to_date || Date.today
   end
 
   def mark_for_deletion(row)
@@ -196,11 +203,11 @@ class Operative::ImportSalesOrderLineItemsService
   def self.define_product_mapping(mapping)
     case DatafeedConfigurationDetails.get_product_mapping_name(mapping)
     when 'Product_Name'
-      define_method(:product_mapping) do |row|
+      define_method(:map_product) do |row|
         row[:product_name]
       end
     when 'Forecast_Category'
-      define_method(:product_mapping) do |row|
+      define_method(:map_product) do |row|
         row[:forecast_category]
       end
     end

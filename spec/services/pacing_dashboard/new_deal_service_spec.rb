@@ -6,6 +6,10 @@ describe PacingDashboard::NewDealService do
     create_deals
   end
 
+  after(:all) do
+    Timecop.return
+  end
+
   it 'return proper count for new deal service' do
     Timecop.freeze(2017, 2, 2) do
       result = new_deal_service.perform
