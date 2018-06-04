@@ -1871,6 +1871,8 @@ ActiveRecord::Schema.define(version: 20180420000253) do
     t.boolean  "is_gmail",   default: false
   end
 
+  add_index "email_opens", ["guid"], name: "index_email_opens_on_guid", using: :btree
+
   create_table "email_threads", force: :cascade do |t|
     t.string   "email_guid"
     t.integer  "user_id"
@@ -1884,6 +1886,8 @@ ActiveRecord::Schema.define(version: 20180420000253) do
     t.string   "sender"
     t.string   "recipient"
   end
+
+  add_index "email_threads", ["user_id", "thread_id"], name: "index_email_threads_on_user_id_and_thread_id", using: :btree
 
   create_table "exchange_rates", force: :cascade do |t|
     t.integer "company_id"

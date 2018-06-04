@@ -3,7 +3,7 @@ class  Api::V2::EmailThreadsController < ApiController
 
   def all_threads
     if params[:thread_ids].present?
-      email_threads = current_user.email_threads.thread_list params[:thread_ids]
+      email_threads = current_user.email_threads.thread_list current_user.id, params[:thread_ids]
 
       render json: { threads: email_threads }
     else
