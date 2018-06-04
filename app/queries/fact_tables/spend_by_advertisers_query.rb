@@ -6,9 +6,9 @@ class FactTables::SpendByAdvertisersQuery
 
   def perform
     AccountProductRevenueFact
-        .select('start_date, name, sum(sum)')
+        .select('advertiser_id, start_date, name, sum(sum)')
         .from(unified_data)
-        .group('start_date, name')
+        .group('start_date, name, advertiser_id')
   end
 
   private

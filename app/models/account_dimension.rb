@@ -1,4 +1,5 @@
 class AccountDimension < ActiveRecord::Base
+  include PgSearch
   enum account_type: { advertiser: 10, agency: 11 }
 
   belongs_to :client, foreign_key: :id
@@ -39,5 +40,20 @@ class AccountDimension < ActiveRecord::Base
   scope :by_holding_company_id, -> (holding_company_id) { where(holding_company_id: holding_company_id) if holding_company_id }
   scope :by_company_id, ->(company_id) { where(company_id: company_id) }
   scope :by_account_type, ->(account_type) { where(account_type: account_type) }
+  scope :fuzzy_find, -> term { fuzzy_search(term) if term.present? }
+  scope :exclude_ids, -> ids { where.not(id: ids) if ids.present? }
 
+  pg_search_scope :fuzzy_search, {
+    against: :name,
+    using: {
+      tsearch: {
+        prefix: true,
+        any_word: true
+      },
+      dmetaphone: {
+        any_word: true
+      }
+    },
+    ranked_by: ':trigram'
+  }
 end

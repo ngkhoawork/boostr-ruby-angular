@@ -1,4 +1,9 @@
 class AssignmentRule < ActiveRecord::Base
+  COUNTRY = 'country'.freeze
+  SOURCE_URL = 'source_url'.freeze
+  PRODUCT_NAME = 'product_name'.freeze
+  TYPES = [COUNTRY, SOURCE_URL, PRODUCT_NAME]
+
   has_many :assignment_rules_users, dependent: :destroy
   has_many :users, through: :assignment_rules_users
 
@@ -10,10 +15,10 @@ class AssignmentRule < ActiveRecord::Base
 
   scope :by_company_id, -> (company_id) { where(company_id: company_id) }
   scope :order_by_position, -> { order(:position) }
-  scope :default, -> { find_by(default: true) }
   scope :not_default, -> { where(default: false) }
-  scope :by_countries, -> (country) { where("array_to_string(countries, '||') ILIKE ?", "%#{country.downcase}%") }
-  scope :by_states, -> (state) { where("array_to_string(states, '||') ILIKE ?", "%#{state.downcase}%") }
+  scope :by_criteria_1, -> (criteria) { where("array_to_string(criteria_1, '||') ILIKE ?", "%#{criteria.downcase}%") }
+  scope :by_criteria_2, -> (criteria) { where("array_to_string(criteria_2, '||') ILIKE ?", "%#{criteria.downcase}%") }
+  scope :by_type, -> (type) { where(field_type: type) }
 
   def next_available_rule
     assignment_rules_users.next_available

@@ -27,12 +27,13 @@ class Io < ActiveRecord::Base
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
   has_many :costs, dependent: :destroy
   has_many :cost_monthly_amounts, dependent: :destroy, through: :costs
-  has_many :display_line_items, dependent: :destroy
+  has_many :display_line_items, dependent: :destroy, class_name: "::DisplayLineItem"
   has_many :display_line_item_budgets, dependent: :destroy, through: :display_line_items
   has_many :print_items, dependent: :destroy
   has_many :temp_ios, dependent: :destroy
   has_many :influencer_content_fees, -> { order 'influencer_content_fees.influencer_id, influencer_content_fees.id' }, dependent: :destroy, through: :content_fees
   has_many :content_fee_products, dependent: :destroy, through: :content_fees, source: :product
+  has_many :spend_agreements, through: :deal
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
   validates :deal_id, uniqueness: true, allow_nil: true

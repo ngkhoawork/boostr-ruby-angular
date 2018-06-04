@@ -163,6 +163,8 @@ Rails.application.routes.draw do
       resources :contact_cf_names, only: [:index]
       resources :display_line_items, only: [:create]
       resources :display_line_item_budgets, only: [:create]
+      resources :custom_field_names, only: [:index, :create, :show, :update, :destroy]
+      resources :sales_processes, only: [:index, :create, :show, :update]
     end # API V2 END
 
     post '/slack/auth', to: 'slack_connect#auth'
@@ -189,6 +191,17 @@ Rails.application.routes.draw do
       resources :deal_product_budgets, only: [:index]
       resources :io_members, only: [:index]
       resources :display_line_item_budgets, only: [:index]
+    end
+
+    resources :spend_agreements do
+      resources :spend_agreement_deals, only: [:index, :create, :destroy] do
+        collection do
+          get :available_to_match
+        end
+      end
+      resources :spend_agreement_ios, only: [:index]
+      resources :spend_agreement_publishers, only: [:index, :create, :destroy]
+      resources :spend_agreement_team_members, only: [:index, :create, :update, :destroy]
     end
 
     resources :dfp_imports do
@@ -238,6 +251,7 @@ Rails.application.routes.draw do
       member do
         post :delete_ssp
         post :update_ssp
+        post :sync_hoopla_users
       end
     end
     resources :integration_types, only: [:index]
@@ -263,9 +277,10 @@ Rails.application.routes.draw do
       get :sellers
       get :connected_contacts
       get :connected_client_contacts
-      get :child_clients
       get :stats
       collection do
+        get :child_clients
+        get :parent_clients
         get :search_clients
         get :filter_options
         get :category_options
@@ -340,6 +355,7 @@ Rails.application.routes.draw do
       post :import_content_fee, on: :collection
       post :import_costs, on: :collection
       get :export_costs, on: :collection
+      get :spend_agreements
       resources :costs, only: [:create, :update, :destroy]
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]
@@ -374,10 +390,13 @@ Rails.application.routes.draw do
       member do
         post :send_to_operative
         post :send_to_google_sheet
+        get :possible_agreements
       end
       resources :deal_members, only: [:index, :create, :update, :destroy]
       resources :deal_contacts, only: [:index, :create, :update, :destroy]
       resources :attachments, only: [:index, :update, :create, :destroy]
+      get :spend_agreements
+      put :assign_agreements
       get 'latest_log', to: 'integration_logs#latest_log'
     end
     resources :assets, only: [:create] do
@@ -417,7 +436,7 @@ Rails.application.routes.draw do
         get :current_year_quarters
       end
     end
-    resources :quotas, only: [:index, :create, :update] do
+    resources :quotas, only: [:index, :create, :update, :destroy] do
       post :import, on: :collection
     end
     resources :forecasts, only: [:index, :show] do
@@ -576,7 +595,7 @@ Rails.application.routes.draw do
     resources :publisher_members, only: [:create, :update, :destroy]
     resources :publisher_contacts, only: [:create, :update, :destroy]
 
-    resources :custom_field_names, path: 'custom_field_names/:subject_type'
+    resources :custom_field_names, only: [:index, :create, :show, :update, :destroy]
 
     resource :egnyte_integration, only: [:show, :create, :update] do
       collection do
@@ -596,6 +615,7 @@ Rails.application.routes.draw do
         get :reassign
         get :map_with_client
         get :reject_from_email
+        get :clients
       end
 
       collection do
@@ -611,7 +631,10 @@ Rails.application.routes.draw do
         get :remove_user
       end
 
-      put :update_positions, on: :collection
+      collection do
+        put :update_positions
+        get :field_types
+      end
     end
 
     resources :workflows, only: [:index, :create, :update, :destroy] do

@@ -6,22 +6,22 @@
         original.custom_field_name.custom_field_options_attributes = original.custom_field_name.customFieldOptions
         angular.toJson(original)
 
-      resource = $resource '/api/custom_field_names/', {subject_type: '@subject_type', id: '@id'},
+      resource = $resource '/api/custom_field_names/', {id: '@id'},
         save:
           method: 'POST'
-          url: '/api/custom_field_names/:subject_type'
+          url: '/api/custom_field_names'
           transformRequest: transformRequest
         update:
           method: 'PUT'
-          url: '/api/custom_field_names/:subject_type/:id'
+          url: '/api/custom_field_names/:id'
           transformRequest: transformRequest
         all:
           method: 'GET'
-          url: '/api/custom_field_names/:subject_type'
+          url: '/api/custom_field_names'
           isArray: true
         delete:
           method: 'DELETE'
-          url: '/api/custom_field_names/:subject_type/:id'
+          url: '/api/custom_field_names/:id'
 
 
       @field_type_list = [
@@ -47,7 +47,7 @@
           params,
           (data) ->
             deferred.resolve(data)
-            $rootScope.$broadcast 'updated_publisher_custom_field_names'
+            $rootScope.$broadcast 'updated_custom_field_names'
           (resp) ->
             deferred.reject(resp)
         )
@@ -59,7 +59,7 @@
           params,
           (data) ->
             deferred.resolve(data)
-            $rootScope.$broadcast 'updated_publisher_custom_field_names'
+            $rootScope.$broadcast 'updated_custom_field_names'
           (resp) ->
             deferred.reject(resp)
         )
@@ -69,7 +69,7 @@
         deferred = $q.defer()
         resource.delete params, () ->
           deferred.resolve()
-          $rootScope.$broadcast 'updated_publisher_custom_field_names'
+          $rootScope.$broadcast 'updated_custom_field_names'
         deferred.promise
 
       return

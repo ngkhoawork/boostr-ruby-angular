@@ -66,7 +66,7 @@
     },
     child_clients: {
       method: "GET"
-      url: 'api/clients/:id/child_clients'
+      url: 'api/clients/child_clients'
       isArray: true
     },
     stats: {
@@ -97,11 +97,17 @@
       method: 'GET'
       url: '/api/clients/search_clients?name=:name&full_text_search=true'
     }
+    search_parent_clients: {
+      isArray: true
+      method: 'GET'
+      url: '/api/clients/parent_clients'
+    }
 
 
   resource.allClients = []
   resource.currentClient = {}
   resource.totalCount = 0
+  resource.exportUrl = '/api/clients.csv'
 
   resource.__all = (params) ->
     deferred = $q.defer()

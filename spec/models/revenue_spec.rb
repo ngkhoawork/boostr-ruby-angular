@@ -26,26 +26,6 @@ RSpec.describe Revenue, type: :model do
     end
   end
 
-  describe 'alerts' do
-    let(:user) { create :user }
-    let(:client) { create :client }
-    let(:client_member) { create :client_member, client: client, user: user, share: 100 }
-    let(:revenue) { create :revenue, user: user, client: client, start_date: DateTime.now.to_date-15, end_date: DateTime.now.to_date+15, budget: 10000, budget_remaining: 8000 }
-
-    it 'returns run rate' do
-      client.client_members << client_member
-      expect(revenue.run_rate.to_i).to equal((((revenue.budget-revenue.budget_remaining)/(DateTime.now.to_date-revenue.start_date.to_date+1))*100.0).to_i)
-      expect(revenue.remaining_day.to_i).to equal((revenue.budget_remaining/(revenue.run_rate/100.0)).to_i)
-      expect(revenue.balance.to_i).to equal((((revenue.end_date.to_date-DateTime.now.to_date+1)-revenue.remaining_day)*(revenue.run_rate/100.0)).to_i)
-      Revenue.set_alerts(company.id)
-      user.reload
-      expect(user.neg_balance_l_cnt.to_i).to equal(1)
-      expect(user.pos_balance_l_cnt.to_i).to equal(0)
-      expect(user.neg_balance_l.to_i).to equal((((revenue.end_date.to_date-DateTime.now.to_date+1)-revenue.remaining_day)*(revenue.run_rate/100.0)).to_i)
-      expect(user.pos_balance_l.to_i).to equal(0)
-    end
-  end
-
   describe 'uploading a good csv' do
     it 'creates a new revenue object for each row' do
       expect do

@@ -48,6 +48,11 @@
         quota: ->
           quota
 
+  $scope.delete = (quota) ->
+    if confirm('Are you sure you want to delete quota record of "' +  quota.user_name + '"?')
+      Quota.delete quota, ->
+        $location.path("/settings/quotas/#{$routeParams.time_period_id}")
+
   $scope.$on 'updated_quotas', ->
     $scope.getQuotas()
 

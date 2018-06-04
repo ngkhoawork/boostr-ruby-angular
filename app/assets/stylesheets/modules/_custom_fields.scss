@@ -53,3 +53,25 @@
 
   }
 }
+
+.custom-field {
+  display: inline-flex;
+  width: 100%;
+  padding-bottom: 5px;
+
+  &.has-error {
+    color: $error-color;
+  }
+
+  >div {
+    width: 100%;
+  }
+
+  .datetime-field {
+    min-width: 130px;
+  }
+
+  .text-area {
+    min-width: 100px;
+  }
+}

@@ -25,6 +25,8 @@
         onInvite: ->
           (user) ->
             $scope.users.push(user)
+        options: -> {}    
+
 
   $scope.submitUser = (user) ->
     index = user.roles.indexOf('admin')

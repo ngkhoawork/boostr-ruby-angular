@@ -49,6 +49,17 @@
                                 {{ $select.selected.name }}
                             %ui-select-choices{ repeat: 'product.id as product in productsByLevel(2) | orderBy: "name" | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'product.name' } } }
+
+            .row{ 'ng-if': 'customFieldNames.length > 0' }
+                .col-xs-6{ 'ng-repeat': 'cf in customFieldNames | orderBy: "position"' }
+                    .form-group{'ng-class':'{error: errors[cf.field_name]}'}
+                        %span.error-text {{errors[cf.field_name]}}
+                        %label 
+                            {{ cf.field_label }}
+                            %span.star{'ng-if': 'cf.is_required'} *
+                        %custom-field{ 'field-type': '{{cf.field_type}}', 'field-label': '{{cf.field_label}}', 'custom-field': 'content_fee.custom_field', 'field-name': '{{cf.field_name}}', 'currency-symbol': '{{currency_symbol}}', 'type': 'form', 'id': '{{content_fee.id}}', 'options': 'cf.custom_field_options' }  
+
+            .row
                 .col-xs-6
                     .form-group.product-budget{'ng-class': "{'with-add-btn': content_fee.isIncorrectTotalBudgetPercent}"}
                         %label Total Budget

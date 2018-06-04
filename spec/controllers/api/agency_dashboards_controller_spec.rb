@@ -81,14 +81,16 @@ describe Api::AgencyDashboardsController, type: :controller do
       {
         date: convert_date(advertiser_agency_revenue_fact.time_dimension.start_date),
         name: advertiser_agency_revenue_fact.advertiser.name,
-        sum: advertiser_agency_revenue_fact.revenue_amount
+        sum: advertiser_agency_revenue_fact.revenue_amount,
+        advertiser_id: advertiser_agency_revenue_fact.advertiser.id
       }
     end
     let(:pipeline) do
       {
         date: convert_date(advertiser_agency_pipeline_fact.time_dimension.start_date),
         name: advertiser_agency_pipeline_fact.advertiser.name,
-        sum: advertiser_agency_pipeline_fact.weighted_amount
+        sum: advertiser_agency_pipeline_fact.weighted_amount,
+        advertiser_id: advertiser_agency_revenue_fact.advertiser.id
       }
     end
 

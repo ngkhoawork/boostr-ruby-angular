@@ -16,7 +16,7 @@
 
     %div.activity-body
       %p
-        %strong {{activity.creator.name}}
+        %strong {{activity.creator.first_name}} {{activity.creator.last_name}}
         {{activity.activity_type.action}}
         %span{'ng-repeat': 'contact in activity.contacts'}
           %a{href: '', 'ng-href': '/contacts/{{contact.id}}'}> {{contact.name}}
@@ -32,7 +32,8 @@
         Publisher
         %a{href: '', 'ng-href': '/publishers/{{activity.publisher.id}}'}
           {{activity.publisher.name}}
-      %div{'ng-if': '!isTextHasTags(activity.comment) || activity.activity_type.name == "Email"'}
+      %div{ng: { 'if': '!isTextHasTags(activity.comment) && activity.activity_type.name != "Email"', 'text-truncate': 'activity.comment', 'tt-chars-threshold': '250' } }
+      %div{'ng-if': 'isTextHasTags(activity.comment) || activity.activity_type.name == "Email"'}
         %p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
         %button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity)'}
           Show email

@@ -27,6 +27,25 @@ describe 'Lead' do
     end
   end
 
+  describe 'callbacks' do
+    let!(:product) { create :product, company: company, name: 'Display' }
+    let!(:contact) { create :contact, address: create(:address, email: 'test@gmail.com') }
+
+    before { create :assignment_rules_user, user: user, assignment_rule: assignment_rule, next: true }
+
+    it 'map product to lead' do
+      lead = create :lead, product_name: 'Display', company: company
+
+      expect(lead.product_id).to eq product.id
+    end
+
+    it 'map contact with lead' do
+      lead = create :lead, product_name: 'Display', company: company, email: 'test@gmail.com'
+
+      expect(lead.contact_id).to eq contact.id
+    end
+  end
+
   private
 
   def company
@@ -35,5 +54,14 @@ describe 'Lead' do
 
   def user
     @_user ||= create :user, company: company
+  end
+
+  def assignment_rule
+    create :assignment_rule,
+           name: 'Product Test',
+           default: false,
+           company: company,
+           field_type: AssignmentRule::PRODUCT_NAME,
+           criteria_1: ['Display']
   end
 end

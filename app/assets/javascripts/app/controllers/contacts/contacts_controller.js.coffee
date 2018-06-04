@@ -47,8 +47,8 @@
                     filter.city = s.city if s.city
                     filter.country = s.country if s.country
                     if s.date.startDate && s.date.endDate
-                        filter.start_date = s.date.startDate.toDate()
-                        filter.end_date = s.date.endDate.toDate()
+                        filter.start_date = s.date.startDate.add(s.date.startDate.utcOffset(), 'm').toDate() if s.date.startDate
+                        filter.end_date = s.date.endDate.add(s.date.endDate.utcOffset(), 'm').toDate() if s.date.endDate
                     filter
                 apply: (reset) ->
                     $scope.getContacts(null, $scope.scrollCallback)

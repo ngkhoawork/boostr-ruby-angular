@@ -15,8 +15,8 @@ describe Api::DisplayLineItemsController, type: :controller do
     end
 
     it 'has appropriate count of record in response with risk filter' do
-      create :io, company: company, display_line_items: [create_negative_item]
-
+      negative_item = create :io, company: company, display_line_items: [create_negative_item]
+      pp negative_item.display_line_items.to_json
       get :index, filter: 'risk', format: :json
 
       response_json = response_json(response)
@@ -216,7 +216,7 @@ describe Api::DisplayLineItemsController, type: :controller do
     create :display_line_item,
            balance: 5_000,
            budget: 40_000,
-           budget_remaining: 5_000.0,
+           budget_delivered: 25_000.0,
            start_date: '20/07/2016',
            end_date: '01/10/2016'
   end
@@ -224,8 +224,8 @@ describe Api::DisplayLineItemsController, type: :controller do
   def create_negative_item
     create :display_line_item,
            balance: 5_000,
-           budget: 10_000,
-           budget_remaining: 20_000.0,
+           budget: 20_000,
+           budget_delivered: 5_000.0,
            start_date: '01/06/2016',
            end_date: '01/10/2016'
   end

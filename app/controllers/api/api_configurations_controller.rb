@@ -76,6 +76,12 @@ class Api::ApiConfigurationsController < ApplicationController
     render json: { service_account_email: SERVICE_ACCOUNT_EMAIL }
   end
 
+  def sync_hoopla_users
+    Hoopla::SyncCompanyUsersWorker.perform_async(current_user.company_id)
+
+    render nothing: true
+  end
+
   private
 
   def api_configuration
@@ -136,7 +142,11 @@ class Api::ApiConfigurationsController < ApplicationController
                                               google_sheets_details_attributes: [
                                                                                   :id,
                                                                                   :sheet_id
-                                                                                ])
+                                                                                ],
+                                              hoopla_details_attributes:        [
+                                                                                  :id,
+                                                                                  :client_id,
+                                                                                  :client_secret])
   end
 
   def sti_routing_param

@@ -342,6 +342,14 @@
       templateUrl: 'bp.html'
       controller: 'BPController'
 
+    .when '/agreements',
+      templateUrl: 'agreements.html'
+      controller: 'AgreementsController'
+      
+    .when '/agreements/:id',
+      templateUrl: 'agreement.html'
+      controller: 'AgreementController'
+
     .when '/forecast/:team_id?',
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'
@@ -448,7 +456,7 @@
   currentUserRoles.isSuperAdmin = -> _.contains this, 'superadmin'
 
   CurrentUser.get().$promise.then (user) ->
-    user.leader = user['leader?']
+    user.leader = user.is_leader
     $rootScope.currentUser = user
     updateTalkus user
 

@@ -16,22 +16,13 @@
         %label.control-label{ for: 'last_name' } Last Name
         %input.form-control{ placeholder: 'Last Name', ng: { model: 'user.last_name' }, name: 'last_name' }
 
-
-      .form-group{'ng-if': '!user["leader?"]'}
-        %label.control-label{ for: 'parent' } Team
-        %ui-select{ name: 'parent', ng: { model: 'user.team_id', disabled: true } }
-          %ui-select-match{ placeholder: 'Select A Team', "allow-clear": 'true' }
-            {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'team.id as team in teams | filter: { name: $select.search }' }
-            %div{ ng: { bind: { html: 'team.name' } } }
-
       .form-group
         %label.control-label{ for: 'title' } Title
         %input.form-control{ placeholder: 'Title', ng: { model: 'user.title' }, name: 'title' }
 
       .form-group
         %label.control-label{ for: 'email' } Email
-        %input.form-control{ placeholder: 'Email', ng: { model: 'user.email', disabled: '{{ hideEmail }}' }, name: 'email' }
+        %input.form-control{ placeholder: 'Email', ng: { model: 'user.email' }, name: 'email' }
 
       .form-group
         %label.control-label{ for: 'user_type' } User Type

@@ -2,20 +2,28 @@ class UserMailer < ApplicationMailer
   include ActionView::Helpers::NumberHelper
   default from: 'boostr <noreply@boostrcrm.com>'
  
-  def close_email(recipients, deal)
-    @deal = deal
-    subject = close_email_subject_for(deal)
+  def close_email(recipients, deal_id)
+    begin
+      @deal = Deal.find(deal_id)
+      subject = close_email_subject_for(@deal)
 
-    mail(to: recipients, subject: subject)
+      mail(to: recipients, subject: subject)
+    rescue ActiveRecord::RecordNotFound
+      return
+    end
   end
 
-  def lost_deal_email(recipients, deal)
-    @deal = deal.reload
-    @deal_budget = lost_deal_budget_for(deal)
-    @deal_member = deal.user_with_highest_share
-    subject = lost_deal_subject_for(deal)
+  def lost_deal_email(recipients, deal_id)
+    begin
+      @deal = Deal.find(deal_id)
+      @deal_budget = lost_deal_budget_for(@deal)
+      @deal_member = @deal.user_with_highest_share
+      subject = lost_deal_subject_for(@deal)
 
-    mail(to: recipients, subject: subject)
+      mail(to: recipients, subject: subject)
+    rescue ActiveRecord::RecordNotFound
+      return
+    end
   end
 
   def stage_changed_email(recipients, deal_id, stage)
@@ -224,6 +232,10 @@ class UserMailer < ApplicationMailer
     @pmp_items = pmp_items
 
     mail(to: recipients, subject: "PMP Digest - Deal-ID's without revenue today")
+  end
+
+  def datafeed_finished(recipients)
+    mail(to: recipients, subject: "Datafeed Alert")
   end
 
   private

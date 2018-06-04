@@ -83,6 +83,7 @@
         {name: 'LEADS', url: '/leads'} if _isLeadsEnabled
         {name: 'BOTTOMS UP', url: '/bps'}
         {name: 'CONTRACTS', url: '/contracts'}
+        {name: 'AGREEMENTS', url: '/agreements'}
         {name: 'FINANCE', url: '/finance', dropdown: [
             {name: 'Billing', url: '/finance/billing'}
         ]}

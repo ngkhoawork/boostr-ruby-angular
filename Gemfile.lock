@@ -92,7 +92,7 @@ GEM
       faraday_middleware-multi_json (~> 0.0)
       oauth2 (~> 1.0)
     ast (2.3.0)
-    attr_encrypted (3.0.3)
+    attr_encrypted (3.0.0)
       encryptor (~> 3.0.0)
     autoprefixer-rails (5.2.1)
       execjs
@@ -225,14 +225,14 @@ GEM
     gli (2.17.1)
     globalid (0.3.5)
       activesupport (>= 4.1.0)
-    google-ads-common (0.12.6)
-      google-ads-savon (~> 1.0.2)
+    google-ads-common (1.0.1)
+      google-ads-savon (~> 1.0, >= 1.0.2)
       httpclient (~> 2.7)
       httpi (~> 2.3)
-      signet (~> 0.7.0)
-    google-ads-savon (1.0.2)
+      signet (~> 0.7)
+    google-ads-savon (1.0.3)
       akami (~> 1.2)
-      builder (~> 3.2)
+      builder (~> 3.0)
       gyoku (~> 1.2)
       httpi (~> 2.3)
       nokogiri (~> 1.6)
@@ -247,8 +247,9 @@ GEM
       mime-types (>= 1.6)
       representable (~> 2.3.0)
       retriable (~> 2.0)
-    google-dfp-api (0.20.0)
-      google-ads-common (~> 0.12.6)
+    google-dfp-api (1.2.1)
+      google-ads-common (~> 1.0.0)
+      tzinfo (~> 1.0)
     googleauth (0.5.1)
       faraday (~> 0.9)
       jwt (~> 1.4)
@@ -305,7 +306,7 @@ GEM
     htmlentities (4.3.4)
     http_parser.rb (0.6.0)
     httpclient (2.8.3)
-    httpi (2.4.2)
+    httpi (2.4.3)
       rack
       socksify
     hurley (0.2)
@@ -339,6 +340,10 @@ GEM
     jquery-ui-rails (6.0.1)
       railties (>= 3.2.16)
     json (1.8.6)
+    json-schema (2.8.0)
+      addressable (>= 2.4)
+    json_matchers (0.9.0)
+      json-schema (~> 2.7)
     jwt (1.5.6)
     kaminari (1.0.1)
       activesupport (>= 4.1.0)
@@ -692,7 +697,7 @@ DEPENDENCIES
   activeadmin (~> 1.0.0)
   angular-rails-templates
   asana
-  attr_encrypted (~> 3.0.0)
+  attr_encrypted (= 3.0.0)
   awesome_print
   aws-sdk-s3
   bootstrap-sass (~> 3.3.5)
@@ -718,7 +723,7 @@ DEPENDENCIES
   geocoder (>= 1.4.6)
   gli
   google-api-client
-  google-dfp-api (= 0.20.0)
+  google-dfp-api (= 1.2.1)
   griddler
   griddler-sendgrid
   guard-livereload
@@ -729,6 +734,7 @@ DEPENDENCIES
   jasmine-rails
   jbuilder
   jquery-rails
+  json_matchers
   knock!
   launchy
   letter_opener

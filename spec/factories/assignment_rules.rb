@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :assignment_rule do
     name 'USA'
-    countries []
-    states []
+    criteria_1 []
+    criteria_2 []
   end
 end

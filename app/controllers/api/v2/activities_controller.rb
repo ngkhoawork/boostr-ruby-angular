@@ -15,14 +15,9 @@ class Api::V2::ActivitiesController < ApiController
     @activity.updated_by = current_user.id
 
     if @activity.save
-      current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
+      @activity.contacts = add_contacts_to_activity
+      @activity.contacts.less_than(@activity.happened_at).update_all(activity_updated_at: @activity.happened_at)
 
-      activity_contacts = []
-      activity_contacts += params[:contacts] if params[:contacts]
-      activity_contacts += process_raw_contact_data if params[:guests]
-
-      contacts = company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
-      @activity.contacts = contacts
       render json: activity, status: :created
     else
       render json: { errors: activity.errors.messages }, status: :unprocessable_entity
@@ -31,14 +26,8 @@ class Api::V2::ActivitiesController < ApiController
 
   def update
     if activity.update_attributes(activity_params)
-      current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
+      activity.contacts = add_contacts_to_activity
 
-      activity_contacts = []
-      activity_contacts += params[:contacts] if params[:contacts]
-      activity_contacts += process_raw_contact_data if params[:guests]
-
-      contacts = company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
-      activity.contacts = contacts
       render json: activity, status: :accepted
     else
       render json: { errors: client.errors.messages }, status: :unprocessable_entity
@@ -107,28 +96,7 @@ class Api::V2::ActivitiesController < ApiController
   end
 
   def process_raw_contact_data
-    addresses = params[:guests].map { |c| c[:address][:email] }
-    existing_contact_ids = Address.contacts_by_email(addresses).map(&:addressable_id)
-    existing_company_contacts = Contact.where(id: existing_contact_ids, company_id: current_user.company_id)
-    new_contacts = []
-
-    existing_emails = existing_company_contacts.map(&:address).map(&:email)
-    new_incoming_contacts = params[:guests].reject do |raw_contact|
-      existing_emails.include?(raw_contact[:address][:email])
-    end
-
-    new_incoming_contacts.each do |new_contact_data|
-      contact = current_user.company.contacts.new(
-        name: new_contact_data['name'],
-        address_attributes: { email: new_contact_data['address']['email'] },
-        created_by: current_user.id
-      )
-      if contact.save
-        new_contacts << contact
-      end
-    end
-
-    existing_company_contacts.ids + new_contacts.map(&:id)
+    ::ProcessRawContactDataService.new(params[:guests], current_user).perform
   end
 
   def activity_params
@@ -137,6 +105,7 @@ class Api::V2::ActivitiesController < ApiController
       :deal_id,
       :client_id,
       :agency_id,
+      :publisher_id,
       :user_id,
       :activity_type_id,
       :activity_type_name,
@@ -145,8 +114,19 @@ class Api::V2::ActivitiesController < ApiController
       :activity_type,
       :timed,
       :google_event_id,
-      :uuid
+      :uuid,
+      custom_field_attributes: CustomField.attribute_names
     )
+  end
+
+  def add_contacts_to_activity
+    current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
+
+    activity_contacts = []
+    activity_contacts += params[:contacts] if params[:contacts]
+    activity_contacts += process_raw_contact_data if params[:guests]
+
+    company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
   end
 
   def activity_csv_report

@@ -17,6 +17,6 @@ class CustomField < ActiveRecord::Base
   private
 
   def set_company_id_by_subject
-    self.company_id = subject.company_id if subject
+    self.company_id = subject&.company_id if subject
   end
 end

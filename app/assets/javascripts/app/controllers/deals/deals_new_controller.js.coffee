@@ -1,6 +1,27 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$filter', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation', 'SalesProcess'
-($scope, $modal, $modalInstance, $q, $filter, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation, SalesProcess) ->
+['$scope', '$modal', '$modalInstance', '$q', '$filter', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation', 'SalesProcess', 'HoldingCompany'
+($scope, $modal, $modalInstance, $q, $filter, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation, SalesProcess, HoldingCompany) ->
+
+  getIDs = (list) -> list.map (item) -> item.id
+
+  getChildClients = (agreement) ->
+    if agreement.advertisers and agreement.advertisers.length > 0
+      advertiserIDs = getIDs(agreement.advertisers)
+    else
+      advertiserIDs = null
+
+    if agreement.parent_companies and agreement.parent_companies.length > 0
+      parentCompanyIDs = getIDs(agreement.parent_companies)
+    else
+      parentCompanyIDs = null
+
+    Client.child_clients({ client_type_id: 111, 'parent_clients[]': parentCompanyIDs, search: '', 'exclude_ids[]': advertiserIDs }
+      (child_clients) -> $scope.availableAdvertisers = child_clients.concat(agreement.parent_companies)
+    )
+
+  getAgencies = (agreement) ->
+    HoldingCompany.relatedAccounts(agreement.holding_company.id)
+      .then (relatedAccounts) -> $scope.availableAgencies = relatedAccounts
 
   $scope.init = ->
     $scope.formType = 'New'
@@ -41,6 +62,8 @@
       currencies: Currency.active_currencies(),
       fields: Field.defaults(deal, 'Deal'),
       base_fields_validations: Validation.deal_base_fields().$promise
+      childClients: getChildClients(options.agreement) if options && options.agreement && !options.agreement.advertisers.length && options.agreement.parent_companies.length
+      agencies: getAgencies (options.agreement) if options && options.agreement && !options.agreement.agencies.length && options.agreement.holding_company
     }).then (data) ->
       $scope.currentUser = data.user
       $scope.currencies = data.currencies
@@ -66,6 +89,18 @@
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
       $scope.setClientTypes(client_types)
+
+    if options.agreement
+      $scope.dateRestrictions = {
+        max_start_date: options.agreement.end_date
+        min_end_date: options.agreement.start_date
+        max_start_date_formated: "Can't be after " + $filter('date')(options.agreement.end_date)
+        min_end_date_formated: "Can't be before " + $filter('date')(options.agreement.start_date)
+      }
+      if options.agreement.advertisers.length && !$scope.availableAdvertisers
+        $scope.availableAdvertisers = options.agreement.advertisers
+      if options.agreement.agencies.length && !$scope.availableAgencies
+        $scope.availableAgencies = options.agreement.agencies
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -109,7 +144,7 @@
 
     if moment(this.deal.start_date).isAfter(this.deal.end_date) then return $scope.errors['end_date'] = 'End Date can\'t be before Start Date';
 
-    fields = ['name', 'stage_id', 'advertiser_id', 'agency_id', 'deal_type', 'source_type', 'start_date', 'end_date']
+    fields = ['name', 'stage_id', 'advertiser_id', 'agency', 'deal_type', 'source_type', 'start_date', 'end_date']
     fields.push('sales_process_id') unless $scope.team
 
     fields.forEach (key) ->
@@ -121,6 +156,9 @@
           if !field then return $scope.errors[key] = 'Stage is required'
         when 'advertiser_id'
           if !field then return $scope.errors[key] = 'Advertiser is required'
+        when 'agency'
+          if !field && options && options.agreement && options.agreement.agencies.length 
+            return $scope.errors[key] = 'Agency is required'
         when 'start_date'
           if !field then return $scope.errors[key] = 'Start date is required'
         when 'end_date'
@@ -145,12 +183,11 @@
     Deal.create(deal: $scope.deal).then(
       (deal) ->
         $modalInstance.close(deal)
-        if options.type != 'gmail' && !options.lead
+        if options.type != 'gmail' && !options.lead && !options.agreement
           if($scope.currentUser.egnyte_authenticated)
             $location.path('/deals' + '/' + deal.id).search({isNew: 'true'});
           else
             $location.path('/deals' + '/' + deal.id);
-
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

@@ -5,7 +5,7 @@
   $scope.init = () ->
     $scope.formType = "Edit"
     $scope.submitText = "Update"
-    $scope.customFieldName = customFieldName
+    $scope.customFieldName = angular.copy customFieldName
     $scope.customFieldName.field_object = objectType
     $scope.customFieldOptions = getFieldOptions()
 
@@ -24,7 +24,7 @@
       when 'account' then $scope.customFieldName.account_cf_options
       when 'contact' then $scope.customFieldName.contact_cf_options
       when 'publisher' then $scope.customFieldName.publisher_custom_field_options
-      when 'activity' then $scope.customFieldName.custom_field_options
+      else $scope.customFieldName.custom_field_options
 
   $scope.addCustomFieldOption = () ->
     $scope.customFieldOptions.push({id: null, value: ""})
@@ -43,11 +43,52 @@
       AccountCfName.field_type_list
     else if field_object == 'publisher'
       PublisherCustomFieldName.field_type_list
-    else if field_object == 'activity'
+    else
       CustomFieldNames.field_type_list
+
+  onError = (error) ->
+    $scope.errors = error.data.errors
+    $scope.buttonDisabled = false
+
+  updateDealCF = ->
+    DealCustomFieldName
+      .update(id: customFieldName.id, deal_custom_field_name: $scope.customFieldName)
+      .then (customFieldName) -> $modalInstance.close()
+      .catch (reject) -> onError(reject)
+
+  updateDealProductCF = ->
+    DealProductCfName
+      .update(id: customFieldName.id, deal_product_cf_name: $scope.customFieldName)
+      .then (customFieldName) -> $modalInstance.close()
+      .catch (reject) -> onError(reject)
+
+  updateAccountCF = ->
+    AccountCfName
+      .update(id: customFieldName.id, account_cf_name: $scope.customFieldName)
+      .then (customFieldName) -> $modalInstance.close()
+      .catch (reject) -> onError(reject)
+
+  updateContactCF = ->
+    ContactCfName
+      .update(id: customFieldName.id, contact_cf_name: $scope.customFieldName)
+      .then (customFieldName) -> $modalInstance.close()
+      .catch (reject) -> onError(reject)
+
+  updatePublisherCF = ->
+    PublisherCustomFieldName
+      .update(id: customFieldName.id, publisher_custom_field_name: $scope.customFieldName)
+      .then (customFieldName) -> $modalInstance.close()
+      .catch (reject) -> onError(reject)
+
+  updateActivityCF = ->
+    CustomFieldNames
+      .update(subject_type: $scope.customFieldName.field_object, id: customFieldName.id, custom_field_name: $scope.customFieldName)
+      .then (customFieldName) -> $modalInstance.close()
+      .catch (reject) -> onError(reject)
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
+    $scope.errors = {}
 
     $scope.customFieldName.customFieldOptions = []
     $scope.customFieldOptions.forEach (item) ->
@@ -55,22 +96,20 @@
         $scope.customFieldName.customFieldOptions.push(item)
 
     switch $scope.customFieldName.field_object
-      when 'deal' then DealCustomFieldName.update(id: customFieldName.id, deal_custom_field_name: $scope.customFieldName).then (customFieldName) ->
-        $modalInstance.close()
-      when 'deal_product' then DealProductCfName.update(id: customFieldName.id, deal_product_cf_name: $scope.customFieldName).then (customFieldName) ->
-        $modalInstance.close()
-      when 'account' then AccountCfName.update(id: customFieldName.id, account_cf_name: $scope.customFieldName).then (customFieldName) ->
-        $modalInstance.close()
-      when 'contact' then ContactCfName.update(id: customFieldName.id, contact_cf_name: $scope.customFieldName).then (customFieldName) ->
-        $modalInstance.close()
-      when 'publisher' then PublisherCustomFieldName.update(id: customFieldName.id, publisher_custom_field_name: $scope.customFieldName).then (customFieldName) ->
-        $modalInstance.close()
-      when 'activity' then CustomFieldNames.update(subject_type: $scope.customFieldName.field_object, id: customFieldName.id, custom_field_name: $scope.customFieldName).then (customFieldName) ->
-        $modalInstance.close()
+      when 'deal'
+        updateDealCF()
+      when 'deal_product'
+        updateDealProductCF()
+      when 'account'
+        updateAccountCF()
+      when 'contact'
+        updateContactCF()
+      when 'publisher'
+        updatePublisherCF()
+      when 'activity'
+        updateActivityCF()
 
-  $scope.cancel = ->
-    $modalInstance.close()
+  $scope.cancel = -> $modalInstance.close()
 
   $scope.init()
-
 ]

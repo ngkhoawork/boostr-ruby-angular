@@ -22,7 +22,7 @@ class Api::V2::UsersController < ApiController
   end
 
   def signed_in_user
-    render json: current_user
+    render json: current_user, serializer: Users::CompanyInfoSerializer
   end
 
   private

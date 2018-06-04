@@ -18,10 +18,11 @@ class Api::PublisherCustomFieldNamesController < ApplicationController
   def update
     update_field_options
 
-    if publisher_custom_field_name.update_attributes(publisher_custom_field_name_params)
+    if publisher_custom_field_name.update(publisher_custom_field_name_params)
       render json: publisher_custom_field_name, status: :accepted
     else
-      render json: { errors: publisher_custom_field_name.errors.messages }, status: :unprocessable_entity
+      render json: { errors: publisher_custom_field_name.errors.messages },
+             status: :unprocessable_entity
     end
   end
 
@@ -51,7 +52,7 @@ class Api::PublisherCustomFieldNamesController < ApplicationController
   end
 
   def publisher_custom_field_name
-    company.publisher_custom_field_names.find(params[:id])
+    @_publisher_custom_field_name ||= company.publisher_custom_field_names.find(params[:id])
   end
 
   def company

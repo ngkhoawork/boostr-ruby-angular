@@ -79,7 +79,7 @@
       $scope.client_connections = client_connections
 
   $scope.getChildClients = ->
-    Client.child_clients({id: $scope.currentClient.id}).$promise.then (child_clients) ->
+    Client.child_clients({'parent_clients[]': [$scope.currentClient.id]}).$promise.then (child_clients) ->
       $scope.child_clients = child_clients
 
   $scope.removeClientMember = (clientMember) ->

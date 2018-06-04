@@ -47,7 +47,7 @@
   }
 }
 
-#contact_assign_modal {
+#contact_assign_modal, #agreement_assign_modal {
   .modal-body {
     padding: 20px 50px;
     .client-list {
@@ -692,4 +692,7 @@
     max-height: 250px;
     overflow-y: auto;
   }
+}
+#activity-form-modal {
+  word-wrap: break-word;
 }

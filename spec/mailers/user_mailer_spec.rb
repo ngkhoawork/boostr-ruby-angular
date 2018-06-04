@@ -20,7 +20,7 @@ RSpec.describe UserMailer, :type => :mailer do
         closed_reason_text: 'too high'
       )
       @deal_budget = number_to_currency(deal.budget_loc.to_i, precision: 0, unit: deal.currency.curr_symbol)
-      @mail = UserMailer.lost_deal_email(['manager@boostrcrm.com'], deal)
+      @mail = UserMailer.lost_deal_email(['manager@boostrcrm.com'], deal.id)
     end
 
     it 'sends users lost deal notification' do

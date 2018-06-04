@@ -1,0 +1,34 @@
+#assign_modal.contacts-modal.popup-modal{ ng: { click: 'onModalClick($event)' } }
+  %form.form-horizontal
+    .popup-modal-header
+      Assign Agreements
+      %span.close-btn{ ng: { click: 'cancel()' } }
+
+    .popup-modal-body.modal-body.p15
+      .form-group.with-add-btn
+        .form-control-wrapper
+          %input.form-control{ name: 'agreement', placeholder: 'Search for Agreements to Assign', ng: { model: 'searchText', change: 'searchObj(searchText)', 'model-options': '{ debounce: 250 }' } }
+          .list-wrapper{ ng: { show: 'showAgreementsDropdown' } }
+            %ul.list
+              %li{ ng: { repeat: 'agreement in agreements' } }
+                %span.name {{ agreement.name }} 
+                %a.select.pull-right{ href: "javascript:void(0)", ng: { click: "selectAgreement(agreement)" } }
+                  Select
+              %li.text-center{ ng: { if: 'agreements.length == 0' } }
+                %span.name Nothing Found for this Deal
+        %button.add-btn.plus-btn{ type: 'button', ng: { click: 'showAddAgreementModal()' } }
+
+      .form-group
+        .row
+          .col-xs-12
+            %h5.assigned-header{ ng: { if: 'assignedAgreements.length > 0' } } Selected Agreements:
+            %h5.assigned-header{ ng: { if: 'assignedAgreements.length == 0' } } No agreements selected yet
+            %ul.assigned-list
+              %li{ ng: { repeat: 'agreement in assignedAgreements' } }
+                {{ agreement.name }}
+                %a.remove.pull-right{ href: "javascript:void(0)", ng: { click: "removeAgreement(agreement)" } }
+                  Remove
+
+    .popup-modal-footer
+      %button.btn.btn-default{ type: 'button', ng: { click: 'cancel()' } } Cancel
+      %button.btn.btn-primary{ type: 'submit', ng: { click: 'assignAgreements()', disabled: 'assignedAgreements.length == 0' } } Assign

@@ -47,6 +47,16 @@ class Deal::IoGenerateService
         budget: deal_product.budget,
         budget_loc: deal_product.budget_loc
       }
+      if deal_product.deal_product_cf.present?
+        content_fee_cf_names = company.custom_field_names.active.to_a
+        company.deal_product_cf_names.active.each do |cf|
+          found = content_fee_cf_names.select{|o| o.field_label == cf.field_label && o.field_type == cf.field_type}.first
+          if found.present?
+            content_fee_param[:custom_field_attributes] ||= {}
+            content_fee_param[:custom_field_attributes][found.field_name.to_sym] = deal_product.deal_product_cf.send(cf.field_name)
+          end
+        end
+      end
       content_fee = ContentFee.create(content_fee_param)
       deal_product.update_columns(open: false)
     end

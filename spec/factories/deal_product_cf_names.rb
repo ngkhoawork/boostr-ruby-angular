@@ -5,7 +5,7 @@ FactoryGirl.define do
     field_type 'text'
     field_label 'Owner'
     is_required false
-    position 1
+    sequence(:position) { |n| n }
     show_on_modal false
     disabled false
   end

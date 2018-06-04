@@ -4,24 +4,21 @@ describe Operative::CustomFieldsRepresenter, operative: true do
   before do
     create :deal_custom_field_name,
            company: company,
-           field_index: 1,
            field_type: "dropdown",
            field_label: "Campaign Territory"
 
     create :deal_custom_field_name,
            company: company,
-           field_index: 3,
            field_type: "text",
            field_label: "Billing Notes"
 
     create :deal_custom_field_name,
            company: company,
-           field_index: 5,
            field_type: "dropdown",
            field_label: "Signing Entity"
+
     create :deal_custom_field_name,
            company: company,
-           field_index: 4,
            field_type: "text",
            field_label: "External PO Reference"
   end
@@ -64,25 +61,25 @@ describe Operative::CustomFieldsRepresenter, operative: true do
   def deal_custom_field
     @_deal_custom_field ||= create :deal_custom_field,
                                    deal: deal,
-                                   text3: "new note",
-                                   text4: "External PO Ref",
+                                   text1: "new note",
+                                   text2: "External PO Ref",
                                    dropdown1: "Brazil",
-                                   dropdown5: "BuzzFeed US"
+                                   dropdown2: "BuzzFeed US"
   end
 
   def buzzfeed_billing_note
-    "<customField>\n        <apiName>Billing_notes__c</apiName>\n        <value>#{deal_custom_field.text3}</value>\n      </customField>"
+    "<customField>\n        <apiName>Billing_notes__c</apiName>\n        <value>new note</value>\n      </customField>"
   end
 
   def buzzfeed_campaign_territory
-    "<customField>\n        <apiName>Country_the_campaign_will_run_in__c</apiName>\n        <value>#{deal_custom_field.dropdown1}</value>\n      </customField>"
+    "<customField>\n        <apiName>Country_the_campaign_will_run_in__c</apiName>\n        <value>Brazil</value>\n      </customField>"
   end
 
   def buzzfeed_signin_entity
-    "<customField>\n        <apiName>Buzzfeed_signing_entity</apiName>\n        <options>\n          <option>\n            <name>#{deal_custom_field.dropdown5}</name>\n          </option>\n        </options>\n      </customField>"
+    "<customField>\n        <apiName>Buzzfeed_signing_entity</apiName>\n        <options>\n          <option>\n            <name>BuzzFeed US</name>\n          </option>\n        </options>\n      </customField>"
   end
 
   def buzzfeed_external_po_reference
-    "<externalPoRef>#{deal_custom_field.text4}</externalPoRef>"
+    "<externalPoRef>External PO Ref</externalPoRef>"
   end
 end
