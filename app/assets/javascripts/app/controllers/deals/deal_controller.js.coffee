@@ -254,6 +254,9 @@
           if !dealProduct.deal_product_cf || !dealProduct.deal_product_cf[productFieldName]
             $scope.currentDeal.validDeal = false
 
+  getDealStage = ->
+    $scope.currentDeal.stage.won = !$scope.currentDeal.stage.open && $scope.currentDeal.stage.probability >= 100
+
   $scope.setCurrentDeal = (deal, shouldUsersUpdate) ->
     $scope.currency_symbol = deal.currency && (deal.currency.curr_symbol || deal.currency.curr_cd)
 
@@ -276,6 +279,7 @@
     $scope.getStages()
     checkPmpDeal()
     getAgreements()
+    getDealStage()
 
   $scope.getStages = ->
     Stage.query({active: true, sales_process_id: $scope.currentDeal.stage.sales_process_id}).$promise.then (stages) ->
