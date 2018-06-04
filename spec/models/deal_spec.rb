@@ -629,6 +629,8 @@ describe Deal do
 
     it 'updates a deal by an ID match' do
       data = build :deal_csv_data, id: existing_deal.id
+      old_share = existing_deal.deal_members.sum(:share)
+      imported_share = data[:team].split('/')[1].to_i
       expect do
         Deal.import(generate_csv(data), user.id, 'deals.csv')
       end.not_to change(Deal, :count)
@@ -644,7 +646,7 @@ describe Deal do
       expect(existing_deal.stage.name).to eq(data[:stage])
       expect(existing_deal.legacy_id).to eq(data[:legacy_id])
       expect(existing_deal.users.map(&:email)).to include(data[:team].split('/')[0])
-      expect(existing_deal.deal_members.map(&:share)).to include(data[:team].split('/')[1].to_i)
+      expect(existing_deal.deal_members.map(&:share)).to include(old_share + imported_share > 100 ? 0 : imported_share)
       expect(existing_deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
     end
 

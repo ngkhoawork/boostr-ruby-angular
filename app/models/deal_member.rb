@@ -21,6 +21,8 @@ class DealMember < ActiveRecord::Base
   scope :by_team, -> (team_id) { where(user_id: Team.find(team_id).all_members_and_leaders_ids) if team_id.present? }
   scope :by_stage_ids, -> (stage_ids) { joins(:deal).where(deals: { stage_id: stage_ids }) if stage_ids.present? }
 
+  after_save :check_team_splits
+
   after_update do
     log_share_changes if share_changed?
   end
@@ -103,5 +105,12 @@ class DealMember < ActiveRecord::Base
       member: user_id,
       old_value: user.name
     ).perform
+  end
+
+  def check_team_splits
+    total_share = deal.deal_members.sum(:share)
+    if total_share > 100
+      deal.deal_members.update_all(share: 0)
+    end
   end
 end
