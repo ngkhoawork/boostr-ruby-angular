@@ -175,9 +175,11 @@
             $scope.submitForm = ->
                 $scope.errors = {}
 
-                fields = ['deal', 'advertiser', 'agency', 'publisher', 'contacts', 'date', 'comment']
+                fields = ['deal', 'advertiser', 'agency', 'publisher', 'date', 'comment']
                 if $scope.showReminderForm
                     fields.push('reminderName', 'reminderDate', 'reminderComment')
+                if $scope.selectedType.contact_required
+                    fields.push('contacts')
 
                 fields.forEach (key) ->
                     field = $scope.form[key]

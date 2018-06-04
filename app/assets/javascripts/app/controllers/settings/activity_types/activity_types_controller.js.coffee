@@ -5,6 +5,14 @@
 		$scope.activityTypes = []
 		positions = {}
 		iconsList = ActivityTypeIconsList
+		$scope.sortableOptions =
+			stop: () ->
+				newPositions = getPositions()
+				if _.isEqual(positions, newPositions) then return
+				updatePositions(newPositions)
+			axis: 'y'
+			opacity: 0.6
+			cursor: 'ns-resize'
 
 		(getActivityTypes = ->
 			ActivityType.all(inactive: true).then (data) ->
@@ -20,14 +28,6 @@
 		$scope.deleteActivityType = (type) ->
 			if confirm("Are you sure you want to delete #{type.name}?")
 				ActivityType.delete(type)
-
-		$scope.onTypeMoved = (typeIndex) ->
-			$scope.activityTypes.splice(typeIndex, 1)
-			newPositions = getPositions()
-			if _.isEqual positions, newPositions then return
-			changes = _.omit newPositions, (val, key) -> positions[key] == val
-			updatePositions(changes)
-			positions = newPositions
 
 		$scope.showActivityTypeModal = (activityType) ->
 			$scope.modalInstance = $modal.open
@@ -51,9 +51,10 @@
 			usedIcons = _.pluck($scope.activityTypes, 'css_class')
 			iconsList = _.difference ActivityTypeIconsList, usedIcons
 
-		updatePositions = (changes) ->
-			ActivityType.updatePositions(activity_types_position: changes)
-
+		updatePositions = (newPositions) ->
+			changes = _.omit newPositions, (val, key) -> positions[key] == val
+			ActivityType.updatePositions(activity_types_position: changes).then () ->
+				positions = newPositions
 
 #		$scope.showActivityTypeModal()
 

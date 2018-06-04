@@ -1,52 +1,102 @@
 #activity-types {
-    .types-container {
-        list-style-type: none;
+    font-family: "Avenir Next", Arial, serif;
+    color: $main-font-color;
+    a {
+        color: $secondary-color;
+        font-weight: 600;
     }
-    .type-row {
-        display: flex;
-        align-items: center;
-        cursor: move;
-        padding: 8px 25px;
-        margin-bottom: 10px;
-        &:hover {
-            .z-icon {
-                display: inline-block;
+    &.block {
+        margin: 40px auto;
+        width: 70%;
+        .title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-right: 20px;
+        }
+        .small {
+            color: $dark-grayish-blue-1;
+            font-size: 14px;
+        }
+    }
+
+    table {
+        thead {
+            background-color: white;
+            tr {
+                border-bottom: 2px solid #d9dde0;
+                th {
+                    color: $secondary-font-color !important;
+                    padding: 10px 8px;
+                    border-left: none;
+                    border-right: none;
+                    text-align: left;
+                    padding-left: 10px;
+                    padding-right: 10px;
+                    &:first-child {
+                        padding-left: 30px;
+                    }
+                }
             }
         }
-        .z-icon {
-            display: none;
-            width: 22px;
-            height: 22px;
-            padding: 2px 4px;
-            font-size: 18px;
-        }
-        .z-toggle {
-            margin-right: 35px;
-        }
-        .delimiter {
-            font-weight: bold;
-            color: $secondary-font-color;
-            margin: 0 12px;
+        tbody {
+            tr {
+                cursor: pointer;
+                &:hover {
+                    .z-icon {
+                        display: inline-block;
+                    }
+                }
+                td {
+                    text-align: left;
+                    padding-left: 10px;
+                    padding-right: 10px;
+                    color: $main-font-color;
+                    &:first-child {
+                        padding-left: 30px;
+                    }
+                    .z-icon {
+                        display: none;
+                        width: 22px;
+                        height: 22px;
+                        padding: 2px 4px;
+                        font-size: 18px;
+                    }
+                    .z-toggle {
+                        margin-right: 35px;
+                    }
+                    .delimiter {
+                        font-weight: bold;
+                        color: $secondary-font-color;
+                        margin: 0 12px;
 
+                    }
+                    .type-name {
+                        font-weight: bold;
+                    }
+                    .type-action {
+                        color: $secondary-font-color;
+                    }
+                    .type-buttons {
+                        width: 100px;
+                        margin-left: auto;
+                    }
+                    .activity-icon {
+                        vertical-align: middle;
+                    }
+                }
+                &:nth-child(even) {
+                    background-color: #F6F9FC;
+                }
+                &:hover {
+                    background-color: #f3f3f3;
+                    td {
+                        a.trashcan {
+                            display: block;
+                        }
+                    }
+                }
+            }
         }
-        .type-name {
-            font-weight: bold;
-        }
-        .type-action {
-            color: $secondary-font-color;
-        }
-        .type-buttons {
-            margin-left: auto;
-        }
-    }
-    .dndPlaceholder {
-        height: 41px;
-        width: 100%;
-        background-color: #e1e1e1;
-        margin-bottom: 10px;
-        border-radius: 4px;
-    }
-    .dndDraggingSource {
-        display: none;
+
     }
 }

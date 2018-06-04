@@ -1,18 +1,32 @@
-#activity-types.z-styles
-	.container-fluid
-		.col-xs-6
-			%div.mb20
-				%span.main-title.mr8 Activity Types Settings
-				%add-button{'ng-click': 'showActivityTypeModal()'} Add
+#activity-types.z-styles.block
+  %div.mb20
+    %span.title Activity Types
+    %add-button.plus-btn{ ng: { click: 'showActivityTypeModal()'} }
+      Add
 
-			.types-container{'dnd-list': 'activityTypes'}
-				.block.type-row{ng: {repeat: 'type in activityTypes'},
-								dnd: {draggable: 'type', moved: 'onTypeMoved($index)'}}
-					%z-toggle{'ng-model': 'type.active', 'ng-change': 'updateActivityType(type)'}
-					%i.activity-icon.mr8.fa{'ng-class': 'type.css_class'}
-					%span.type-name {{type.name}}
-					%span.delimiter{'ng-show': 'type.action'} -
-					%span.type-action {{type.action}}
-					%div.type-buttons{'ng-show': 'type.editable'}
-						%i.fa.fa-pencil.z-icon.mr8{'ng-click': 'showActivityTypeModal(type)'}
-						%i.fa.fa-trash.z-icon{'ng-click': 'deleteActivityType(type)'}
+  %table.time-period-table.table
+    %thead
+      %tr
+        %th Name - Action
+        %th Active
+        %th Contact Required
+        %th
+    %tbody{ ng: { if: 'activityTypes.length > 0' }, 'ui-sortable': 'sortableOptions', ng: { model: 'activityTypes' } }
+      %tr{ng: {repeat: 'type in activityTypes'}}
+        %td
+          %i.activity-icon.mr8.fa{'ng-class': 'type.css_class'}
+          %span.type-name {{type.name}}
+          %span.delimiter{'ng-show': 'type.action'} -
+          %span.type-action {{type.action}}
+        %td
+          %z-toggle{'ng-model': 'type.active', 'ng-change': 'updateActivityType(type)'}
+        %td
+          %z-toggle{'ng-model': 'type.contact_required', 'ng-change': 'updateActivityType(type)'}
+        %td
+          %div.type-buttons{'ng-show': 'type.editable'}
+            %i.fa.fa-pencil.z-icon.mr8{'ng-click': 'showActivityTypeModal(type)'}
+            %i.fa.fa-trash.z-icon{'ng-click': 'deleteActivityType(type)'}
+    %tbody{ ng: { if: 'activityTypes.length == 0' } }
+      %tr
+        %td.center.auto-colspan
+          No data available

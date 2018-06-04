@@ -55,7 +55,7 @@
           %span.error-text {{errors.contacts}}
           %label
             {{selectedType.action | firstUppercase}}
-            %span.star *
+            %span.star{'ng-if': 'selectedType.contact_required'} *
 
           .clearfix
           %ui-select{multiple: true, name: 'contacts', 'ng-model': 'form.contacts', disabled: true}
