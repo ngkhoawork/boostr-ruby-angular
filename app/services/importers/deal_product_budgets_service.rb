@@ -19,7 +19,7 @@ class Importers::DealProductBudgetsService < Importers::BaseService
     Csv::DealProductBudget.new(
       deal_id: row[:deal_id],
       deal_name: row[:deal_name],
-      product_name: row[:product],
+      product_name: row[:deal_product],
       product_level1: row[:product_level1],
       product_level2: row[:product_level2],
       budget: row[:budget],

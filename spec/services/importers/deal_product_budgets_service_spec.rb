@@ -44,7 +44,7 @@ describe Importers::DealProductBudgetsService do
     @_file ||= Tempfile.open([Dir.tmpdir, '.csv']) do |fh|
       begin
         csv = CSV.new(fh)
-        csv << ['Deal ID', 'Deal Name', 'Product', 'Product Level1', 'Product Level2', 'Budget', 'Start Date' ,'End Date']
+        csv << ['Deal ID', 'Deal Name', 'Deal Product', 'Product Level1', 'Product Level2', 'Budget', 'Start Date' ,'End Date']
         csv << [deal.id, deal.name, product.name, nil, nil, '100', '01/01/2018', '01/31/2018']
         csv << [nil, 'any deal', 'invalid row', nil, nil, '100', '01/01/2018', '01/31/2018']
       ensure
