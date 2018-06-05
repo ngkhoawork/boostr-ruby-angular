@@ -116,8 +116,7 @@
         allowedFields = []
         for item in pmp.pmp_items
           for prop of item.custom_field
-            if item.custom_field[prop] != null
-              allowedFields.push(prop)
+            allowedFields.push(prop)
         for pmp_key_index of pmp.pmp_items_cf_keys
           if !allowedFields.includes(Object.keys(pmp.pmp_items_cf_keys[pmp_key_index][0]).shift()) || Object.values(pmp.pmp_items_cf_keys[pmp_key_index][0]).shift()
             pmp.pmp_items_cf_labels[pmp_key_index] = null
@@ -639,7 +638,7 @@
           item: () -> null
           pmpId: () -> $scope.currentPMP.id
       modalInstance.result.then (pmp_item) ->
-        $scope.currentPMP.pmp_items.push pmp_item
+        getPmp();
         $scope.currentPMP.budget = parseFloat($scope.currentPMP.budget || 0) + parseFloat(pmp_item.budget)
         $scope.currentPMP.budget_loc = parseFloat($scope.currentPMP.budget_loc || 0) + parseFloat(pmp_item.budget_loc)
         $scope.currentPMP.budget_delivered = parseFloat($scope.currentPMP.budget_delivered || 0) + parseFloat(pmp_item.budget_delivered)

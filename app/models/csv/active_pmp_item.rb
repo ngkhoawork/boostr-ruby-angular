@@ -36,7 +36,7 @@ class Csv::ActivePmpItem
   private
 
   def record
-    raise custom_fields_required[:raises].join(', ') if custom_fields_required&.keys&.include?(:raises)
+    raise custom_fields_required[:raises].join(', ') unless custom_fields_required[:raises].blank?
 
     if custom_fields_params.present?
       with_custom_fields_params = active_pmp_item_params.merge!(custom_field: CustomField.new(custom_fields_params))
@@ -57,18 +57,32 @@ class Csv::ActivePmpItem
 
   def custom_fields_params
     results = fetch_results(custom_fields_optional)
-    results.merge!(fetch_results(custom_fields_required))
+    results.merge!(fetch_results(custom_fields_required.except!(:raises)))
     results
   end
 
   def fetch_results(collection)
-    collection&.map{ |cfk, cfv| [custom_field_name(cfk), cfv] }.to_h.symbolize_keys
+    collection&.map{ |cfk, cfv| [custom_field_name(cfk), custom_field_name_convert(cfk,cfv)] }.to_h.symbolize_keys
   end
 
   def custom_field_name(key)
-    custom_field_name = CustomFieldName.active.for_model('PmpItem')&.find_by('lower(field_label) = ?', key)
-    return if custom_field_name.blank?
-    [custom_field_name&.column_type,custom_field_name&.column_index].join
+    return if cf_name(key).blank?
+    [cf_name(key)&.column_type,cf_name(key)&.column_index].join
+  end
+
+  def custom_field_name_convert(key,cfv)
+    return if cf_name(key).blank?
+    if cf_name(key)&.column_type.eql?('datetime')
+      check_and_format_date(cfv)
+    else
+      cfv
+    end
+  end
+
+  def cf_name(key)
+    @_cf_name ||= CustomFieldName.active
+                      .for_model('PmpItem')
+                      &.find_by('lower(field_label) = ?', key.to_s.gsub('_',' '))
   end
 
   def check_ssp
