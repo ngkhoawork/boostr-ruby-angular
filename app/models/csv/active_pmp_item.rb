@@ -62,7 +62,9 @@ class Csv::ActivePmpItem
   end
 
   def fetch_results(collection)
-    collection&.map{ |cfk, cfv| [custom_field_name(cfk), custom_field_name_convert(cfk,cfv)] }.to_h.symbolize_keys
+    collection&.map{ |custom_field_key, custom_field_value|
+      [custom_field_name(custom_field_key), custom_field_name_convert(custom_field_key, custom_field_value)]
+    }&.to_h&.symbolize_keys
   end
 
   def custom_field_name(key)
@@ -70,19 +72,19 @@ class Csv::ActivePmpItem
     [cf_name(key)&.column_type,cf_name(key)&.column_index].join
   end
 
-  def custom_field_name_convert(key,cfv)
+  def custom_field_name_convert(key, custom_field_value)
     return if cf_name(key).blank?
-    if cf_name(key)&.column_type.eql?('datetime')
-      check_and_format_date(cfv)
+    if cf_name(key)&.column_type&.eql?('datetime')
+      check_and_format_date(custom_field_value)
     else
-      cfv
+      custom_field_value
     end
   end
 
   def cf_name(key)
-    @_cf_name ||= CustomFieldName.active
-                      .for_model('PmpItem')
-                      &.find_by('lower(field_label) = ?', key.to_s.gsub('_',' '))
+    CustomFieldName.active
+        .for_model('PmpItem')
+        &.find_by('lower(field_label) = ?', key.to_s.gsub('_',' '))
   end
 
   def check_ssp
