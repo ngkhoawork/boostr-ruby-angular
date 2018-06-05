@@ -716,6 +716,10 @@
 }
 #activity-form-modal {
   word-wrap: break-word;
+  .dropdown-menu[typeahead-popup] {
+    max-height: 250px;
+    overflow-y: auto;
+  }
 }
 #user-modal {
   .star {
