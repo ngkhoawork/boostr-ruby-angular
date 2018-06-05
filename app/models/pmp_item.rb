@@ -48,20 +48,6 @@ class PmpItem < ActiveRecord::Base
     end
   end
 
-  def self.calculate_items
-    PmpItem.all.each do |pmp_item|
-      pmp_item.proccess_items
-    end
-  end
-
-  def proccess_items
-    self.skip_callback = true
-    self.without_adv = pmp_item_daily_actuals.where(advertiser_id: nil).where.not(pmp_item_daily_actuals: {revenue: 0.0}).present?
-    self.total_revenue_by_daily_items = pmp_item_daily_actuals.where(advertiser_id: nil).sum(:revenue)
-    self.total_impressions_by_daily_items = pmp_item_daily_actuals.where(advertiser_id: nil).sum(:impressions)
-    save!(validate:false)
-  end
-
   def calculate!
     calculate_budgets!
     calculate_run_rates!

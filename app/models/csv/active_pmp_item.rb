@@ -1,7 +1,6 @@
 class Csv::ActivePmpItem
   include ActiveModel::Validations
   include Csv::Pmp
-  include Csv::ProductOptionable
 
   attr_accessor :deal_id,
                 :name,
@@ -9,8 +8,6 @@ class Csv::ActivePmpItem
                 :ssp,
                 :pmp_type,
                 :product_name,
-                :product_level1,
-                :product_level2,
                 :start_date,
                 :end_date,
                 :budget,
@@ -98,12 +95,7 @@ class Csv::ActivePmpItem
   end
 
   def check_product
-    # disabled for next release 21.06.2018
-    # if company&.product_options_enabled
-    #   ::Product.find_by(full_name: product_full_name).id
-    # else
-      ::Product.find_by(name: product_name).id
-    # end
+    ::Product.find_by(name: product_name).id
   rescue
     raise_error("Product")
   end

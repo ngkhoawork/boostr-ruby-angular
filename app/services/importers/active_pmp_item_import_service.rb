@@ -15,8 +15,6 @@ class Importers::ActivePmpItemImportService < Importers::BaseService
         ssp: row[:ssp],
         pmp_type: row[:pmp_type],
         product_name: row[:product],
-        product_level1: row[:product_level1],
-        product_level2: row[:product_level2],
         start_date: row[:start_date],
         end_date: row[:end_date],
         budget: row[:budget],

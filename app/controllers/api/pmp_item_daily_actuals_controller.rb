@@ -58,8 +58,6 @@ class Api::PmpItemDailyActualsController < ApplicationController
       :impressions,
       :win_rate,
       :ad_requests,
-      :name,
-      :custom,
       :pmp_item_id,
       :ssp_advertiser,
       :advertiser_id
@@ -86,23 +84,15 @@ class Api::PmpItemDailyActualsController < ApplicationController
 
   def filtered_actuals
     data = PmpItemDailyActualsQuery.new(params, company).perform
-    data = by_pages(data)# if !params[:pmp_item_id]
+    data = by_pages(data) if !params[:pmp_item_id]
     data
   end
 
   def filtered_actuals_serializer
     ActiveModel::ArraySerializer.new(
       filtered_actuals,
-      each_serializer: select_serializer
+      each_serializer: Pmps::PmpItemDailyActualSerializer
     )
-  end
-
-  def select_serializer
-    if params['list_type'].eql?('grouped') && params['filter'].eql?('no-match-adv')
-      Pmps::PmpItemDailyActualGroupedSerializer
-    else
-      Pmps::PmpItemDailyActualSerializer
-    end
   end
 
   def pmp_item_daily_actual
