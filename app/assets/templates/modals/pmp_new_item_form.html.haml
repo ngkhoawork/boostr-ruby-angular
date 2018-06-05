@@ -40,7 +40,7 @@
               %div{ ng: { bind: { html: 'pmpType.name' } } }
               
       .row
-        .col-md-6.form-group{ 'ng-if': '!productOptionsEnabled', 'ng-class':'{error: errors.product_id}'}
+        .col-md-6.form-group
           %span.error-text {{errors.product_id}}
           %label{ for: 'product_id' }
             Product
@@ -50,39 +50,6 @@
               {{ $select.selected.name }}
             %ui-select-choices{ repeat: 'product.id as product in products' }
               %div{ ng: { bind: { html: 'product.name' } } }
-        .col-xs-6{ 'ng-if': 'productOptionsEnabled' }
-          .form-group{ 'ng-class': '{error: errors.product_id}' }
-            %span.error-text {{errors.product_id}}
-            %label
-              Product
-              %span.star *
-            %ui-select{ name: 'product_level_0', ng: { model: 'item.product0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
-              %ui-select-match{ placeholder: 'Product' }
-                {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'product.id as product in productsByLevel(0) | orderBy: "name" | filter: { name: $select.search }' }
-                %div{ ng: { bind: { html: 'product.name' } } }
-        .col-xs-6{ 'ng-if': 'productOptionsEnabled && productOption1Enabled' }
-          .form-group{ 'ng-class': '{error: errors.product1}' }
-            %span.error-text {{errors.product1}}
-            %label
-              {{ option1Field }}
-              %span.star{'ng-if': 'hasSubProduct(1) || selectedProduct().level >= 1'} *
-            %ui-select{ name: 'product_level_1', ng: { model: 'item.product1', disabled: '!item.product0 || productsByLevel(1).length == 0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
-              %ui-select-match{ placeholder: '{{ option1Field }}', 'allow-clear': 'true' }
-                {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'product.id as product in productsByLevel(1) | orderBy: "name" | filter: { name: $select.search }' }
-                %div{ ng: { bind: { html: 'product.name' } } }
-        .col-xs-6{ 'ng-if': 'productOptionsEnabled && productOption2Enabled' }
-          .form-group{ 'ng-class': '{error: errors.product2}' }
-            %span.error-text {{errors.product2}}
-            %label
-              {{ option2Field }}
-              %span.star{'ng-if': 'hasSubProduct(2) || selectedProduct().level == 2'} *
-            %ui-select{ name: 'product_level_2', ng: { model: 'item.product2', disabled: '!item.product1 || productsByLevel(2).length == 0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
-              %ui-select-match{ placeholder: '{{ option2Field }}', 'allow-clear': 'true' }
-                {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'product.id as product in productsByLevel(2) | orderBy: "name" | filter: { name: $select.search }' }
-                %div{ ng: { bind: { html: 'product.name' } } }
       .row
         .col-md-6.form-group{ng: {repeat: 'pmpItemCustomField in pmpItemcustomFieldNames | orderBy: "position"', init: "fieldName = pmpItemCustomField.field_name", if: "!pmpItemCustomField.disabled", class:'{error: errors[fieldName]}'}}
           %span.error-text {{errors[fieldName]}}
@@ -108,7 +75,6 @@
               {{ $select.selected.value }}
             %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in pmpItemCustomField.custom_field_options | filter: { value: $select.search }' }
               %div{ ng: { bind: { html: 'customFieldOption.value' } } }
-
 
     .popup-modal-footer.text-center
       %button.btn.btn-default{ 'type': 'button', 'ng-click': 'closeModal()' } Cancel

@@ -12,7 +12,6 @@
 
   $scope.init = () ->
     getCustomFields()
-    getProductFields()
     getMetadata()
     Company.get().$promise.then (company) -> $scope.company = company
 
@@ -111,13 +110,6 @@
   getMetadata = ->
     if metadata == true
       $scope.metadata_url = api_url + '/metadata'
-
-  getProductFields = ->
-    if api_url == '/api/active_pmps/import_item'
-      user = $scope.currentUser
-      $scope.product_fields = []
-      if user.product_options_enabled
-        $scope.product_fields = [user.product_option1, user.product_option2]
 
   $scope.init()
 ]

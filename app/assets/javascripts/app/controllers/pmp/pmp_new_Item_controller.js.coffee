@@ -1,6 +1,6 @@
 @app.controller 'PmpNewItemController',
-  ['$scope', '$modalInstance', 'CustomFieldNames', 'item', 'pmpId', 'PMPItem', 'SSP', 'PMPType', 'Product', 'Company'
-  ($scope,    $modalInstance, CustomFieldNames,   item,   pmpId,   PMPItem,   SSP,   PMPType,   Product, Company) ->
+  ['$scope', '$modalInstance', 'CustomFieldNames', 'item', 'pmpId', 'PMPItem', 'SSP', 'PMPType', 'Product'
+  ($scope,    $modalInstance, CustomFieldNames,   item,   pmpId,   PMPItem,   SSP,   PMPType,   Product) ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
     $scope.item = item || {}
@@ -20,63 +20,8 @@
         $scope.ssps = ssps
       Product.all(revenue_type: 'PMP', active: true).then (data) ->
         $scope.products = data
-        if !_.isEmpty(item)
-          $scope.productsByLevelEdit(0,item.product)
-          $scope.productsByLevelEdit(1,item.product)
-          $scope.productsByLevelEdit(2,item.product)
       CustomFieldNames.all({subject_type: 'pmp_item', show_on_modal: true}).then (pmpItemcustomFieldNames) ->
         $scope.pmpItemcustomFieldNames = pmpItemcustomFieldNames
-      Company.get().$promise.then (company) ->
-        $scope.company = company
-        $scope.productOptionsEnabled = company.product_options_enabled
-        $scope.productOption1Enabled = company.product_option1_enabled
-        $scope.productOption2Enabled = company.product_option2_enabled
-        $scope.option1Field = company.product_option1_field || 'Option1'
-        $scope.option2Field = company.product_option2_field || 'Option2'
-
-    $scope.productsByLevel = (level) ->
-      _.filter $scope.products, (p) ->
-        if level == 0
-          p.level == level
-        else if level == 1
-          p.level == 1 && p.parent_id == $scope.item.product0
-        else if level == 2
-          p.level == 2 && p.parent_id == $scope.item.product1
-
-    $scope.productsByLevelEdit = (level, product)->
-      _.filter $scope.products, (p) ->
-        if level == 0
-          $scope.item.product0 = product.level0.id
-          p.level == level
-        else if level == 1
-          $scope.item.product1 = product.level1.id
-          p.level == 1 && p.parent_id == product.level0.id
-        else if level == 2
-          $scope.item.product2 = product.level2.id
-          p.level == 2 && p.parent_id == product.level1.id
-
-    $scope.onChangeProduct = (item, model) ->
-      if item
-        $scope.item.product_id = item.id
-        if item.level == 0
-          $scope.item.product1 = null
-          $scope.item.product2 = null
-        else if item.level == 1
-          $scope.item.product2 = null
-      else
-        if !$scope.item.product1
-          $scope.item.product_id = $scope.item.product0
-          $scope.item.product2 = null
-        else if !$scope.item.product2
-          $scope.item.product_id = $scope.item.product1
-
-    $scope.hasSubProduct = (level) ->
-      if $scope.productOptionsEnabled && subProduct = _.find($scope.products, (p) ->
-        (!level || p.level == level) && p.parent_id == $scope.item.product_id)
-        return subProduct
-
-    $scope.selectedProduct = () ->
-      _.find $scope.products, (p) -> p.id == $scope.item.product_id
 
     $scope.submitForm = () ->
       # validates empty fields
@@ -88,15 +33,6 @@
         title = titles[_.indexOf(fields, key)]
         if !field then $scope.errors[key] = title + ' is required'
       if !_.isEmpty($scope.errors) then return
-
-      if $scope.company.product_options_enabled
-        if !$scope.item.product_id
-          $scope.errors['product_id'] = 'Product is required'
-        else if subProduct = $scope.hasSubProduct()
-          if subProduct.level == 1 && $scope.company.product_option1_enabled
-            $scope.errors['product' + 1] = $scope['option' + 1 + 'Field'] + ' is required'
-          if subProduct.level == 2 && $scope.company.product_option2_enabled
-            $scope.errors['product' + 2] = $scope['option' + 2 + 'Field'] + ' is required'
 
       $scope.pmpItemcustomFieldNames.forEach (item) ->
         if item.is_required && !item.disabled && (!$scope.item.pmp_item_custom_field_obj || !$scope.item.pmp_item_custom_field_obj[item.field_name])

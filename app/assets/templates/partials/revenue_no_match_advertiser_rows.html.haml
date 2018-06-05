@@ -1,49 +1,11 @@
-%table.table.table-hover
-    %thead
-        %tr.z-sortable-prime
-            %th.left
-                %span.z-sortable{"ng-click" => "setCustomOrder('ssp_deal_id',orderKeys.row_1, 'row_1')"} Deal-ID (Click to Expand)
-            %th.left
-                %span.z-sortable{"ng-click" => "setCustomOrder('pmp.name',orderKeys.row_2, 'row_2')"} PMP Name
-            %th.left
-                %span.z-sortable{"ng-click" => "setCustomOrder('ssp.name',orderKeys.row_3, 'row_3')"} SSP Name
-            %th.left
-                %span.z-sortable{"ng-click" => "setCustomOrder('advertiser',orderKeys.row_4, 'row_4')"} Advertiser
-            %th.right
-                %span.z-sortable{"ng-click" => "setCustomOrder('total_impressions',orderKeys.row_5, 'row_5')"} Impressions
-            %th.right
-                %span.z-sortable{"ng-click" => "setCustomOrder('total_revenue_loc',orderKeys.row_6, 'row_6')"} Revenue
-            %th.right
-    %tbody#noMatchAdv{"ng-repeat" => "row in revenue | filter:searchText"}
-        %tr{"ng-if" => "row.count > 1"}
-            %td.left
-                %div.load-spinner{ ng: { if: 'row.expanded && isItemsLoading' } }
-                %i{ ng: { class: "{ 'fa fa-chevron-down toggle-icon': row.expanded, 'fa fa-chevron-right toggle-icon': !row.expanded }" } }
-                %a{"ng-click" => "expandRecord(row,$index)"} {{ row.ssp_deal_id }}
-
-            %td.left
-                %a{:href => "", "ng-click" => "$event.stopPropagation();", "ng-href" => "/revenue/pmps/{{row.pmp.id}}"} {{ row.pmp.name }}
-            %td.left {{ row.ssp.name }}
-            %td.left {{ row.advertiser }}
-            %td.right {{ row.total_impressions  | number:0 }}
-            %td.right {{ row.total_revenue_loc | currency:row.actuals_last.currency.curr_symbol:2 }}
-        %tr{"ng-if" => "row.count == 1", "ng-click" => "showAssignAdvertiserModal(row.actuals_last)" }
-            %td.left {{ row.ssp_deal_id }}
-            %td.left
-                %a{:href => "", "ng-click" => "$event.stopPropagation();", "ng-href" => "/revenue/pmps/{{row.pmp.id}}"} {{ row.pmp.name }}
-            %td.left {{ row.ssp.name }}
-            %td.left {{ row.actuals_last.ssp_advertiser }}
-            %td.right {{ row.actuals_last.impressions | number:0 }}
-            %td.right {{ row.actuals_last.revenue_loc | currency:row.actuals_last.currency.curr_symbol:2 }}
-            %td.right
-                %i.fa.fa-angle-right
-        %tr{"infinite-scroll" => "loadMoreItemsRevenues(ri)", "ng-if" => "row.expanded", "infinite-scroll-disabled" => "isItemsLoading || allCustomItemsLoaded", "ng-click" => "showAssignAdvertiserModal(ri)", "ng-repeat" => "ri in revenueItems", "scroll-distance" => "0.5", "scroll-listen-for-event" => "lazy:scroll"}
-            %td.left {{ ri.ssp_deal_id }}
-            %td.left
-                %a{:href => "", "ng-click" => "$event.stopPropagation();", "ng-href" => "/revenue/pmps/{{ri.pmp.id}}"} {{ ri.pmp.name }}
-            %td.left {{ ri.ssp.name }}
-            %td.left {{ ri.ssp_advertiser }}
-            %td.right {{ ri.impressions | number:0 }}
-            %td.right {{ ri.revenue_loc | currency:ri.currency.curr_symbol:2 }}
-            %td.right
-                %i.fa.fa-angle-right
+%tr{'ng-repeat': 'row in revenue | orderBy : zSort.by : zSort.rev | filter:searchText', 'ng-click': 'showAssignAdvertiserModal(row)'}
+  %td.left {{ row.ssp_deal_id }}
+  %td.left
+    %a{ href: '', ng: { if: 'row.pmp', href: '/revenue/pmps/{{row.pmp.id}}', click: '$event.stopPropagation();' } }
+      {{ row.pmp.name }}
+  %td.left {{ row.ssp.name }}
+  %td.left {{ row.ssp_advertiser }}
+  %td.right {{ row.impressions | number:0 }}
+  %td.right {{ row.revenue_loc | currency:row.currency.curr_symbol:2 }}
+  %td.right
+    %i.fa.fa-angle-right
