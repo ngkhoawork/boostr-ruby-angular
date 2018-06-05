@@ -9,12 +9,10 @@
       $location.path().indexOf(viewLocation) == 0
 
     $scope.search = (keyCode, query) ->
-      return unless query
-      if query.length == 0
-        $scope.searchResults = []
+      if !query || query.length == 0
+        $scope.clearSearch()
       else if keyCode == 13
-        if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
-        $scope.searchResults = []
+        $scope.clearSearch()
         $scope.query = query
         $location.url('/search?query=' + encodeURIComponent(query))
       else
@@ -51,11 +49,6 @@
         when 'Deal'
           'deals/' + res.details.id
 
-
-    $scope.showDetail = (res) ->
-      if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
-      $scope.searchResults = []
-
     closest = (element, className) ->
       if element[0].nodeName == 'HTML'
           return
@@ -65,8 +58,8 @@
           closest(element.parent(), className)
 
     $scope.clearSearch = (event) ->
-      if event
-        element = angular.element(event.originalEvent.explicitOriginalTarget)
+      if event && (event.relatedTarget || event.toElement)
+        element = angular.element(event.relatedTarget || event.toElement)
         return if closest(element, 'search-dropdown')
       if searchTimeout then searchTimeout = $timeout.cancel(searchTimeout)
       $scope.searchResults = []
