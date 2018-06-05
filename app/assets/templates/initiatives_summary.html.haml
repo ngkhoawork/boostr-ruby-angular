@@ -61,7 +61,7 @@
 							%tbody
 								%tr{'ng-repeat': 'deal in selectedInitiative.deals.open_deals'}
 									%td
-										%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
+										%a{'ng-href': '{{"/deals/" + deal.id}}', target: '_blank'} {{deal.name}}
 									%td {{deal.advertiser_name}}
 									%td
 										%div{'ng-repeat': 'seller in deal.seller_names'} {{seller}}
@@ -93,7 +93,7 @@
 							%tbody
 								%tr{'ng-repeat': 'deal in selectedInitiative.deals.won_deals'}
 									%td
-										%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
+										%a{'ng-href': '{{"/deals/" + deal.id}}', target: '_blank'} {{deal.name}}
 									%td {{deal.advertiser_name}}
 									%td
 										%div{'ng-repeat': 'seller in deal.seller_names'} {{seller}}
@@ -125,7 +125,7 @@
 							%tbody
 								%tr{'ng-repeat': 'deal in selectedInitiative.deals.lost_deals'}
 									%td
-										%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
+										%a{'ng-href': '{{"/deals/" + deal.id}}', target: '_blank'} {{deal.name}}
 									%td {{deal.advertiser_name}}
 									%td
 										%div{'ng-repeat': 'seller in deal.seller_names'} {{seller}}

@@ -188,7 +188,7 @@
                 %tbody
                   %tr{'ng-repeat': 'revenue in revenues | orderBy : zSort.revenues.by : zSort.revenues.rev'}
                     %td
-                      %a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}'} {{revenue.name}}
+                      %a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}', target: '_blank'} {{revenue.name}}
                     %td {{revenue.advertiser.name}}
                     %td {{revenue.agency.name}}
                     %td
@@ -243,7 +243,7 @@
                 %tbody
                   %tr{'ng-repeat': 'pmp_revenue in pmp_revenues | orderBy : zSort.pmp_revenues.by : zSort.pmp_revenues.rev'}
                     %td
-                      %a{href: '', 'ng-href': '/revenue/pmps/{{pmp_revenue.id}}'} {{pmp_revenue.name}}
+                      %a{href: '', 'ng-href': '/revenue/pmps/{{pmp_revenue.id}}', target: '_blank'} {{pmp_revenue.name}}
                     %td {{pmp_revenue.advertiser}}
                     %td {{pmp_revenue.agency}}
                     %td
@@ -301,7 +301,7 @@
                 %tbody
                   %tr{'ng-repeat': 'deal in deals | orderBy : zSort.deals.by : zSort.deals.rev', popover: '{{deal.next_steps}}', 'popover-title': 'Next Steps', 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
                     %td
-                      %a{href: '', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
+                      %a{href: '', 'ng-href': '/deals/{{deal.id}}', target: '_blank'} {{deal.name}}
                     %td {{deal.advertiser.name}}
                     %td {{deal.agency.name}}
                     %td
