@@ -3,12 +3,12 @@
     %a#logo{:href => root_path}
     %div.global-search
       %i.fa.fa-search
-      %input.form-control{'ng-model': 'query', 'ng-keyup': 'search($event.keyCode, query)', 'ng-blur': 'clearSearch($event)', placeholder: 'Search'}
+      %input.form-control{'ng-model': 'query', 'ng-keyup': 'search($event.keyCode, query)', 'ng-blur': 'clearSearch($event)', placeholder: 'Search', maxlength: '100'}
       %ul.search-dropdown{'ng-if': 'searchResults.length > 0', 'ng-blur': 'clearSearch($event)'}
         %li{'ng-repeat': 'res in searchResults', 'ng-click': 'search(13, res.details.name)', 'ng-blur': 'clearSearch($event)', 'tabindex': '-1'}
           %div{'ng-if': 'res.searchable_type != "Activity"'}
             %span{'text-in-bold': '', 'text': 'res.details.name', 'lookup': 'query', 'ng-blur': 'clearSearch($event)', 'tabindex': '-1'} 
-            %a{'href': '{{detailPage(res)}}', 'ng-click': '$event.stopPropagation(); showDetail(res);', 'ng-blur': 'clearSearch($event)'}
+            %a{'href': '{{detailPage(res)}}', 'ng-click': '$event.stopPropagation(); clearSearch();', 'ng-blur': 'clearSearch($event)'}
               Go to {{ displayType(res) }}
           .no-pointer{'ng-if': 'res.searchable_type == "Activity"'}
             %span {{ res.details.creator.first_name + " " +     res.details.creator.last_name }}
