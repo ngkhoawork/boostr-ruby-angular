@@ -274,6 +274,8 @@
       deal.next_steps_expired = moment(deal.next_steps_due) < moment().startOf('day')
     $scope.currentDeal = deal
     $scope.selectedStageId = deal.stage_id
+    $scope.start_date = deal.start_date
+    $scope.end_date = deal.end_date
     $scope.verifyMembersShare()
     $scope.setBudgetPercent(deal)
     $scope.getStages()
@@ -589,10 +591,10 @@
 
   $scope.moment = moment
 
-  $scope.updateDealDate = (key, oldDate) ->
+  $scope.updateDealDate = (key) ->
     deal = $scope.currentDeal
     if moment(deal.start_date).isAfter(deal.end_date)
-      deal[key] = moment(oldDate).toDate()
+      deal[key] = moment($scope[key]).toDate()
       $scope.errors.campaignPeriod = 'End Date can\'t be before Start Date'
       $timeout (-> delete $scope.errors.campaignPeriod), 6000
     else
