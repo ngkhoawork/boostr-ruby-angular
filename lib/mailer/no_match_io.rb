@@ -7,6 +7,7 @@ module Mailer
       return unless @temp_ios.present?
       @notification = company.notifications.active.find_by(event_type: Notification::TYPES['no_match_io'])
       return unless @notification.present?
+      return if @notification.recipients.blank?
       mail(to: @notification.recipients, subject: @notification.subject)
     end
   end
