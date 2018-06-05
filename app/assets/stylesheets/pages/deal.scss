@@ -817,11 +817,10 @@
         .status-success {
             color: #2ca02c;
         }
-        .bs-datepicker {
-            .dropdown-menu {
-                right: 0;
-                left: auto !important;
-            }
+        ul[datepicker-popup-wrap] {
+            left: auto !important;
+            right: 50%;
+            transform: translateX(50%);
         }
     }
     .error-tooltip {
