@@ -34,6 +34,12 @@
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
+  
+  adminGuard = ($rootScope, $location) ->
+    unless $rootScope.currentUserRoles.isAdmin()
+      alert("You don't have access here")
+      $location.path('/')
+      
   $routeProvider
     .when '/search',
       templateUrl: 'search.html'
@@ -225,118 +231,147 @@
     .when '/settings/',
       templateUrl: 'settings.html'
       controller: 'SettingsController'
+      resolve: check: adminGuard
 
     .when '/settings/general',
       templateUrl: 'settings/general.html'
       controller: 'SettingsGeneralController'
+      resolve: check: adminGuard
 
     .when '/settings/api_configurations',
       templateUrl: 'settings/api_configurations.html'
       controller: 'ApiConfigurationsController'
+      resolve: check: adminGuard
 
     .when '/settings/integration_logs',
       templateUrl: 'settings/integration_logs.html'
       controller: 'IntegrationLogsController'
+      resolve: check: adminGuard
 
     .when '/settings/integration_logs/:id',
       templateUrl: 'settings/integration_log.html'
       controller: 'IntegrationLogsController'
+      resolve: check: adminGuard
 
     .when '/settings/io_feed_logs',
       templateUrl: 'settings/io_feed_logs.html'
       controller: 'CsvImportLogsController'
+      resolve: check: adminGuard
 
     .when '/settings/smart_insights',
       templateUrl: 'settings/smart_insights.html'
       controller: 'SettingsSmartInsightsController'
+      resolve: check: adminGuard
 
     .when '/settings/users',
       templateUrl: 'settings/users.html'
       controller: 'SettingsUsersController'
+      resolve: check: adminGuard
 
     .when '/settings/currencies',
       templateUrl: 'settings/currencies.html'
       controller: 'SettingsCurrenciesController'
+      resolve: check: adminGuard
 
     .when '/settings/data_import',
       templateUrl: 'settings/data_import_export.html'
       controller: 'DataImportExportController'
+      resolve: check: adminGuard
 
     .when '/settings/notifications',
       templateUrl: 'settings/notifications.html'
       controller: 'SettingsNotificationsController'
+      resolve: check: adminGuard
 
     .when '/settings/initiatives',
       templateUrl: 'settings/initiatives.html'
       controller: 'SettingsInitiativesController'
+      resolve: check: adminGuard
 
     .when '/settings/products',
       templateUrl: 'settings/products.html'
       controller: 'SettingsProductsController'
+      resolve: check: adminGuard
 
     .when '/settings/products/:id',
       templateUrl: 'settings/products.html'
       controller: 'SettingsProductsController'
+      resolve: check: adminGuard
 
     .when '/settings/teams',
       templateUrl: 'settings/teams.html'
       controller: 'SettingsTeamsController'
+      resolve: check: adminGuard
 
     .when '/settings/teams/:id',
       templateUrl: 'settings/team.html'
       controller: 'SettingsTeamController'
+      resolve: check: adminGuard
 
     .when '/settings/custom_values',
       templateUrl: 'settings/custom_values.html'
       controller: 'SettingsCustomValuesController'
+      resolve: check: adminGuard
 
     .when '/settings/time_periods',
       templateUrl: 'settings/time_periods.html'
       controller: 'SettingsTimePeriodsController'
+      resolve: check: adminGuard
 
     .when '/settings/quotas/:time_period_id?',
       templateUrl: 'settings/quotas.html'
       controller: 'SettingsQuotasController'
+      resolve: check: adminGuard
 
     .when '/settings/stages',
       templateUrl: 'settings/stages/main_stages.html'
       controller: 'MainStageController'
+      resolve: check: adminGuard
 
     .when '/settings/workflows/',
       templateUrl: 'settings/workflows.html',
       controller: 'SettingsWorkflowsController'
+      resolve: check: adminGuard
 
     .when '/settings/bps',
       templateUrl: 'settings/bps.html'
       controller: 'BPsController'
+      resolve: check: adminGuard
 
     .when '/settings/bps/:id',
       templateUrl: 'settings/bp.html'
       controller: 'BPsBPController'
+      resolve: check: adminGuard
 
     .when '/settings/custom_fields/',
       templateUrl: 'settings/custom_fields.html'
       controller: 'SettingsDealCustomFieldNamesController'
+      resolve: check: adminGuard
 
     .when '/settings/ealerts/',
       templateUrl: 'settings/ealerts.html'
       controller: 'SettingsEalertsController'
+      resolve: check: adminGuard
 
     .when '/settings/activity_types/',
       templateUrl: 'settings/activity_types.html'
       controller: 'SettingsActivityTypesController'
+      resolve: check: adminGuard
 
     .when '/settings/permissions/',
       templateUrl: 'settings/permissions.html'
       controller: 'SettingsPermissionsController'
+      resolve: check: adminGuard
 
     .when '/settings/validations/',
       templateUrl: 'settings/validations.html'
       controller: 'SettingsValidationsController'
+      resolve: check: adminGuard
 
     .when '/settings/egnyte',
       templateUrl: 'settings/egnyte.html'
       controller: 'SettingsEgnyteController'
+      resolve: check: adminGuard
 
     .when '/bps',
       templateUrl: 'bp.html'
@@ -386,6 +421,7 @@
     .when '/settings/leads',
       templateUrl: 'settings/leads.html'
       controller: 'LeadsSettingsController'
+      resolve: check: adminGuard
 
     .when '/api_reference',
       templateUrl: 'api_reference.html'
@@ -406,7 +442,6 @@
     .when '/contracts/:id',
       templateUrl: 'contracts/contract.html'
       controller: 'ContractController'
-
 
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
