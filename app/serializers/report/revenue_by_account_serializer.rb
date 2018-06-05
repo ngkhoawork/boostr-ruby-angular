@@ -8,12 +8,7 @@ class Report::RevenueByAccountSerializer < ActiveModel::Serializer
              :team_name,
              :seller_names,
              :revenues,
-             :total_revenue,
-             :month_revenues
-
-  def month_revenues
-    object.month_revenues
-  end
+             :total_revenue
 
   def name
     object.name
