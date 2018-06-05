@@ -113,6 +113,7 @@
                     return percent_value
 
             $scope.setPercent = (percent_value, index) ->
+                percent_value = 0 if !percent_value
                 percent_value = percent_value + '%'
                 if(index!= undefined)
                     $scope.deal_product.deal_product_budgets[index].percent_value = percent_value
@@ -126,6 +127,7 @@
 
 
             $scope.changeTotalBudget = ->
+                $scope.deal_product.budget_loc = Number($scope.deal_product.budget_loc) || 0
                 $scope.deal_product.budget_percent = 100
                 $scope.deal_product.isIncorrectTotalBudgetPercent = false
                 budgetOneDay = $scope.deal_product.budget_loc / $scope.currentDeal.days
@@ -231,4 +233,6 @@
 
             $scope.cancel = ->
                 $modalInstance.close()
+
+            $scope.isUndefined = angular.isUndefined
     ]
