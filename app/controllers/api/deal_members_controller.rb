@@ -18,6 +18,8 @@ class Api::DealMembersController < ApplicationController
 
   def update
     if deal_member.update_attributes(deal_member_params)
+      deal.manual_update = true
+      WorkflowWorker.perform_async(deal_id: deal.id, type: 'update')
       render deal
     else
       render json: { errors: deal_member.errors.messages }, status: :unprocessable_entity

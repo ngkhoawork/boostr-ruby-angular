@@ -32,6 +32,10 @@ class WorkflowCriterion < ActiveRecord::Base
     Arel::Table.new(:teams)
   end
 
+  def deal_members
+    Arel::Table.new(:deal_members)
+  end
+
   def account_cfs
     Arel::Table.new(:account_cfs)
   end
@@ -45,11 +49,13 @@ class WorkflowCriterion < ActiveRecord::Base
     return options[:name].send(arel_operator, criteria_value) if field.eql?("deal_type")
     return initiatives[:name].send(arel_operator, criteria_value) if field.eql?("deal_initiative")
     return teams[:name].send(arel_operator, criteria_value) if field.eql?("teams")
+    return deal_members[:share].send(arel_operator, criteria_value) if field.eql?("share")
     return options.alias(:client_segments)[:name].send(arel_operator, criteria_value) if field.eql?("client_segments")
     return options.alias(:client_regions)[:name].send(arel_operator, criteria_value) if field.eql?("client_regions")
     return options.alias(:client_categories)[:name].send(arel_operator, criteria_value) if field.eql?("client_categories")
     return options.alias(:client_subcategories)[:name].send(arel_operator, criteria_value) if field.eql?("client_subcategories")
     return account_cfs[field].send(arel_operator, criteria_value) if base_object.eql?('Account Custom Fields')
+    return options.alias(:member_roles)[:name].send(arel_operator, criteria_value) if base_object.eql?('Deal Members')
     return deal_custom_fields[field].send(arel_operator, criteria_value) if base_object.eql?('Deal Custom Fields')
     criteria_field.send(arel_operator, date_field? ? criteria_value.to_date : criteria_value)
   end
