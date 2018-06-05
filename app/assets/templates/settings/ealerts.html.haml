@@ -8,6 +8,13 @@
           .row
             .col-xs-7
               .mb20.pb20.bb-gray
+                .form-group{'ng-class': "{'error': errors['subject']}"}
+                  %label{ for: 'subject' }
+                    Subject
+                    %span.star *
+                  %z-mapping-text-input{'ng-if': 'loadedDataMapping', 'message-text': 'ealert.subject', 'field-mapping': 'data_mappings' }
+                  %span.error-text {{errors.subject}}
+              .mb20.pb20.bb-gray
                 .form-group{'ng-class': "{'error': errors['delay']}"}
                   %label{ for: 'stage' }
                     Auto-send eAlerts Delay (in minutes)
