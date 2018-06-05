@@ -35,6 +35,14 @@ class Workflow < ActiveRecord::Base
     update_attribute(:md5_signature, sign)
   end
 
+  def check_changes(field)
+    workflow_criterions&.pluck(:base_object)&.include?(field_mapper(field))
+  end
+
+  def field_mapper(field)
+    'Stage' if field.eql?('stage_id')
+  end
+
   def create_signature
     self.skip_update = true
     update_attribute(:md5_signature, sign)

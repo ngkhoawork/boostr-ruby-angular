@@ -24,14 +24,7 @@ class WorkflowCheckService
 
       wfc = workflow_criterions
       if wfc&.size.eql?(1) && wfc&.first.math_operator.eql?('>')
-        last_event = DealProductState.where(deal_id:obj_id)&.order_by(created_at: 'ask')&.last
-        deal_products_sum = last_event&.deal_products_sum&.to_f
-        previous_products_sum = last_event&.previous_products_sum&.to_f
-        if (previous_products_sum == wfc&.first&.value&.to_f)
-          return true if deal_products_sum > wfc&.first&.value&.to_f
-        else
-          return ((previous_products_sum < wfc&.first&.value&.to_f) && previous_products_sum < wfc&.first&.value&.to_f)
-        end
+        return check_exceptions(wfc)
       end
 
       return create_log unless event_log.present?
@@ -39,6 +32,17 @@ class WorkflowCheckService
       update_object(event_log, 'add')
 
       return true
+    end
+  end
+
+  def check_exceptions(wfc)
+    last_event = DealProductState.where(deal_id:obj_id)&.order_by(created_at: 'ask')&.last
+    deal_products_sum = last_event&.deal_products_sum&.to_f
+    previous_products_sum = last_event&.previous_products_sum&.to_f
+    if previous_products_sum.eql?(wfc&.first&.value&.to_f)
+      return true if deal_products_sum > wfc&.first&.value&.to_f
+    else
+      return true if (previous_products_sum || 0) < wfc&.first&.value&.to_f && (previous_products_sum || 0) < wfc&.first&.value&.to_f
     end
   end
 
