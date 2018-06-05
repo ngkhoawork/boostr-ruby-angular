@@ -171,7 +171,7 @@
 								%a{href: '', 'ng-click': 'filter.select("yearClosed", year)'} {{year}}
 		.footer
 			%span.reset{'ng-click': 'filter.resetAll()'} Reset
-			%button.btn-main.submit{'ng-click': 'filter.apply(null, scrollCallback)'} Apply filters
+			%button.btn-main.submit{'ng-click': 'filter.apply(null, scrollCallback, true)'} Apply filters
 
 	.container-fluid
 		.row

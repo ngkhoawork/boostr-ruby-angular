@@ -108,8 +108,8 @@
                         _this = $scope.filter.datePicker
                         if (_this.createdDate.startDate && _this.createdDate.endDate)
                             $scope.filter.selected.createdDate = _this.createdDate
-                apply: (reset, callback) ->
-                    $scope.getDeals(callback)
+                apply: (reset, callback, onFilterApply) ->
+                    $scope.getDeals(callback, onFilterApply)
                     this.isOpen = false
                 reset: (key) ->
                     DealsFilter.reset(key)
@@ -133,8 +133,6 @@
                         when 'startDate' then 'Start date'
                         when 'createdDate' then 'Created date'
                 select: (key, value) ->
-                    if key == 'team'
-                        $scope.teamFilter({name: 'All Deals', param: 'all'})
                     DealsFilter.select(key, value)
                 onDropdownToggle: ->
                     this.search = ''
@@ -163,10 +161,13 @@
                     query.closed_year = f.yearClosed if f.yearClosed
                     query
 
-            $scope.getDeals = (callback) ->
+            $scope.getDeals = (callback, onFilterApply) ->
                 this.appliedSelection = angular.copy this.selected
                 $scope.page = 1
                 params = getDealParams()
+                if params.team_id && onFilterApply
+                    params.filter = 'all'
+                    $scope.teamFilter({name: 'All Deals', param: 'all'})
                 $scope.deals = []
                 $scope.columns = []
                 $scope.dealsInfo = []
