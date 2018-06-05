@@ -68,10 +68,10 @@
                 _.each $scope.deal_product.deal_product_budgets, (month, index) ->
                     if(length-1 != index)
                         budgetSum = budgetSum + month.budget_loc
-                        budgetPercentSum = budgetPercentSum + month.percent_value
+                        budgetPercentSum = Number( (budgetPercentSum + month.percent_value).toFixed(1) )
                     else
                         month.budget_loc = $scope.deal_product.budget_loc - budgetSum
-                        month.percent_value = 100 - budgetPercentSum
+                        month.percent_value = Number( ( 100 - budgetPercentSum ).toFixed(1) )
 
             cutSymbolsAddProductBudget = (dealProduct)->
                 dealProduct = angular.copy dealProduct
@@ -137,7 +137,7 @@
                         month.budget_loc = 0
                     else
                         month.budget_loc = Math.round($scope.currentDeal.days_per_month[index] * budgetOneDay)
-                        month.percent_value = Math.round(month.budget_loc / $scope.deal_product.budget_loc * 100)
+                        month.percent_value = Number( (month.budget_loc / $scope.deal_product.budget_loc * 100).toFixed(1) )
                     budgetSum = budgetSum + $scope.currentDeal.days_per_month[index] * budgetOneDay
                     budgetPercentSum = budgetPercentSum + month.percent_value
                 if($scope.deal_product.budget_loc && budgetSum != $scope.deal_product.budget_loc  || budgetPercentSum && budgetPercentSum != 100)
@@ -158,7 +158,7 @@
                     else
                         $scope.deal_product.budget_loc = $scope.deal_product.budget_loc + $scope.cutCurrencySymbol(month.budget_loc)
                 _.each $scope.deal_product.deal_product_budgets, (month) ->
-                    month.percent_value = $scope.setPercent( Math.round($scope.cutCurrencySymbol(month.budget_loc) / $scope.deal_product.budget_loc * 100))
+                    month.percent_value = $scope.setPercent( Number( ( $scope.cutCurrencySymbol(month.budget_loc) / $scope.deal_product.budget_loc * 100 ).toFixed(1) ) )
 
             $scope.changeMonthPercent = (monthPercentValue, index)->
                 if(!monthPercentValue)
