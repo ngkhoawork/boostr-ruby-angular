@@ -66,6 +66,8 @@
                 budgetPercentSum = 0
                 length = $scope.deal_product.deal_product_budgets.length
                 _.each $scope.deal_product.deal_product_budgets, (month, index) ->
+                    month.budget_loc = $scope.cutCurrencySymbol(month.budget_loc)
+                    month.percent_value = $scope.cutPercent(month.percent_value)
                     if(length-1 != index)
                         budgetSum = budgetSum + month.budget_loc
                         budgetPercentSum = Number( (budgetPercentSum + month.percent_value).toFixed(1) )
@@ -99,7 +101,11 @@
                         id: ->
 
             $scope.setCurrencySymbol = (value, index) ->
-                value = $scope.currency_symbol + value
+                if String(value).indexOf($scope.currency_symbol) < 0
+                    value = $scope.currency_symbol + value
+                else
+                    return value
+
                 if(index!= undefined )
                     $scope.deal_product.deal_product_budgets[index].budget_loc = value
                 else
@@ -114,7 +120,12 @@
 
             $scope.setPercent = (percent_value, index) ->
                 percent_value = 0 if !percent_value
-                percent_value = percent_value + '%'
+
+                if String(percent_value).indexOf('%') < 0
+                    percent_value = percent_value + '%'
+                else
+                    return percent_value
+                    
                 if(index!= undefined)
                     $scope.deal_product.deal_product_budgets[index].percent_value = percent_value
                 else
@@ -161,6 +172,10 @@
                         $scope.deal_product.budget_loc = $scope.deal_product.budget_loc + $scope.cutCurrencySymbol(month.budget_loc)
                 _.each $scope.deal_product.deal_product_budgets, (month) ->
                     month.percent_value = $scope.setPercent( Number( ( $scope.cutCurrencySymbol(month.budget_loc) / $scope.deal_product.budget_loc * 100 ).toFixed(1) ) )
+                addProductBudgetCorrection()
+                _.each $scope.deal_product.deal_product_budgets, (month) ->
+                    month.budget_loc = $scope.setCurrencySymbol(month.budget_loc)
+                    month.percent_value = $scope.setPercent(month.percent_value)
 
             $scope.changeMonthPercent = (monthPercentValue, index)->
                 if(!monthPercentValue)
