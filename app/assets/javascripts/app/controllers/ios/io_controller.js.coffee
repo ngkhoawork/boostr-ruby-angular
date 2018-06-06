@@ -360,8 +360,8 @@
             $scope.updateIODate = (key) ->
                 $scope.errors = {}
                 io = $scope.currentIO
-                io.start_date = moment(io.start_date).format('YYYY-MM-DD')
-                io.end_date = moment(io.end_date).format('YYYY-MM-DD')
+                io.start_date = moment(io.start_date).utc().format()
+                io.end_date = moment(io.end_date).utc().format()
 
                 if moment(io.start_date).isSameOrBefore(io.end_date)
                     $scope.updateIO()

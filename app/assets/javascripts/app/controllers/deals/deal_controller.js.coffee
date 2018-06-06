@@ -589,8 +589,8 @@
 
   $scope.updateDealDate = (key) ->
     deal = $scope.currentDeal
-    deal.start_date = moment(deal.start_date).format('YYYY-MM-DD')
-    deal.end_date = moment(deal.end_date).format('YYYY-MM-DD')
+    deal.start_date = moment(deal.start_date).utc().format()
+    deal.end_date = moment(deal.end_date).utc().format()
     if moment(deal.start_date).isSameOrBefore(deal.end_date)
       $scope.updateDeal()
     else
