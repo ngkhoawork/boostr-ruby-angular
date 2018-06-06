@@ -30,12 +30,12 @@
             %span.error-text {{errors.advertiser}}
             %label{style: 'display: block'}
               or Advertiser
-            %input.form-control{'placeholder': 'Choose Advertiser', 'ng-model': 'form.advertiser', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "advertiser")'}
+            %input.form-control{'placeholder': 'Choose Advertiser', 'ng-model': 'form.advertiser', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchClients($viewValue, Advertiser)'}
           .form-group.agency-field{'ng-class':'{error: errors.agency}'}
             %span.error-text {{errors.agency}}
             %label{style: 'display: block'}
               or Agency
-            %input.form-control{'placeholder': 'Choose Agency', 'ng-model': 'form.agency', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "agency")'}
+            %input.form-control{'placeholder': 'Choose Agency', 'ng-model': 'form.agency', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.name for item in searchClients($viewValue, Agency)'}
           %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openAccountModal()'}
 
         .row
