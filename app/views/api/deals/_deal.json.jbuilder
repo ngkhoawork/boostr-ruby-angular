@@ -2,8 +2,8 @@ json.extract! deal, :id, :name, :budget, :budget_loc, :created_at, :curr_cd, :de
                     :stage_id, :previous_stage_id, :stage_updated_at, :closed_at, :advertiser_id, :agency_id,
                     :initiative_id, :next_steps_due
 
-json.start_date deal.start_date.to_datetime
-json.end_date deal.end_date.to_datetime
+json.start_date deal.start_date
+json.end_date deal.end_date
 json.days deal.days
 json.months deal.months
 json.days_per_month deal.days_per_month
