@@ -58,7 +58,7 @@ module WorkflowCallbacks
         deal_id: self.id,
         deal_products_sum: deal_products.sum(:budget),
         event_type: event_type,
-        previous_products_sum: self.budget
+        previous_products_sum: self.budget || 0
       }
       DealProductState.create(opts)
     rescue => e
