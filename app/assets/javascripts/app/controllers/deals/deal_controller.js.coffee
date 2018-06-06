@@ -494,9 +494,8 @@
             budgetSum = budgetSum + deal_product_budget.budget_loc
             budgetPercentSum = budgetPercentSum + deal_product_budget.budget_percent
 
-#            need correct data from server
-#          if(budgetSum != product.total_budget || budgetPercentSum != 100)
-#            $scope.budgetCorrection(product.deal_products, product.total_budget)
+        if(budgetSum != deal_product.total_budget || budgetPercentSum != 100)
+          $scope.budgetCorrection(deal_product.deal_product_budgets, deal_product.budget)
 
           deal_product.total_budget_percent = 100
 
@@ -517,7 +516,7 @@
           budgetSum = budgetSum + Number(deal_product_budget.budget_loc)
           budgetPercentSum = budgetPercentSum + Number(deal_product_budget.budget_percent)
       deal_product_budgets[length-1].budget_loc = total_product_budget - budgetSum
-      deal_product_budgets[length-1].budget_percent = 100 - budgetPercentSum
+      deal_product_budgets[length-1].budget_percent = Number(100 - budgetPercentSum).toFixed(1)
 
 #============END percent and money inputs logic=====================
 
