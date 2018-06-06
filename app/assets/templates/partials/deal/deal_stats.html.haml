@@ -36,12 +36,12 @@
 						.description Campaign Period
 						%div{'ng-if': 'currentDeal.stage.open'}
 							.title.bs-datepicker
-								%span.editable{ datepicker: { popup: 'MMMM d, y' }, ng: { model: 'currentDeal.start_date', click: 'startOpened = !startOpened', change: 'updateDealDate("start_date")' }, 'is-open': 'startOpened' }
-									{{currentDeal.start_date | date : 'mediumDate' : 'UTC'}}
+								%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.start_date', click: 'startOpened = !startOpened', change: 'updateDealDate("start_date")' }, 'is-open': 'startOpened' }
+									{{currentDeal.start_date | date : 'mediumDate'}}
 								{{'-'}}
 								%span.no-wrap-line
-									%span.editable{ datepicker: { popup: 'MMMM d, y' }, ng: { model: 'currentDeal.end_date', click: 'endOpened = !endOpened', change: 'updateDealDate("end_date")' }, 'is-open': 'endOpened' }
-										{{currentDeal.end_date | date : 'mediumDate' : 'UTC'}}
+									%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.end_date', click: 'endOpened = !endOpened', change: 'updateDealDate("end_date")' }, 'is-open': 'endOpened' }
+										{{currentDeal.end_date | date : 'mediumDate'}}
 									%span.caret
 						%div{'ng-if': '!currentDeal.stage.open'}
 							.title

@@ -589,12 +589,14 @@
 
   $scope.updateDealDate = (key) ->
     deal = $scope.currentDeal
-    if moment(deal.start_date).isAfter(deal.end_date)
+    deal.start_date = moment(deal.start_date).format('YYYY-MM-DD')
+    deal.end_date = moment(deal.end_date).format('YYYY-MM-DD')
+    if moment(deal.start_date).isSameOrBefore(deal.end_date)
+      $scope.updateDeal()
+    else
       deal[key] = moment($scope[key]).toDate()
       $scope.errors.campaignPeriod = 'End Date can\'t be before Start Date'
       $timeout (-> delete $scope.errors.campaignPeriod), 6000
-    else
-      $scope.updateDeal()
 
   validationValueFactorExists = (deal, factor) ->
     if factor == 'deal_type_value'
