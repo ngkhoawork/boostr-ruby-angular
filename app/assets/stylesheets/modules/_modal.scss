@@ -693,5 +693,9 @@
   .dropdown-menu[typeahead-popup] {
     max-height: 250px;
     overflow-y: auto;
+
+    li a {
+      padding: 3px 20px;
+    }
   }
 }
