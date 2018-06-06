@@ -32,7 +32,10 @@ RSpec.describe CustomFieldName, type: :model do
       it 'not valid with not uniq position in one company with one subject type' do
         create_custom_field_name(position: 1, subject_type: 'Ssp')
 
-        expect(build_custom_field_name(position: 1, subject_type: 'Ssp')).not_to be_valid
+        new_custom_field_name = build_custom_field_name(position: 1, subject_type: 'Ssp')
+
+        expect(new_custom_field_name).not_to be_valid
+        expect(new_custom_field_name.errors.full_messages).to eq ['Position has already been taken']
       end
     end
 
