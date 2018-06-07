@@ -57,6 +57,7 @@ en:
           greater_than_end_date: "Start date --%{start_date}-- is greater than end date --%{end_date}--"
         end_date:
           not_in_io_range: "Monthly budget end date --%{end_date}-- is not in between io start date and end date"
+          invalid: "End date --%{end_date}-- does not match mm/dd/yyyy format"
       deal_product_budget:
         product:
           existence: "Product with --%{product_full_name}-- name doesn't exist"
