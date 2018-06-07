@@ -216,8 +216,6 @@
                     $scope.errors['product_id'] = 'Product is required'
                 else if subProduct = $scope.hasSubProduct()
                     $scope.errors['product' + subProduct.level] = $scope['option' + subProduct.level + 'Field'] + ' is required'
-                else if !isPmpDeal && _.find($scope.currentDeal.products, (p) -> p.id == $scope.deal_product.product_id)
-                    $scope.errors['product_id'] = "Product's already added"
 
                 if !_.isEmpty($scope.errors) || $scope.deal_product.isIncorrectTotalBudgetPercent then return
 

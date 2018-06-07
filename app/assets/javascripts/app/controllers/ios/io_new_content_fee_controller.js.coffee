@@ -196,8 +196,6 @@
                     $scope.errors['product_id'] = 'Product is required'
                 else if subProduct = $scope.hasSubProduct()
                     $scope.errors['product' + subProduct.level] = $scope['option' + subProduct.level + 'Field'] + ' is required'
-                else if _.find(content_fee_products, (p) -> p.id == $scope.content_fee.product_id)
-                    $scope.errors['product_id'] = "Product's already added"
 
                 $scope.customFieldNames.forEach (cf) ->
                   if cf.is_required && cf.field_type != 'boolean' && !$scope.content_fee.custom_field[cf.field_name]

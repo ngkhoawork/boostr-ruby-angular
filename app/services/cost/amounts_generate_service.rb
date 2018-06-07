@@ -14,19 +14,9 @@ class Cost::AmountsGenerateService
 
   private
 
-  def deal_product
-    if io && product
-      io.deal.deal_products.find_by(product: product)
-    else
-      nil
-    end
-  end
-
   def generate_cost_amounts
     if cost.imported
       generate_empty_amounts
-    elsif deal_product && deal_product.deal_product_budgets.length == io.months.length
-      generate_from_deal_products
     else
       generate_auto_amounts
     end
@@ -40,20 +30,6 @@ class Cost::AmountsGenerateService
         end_date: [period.end_of_month, io.end_date].min,
         budget: 0,
         budget_loc: 0
-      )
-    end
-  end
-
-  def generate_from_deal_products
-    margin = deal_product.product&.margin || 100
-    deal_product.deal_product_budgets.order("start_date asc").each_with_index do |monthly_budget, index|
-      budget = monthly_budget.budget * (100 - margin) / 100.0
-      budget_loc = monthly_budget.budget_loc * (100 - margin) / 100.0
-      cost.cost_monthly_amounts.create(
-        start_date: monthly_budget.start_date,
-        end_date: monthly_budget.end_date,
-        budget: budget,
-        budget_loc: budget_loc
       )
     end
   end
