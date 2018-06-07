@@ -88,7 +88,7 @@ class Deal::IoGenerateService
   end
 
   def content_fee_product_budgets(deal_product)
-    deal_product.deal_product_budgets.order("start_date asc").map do |monthly_budget|
+    deal_product.deal_product_budgets.map do |monthly_budget|
       {
         start_date: monthly_budget.start_date,
         end_date: monthly_budget.end_date,
