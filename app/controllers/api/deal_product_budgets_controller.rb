@@ -19,15 +19,18 @@ class Api::DealProductBudgetsController < ApplicationController
   end
 
   def create
-    if params[:file].present?
-      S3FileImportWorker.perform_async('Importers::DealProductBudgetsService',
-                                      current_user.company_id,
-                                      params[:file][:s3_file_path],
-                                      params[:file][:original_filename])
+    return unless params[:file].present?
 
+    begin
+      S3FileImportWorker.perform_async('Importers::DealProductBudgetsService',
+                                    current_user.company_id,
+                                    params[:file][:s3_file_path],
+                                    params[:file][:original_filename])
       render json: {
         message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
       }, status: :ok
+    rescue Exception => e
+      render json: { errors: [e.message] }, status: :unprocessable_entity
     end
   end
 end

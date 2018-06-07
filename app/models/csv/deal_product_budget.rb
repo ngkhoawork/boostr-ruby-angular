@@ -90,29 +90,29 @@ class Csv::DealProductBudget
   end
 
   def validate_product_existence
-    if product.nil?
-      errors.add(:base, I18n.t('csv.errors.deal_product_budget.product.existence', product_full_name: product_full_name))
-    end
+    return unless product.nil?
+    errors.add(:base, I18n.t('csv.errors.deal_product_budget.product.existence', product_full_name: product_full_name))
   end
 
   def validate_deal_existence
-    if deal.nil?
-      errors.add(:base, I18n.t('csv.errors.deal_product_budget.deal.existence', deal_id: deal_id, deal_name: deal_name))
-    end
+    return unless  deal.nil?
+    errors.add(:base, I18n.t('csv.errors.deal_product_budget.deal.existence', deal_id: deal_id, deal_name: deal_name))
   end
 
   def validate_end_date
-    return unless deal.present? && end_date.present? && !date_between_deal?(formatted_end_date)
-    errors.add(:base, I18n.t('csv.errors.deal_product_budget.end_date.not_in_deal_range', end_date: end_date))
-  rescue
-    errors.add(:base, I18n.t('csv.errors.deal_product_budget.end_date.invalid', end_date: end_date))
+    validate_date('end_date')
   end
 
   def validate_start_date
-    return unless deal.present? && start_date.present? && !date_between_deal?(formatted_start_date)
-    errors.add(:base, I18n.t('csv.errors.deal_product_budget.start_date.not_in_deal_range', start_date: start_date))
+    validate_date('start_date')
+  end
+
+  def validate_date(field_name)
+    field_value = send(field_name)
+    return unless deal.present? && field_value.present? && !date_between_deal?(format_date(field_value))
+    errors.add(:base, I18n.t("csv.errors.deal_product_budget.#{field_name}.not_in_deal_range", "#{field_name}": field_value))
   rescue
-    errors.add(:base, I18n.t('csv.errors.deal_product_budget.start_date.invalid', start_date: start_date))
+    errors.add(:base, I18n.t("csv.errors.deal_product_budget.#{field_name}.invalid", "#{field_name}": field_value))
   end
 
   def validate_start_date_before_end_date
