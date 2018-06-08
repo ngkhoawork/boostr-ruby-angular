@@ -47,16 +47,16 @@
             %button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity, $event)'}
               Show email
         %td.left
-          %a{'ng-href': '/accounts/{{activity.client.id}}'} {{ activity.client.name }}
+          %a{'ng-href': '/accounts/{{activity.client.id}}', target: '_blank'} {{ activity.client.name }}
         %td.left
-          %a{'ng-href': '/accounts/{{activity.agency.id}}'} {{ activity.agency.name }}
+          %a{'ng-href': '/accounts/{{activity.agency.id}}', target: '_blank'} {{ activity.agency.name }}
         %td.left
           %div{ ng: { repeat: 'contact in activity.contacts' } }
-            %a{'ng-href': '/contacts/{{contact.id}}'} {{ contact.name }}
+            %a{'ng-href': '/contacts/{{contact.id}}', target: '_blank'} {{ contact.name }}
         %td.left
-          %a{'ng-href': '/deals/{{activity.deal.id}}'} {{ activity.deal.name }}
+          %a{'ng-href': '/deals/{{activity.deal.id}}', target: '_blank'} {{ activity.deal.name }}
         %td.left
-          %a{'ng-href': '/publishers/{{activity.publisher.id}}'} {{ activity.publisher.name }}
+          %a{'ng-href': '/publishers/{{activity.publisher.id}}', target: '_blank'} {{ activity.publisher.name }}
         %td.left {{ activity.creator.first_name + " " + activity.creator.last_name }}
         %td.left {{ activity.team_creator }}
         %td{ng: {repeat: 'cf in customFieldNames', init: "fieldName = cf.field_name"}}

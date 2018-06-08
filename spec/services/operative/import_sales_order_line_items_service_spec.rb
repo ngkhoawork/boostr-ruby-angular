@@ -132,6 +132,52 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     subject.perform
   end
 
+  it 'skips rows that got changed more than a day prior to last import' do
+    api_config({skip_not_changed: true})
+
+    csv_import_log(created_at: Date.today - 1.month)
+
+    content_for_files([
+      line_item_csv_file(last_modified_on: DateTime.now - 3.months),
+      invoice_csv_file
+    ])
+
+    expect(DisplayLineItemCsv).not_to receive(:new)
+    subject.perform
+  end
+
+  it 'does not skip old rows if option is disabled' do
+    api_config({skip_not_changed: false})
+
+    csv_import_log(created_at: Date.today - 1.month)
+
+    content_for_files([
+      line_item_csv_file(last_modified_on: DateTime.now - 3.months),
+      invoice_csv_file
+    ])
+
+    expect(DisplayLineItemCsv).to receive(:new).and_return(line_item_csv)
+    expect(line_item_csv).to receive(:valid?).and_return(:true)
+    expect(line_item_csv).to receive(:perform)
+    subject.perform
+  end
+
+  it 'does not skip rows that changed recently' do
+    api_config({skip_not_changed: true})
+
+    csv_import_log(created_at: Date.today - 1.month)
+
+    content_for_files([
+      line_item_csv_file(last_modified_on: DateTime.now.to_s),
+      invoice_csv_file
+    ])
+
+    expect(DisplayLineItemCsv).to receive(:new).and_return(line_item_csv)
+    expect(line_item_csv).to receive(:valid?).and_return(:true)
+    expect(line_item_csv).to receive(:perform)
+    subject.perform
+  end
+
   it 'deletes a row when status is deleted and line exists in our system' do
     content_for_files([
       line_item_csv_file(
@@ -179,6 +225,9 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
 
     context 'Recognized Revenue pattern' do
       it 'sums invoice_line_item.recognized_revenue' do
+        pattern_id = DatafeedConfigurationDetails.get_pattern_id('Recognized Revenue')
+        api_config({revenue_calculation_pattern: pattern_id})
+
         content_for_files([
           line_item_csv_file,
           multiline_invoice_csv_file
@@ -204,13 +253,15 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
         expect(line_item_csv).to receive(:valid?).and_return(:true)
         expect(line_item_csv).to receive(:perform)
 
-        pattern_id = DatafeedConfigurationDetails.get_pattern_id('Recognized Revenue')
-        subject(revenue_pattern: pattern_id).perform
+        subject.perform
       end
     end
 
     context 'Invoice Amount pattern' do
       it 'sums invoice_line_item.invoice_amount' do
+        pattern_id = DatafeedConfigurationDetails.get_pattern_id('Invoice Amount')
+        api_config({revenue_calculation_pattern: pattern_id})
+
         content_for_files([
           line_item_csv_file,
           multiline_invoice_csv_file
@@ -236,8 +287,7 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
         expect(line_item_csv).to receive(:valid?).and_return(:true)
         expect(line_item_csv).to receive(:perform)
 
-        pattern_id = DatafeedConfigurationDetails.get_pattern_id('Invoice Amount')
-        subject(revenue_pattern: pattern_id).perform
+        subject.perform
       end
     end
   end
@@ -245,6 +295,9 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
   context 'product mapping' do
     context 'Product Name mapping' do
       it 'passes Product_Name column as product_name' do
+        mapping_id = DatafeedConfigurationDetails.get_product_mapping_id('Product_Name')
+        api_config({product_mapping: mapping_id})
+
         content_for_files([
           line_item_csv_file,
           multiline_invoice_csv_file
@@ -270,13 +323,15 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
         expect(line_item_csv).to receive(:valid?).and_return(:true)
         expect(line_item_csv).to receive(:perform)
 
-        mapping_id = DatafeedConfigurationDetails.get_product_mapping_id('Product_Name')
-        subject(product_mapping: mapping_id).perform
+        subject.perform
       end
     end
 
     context 'Forecast Category mapping' do
       it 'passes Forecast_Category column as product_name' do
+        mapping_id = DatafeedConfigurationDetails.get_product_mapping_id('Forecast_Category')
+        api_config({product_mapping: mapping_id})
+
         content_for_files([
           line_item_csv_file,
           multiline_invoice_csv_file
@@ -302,8 +357,7 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
         expect(line_item_csv).to receive(:valid?).and_return(:true)
         expect(line_item_csv).to receive(:perform)
 
-        mapping_id = DatafeedConfigurationDetails.get_product_mapping_id('Forecast_Category')
-        subject(product_mapping: mapping_id).perform
+        subject.perform
       end
     end
   end
@@ -311,18 +365,22 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
   context 'parent_line_item_id option' do
     context 'exclude_child_line_items is enabled' do
       it 'skips rows if parent_line_item_id is present' do
+        api_config({exclude_child_line_items: true})
+
         content_for_files([
           line_item_csv_file(parent_line_item_id: '50065'),
           invoice_csv_file
         ])
 
         expect(DisplayLineItemCsv).not_to receive(:new)
-        subject(exclude_child_line_items: true).perform
+        subject.perform
       end
     end
 
     context 'exclude_child_line_items is disabled' do
       it 'does not skip rows if parent_line_item_id is present' do
+        api_config({exclude_child_line_items: false})
+
         content_for_files([
           line_item_csv_file(parent_line_item_id: '50065'),
           invoice_csv_file
@@ -332,7 +390,7 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
         expect(line_item_csv).to receive(:valid?).and_return(:true)
         expect(line_item_csv).to receive(:perform)
 
-        subject(exclude_child_line_items: false).perform
+        subject.perform
       end
     end
   end
@@ -486,17 +544,42 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     DatafeedConfigurationDetails.get_product_mapping_id('Product_Name')
   end
 
-  def subject(revenue_pattern: default_pattern, product_mapping: default_mapping, exclude_child_line_items: false)
+  def subject
     @_subject ||= Operative::ImportSalesOrderLineItemsService.new(
-      company.id,
-      revenue_pattern,
-      product_mapping,
-      exclude_child_line_items,
+      api_config,
       { sales_order_line_items: line_item_file, invoice_line_item: invoice_file }
     )
   end
 
   def display_line_item
     @display_line_item ||= create :display_line_item, io: io
+  end
+
+  def api_config(opts={})
+    @api_config ||= create :operative_datafeed_configuration, {
+      company: company,
+      datafeed_configuration_details: datafeed_configuration_details(opts)
+    }
+  end
+
+  def datafeed_configuration_details(opts={})
+    defaults = {
+      revenue_calculation_pattern: default_pattern,
+      product_mapping: default_mapping,
+      exclude_child_line_items: false
+    }
+
+    @details ||= create :datafeed_configuration_details, defaults.merge(opts)
+  end
+
+  def csv_import_log(opts={})
+    defaults = {
+      company_id: company.id,
+      object_name: 'display_line_item',
+      source: 'operative',
+      rows_processed: 11
+    }
+
+    @csv_import_log ||= create :csv_import_log, defaults.merge(opts)
   end
 end

@@ -22,6 +22,9 @@
     scope.localModel = scope.model
     # apply the changes to the real model
 
+    scope.$watch 'model', (model) ->
+      scope.localModel = model
+
     scope.save = ->
       scope.model = scope.localModel
       $timeout (->

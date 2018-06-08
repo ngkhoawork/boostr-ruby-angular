@@ -137,6 +137,7 @@ class Api::ApiConfigurationsController < ApplicationController
                                                                                   :exclude_child_line_items,
                                                                                   :run_intraday,
                                                                                   :run_fullday,
+                                                                                  :skip_not_changed,
                                                                                   :company_name
                                                                                 ],
                                               google_sheets_details_attributes: [

@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe Deal do
   let!(:company) { create :company }
+  let!(:company_with_freezed) { create :company, default_deal_freeze_budgets: true }
   let(:user) { create :user }
 
   context 'associations' do
@@ -629,6 +630,8 @@ describe Deal do
 
     it 'updates a deal by an ID match' do
       data = build :deal_csv_data, id: existing_deal.id
+      old_share = existing_deal.deal_members.sum(:share)
+      imported_share = data[:team].split('/')[1].to_i
       expect do
         Deal.import(generate_csv(data), user.id, 'deals.csv')
       end.not_to change(Deal, :count)
@@ -644,7 +647,7 @@ describe Deal do
       expect(existing_deal.stage.name).to eq(data[:stage])
       expect(existing_deal.legacy_id).to eq(data[:legacy_id])
       expect(existing_deal.users.map(&:email)).to include(data[:team].split('/')[0])
-      expect(existing_deal.deal_members.map(&:share)).to include(data[:team].split('/')[1].to_i)
+      expect(existing_deal.deal_members.map(&:share)).to include(old_share + imported_share > 100 ? 0 : imported_share)
       expect(existing_deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
     end
 
@@ -1082,6 +1085,31 @@ describe Deal do
       expect(DealStageLog.where(company_id: company.id, deal_id: deal.id, stage_id: stage.id, operation: 'U')).not_to be_nil
     end
 
+    context 'date changes' do
+      it 'update freezed budgets' do
+        deal(company: company_with_freezed, start_date: '2017-04-01', end_date: '2017-04-30')
+        deal_product
+
+        deal_product_budgets = deal_product.deal_product_budgets.by_oldest
+
+        expect(deal_product_budgets.count).to eq(1)
+
+        deal.update_attributes(start_date: '2017-03-01', end_date: '2017-05-31')
+
+        expect(deal_product_budgets.reload.count).to eq(3)
+        expect(deal_product_budgets[0].budget.to_f).to eq(0)
+        expect(deal_product_budgets[1].budget.to_f).to eq(100_000)
+        expect(deal_product_budgets[2].budget.to_f).to eq(0)
+
+        deal.update_attributes(start_date: '2017-05-01')
+
+        expect(deal_product_budgets.reload.count).to eq(1)
+        expect(deal_product_budgets[0].budget.to_f).to eq(0)
+        expect(deal_product.reload.budget.to_f).to eq(0)
+        expect(deal.reload.budget.to_f).to eq(0)
+      end
+    end
+
     context 'connect_deal_clients' do
       it 'does not create a connection without agency' do
         deal(advertiser: advertiser, agency: nil)
@@ -1130,6 +1158,38 @@ describe Deal do
     let(:won_stage) { create :stage, probability: 100, open: false }
     let(:lost_stage) { create :stage, probability: 0, open: false }
     let(:open_stage) { create :stage }
+
+    it 'should set freezed from company setting with freeze false' do
+      deal = build(
+        :deal,
+        stage: won_stage,
+        creator: user,
+        updator: user,
+        stage_updator: user,
+        stage_updated_at: Date.new,
+        company: company
+      )
+
+      deal.save!
+
+      expect(deal.freezed).to eq false
+    end
+
+
+    it 'should set freezed from company setting with freeze true' do
+      deal = build(
+        :deal,
+        stage: won_stage,
+        creator: user,
+        updator: user,
+        stage_updator: user,
+        stage_updated_at: Date.new,
+        company: company_with_freezed
+      )
+      deal.save!
+
+      expect(deal.freezed).to eq true
+    end
 
     it 'when create deal with closed won stage set closed_at date as created_at' do
       deal = build(

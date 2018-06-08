@@ -78,11 +78,12 @@ describe Api::DealMembersController, type: :controller do
     end
 
     it 'creates audit logs for deal when update deal member share' do
+      deal.deal_members.first.update(share: 20)
       put :update, id: deal_member.id, deal_id: deal.id, deal_member: { share: '80' }, format: :json
 
       audit_log = deal.audit_logs.last
 
-      expect(audit_log.old_value).to eq '100'
+      expect(audit_log.old_value).to eq '60'
       expect(audit_log.new_value).to eq '80'
       expect(audit_log.type_of_change).to eq 'Share Change'
       expect(audit_log.updated_by).to eq user.id
@@ -128,7 +129,7 @@ describe Api::DealMembersController, type: :controller do
   end
 
   def deal_member
-    @_deal_member ||= create :deal_member, deal_id: deal.id, user_id: user.id, share: 100
+    @_deal_member ||= create :deal_member, deal_id: deal.id, user_id: user.id, share: 60
   end
 
   def deal

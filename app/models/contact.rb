@@ -1,6 +1,12 @@
 class Contact < ActiveRecord::Base
   SAFE_COLUMNS = %i{name position created_at updated_at}
 
+  include PgSearch
+
+  multisearchable against: [:name, :email, :client_names], 
+                  additional_attributes: lambda { |contact| { company_id: contact.company_id, order: 3 } },
+                  if: lambda { |contact| !contact.deleted? }
+
   acts_as_paranoid
 
   WEB_FORM_LEAD = 'web-form lead'.freeze
@@ -112,7 +118,11 @@ class Contact < ActiveRecord::Base
       relation.primary = true if relations.count == 0
       relation.save
     end
+    update_pg_search_document
+    update_associated_search_documents if name_changed?
   end
+
+  after_destroy :update_associated_search_documents
 
   def primary_client_json
     self.primary_client.serializable_hash(only: [:id, :name, :client_type_id]) rescue nil
@@ -286,6 +296,14 @@ class Contact < ActiveRecord::Base
     else
       nil
     end
+  end
+
+  def client_names
+    clients.pluck(:name).join(' ')
+  end
+
+  def update_associated_search_documents
+    PgSearchDocumentUpdateWorker.perform_async('Activity', activities.pluck(:id))
   end
 
   private

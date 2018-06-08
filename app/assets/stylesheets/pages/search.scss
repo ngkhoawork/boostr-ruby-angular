@@ -1,0 +1,15 @@
+#global-search {
+  .container-fluid > .title {
+    font-size: 26px;
+    margin-bottom: 20px;
+
+    >b {
+      margin-right: 40px;
+    }
+
+    .navigations {
+      display: inline-block;
+      font-size: 14px;
+    }
+  }
+}

@@ -12,7 +12,7 @@ class Api::ContactCfNamesController < ApplicationController
   def update
     update_field_options
 
-    if contact_cf_name.update_attributes(contact_cf_name_params)
+    if contact_cf_name.update(contact_cf_name_params)
       render json: contact_cf_name, status: :accepted
     else
       render json: { errors: contact_cf_name.errors.messages }, status: :unprocessable_entity
@@ -53,7 +53,7 @@ class Api::ContactCfNamesController < ApplicationController
   end
 
   def contact_cf_name
-    current_user.company.contact_cf_names.find(params[:id])
+    @_contact_cf_name ||= current_user.company.contact_cf_names.find(params[:id])
   end
 
   def contact_cf_name_params

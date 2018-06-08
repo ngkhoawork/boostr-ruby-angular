@@ -8,6 +8,11 @@ class Deal < ActiveRecord::Base
 
   include GoogleSheetsExportable
   include WorkflowCallbacks
+  include PgSearch
+
+  multisearchable against: [:name, :advertiser_name, :agency_name], 
+                  additional_attributes: lambda { |deal| { company_id: deal.company_id, order: 2 } },
+                  if: lambda { |deal| !deal.deleted? }
 
   acts_as_paranoid
 
@@ -105,7 +110,7 @@ class Deal < ActiveRecord::Base
       send_ealert
       log_stage_changes
     end
-    reset_products if (start_date_changed? || end_date_changed?)
+    Deal::ResetBudgetsService.new(self).perform if (start_date_changed? || end_date_changed?)
     send_lost_deal_notification
     connect_deal_clients
     log_start_date_changes if start_date_changed?
@@ -117,6 +122,7 @@ class Deal < ActiveRecord::Base
 
   before_create do
     update_stage
+    set_freezed
     if self.closed_at.nil?
       self.closed_at = created_at unless stage.open?
     end
@@ -131,6 +137,10 @@ class Deal < ActiveRecord::Base
     track_spend_agreements if manual_update
   end
 
+  after_save do 
+    update_associated_search_documents if name_changed?
+  end
+
   after_commit :asana_connect, on: [:create]
 
   before_destroy do
@@ -139,6 +149,7 @@ class Deal < ActiveRecord::Base
 
   after_destroy do
     update_pipeline_fact(self)
+    update_associated_search_documents
   end
 
   after_commit :setup_egnyte_folders, on: [:create]
@@ -233,6 +244,10 @@ class Deal < ActiveRecord::Base
 
   attr_accessor :manual_update
 
+  def set_freezed
+    self.freezed = company.default_deal_freeze_budgets
+  end
+
   def run_agreements_tracking?
     advertiser_id_changed? || agency_id_changed? || start_date_changed? || end_date_changed?
   end
@@ -256,7 +271,7 @@ class Deal < ActiveRecord::Base
     if open_changed?
       update_pipeline_fact(self)
     end
-    WorkflowWorker.perform_async(deal_id: id, type: 'update') if budget_changed?
+    WorkflowWorker.perform_async(deal_id: id, type: 'update') if budget_changed? && manual_update
   end
 
   def asana_connect
@@ -538,16 +553,6 @@ class Deal < ActiveRecord::Base
     deal_product_budgets.update_all("budget_loc = budget * #{self.exchange_rate}")
     deal_products.map{ |deal_product| deal_product.update_budget }
     self.budget_loc = budget * self.exchange_rate
-  end
-
-  def reset_products
-    # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
-    ActiveRecord::Base.no_touching do
-      deal_products.each do |deal_product|
-        deal_product.deal_product_budgets.destroy_all
-        deal_product.create_product_budgets
-      end
-    end
   end
 
   def generate_deal_members
@@ -1512,7 +1517,7 @@ class Deal < ActiveRecord::Base
     if notification.present?
       recipients = notification.recipients_arr
 
-      UserMailer.close_email(recipients, self).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+      UserMailer.close_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
     end
   end
 
@@ -1523,7 +1528,8 @@ class Deal < ActiveRecord::Base
 
       recipients = notification.recipients_arr
 
-      UserMailer.lost_deal_email(recipients, self).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+      UserMailer.lost_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+
     end
   end
 
@@ -1691,6 +1697,18 @@ class Deal < ActiveRecord::Base
 
   def generate_io
     Deal::IoGenerateService.new(self).perform
+  end
+
+  def advertiser_name
+    advertiser&.name
+  end
+
+  def agency_name
+    agency&.name
+  end
+
+  def update_associated_search_documents
+    PgSearchDocumentUpdateWorker.perform_async('Activity', activities.pluck(:id))
   end
 
   private

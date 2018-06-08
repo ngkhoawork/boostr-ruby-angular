@@ -23,7 +23,7 @@
     :javascript
       currentUserRoles = #{current_user.roles}
       companyEgnyteSettings = #{current_user.company.egnyte_integration.to_json}
-    %header
+    %header.ng-cloak
       - if content_for? :nav
         = yield :nav
       - else

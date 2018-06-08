@@ -55,11 +55,12 @@ RSpec.describe Api::ContactCfNamesController, type: :controller do
       contact_cf_name(position: 1)
       option = contact_cf_name.contact_cf_options.first
 
-      put :update, id: contact_cf_name.id,
-      contact_cf_name: {
-        position: 5,
-        contact_cf_options_attributes: [{id: option.id, value: 'Updaterino'}]
-      }
+      put :update,
+          id:              contact_cf_name.id,
+          contact_cf_name: {
+            position:                      5,
+            contact_cf_options_attributes: [{ id: option.id, value: 'Updaterino' }]
+          }
 
       expect(contact_cf_name.reload.position).to be 5
       expect(option.reload.value).to eql 'Updaterino'
@@ -68,13 +69,26 @@ RSpec.describe Api::ContactCfNamesController, type: :controller do
     it 'update dropdown options for contact cf option' do
       option = contact_cf_name.contact_cf_options
 
-      put :update, id: contact_cf_name.id,
+      put :update,
+          id:              contact_cf_name.id,
           contact_cf_name: {
-              position: 5,
-              contact_cf_options_attributes: {}
+            position:                      5,
+            contact_cf_options_attributes: {}
           }
 
       expect(option.reload).to be_empty
+    end
+
+    it 'failed when update position and position already has taken' do
+      put :update,
+          id:              contact_cf_names.second.id,
+          contact_cf_name: { position: contact_cf_names.first.position }
+
+      expect(response).to have_http_status :unprocessable_entity
+
+      response_json = JSON.parse(response.body)
+
+      expect(response_json['errors']['position']).to eq ['has already been taken']
     end
   end
 
@@ -126,17 +140,15 @@ RSpec.describe Api::ContactCfNamesController, type: :controller do
     @_company ||= create :company
   end
 
-  def contact_cf_names(opts={})
-    opts.merge!(company: company)
-    @_contact_cf_names ||= create_list :contact_cf_name, 4, opts
+  def contact_cf_names(attrs = {})
+    @_contact_cf_names ||= create_list :contact_cf_name, 2, company: company, **attrs
   end
 
-  def contact_cf_name(opts={})
-    opts.merge!(company: company)
-    @_contact_cf_name ||= create :contact_cf_name, opts    
+  def contact_cf_name(attrs = {})
+    @_contact_cf_name ||= create :contact_cf_name, company: company, **attrs
   end
 
-  def cf_name_params(opts={})
-    @_cf_name_params ||= attributes_for :contact_cf_name, opts
+  def cf_name_params(attrs = {})
+    @_cf_name_params ||= attributes_for :contact_cf_name, attrs
   end
 end

@@ -36,11 +36,11 @@
 						.description Campaign Period
 						%div{'ng-if': 'currentDeal.stage.open'}
 							.title.bs-datepicker
-								%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.start_date', click: 'startOpened = !startOpened', change: 'updateDealDate("start_date", {{moment(currentDeal.start_date).toDate()}})' }, 'is-open': 'startOpened' }
+								%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.start_date', click: 'startOpened = !startOpened', change: 'updateDealDate("start_date")' }, 'is-open': 'startOpened' }
 									{{currentDeal.start_date | date : 'mediumDate' : 'UTC'}}
 								{{'-'}}
 								%span.no-wrap-line
-									%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.end_date', click: 'endOpened = !endOpened', change: 'updateDealDate("end_date", {{moment(currentDeal.end_date).toDate()}})' }, 'is-open': 'endOpened' }
+									%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.end_date', click: 'endOpened = !endOpened', change: 'updateDealDate("end_date")' }, 'is-open': 'endOpened' }
 										{{currentDeal.end_date | date : 'mediumDate' : 'UTC'}}
 									%span.caret
 						%div{'ng-if': '!currentDeal.stage.open'}
@@ -61,6 +61,17 @@
 						.description Forecast Amount
 						.title {{currentDeal.budget_loc * currentDeal.stage.probability / 100 | currency: currency_symbol : 0}}
 						.subtitle{'ng-if': 'currentDeal.currency.curr_cd != "USD"'} {{currentDeal.budget * currentDeal.stage.probability / 100 | currency: '$' : 0}}
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Freeze Budgets
+						.title
+							.show-hide-remainder-form
+								.switch-remainder-form
+									%input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'currentDeal.freezed', 'ng-change': 'updateDeal()', id: "rem-act-modal-toggle12"}
+									%label{:for => "rem-act-modal-toggle12"}
+										%span
 
 			%div.stats-col
 				.col-body-wrap

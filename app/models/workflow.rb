@@ -16,6 +16,7 @@ class Workflow < ActiveRecord::Base
   accepts_nested_attributes_for :workflow_action, :workflow_criterions
 
   scope :for_company, -> (id) { where(company_id: id) }
+  scope :active, -> { where(switched_on: true) }
 
   attr_accessor :skip_update
 
@@ -32,6 +33,14 @@ class Workflow < ActiveRecord::Base
     ap "history removed"
     ap "#"*100
     update_attribute(:md5_signature, sign)
+  end
+
+  def check_changes(field)
+    workflow_criterions&.pluck(:base_object)&.include?(field_mapper(field))
+  end
+
+  def field_mapper(field)
+    'Stage' if field.eql?('stage_id')
   end
 
   def create_signature

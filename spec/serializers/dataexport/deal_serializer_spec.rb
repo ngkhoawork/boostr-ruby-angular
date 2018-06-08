@@ -1,7 +1,11 @@
 require 'rails_helper'
 
 describe Dataexport::DealSerializer do
-  before { serialized_custom_fields }
+  before do
+    serialized_custom_fields
+    type
+    source
+  end
 
   it 'serializes deal data' do
     expect(serializer.id).to eq(deal.id)
@@ -16,8 +20,8 @@ describe Dataexport::DealSerializer do
     expect(serializer.last_updated).to eq(deal.updated_at)
     expect(serializer.stage_id).to eq(deal.stage_id)
     expect(serializer.stage_name).to eq(deal.stage.name)
-    expect(serializer.type).to eq(deal.deal_type)
-    expect(serializer.source).to eq(deal.source_type)
+    expect(serializer.type).to eq(type)
+    expect(serializer.source).to eq(source)
     expect(serializer.next_steps).to eq(deal.next_steps)
     expect(serializer.closed_date).to eq(deal.closed_at)
     expect(serializer.open).to eq(deal.open)
@@ -57,5 +61,34 @@ describe Dataexport::DealSerializer do
     @_serialized_custom_fields ||= {
       field_name.field_label.downcase.gsub(' ', '_') => custom_field.public_send(field_name.field_name)
     }
+  end
+
+  def type
+    return @_type if defined? @_type
+
+    field = find_or_create_custom_field('Deal Source')
+    create_value_for_field(field)
+
+    @_type = deal.values.find_by(field_id: field.id).option.name
+  end
+
+  def source
+    return @_source if defined? @_source
+
+    field = find_or_create_custom_field('Deal Type')
+    create_value_for_field(field)
+
+    @_source = deal.values.find_by(field_id: field.id).option.name
+  end
+
+  def find_or_create_custom_field(field_name)
+    field = deal.fields.find_or_initialize_by(name: field_name, value_type: 'Option')
+    field.save unless field.persisted?
+    field
+  end
+
+  def create_value_for_field(field)
+    option = create :option, company: company, field: field, name: 'Option1'
+    value = create :value, company: company, subject: deal, option: option, field: field
   end
 end

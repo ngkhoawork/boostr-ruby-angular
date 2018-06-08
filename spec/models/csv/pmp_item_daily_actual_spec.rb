@@ -38,8 +38,8 @@ describe Csv::PmpItemDailyActual, 'model' do
       pmp_item.reload
       expect(pmp_item.budget_delivered_loc).to eq(1500)
       expect(pmp_item.budget_remaining_loc).to eq(500)
-      expect(pmp_item.run_rate_7_days).to be_nil
-      expect(pmp_item.run_rate_30_days).to be_nil
+      expect(pmp_item.run_rate_7_days).to be_zero
+      expect(pmp_item.run_rate_30_days).to be_zero
     end
 
     it 'calculate pmp end date' do

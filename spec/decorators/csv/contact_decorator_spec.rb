@@ -22,5 +22,6 @@ describe Csv::ContactDecorator do
     expect(subject.phone).to eq contact&.address&.phone
     expect(subject.mobile).to eq contact&.address&.mobile
     expect(subject.related_accounts).to eq contact.non_primary_clients.pluck(:name).join(';')
+    expect(subject.created_date).to eq contact.created_at.strftime('%m/%d/%Y')
   end
 end

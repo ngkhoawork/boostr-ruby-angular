@@ -38,6 +38,11 @@
 					%span.mr8 Active
 					%z-toggle{'ng-model': 'activityType.active'}
 
+			.form-group
+				%label
+					%span.mr8 Contact Required
+					%z-toggle{'ng-model': 'activityType.contact_required'}
+
 
 		.popup-modal-footer
 			%button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel

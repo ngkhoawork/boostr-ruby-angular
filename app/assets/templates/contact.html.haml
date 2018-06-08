@@ -94,7 +94,7 @@
 						%div.custom-field-item-label Mobile
 						%div.custom-field-item-field {{currentContact.address.mobile}}
 					%div.custom-field-item{'ng-if': 'currentContact.address.phone'}
-						%div.custom-field-item-label Phone
+						%div.custom-field-item-label Office
 						%div.custom-field-item-field {{currentContact.address.phone}}
 					%div.custom-field-item
 						%div.custom-field-item-label Job Level
@@ -160,5 +160,12 @@
 											%span.text {{customFieldOption.value}}
 							.currency-field{ ng: { 'switch-when': 'sum' } }
 								{{ (currentContact.contact_cf[fieldName] || 0) | number : 0 }}
+							.link-field{ ng: { 'switch-when': 'link' } }
+								%span{'ng-show': '_scope()[fieldName].$visible', 'editable-text': 'currentContact.contact_cf[fieldName]', onaftersave: 'updateContact()', blur: 'submit', 'e-form': '{{fieldName}}'}
+									{{currentContact.contact_cf[fieldName]}}
+								%div.link-wrap{'ng-hide': '_scope()[fieldName].$visible'}
+									%span{'ng-if': '!isUrlValid(currentContact.contact_cf[fieldName])', 'ng-class': '{"not-selected": !currentContact.contact_cf[fieldName], "has-error": currentContact.contact_cf[fieldName]}'} {{currentContact.contact_cf[fieldName] || 'Enter'}}
+									%a{'ng-if': 'isUrlValid(currentContact.contact_cf[fieldName])', href: '', target: '_blank', 'ng-href': '{{fixUrl(currentContact.contact_cf[fieldName])}}'} {{getUrlHostname(currentContact.contact_cf[fieldName])}}
+								%i.fa.fa-pencil.edit-deal{'ng-hide': '_scope()[fieldName].$visible', 'ng-click': '_scope()[fieldName].$show()'}
 
 				%activity-feed{object: 'currentContact', type: 'contact'}

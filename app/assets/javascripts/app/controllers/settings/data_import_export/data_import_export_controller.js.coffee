@@ -322,7 +322,7 @@
     return true
 
   $scope.exportClients = ->
-    $window.open('/api/clients.csv')
+    $window.open('/api/clients.csv?filter=all')
     return true
 
   $scope.exportContacts = ->
@@ -367,7 +367,7 @@
         api_url: ->
           '/api/active_pmps/import_item'
         custom_fields_api: ->
-          undefined
+          'CustomFieldNames'
         metadata: ->
           false
 

@@ -96,8 +96,13 @@
 
       # Temporary until we will use new structure of custom fields in all places
       if custom_fields_api == 'CustomFieldNames'
-        service.all({subject_type: 'activity', show_on_modal: true}).then (custom_fields) ->
-          $scope.custom_fields = custom_fields
+        if api_url == '/api/active_pmps/import_item'
+          service.all({subject_type: 'pmp_item'}).then (custom_fields) ->
+            $scope.required_custom_fields = _.filter custom_fields, (c) -> c.disabled == false && c.is_required == true
+            $scope.optional_custom_fields = _.filter custom_fields, (c) -> c.disabled == false && c.is_required == false
+        if api_url == '/api/deal_products'
+          service.all({subject_type: 'activity', show_on_modal: true}).then (custom_fields) ->
+            $scope.custom_fields = custom_fields
       else
         service.csv_headers().then (custom_fields) ->
           $scope.custom_fields = custom_fields

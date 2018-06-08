@@ -304,11 +304,13 @@ class Api::DealsController < ApplicationController
     else
       deal.deal_custom_field = DealCustomField.new(deal_cf_params)
     end
+    changed_fields = deal&.changed
     if deal.save(context: :manual_update)
       opts = { deal_id: deal.id, type: "update" }
       if params['deal']['close_reason'].present?
         opts.merge!(option_id: params['deal']['close_reason']['option_id'])
       end
+      opts[:changed_fields] = changed_fields
       WorkflowWorker.perform_async(opts)
       render deal
     else
@@ -640,6 +642,7 @@ class Api::DealsController < ApplicationController
         :closed_reason_text,
         :created_at,
         :lead_id,
+        :freezed,
         :created_from,
         {
             values_attributes: [
@@ -1018,7 +1021,7 @@ class Api::DealsController < ApplicationController
       if params[:member_id]
         [params[:member_id]]
       elsif params[:team_id]
-        team.all_members_and_leaders
+        team.all_members_and_leaders_ids
       end
   end
 

@@ -1,6 +1,6 @@
 @app.controller 'PmpNewItemController',
-  ['$scope', '$modalInstance', 'item', 'pmpId', 'PMPItem', 'SSP', 'PMPType', 'Product'
-  ($scope,    $modalInstance,   item,   pmpId,   PMPItem,   SSP,   PMPType,   Product) ->
+  ['$scope', '$modalInstance', 'CustomFieldNames', 'item', 'pmpId', 'PMPItem', 'SSP', 'PMPType', 'Product'
+  ($scope,    $modalInstance, CustomFieldNames,   item,   pmpId,   PMPItem,   SSP,   PMPType,   Product) ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
     $scope.item = item || {}
@@ -10,6 +10,8 @@
 
     init = () ->
       if !_.isEmpty(item)
+        if item.custom_field
+          item.pmp_item_custom_field_obj = item.custom_field
         $scope.item.product_id = item.product && item.product.id
         $scope.item.ssp_id = item.ssp && item.ssp.id
         $scope.formType = 'Edit'
@@ -18,6 +20,8 @@
         $scope.ssps = ssps
       Product.all(revenue_type: 'PMP', active: true).then (data) ->
         $scope.products = data
+      CustomFieldNames.all({subject_type: 'pmp_item', show_on_modal: true}).then (pmpItemcustomFieldNames) ->
+        $scope.pmpItemcustomFieldNames = pmpItemcustomFieldNames
 
     $scope.submitForm = () ->
       # validates empty fields
@@ -30,12 +34,19 @@
         if !field then $scope.errors[key] = title + ' is required'
       if !_.isEmpty($scope.errors) then return
 
+      $scope.pmpItemcustomFieldNames.forEach (item) ->
+        if item.is_required && !item.disabled && (!$scope.item.pmp_item_custom_field_obj || !$scope.item.pmp_item_custom_field_obj[item.field_name])
+          $scope.errors[item.field_name] = item.field_label + ' is required'
+
       if $scope.formType == 'New'
         createPmpItem()
       else
         updatePmpItem()
 
     createPmpItem = () ->
+      return if !angular.equals({}, $scope.errors)
+
+      $scope.item.custom_field_attributes = $scope.item.pmp_item_custom_field_obj
       PMPItem.create(pmp_id: pmpId, pmp_item: $scope.item).then(
         (item) ->
           $modalInstance.close(item)
@@ -45,6 +56,9 @@
       )
 
     updatePmpItem = () ->
+      return if !angular.equals({}, $scope.errors)
+
+      $scope.item.custom_field_attributes = $scope.item.pmp_item_custom_field_obj
       PMPItem.update(pmp_id: pmpId, id: $scope.item.id, pmp_item: $scope.item).then(
         (pmp) ->
           $modalInstance.close(pmp)

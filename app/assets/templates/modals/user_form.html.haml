@@ -10,19 +10,23 @@
     .modal-body
       .form-group
         %label.control-label{ for: 'first_name' } First Name
-        %input.form-control{ placeholder: 'First Name', ng: { model: 'user.first_name' }, name: 'first_name' }
+        %span.star *
+        %input.form-control{ placeholder: 'First Name', ng: { model: 'user.first_name' }, name: 'first_name', required: true }
 
       .form-group
         %label.control-label{ for: 'last_name' } Last Name
-        %input.form-control{ placeholder: 'Last Name', ng: { model: 'user.last_name' }, name: 'last_name' }
+        %span.star *
+        %input.form-control{ placeholder: 'Last Name', ng: { model: 'user.last_name' }, name: 'last_name', required: true }
 
       .form-group
         %label.control-label{ for: 'title' } Title
         %input.form-control{ placeholder: 'Title', ng: { model: 'user.title' }, name: 'title' }
 
-      .form-group
+      .form-group{ ng: { class:'{error: errors.email[0]}'} }
+        %span.error-text {{errors.email[0]}}
         %label.control-label{ for: 'email' } Email
-        %input.form-control{ placeholder: 'Email', ng: { model: 'user.email' }, name: 'email' }
+        %span.star *
+        %input.form-control{ placeholder: 'Email', ng: { model: 'user.email', disabled: '{{ hideEmail }}' }, name: 'email', required: true }
 
       .form-group
         %label.control-label{ for: 'user_type' } User Type

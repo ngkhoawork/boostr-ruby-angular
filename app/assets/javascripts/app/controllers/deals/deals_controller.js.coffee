@@ -108,8 +108,8 @@
                         _this = $scope.filter.datePicker
                         if (_this.createdDate.startDate && _this.createdDate.endDate)
                             $scope.filter.selected.createdDate = _this.createdDate
-                apply: (reset, callback) ->
-                    $scope.getDeals(callback)
+                apply: (reset, callback, onFilterApply) ->
+                    $scope.getDeals(callback, onFilterApply)
                     this.isOpen = false
                 reset: (key) ->
                     DealsFilter.reset(key)
@@ -143,7 +143,7 @@
 #                    event.stopPropagation()
                     this.isOpen = false
                 toQuery: (previous) ->
-                    f = if previous then this.appliedSelection else this.selected
+                    f = if previous then this.appliedSelection else angular.copy this.selected
                     query = {}
                     query.member_id = f.member.id if f.member
                     query.team_id = f.team.id if f.team
@@ -154,17 +154,20 @@
                     query.curr_cd = f.currency.curr_cd if f.currency
                     query.external_id = f.external_id if f.external_id
                     query.time_period_id = f.timePeriod.id if f.timePeriod
-                    query.start_start_date = f.startDate.startDate if f.startDate.startDate
-                    query.start_end_date = f.startDate.endDate if f.startDate.endDate
-                    query.created_start_date = f.createdDate.startDate if f.createdDate.startDate
-                    query.created_end_date = f.createdDate.endDate if f.createdDate.endDate
+                    query.start_start_date = f.startDate.startDate.add(f.startDate.startDate.utcOffset(), 'm') if f.startDate.startDate
+                    query.start_end_date = f.startDate.endDate.add(f.startDate.endDate.utcOffset(), 'm') if f.startDate.endDate
+                    query.created_start_date = f.createdDate.startDate.add(f.createdDate.startDate.utcOffset(), 'm') if f.createdDate.startDate
+                    query.created_end_date = f.createdDate.endDate.add(f.createdDate.endDate.utcOffset(), 'm') if f.createdDate.endDate
                     query.closed_year = f.yearClosed if f.yearClosed
                     query
 
-            $scope.getDeals = (callback) ->
+            $scope.getDeals = (callback, onFilterApply) ->
                 this.appliedSelection = angular.copy this.selected
                 $scope.page = 1
                 params = getDealParams()
+                if params.team_id && onFilterApply
+                    params.filter = 'all'
+                    $scope.teamFilter({name: 'All Deals', param: 'all'})
                 $scope.deals = []
                 $scope.columns = []
                 $scope.dealsInfo = []

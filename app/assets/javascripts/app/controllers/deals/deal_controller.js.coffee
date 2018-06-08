@@ -254,6 +254,9 @@
           if !dealProduct.deal_product_cf || !dealProduct.deal_product_cf[productFieldName]
             $scope.currentDeal.validDeal = false
 
+  getDealStage = ->
+    $scope.currentDeal.stage.won = !$scope.currentDeal.stage.open && $scope.currentDeal.stage.probability >= 100
+
   $scope.setCurrentDeal = (deal, shouldUsersUpdate) ->
     $scope.currency_symbol = deal.currency && (deal.currency.curr_symbol || deal.currency.curr_cd)
 
@@ -271,11 +274,14 @@
       deal.next_steps_expired = moment(deal.next_steps_due) < moment().startOf('day')
     $scope.currentDeal = deal
     $scope.selectedStageId = deal.stage_id
+    $scope.start_date = deal.start_date
+    $scope.end_date = deal.end_date
     $scope.verifyMembersShare()
     $scope.setBudgetPercent(deal)
     $scope.getStages()
     checkPmpDeal()
     getAgreements()
+    getDealStage()
 
   $scope.getStages = ->
     Stage.query({active: true, sales_process_id: $scope.currentDeal.stage.sales_process_id}).$promise.then (stages) ->
@@ -487,7 +493,7 @@
       budgetPercentSum = 0
       _.each deal_product.deal_product_budgets, (item) ->
         budgetPercentSum = budgetPercentSum + Number(item.budget_percent)
-      deal_product.total_budget_percent = budgetPercentSum;
+      deal_product.total_budget_percent = Number(budgetPercentSum.toFixed(1))
       if(budgetPercentSum != 100)
         deal_product.isIncorrectTotalBudgetPercent = true;
         _.each deal_product.deal_product_budgets, (item) ->
@@ -507,13 +513,12 @@
           budgetSum = 0
           budgetPercentSum = 0
           _.each deal_product.deal_product_budgets, (deal_product_budget, index) ->
-            deal_product_budget.budget_percent = Math.round(deal_product_budget.budget_loc/deal_product.budget_loc*100)
+            deal_product_budget.budget_percent = Number((deal_product_budget.budget_loc / deal_product.budget_loc * 100).toFixed(1))
             budgetSum = budgetSum + deal_product_budget.budget_loc
             budgetPercentSum = budgetPercentSum + deal_product_budget.budget_percent
 
-#            need correct data from server
-#          if(budgetSum != product.total_budget || budgetPercentSum != 100)
-#            $scope.budgetCorrection(product.deal_products, product.total_budget)
+        if(budgetSum != deal_product.total_budget || budgetPercentSum != 100)
+          $scope.budgetCorrection(deal_product.deal_product_budgets, deal_product.budget)
 
           deal_product.total_budget_percent = 100
 
@@ -534,7 +539,7 @@
           budgetSum = budgetSum + Number(deal_product_budget.budget_loc)
           budgetPercentSum = budgetPercentSum + Number(deal_product_budget.budget_percent)
       deal_product_budgets[length-1].budget_loc = total_product_budget - budgetSum
-      deal_product_budgets[length-1].budget_percent = 100 - budgetPercentSum
+      deal_product_budgets[length-1].budget_percent = Number(100 - budgetPercentSum).toFixed(1)
 
 #============END percent and money inputs logic=====================
 
@@ -585,14 +590,16 @@
 
   $scope.moment = moment
 
-  $scope.updateDealDate = (key, oldDate) ->
+  $scope.updateDealDate = (key) ->
     deal = $scope.currentDeal
-    if moment(deal.start_date).isAfter(deal.end_date)
-      deal[key] = moment(oldDate).toDate()
+    deal.start_date = moment(deal.start_date).utc().format()
+    deal.end_date = moment(deal.end_date).utc().format()
+    if moment(deal.start_date).isSameOrBefore(deal.end_date)
+      $scope.updateDeal()
+    else
+      deal[key] = moment($scope[key]).toDate()
       $scope.errors.campaignPeriod = 'End Date can\'t be before Start Date'
       $timeout (-> delete $scope.errors.campaignPeriod), 6000
-    else
-      $scope.updateDeal()
 
   validationValueFactorExists = (deal, factor) ->
     if factor == 'deal_type_value'
@@ -657,10 +664,19 @@
   $scope.findById = (arr, id)->
     _.findWhere arr, id: id
 
+  totalSplitShare = () ->
+    _.reduce $scope.dealMembers, (sum, dealMember) ->
+      sum + parseInt(dealMember.share)
+    , 0
+
   $scope.updateDealMember = (data) ->
-    DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
-      $scope.setCurrentDeal(deal, true)
-      checkCurrentUserDealShare(deal.members)
+    if totalSplitShare() > 100
+      data.share = _.find($scope.currentDeal.members, (member) -> member.id == data.id).share
+      $scope.showWarningModal 'Deal split % cannot exceed 100%. Update your split % to sum to 100%.', null
+    else
+      DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
+        $scope.setCurrentDeal(deal, true)
+        checkCurrentUserDealShare(deal.members)
 
   $scope.onEditableBlur = () ->
   $scope.verifyMembersShare = ->

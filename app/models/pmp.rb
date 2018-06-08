@@ -71,12 +71,12 @@ class Pmp < ActiveRecord::Base
 
   def calculate_budgets!
     items = pmp_items.reload.to_a
-    self.budget = items.map(&:budget).inject(0, &:+)
-    self.budget_loc = items.map(&:budget_loc).inject(0, &:+)
-    self.budget_delivered = items.map(&:budget_delivered).inject(0, &:+)
-    self.budget_delivered_loc = items.map(&:budget_delivered_loc).inject(0, &:+)
-    self.budget_remaining = items.map(&:budget_remaining).inject(0, &:+)
-    self.budget_remaining_loc = items.map(&:budget_remaining_loc).inject(0, &:+)
+    self.budget = items.map(&:budget).compact.inject(0, &:+)
+    self.budget_loc = items.map(&:budget_loc).compact.inject(0, &:+)
+    self.budget_delivered = items.map(&:budget_delivered).compact.inject(0, &:+)
+    self.budget_delivered_loc = items.map(&:budget_delivered_loc).compact.inject(0, &:+)
+    self.budget_remaining = items.map(&:budget_remaining).compact.inject(0, &:+)
+    self.budget_remaining_loc = items.map(&:budget_remaining_loc).compact.inject(0, &:+)
     self.save!
   end
 

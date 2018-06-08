@@ -128,7 +128,8 @@
                     {{(currentDeal.closed_at | date) || 'Select date'}}
     %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
         %div.custom-field-item-label
-            %label Loss Reason
+            %label{ ng: { if: 'currentDeal.stage.won' } } Won Reason
+            %label{ ng: { if: '!currentDeal.stage.won' } } Loss Reason
         %div.custom-field-item-field
             .dropdown
                 %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
@@ -140,7 +141,8 @@
                             %span.text {{option.name}}
     %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
         %div.custom-field-item-label
-            %label Loss Comments
+            %label{ ng: { if: 'currentDeal.stage.won' } } Won Comments
+            %label{ ng: { if: '!currentDeal.stage.won' } } Loss Comments
         %div.custom-field-item-field
             %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.closed_reason_text", name: "closed_reason_text", placeholder: 'Enter comments', 'ng-blur': 'updateDeal()' }
 

@@ -1,25 +1,24 @@
 class Operative::ImportSalesOrdersService
-  def initialize(company_id, auto_close_deals, files)
-    @company_id = company_id
-    @auto_close_deals = auto_close_deals
-    @sales_order = files[:sales_order]
-    @currency = files[:currency]
+  def initialize(api_config, files)
+    @api_config = api_config
+    @files = files
     @currencies_list = {}
+    @temp_io_ids = []
   end
 
   def perform
-    @sales_order_file = open_file(@sales_order)
-    @currency_file = open_file(@currency) if @currency
-    if @sales_order_file
-      parse_and_process_rows
-    end
+    parse_and_process_rows
   end
 
   private
 
-  attr_reader :company_id, :auto_close_deals, :sales_order, :sales_order_file, :currency, :currency_file, :currencies_list
+  attr_reader :api_config, :files, :currencies_list, :temp_io_ids
 
-  def open_file(file)
+  delegate :company_id, :auto_close_deals, :skip_not_changed?, to: :api_config
+
+  def open_file(file_label)
+    file = files.fetch file_label
+
     File.open(file, 'r:ISO-8859-1')
   rescue Exception => e
     import_log = CsvImportLog.new(company_id: company_id, object_name: 'io', source: 'operative')
@@ -32,14 +31,22 @@ class Operative::ImportSalesOrdersService
     parse_currencies
     save_currency_mappings
     parse_sales_order
+    notify_no_match_ios
+  end
+
+  def notify_no_match_ios
+    return unless temp_io_ids.present?
+    NoMatchIoMailer.notify(temp_io_ids,company_id).deliver_later(queue: "default")
   end
 
   def parse_currencies
-    return if currency_file.nil?
-    import_log = CsvImportLog.new(company_id: company_id, object_name: 'currency', source: 'operative')
-    import_log.set_file_source(currency)
+    return if files[:currency].nil?
 
-    File.foreach(currency_file).with_index do |line, line_num|
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'currency', source: 'operative')
+    file = open_file(:currency)
+    import_log.set_file_source(file)
+
+    File.foreach(file).with_index do |line, line_num|
       if line_num == 0
         @headers = CSV.parse_line(line)
         next
@@ -63,13 +70,16 @@ class Operative::ImportSalesOrdersService
 
   def parse_sales_order
     import_log = CsvImportLog.new(company_id: company_id, object_name: 'io', source: 'operative')
-    import_log.set_file_source(sales_order)
+    file = open_file(:sales_order)
+    import_log.set_file_source(file)
+    last_import_date = skip_not_changed? ? import_log.last_import_date : -Float::INFINITY
 
-    File.foreach(sales_order_file).with_index do |line, line_num|
+    File.foreach(file).with_index do |line, line_num|
       import_log.count_processed
 
       if line_num == 0
         @headers = CSV.parse_line(line)
+        import_log.count_skipped
         next
       end
 
@@ -81,7 +91,7 @@ class Operative::ImportSalesOrdersService
         next
       end
 
-      if irrelevant_order(row)
+      if irrelevant_row(row, last_import_date)
         import_log.count_skipped
         next
       end
@@ -96,7 +106,8 @@ class Operative::ImportSalesOrdersService
 
       if io_csv.valid?
         begin
-          io_csv.perform
+          id = io_csv.perform
+          temp_io_ids << id if id.present?
           import_log.count_imported
         rescue Exception => e
           import_log.count_failed
@@ -121,8 +132,15 @@ class Operative::ImportSalesOrdersService
     end
   end
 
-  def irrelevant_order(row)
-    row[:order_status] != 'active_order' || row[:order_start_date].blank? || row[:order_status].try(:downcase) == 'deleted'
+  def irrelevant_row(row, last_import_date)
+    last_modified_date(row[:last_modified_on]) < last_import_date ||
+    row[:order_status] != 'active_order' ||
+    row[:order_start_date].blank? ||
+    row[:order_status].try(:downcase) == 'deleted'
+  end
+
+  def last_modified_date(date)
+    date&.to_date || Date.today
   end
 
   def build_io_csv(row)

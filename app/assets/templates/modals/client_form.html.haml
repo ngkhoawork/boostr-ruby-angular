@@ -65,7 +65,7 @@
             %ui-select{ parent_client: 'holding-company', ng: { model: 'client.holding_company_id', disabled: 'client.client_type.option_id === undefined'} }
               %ui-select-match{ placeholder: 'Pick from list', "allow-clear": 'true' }
                 {{ $select.selected.name || client.parent_client.name }}
-              %ui-select-choices{ repeat: 'option.id as option in holdingCompanies | filter: { name: $select.search }' }
+              %ui-select-choices{ repeat: 'option.id as option in holdingCompanies | orderBy: "name" | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'option.name' } } }
       .form-group{ ng: {if: 'Advertiser && client.client_type.option_id === Advertiser'} }
         .row
@@ -78,7 +78,7 @@
             %ui-select{ category: 'client-category', ng: { model: 'client.client_category_id', disabled: true, change: 'updateCategory($select.selected)' } }
               %ui-select-match{ placeholder: 'Advertiser Category' }
                 {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'category.id as category in client.fields[0].options | filter: { name: $select.search }' }
+              %ui-select-choices{ repeat: 'category.id as category in client.fields[0].options | orderBy: "name" | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'category.name' } } }
           .col-xs-6{ ng: {class: '{error: errors.client_subcategory_id}'} }
             %span.error-text {{errors.client_subcategory_id}}
@@ -89,7 +89,7 @@
             %ui-select{ subcategory: 'client-subcategory', ng: { model: 'client.client_subcategory_id', disabled: true } }
               %ui-select-match{ placeholder: 'Advertiser Subcategory' }
                 {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'subcategory.id as subcategory in current_category.suboptions | filter: { name: $select.search }' }
+              %ui-select-choices{ repeat: 'subcategory.id as subcategory in current_category.suboptions | orderBy: "name" | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'subcategory.name' } } }
       .form-group
         .row

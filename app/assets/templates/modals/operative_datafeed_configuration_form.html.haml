@@ -50,10 +50,14 @@
             %input.form-control{ placeholder: 'example@email.com', ng: { model: 'api_configuration.datafeed_configuration_details.company_name' }, name: 'company_name', required: true  }
       .form-group
         .row
-          .col-xs-12
+          .col-xs-6
             %label.control-label{ for: 'auto_close_deals' } Auto-Close Deals on IO Import
             %br
             %z-toggle{'ng-model': 'api_configuration.datafeed_configuration_details.auto_close_deals'}
+          .col-xs-6
+            %label.control-label{ for: 'exclude_child_line_items' } Only New & Changes
+            %br
+            %z-toggle{'ng-model': 'api_configuration.datafeed_configuration_details.skip_not_changed'}
 
       .form-group{'ng-class':'{error: errors.revenue_calculation_pattern}'}
         %span.error-text {{errors.revenue_calculation_pattern}}

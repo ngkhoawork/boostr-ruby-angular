@@ -2,6 +2,11 @@ class Client < ActiveRecord::Base
   SAFE_COLUMNS = %i{name}
 
   include PgSearch
+  
+  multisearchable against: [:name],
+                  additional_attributes: lambda { |client| { company_id: client.company_id, order: 1 } },
+                  if: lambda { |client| !client.deleted? }
+
   acts_as_paranoid
 
   belongs_to :company
@@ -91,6 +96,11 @@ class Client < ActiveRecord::Base
 
   after_commit :setup_egnyte_folders, on: [:create]
   after_commit :update_egnyte_folder, on: [:update]
+
+  after_save do 
+    update_associated_search_documents if name_changed?
+  end
+  after_destroy :update_associated_search_documents
 
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
@@ -406,6 +416,30 @@ class Client < ActiveRecord::Base
 
   def self.workflowable_reflections
     %i{ account_cf }
+  end
+
+  def self.rebuild_pg_search_documents
+    connection.execute <<-SQL
+     INSERT INTO pg_search_documents (searchable_type, searchable_id, company_id, content, created_at, updated_at, "order")
+       SELECT 'Client' AS searchable_type,
+              clients.id AS searchable_id,
+              clients.company_id AS company_id,
+              clients.name AS content,
+              now() AS created_at,
+              now() AS updated_at,
+              1 AS "order"
+       FROM clients
+       WHERE clients.deleted_at IS NULL
+    SQL
+  end
+
+  def update_associated_search_documents
+    PgSearchDocumentUpdateWorker.perform_async('Deal', agency_deals.pluck(:id)) 
+    PgSearchDocumentUpdateWorker.perform_async('Deal', advertiser_deals.pluck(:id)) 
+    PgSearchDocumentUpdateWorker.perform_async('Io', agency_ios.pluck(:id)) 
+    PgSearchDocumentUpdateWorker.perform_async('Io', advertiser_ios.pluck(:id)) 
+    PgSearchDocumentUpdateWorker.perform_async('Contact', contacts.pluck(:id))
+    PgSearchDocumentUpdateWorker.perform_async('Activity', activities.pluck(:id))
   end
 
   private

@@ -76,7 +76,7 @@
       init = () ->
         $scope.api_configurations = []
         ApiConfiguration.all().then (api_configurations) ->
-          $scope.api_configurations = api_configurations.api_configurations
+          $scope.api_configurations = $scope.api_configurations.concat api_configurations.api_configurations
           $scope.dfp_turned_on = false
           dfp_config = _.find($scope.api_configurations, (item) ->
             if item.integration_provider == 'DFP'
@@ -85,8 +85,7 @@
             $scope.dfp_turned_on = true
             $scope.dfp_config_id = dfp_config.id
         ApiConfiguration.ssp_credentials().then (api_configurations) ->
-          angular.forEach api_configurations.ssp, (val) ->
-            $scope.api_configurations.push(val)
+          $scope.api_configurations = $scope.api_configurations.concat api_configurations.ssp
         IntegrationType.all().then (types) ->
           $scope.integration_types = types
 

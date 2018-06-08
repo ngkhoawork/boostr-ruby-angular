@@ -24,7 +24,7 @@ class DisplayLineItemCsv
   def perform
     return self.errors.full_messages unless self.valid?
     update_external_io_number
-    upsert_temp_io
+    response = upsert_temp_io
 
     @parsed_start_date = parse_date(start_date)
     @parsed_end_date = parse_date(end_date)
@@ -57,6 +57,7 @@ class DisplayLineItemCsv
 
       update_io if io_can_be_updated?
     end
+    response
   end
 
   private
@@ -116,6 +117,7 @@ class DisplayLineItemCsv
       io_or_tempio.update!(
           temp_io_params
       )
+      io_or_tempio.id
     end
   end
 

@@ -10,6 +10,10 @@ class PmpItemDailyActual < ActiveRecord::Base
 
   scope :latest, -> { order('date DESC') }
   scope :oldest, -> { order('date ASC') }
+  scope :last_days, ->(days_count) do
+    today = Time.now.to_date
+    order(date: :desc).where(date: (today - days_count.days)..today)
+  end
 
   delegate :pmp, to: :pmp_item, allow_nil: true
   delegate :product, to: :pmp_item, allow_nil: true
@@ -33,7 +37,7 @@ class PmpItemDailyActual < ActiveRecord::Base
       pmp_item_daily_actuals = user.company.pmp_item_daily_actuals
                     .where(ssp_advertiser: ssp_advertiser, advertiser_id: nil).to_a
       pmp_item_daily_actuals.map(&:pmp_item).compact.map(&:ssp_id).compact.uniq.each do |ssp_id|
-        SspAdvertiser.create_or_update(ssp_advertiser, client.id, ssp_id, user) 
+        SspAdvertiser.create_or_update(ssp_advertiser, client.id, ssp_id, user)
       end
       user.company.pmp_item_daily_actuals
           .where(ssp_advertiser: ssp_advertiser, advertiser_id: nil)
@@ -43,8 +47,8 @@ class PmpItemDailyActual < ActiveRecord::Base
   end
 
   def assign_advertiser!(client, user)
-    if self.ssp_advertiser.present? 
-      SspAdvertiser.create_or_update(self.ssp_advertiser, client.id, pmp_item&.ssp&.id, user) 
+    if self.ssp_advertiser.present?
+      SspAdvertiser.create_or_update(self.ssp_advertiser, client.id, pmp_item&.ssp&.id, user)
     end
     self.advertiser_id = client.id
     self.save!

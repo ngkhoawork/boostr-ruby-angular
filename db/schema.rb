@@ -773,6 +773,16 @@ ActiveRecord::Schema.define(version: 20180420000253) do
     t.decimal  "number_4_dec8",   precision: 15, scale: 4
     t.decimal  "number_4_dec9",   precision: 15, scale: 4
     t.decimal  "number_4_dec10",  precision: 15, scale: 4
+    t.string   "link1"
+    t.string   "link2"
+    t.string   "link3"
+    t.string   "link4"
+    t.string   "link5"
+    t.string   "link6"
+    t.string   "link7"
+    t.string   "link8"
+    t.string   "link9"
+    t.string   "link10"
   end
 
   add_index "contact_cfs", ["company_id"], name: "index_contact_cfs_on_company_id", using: :btree
@@ -1861,6 +1871,8 @@ ActiveRecord::Schema.define(version: 20180420000253) do
     t.boolean  "is_gmail",   default: false
   end
 
+  add_index "email_opens", ["guid"], name: "index_email_opens_on_guid", using: :btree
+
   create_table "email_threads", force: :cascade do |t|
     t.string   "email_guid"
     t.integer  "user_id"
@@ -1874,6 +1886,8 @@ ActiveRecord::Schema.define(version: 20180420000253) do
     t.string   "sender"
     t.string   "recipient"
   end
+
+  add_index "email_threads", ["user_id", "thread_id"], name: "index_email_threads_on_user_id_and_thread_id", using: :btree
 
   create_table "exchange_rates", force: :cascade do |t|
     t.integer "company_id"
