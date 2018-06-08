@@ -12,6 +12,13 @@ class DealProductBudget < ActiveRecord::Base
       effect_date.month
     )
   end
+  scope :for_end_year_month, -> (effect_date) do
+    where(
+      "DATE_PART('year', end_date) = ? AND DATE_PART('month', end_date) = ?",
+      effect_date.year,
+      effect_date.month
+    )
+  end
   scope :for_product_id, -> (product_id) { where('deal_products.product_id = ?', product_id) if product_id.present? }
   scope :by_seller_id, -> (seller_id) do
     joins(deal_product: { deal: :deal_members })
