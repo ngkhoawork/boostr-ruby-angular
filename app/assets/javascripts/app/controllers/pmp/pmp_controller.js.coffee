@@ -146,7 +146,11 @@
 
     $scope.formatData = (index, pmp_item_cf_key, custom_field) ->
       pmp_item_cf_key = Object.keys(pmp_item_cf_key[0]).shift()
-      data = custom_field[pmp_item_cf_key];
+
+      try
+        data = custom_field[pmp_item_cf_key];
+      catch e
+
       switch pmp_item_cf_key.split(/\d+/).shift()
         when 'currency'
           return $filter('currency')(data, $scope.currencySymbol, 2)
