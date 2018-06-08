@@ -19,6 +19,8 @@
                     $scope.currentIO = io
                     $scope.start_date = io.start_date
                     $scope.end_date = io.end_date
+                    io.start_date = moment(io.start_date).toDate()
+                    io.end_date = moment(io.end_date).toDate()
                     if $scope.currentIO.influencer_content_fees
                         $scope.currentIO.total_influencer_gross = 0
                         $scope.currentIO.total_influencer_net = 0
@@ -360,13 +362,13 @@
             $scope.updateIODate = (key) ->
                 $scope.errors = {}
                 io = $scope.currentIO
-                io.start_date = moment(io.start_date).utc().format()
-                io.end_date = moment(io.end_date).utc().format()
+                io.start_date = moment(io.start_date).format('YYYY-MM-DD')
+                io.end_date = moment(io.end_date).format('YYYY-MM-DD')
 
                 if moment(io.start_date).isSameOrBefore(io.end_date)
                     $scope.updateIO()
                 else
-                    $scope.currentIO[key] = $scope[key]
+                    $scope.currentIO[key] = moment($scope[key]).format('YYYY-MM-DD')
                     $scope.errors.ioDate = 'End Date can\'t be before Start Date'
                     $timeout (-> delete $scope.errors.ioDate), 6000   
 
