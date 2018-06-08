@@ -276,6 +276,8 @@
     $scope.selectedStageId = deal.stage_id
     $scope.start_date = deal.start_date
     $scope.end_date = deal.end_date
+    deal.start_date = moment(deal.start_date).toDate()
+    deal.end_date = moment(deal.end_date).toDate()
     $scope.verifyMembersShare()
     $scope.setBudgetPercent(deal)
     $scope.getStages()
@@ -592,12 +594,12 @@
 
   $scope.updateDealDate = (key) ->
     deal = $scope.currentDeal
-    deal.start_date = moment(deal.start_date).utc().format()
-    deal.end_date = moment(deal.end_date).utc().format()
+    deal.start_date = moment(deal.start_date).format('YYYY-MM-DD')
+    deal.end_date = moment(deal.end_date).format('YYYY-MM-DD')
     if moment(deal.start_date).isSameOrBefore(deal.end_date)
       $scope.updateDeal()
     else
-      deal[key] = moment($scope[key]).toDate()
+      deal[key] = moment($scope[key]).format('YYYY-MM-DD')
       $scope.errors.campaignPeriod = 'End Date can\'t be before Start Date'
       $timeout (-> delete $scope.errors.campaignPeriod), 6000
 
