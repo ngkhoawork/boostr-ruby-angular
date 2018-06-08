@@ -114,9 +114,26 @@
     $scope.current.option.suboptions = _.reject $scope.current.option.suboptions, (suboption) ->
       deleted_suboption.id == suboption.id
 
+  $scope.isDisabled = (option) ->
+    $scope.current.object.name == 'Accounts' && $scope.current.field.name == 'Client Type' && ( option.name == 'Agency' || option.name == 'Advertiser' )
+
   $scope.createNewValue = () ->
     $scope.newest = { name: '' }
-    $scope.current.field.options.push($scope.newest)
+    canAddOption = true
+    if $scope.current.object.name == 'Accounts' && $scope.current.field.name == 'Client Type'
+      isAdvertiserTypeAdded = isAgencyTypeAdded = false
+      $scope.current.field.options.forEach(
+        (option) ->
+          if option.name == 'Advertiser' then isAdvertiserTypeAdded = true
+          if option.name == 'Agency' then isAgencyTypeAdded = true
+      )
+      if isAgencyTypeAdded && isAdvertiserTypeAdded
+        canAddOption = false
+        alert 'You cannot create additional types. "Advertiser" and "Agency" are the only types available.'
+      else
+        canAddOption = true
+
+    if canAddOption then $scope.current.field.options.push($scope.newest)
 
   $scope.createNewSubOption = () ->
     $scope.newest = { name: '' }

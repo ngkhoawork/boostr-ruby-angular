@@ -26,4 +26,8 @@ class ClientContact < ActiveRecord::Base
             }
     }))
   end
+
+  def unassign_contact
+    contact.update(client_id: nil) if contact.clients.ids == [client_id]
+  end
 end

@@ -12,14 +12,35 @@ class Pmps::PmpItemSerializer < ActiveModel::Serializer
     :run_rate_7_days,
     :run_rate_30_days,
     :pmp_type,
-    :product
+    :product,
+    :total_impressions,
+    :total_revenue_loc
   )
+
+  has_one :custom_field, serializer: CustomFields::Serializer
 
   def ssp
     object.ssp.serializable_hash(only: [:id, :name]) rescue nil
   end
 
   def product
-    object.product.serializable_hash(only: [:id, :name]) rescue nil
+    if object.pmp.company.product_options_enabled
+      object.product
+    else
+      object.product.serializable_hash(only: [:id, :name]) rescue nil
+    end
+  end
+
+  def actuals
+    @_actuals ||= object.pmp_item_daily_actuals.where(advertiser_id: nil )
+                      .where.not(revenue: 0.0)
+  end
+
+  def total_impressions
+    actuals.sum(:impressions)&.to_f
+  end
+
+  def total_revenue_loc
+    actuals.sum(:revenue)&.to_f
   end
 end

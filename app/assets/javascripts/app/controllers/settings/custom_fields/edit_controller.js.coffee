@@ -80,11 +80,11 @@
       .then (customFieldName) -> $modalInstance.close()
       .catch (reject) -> onError(reject)
 
-  updateActivityCF = ->
+  updateCF = ->
     CustomFieldNames
-      .update(subject_type: $scope.customFieldName.field_object, id: customFieldName.id, custom_field_name: $scope.customFieldName)
-      .then (customFieldName) -> $modalInstance.close()
-      .catch (reject) -> onError(reject)
+    .update(subject_type: $scope.customFieldName.field_object, id: customFieldName.id, custom_field_name: $scope.customFieldName)
+    .then (customFieldName) -> $modalInstance.close()
+    .catch (reject) -> onError(reject)
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
@@ -106,8 +106,8 @@
         updateContactCF()
       when 'publisher'
         updatePublisherCF()
-      when 'activity'
-        updateActivityCF()
+      else
+        updateCF()
 
   $scope.cancel = -> $modalInstance.close()
 

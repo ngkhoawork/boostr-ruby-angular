@@ -5,7 +5,10 @@ class WorkflowWorker < BaseWorker
     type = opts[:type]
     return if deal.blank?
     return if type.blank?
-    deal.workflows.each do |workflow|
+    changed_field = opts[:changed_fields]&.join
+    deal.workflows.active.each do |workflow|
+      next unless workflow.check_changes('stage_id') if changed_field&.include?('stage_id')
+
       next unless workflow.switched_on? && workflow.send("fire_on_#{type}")
       WorkflowChainChecker.check(workflow, deal, opts)
     end

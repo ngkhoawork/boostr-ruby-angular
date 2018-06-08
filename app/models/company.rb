@@ -65,6 +65,8 @@ class Company < ActiveRecord::Base
   has_many :sales_processes
   has_many :ssp_credentials, dependent: :destroy
   has_many :spend_agreements, dependent: :destroy
+  has_one  :slack_api_configuration
+  has_many :workflows
 
   has_many :deal_custom_field_names
   has_many :deal_product_cf_names

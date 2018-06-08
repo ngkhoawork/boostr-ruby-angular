@@ -11,11 +11,11 @@ class Dataexport::DealSerializer < ActiveModel::Serializer
   end
 
   def type
-    object.deal_type
+    object.values.find_by(field_id: object.fields.find_by_name('Deal Source').id)&.option&.name
   end
 
   def source
-    object.source_type
+    object.values.find_by(field_id: object.fields.find_by_name('Deal Type').id)&.option&.name
   end
 
   def closed_date

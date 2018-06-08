@@ -59,6 +59,8 @@
                     %ui-select{ name: 'advertiser', ng: { if: '!availableAdvertisers.length', model: 'deal.advertiser_id', disabled: true, keyup: 'searchClients($select.search, Advertiser)' }, 'on-select': "advertiserSelected($model)" }
                         %ui-select-match{ placeholder: 'Advertiser' }
                             {{ $select.selected.name }}
+                            %span.clear-icon{'ng-click': 'removeAccount($event, "advertiser")'}
+                                %i.fa.fa-close
                         %ui-select-choices{ repeat: 'advertiser.id as advertiser in advertisers' }
                             %div{ ng: { bind: { html: 'advertiser.name' } } }
 
@@ -75,6 +77,8 @@
                     %ui-select{ name: 'agency', ng: { if: '!availableAgencies.length', model: 'deal.agency_id', disabled: true, keyup: 'searchClients($select.search, Agency)' }, 'on-select': 'agencySelected($model)' }
                         %ui-select-match{ placeholder: 'Agency' }
                             {{ $select.selected.name }}
+                            %span.clear-icon{'ng-click': 'removeAccount($event, "agency")'}
+                                %i.fa.fa-close
                         %ui-select-choices{ repeat: 'agency.id as agency in agencies' }
                             %div{ ng: { bind: { html: 'agency.name' } } }
                     
@@ -141,8 +145,8 @@
                     %input.form-control{ 'ng-if': "dealCustomFieldName.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.deal_custom_field[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{dealCustomFieldName.field_label}}' }
                 .show-hide-remainder-form{ ng: { if: "dealCustomFieldName.field_type == 'boolean' " } }
                     .switch-remainder-form
-                        %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}", type: 'checkbox', 'ng-model': 'deal.deal_custom_field[fieldName]'}
-                        %label{:for => "{{fieldName}}"}
+                        %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}-modal", type: 'checkbox', 'ng-model': 'deal.deal_custom_field[fieldName]'}
+                        %label{:for => "{{fieldName}}-modal"}
                             %span
                 %ui-select{ name: '{{fieldName}}', ng: { if: "dealCustomFieldName.field_type == 'dropdown'", model: 'deal.deal_custom_field[fieldName]', disabled: true } }
                     %ui-select-match{ placeholder: 'Select value' }

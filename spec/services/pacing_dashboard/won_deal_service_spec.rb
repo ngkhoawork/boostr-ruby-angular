@@ -6,6 +6,10 @@ describe PacingDashboard::WonDealService do
     create_deals
   end
 
+  after(:all) do
+    Timecop.return
+  end
+
   it 'return proper data for won deal service' do
     Timecop.freeze(2017, 2, 2)
 

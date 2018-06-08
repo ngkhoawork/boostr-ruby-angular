@@ -6,7 +6,7 @@ module WorkflowCallbacks
   included do
     before_destroy { check_chains_for_workflows(on_destroy_workflows, self, destroyed: true, callback_type: 'destroy') }
 
-    before_update  { track_deal_state }
+    before_update  { track_deal_state if manual_update }
   end
 
   def check_chains_for_workflows(workflows, deal, options = {})
@@ -50,5 +50,18 @@ module WorkflowCallbacks
 
   def workflows
     @_workflows ||=  Workflow.for_company(self.company.id).where(workflowable_type: self.class.name)
+  end
+
+  def deal_product_state(event_type)
+    begin
+      opts = {
+        deal_id: self.id,
+        deal_products_sum: deal_products.sum(:budget),
+        event_type: event_type,
+        previous_products_sum: self.budget || 0
+      }
+      DealProductState.create(opts)
+    rescue => e
+    end
   end
 end

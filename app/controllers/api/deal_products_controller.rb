@@ -32,10 +32,13 @@ class Api::DealProductsController < ApplicationController
       }, status: :ok
     else
       exchange_rate = deal.exchange_rate
+      deal_product_params.merge!(manual_update: true)
       converted_params = ConvertCurrency.call(exchange_rate, deal_product_params)
       deal_product = deal.deal_products.new(converted_params)
       deal_product.update_periods if params[:deal_product][:deal_product_budgets_attributes]
       if deal_product.save
+        deal.deal_product_state('create')
+        deal.manual_update = true
         DealTotalBudgetUpdaterService.perform(deal)
 
         render deal
@@ -48,8 +51,9 @@ class Api::DealProductsController < ApplicationController
   def update
     exchange_rate = deal.exchange_rate
     converted_params = ConvertCurrency.call(exchange_rate, deal_product_params)
-
+    converted_params.merge!(manual_update: true)
     if deal_product.update_attributes(converted_params)
+      deal.deal_product_state('update')
       DealTotalBudgetUpdaterService.perform(deal)
 
       render deal

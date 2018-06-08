@@ -35,6 +35,23 @@
         %li End_date
         %li Budget
         %li Delivered
+      .custom_fields{ng: { show: 'optional_custom_fields && optional_custom_fields.length > 0 || required_custom_fields && required_custom_fields.length > 0'   }}
+        %h6.text-center
+          %p
+            Optional PMP Item Custom Fields.
+          %p
+            Please use these EXACT headers to allow system to recognize Custom Fields:
+
+      %ol.row.center-block.grid-block{ng: { show: 'optional_custom_fields && optional_custom_fields.length > 0' }}
+        %h6.text-center
+          Optional Custom Fields
+        %li{ng: { repeat: 'optional_custom_field in optional_custom_fields' }}
+          {{ optional_custom_field.field_label }}
+      %ol.row.center-block.grid-block{ng: { show: 'required_custom_fields && required_custom_fields.length > 0' }}
+        %h6.text-center
+          Required Custom Fields
+        %li{ng: { repeat: 'required_custom_field in required_custom_fields' }}
+          {{ required_custom_field.field_label }}
 
     .well.well-lg.dark
       .row

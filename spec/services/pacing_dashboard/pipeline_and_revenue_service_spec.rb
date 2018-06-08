@@ -7,6 +7,10 @@ describe PacingDashboard::PipelineAndRevenueService do
     create_snapshots
   end
 
+  after(:all) do
+    Timecop.return
+  end
+
   it 'return proper data for pipeline and revenue service' do
     Timecop.freeze(2017, 2, 2)
 

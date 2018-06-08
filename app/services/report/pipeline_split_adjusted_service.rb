@@ -6,8 +6,8 @@ class Report::PipelineSplitAdjustedService
     @company   = company
     @seller_id = params[:seller_id]
     @team_id   = params[:team_id]
-    @stage_ids  = params[:stage_ids]
-    @status    = params[:status]
+    @stage_ids = params[:stage_ids]
+    @status    = params[:status].present? ? params[:status] : FILTER_ALL_ATTR
   end
 
   def perform

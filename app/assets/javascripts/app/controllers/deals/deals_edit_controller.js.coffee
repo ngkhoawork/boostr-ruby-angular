@@ -189,5 +189,10 @@
       $scope.stages = stages
       $scope.deal.stage_id = null
 
+  $scope.removeAccount = (e, type) ->
+    e.stopPropagation()
+    $scope.deal[type + '_id'] = null
+    $scope.deal[type] = null
+
   $scope.init()
 ]

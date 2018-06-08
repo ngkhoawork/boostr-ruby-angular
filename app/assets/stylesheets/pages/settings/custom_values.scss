@@ -16,6 +16,9 @@
   .well {
     .title {
       padding-right: 7px;
+      &[disabled] {
+        cursor: not-allowed;
+      }
     }
     .total {
       padding-left: 7px;

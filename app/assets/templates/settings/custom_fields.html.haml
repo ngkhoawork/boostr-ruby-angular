@@ -277,6 +277,50 @@
       .col-xs-4.quota-period
         .row
           .col-xs-12
+            PMP Items Custom Fields
+
+    .row
+      .col-xs-12
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.left Position
+                %th.left Name
+                %th.left Type
+                %th.left Required
+                %th.left Show on Modal
+                %th.left Disabled
+                %th.action-column
+            %tbody
+              %tr{ ng: { repeat: 'custom_field in pmpItemCustomFieldNames', if: 'pmpItemCustomFieldNames.length > 0' } }
+                %td.left
+                  {{ custom_field.position }}
+                %td.left
+                  {{ custom_field.field_label }}
+                %td.left
+                  {{ custom_field.field_type }}
+                %td.left
+                  {{ custom_field.is_required ? "Yes" : "No" }}
+                %td.left
+                  {{ custom_field.show_on_modal ? "Yes" : "No" }}
+                %td.left
+                  {{ custom_field.disabled ? "Yes" : "No" }}
+                %td.action-td
+                  %a.edit-team{ href: '', ng: { click: 'editModal(custom_field, "pmp_item")' } }
+                    = inline_svg 'icons/pencil.svg'
+                  %a.delete-team{ href: '', ng: { click: 'delete(custom_field, "pmp_item")' } }
+                    = inline_svg 'icons/trash.svg'
+              %tr{ ng: { if: '!pmpItemCustomFieldNames || pmpItemCustomFieldNames.length == 0' } }
+                %td{ colspan: '7' }
+                  %center
+                    No data available
+
+    %br
+    .row
+      .col-xs-4.quota-period
+        .row
+          .col-xs-12
             IO Content Fee Custom Fields
 
     .row
@@ -315,3 +359,4 @@
                 %td.auto-colspan
                   %center
                     No data available
+    %br

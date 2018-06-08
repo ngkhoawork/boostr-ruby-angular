@@ -3,7 +3,8 @@ class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable and :omniauthable
   devise :invitable, :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable, :confirmable
+         :recoverable, :rememberable, :trackable, :validatable, :confirmable,
+         validate_on_invite: true
 
   belongs_to :company
   has_one :egnyte_auth, class_name: 'EgnyteAuthentication', dependent: :destroy
@@ -35,9 +36,10 @@ class User < ActiveRecord::Base
   has_many :assignment_rules, through: :assignment_rules_users
   has_one :hoopla_user, inverse_of: :user
 
-  ROLES = %w(user admin superadmin supportadmin)
+  ROLES = %w[user admin superadmin supportadmin]
 
   validates :first_name, :last_name, presence: true
+  validates :email, uniqueness: true, presence: true
   validate :currency_exists
 
   scope :by_user_type, -> type_id { where(user_type: type_id) if type_id.present? }
@@ -54,7 +56,6 @@ class User < ActiveRecord::Base
   after_destroy do |user_record|
     delete_dimension(user_record)
   end
-
 
   def create_dimension
     UserDimension.create(

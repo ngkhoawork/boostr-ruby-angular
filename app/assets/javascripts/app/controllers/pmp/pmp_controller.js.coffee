@@ -1,6 +1,6 @@
 @app.controller 'PMPController',
-  ['$rootScope', '$scope', '$modal', '$location', '$filter', '$timeout', '$routeParams', 'PMP', 'PMPMember', 'User', 'PMPItem', 'PMPItemDailyActual', 'PMPType', 'STATISTIC',
-  ( $rootScope,   $scope,   $modal,   $location,   $filter,   $timeout,   $routeParams,   PMP,   PMPMember,   User,   PMPItem,   PMPItemDailyActual,   PMPType, STATISTIC) ->
+  ['$rootScope', '$scope', '$modal', '$location', '$filter', '$timeout', '$routeParams', 'PMP', 'PMPMember', 'User', 'PMPItem', 'PMPItemDailyActual', 'PMPType', 'STATISTIC', 'Company'
+  ( $rootScope,   $scope,   $modal,   $location,   $filter,   $timeout,   $routeParams,   PMP,   PMPMember,   User,   PMPItem,   PMPItemDailyActual,   PMPType, STATISTIC, Company) ->
     $scope.currentPMP = {}
     $scope.importStatistics = [];
     $scope.pmpItemDailyActuals = []
@@ -58,7 +58,7 @@
       tooltipText: (x, y) ->
         value = 'N/A'
         value = $scope.currencySymbol + $filter('number')(y) if y?
-        '<p>' + (this.selectedItem.ssp_deal_id || $filter('firstUppercase')(this.selectedItem)) + '</p>' + 
+        '<p>' + (this.selectedItem.ssp_deal_id || $filter('firstUppercase')(this.selectedItem)) + '</p>' +
         '<p><span>' + value + '</span></p>' + 
         '<p><span>' + x + '</span></p>'
       yAxisLabelFormat: (v) ->
@@ -108,20 +108,52 @@
       $scope.timeFilter.timePeriodString = $scope.timeFilter.getStartDate()
       $scope.timeFilter.timePeriodString += ' - '
       $scope.timeFilter.timePeriodString += $scope.timeFilter.getEndDate()
+      getPmp();
 
+    getPmp = () ->
       PMP.get($routeParams.id).then (pmp) ->
         $scope.currentPMP = pmp
+        allowedFields = []
+        for item in pmp.pmp_items
+          for prop of item.custom_field
+            allowedFields.push(prop)
+        for pmp_key_index of pmp.pmp_items_cf_keys
+          if !allowedFields.includes(Object.keys(pmp.pmp_items_cf_keys[pmp_key_index][0]).shift()) || Object.values(pmp.pmp_items_cf_keys[pmp_key_index][0]).shift()
+            pmp.pmp_items_cf_labels[pmp_key_index] = null
+        if pmp.pmp_items_cf_labels != null
+          $scope.pmp_items_cf_labels = pmp.pmp_items_cf_labels.filter((x) ->
+            x != null
+          )
+        $scope.pmp_items_cf_types = pmp.pmp_items_cf_types
+        if pmp.pmp_items_cf_keys != null
+          $scope.pmp_items_cf_keys = pmp.pmp_items_cf_keys.filter((x) ->
+            allowedFields.includes(Object.keys(x[0]).shift()) && !Object.values(x[0]).shift()
+          )
         $scope.updateDeliveryChart('all')
         $scope.updatePriceChart('all')
         $scope.revenueChart.update('all')
         $scope.currencySymbol = pmp.currency && (pmp.currency.curr_symbol || pmp.currency.curr_cd)
         STATISTIC.all($scope.currentPMP.id).then (statistics) ->
           $scope.importStatistics = statistics;
+        Company.get().$promise.then (company) ->
+          $scope.company = company
+
 
     reloadDailyActuals = () ->
       $scope.page = 1
       $scope.pmpItemDailyActuals = []
       $scope.loadMoreData()
+
+    $scope.formatData = (index, pmp_item_cf_key, custom_field) ->
+      pmp_item_cf_key = Object.keys(pmp_item_cf_key[0]).shift()
+      data = custom_field[pmp_item_cf_key];
+      switch pmp_item_cf_key.split(/\d+/).shift()
+        when 'currency'
+          return $filter('currency')(data, $scope.currencySymbol, 2)
+        when 'datetime'
+          return $filter('date')(data, 'M/d/yyyy', 'UTC')
+        else
+          return data
 
     $scope.loadMoreData = ->
       return if $scope.isLoading
@@ -260,7 +292,7 @@
             value = unit + $filter('number')(d) 
           else 
             value = $filter('number')(d) + unit
-        '<p>' + (selectedItem.ssp_deal_id || $filter('firstUppercase')(selectedItem)) + '</p>' + 
+        '<p>' + (selectedItem.ssp_deal_id || $filter('firstUppercase')(selectedItem)) + '</p>' +
         '<p><span>' + value + '</span></p>' + 
         '<p><span>' + title + '</span></p>'
       tooltip = d3.select("body").append("div") 
@@ -606,7 +638,7 @@
           item: () -> null
           pmpId: () -> $scope.currentPMP.id
       modalInstance.result.then (pmp_item) ->
-        $scope.currentPMP.pmp_items.push pmp_item
+        getPmp();
         $scope.currentPMP.budget = parseFloat($scope.currentPMP.budget || 0) + parseFloat(pmp_item.budget)
         $scope.currentPMP.budget_loc = parseFloat($scope.currentPMP.budget_loc || 0) + parseFloat(pmp_item.budget_loc)
         $scope.currentPMP.budget_delivered = parseFloat($scope.currentPMP.budget_delivered || 0) + parseFloat(pmp_item.budget_delivered)
@@ -648,7 +680,7 @@
           item: () -> angular.copy(item)
           pmpId: () -> $scope.currentPMP.id
       modalInstance.result.then (pmp) ->
-        $scope.currentPMP = pmp
+        getPmp();
         reloadDailyActuals()
 
     $scope.deletePmpItem = (item) ->

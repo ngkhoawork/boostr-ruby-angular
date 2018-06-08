@@ -141,13 +141,7 @@
                     deals
 
             $scope.searchClients = (str, type) ->
-                q =
-                    search: str
-                    filter: 'all'
-                if type is 'advertiser' then q.client_type_id = $scope.Advertiser
-                if type is 'agency' then q.client_type_id = $scope.Agency
-                Client.query(q).$promise.then (clients) ->
-                    clients
+                Client.search_clients( name: str, client_type_id: type).$promise.then (clients) -> clients
 
             $scope.searchContacts = (str) ->
                 if ($scope.contactSearchText != str)
@@ -175,9 +169,11 @@
             $scope.submitForm = ->
                 $scope.errors = {}
 
-                fields = ['deal', 'advertiser', 'agency', 'publisher', 'contacts', 'date', 'comment']
+                fields = ['deal', 'advertiser', 'agency', 'publisher', 'date', 'comment']
                 if $scope.showReminderForm
                     fields.push('reminderName', 'reminderDate', 'reminderComment')
+                if $scope.selectedType.contact_required
+                    fields.push('contacts')
 
                 fields.forEach (key) ->
                     field = $scope.form[key]

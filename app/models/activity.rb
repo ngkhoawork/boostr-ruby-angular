@@ -230,7 +230,7 @@ class Activity < ActiveRecord::Base
           :creator => {},
           :publisher => { only: [:id, :name] },
           custom_field: { only: CustomField.allowed_attr_names(company, 'Activity') },
-          activity_type: { only: [:id, :name, :css_class, :action] }
+          activity_type: { only: [:id, :name, :css_class, :action, :contact_required] }
         },
         methods: [:team_creator]
       ).except(:override))

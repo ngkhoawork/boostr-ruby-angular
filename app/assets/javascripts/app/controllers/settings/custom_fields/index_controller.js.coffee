@@ -11,7 +11,8 @@
     getCustomFieldNames()
 
   getCustomFieldNames = () ->
-    CustomFieldNames.all({'subject_type[]': ['activity', 'content_fee']}).then (customFieldNames) ->
+    CustomFieldNames.all({'subject_type[]': ['activity', 'content_fee', 'pmp_item']}).then (customFieldNames) ->
+      $scope.pmpItemCustomFieldNames = _.filter customFieldNames, (c) -> c.subject_type == 'PmpItem'
       $scope.activityCustomFieldNames = _.filter customFieldNames, (c) -> c.subject_type == 'Activity'
       $scope.contentFeeCustomFieldNames = _.filter customFieldNames, (c) -> c.subject_type == 'ContentFee'
 
@@ -53,6 +54,7 @@
           }
 
   $scope.editModal = (customFieldName, objectType)->
+    customFieldName = angular.copy customFieldName
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_custom_field_name_form.html'
       size: 'lg'
@@ -61,7 +63,7 @@
       keyboard: false
       resolve:
         customFieldName: ->
-          customFieldName
+          customFieldName = customFieldName
         objectType: ->
           objectType
 

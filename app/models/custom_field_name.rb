@@ -7,8 +7,7 @@ class CustomFieldName < ActiveRecord::Base
   validates :subject_type, inclusion: { in: :allowed_subject_types }
   validates :field_type, presence: true, inclusion: { in: :allowed_field_types }
   validates :field_label, presence: true
-  validates :position, uniqueness: { scope: [:subject_type, :company],
-                                     message: 'Custom field name should be unique' },
+  validates :position, uniqueness: { scope: [:subject_type, :company] },
                        presence: true, numericality: true
   validate  :ensure_allowed_number_of_fields_is_not_exceeded
 
@@ -19,6 +18,8 @@ class CustomFieldName < ActiveRecord::Base
 
   scope :position_asc, -> { order(position: :asc) }
   scope :active, -> { where('disabled IS NOT TRUE') }
+  scope :required, -> { where(is_required: true) }
+  scope :optional, -> { where(is_required: false) }
   scope :for_model, ->(model_name) { where(subject_type: valid_subject_type(model_name)) if model_name && check_subject_type!(model_name) }
 
   accepts_nested_attributes_for :custom_field_options

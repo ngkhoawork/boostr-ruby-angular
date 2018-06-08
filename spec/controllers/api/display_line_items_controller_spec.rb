@@ -6,6 +6,10 @@ describe Api::DisplayLineItemsController, type: :controller do
     sign_in user
   end
 
+  after(:all) do
+    Timecop.return
+  end
+
   describe 'GET #index' do
     before do
       Timecop.freeze(2016, 8, 1)
@@ -16,7 +20,7 @@ describe Api::DisplayLineItemsController, type: :controller do
 
     it 'has appropriate count of record in response with risk filter' do
       negative_item = create :io, company: company, display_line_items: [create_negative_item]
-      pp negative_item.display_line_items.to_json
+
       get :index, filter: 'risk', format: :json
 
       response_json = response_json(response)

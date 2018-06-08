@@ -1,0 +1,7 @@
+%h1 #{ @notification.subject }
+%p #{ @notification.message}
+
+%br
+- @temp_ios.each do |temp_io|
+  %p
+    Name: #{temp_io.name}

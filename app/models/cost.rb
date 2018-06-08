@@ -94,10 +94,6 @@ class Cost < ActiveRecord::Base
     end
   end
 
-  def update_cost_monthly_amounts
-    Cost::AmountsUpdateService.new(self).perform
-  end
-
   def update_periods
     cost_monthly_amounts.each.with_index do |cost_monthly_amount, index|
       period = Date.new(*io.months[index])
@@ -109,7 +105,7 @@ class Cost < ActiveRecord::Base
   def update_cost_or_monthly_budget
     if cost_monthly_amounts.sum(:budget) != budget || cost_monthly_amounts.sum(:budget_loc) != budget_loc
       if (budget_changed? || budget_loc_changed?) && !io.freezed?
-        update_cost_monthly_amounts
+        Cost::AmountsUpdateService.new(self).perform
         update(is_estimated: false)
       else
         update_budget

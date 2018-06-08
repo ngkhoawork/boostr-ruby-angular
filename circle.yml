@@ -1,6 +1,7 @@
 database:
   override:
     - cp config/database.yml.example config/database.yml
+    - cp config/mongoid.yml.example config/mongoid.yml
     - bundle exec rake db:drop db:create db:migrate RAILS_ENV=test
 
 general:

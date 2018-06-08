@@ -90,6 +90,7 @@ class IoCsv
     temp_io.update(
       temp_io_params
     )
+    temp_io.id
   end
 
   def io_number

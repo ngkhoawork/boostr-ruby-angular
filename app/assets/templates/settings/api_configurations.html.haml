@@ -46,7 +46,7 @@
                   %button.btn.activity-email-btn{ ng: { click: 'runDatafeedIntraday(api_configuration)', disabled: '!api_configuration.can_be_scheduled'} } Run Intraday
                   %button.btn.activity-email-btn{ ng: { click: 'runDatafeedImportAll(api_configuration)', disabled: '!api_configuration.can_be_scheduled'} } Import All
               %td.action-td
-                %a.edit-api-integration{ href: '', ng: { click: 'editModal(api_configuration)' } }
+                %a.edit-api-integration{ href: '', ng: { click: 'editModal(api_configuration)', if: 'api_configuration.integration_provider != "Slack"' } }
                   = inline_svg 'icons/pencil.svg'
                 %a.delete-api-integration{ href: '', ng: { click: 'delete(api_configuration)' } }
                   = inline_svg 'icons/trash.svg'

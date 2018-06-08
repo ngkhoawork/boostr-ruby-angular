@@ -66,12 +66,14 @@
                 budgetPercentSum = 0
                 length = $scope.deal_product.deal_product_budgets.length
                 _.each $scope.deal_product.deal_product_budgets, (month, index) ->
+                    month.budget_loc = $scope.cutCurrencySymbol(month.budget_loc)
+                    month.percent_value = $scope.cutPercent(month.percent_value)
                     if(length-1 != index)
                         budgetSum = budgetSum + month.budget_loc
-                        budgetPercentSum = budgetPercentSum + month.percent_value
+                        budgetPercentSum = Number( (budgetPercentSum + month.percent_value).toFixed(1) )
                     else
                         month.budget_loc = $scope.deal_product.budget_loc - budgetSum
-                        month.percent_value = 100 - budgetPercentSum
+                        month.percent_value = Number( ( 100 - budgetPercentSum ).toFixed(1) )
 
             cutSymbolsAddProductBudget = (dealProduct)->
                 dealProduct = angular.copy dealProduct
@@ -99,7 +101,11 @@
                         id: ->
 
             $scope.setCurrencySymbol = (value, index) ->
-                value = $scope.currency_symbol + value
+                if String(value).indexOf($scope.currency_symbol) < 0
+                    value = $scope.currency_symbol + value
+                else
+                    return value
+
                 if(index!= undefined )
                     $scope.deal_product.deal_product_budgets[index].budget_loc = value
                 else
@@ -113,7 +119,13 @@
                     return percent_value
 
             $scope.setPercent = (percent_value, index) ->
-                percent_value = percent_value + '%'
+                percent_value = 0 if !percent_value
+
+                if String(percent_value).indexOf('%') < 0
+                    percent_value = percent_value + '%'
+                else
+                    return percent_value
+                    
                 if(index!= undefined)
                     $scope.deal_product.deal_product_budgets[index].percent_value = percent_value
                 else
@@ -126,6 +138,7 @@
 
 
             $scope.changeTotalBudget = ->
+                $scope.deal_product.budget_loc = Number($scope.deal_product.budget_loc) || 0
                 $scope.deal_product.budget_percent = 100
                 $scope.deal_product.isIncorrectTotalBudgetPercent = false
                 budgetOneDay = $scope.deal_product.budget_loc / $scope.currentDeal.days
@@ -137,7 +150,7 @@
                         month.budget_loc = 0
                     else
                         month.budget_loc = Math.round($scope.currentDeal.days_per_month[index] * budgetOneDay)
-                        month.percent_value = Math.round(month.budget_loc / $scope.deal_product.budget_loc * 100)
+                        month.percent_value = Number( (month.budget_loc / $scope.deal_product.budget_loc * 100).toFixed(1) )
                     budgetSum = budgetSum + $scope.currentDeal.days_per_month[index] * budgetOneDay
                     budgetPercentSum = budgetPercentSum + month.percent_value
                 if($scope.deal_product.budget_loc && budgetSum != $scope.deal_product.budget_loc  || budgetPercentSum && budgetPercentSum != 100)
@@ -158,7 +171,11 @@
                     else
                         $scope.deal_product.budget_loc = $scope.deal_product.budget_loc + $scope.cutCurrencySymbol(month.budget_loc)
                 _.each $scope.deal_product.deal_product_budgets, (month) ->
-                    month.percent_value = $scope.setPercent( Math.round($scope.cutCurrencySymbol(month.budget_loc) / $scope.deal_product.budget_loc * 100))
+                    month.percent_value = $scope.setPercent( Number( ( $scope.cutCurrencySymbol(month.budget_loc) / $scope.deal_product.budget_loc * 100 ).toFixed(1) ) )
+                addProductBudgetCorrection()
+                _.each $scope.deal_product.deal_product_budgets, (month) ->
+                    month.budget_loc = $scope.setCurrencySymbol(month.budget_loc)
+                    month.percent_value = $scope.setPercent(month.percent_value)
 
             $scope.changeMonthPercent = (monthPercentValue, index)->
                 if(!monthPercentValue)
@@ -199,8 +216,6 @@
                     $scope.errors['product_id'] = 'Product is required'
                 else if subProduct = $scope.hasSubProduct()
                     $scope.errors['product' + subProduct.level] = $scope['option' + subProduct.level + 'Field'] + ' is required'
-                else if !isPmpDeal && _.find($scope.currentDeal.products, (p) -> p.id == $scope.deal_product.product_id)
-                    $scope.errors['product_id'] = "Product's already added"
 
                 if !_.isEmpty($scope.errors) || $scope.deal_product.isIncorrectTotalBudgetPercent then return
 
@@ -212,6 +227,7 @@
                     message = 'This deal has only non PMP products. You can\'t add PMP product.'
                     showWarningModal(message)
                 else
+                    $scope.disableSubmitButton = true
                     DealProduct.create(deal_id: $scope.currentDeal.id, deal_product: dealProduct).then(
                         (deal) ->
                             $rootScope.$broadcast 'deal_product_added', deal
@@ -219,6 +235,7 @@
                         (resp) ->
                             for key, error of resp.data.errors
                                 $scope.errors[key] = error && error[0]
+                            $scope.disableSubmitButton = false    
                     )
 
             $scope.resetDealProduct = ->
@@ -229,4 +246,6 @@
 
             $scope.cancel = ->
                 $modalInstance.close()
+
+            $scope.isUndefined = angular.isUndefined
     ]

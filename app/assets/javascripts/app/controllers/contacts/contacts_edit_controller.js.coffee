@@ -28,6 +28,8 @@
     $scope.contact.address.phone = $filter('tel')($scope.contact.address.phone)
     $scope.contact.address.mobile = $filter('tel')($scope.contact.address.mobile)
 
+  if $scope.contact.name == $scope.contact.address.email then $scope.contact.name = ''
+
   $scope.submitForm = () ->
     emailRegExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
 
@@ -40,6 +42,7 @@
       switch key
         when 'name'
           if !field then return $scope.errors[key] = 'Name is required'
+          if contact.name == contact.address.email then return $scope.errors[key] = 'Name cannot match email address'
         when 'client_id'
           if !field  then return $scope.errors[key] = 'Primary Account is required'
         when 'address'

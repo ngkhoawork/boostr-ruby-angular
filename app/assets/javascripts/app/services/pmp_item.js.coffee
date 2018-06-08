@@ -16,6 +16,10 @@
       method: 'PUT'
       url: '/api/pmps/:pmp_id/pmp_items/:id'
       transformRequest: transformRequest
+    },
+    get_pmp_item: {
+      method: 'GET',
+      url: '/api/pmps/:pmp_id/pmp_items/:id'
     }
 
   @all = (params) ->
@@ -40,6 +44,12 @@
     deferred = $q.defer()
     resource.delete { pmp_id: params.pmp_id, id: params.id }, () ->
       deferred.resolve()
+    deferred.promise
+
+  @get_item = (params) ->
+    deferred = $q.defer()
+    resource.get_pmp_item { pmp_id: params.pmp_id, id: params.id }, (pmp_item) ->
+      deferred.resolve(pmp_item)
     deferred.promise
 
   return

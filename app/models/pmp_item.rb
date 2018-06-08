@@ -1,4 +1,6 @@
 class PmpItem < ActiveRecord::Base
+  include HasCustomField
+
   belongs_to :pmp, required: true
   belongs_to :ssp, required: true
   belongs_to :product
@@ -91,6 +93,10 @@ class PmpItem < ActiveRecord::Base
     pmp_item_daily_actuals.maximum(:date)
   end
 
+  def company_id
+    pmp&.company_id
+  end
+
   private
 
   def convert_currency
@@ -100,6 +106,7 @@ class PmpItem < ActiveRecord::Base
   end
 
   def set_budget_remaining_and_delivered
+    return if skip_callback
     self.budget_delivered ||= 0
     self.budget_delivered_loc ||= 0
     self.budget_remaining = [budget - budget_delivered, 0].max

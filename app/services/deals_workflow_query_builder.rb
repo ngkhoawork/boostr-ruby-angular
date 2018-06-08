@@ -89,8 +89,16 @@ class DealsWorkflowQueryBuilder
     Arel::Table.new(:deal_custom_fields)
   end
 
+  def fields
+    Arel::Table.new(:fields)
+  end
+
   def members
     Arel::Table.new(:members)
+  end
+
+  def member_roles
+    options.alias(:member_roles)
   end
 
   # INFO: Return Join Relations with On Conditions
@@ -138,6 +146,10 @@ class DealsWorkflowQueryBuilder
             condition = condition
                             .join(client_subcategories)
                             .on(clients[:client_subcategory_id].eq(client_subcategories[:id]))
+          when 'share'
+            condition = condition
+                            .join(deal_members)
+                            .on(deal_members[:deal_id].eq(deals[:id]))
         end
         case wc.base_object
           when 'Account Custom Fields'
@@ -152,6 +164,16 @@ class DealsWorkflowQueryBuilder
                             .join(deal_custom_fields)
                             .on(deals[:id].eq(deal_custom_fields[:deal_id]))
             end
+          when 'Deal Members'
+            condition = condition
+                            .join(deal_members)
+                            .on(deal_members[:deal_id].eq(deals[:id]))
+                            .join(values)
+                            .on(values[:subject_id].eq(deal_members[:id]))
+                            .join(fields)
+                            .on(values[:field_id].eq(fields[:id]))
+                            .join(member_roles)
+                            .on(fields[:id].eq(member_roles[:field_id])) if wc.field.eql?('role')
         end
       end
     condition

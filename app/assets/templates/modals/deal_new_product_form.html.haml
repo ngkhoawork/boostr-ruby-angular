@@ -45,7 +45,7 @@
                             {{ option2Field }}
                             %span.star{'ng-if': 'hasSubProduct(2) || selectedProduct().level == 2'} *
                         %ui-select{ name: 'product_level_2', ng: { model: 'deal_product.product2', disabled: '!deal_product.product1 || productsByLevel(2).length == 0', required: true }, 'on-select': 'onChangeProduct($item, $model)' }
-                            %ui-select-match{ placeholder: '{{ option1Field }}', 'allow-clear': 'true' }
+                            %ui-select-match{ placeholder: '{{ option2Field }}', 'allow-clear': 'true' }
                                 {{ $select.selected.name }}
                             %ui-select-choices{ repeat: 'product.id as product in productsByLevel(2) | orderBy: "name" | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'product.name' } } }
@@ -65,7 +65,7 @@
                             .form-group
                                 %label {{deal_product.months[$index]}}
                                 %input.form-control.offset-bottom{style: 'margin-bottom: 5px', 'ng-model': 'month.budget_loc',
-                                    'ng-disabled': '!deal_product.budget_loc',
+                                    'ng-disabled': 'isUndefined(deal_product.budget_loc)',
                                     'ng-change': 'changeMonthValue(month.budget_loc, $index)',
                                     'ng-focus': 'cutCurrencySymbol(month.budget_loc, $index)',
                                     'ng-blur': 'setCurrencySymbol(month.budget_loc, $index)',
@@ -78,4 +78,4 @@
                                     'numbers-only':''}
         .popup-modal-footer
             %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
-            %button.btn.btn-warning{'type': 'submit'} Add Product
+            %button.btn.btn-warning{'type': 'submit', ng: { disabled: 'disableSubmitButton' }} Add Product

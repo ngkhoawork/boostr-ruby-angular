@@ -78,10 +78,9 @@
               %tbody
                 %tr{'ng-repeat': 'advertiser in relatedAdvertisers'}
                   %td
-                    %a{href: '', 'ng-href': '/accounts/{{advertiser.id}}'} {{advertiser.advertiser_name}}
+                    %a{href: '', 'ng-href': '/accounts/{{advertiser.id}}', target: '_blank'} {{advertiser.advertiser_name}}
                   %td {{advertiser.sum | currency : '$' : 0}}
                   %td {{advertiser.seller_name}}
-
       .col-xs-4.pr0
         .block
           %div.mb20
