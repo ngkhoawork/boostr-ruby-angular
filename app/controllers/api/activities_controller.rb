@@ -28,6 +28,7 @@ class Api::ActivitiesController < ApplicationController
       if @activity.save
         @activity.contacts = add_contacts_to_activity
         @activity.contacts.less_than(@activity.happened_at).update_all(activity_updated_at: @activity.happened_at)
+        @activity.update_pg_search_document
 
         render json: activity, status: :created
       else
@@ -39,6 +40,7 @@ class Api::ActivitiesController < ApplicationController
   def update
     if activity.update_attributes(activity_params)
       activity.contacts = add_contacts_to_activity
+      activity.update_pg_search_document
       update_all_activity_updated_at
 
       render json: activity, status: :accepted

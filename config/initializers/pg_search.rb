@@ -1,12 +1,8 @@
 PgSearch.multisearch_options = {
   using: {
     tsearch: {
-      prefix: true,
-      any_word: true
+      prefix: true
     },
-    dmetaphone: {
-      any_word: true
-    }
-  },
-  ranked_by: ':trigram'
+    trigram: {}
+  }
 }

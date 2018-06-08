@@ -12,6 +12,11 @@ class Address < ActiveRecord::Base
 
   scope :contacts_by_email, -> (email) { where(addressable_type: 'Contact').where('email ilike ANY (array[?])', email) }
 
+  after_save do
+    update_associated_search_documents if email_changed?
+  end
+  after_destroy :update_associated_search_documents
+
   def us_state
     if state.present?
       unless UsaState.new.abbreviations.include?(state)
@@ -25,5 +30,11 @@ class Address < ActiveRecord::Base
     name += ", #{city}" if city.present?
     name += ", #{state}" if state.present?
     name
+  end
+
+  def update_associated_search_documents
+    if addressable_type == 'Contact'
+      PgSearchDocumentUpdateWorker.perform_async('Contact', addressable_id)
+    end
   end
 end
