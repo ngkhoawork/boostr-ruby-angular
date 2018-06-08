@@ -137,6 +137,10 @@ class Deal < ActiveRecord::Base
     track_spend_agreements if manual_update
   end
 
+  after_save do 
+    update_associated_search_documents if name_changed?
+  end
+
   after_commit :asana_connect, on: [:create]
 
   before_destroy do
@@ -145,6 +149,7 @@ class Deal < ActiveRecord::Base
 
   after_destroy do
     update_pipeline_fact(self)
+    update_associated_search_documents
   end
 
   after_commit :setup_egnyte_folders, on: [:create]
@@ -1700,6 +1705,10 @@ class Deal < ActiveRecord::Base
 
   def agency_name
     agency&.name
+  end
+
+  def update_associated_search_documents
+    PgSearchDocumentUpdateWorker.perform_async('Activity', activities.pluck(:id))
   end
 
   private

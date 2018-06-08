@@ -97,6 +97,11 @@ class Client < ActiveRecord::Base
   after_commit :setup_egnyte_folders, on: [:create]
   after_commit :update_egnyte_folder, on: [:update]
 
+  after_save do 
+    update_associated_search_documents if name_changed?
+  end
+  after_destroy :update_associated_search_documents
+
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
   scope :exclude_ids, -> ids { where.not(id: ids) if ids.present? }
@@ -426,6 +431,15 @@ class Client < ActiveRecord::Base
        FROM clients
        WHERE clients.deleted_at IS NULL
     SQL
+  end
+
+  def update_associated_search_documents
+    PgSearchDocumentUpdateWorker.perform_async('Deal', agency_deals.pluck(:id)) 
+    PgSearchDocumentUpdateWorker.perform_async('Deal', advertiser_deals.pluck(:id)) 
+    PgSearchDocumentUpdateWorker.perform_async('Io', agency_ios.pluck(:id)) 
+    PgSearchDocumentUpdateWorker.perform_async('Io', advertiser_ios.pluck(:id)) 
+    PgSearchDocumentUpdateWorker.perform_async('Contact', contacts.pluck(:id))
+    PgSearchDocumentUpdateWorker.perform_async('Activity', activities.pluck(:id))
   end
 
   private

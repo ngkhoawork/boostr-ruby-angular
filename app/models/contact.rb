@@ -119,7 +119,10 @@ class Contact < ActiveRecord::Base
       relation.save
     end
     update_pg_search_document
+    update_associated_search_documents if name_changed?
   end
+
+  after_destroy :update_associated_search_documents
 
   def primary_client_json
     self.primary_client.serializable_hash(only: [:id, :name, :client_type_id]) rescue nil
@@ -297,6 +300,10 @@ class Contact < ActiveRecord::Base
 
   def client_names
     clients.pluck(:name).join(' ')
+  end
+
+  def update_associated_search_documents
+    PgSearchDocumentUpdateWorker.perform_async('Activity', activities.pluck(:id))
   end
 
   private

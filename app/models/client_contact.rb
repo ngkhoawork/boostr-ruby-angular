@@ -11,6 +11,14 @@ class ClientContact < ActiveRecord::Base
 
   delegate :name, to: :account_dimension, prefix: true
 
+  after_save do
+    contact.update_pg_search_document
+  end
+
+  after_destroy do
+    contact.update_pg_search_document unless self.destroyed_by_association
+  end
+
   def as_json(options = {})
     super(options.deep_merge(include: {
             client: {
