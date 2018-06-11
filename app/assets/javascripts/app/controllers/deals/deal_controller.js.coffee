@@ -518,9 +518,8 @@
             deal_product_budget.budget_percent = Number((deal_product_budget.budget_loc / deal_product.budget_loc * 100).toFixed(1))
             budgetSum = budgetSum + deal_product_budget.budget_loc
             budgetPercentSum = budgetPercentSum + deal_product_budget.budget_percent
-
-        if(budgetSum != deal_product.total_budget || budgetPercentSum != 100)
-          $scope.budgetCorrection(deal_product.deal_product_budgets, deal_product.budget)
+        if(budgetSum != deal_product.budget_loc || budgetPercentSum != 100)
+          $scope.budgetCorrection(deal_product.deal_product_budgets, deal_product.budget_loc)
 
           deal_product.total_budget_percent = 100
 
@@ -533,15 +532,20 @@
         if(0 == index)
           budgetSum = budgetSum + Number(deal_product_budget.budget_loc)
           budgetPercentSum = budgetPercentSum + Number(deal_product_budget.budget_percent)
-      deal_product_budgets[0].budget_loc = total_product_budget - budgetSum
-      deal_product_budgets[0].budget_percent = 100 - budgetPercentSum
+      deal_product_budgets[0].budget_loc = total_product_budget - budgetSum.toFixed(2)
+      deal_product_budgets[0].budget_percent = 100 - budgetPercentSum.toFixed(2)
     else
       _.each deal_product_budgets, (deal_product_budget, index) ->
         if(length-1 != index)
           budgetSum = budgetSum + Number(deal_product_budget.budget_loc)
           budgetPercentSum = budgetPercentSum + Number(deal_product_budget.budget_percent)
-      deal_product_budgets[length-1].budget_loc = total_product_budget - budgetSum
-      deal_product_budgets[length-1].budget_percent = Number(100 - budgetPercentSum).toFixed(1)
+      last_budget = total_product_budget - budgetSum.toFixed(2)
+      last_percentage = Number(100 - budgetPercentSum.toFixed(1)).toFixed(1)
+      deal_product_budgets[length-1].budget_loc = last_budget
+      if last_percentage < 0 || isNaN(last_percentage || last_budget == 0)
+        deal_product_budgets[length-1].budget_percent = 0
+      else
+        deal_product_budgets[length-1].budget_percent = last_percentage
 
 #============END percent and money inputs logic=====================
 

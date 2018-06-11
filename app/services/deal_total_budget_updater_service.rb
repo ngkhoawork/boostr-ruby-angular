@@ -11,8 +11,7 @@ class DealTotalBudgetUpdaterService
 
   def perform
     deal.log_budget_changes(current_budget, new_budget)
-    deal.assign_attributes(budget: new_budget, budget_loc: new_budget_loc)
-    deal.save(validate: false)
+    deal.update_columns(budget: new_budget, budget_loc: new_budget_loc)
   end
 
   private
