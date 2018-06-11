@@ -22,6 +22,7 @@ class Deal::ResetBudgetsService
           DealProduct::ResetBudgetsService.new(deal_product).perform
         end
       end
+      DealTotalBudgetUpdaterService.perform(deal)
     end
   end
 end

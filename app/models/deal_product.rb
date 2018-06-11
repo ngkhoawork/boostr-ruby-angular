@@ -27,7 +27,7 @@ class DealProduct < ActiveRecord::Base
 
   after_update do
     if deal_product_budgets.sum(:budget_loc) != budget_loc || deal_product_budgets.sum(:budget) != budget
-      if budget_loc_changed? || budget_changed? && !deal.freezed?
+      if (budget_loc_changed? || budget_changed?) && !deal.freezed?
         update_product_budgets
       else
         update_budget
