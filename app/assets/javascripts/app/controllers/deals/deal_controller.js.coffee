@@ -519,8 +519,8 @@
             budgetSum = budgetSum + deal_product_budget.budget_loc
             budgetPercentSum = budgetPercentSum + deal_product_budget.budget_percent
 
-        if(budgetSum != deal_product.total_budget || budgetPercentSum != 100)
-          $scope.budgetCorrection(deal_product.deal_product_budgets, deal_product.budget)
+        if(budgetSum != deal_product.budget_loc || budgetPercentSum != 100)
+          $scope.budgetCorrection(deal_product.deal_product_budgets, deal_product.budget_loc)
 
           deal_product.total_budget_percent = 100
 
