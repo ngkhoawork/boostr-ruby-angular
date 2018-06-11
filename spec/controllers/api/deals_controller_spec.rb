@@ -126,7 +126,7 @@ describe Api::DealsController, type: :controller do
 
       expect{
         put :update, id: deal.id, deal: { start_date: Date.new(2017, 8, 10) }, format: :json
-      }.to change(AuditLog, :count).by(1)
+      }.to change(AuditLog, :count).by(2)
 
       audit_log = deal.audit_logs.last
 
@@ -141,7 +141,7 @@ describe Api::DealsController, type: :controller do
 
       expect{
         put :update, id: deal.id, deal: { end_date: Date.new(2017, 8, 10) }, format: :json
-      }.to_not change(AuditLog, :count)
+      }.to change(AuditLog, :count).by(1)
     end
 
     it 'saves deal cusotm field values' do

@@ -518,7 +518,6 @@
             deal_product_budget.budget_percent = Number((deal_product_budget.budget_loc / deal_product.budget_loc * 100).toFixed(1))
             budgetSum = budgetSum + deal_product_budget.budget_loc
             budgetPercentSum = budgetPercentSum + deal_product_budget.budget_percent
-
         if(budgetSum != deal_product.budget_loc || budgetPercentSum != 100)
           $scope.budgetCorrection(deal_product.deal_product_budgets, deal_product.budget_loc)
 
@@ -533,15 +532,15 @@
         if(0 == index)
           budgetSum = budgetSum + Number(deal_product_budget.budget_loc)
           budgetPercentSum = budgetPercentSum + Number(deal_product_budget.budget_percent)
-      deal_product_budgets[0].budget_loc = total_product_budget - budgetSum
-      deal_product_budgets[0].budget_percent = 100 - budgetPercentSum
+      deal_product_budgets[0].budget_loc = total_product_budget - budgetSum.toFixed(2)
+      deal_product_budgets[0].budget_percent = 100 - budgetPercentSum.toFixed(2)
     else
       _.each deal_product_budgets, (deal_product_budget, index) ->
         if(length-1 != index)
           budgetSum = budgetSum + Number(deal_product_budget.budget_loc)
           budgetPercentSum = budgetPercentSum + Number(deal_product_budget.budget_percent)
-      deal_product_budgets[length-1].budget_loc = total_product_budget - budgetSum
-      deal_product_budgets[length-1].budget_percent = Number(100 - budgetPercentSum).toFixed(1)
+      deal_product_budgets[length-1].budget_loc = total_product_budget - budgetSum.toFixed(2)
+      deal_product_budgets[length-1].budget_percent = Number(100 - budgetPercentSum.toFixed(2)).toFixed(1)
 
 #============END percent and money inputs logic=====================
 
