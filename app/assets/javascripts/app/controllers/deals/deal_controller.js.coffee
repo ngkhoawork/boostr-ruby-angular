@@ -540,7 +540,11 @@
           budgetSum = budgetSum + Number(deal_product_budget.budget_loc)
           budgetPercentSum = budgetPercentSum + Number(deal_product_budget.budget_percent)
       deal_product_budgets[length-1].budget_loc = total_product_budget - budgetSum.toFixed(2)
-      deal_product_budgets[length-1].budget_percent = Number(100 - budgetPercentSum.toFixed(2)).toFixed(1)
+      last_percentage = Number(100 - budgetPercentSum.toFixed(1)).toFixed(1)
+      if last_percentage < 0 || isNaN(last_percentage)
+        deal_product_budgets[length-1].budget_percent = 0
+      else
+        deal_product_budgets[length-1].budget_percent = last_percentage
 
 #============END percent and money inputs logic=====================
 
