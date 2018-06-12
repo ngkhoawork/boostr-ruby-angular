@@ -101,7 +101,7 @@ class Leads::UserAssignmentService
 
   def next_assignment_rules_user
     @_next_assignment_rules_user ||=
-      find_rule.assignment_rules_users.find_by(position: find_next_available_rule.position.next)
+      find_next_available_rule.next_record_by_position
   end
 
   def first_assignment_rules_user
