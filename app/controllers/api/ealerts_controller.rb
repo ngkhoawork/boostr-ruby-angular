@@ -109,6 +109,7 @@ class Api::EalertsController < ApplicationController
   def ealert_params
     params.require(:ealert).permit(
       :company_id,
+      :subject,
       :recipients,
       :automatic_send,
       :same_all_stages,
