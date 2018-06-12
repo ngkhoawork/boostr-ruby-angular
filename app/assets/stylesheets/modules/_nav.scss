@@ -79,6 +79,15 @@
           > div {
             width: 100%;
             padding: 11px 10px;
+
+            > span {
+              display: block;
+              padding-right: 120px;
+              word-wrap: break-word;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+            }
           }
 
           .no-pointer {
@@ -90,6 +99,7 @@
           }
 
           a {
+            float: right;
             position: absolute;
             right: 10px;
           }
