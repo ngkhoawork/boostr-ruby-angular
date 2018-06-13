@@ -1,0 +1,71 @@
+.mapping-text-input {
+  position: relative;
+  display: block;
+
+  .search-mapping-wrapper {
+    width: 300px;
+    max-height: 300px;
+    position: absolute;
+    top: 33px;
+    right: 10px;
+    border: 1px solid #DEE6EE;
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 1000;
+    background: #fff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+
+    li {
+      border-bottom: 1px solid #DEE6EE;
+      padding: 3px 0 3px 2px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #DFDFDF;
+      }
+
+      &:last-child {
+        border: 0
+      }
+    }
+  }
+  .target {
+    padding-right: 50px;
+    resize: none;
+  }
+  .search-field {
+    height: 30px;
+  }
+  .add-mapping {
+    position: absolute;
+    top: 13px;
+    right: 25px;
+    color: $main-color !important;
+  }
+  .dropdown-menu {
+    width: 100%;
+    box-shadow: none;
+    margin-top: 5px;
+    overflow-y: scroll;
+    padding: 10px;
+    border: 1px solid #DEE6EE;
+  }
+  .mappings {
+    display: block;
+    position: static;
+    max-height: 115px;
+    li {
+      line-height: 24px;
+      padding: 0 0 0 2px;
+    }
+  }
+  .glyphicon-th-list:after  {
+    content: '+';
+    display: block;
+    color: #3498DB;
+    font-size: 12px;
+    position: absolute;
+    top: 60%;
+    left: 60%;
+  }
+}
