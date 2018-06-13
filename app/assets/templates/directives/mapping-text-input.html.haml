@@ -1,9 +1,0 @@
-.mapping-text-input
-  .search-mapping-wrapper{ ng: { show: 'showSearch', click: 'preventOutsideClick()' } }
-    %input.form-control.search-field{ type: 'search', placeholder: 'Search for Mapping', ng: { model: 'search' } }
-    %ul.dropdown-menu.mappings{ ng: { show: 'filteredSuggestions.length > 0' } }
-      %li{ ng: { repeat: 'suggestion in filteredSuggestions= (foundSuggestions | filter: search)', click: 'addSuggestionToText(suggestion)' } }
-        {{ suggestion.label_name }}
-  %textarea.target.form-control{ rows: 4, name: 'message', placeholder: 'Type your text here *', ng: { model: 'messageText', keyup: 'checkCursorPosition()', click: 'checkCursorPosition()' } }
-  %a.add-mapping{ title: 'Add Mapping', href: '', ng: { click: 'toogleSearch()' } }
-    %span.glyphicon.glyphicon-th-list{ 'aria-hidden': 'true' }

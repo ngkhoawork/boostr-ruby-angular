@@ -1,11 +1,9 @@
 @app.controller "SettingsEalertsController",
-['$scope', '$routeParams', '$location', '$modal', 'DealCustomFieldName', 'DealProductCfName', 'Ealert', 'Stage', 'DataModel', '$q'
-($scope,    $routeParams,   $location,   $modal,   DealCustomFieldName,   DealProductCfName,   Ealert,   Stage,   DataModel,   $q) ->
+['$scope', '$routeParams', '$location', '$modal', 'DealCustomFieldName', 'DealProductCfName', 'Ealert', 'Stage', '$q'
+($scope,    $routeParams,   $location,   $modal,   DealCustomFieldName,   DealProductCfName,   Ealert,   Stage,   $q) ->
   $scope.recipients = []
   $scope.selectedFields = []
   $scope.availableFields = []
-  $scope.data_mappings = []
-  $scope.loadedDataMapping = false;
 
   $scope.init = () ->
     getEalert()
@@ -22,12 +20,6 @@
       $scope.stages = data.stages
       $scope.ealert = data.ealert
       transformEalert()
-      getDataMappings()
-
-  getDataMappings = ->
-    DataModel.get_mappings(object_name: 'Deal').then (mappings) ->
-      $scope.data_mappings = mappings
-      $scope.loadedDataMapping = true;
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -39,10 +31,7 @@
 
   $scope.submitEalert = (ealert) ->
     $scope.errors = {}
-
-    if !ealert.subject
-      $scope.errors['subject'] = 'Subject is required!'
-    else if ealert.delay == null
+    if ealert.delay == null
       $scope.errors['delay'] = 'Auto send delay is required!'
     else if ealert.delay < 0
       $scope.errors['delay'] = 'Auto send delay can\'t be negative value!'
