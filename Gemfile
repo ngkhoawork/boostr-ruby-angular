@@ -55,7 +55,7 @@ gem 'rack-cors', :require => 'rack/cors'
 gem 'smarter_csv'
 gem 'daemons'
 gem 'google-api-client'
-gem 'nokogiri', '1.6.8.1'
+gem 'nokogiri', '1.10.8'
 
 gem 'slack-ruby-client'
 gem 'wisper'
