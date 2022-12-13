@@ -166,6 +166,7 @@ GEM
       unicode_utils (~> 1.4)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
+    crass (1.0.6)
     daemons (1.2.5)
     dalli (2.7.4)
     database_cleaner (1.4.1)
@@ -374,7 +375,8 @@ GEM
       actionpack (>= 3.0)
       activerecord (>= 3.0)
       railties (>= 3.0)
-    loofah (2.0.2)
+    loofah (2.19.1)
+      crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     lumberjack (1.0.12)
     mail (2.6.3)
@@ -519,8 +521,8 @@ GEM
       activesupport (>= 4.2.0.beta, < 5.0)
       nokogiri (~> 1.6.0)
       rails-deprecated_sanitizer (>= 1.0.1)
-    rails-html-sanitizer (1.0.2)
-      loofah (~> 2.0)
+    rails-html-sanitizer (1.4.4)
+      loofah (~> 2.19, >= 2.19.1)
     rails_12factor (0.0.3)
       rails_serve_static_assets
       rails_stdout_logging
